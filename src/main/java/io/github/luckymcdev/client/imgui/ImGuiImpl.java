@@ -16,6 +16,7 @@ import imgui.flag.ImGuiConfigFlags;
 import imgui.flag.ImGuiDir;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
+import io.github.luckymcdev.client.Client;
 import io.github.luckymcdev.client.imgui.context.ImGuiContextStack;
 import io.github.luckymcdev.client.imgui.context.ImGuiContextTypes;
 import io.github.luckymcdev.client.imgui.graphics.ImGuiGraphicsStack;
@@ -99,12 +100,10 @@ public final class ImGuiImpl {
         // There is basically some like validation thing, and you have to get the real thing??? im not really sure.
 
         // Unwrap Texture
-        ValidationGpuTexture mcColTex = (ValidationGpuTexture) framebuffer.getColorTexture();
-        GlTexture colorTexture = (GlTexture) mcColTex.getRealTexture();
+        GlTexture colorTexture = Client.getGlTexture();
 
         // Unwrap device
-        ValidationGpuDevice mcDevice = (ValidationGpuDevice) RenderSystem.getDevice();
-        GlDevice device = (GlDevice) mcDevice.getRealDevice();
+        GlDevice device = Client.getGlDevice();
 
         GlStateManager._glBindFramebuffer(
                 GL30C.GL_FRAMEBUFFER, colorTexture.getFbo(device.directStateAccess(), null)
