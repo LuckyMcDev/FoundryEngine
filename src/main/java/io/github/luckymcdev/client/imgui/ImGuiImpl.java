@@ -10,10 +10,11 @@ import com.mojang.blaze3d.opengl.GlTexture;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import imgui.*;
-import imgui.extension.implot.ImPlot;
 import imgui.flag.ImGuiConfigFlags;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
+import io.github.luckymcdev.client.imgui.context.ImGuiContextStack;
+import io.github.luckymcdev.client.imgui.context.ImGuiContextTypes;
 import net.minecraft.client.Minecraft;
 import net.neoforged.neoforge.client.blaze3d.validation.ValidationGpuDevice;
 import net.neoforged.neoforge.client.blaze3d.validation.ValidationGpuTexture;
@@ -31,11 +32,16 @@ public final class ImGuiImpl {
     private final static ImGuiImplGlfw imGuiImplGlfw = new ImGuiImplGlfw();
     private final static ImGuiImplGl3 imGuiImplGl3 = new ImGuiImplGl3();
 
+    // Main context stack for the application
+    private static ImGuiContextStack mainContextStack;
+
     private static short[] glyphRanges;
 
     public static void create(final long handle) {
-        ImGui.createContext();
-        ImPlot.createContext();
+        // Create context stack with ImGui and ImPlot
+        mainContextStack = new ImGuiContextStack();
+        mainContextStack.addContextType(ImGuiContextTypes.IMGUI);
+        mainContextStack.addContextType(ImGuiContextTypes.IMPLOT);
 
         final ImGuiIO data = ImGui.getIO();
         data.setIniFilename("toolbox.ini");
@@ -55,6 +61,9 @@ public final class ImGuiImpl {
     public static void beginImGuiRendering() {
         final RenderTarget framebuffer = Minecraft.getInstance().getMainRenderTarget();
 
+        // This next "unwrapping" part is because of some weird neoforge shenanigans i dont understand.
+        // There is basically some like validation device, and you have to get the real device??? im not really sure.
+
         // Unwrap Texture
         ValidationGpuTexture mcColTex = (ValidationGpuTexture) framebuffer.getColorTexture();
         GlTexture colorTexture = (GlTexture) mcColTex.getRealTexture();
@@ -62,8 +71,6 @@ public final class ImGuiImpl {
         // Unwrap device
         ValidationGpuDevice mcDevice = (ValidationGpuDevice) RenderSystem.getDevice();
         GlDevice device = (GlDevice) mcDevice.getRealDevice();
-
-
 
         GlStateManager._glBindFramebuffer(
                 GL30C.GL_FRAMEBUFFER, colorTexture.getFbo(device.directStateAccess(), null)
@@ -88,6 +95,13 @@ public final class ImGuiImpl {
 
             GLFW.glfwMakeContextCurrent(pointer);
         }
+    }
+
+    /**
+     * Get the main context stack for manual context switching
+     */
+    public static ImGuiContextStack getMainContextStack() {
+        return mainContextStack;
     }
 
     /**
@@ -124,8 +138,11 @@ public final class ImGuiImpl {
         imGuiImplGl3.shutdown();
         imGuiImplGlfw.shutdown();
 
-        ImPlot.destroyContext();
-        ImGui.destroyContext();
+        // Destroy the main context stack (destroys both ImGui and ImPlot contexts)
+        if (mainContextStack != null) {
+            mainContextStack.destroy();
+            mainContextStack = null;
+        }
     }
 
 }
