@@ -2,6 +2,8 @@ package io.github.luckymcdev.client.imgui.context;
 
 import imgui.ImGui;
 import imgui.binding.ImGuiStruct;
+import imgui.extension.imnodes.ImNodes;
+import imgui.extension.imnodes.ImNodesContext;
 import imgui.extension.implot.ImPlot;
 import imgui.extension.implot.ImPlotContext;
 import imgui.internal.ImGuiContext;
@@ -50,6 +52,28 @@ public class ImGuiContextTypes {
         @Override
         public void destroy(ImPlotContext context) {
             ImPlot.destroyContext(context);
+        }
+    };
+
+    public static final ContextType<ImNodesContext> IMNODES = new ContextType<>() {
+        @Override
+        public ImNodesContext create() {
+            return new ImNodesContext(ImNodes.createContext().ptr);
+        }
+
+        @Override
+        public ImNodesContext getCurrent() {
+            return new ImNodesContext(ImNodes.getCurrentContext().ptr);
+        }
+
+        @Override
+        public void setCurrent(ImNodesContext context) {
+            ImNodes.setCurrentContext(context);
+        }
+
+        @Override
+        public void destroy(ImNodesContext context) {
+            ImNodes.destroyContext(context);
         }
     };
 }

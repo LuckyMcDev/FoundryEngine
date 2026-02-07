@@ -2,37 +2,38 @@ package io.github.luckymcdev.client.imgui.context;
 
 import imgui.binding.ImGuiStruct;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 
 public class ImGuiContextStack {
+    private final Deque<ImGuiContextStack> stack = new ArrayDeque<>();
     private final List<ContextEntry<?>> contexts = new ArrayList<>();
 
-    public ImGuiContextStack() {
-    }
-
-    // Add a context type
     public <T extends ImGuiStruct> void addContextType(ContextType<T> type) {
         contexts.add(new ContextEntry<>(type));
     }
 
     // Push: switch to stored contexts, return previous ones
-    public ImGuiContextStack push() {
+    public void push() {
         ImGuiContextStack previous = new ImGuiContextStack();
 
         for (ContextEntry<?> entry : contexts) {
-            // Save current context and switch
             entry.pushAndSavePrevious(previous);
         }
 
-        return previous;
+        stack.push(previous);
     }
 
     // Pop: restore contexts from this stack
     public void pop() {
-        for (ContextEntry<?> entry : contexts) {
-            entry.restore();
+        if (stack.isEmpty()) {
+            throw new IllegalStateException("Context stack underflow");
         }
+
+        ImGuiContextStack previous = stack.pop();
+        previous.pop();
     }
 
     // Destroy all contexts in this stack

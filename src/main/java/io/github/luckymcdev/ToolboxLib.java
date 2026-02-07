@@ -2,6 +2,7 @@ package io.github.luckymcdev;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.logging.LogUtils;
+import io.github.luckymcdev.common.Commons;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
@@ -19,9 +20,8 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import org.slf4j.Logger;
 
-@Mod(ToolboxLib.MODID)
+@Mod(Commons.MODID)
 public class ToolboxLib {
-    public static final String MODID = "toolboxlib";
     private static final Logger LOGGER = LogUtils.getLogger();
 
     public ToolboxLib(IEventBus modEventBus, ModContainer modContainer) {
@@ -44,7 +44,7 @@ public class ToolboxLib {
     public void onRegisterCommands(RegisterCommandsEvent event) {
     }
 
-    @EventBusSubscriber(modid = MODID, value = Dist.CLIENT)
+    @EventBusSubscriber(modid = Commons.MODID, value = Dist.CLIENT)
     public static class ClientModEvents {
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
