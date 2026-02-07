@@ -1,6 +1,6 @@
 package io.github.luckymcdev.mixin.imgui;
 
-import io.github.luckymcdev.imgui.ImGuiImpl;
+import io.github.luckymcdev.client.imgui.ImGuiImpl;
 import net.minecraft.client.Minecraft;
 import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.main.GameConfig;

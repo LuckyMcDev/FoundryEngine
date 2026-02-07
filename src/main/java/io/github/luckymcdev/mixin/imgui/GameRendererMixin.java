@@ -1,7 +1,7 @@
 package io.github.luckymcdev.mixin.imgui;
 
 import imgui.ImGui;
-import io.github.luckymcdev.imgui.ImGuiImpl;
+import io.github.luckymcdev.client.imgui.ImGuiImpl;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;

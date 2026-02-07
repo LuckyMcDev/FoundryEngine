@@ -2,7 +2,7 @@
  * This file is part of fabric-imgui-example-mod - https://github.com/FlorianMichael/fabric-imgui-example-mod
  * by FlorianMichael/EnZaXD and contributors
  */
-package io.github.luckymcdev.imgui;
+package io.github.luckymcdev.client.imgui;
 
 import com.mojang.blaze3d.opengl.GlDevice;
 import com.mojang.blaze3d.opengl.GlStateManager;
