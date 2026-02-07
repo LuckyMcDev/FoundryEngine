@@ -5,6 +5,8 @@ import imgui.ImFontAtlas;
 import imgui.ImGui;
 import imgui.ImGuiIO;
 import io.github.luckymcdev.client.imgui.ImGuiImpl;
+import io.github.luckymcdev.client.imgui.icon.ImIcon;
+import io.github.luckymcdev.client.imgui.icon.ImIcons;
 import io.github.luckymcdev.client.imgui.node.*;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
@@ -25,7 +27,6 @@ public class GameRendererMixin {
     @Final
     private Minecraft minecraft;
 
-    // Create the node editor instance (only once)
     private static NodeEditorInstance<String> nodeEditor;
     private static NodePinType<String> stringType;
 
@@ -38,7 +39,7 @@ public class GameRendererMixin {
 
         ImGui.text("Loaded Font: "+ font + " size: "+ font.getFontSize());
 
-        ImGui.text("nf-fa-camera  \uF030  \\uf030");
+        ImGui.text(ImIcons.FA.FA_FILE_TEXT + " " + ImIcons.DEV.DEV_NODEJS + ImIcons.SETI.SETI_APPLE);
 
         ImGui.end();
 

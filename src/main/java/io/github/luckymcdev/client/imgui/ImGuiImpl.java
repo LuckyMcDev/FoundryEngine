@@ -27,16 +27,9 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.ARGB;
 import net.neoforged.neoforge.client.blaze3d.validation.ValidationGpuDevice;
 import net.neoforged.neoforge.client.blaze3d.validation.ValidationGpuTexture;
-import org.apache.commons.io.IOUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.*;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UncheckedIOException;
-import java.util.Objects;
 
 public final class ImGuiImpl {
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -47,7 +40,23 @@ public final class ImGuiImpl {
     private final static ImGuiContextStack CONTEXT_STACK = new ImGuiContextStack();
     private final static ImGuiGraphicsStack GRAPHICS_STACK = new ImGuiGraphicsStack();
 
-    private static short[] glyphRanges;
+    private static final short[] GLYPH_RANGES = {
+            0x0020, 0x00FF, // Basic Latin
+            0x0100, 0x017F, // Latin Extended-A
+            0x0400, 0x052F, // Cyrillic
+            0x3040, 0x30FF, // Hiragana & Katakana
+            (short)0x4E00, (short)0x9FFF, // CJK Unified Ideographs (Kanji, BMP portion)
+            (short)0xE0A0, (short)0xE0A2, // Powerline symbols
+            (short)0xE000, (short)0xE00A, // Pomicons
+            (short)0xE200, (short)0xE2A9, // FA Extension
+            (short)0xE5FA, (short)0xE6B7, // Seti-UI
+            (short)0xE700, (short)0xE8EF, // Devicons
+            (short)0xED00, (short)0xF2FF, // Font Awesome
+            (short)0xE300, (short)0xE3E3, // Weather Icons
+            (short)0xF400, (short)0xF533, // Octicons
+            0x2665, 0x26A1, // Extra Octicons
+            0
+    };
 
     public static ImFont font = null;
 
@@ -75,7 +84,12 @@ public final class ImGuiImpl {
 
         imGuiImplGl3.init();
         imGuiImplGlfw.init(handle, true);
+
         loadFonts(Instances.getResourceManager());
+
+        var style = ImGui.getStyle();
+        ImGui.styleColorsDark();
+        setFullDefaultStyle(style);
     }
 
     public static void beginImGuiRendering() {
@@ -135,20 +149,11 @@ public final class ImGuiImpl {
         var fonts = ImGui.getIO().getFonts();
         fonts.clear();
 
-        if (glyphRanges == null) {
-            final ImFontGlyphRangesBuilder rangesBuilder = new ImFontGlyphRangesBuilder();
-
-            rangesBuilder.addRanges(ImGui.getIO().getFonts().getGlyphRangesDefault());
-            rangesBuilder.addRanges(ImGui.getIO().getFonts().getGlyphRangesCyrillic());
-            rangesBuilder.addRanges(ImGui.getIO().getFonts().getGlyphRangesJapanese());
-
-            glyphRanges = rangesBuilder.buildRanges();
-        }
-
         var config = new ImFontConfig();
-        config.setGlyphRanges(glyphRanges);
-        config.setOversampleH(2);
-        config.setOversampleV(2);
+        config.setGlyphRanges(GLYPH_RANGES);
+        config.setOversampleH(3);
+        config.setOversampleV(3);
+        config.setRasterizerMultiply(1.2f); // slightly darker
         config.setGlyphOffset(0, 0);
 
         try {

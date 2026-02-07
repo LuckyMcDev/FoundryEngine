@@ -15,6 +15,7 @@ public class ImGuiGraphicsStack {
         int styleVarCount = 0;
         int styleColorCount = 0;
         int fontCount = 0;
+        float fontScale = 20F;
     }
 
     private StackFrame currentFrame() {
@@ -74,6 +75,12 @@ public class ImGuiGraphicsStack {
 
     public void pushFont(ImFont font) {
         pushFontInternal(() -> ImGui.pushFont(font));
+    }
+
+    private void pushFontScaleInternal(Runnable action) {
+        currentFrame();
+        action.run();
+        stack.peek().fontScale++;
     }
 
     public void push() {
