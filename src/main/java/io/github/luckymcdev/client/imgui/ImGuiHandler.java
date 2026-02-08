@@ -25,8 +25,10 @@ import io.github.luckymcdev.client.imgui.context.ImGuiContextTypes;
 import io.github.luckymcdev.client.imgui.graphics.ImGuiGraphicsStack;
 import io.github.luckymcdev.common.Instances;
 import io.github.luckymcdev.common.font.TTFFile;
+import io.github.luckymcdev.common.registry.ResourceRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.input.InputQuirks;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.ARGB;
 import org.lwjgl.glfw.GLFW;
@@ -60,6 +62,7 @@ public final class ImGuiHandler {
             0x2665, 0x26A1, // Extra Octicons
             0
     };
+
     static int dockId;
 
     public static void create(final long handle) {
