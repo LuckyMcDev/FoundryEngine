@@ -61,8 +61,6 @@ public final class ImGuiImpl {
             0
     };
     static int dockId;
-    static float dpiScale = 1.0f;
-    private static boolean endingFrame = false;
 
     public static void create(final long handle) {
 
@@ -170,14 +168,6 @@ public final class ImGuiImpl {
 
     public static boolean shouldInterceptKeyboard() {
         return ImGui.getIO().getWantCaptureKeyboard();
-    }
-
-    public static void beforeEndFrame() {
-        endingFrame = true;
-    }
-
-    public static void afterEndFrame() {
-        endingFrame = false;
     }
 
     public static void setFullDefaultStyle(ImGuiStyle style) {

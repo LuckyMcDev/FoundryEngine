@@ -25,16 +25,6 @@ public class MinecraftMixin implements TbMinecraft {
     @Final
     private Window window;
 
-    @Inject(method = "runTick", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/Window;isMinimized()Z"))
-    public void beforeEndFrame(boolean tick, CallbackInfo ci) {
-        ImGuiImpl.beforeEndFrame();
-    }
-
-    @Inject(method = "runTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/Util;getNanos()J", ordinal = 1))
-    public void afterEndFrame(boolean tick, CallbackInfo ci) {
-        ImGuiImpl.afterEndFrame();
-    }
-
     @Inject(method = "<init>", at = @At("RETURN"))
     public void initImGui(GameConfig gameConfig, CallbackInfo ci) {
         TTFFile.find(resourceManager);
