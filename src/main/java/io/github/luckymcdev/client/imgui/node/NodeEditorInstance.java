@@ -3,6 +3,8 @@ package io.github.luckymcdev.client.imgui.node;
 import imgui.ImGui;
 import imgui.extension.imnodes.ImNodes;
 import imgui.extension.imnodes.flag.ImNodesMiniMapLocation;
+import imgui.extension.imnodes.flag.ImNodesStyleVar;
+import imgui.flag.ImGuiKey;
 import imgui.type.ImInt;
 import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -88,6 +90,8 @@ public class NodeEditorInstance<T> {
         ImNodes.beginNodeEditor();
         boolean nodeEditorHovered = ImNodes.isEditorHovered();
         Node removedNode = null;
+
+        // TODO: Figure out how to do zooming for the editor.
 
         for (var node : nodes.values()) {
             ImNodes.beginNode(node.id);
@@ -194,6 +198,14 @@ public class NodeEditorInstance<T> {
                 if (pin.inputLinkSelected) {
                     pin.inputLinkSelected = false;
                     pin.inputLink = null;
+                }
+            }
+
+            // Remove selected nodes with DELETE key
+            for (var node : nodes.values()) {
+                if (node.selected && node != root) {
+                    removedNode = node;
+                    break; // Remove one node at a time
                 }
             }
         }
