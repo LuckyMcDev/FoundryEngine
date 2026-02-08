@@ -1,7 +1,6 @@
 package io.github.luckymcdev.common.registry;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class GenericRegistry<K, V> implements Registry<K, V> {
     private final Map<K, V> registryMap = new HashMap<>();
@@ -19,6 +18,10 @@ public class GenericRegistry<K, V> implements Registry<K, V> {
     @Override
     public boolean contains(K key) {
         return registryMap.containsKey(key);
+    }
+
+    public Collection<V> getValues() {
+        return registryMap.values();
     }
 
     @Override
