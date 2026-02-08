@@ -21,7 +21,7 @@ public class ImGuiGraphicsStack {
     }
 
     private void pushStyleVarInternal(Runnable pushAction) {
-        currentFrame(); // ensures a frame exists
+        currentFrame();
         pushAction.run();
         stack.peek().styleVarCount++;
     }
@@ -41,6 +41,7 @@ public class ImGuiGraphicsStack {
     private void pushStyleColorInternal(Runnable pushAction) {
         currentFrame();
         pushAction.run();
+        assert stack.peek() != null;
         stack.peek().styleColorCount++;
     }
 
@@ -60,20 +61,17 @@ public class ImGuiGraphicsStack {
         pushStyleColorInternal(() -> ImGui.pushStyleColor(styleColor, color));
     }
 
-    private void pushFontInternal(Runnable action) {
-        currentFrame();
-        action.run();
-        stack.peek().fontCount++;
-    }
-
-    public void pushFont(ImFont font) {
-        pushFontInternal(() -> ImGui.pushFont(font));
-    }
-
     private void pushFontScaleInternal(Runnable action) {
         currentFrame();
         action.run();
-        stack.peek().fontScale++;
+    }
+
+    public void pushFontScale(final float fontScale) {
+        pushFontScaleInternal(() -> {
+            assert stack.peek() != null;
+            stack.peek().fontScale = fontScale;
+            ImGui.getFont().setScale(fontScale);
+        });
     }
 
     public void push() {
@@ -86,8 +84,9 @@ public class ImGuiGraphicsStack {
         }
 
         StackFrame frame = stack.pop();
-        for (int i = 0; i < frame.fontCount; i++) {
-            ImGui.popFont();
+
+        if (frame.fontScale != 1F) {
+            ImGui.getFont().setScale(frame.fontScale);
         }
         if (frame.styleVarCount > 0) {
             ImGui.popStyleVar(frame.styleVarCount);
@@ -114,7 +113,6 @@ public class ImGuiGraphicsStack {
     private static class StackFrame {
         int styleVarCount = 0;
         int styleColorCount = 0;
-        int fontCount = 0;
-        float fontScale = 20F;
+        float fontScale = 1.0F;
     }
 }

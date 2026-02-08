@@ -4,25 +4,21 @@
  */
 package io.github.luckymcdev.client.imgui;
 
+import com.electronwill.nightconfig.core.utils.StringUtils;
 import com.mojang.blaze3d.opengl.GlDevice;
 import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.opengl.GlTexture;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.logging.LogUtils;
-import imgui.ImFontConfig;
-import imgui.ImGui;
-import imgui.ImGuiIO;
-import imgui.ImGuiStyle;
-import imgui.flag.ImGuiCol;
-import imgui.flag.ImGuiConfigFlags;
-import imgui.flag.ImGuiDir;
-import imgui.flag.ImGuiDockNodeFlags;
+import imgui.*;
+import imgui.flag.*;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
 import io.github.luckymcdev.client.Client;
 import io.github.luckymcdev.client.imgui.context.ImGuiContextStack;
 import io.github.luckymcdev.client.imgui.context.ImGuiContextTypes;
 import io.github.luckymcdev.client.imgui.graphics.ImGuiGraphicsStack;
+import io.github.luckymcdev.client.imgui.icon.ImIcons;
 import io.github.luckymcdev.common.Instances;
 import io.github.luckymcdev.common.font.TTFFile;
 import io.github.luckymcdev.common.registry.ResourceRegistry;
@@ -31,11 +27,14 @@ import net.minecraft.client.input.InputQuirks;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.ARGB;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL30C;
 import org.slf4j.Logger;
+
+import java.util.Date;
 
 public final class ImGuiHandler {
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -64,6 +63,7 @@ public final class ImGuiHandler {
     };
 
     static int dockId;
+    static boolean infoBarEnabled = false;
 
     public static void create(final long handle) {
 
@@ -114,6 +114,34 @@ public final class ImGuiHandler {
 
         dockId = ImGui.dockSpaceOverViewport(2087402907, ImGui.getMainViewport(), ImGuiDockNodeFlags.NoDockingInCentralNode | ImGuiDockNodeFlags.PassthruCentralNode);
         var centralNode = imgui.internal.ImGui.dockBuilderGetCentralNode(dockId);
+        var centralNodePos = centralNode.getPos();
+        var centralNodeSize = centralNode.getSize();
+
+        int menuBarHeight = 20;
+
+        int flags = ImGuiWindowFlags.NoSavedSettings
+                | ImGuiWindowFlags.MenuBar
+                | ImGuiWindowFlags.NoMove
+                | ImGuiWindowFlags.NoDocking
+                | ImGuiWindowFlags.NoNav
+                | ImGuiWindowFlags.NoDecoration;
+
+
+        if(!infoBarEnabled) return;
+
+        ImGui.setNextWindowViewport(ImGui.getMainViewport().getID());
+        ImGui.setNextWindowPos(centralNodePos.x, centralNodePos.y);
+        ImGui.setNextWindowSize(centralNodeSize.x, menuBarHeight);
+
+        if (ImGui.begin("###top-info-bar", flags)) {
+            ImGui.setWindowFontScale(0.9F);
+            if (ImGui.beginMenuBar()) {
+                topInfoBar();
+                ImGui.endMenuBar();
+            }
+        }
+
+        ImGui.end();
     }
 
     public static void endImGuiRendering() {
@@ -157,12 +185,17 @@ public final class ImGuiHandler {
             LOGGER.error(e.getMessage());
             fonts.addFontDefault();
         }
-
-        fonts.build();
         imGuiImplGl3.destroyFontsTexture();
+        fonts.build();
         imGuiImplGl3.createFontsTexture();
         config.destroy();
         fonts.clearTexData();
+
+
+        if(ImGui.getFont() == null) {
+            ImGui.getIO().getFonts().addFontDefault();
+            LOGGER.info("Go back to default font, font corrupted?");
+        }
     }
 
     public static boolean shouldInterceptMouse() {
@@ -202,7 +235,7 @@ public final class ImGuiHandler {
         setColor(style, ImGuiCol.FrameBg, 0xFF15151C);
         setColor(style, ImGuiCol.TitleBg, 0xFF010101);
         setColor(style, ImGuiCol.TitleBgActive, 0xFF010101);
-        setColor(style, ImGuiCol.MenuBarBg, 0xFF17171C);
+        setColor(style, ImGuiCol.MenuBarBg, 0xFF222228);
         setColor(style, ImGuiCol.TitleBgCollapsed, 0xEF517F70);
         setColor(style, ImGuiCol.SliderGrab, 0xFF446692);
         setColor(style, ImGuiCol.Button, 0x664296FA);
@@ -212,6 +245,29 @@ public final class ImGuiHandler {
 
     public static void setColor(ImGuiStyle style, int key, int color) {
         style.setColor(key, ARGB.toABGR(color));
+    }
+    public static void topInfoBar() {
+        var now = new Date();
+
+        String username = Minecraft.getInstance().getUser().getName();
+        ImGui.text(ImIcons.FA.FA_USER + " " + username);
+        ImGui.separator();
+
+        ImGui.text(ImIcons.FA.FA_EARTH_EUROPE + " " + now);
+        ImGui.separator();
+
+        ImGui.text(ImIcons.FA.FA_TACHOMETER + " " + Minecraft.getInstance().getFps() + " FPS");
+        ImGui.separator();
+
+        long maxMemory = Runtime.getRuntime().maxMemory();
+        long usedMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+        ImGui.text(ImIcons.FA.FA_MEMORY + " Used " + (usedMemory * 100 / maxMemory) + "% Memory");
+        ImGui.separator();
+
+        var server = Minecraft.getInstance().getCurrentServer();
+        if (server != null) {
+            ImGui.text(ImIcons.FA.FA_SERVER + " " + server.ip);
+        }
     }
 
     public static void dispose() {
