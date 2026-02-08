@@ -510,8 +510,7 @@ public class ImIcons {
         DEV_SYMFONY_BADGE('\uE757'),
         DEV_UNITY_SMALL('\uE721'),
         DEV_GIT_PULL_REQUEST('\uE726'),
-        DEV_RUBY_ON_RAILS('\uE73B')
-        ;
+        DEV_RUBY_ON_RAILS('\uE73B');
 
         private final char icon;
 
@@ -840,8 +839,7 @@ public class ImIcons {
         OCT_GIT_PULL_REQUEST_CLOSED('\uF4DC'),
         OCT_GIT_PULL_REQUEST_DRAFT('\uF4DD'),
         OCT_HEART('\u2665'),
-        OCT_ZAP('\u26A1')
-        ;
+        OCT_ZAP('\u26A1');
 
         private final char icon;
 
@@ -1030,8 +1028,7 @@ public class ImIcons {
         FAE_BOOK_OPEN_O('\uE28B'),
         FAE_CC_NC_EU('\uE293'),
         FAE_CC_NC_JP('\uE294'),
-        FAE_ENVELOPE_OPEN_O('\uE278')
-        ;
+        FAE_ENVELOPE_OPEN_O('\uE278');
 
         private final char icon;
 
@@ -2865,8 +2862,7 @@ public class ImIcons {
         FA_UP_RIGHT_FROM_SQUARE('\uF0B3'),
         FA_WIZARDS_OF_THE_COAST('\uEF18'),
         FA_ARROW_UP_RIGHT_FROM_SQUARE('\uF08E'),
-        FA_ARROWS_UP_DOWN_LEFT_RIGHT('\uF047')
-        ;
+        FA_ARROWS_UP_DOWN_LEFT_RIGHT('\uF047');
 
         private final char icon;
 
@@ -2896,8 +2892,7 @@ public class ImIcons {
         POM_POMODORO_ESTIMATED('\uE002'),
         POM_POMODORO_SQUASHED('\uE004'),
         POM_POMODORO_TICKING('\uE003'),
-        POM_SHORT_PAUSE('\uE005')
-        ;
+        POM_SHORT_PAUSE('\uE005');
 
         private final char icon;
 
@@ -2921,8 +2916,7 @@ public class ImIcons {
         PL_HOSTNAME('\uE0A2'),
         PL_READONLY('\uE0A2'),
         PL_CURRENT_LINE('\uE0A1'),
-        PL_LINE_NUMBER('\uE0A1')
-        ;
+        PL_LINE_NUMBER('\uE0A1');
 
         private final char icon;
 
@@ -3108,8 +3102,7 @@ public class ImIcons {
         SETI_NEW_FILE('\uE676'),
         SETI_NPM_IGNORED('\uE616'),
         SETI_PLAY_ARROW('\uE602'),
-        SETI_TIME_COP('\uE641')
-        ;
+        SETI_TIME_COP('\uE641');
 
         private final char icon;
 
@@ -3345,8 +3338,7 @@ public class ImIcons {
         WEATHER_MOON_ALT_WANING_GIBBOUS_4('\uE3D9'),
         WEATHER_MOON_ALT_WANING_GIBBOUS_5('\uE3DA'),
         WEATHER_MOON_ALT_WANING_GIBBOUS_6('\uE3DB'),
-        WEATHER_MOON_ALT_WAXING_CRESCENT_1('\uE3C8')
-        ;
+        WEATHER_MOON_ALT_WAXING_CRESCENT_1('\uE3C8');
 
         private final char icon;
 

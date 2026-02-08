@@ -1,21 +1,16 @@
 package io.github.luckymcdev.mixin.imgui;
 
-import com.mojang.blaze3d.pipeline.RenderTarget;
 import imgui.ImFont;
-import imgui.ImFontAtlas;
 import imgui.ImGui;
-import imgui.ImGuiIO;
 import io.github.luckymcdev.client.imgui.ImGuiImpl;
-import io.github.luckymcdev.client.imgui.icon.ImIcon;
 import io.github.luckymcdev.client.imgui.icon.ImIcons;
-import io.github.luckymcdev.client.imgui.node.*;
+import io.github.luckymcdev.client.imgui.node.Node;
+import io.github.luckymcdev.client.imgui.node.NodeEditorInstance;
+import io.github.luckymcdev.client.imgui.node.NodePinShape;
+import io.github.luckymcdev.client.imgui.node.NodePinType;
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
-import org.lwjgl.opengl.GL11;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -40,7 +35,7 @@ public class GameRendererMixin {
         ImGui.begin("Test");
         ImFont font = ImGui.getFont();
 
-        ImGui.text("Loaded Font: "+ font + " size: "+ font.getFontSize());
+        ImGui.text("Loaded Font: " + font + " size: " + font.getFontSize());
 
         ImGui.text(ImIcons.FA.FA_FILE_TEXT + " " + ImIcons.DEV.DEV_NODEJS + ImIcons.SETI.SETI_APPLE);
 

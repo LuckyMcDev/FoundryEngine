@@ -11,13 +11,6 @@ import java.util.Deque;
 public class ImGuiGraphicsStack {
     private final Deque<StackFrame> stack = new ArrayDeque<>();
 
-    private static class StackFrame {
-        int styleVarCount = 0;
-        int styleColorCount = 0;
-        int fontCount = 0;
-        float fontScale = 20F;
-    }
-
     private StackFrame currentFrame() {
         if (stack.isEmpty()) {
             throw new IllegalStateException(
@@ -116,5 +109,12 @@ public class ImGuiGraphicsStack {
 
     public int getDepth() {
         return stack.size();
+    }
+
+    private static class StackFrame {
+        int styleVarCount = 0;
+        int styleColorCount = 0;
+        int fontCount = 0;
+        float fontScale = 20F;
     }
 }

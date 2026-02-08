@@ -1,10 +1,10 @@
 package io.github.luckymcdev.mixin.imgui;
 
+import com.mojang.blaze3d.platform.Window;
 import io.github.luckymcdev.client.imgui.ImGuiImpl;
 import io.github.luckymcdev.common.font.TTFFile;
 import io.github.luckymcdev.interfaces.TbMinecraft;
 import net.minecraft.client.Minecraft;
-import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.main.GameConfig;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import org.spongepowered.asm.mixin.Final;

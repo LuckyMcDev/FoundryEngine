@@ -1,11 +1,7 @@
 package io.github.luckymcdev;
 
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.logging.LogUtils;
 import io.github.luckymcdev.common.Commons;
-import net.minecraft.client.Minecraft;
-import net.minecraft.commands.Commands;
-import net.minecraft.network.chat.Component;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;

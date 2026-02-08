@@ -9,7 +9,10 @@ import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.opengl.GlTexture;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.logging.LogUtils;
-import imgui.*;
+import imgui.ImFontConfig;
+import imgui.ImGui;
+import imgui.ImGuiIO;
+import imgui.ImGuiStyle;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiConfigFlags;
 import imgui.flag.ImGuiDir;
@@ -22,14 +25,14 @@ import io.github.luckymcdev.client.imgui.context.ImGuiContextTypes;
 import io.github.luckymcdev.client.imgui.graphics.ImGuiGraphicsStack;
 import io.github.luckymcdev.common.Instances;
 import io.github.luckymcdev.common.font.TTFFile;
-import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.input.InputQuirks;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.ARGB;
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.glfw.GLFWWindowContentScaleCallback;
-import org.lwjgl.opengl.*;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL30C;
 import org.slf4j.Logger;
 
 public final class ImGuiImpl {
@@ -40,28 +43,26 @@ public final class ImGuiImpl {
 
     private final static ImGuiContextStack CONTEXT_STACK = new ImGuiContextStack();
     private final static ImGuiGraphicsStack GRAPHICS_STACK = new ImGuiGraphicsStack();
-
-    static int dockId;
-    private static boolean endingFrame = false;
-    static float dpiScale = 1.0f;
-
     private static final short[] GLYPH_RANGES = {
             0x0020, 0x00FF, // Basic Latin
             0x0100, 0x017F, // Latin Extended-A
             0x0400, 0x052F, // Cyrillic
             0x3040, 0x30FF, // Hiragana & Katakana
-            (short)0x4E00, (short)0x9FFF, // CJK Unified Ideographs (Kanji, BMP portion)
-            (short)0xE0A0, (short)0xE0A2, // Powerline symbols
-            (short)0xE000, (short)0xE00A, // Pomicons
-            (short)0xE200, (short)0xE2A9, // FA Extension
-            (short)0xE5FA, (short)0xE6B7, // Seti-UI
-            (short)0xE700, (short)0xE8EF, // Devicons
-            (short)0xED00, (short)0xF2FF, // Font Awesome
-            (short)0xE300, (short)0xE3E3, // Weather Icons
-            (short)0xF400, (short)0xF533, // Octicons
+            (short) 0x4E00, (short) 0x9FFF, // CJK Unified Ideographs (Kanji, BMP portion)
+            (short) 0xE0A0, (short) 0xE0A2, // Powerline symbols
+            (short) 0xE000, (short) 0xE00A, // Pomicons
+            (short) 0xE200, (short) 0xE2A9, // FA Extension
+            (short) 0xE5FA, (short) 0xE6B7, // Seti-UI
+            (short) 0xE700, (short) 0xE8EF, // Devicons
+            (short) 0xED00, (short) 0xF2FF, // Font Awesome
+            (short) 0xE300, (short) 0xE3E3, // Weather Icons
+            (short) 0xF400, (short) 0xF533, // Octicons
             0x2665, 0x26A1, // Extra Octicons
             0
     };
+    static int dockId;
+    static float dpiScale = 1.0f;
+    private static boolean endingFrame = false;
 
     public static void create(final long handle) {
 
