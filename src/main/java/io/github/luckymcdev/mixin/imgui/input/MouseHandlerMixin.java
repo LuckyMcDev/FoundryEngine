@@ -1,6 +1,6 @@
 package io.github.luckymcdev.mixin.imgui.input;
 
-import io.github.luckymcdev.client.imgui.ImGuiImpl;
+import io.github.luckymcdev.client.imgui.ImGuiHandler;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.client.input.MouseButtonInfo;
 import org.spongepowered.asm.mixin.Mixin;
@@ -13,14 +13,14 @@ public class MouseHandlerMixin {
 
     @Inject(method = "onButton", at = @At("HEAD"), cancellable = true)
     public void tb$onMouseButton(long p_window, MouseButtonInfo buttonInfo, int action, CallbackInfo ci) {
-        if (ImGuiImpl.shouldInterceptMouse()) {
+        if (ImGuiHandler.shouldInterceptMouse()) {
             ci.cancel();
         }
     }
 
     @Inject(method = "onScroll", at = @At("HEAD"), cancellable = true)
     public void tb$onMouseScroll(long window, double horizontal, double vertical, CallbackInfo ci) {
-        if (ImGuiImpl.shouldInterceptMouse()) {
+        if (ImGuiHandler.shouldInterceptMouse()) {
             ci.cancel();
         }
     }

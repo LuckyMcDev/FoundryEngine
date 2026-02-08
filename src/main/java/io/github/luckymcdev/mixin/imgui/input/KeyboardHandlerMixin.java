@@ -1,6 +1,6 @@
 package io.github.luckymcdev.mixin.imgui.input;
 
-import io.github.luckymcdev.client.imgui.ImGuiImpl;
+import io.github.luckymcdev.client.imgui.ImGuiHandler;
 import net.minecraft.client.KeyboardHandler;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
@@ -13,14 +13,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class KeyboardHandlerMixin {
     @Inject(method = "keyPress", at = @At("HEAD"), cancellable = true)
     public void vl$onKey(long p_window, int action, KeyEvent event, CallbackInfo ci) {
-        if (ImGuiImpl.shouldInterceptKeyboard()) {
+        if (ImGuiHandler.shouldInterceptKeyboard()) {
             ci.cancel();
         }
     }
 
     @Inject(method = "charTyped", at = @At("HEAD"), cancellable = true)
     public void vl$onChar(long window, CharacterEvent event, CallbackInfo ci) {
-        if (ImGuiImpl.shouldInterceptKeyboard()) {
+        if (ImGuiHandler.shouldInterceptKeyboard()) {
             ci.cancel();
         }
     }

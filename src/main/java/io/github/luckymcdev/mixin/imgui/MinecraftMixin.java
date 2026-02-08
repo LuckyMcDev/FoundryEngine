@@ -1,7 +1,7 @@
 package io.github.luckymcdev.mixin.imgui;
 
 import com.mojang.blaze3d.platform.Window;
-import io.github.luckymcdev.client.imgui.ImGuiImpl;
+import io.github.luckymcdev.client.imgui.ImGuiHandler;
 import io.github.luckymcdev.common.font.TTFFile;
 import io.github.luckymcdev.interfaces.TbMinecraft;
 import net.minecraft.client.Minecraft;
@@ -28,11 +28,11 @@ public class MinecraftMixin implements TbMinecraft {
     @Inject(method = "<init>", at = @At("RETURN"))
     public void initImGui(GameConfig gameConfig, CallbackInfo ci) {
         TTFFile.find(resourceManager);
-        ImGuiImpl.create(window.handle());
+        ImGuiHandler.create(window.handle());
     }
 
     @Inject(method = "close", at = @At("HEAD"))
     public void closeImGui(CallbackInfo ci) {
-        ImGuiImpl.dispose();
+        ImGuiHandler.dispose();
     }
 }

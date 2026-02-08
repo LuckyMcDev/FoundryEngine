@@ -35,7 +35,7 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL30C;
 import org.slf4j.Logger;
 
-public final class ImGuiImpl {
+public final class ImGuiHandler {
     private static final Logger LOGGER = LogUtils.getLogger();
 
     private final static ImGuiImplGlfw imGuiImplGlfw = new ImGuiImplGlfw();

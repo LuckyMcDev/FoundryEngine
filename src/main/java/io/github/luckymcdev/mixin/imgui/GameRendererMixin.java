@@ -2,7 +2,7 @@ package io.github.luckymcdev.mixin.imgui;
 
 import imgui.ImFont;
 import imgui.ImGui;
-import io.github.luckymcdev.client.imgui.ImGuiImpl;
+import io.github.luckymcdev.client.imgui.ImGuiHandler;
 import io.github.luckymcdev.client.imgui.icon.ImIcons;
 import io.github.luckymcdev.client.imgui.node.Node;
 import io.github.luckymcdev.client.imgui.node.NodeEditorInstance;
@@ -30,7 +30,7 @@ public class GameRendererMixin {
 
     @Inject(method = "render", at = @At("RETURN"))
     private void renderReturn(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci) {
-        ImGuiImpl.beginImGuiRendering();
+        ImGuiHandler.beginImGuiRendering();
 
         ImGui.begin("Test");
         ImFont font = ImGui.getFont();
@@ -74,7 +74,7 @@ public class GameRendererMixin {
         }
         ImGui.end();
 
-        ImGuiImpl.endImGuiRendering();
+        ImGuiHandler.endImGuiRendering();
     }
 
 
