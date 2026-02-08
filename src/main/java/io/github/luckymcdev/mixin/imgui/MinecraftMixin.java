@@ -2,6 +2,7 @@ package io.github.luckymcdev.mixin.imgui;
 
 import io.github.luckymcdev.client.imgui.ImGuiImpl;
 import io.github.luckymcdev.common.font.TTFFile;
+import io.github.luckymcdev.interfaces.TbMinecraft;
 import net.minecraft.client.Minecraft;
 import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.main.GameConfig;
@@ -14,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Minecraft.class)
-public class MinecraftClientMixin {
+public class MinecraftMixin implements TbMinecraft {
 
     @Shadow
     @Final
@@ -23,6 +24,16 @@ public class MinecraftClientMixin {
     @Shadow
     @Final
     private Window window;
+
+    @Inject(method = "runTick", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/Window;isMinimized()Z"))
+    public void beforeEndFrame(boolean tick, CallbackInfo ci) {
+        ImGuiImpl.beforeEndFrame();
+    }
+
+    @Inject(method = "runTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/Util;getNanos()J", ordinal = 1))
+    public void afterEndFrame(boolean tick, CallbackInfo ci) {
+        ImGuiImpl.afterEndFrame();
+    }
 
     @Inject(method = "<init>", at = @At("RETURN"))
     public void initImGui(GameConfig gameConfig, CallbackInfo ci) {
@@ -34,5 +45,4 @@ public class MinecraftClientMixin {
     public void closeImGui(CallbackInfo ci) {
         ImGuiImpl.dispose();
     }
-
 }

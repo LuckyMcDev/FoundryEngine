@@ -8,12 +8,12 @@ import com.mojang.blaze3d.opengl.GlDevice;
 import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.opengl.GlTexture;
 import com.mojang.blaze3d.pipeline.RenderTarget;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import imgui.*;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiConfigFlags;
 import imgui.flag.ImGuiDir;
+import imgui.flag.ImGuiDockNodeFlags;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
 import io.github.luckymcdev.client.Client;
@@ -22,13 +22,14 @@ import io.github.luckymcdev.client.imgui.context.ImGuiContextTypes;
 import io.github.luckymcdev.client.imgui.graphics.ImGuiGraphicsStack;
 import io.github.luckymcdev.common.Instances;
 import io.github.luckymcdev.common.font.TTFFile;
+import io.github.luckymcdev.interfaces.TbWindow;
+import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.input.InputQuirks;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.ARGB;
-import net.neoforged.neoforge.client.blaze3d.validation.ValidationGpuDevice;
-import net.neoforged.neoforge.client.blaze3d.validation.ValidationGpuTexture;
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.glfw.GLFWWindowContentScaleCallback;
 import org.lwjgl.opengl.*;
 import org.slf4j.Logger;
 
@@ -40,6 +41,10 @@ public final class ImGuiImpl {
 
     private final static ImGuiContextStack CONTEXT_STACK = new ImGuiContextStack();
     private final static ImGuiGraphicsStack GRAPHICS_STACK = new ImGuiGraphicsStack();
+
+    static int dockId;
+    private static boolean endingFrame = false;
+    static float dpiScale = 1.0f;
 
     private static final short[] GLYPH_RANGES = {
             0x0020, 0x00FF, // Basic Latin
@@ -59,8 +64,6 @@ public final class ImGuiImpl {
             0
     };
 
-    public static ImFont font = null;
-
     public static void create(final long handle) {
 
         CONTEXT_STACK.addContextType(ImGuiContextTypes.IMGUI);
@@ -77,12 +80,6 @@ public final class ImGuiImpl {
         io.setConfigWindowsMoveFromTitleBarOnly(true);
         io.setConfigMacOSXBehaviors(InputQuirks.ON_OSX);
 
-        // If you want to have custom fonts, you can use the following code here
-        //font = loadFont("/fonts/jetbrainsmononerdfontmono-regular.ttf", 16);
-        // In ImGui windows, you can set the font like this:
-        //ImGui.pushFont(defaultFont);
-        //ImGui.popFont();
-
         imGuiImplGl3.init();
         imGuiImplGlfw.init(handle, true);
 
@@ -93,16 +90,22 @@ public final class ImGuiImpl {
         setFullDefaultStyle(style);
     }
 
+    public static void trackDpiScale(Window window) {
+        var previous = new GLFWWindowContentScaleCallback[1];
+        previous[0] = GLFW.glfwSetWindowContentScaleCallback(window.handle(), (handle, xScale, yScale) -> {
+            dpiScale = xScale;
+            if (previous[0] != null) {
+                previous[0].invoke(handle, xScale, yScale);
+            }
+        });
+        var xScale = new float[1];
+        GLFW.glfwGetWindowContentScale(window.handle(), xScale, null);
+        dpiScale = xScale[0];
+    }
+
     public static void beginImGuiRendering() {
         final RenderTarget framebuffer = Minecraft.getInstance().getMainRenderTarget();
-
-        // This next "unwrapping" part is because of some weird neoforge shenanigans i dont understand.
-        // There is basically some like validation thing, and you have to get the real thing??? im not really sure.
-
-        // Unwrap Texture
         GlTexture colorTexture = Client.getGlTexture();
-
-        // Unwrap device
         GlDevice device = Client.getGlDevice();
 
         GlStateManager._glBindFramebuffer(
@@ -113,6 +116,40 @@ public final class ImGuiImpl {
         imGuiImplGl3.newFrame();
         imGuiImplGlfw.newFrame();
         ImGui.newFrame();
+
+        final ImGuiIO io = ImGui.getIO();
+        Minecraft mc = Instances.getMinecraft();
+
+        if (mc.mouseHandler.isMouseGrabbed()) {
+            io.setMousePos(-1, -1);
+        }
+
+        var window = mc.getWindow();
+
+        dockId = ImGui.dockSpaceOverViewport(2087402907, ImGui.getMainViewport(), ImGuiDockNodeFlags.NoDockingInCentralNode | ImGuiDockNodeFlags.PassthruCentralNode);
+        var centralNode = imgui.internal.ImGui.dockBuilderGetCentralNode(dockId);
+
+        // Get the size and position of the central node
+        var windowPos = ImGui.getMainViewport().getPos();
+        var windowSize = ImGui.getMainViewport().getSize();
+        var centralNodePos = centralNode.getPos();
+        var centralNodeSize = centralNode.getSize();
+
+        var prevWidth = window.getWidth();
+        var prevHeight = window.getHeight();
+
+        Client.convertToTb(window).tb$setViewportArea(
+                (centralNodePos.x - windowPos.x) / windowSize.x,
+                (centralNodePos.y - windowPos.y) / windowSize.y,
+                centralNodeSize.x / windowSize.x,
+                centralNodeSize.y / windowSize.y
+        );
+
+        if (window.getWidth() != 0 && window.getHeight() != 0) {
+            if (window.getWidth() != prevWidth || window.getHeight() != prevHeight) {
+                mc.resizeDisplay();
+            }
+        }
     }
 
     public static void endImGuiRendering() {
@@ -130,16 +167,10 @@ public final class ImGuiImpl {
         }
     }
 
-    /**
-     * Get the main context stack for manual context switching
-     */
     public static ImGuiContextStack getMainContextStack() {
         return CONTEXT_STACK;
     }
 
-    /**
-     * Get the main graphics stack
-     */
     public static ImGuiGraphicsStack getGraphicsStack() {
         return GRAPHICS_STACK;
     }
@@ -152,7 +183,7 @@ public final class ImGuiImpl {
         config.setGlyphRanges(GLYPH_RANGES);
         config.setOversampleH(3);
         config.setOversampleV(3);
-        config.setRasterizerMultiply(1.2f); // slightly darker
+        config.setRasterizerMultiply(1.2f);
         config.setGlyphOffset(0, 0);
 
         try {
@@ -164,14 +195,48 @@ public final class ImGuiImpl {
         }
 
         fonts.build();
-
         imGuiImplGl3.destroyFontsTexture();
         imGuiImplGl3.createFontsTexture();
-
         config.destroy();
         fonts.clearTexData();
     }
 
+    public static boolean shouldInterceptMouse() {
+        return ImGui.getIO().getWantCaptureMouse() && !Minecraft.getInstance().mouseHandler.isMouseGrabbed();
+    }
+
+    public static boolean shouldInterceptKeyboard() {
+        return ImGui.getIO().getWantCaptureKeyboard();
+    }
+
+    public static void beforeEndFrame() {
+        endingFrame = true;
+    }
+
+    public static void afterEndFrame() {
+        endingFrame = false;
+    }
+
+    // EXACT vidlib implementation
+    public static int frameX(int original) {
+        var window = Minecraft.getInstance().getWindow();
+        return endingFrame ? (int) (((TbWindow)(Object)window).tb$getXOffset() * ((TbWindow)(Object)window).tb$getUnscaledFramebufferWidth()) : original;
+    }
+
+    public static int frameY(int original) {
+        var window = Minecraft.getInstance().getWindow();
+        return endingFrame ? (int) (((TbWindow)(Object)window).tb$getInverseYOffset() * ((TbWindow)(Object)window).tb$getUnscaledFramebufferHeight()) : original;
+    }
+
+    public static int frameW(int original) {
+        var window = Minecraft.getInstance().getWindow();
+        return endingFrame ? (int) (original + ((TbWindow)(Object)window).tb$getXOffset() * ((TbWindow)(Object)window).tb$getUnscaledFramebufferWidth()) : original;
+    }
+
+    public static int frameH(int original) {
+        var window = Minecraft.getInstance().getWindow();
+        return endingFrame ? (int) (original + ((TbWindow)(Object)window).tb$getInverseYOffset() * ((TbWindow)(Object)window).tb$getUnscaledFramebufferHeight()) : original;
+    }
 
     public static void setFullDefaultStyle(ImGuiStyle style) {
         setDefaultStyle(style);
@@ -190,7 +255,6 @@ public final class ImGuiImpl {
         style.setPopupRounding(3F);
         style.setScrollbarRounding(1F);
         style.setGrabRounding(2F);
-
         style.setIndentSpacing(25F);
         style.setScrollbarSize(13F);
         style.setGrabMinSize(16F);
@@ -206,7 +270,6 @@ public final class ImGuiImpl {
         setColor(style, ImGuiCol.MenuBarBg, 0xFF17171C);
         setColor(style, ImGuiCol.TitleBgCollapsed, 0xEF517F70);
         setColor(style, ImGuiCol.SliderGrab, 0xFF446692);
-
         setColor(style, ImGuiCol.Button, 0x664296FA);
         setColor(style, ImGuiCol.ButtonHovered, 0x664296FA);
         setColor(style, ImGuiCol.ButtonActive, 0x664296FA);
@@ -219,9 +282,7 @@ public final class ImGuiImpl {
     public static void dispose() {
         imGuiImplGl3.shutdown();
         imGuiImplGlfw.shutdown();
-
         CONTEXT_STACK.destroy();
         GRAPHICS_STACK.destroy();
     }
-
 }

@@ -1,5 +1,6 @@
 package io.github.luckymcdev.mixin.imgui;
 
+import com.mojang.blaze3d.pipeline.RenderTarget;
 import imgui.ImFont;
 import imgui.ImFontAtlas;
 import imgui.ImGui;
@@ -11,6 +12,7 @@ import io.github.luckymcdev.client.imgui.node.*;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
+import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -23,15 +25,21 @@ import java.util.List;
 @Mixin(GameRenderer.class)
 public class GameRendererMixin {
 
-    @Shadow
-    @Final
-    private Minecraft minecraft;
-
     private static NodeEditorInstance<String> nodeEditor;
     private static NodePinType<String> stringType;
 
+    @Inject(method = "render", at = @At("HEAD"))
+    private void renderHead(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci) {
+
+    }
+
     @Inject(method = "render", at = @At("RETURN"))
-    private void render(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci) {
+    private void renderReturn(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci) {
+        // Check window size changes BEFORE ImGui rendering
+        var window = Minecraft.getInstance().getWindow();
+        var prevWidth = window.getWidth();
+        var prevHeight = window.getHeight();
+
         ImGuiImpl.beginImGuiRendering();
 
         ImGui.begin("Test");
@@ -76,7 +84,14 @@ public class GameRendererMixin {
         }
         ImGui.end();
 
+
+        if (window.getWidth() != prevWidth || window.getHeight() != prevHeight) {
+            Minecraft.getInstance().resizeDisplay();
+        }
+
+
         ImGuiImpl.endImGuiRendering();
     }
+
 
 }
