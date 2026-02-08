@@ -6,7 +6,6 @@ import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.luckymcdev.common.Instances;
-import io.github.luckymcdev.interfaces.TbWindow;
 import net.neoforged.neoforge.client.blaze3d.validation.ValidationGpuDevice;
 import net.neoforged.neoforge.client.blaze3d.validation.ValidationGpuTexture;
 
@@ -20,9 +19,5 @@ public interface Client {
         RenderTarget framebuffer = Instances.getMinecraft().getMainRenderTarget();
         ValidationGpuTexture mcColTex = (ValidationGpuTexture) framebuffer.getColorTexture();
         return (GlTexture) mcColTex.getRealTexture();
-    }
-
-    static TbWindow convertToTb(Window window) {
-        return (TbWindow) (Object) window;
     }
 }

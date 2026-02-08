@@ -7,11 +7,9 @@
   ],
   "client": [
     "imgui.GameRendererMixin",
-    "imgui.GlCommandEncoderMixin",
     "imgui.input.KeyboardHandlerMixin",
     "imgui.MinecraftMixin",
-    "imgui.input.MouseHandlerMixin",
-    "imgui.WindowMixin"
+    "imgui.input.MouseHandlerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

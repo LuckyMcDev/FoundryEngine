@@ -22,7 +22,6 @@ import io.github.luckymcdev.client.imgui.context.ImGuiContextTypes;
 import io.github.luckymcdev.client.imgui.graphics.ImGuiGraphicsStack;
 import io.github.luckymcdev.common.Instances;
 import io.github.luckymcdev.common.font.TTFFile;
-import io.github.luckymcdev.interfaces.TbWindow;
 import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.input.InputQuirks;
@@ -90,19 +89,6 @@ public final class ImGuiImpl {
         setFullDefaultStyle(style);
     }
 
-    public static void trackDpiScale(Window window) {
-        var previous = new GLFWWindowContentScaleCallback[1];
-        previous[0] = GLFW.glfwSetWindowContentScaleCallback(window.handle(), (handle, xScale, yScale) -> {
-            dpiScale = xScale;
-            if (previous[0] != null) {
-                previous[0].invoke(handle, xScale, yScale);
-            }
-        });
-        var xScale = new float[1];
-        GLFW.glfwGetWindowContentScale(window.handle(), xScale, null);
-        dpiScale = xScale[0];
-    }
-
     public static void beginImGuiRendering() {
         final RenderTarget framebuffer = Minecraft.getInstance().getMainRenderTarget();
         GlTexture colorTexture = Client.getGlTexture();
@@ -124,32 +110,8 @@ public final class ImGuiImpl {
             io.setMousePos(-1, -1);
         }
 
-        var window = mc.getWindow();
-
         dockId = ImGui.dockSpaceOverViewport(2087402907, ImGui.getMainViewport(), ImGuiDockNodeFlags.NoDockingInCentralNode | ImGuiDockNodeFlags.PassthruCentralNode);
         var centralNode = imgui.internal.ImGui.dockBuilderGetCentralNode(dockId);
-
-        // Get the size and position of the central node
-        var windowPos = ImGui.getMainViewport().getPos();
-        var windowSize = ImGui.getMainViewport().getSize();
-        var centralNodePos = centralNode.getPos();
-        var centralNodeSize = centralNode.getSize();
-
-        var prevWidth = window.getWidth();
-        var prevHeight = window.getHeight();
-
-        Client.convertToTb(window).tb$setViewportArea(
-                (centralNodePos.x - windowPos.x) / windowSize.x,
-                (centralNodePos.y - windowPos.y) / windowSize.y,
-                centralNodeSize.x / windowSize.x,
-                centralNodeSize.y / windowSize.y
-        );
-
-        if (window.getWidth() != 0 && window.getHeight() != 0) {
-            if (window.getWidth() != prevWidth || window.getHeight() != prevHeight) {
-                mc.resizeDisplay();
-            }
-        }
     }
 
     public static void endImGuiRendering() {
@@ -215,27 +177,6 @@ public final class ImGuiImpl {
 
     public static void afterEndFrame() {
         endingFrame = false;
-    }
-
-    // EXACT vidlib implementation
-    public static int frameX(int original) {
-        var window = Minecraft.getInstance().getWindow();
-        return endingFrame ? (int) (((TbWindow)(Object)window).tb$getXOffset() * ((TbWindow)(Object)window).tb$getUnscaledFramebufferWidth()) : original;
-    }
-
-    public static int frameY(int original) {
-        var window = Minecraft.getInstance().getWindow();
-        return endingFrame ? (int) (((TbWindow)(Object)window).tb$getInverseYOffset() * ((TbWindow)(Object)window).tb$getUnscaledFramebufferHeight()) : original;
-    }
-
-    public static int frameW(int original) {
-        var window = Minecraft.getInstance().getWindow();
-        return endingFrame ? (int) (original + ((TbWindow)(Object)window).tb$getXOffset() * ((TbWindow)(Object)window).tb$getUnscaledFramebufferWidth()) : original;
-    }
-
-    public static int frameH(int original) {
-        var window = Minecraft.getInstance().getWindow();
-        return endingFrame ? (int) (original + ((TbWindow)(Object)window).tb$getInverseYOffset() * ((TbWindow)(Object)window).tb$getUnscaledFramebufferHeight()) : original;
     }
 
     public static void setFullDefaultStyle(ImGuiStyle style) {

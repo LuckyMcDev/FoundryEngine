@@ -35,11 +35,6 @@ public class GameRendererMixin {
 
     @Inject(method = "render", at = @At("RETURN"))
     private void renderReturn(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci) {
-        // Check window size changes BEFORE ImGui rendering
-        var window = Minecraft.getInstance().getWindow();
-        var prevWidth = window.getWidth();
-        var prevHeight = window.getHeight();
-
         ImGuiImpl.beginImGuiRendering();
 
         ImGui.begin("Test");
@@ -83,12 +78,6 @@ public class GameRendererMixin {
             });
         }
         ImGui.end();
-
-
-        if (window.getWidth() != prevWidth || window.getHeight() != prevHeight) {
-            Minecraft.getInstance().resizeDisplay();
-        }
-
 
         ImGuiImpl.endImGuiRendering();
     }
