@@ -15,6 +15,7 @@ import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
 import io.github.luckymcdev.client.imgui.context.ImGuiContextStack;
 import io.github.luckymcdev.client.imgui.context.ImGuiContextTypes;
+import io.github.luckymcdev.client.imgui.graphics.ImGuiGraphics;
 import io.github.luckymcdev.client.imgui.graphics.ImGuiGraphicsStack;
 import io.github.luckymcdev.client.imgui.icon.ImIcons;
 import io.github.luckymcdev.common.Instances;
@@ -83,7 +84,7 @@ public final class ImGuiHandler {
 
         var style = ImGui.getStyle();
         ImGui.styleColorsDark();
-        setFullDefaultStyle(style);
+        ImGuiGraphics.setupStyles(style);
     }
 
     public static void beginImGuiRendering() {
@@ -201,46 +202,6 @@ public final class ImGuiHandler {
         return ImGui.getIO().getWantCaptureKeyboard();
     }
 
-    public static void setFullDefaultStyle(ImGuiStyle style) {
-        setDefaultStyle(style);
-        style.setWindowPadding(4F, 4F);
-        style.setFramePadding(4F, 1F);
-        style.setPopupBorderSize(0F);
-        style.setItemSpacing(6F, 4F);
-        style.setItemInnerSpacing(8F, 6F);
-    }
-
-    public static void setDefaultStyle(ImGuiStyle style) {
-        style.setWindowMenuButtonPosition(ImGuiDir.None);
-        style.setWindowRounding(4F);
-        style.setFrameRounding(3F);
-        style.setChildRounding(3F);
-        style.setPopupRounding(3F);
-        style.setScrollbarRounding(1F);
-        style.setGrabRounding(2F);
-        style.setIndentSpacing(25F);
-        style.setScrollbarSize(13F);
-        style.setGrabMinSize(16F);
-        style.setWindowBorderSize(0F);
-        style.setSelectableTextAlign(0F, 0.5F);
-        style.setAlpha(1F);
-
-        setColor(style, ImGuiCol.WindowBg, 0xFF222228);
-        setColor(style, ImGuiCol.PopupBg, 0xE30D0D11);
-        setColor(style, ImGuiCol.FrameBg, 0xFF15151C);
-        setColor(style, ImGuiCol.TitleBg, 0xFF010101);
-        setColor(style, ImGuiCol.TitleBgActive, 0xFF010101);
-        setColor(style, ImGuiCol.MenuBarBg, 0xFF222228);
-        setColor(style, ImGuiCol.TitleBgCollapsed, 0xEF517F70);
-        setColor(style, ImGuiCol.SliderGrab, 0xFF446692);
-        setColor(style, ImGuiCol.Button, 0x664296FA);
-        setColor(style, ImGuiCol.ButtonHovered, 0x664296FA);
-        setColor(style, ImGuiCol.ButtonActive, 0x664296FA);
-    }
-
-    public static void setColor(ImGuiStyle style, int key, int color) {
-        style.setColor(key, ARGB.toABGR(color));
-    }
     public static void topInfoBar() {
         var now = new Date();
 
