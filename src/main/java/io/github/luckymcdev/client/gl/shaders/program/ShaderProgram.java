@@ -1,7 +1,7 @@
 package io.github.luckymcdev.client.gl.shaders.program;
 
+import com.mojang.blaze3d.opengl.GlConst;
 import com.mojang.logging.LogUtils;
-import io.github.luckymcdev.client.gl.GlConst;
 import io.github.luckymcdev.client.gl.GlDispatch;
 import io.github.luckymcdev.client.gl.OpenGlObject;
 import io.github.luckymcdev.client.gl.shaders.Shader;
