@@ -4,7 +4,6 @@
  */
 package io.github.luckymcdev.client.imgui;
 
-import com.electronwill.nightconfig.core.utils.StringUtils;
 import com.mojang.blaze3d.opengl.GlDevice;
 import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.opengl.GlTexture;
@@ -14,20 +13,16 @@ import imgui.*;
 import imgui.flag.*;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
-import io.github.luckymcdev.client.Client;
 import io.github.luckymcdev.client.imgui.context.ImGuiContextStack;
 import io.github.luckymcdev.client.imgui.context.ImGuiContextTypes;
 import io.github.luckymcdev.client.imgui.graphics.ImGuiGraphicsStack;
 import io.github.luckymcdev.client.imgui.icon.ImIcons;
 import io.github.luckymcdev.common.Instances;
 import io.github.luckymcdev.common.font.TTFFile;
-import io.github.luckymcdev.common.registry.ResourceRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.input.InputQuirks;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.ARGB;
-import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
@@ -93,8 +88,8 @@ public final class ImGuiHandler {
 
     public static void beginImGuiRendering() {
         final RenderTarget framebuffer = Minecraft.getInstance().getMainRenderTarget();
-        GlTexture colorTexture = Client.getGlTexture();
-        GlDevice device = Client.getGlDevice();
+        GlTexture colorTexture = Instances.getGlTexture();
+        GlDevice device = Instances.getGlDevice();
 
         GlStateManager._glBindFramebuffer(
                 GL30C.GL_FRAMEBUFFER, colorTexture.getFbo(device.directStateAccess(), null)
