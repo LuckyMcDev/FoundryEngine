@@ -37,7 +37,7 @@ public class Panel {
     }
 
     private int getFlags() {
-        int flags = ImGuiWindowFlags.NoCollapse;
+        int flags = ImGuiWindowFlags.None;
 
         if(temporary) {
             flags |= ImGuiWindowFlags.NoSavedSettings;
