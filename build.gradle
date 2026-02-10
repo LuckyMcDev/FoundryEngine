@@ -103,6 +103,10 @@ sourceSets.main.resources.srcDir generateModMetadata
 
 neoForge.ideSyncTask generateModMetadata
 
+tasks.named("createMinecraftArtifacts") {
+    dependsOn(generateModMetadata)
+}
+
 publishing {
     publications {
         register('mavenJava', MavenPublication) {
