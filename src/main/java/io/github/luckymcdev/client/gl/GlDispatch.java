@@ -530,6 +530,10 @@ public class GlDispatch {
         wrap(GL43C::glFlush);
     }
 
+    public static void glObjectLabel(int identifier, int name, String label) {
+        wrap(() -> GL43C.glObjectLabel(identifier, name, label));
+    }
+
     private interface GlCall extends Runnable {
         void dispatch();
 
