@@ -22,7 +22,7 @@ public class TbRenderer implements ResourceManagerReloadListener {
     }
 
     @SubscribeEvent
-    private void updateClientMatrices(FrameGraphSetupEvent event) {
+    private static void updateClientMatrices(FrameGraphSetupEvent event) {
         ClientMatrices.updateMain(event.getModelViewMatrix(), event.getProjectionMatrix());
     }
 
