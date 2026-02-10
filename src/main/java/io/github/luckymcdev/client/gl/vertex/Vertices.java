@@ -1,5 +1,12 @@
 package io.github.luckymcdev.client.gl.vertex;
 
+import org.lwjgl.util.par.ParShapes;
+import org.lwjgl.util.par.ParShapesMesh;
+
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.util.function.Supplier;
+
 public class Vertices {
 
     public static final float[] QUAD_VERTICES = {
@@ -27,11 +34,58 @@ public class Vertices {
                     2, 3, 0
             });
 
+    private static VertexMesh wrapParCall(Supplier<ParShapesMesh> meshSupplier) {
+        ParShapesMesh mesh = null;
+        try {
+            mesh = meshSupplier.get();
+            if (mesh == null) throw new RuntimeException("Failed to generate mesh");
+
+            return convertParMesh(mesh);
+        } finally {
+            if (mesh != null) {
+                ParShapes.par_shapes_free_mesh(mesh);
+            }
+        }
+    }
+
+    public static VertexMesh createSphere(int slices, int stacks) {
+        return wrapParCall(() -> ParShapes.par_shapes_create_parametric_sphere(slices, stacks));
+    }
+
+    private static VertexMesh convertParMesh(ParShapesMesh mesh) {
+        int vCount = mesh.npoints();
+        int tCount = mesh.ntriangles();
+
+        FloatBuffer positions = mesh.points(vCount * 3);
+        FloatBuffer uvs = mesh.tcoords(vCount * 2);
+        IntBuffer triangleIndices = mesh.triangles(tCount * 3);
+
+        VertexData builder = VertexData.builder(vCount * 5);
+        for (int i = 0; i < vCount; i++) {
+            builder.pos(
+                    positions.get(i * 3),
+                    positions.get(i * 3 + 1),
+                    positions.get(i * 3 + 2)
+            );
+
+            if (uvs != null) {
+                builder.uv(uvs.get(i * 2), uvs.get(i * 2 + 1));
+            }
+
+            builder.end();
+        }
+
+        int[] indices = new int[tCount * 3];
+        triangleIndices.get(indices);
+
+        return builder.buildMesh(indices);
+    }
+
+
     /**
-     * A simple struct holding vertex data and metadata
+     * A simple struct holding vertex data
      */
     public record VertexMesh(float[] vertices, int[] indices, int vertexCount) {
-        public boolean isIndexed() { return indices != null; }
     }
 
     /**
