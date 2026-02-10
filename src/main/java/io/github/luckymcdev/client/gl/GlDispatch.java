@@ -18,6 +18,7 @@ import org.joml.Vector4f;
 import org.joml.Vector4i;
 import org.lwjgl.opengl.GL43C;
 import org.lwjgl.system.MemoryStack;
+import org.lwjgl.system.NativeType;
 
 public class GlDispatch {
     public static GlDevice glDevice = Instances.getGlDevice();
@@ -284,6 +285,14 @@ public class GlDispatch {
                 GL43C.glUniformMatrix4fv(location, transpose, buffer);
             }
         });
+    }
+
+    public static int glGetUniformBlockIndex(int program, String name) {
+        return wrapReturn(() -> GL43C.glGetUniformBlockIndex(program, name));
+    }
+
+    public static void glUniformBlockBinding(int program, int uniformBlockIndex, int uniformBlockBinding) {
+        wrap(() -> GL43C.glUniformBlockBinding(program, uniformBlockIndex, uniformBlockBinding));
     }
 
     public static int glGenTextures() {

@@ -5,6 +5,7 @@ import com.mojang.blaze3d.opengl.GlTexture;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -30,6 +31,10 @@ public interface Instances {
 
     static RenderTarget getMainRenderTarget() {
         return getMinecraft().getMainRenderTarget();
+    }
+
+    static Camera getMainCamera() {
+        return getGameRenderer().getMainCamera();
     }
 
     static GlDevice getGlDevice() {

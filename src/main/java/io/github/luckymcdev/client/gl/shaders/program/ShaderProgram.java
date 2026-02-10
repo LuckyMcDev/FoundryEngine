@@ -10,7 +10,6 @@ import io.github.luckymcdev.client.gl.shaders.exeption.ShaderException;
 import io.github.luckymcdev.client.gl.shaders.uniform.Uniform;
 import net.minecraft.resources.ResourceLocation;
 import org.joml.*;
-import org.lwjgl.opengl.GL43C;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
@@ -41,7 +40,7 @@ public class ShaderProgram extends OpenGlObject {
     public void link() throws ShaderException {
         GlDispatch.glLinkProgram(this.pointer);
 
-        int linkStatus = GlDispatch.glGetProgrami(this.pointer, GL43C.GL_LINK_STATUS);
+        int linkStatus = GlDispatch.glGetProgrami(this.pointer, GlConst.GL_LINK_STATUS);
         String log = GlDispatch.glGetProgramInfoLog(this.pointer);
 
         if(linkStatus != GlConst.GL_TRUE) {
@@ -61,8 +60,21 @@ public class ShaderProgram extends OpenGlObject {
         GlDispatch.glDeleteProgram(this.pointer);
     }
 
+    public void bindUniformBlock(String blockName, int bindingPoint) {
+        int blockIndex = GlDispatch.glGetUniformBlockIndex(this.pointer, blockName);
+        if (blockIndex != -1) {
+            GlDispatch.glUniformBlockBinding(this.pointer, blockIndex, bindingPoint);
+        }
+    }
+
     public int getUniform(Uniform<?> uniform) {
         return GlDispatch.glGetUniformLocation(this.pointer, uniform.name());
+    }
+
+    public void setUniforms(Iterable<Uniform<?>> uniforms) {
+        for (Uniform<?> uniform : uniforms) {
+            this.setUniform(uniform);
+        }
     }
 
     public void setUniform(Uniform<?> uniform) {
@@ -99,6 +111,6 @@ public class ShaderProgram extends OpenGlObject {
 
     @Override
     public void free() {
-
+        delete();
     }
 }
