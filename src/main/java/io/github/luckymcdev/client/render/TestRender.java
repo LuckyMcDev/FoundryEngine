@@ -5,6 +5,8 @@ import com.mojang.blaze3d.opengl.GlTexture;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
+import io.github.luckymcdev.client.TbRenderSystem;
+import io.github.luckymcdev.client.TbRenderer;
 import io.github.luckymcdev.client.gl.GlDispatch;
 import io.github.luckymcdev.client.gl.OpenGlStack;
 import io.github.luckymcdev.client.gl.framebuffer.FrameBuffer;
@@ -59,39 +61,28 @@ public class TestRender {
             GlDispatch.glDisable(GL43C.GL_CULL_FACE);
             GlDispatch.glDepthMask(false);
 
-            // Bind the main target's color texture
+            // 1. Bind Input (The Game Screen)
             GlDispatch.glActiveTexture(GL43C.GL_TEXTURE0);
-            GlDispatch.glBindTexture(GL43C.GL_TEXTURE_2D, Instances.getGlTexture(mainTarget).glId());
+            int inputTextureId = Instances.getGlTexture(mainTarget).glId();
+            GlDispatch.glBindTexture(GL43C.GL_TEXTURE_2D, inputTextureId);
 
-            // Bind and clear custom buffer
+            // 2. Prepare Output (Your Buffer)
             customBuffer.bind();
             GlDispatch.glClearColor(0, 0, 0, 0);
-            GlDispatch.glClear(GL43C.GL_COLOR_BUFFER_BIT | GL43C.GL_DEPTH_BUFFER_BIT);
-            GlDispatch.glViewport(0, 0, customBuffer.width(), customBuffer.height());
+            GlDispatch.glClear(GL43C.GL_COLOR_BUFFER_BIT);
 
-            // Use shader and draw
+            // 3. Draw
             program.use();
             program.setUniform(new Uniform<>("screenTexture", 0));
             quad.draw();
 
-            // Unbind
-            GlDispatch.glUseProgram(0);
+            program.disable();
+            GlDispatch.glBindTexture(GL43C.GL_TEXTURE_2D, 0);
             customBuffer.unbind();
 
-            // Blit back to main target
             int mainFbo = getMainFbo();
-            GlDispatch.glBindFramebuffer(GL43C.GL_READ_FRAMEBUFFER, customBuffer.pointer());
-            GlDispatch.glBindFramebuffer(GL43C.GL_DRAW_FRAMEBUFFER, mainFbo);
-            GlDispatch.glBlitFramebuffer(
-                    0, 0, customBuffer.width(), customBuffer.height(),
-                    0, 0, mainTarget.width, mainTarget.height,
-                    GL43C.GL_COLOR_BUFFER_BIT,
-                    GL43C.GL_NEAREST
-            );
-            GlDispatch.glBindFramebuffer(GL43C.GL_READ_FRAMEBUFFER, 0);
-            GlDispatch.glBindFramebuffer(GL43C.GL_DRAW_FRAMEBUFFER, 0);
+            TbRenderSystem.renderer().getFrameBufferManager().blit(customBuffer, mainFbo, mainTarget);
         } finally {
-            // Restore OpenGL state (always runs, even on exception)
             glStack.pop();
         }
     }
@@ -123,7 +114,6 @@ public class TestRender {
             if (customBuffer == null) {
                 RenderTarget main = Instances.getMinecraft().getMainRenderTarget();
                 customBuffer = new FrameBuffer(Commons.id("custombuffer"),main.width, main.height);
-                FrameBufferManager.register(customBuffer);
             }
 
             quad = new Mesh(
