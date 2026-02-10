@@ -3,6 +3,8 @@ package io.github.luckymcdev.client.gl.vertex.objects;
 import io.github.luckymcdev.client.gl.GlDispatch;
 import io.github.luckymcdev.client.gl.OpenGlObject;
 
+import java.nio.IntBuffer;
+
 import static org.lwjgl.opengl.GL33.*;
 
 public class ElementBufferObject extends OpenGlObject {
@@ -20,6 +22,11 @@ public class ElementBufferObject extends OpenGlObject {
     }
 
     public void uploadData(int[] data, int usage) {
+        bind();
+        GlDispatch.glBufferData(GL_ELEMENT_ARRAY_BUFFER, data, usage);
+    }
+
+    public void uploadData(IntBuffer data, int usage) {
         bind();
         GlDispatch.glBufferData(GL_ELEMENT_ARRAY_BUFFER, data, usage);
     }

@@ -21,28 +21,17 @@ public class Vertices {
             .pos(-1.0f, -1.0f).uv(0.0f, 0.0f).end()
             .pos( 1.0f, -1.0f).uv(1.0f, 0.0f).end()
             .pos( 1.0f,  1.0f).uv(1.0f, 1.0f).end()
-            .pos(-1.0f, -1.0f).uv(0.0f, 0.0f).end()
-            .pos( 1.0f,  1.0f).uv(1.0f, 1.0f).end()
             .pos(-1.0f,  1.0f).uv(0.0f, 1.0f).end()
-            .buildMesh();
+            .buildMesh(new int[]{
+                    0, 1, 2,
+                    2, 3, 0
+            });
 
     /**
      * A simple struct holding vertex data and metadata
      */
-    public record VertexMesh(float[] vertices, int vertexCount) {
-        /**
-         * Get the total number of floats in the vertex array
-         */
-        public int floatCount() {
-            return vertices.length;
-        }
-
-        /**
-         * Get the stride (floats per vertex)
-         */
-        public int stride() {
-            return vertices.length / vertexCount;
-        }
+    public record VertexMesh(float[] vertices, int[] indices, int vertexCount) {
+        public boolean isIndexed() { return indices != null; }
     }
 
     /**
@@ -132,11 +121,8 @@ public class Vertices {
             return verticesAdded;
         }
 
-        /**
-         * Build and return a VertexMesh struct
-         */
-        public VertexMesh buildMesh() {
-            return new VertexMesh(build(), vertexCount());
+        public VertexMesh buildMesh(int[] indices) {
+            return new VertexMesh(build(), indices, vertexCount());
         }
     }
 }

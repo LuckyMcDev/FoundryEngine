@@ -1,8 +1,9 @@
 package io.github.luckymcdev.client.gl.vertex;
 
-import io.github.luckymcdev.client.gl.vertex.objects.ElementBufferObject;
-import io.github.luckymcdev.client.gl.vertex.objects.VertexArrayObject;
-import io.github.luckymcdev.client.gl.vertex.objects.VertexBufferObject;
+import io.github.luckymcdev.client.gl.GlDispatch;
+import io.github.luckymcdev.client.gl.vertex.objects.ElementBufferObject; import io.github.luckymcdev.client.gl.vertex.objects.VertexArrayObject; import io.github.luckymcdev.client.gl.vertex.objects.VertexBufferObject; import org.lwjgl.BufferUtils; import org.lwjgl.util.meshoptimizer.MeshOptimizer;
+
+import java.nio.ByteBuffer; import java.nio.FloatBuffer; import java.nio.IntBuffer;
 
 import static org.lwjgl.opengl.GL33.*;
 
@@ -10,72 +11,64 @@ public class Mesh {
     private final VertexArrayObject vao;
     private final VertexBufferObject vbo;
     private ElementBufferObject ebo;
-    private int vertexCount;
     private int indexCount;
-    private final boolean indexed;
     private final int drawMode;
 
-
-    public Mesh(Vertices.VertexMesh mesh, VertexLayout layout, int mode) {
-        this(mesh.vertices(), mesh.vertexCount(), layout, mode);
-    }
-
-    public Mesh(float[] vertices, int vertexCount, VertexLayout layout) {
-        this(vertices, vertexCount, layout, GL_TRIANGLES);
-    }
-
-    // Constructor with custom draw mode
-    public Mesh(float[] vertices, int vertexCount, VertexLayout layout, int drawMode) {
-        this.indexed = false;
-        this.vertexCount = vertexCount;
+    public Mesh(float[] vertices, int[] indices, VertexLayout layout, int drawMode, boolean optimize) {
         this.drawMode = drawMode;
 
-        vao = new VertexArrayObject();
-        vao.bind();
+        if (optimize) {
+            IntBuffer indexBuffer = BufferUtils.createIntBuffer(indices.length);
+            indexBuffer.put(indices).flip();
 
-        vbo = new VertexBufferObject();
-        vbo.uploadData(vertices, GL_STATIC_DRAW);
+            int stride = layout.getStride();
+            int vCount = vertices.length / (stride / 4);
+
+            MeshOptimizer.meshopt_optimizeVertexCache(indexBuffer, indexBuffer, vCount);
+
+            ByteBuffer vertexByteBuffer = BufferUtils.createByteBuffer(vertices.length * 4);
+            FloatBuffer vertexFloatView = vertexByteBuffer.asFloatBuffer();
+            vertexFloatView.put(vertices).flip();
+
+            MeshOptimizer.meshopt_optimizeVertexFetch(
+                    vertexByteBuffer,
+                    indexBuffer,
+                    vertexByteBuffer,
+                    vCount,
+                    stride
+            );
+
+            this.indexCount = indices.length;
+
+            vao = new VertexArrayObject();
+            vao.bind();
+
+            vbo = new VertexBufferObject();
+            vbo.uploadData(vertexFloatView, GL_STATIC_DRAW);
+
+            ebo = new ElementBufferObject();
+            ebo.uploadData(indexBuffer, GL_STATIC_DRAW);
+        } else {
+            this.indexCount = indices.length;
+
+            vao = new VertexArrayObject();
+            vao.bind();
+
+            vbo = new VertexBufferObject();
+            vbo.uploadData(vertices, GL_STATIC_DRAW);
+
+            ebo = new ElementBufferObject();
+            ebo.uploadData(indices, GL_STATIC_DRAW);
+        }
 
         layout.apply();
-
         vao.unbind();
-        vbo.unbind();
-    }
-
-    // Indexed constructor with layout
-    public Mesh(float[] vertices, int[] indices, VertexLayout layout) {
-        this(vertices, indices, layout, GL_TRIANGLES);
-    }
-
-    // Indexed constructor with custom draw mode
-    public Mesh(float[] vertices, int[] indices, VertexLayout layout, int drawMode) {
-        this.indexed = true;
-        this.indexCount = indices.length;
-        this.drawMode = drawMode;
-
-        vao = new VertexArrayObject();
-        vao.bind();
-
-        vbo = new VertexBufferObject();
-        vbo.uploadData(vertices, GL_STATIC_DRAW);
-
-        ebo = new ElementBufferObject();
-        ebo.uploadData(indices, GL_STATIC_DRAW);
-
-        layout.apply();
-
-        vao.unbind();
-        vbo.unbind();
     }
 
     public void draw() {
         vao.bind();
 
-        if (indexed) {
-            glDrawElements(drawMode, indexCount, GL_UNSIGNED_INT, 0L);
-        } else {
-            glDrawArrays(drawMode, 0, vertexCount);
-        }
+        GlDispatch.glDrawElements(drawMode, indexCount, GL_UNSIGNED_INT, 0L);
 
         vao.unbind();
     }

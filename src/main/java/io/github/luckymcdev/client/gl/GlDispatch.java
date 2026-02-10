@@ -349,6 +349,10 @@ public class GlDispatch {
         wrap(() -> GL43C.glBufferData(target, data, usage));
     }
 
+    public static void glBufferData(int target, IntBuffer data, int usage) {
+        wrap(() -> GL43C.glBufferData(target, data, usage));
+    }
+
     public static void glBufferData(int target, ByteBuffer data, int usage) {
         wrap(() -> GL43C.glBufferData(target, data, usage));
     }

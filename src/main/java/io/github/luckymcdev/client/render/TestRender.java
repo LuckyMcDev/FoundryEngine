@@ -118,9 +118,10 @@ public class TestRender {
 
             quad = new Mesh(
                     Vertices.FULLSCREEN_QUAD.vertices(),
-                    Vertices.FULLSCREEN_QUAD.vertexCount(),
+                    Vertices.FULLSCREEN_QUAD.indices(),
                     VertexLayout.POS_TEX_2D,
-                    GL33.GL_TRIANGLES
+                    GL33.GL_TRIANGLES,
+                    true
             );
 
             LOGGER.info("Test renderer initialized successfully");
