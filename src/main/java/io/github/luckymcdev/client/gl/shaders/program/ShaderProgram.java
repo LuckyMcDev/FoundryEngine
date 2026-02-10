@@ -53,6 +53,10 @@ public class ShaderProgram extends OpenGlObject {
         GlDispatch.glUseProgram(this.pointer);
     }
 
+    public void disable() {
+        GlDispatch.glUseProgram(0);
+    }
+
     public void delete() {
         GlDispatch.glDeleteProgram(this.pointer);
     }
