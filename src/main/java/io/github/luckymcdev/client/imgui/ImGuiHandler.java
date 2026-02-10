@@ -84,7 +84,7 @@ public final class ImGuiHandler {
 
         var style = ImGui.getStyle();
         ImGui.styleColorsDark();
-        ImGuiGraphics.setupStyles(style);
+        ImGuiGraphics.setFullDefaultStyle(style);
     }
 
     public static void beginImGuiRendering() {
