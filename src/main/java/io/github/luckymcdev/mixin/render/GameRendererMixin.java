@@ -1,24 +1,23 @@
-package io.github.luckymcdev.mixin.imgui;
+package io.github.luckymcdev.mixin.render;
 
 import imgui.ImGui;
 
+import io.github.luckymcdev.client.ClientMatrices;
 import io.github.luckymcdev.client.editor.BuiltInEditor;
-import io.github.luckymcdev.client.editor.Panel;
 import io.github.luckymcdev.client.editor.panels.NodeEditorPanel;
 import io.github.luckymcdev.client.editor.panels.TestPanel;
 import io.github.luckymcdev.client.imgui.ImGuiHandler;
-import io.github.luckymcdev.client.imgui.node.NodeEditorInstance;
-import io.github.luckymcdev.client.imgui.node.NodePinType;
-import io.github.luckymcdev.common.Commons;
 
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.renderer.GameRenderer;
 
-import org.spongepowered.asm.mixin.Final;
+import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(GameRenderer.class)

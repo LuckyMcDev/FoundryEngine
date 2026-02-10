@@ -8,10 +8,10 @@
   "client": [
     "MinecraftMixin",
     "RenderPipelinesInvoker",
-    "imgui.GameRendererMixin",
-    "imgui.MinecraftMixin",
-    "imgui.input.KeyboardHandlerMixin",
-    "imgui.input.MouseHandlerMixin"
+    "input.KeyboardHandlerMixin",
+    "input.MouseHandlerMixin",
+    "render.GameRendererMixin",
+    "render.LevelRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

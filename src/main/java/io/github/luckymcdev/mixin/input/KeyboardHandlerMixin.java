@@ -1,4 +1,4 @@
-package io.github.luckymcdev.mixin.imgui.input;
+package io.github.luckymcdev.mixin.input;
 
 import io.github.luckymcdev.client.imgui.ImGuiHandler;
 import net.minecraft.client.KeyboardHandler;
