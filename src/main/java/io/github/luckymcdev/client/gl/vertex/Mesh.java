@@ -15,6 +15,11 @@ public class Mesh {
     private final boolean indexed;
     private final int drawMode;
 
+
+    public Mesh(Vertices.VertexMesh mesh, VertexLayout layout, int mode) {
+        this(mesh.vertices(), mesh.vertexCount(), layout, mode);
+    }
+
     public Mesh(float[] vertices, int vertexCount, VertexLayout layout) {
         this(vertices, vertexCount, layout, GL_TRIANGLES);
     }

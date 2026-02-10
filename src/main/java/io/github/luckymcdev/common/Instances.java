@@ -6,6 +6,7 @@ import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.neoforged.neoforge.client.blaze3d.validation.ValidationGpuDevice;
 import net.neoforged.neoforge.client.blaze3d.validation.ValidationGpuTexture;
@@ -23,9 +24,22 @@ public interface Instances {
         return getMinecraft().getWindow();
     }
 
+    static GameRenderer getGameRenderer() {
+        return getMinecraft().gameRenderer;
+    }
+
+    static RenderTarget getMainRenderTarget() {
+        return getMinecraft().getMainRenderTarget();
+    }
+
     static GlDevice getGlDevice() {
         ValidationGpuDevice mcDevice = (ValidationGpuDevice) RenderSystem.getDevice();
         return (GlDevice) mcDevice.getRealDevice();
+    }
+
+    static GlTexture getGlTexture(RenderTarget target) {
+        ValidationGpuTexture mcColTex = (ValidationGpuTexture) target.getColorTexture();
+        return (GlTexture) mcColTex.getRealTexture();
     }
 
     static GlTexture getGlTexture() {

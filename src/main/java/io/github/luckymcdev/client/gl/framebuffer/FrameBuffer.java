@@ -6,11 +6,14 @@ import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.luckymcdev.client.gl.GlDispatch;
 import io.github.luckymcdev.client.gl.OpenGlObject;
+import io.github.luckymcdev.common.Commons;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.blaze3d.validation.ValidationGpuDevice;
 import net.neoforged.neoforge.client.blaze3d.validation.ValidationGpuTexture;
 import org.lwjgl.opengl.GL43C;
 
 public class FrameBuffer extends OpenGlObject {
+    private ResourceLocation id;
     private int width;
     private int height;
     private int colorTexture;
@@ -18,15 +21,16 @@ public class FrameBuffer extends OpenGlObject {
     private boolean ownsFbo;
     private boolean ownsAttachments;
 
-    public FrameBuffer(int width, int height) {
-        this(width, height, true);
+    public FrameBuffer(ResourceLocation id, int width, int height) {
+        this(id, width, height, true);
     }
 
-    private FrameBuffer(int width, int height, boolean create) {
+    private FrameBuffer(ResourceLocation id, int width, int height, boolean create) {
         this.width = width;
         this.height = height;
         this.ownsFbo = create;
         this.ownsAttachments = create;
+        this.id = id;
         if (create) {
             create();
         }
@@ -47,7 +51,7 @@ public class FrameBuffer extends OpenGlObject {
         ValidationGpuDevice deviceValidation = (ValidationGpuDevice) RenderSystem.getDevice();
         GlDevice device = (GlDevice) deviceValidation.getRealDevice();
 
-        FrameBuffer buffer = new FrameBuffer(target.width, target.height, true);
+        FrameBuffer buffer = new FrameBuffer(Commons.id(target.toString()),target.width, target.height, true);
         int sourceFbo = colorTexture.getFbo(device.directStateAccess(), depthTexture);
 
         GlDispatch.glBindFramebuffer(GL43C.GL_READ_FRAMEBUFFER, sourceFbo);
@@ -89,8 +93,16 @@ public class FrameBuffer extends OpenGlObject {
         if (!ownsAttachments) {
             return;
         }
+
+        bind();
         deleteAttachments();
         createAttachments();
+
+        int status = GlDispatch.glCheckFramebufferStatus(GL43C.GL_FRAMEBUFFER);
+        if (status != GL43C.GL_FRAMEBUFFER_COMPLETE) {
+            throw new IllegalStateException("Framebuffer incomplete after resize: 0x" + Integer.toHexString(status));
+        }
+        unbind();
     }
 
     public int texture() {
@@ -103,6 +115,10 @@ public class FrameBuffer extends OpenGlObject {
 
     public int height() {
         return height;
+    }
+
+    public ResourceLocation id() {
+        return id;
     }
 
     private void create() {

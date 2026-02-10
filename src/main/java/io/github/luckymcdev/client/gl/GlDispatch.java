@@ -32,6 +32,22 @@ public class GlDispatch {
         return call.dispatch();
     }
 
+    public static boolean glIsEnabled(int cap) {
+        return wrapReturn(() -> GL43C.glIsEnabled(cap));
+    }
+
+    public static int glGetInteger(int name)  {
+        return wrapReturn(() -> GL43C.glGetInteger(name));
+    }
+
+    public static boolean glGetBoolean(int name) {
+        return wrapReturn(() -> GL43C.glGetBoolean(name));
+    }
+
+    public static void glGetIntegerv(int name, int[] params) {
+        wrap(()-> GL43C.glGetIntegerv(name, params));
+    }
+
     public static int glCreateShader(int type) {
         return wrapReturn(() -> GL43C.glCreateShader(type));
     }
