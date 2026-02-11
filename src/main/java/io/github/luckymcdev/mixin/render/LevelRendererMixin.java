@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class LevelRendererMixin {
 
     @Inject(method = "prepareCullFrustum", at = @At("RETURN"))
-    private void prepareCullFrustum(Matrix4f frustumMatrix, Matrix4f projectionMatrix, Vec3 cameraPosition, CallbackInfoReturnable<Frustum> cir) {
+    public void prepareCullFrustum(Matrix4f frustumMatrix, Matrix4f projectionMatrix, Vec3 cameraPosition, CallbackInfoReturnable<Frustum> cir) {
         ClientMatrices.PERSPECTIVE.set(projectionMatrix);
         ClientMatrices.FRUSTUM.set(frustumMatrix);
     }

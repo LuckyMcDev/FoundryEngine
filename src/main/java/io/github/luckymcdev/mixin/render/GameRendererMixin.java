@@ -8,6 +8,7 @@ import io.github.luckymcdev.client.editor.panels.TestPanel;
 import io.github.luckymcdev.client.imgui.ImGuiHandler;
 
 import io.github.luckymcdev.common.Instances;
+import io.github.luckymcdev.interfaces.TbGameRenderer;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.renderer.GameRenderer;
 
@@ -18,17 +19,19 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(GameRenderer.class)
-public class GameRendererMixin {
+public class GameRendererMixin implements TbGameRenderer {
 
     @Unique
     private static final BuiltInEditor tb$builtInEditor = Instances.getBuiltInEditor();
 
+    @Override
     @Inject(method = "render", at = @At("HEAD"))
-    private void renderHead(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci) {
+    public void tb$renderHead(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci) {
     }
 
+    @Override
     @Inject(method = "render", at = @At("RETURN"))
-    private void renderReturn(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci) {
+    public void tb$renderReturn(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci) {
         ImGuiHandler.beginImGuiRendering();
 
         // Render the UI

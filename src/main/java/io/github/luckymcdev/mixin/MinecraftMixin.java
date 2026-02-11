@@ -26,19 +26,16 @@ public class MinecraftMixin implements TbMinecraft {
     @Final
     private Window window;
 
+    @Override
     @Inject(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;resizeDisplay()V", shift = At.Shift.BEFORE))
-    private void tb$init(GameConfig gameConfig, CallbackInfo ci) {
+    public void tb$init(GameConfig gameConfig, CallbackInfo ci) {
         TbRenderSystem.init();
-    }
-
-    @Inject(method = "<init>", at = @At("RETURN"))
-    public void initImGui(GameConfig gameConfig, CallbackInfo ci) {
         TTFFile.find(resourceManager);
         ImGuiHandler.create(window.handle());
     }
 
-    @Inject(method = "close", at = @At("HEAD"))
-    public void closeImGui(CallbackInfo ci) {
+    @Inject(method = "close", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/font/providers/FreeTypeUtil;destroy()V", shift = At.Shift.BEFORE))
+    public void tb$close(CallbackInfo ci) {
         ImGuiHandler.dispose();
     }
 }
