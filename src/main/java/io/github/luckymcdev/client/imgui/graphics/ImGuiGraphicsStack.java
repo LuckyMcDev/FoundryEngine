@@ -1,6 +1,5 @@
 package io.github.luckymcdev.client.imgui.graphics;
 
-import imgui.ImFont;
 import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.ImVec4;

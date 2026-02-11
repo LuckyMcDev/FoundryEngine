@@ -1,9 +1,7 @@
 package io.github.luckymcdev.client.editor;
 
-import com.mojang.blaze3d.systems.RenderPass;
 import imgui.ImGui;
 import imgui.flag.ImGuiWindowFlags;
-import imgui.internal.ImGuiWindow;
 import imgui.type.ImBoolean;
 import io.github.luckymcdev.client.editor.config.ImGuiWindowType;
 import io.github.luckymcdev.client.editor.config.PanelStyle;
@@ -39,7 +37,7 @@ public class Panel {
     private int getFlags() {
         int flags = ImGuiWindowFlags.None;
 
-        if(temporary) {
+        if (temporary) {
             flags |= ImGuiWindowFlags.NoSavedSettings;
         }
 
@@ -47,14 +45,14 @@ public class Panel {
     }
 
     public final void open() {
-        if(!this.open) {
+        if (!this.open) {
             this.open = true;
         }
         onOpened();
     }
 
     public final void close() {
-        if(this.open) {
+        if (this.open) {
             this.open = false;
         }
     }
@@ -84,12 +82,12 @@ public class Panel {
 
         boolean menuOpen = ImGui.begin(title, WINDOW, flags);
 
-        if(menuOpen) {
+        if (menuOpen) {
             boolean shouldClose = !WINDOW.get();
 
             this.content();
 
-            if(shouldClose) {
+            if (shouldClose) {
                 this.close();
             }
 

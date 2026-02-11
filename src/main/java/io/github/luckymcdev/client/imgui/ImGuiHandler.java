@@ -9,8 +9,12 @@ import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.opengl.GlTexture;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.logging.LogUtils;
-import imgui.*;
-import imgui.flag.*;
+import imgui.ImFontConfig;
+import imgui.ImGui;
+import imgui.ImGuiIO;
+import imgui.flag.ImGuiConfigFlags;
+import imgui.flag.ImGuiDockNodeFlags;
+import imgui.flag.ImGuiWindowFlags;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
 import io.github.luckymcdev.client.imgui.context.ImGuiContextStack;
@@ -23,7 +27,6 @@ import io.github.luckymcdev.common.font.TTFFile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.input.InputQuirks;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.util.ARGB;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
@@ -123,7 +126,7 @@ public final class ImGuiHandler {
                 | ImGuiWindowFlags.NoDecoration;
 
 
-        if(!infoBarEnabled) return;
+        if (!infoBarEnabled) return;
 
         ImGui.setNextWindowViewport(ImGui.getMainViewport().getID());
         ImGui.setNextWindowPos(centralNodePos.x, centralNodePos.y);
@@ -188,7 +191,7 @@ public final class ImGuiHandler {
         fonts.clearTexData();
 
 
-        if(ImGui.getFont() == null) {
+        if (ImGui.getFont() == null) {
             ImGui.getIO().getFonts().addFontDefault();
             LOGGER.info("Go back to default font, font corrupted?");
         }

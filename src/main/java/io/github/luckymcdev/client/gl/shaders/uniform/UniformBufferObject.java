@@ -4,7 +4,7 @@ import io.github.luckymcdev.client.gl.GlDispatch;
 import io.github.luckymcdev.client.gl.OpenGlObject;
 import org.lwjgl.opengl.GL31;
 
-import static org.lwjgl.opengl.GL33.*;
+import static org.lwjgl.opengl.GL33.GL_DYNAMIC_DRAW;
 
 public class UniformBufferObject extends OpenGlObject {
 

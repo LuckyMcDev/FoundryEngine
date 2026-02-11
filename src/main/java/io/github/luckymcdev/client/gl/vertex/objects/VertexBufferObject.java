@@ -5,7 +5,7 @@ import io.github.luckymcdev.client.gl.OpenGlObject;
 
 import java.nio.FloatBuffer;
 
-import static org.lwjgl.opengl.GL33.*;
+import static org.lwjgl.opengl.GL33.GL_ARRAY_BUFFER;
 
 public class VertexBufferObject extends OpenGlObject {
 

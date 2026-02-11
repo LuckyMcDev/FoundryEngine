@@ -175,15 +175,6 @@ public class VertexLayout {
         }
     }
 
-    private static class VertexAttribute {
-        final int location;
-        final int componentCount;
-        final int offset;
-
-        VertexAttribute(int location, int componentCount, int offset) {
-            this.location = location;
-            this.componentCount = componentCount;
-            this.offset = offset;
-        }
+    private record VertexAttribute(int location, int componentCount, int offset) {
     }
 }

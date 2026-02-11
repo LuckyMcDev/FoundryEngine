@@ -6,7 +6,8 @@ import io.github.luckymcdev.client.gl.shaders.exeption.ShaderException;
 import io.github.luckymcdev.common.Commons;
 import net.minecraft.resources.ResourceLocation;
 
-import static org.lwjgl.opengl.GL43C.*;
+import static org.lwjgl.opengl.GL43C.GL_COMPILE_STATUS;
+import static org.lwjgl.opengl.GL43C.GL_TRUE;
 
 public class Shader extends OpenGlObject {
     private final ResourceLocation id;

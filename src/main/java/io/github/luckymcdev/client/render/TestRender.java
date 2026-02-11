@@ -6,11 +6,9 @@ import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import io.github.luckymcdev.client.TbRenderSystem;
-import io.github.luckymcdev.client.TbRenderer;
 import io.github.luckymcdev.client.gl.GlDispatch;
 import io.github.luckymcdev.client.gl.OpenGlStack;
 import io.github.luckymcdev.client.gl.framebuffer.FrameBuffer;
-import io.github.luckymcdev.client.gl.framebuffer.FrameBufferManager;
 import io.github.luckymcdev.client.gl.shaders.ExtendedShaderType;
 import io.github.luckymcdev.client.gl.shaders.Shader;
 import io.github.luckymcdev.client.gl.shaders.ShaderSource;
@@ -24,8 +22,6 @@ import io.github.luckymcdev.common.Commons;
 import io.github.luckymcdev.common.Instances;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.blaze3d.validation.ValidationGpuDevice;
-import net.neoforged.neoforge.client.blaze3d.validation.ValidationGpuTexture;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import org.lwjgl.opengl.GL33;
 import org.lwjgl.opengl.GL43C;
@@ -34,10 +30,10 @@ import org.slf4j.Logger;
 @EventBusSubscriber
 public class TestRender {
     private static final Logger LOGGER = LogUtils.getLogger();
+    private static final OpenGlStack glStack = new OpenGlStack();
     private static ShaderProgram program;
     private static Mesh quad;
     private static FrameBuffer customBuffer;
-    private static final OpenGlStack glStack = new OpenGlStack();
 
     @SubscribeEvent
     public static void render(RenderGuiEvent.Post event) {
@@ -113,7 +109,7 @@ public class TestRender {
 
             if (customBuffer == null) {
                 RenderTarget main = Instances.getMinecraft().getMainRenderTarget();
-                customBuffer = new FrameBuffer(Commons.id("custombuffer"),main.width, main.height);
+                customBuffer = new FrameBuffer(Commons.id("custombuffer"), main.width, main.height);
             }
 
             quad = new Mesh(

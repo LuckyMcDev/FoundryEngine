@@ -24,7 +24,9 @@ public class ImGuiContextTypes {
         @Override
         public void destroy(ImGuiContext context) {
             ImGui.destroyContext(context);
-        }        @Override
+        }
+
+        @Override
         public void setCurrent(ImGuiContext context) {
             ImGui.setCurrentContext(context);
         }
@@ -46,7 +48,9 @@ public class ImGuiContextTypes {
         @Override
         public void destroy(ImPlotContext context) {
             ImPlot.destroyContext(context);
-        }        @Override
+        }
+
+        @Override
         public void setCurrent(ImPlotContext context) {
             ImPlot.setCurrentContext(context);
         }
@@ -68,7 +72,9 @@ public class ImGuiContextTypes {
         @Override
         public void destroy(ImNodesContext context) {
             ImNodes.destroyContext(context);
-        }        @Override
+        }
+
+        @Override
         public void setCurrent(ImNodesContext context) {
             ImNodes.setCurrentContext(context);
         }

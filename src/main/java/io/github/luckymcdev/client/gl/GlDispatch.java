@@ -3,22 +3,14 @@ package io.github.luckymcdev.client.gl;
 import com.mojang.blaze3d.opengl.GlDevice;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.luckymcdev.common.Instances;
+import org.joml.*;
+import org.lwjgl.opengl.GL43C;
+import org.lwjgl.system.MemoryStack;
+
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.function.Supplier;
-import org.joml.Matrix2f;
-import org.joml.Matrix3f;
-import org.joml.Matrix4f;
-import org.joml.Vector2f;
-import org.joml.Vector2i;
-import org.joml.Vector3f;
-import org.joml.Vector3i;
-import org.joml.Vector4f;
-import org.joml.Vector4i;
-import org.lwjgl.opengl.GL43C;
-import org.lwjgl.system.MemoryStack;
-import org.lwjgl.system.NativeType;
 
 public class GlDispatch {
     public static GlDevice glDevice = Instances.getGlDevice();
@@ -37,7 +29,7 @@ public class GlDispatch {
         return wrapReturn(() -> GL43C.glIsEnabled(cap));
     }
 
-    public static int glGetInteger(int name)  {
+    public static int glGetInteger(int name) {
         return wrapReturn(() -> GL43C.glGetInteger(name));
     }
 
@@ -46,7 +38,7 @@ public class GlDispatch {
     }
 
     public static void glGetIntegerv(int name, int[] params) {
-        wrap(()-> GL43C.glGetIntegerv(name, params));
+        wrap(() -> GL43C.glGetIntegerv(name, params));
     }
 
     public static int glCreateShader(int type) {

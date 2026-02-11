@@ -16,14 +16,13 @@ public class TbRenderer implements ResourceManagerReloadListener {
         this.frameBufferManager = new FrameBufferManager();
     }
 
-
-    public FrameBufferManager getFrameBufferManager() {
-        return frameBufferManager;
-    }
-
     @SubscribeEvent
     private static void updateClientMatrices(FrameGraphSetupEvent event) {
         ClientMatrices.updateMain(event.getModelViewMatrix(), event.getProjectionMatrix());
+    }
+
+    public FrameBufferManager getFrameBufferManager() {
+        return frameBufferManager;
     }
 
     @Override

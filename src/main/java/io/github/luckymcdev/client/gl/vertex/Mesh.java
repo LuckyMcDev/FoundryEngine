@@ -1,18 +1,25 @@
 package io.github.luckymcdev.client.gl.vertex;
 
 import io.github.luckymcdev.client.gl.GlDispatch;
-import io.github.luckymcdev.client.gl.vertex.objects.ElementBufferObject; import io.github.luckymcdev.client.gl.vertex.objects.VertexArrayObject; import io.github.luckymcdev.client.gl.vertex.objects.VertexBufferObject; import org.lwjgl.BufferUtils; import org.lwjgl.util.meshoptimizer.MeshOptimizer;
+import io.github.luckymcdev.client.gl.vertex.objects.ElementBufferObject;
+import io.github.luckymcdev.client.gl.vertex.objects.VertexArrayObject;
+import io.github.luckymcdev.client.gl.vertex.objects.VertexBufferObject;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.util.meshoptimizer.MeshOptimizer;
 
-import java.nio.ByteBuffer; import java.nio.FloatBuffer; import java.nio.IntBuffer;
+import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
-import static org.lwjgl.opengl.GL33.*;
+import static org.lwjgl.opengl.GL33.GL_STATIC_DRAW;
+import static org.lwjgl.opengl.GL33.GL_UNSIGNED_INT;
 
 public class Mesh {
     private final VertexArrayObject vao;
     private final VertexBufferObject vbo;
-    private ElementBufferObject ebo;
-    private int indexCount;
     private final int drawMode;
+    private final ElementBufferObject ebo;
+    private final int indexCount;
 
     public Mesh(float[] vertices, int[] indices, VertexLayout layout, int drawMode, boolean optimize) {
         this.drawMode = drawMode;

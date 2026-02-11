@@ -43,8 +43,8 @@ public class ShaderProgram extends OpenGlObject {
         int linkStatus = GlDispatch.glGetProgrami(this.pointer, GlConst.GL_LINK_STATUS);
         String log = GlDispatch.glGetProgramInfoLog(this.pointer);
 
-        if(linkStatus != GlConst.GL_TRUE) {
-            throw new ShaderException("Failed to link program: " + this.id.toString() + " Log: "+log);
+        if (linkStatus != GlConst.GL_TRUE) {
+            throw new ShaderException("Failed to link program: " + this.id.toString() + " Log: " + log);
         }
     }
 

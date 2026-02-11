@@ -3,8 +3,6 @@ package io.github.luckymcdev.client.imgui.node;
 import imgui.ImGui;
 import imgui.extension.imnodes.ImNodes;
 import imgui.extension.imnodes.flag.ImNodesMiniMapLocation;
-import imgui.extension.imnodes.flag.ImNodesStyleVar;
-import imgui.flag.ImGuiKey;
 import imgui.type.ImInt;
 import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;

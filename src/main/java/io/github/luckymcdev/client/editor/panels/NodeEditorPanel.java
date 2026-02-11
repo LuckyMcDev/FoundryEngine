@@ -13,8 +13,8 @@ import java.util.List;
 public class NodeEditorPanel extends Panel {
     public static final NodeEditorPanel INSTANCE = new NodeEditorPanel();
 
-    private NodeEditorInstance<String> nodeEditor;
-    private NodePinType<String> stringType = new NodePinType<>("String", NodePinShape.CIRCLE, null);;
+    private final NodeEditorInstance<String> nodeEditor;
+    private final NodePinType<String> stringType = new NodePinType<>("String", NodePinShape.CIRCLE, null);
 
     private NodeEditorPanel() {
         super(Commons.id("node_editor"), "Node Editor");

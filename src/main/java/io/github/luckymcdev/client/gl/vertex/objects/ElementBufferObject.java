@@ -5,12 +5,12 @@ import io.github.luckymcdev.client.gl.OpenGlObject;
 
 import java.nio.IntBuffer;
 
-import static org.lwjgl.opengl.GL33.*;
+import static org.lwjgl.opengl.GL33.GL_ELEMENT_ARRAY_BUFFER;
 
 public class ElementBufferObject extends OpenGlObject {
 
     public ElementBufferObject() {
-        this.pointer =GlDispatch.glGenBuffers();
+        this.pointer = GlDispatch.glGenBuffers();
     }
 
     public void bind() {

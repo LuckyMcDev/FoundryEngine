@@ -30,18 +30,18 @@ public class FrameBuffer extends OpenGlObject {
     );
 
     private final ResourceLocation id;
-    private int width;
-    private int height;
-    private int colorTexture;
-    private int depthRenderbuffer;
     private final boolean ownsFbo;
     private final boolean ownsAttachments;
     private final boolean hasDepth;
     private final boolean hasStencil;
     private final String debugLabel;
     private final int clearMask;
+    private int width;
+    private int height;
+    private int colorTexture;
+    private int depthRenderbuffer;
     private int filterMode = GL43C.GL_LINEAR;
-    private float[] clearColor = new float[]{0.0f, 0.0f, 0.0f, 0.0f};
+    private final float[] clearColor = new float[]{0.0f, 0.0f, 0.0f, 0.0f};
 
     public FrameBuffer(ResourceLocation id, int width, int height) {
         this(id, width, height, true, false);
@@ -120,6 +120,7 @@ public class FrameBuffer extends OpenGlObject {
 
     /**
      * Bind this framebuffer for both reading and writing
+     *
      * @param setViewport If true, sets the viewport to match the framebuffer dimensions
      */
     public void bind(boolean setViewport) {
@@ -138,6 +139,7 @@ public class FrameBuffer extends OpenGlObject {
 
     /**
      * Bind this framebuffer for drawing only
+     *
      * @param setViewport If true, sets the viewport to match the framebuffer dimensions
      */
     public void bindDraw(boolean setViewport) {
@@ -199,21 +201,6 @@ public class FrameBuffer extends OpenGlObject {
         this.clearColor[1] = g;
         this.clearColor[2] = b;
         this.clearColor[3] = a;
-    }
-
-    /**
-     * Set the texture filter mode for the color attachment
-     */
-    public void setFilterMode(int filterMode) {
-        if (this.filterMode == filterMode) {
-            return;
-        }
-        this.filterMode = filterMode;
-
-        GlDispatch.glBindTexture(GL43C.GL_TEXTURE_2D, colorTexture);
-        GlDispatch.glTexParameteri(GL43C.GL_TEXTURE_2D, GL43C.GL_TEXTURE_MIN_FILTER, filterMode);
-        GlDispatch.glTexParameteri(GL43C.GL_TEXTURE_2D, GL43C.GL_TEXTURE_MAG_FILTER, filterMode);
-        GlDispatch.glBindTexture(GL43C.GL_TEXTURE_2D, 0);
     }
 
     /**
@@ -279,6 +266,21 @@ public class FrameBuffer extends OpenGlObject {
 
     public int getFilterMode() {
         return filterMode;
+    }
+
+    /**
+     * Set the texture filter mode for the color attachment
+     */
+    public void setFilterMode(int filterMode) {
+        if (this.filterMode == filterMode) {
+            return;
+        }
+        this.filterMode = filterMode;
+
+        GlDispatch.glBindTexture(GL43C.GL_TEXTURE_2D, colorTexture);
+        GlDispatch.glTexParameteri(GL43C.GL_TEXTURE_2D, GL43C.GL_TEXTURE_MIN_FILTER, filterMode);
+        GlDispatch.glTexParameteri(GL43C.GL_TEXTURE_2D, GL43C.GL_TEXTURE_MAG_FILTER, filterMode);
+        GlDispatch.glBindTexture(GL43C.GL_TEXTURE_2D, 0);
     }
 
     public boolean hasDepthAttachment() {

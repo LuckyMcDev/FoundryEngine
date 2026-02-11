@@ -1,12 +1,9 @@
 package io.github.luckymcdev.client.editor;
 
 import io.github.luckymcdev.common.registry.GenericRegistry;
-import imgui.ImGui;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 public class BuiltInEditor {
     private static final GenericRegistry<String, Panel> OPEN_PANELS = new GenericRegistry<>();

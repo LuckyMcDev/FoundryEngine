@@ -12,10 +12,10 @@ public class Vertices {
     public static final float[] QUAD_VERTICES = {
             -1.0f, -1.0f,
             1.0f, -1.0f,
-            1.0f,  1.0f,
+            1.0f, 1.0f,
             -1.0f, -1.0f,
-            1.0f,  1.0f,
-            -1.0f,  1.0f
+            1.0f, 1.0f,
+            -1.0f, 1.0f
     };
 
     public static final float[] TRIANGLE_VERTICES = {
@@ -26,9 +26,9 @@ public class Vertices {
 
     public static final VertexMesh FULLSCREEN_QUAD = VertexData.builder()
             .pos(-1.0f, -1.0f).uv(0.0f, 0.0f).end()
-            .pos( 1.0f, -1.0f).uv(1.0f, 0.0f).end()
-            .pos( 1.0f,  1.0f).uv(1.0f, 1.0f).end()
-            .pos(-1.0f,  1.0f).uv(0.0f, 1.0f).end()
+            .pos(1.0f, -1.0f).uv(1.0f, 0.0f).end()
+            .pos(1.0f, 1.0f).uv(1.0f, 1.0f).end()
+            .pos(-1.0f, 1.0f).uv(0.0f, 1.0f).end()
             .buildMesh(new int[]{
                     0, 1, 2,
                     2, 3, 0
