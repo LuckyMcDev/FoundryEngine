@@ -30,10 +30,10 @@ import org.slf4j.Logger;
 @EventBusSubscriber
 public class TestRender {
     private static final Logger LOGGER = LogUtils.getLogger();
-    private static final OpenGlStack glStack = new OpenGlStack();
     private static ShaderProgram program;
     private static Mesh quad;
     private static FrameBuffer customBuffer;
+    private static final OpenGlStack glStack = new OpenGlStack();
 
     @SubscribeEvent
     public static void render(RenderGuiEvent.Post event) {
