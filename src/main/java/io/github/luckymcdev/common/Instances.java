@@ -5,6 +5,7 @@ import com.mojang.blaze3d.opengl.GlTexture;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
+import io.github.luckymcdev.client.editor.BuiltInEditor;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
@@ -51,5 +52,9 @@ public interface Instances {
         RenderTarget framebuffer = Instances.getMinecraft().getMainRenderTarget();
         ValidationGpuTexture mcColTex = (ValidationGpuTexture) framebuffer.getColorTexture();
         return (GlTexture) mcColTex.getRealTexture();
+    }
+
+    static BuiltInEditor getBuiltInEditor() {
+        return InstancesInternal.EDITOR;
     }
 }
