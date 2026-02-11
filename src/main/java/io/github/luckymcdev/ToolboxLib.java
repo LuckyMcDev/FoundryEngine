@@ -2,6 +2,8 @@ package io.github.luckymcdev;
 
 import com.mojang.logging.LogUtils;
 import io.github.luckymcdev.common.Commons;
+import io.github.luckymcdev.common.cl.OpenClExample;
+import io.github.luckymcdev.common.cl.task.ClWorker;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -30,6 +32,21 @@ public class ToolboxLib {
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
+        /*
+        OpenCLExample.test();
+        OpenCLExample.testHills();
+        OpenCLExample.testPlains();
+        OpenCLExample.testMountains();
+        OpenCLExample.visualizeColorized();
+         */
+
+        ClWorker.submit(() -> {
+            OpenClExample.visualize(15630, 8640, 300.0f, 32, false);
+            //OpenCLExample.comparePerformance(7680, 4320, 300.0f, 6, 0.5f, 10);
+            return "1";
+        });
+
+
     }
 
     @SubscribeEvent
