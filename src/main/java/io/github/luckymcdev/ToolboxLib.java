@@ -1,7 +1,9 @@
 package io.github.luckymcdev;
 
 import com.mojang.logging.LogUtils;
+import io.github.luckymcdev.client.editor.BuiltInEditor;
 import io.github.luckymcdev.common.Commons;
+import io.github.luckymcdev.common.Instances;
 import io.github.luckymcdev.common.cl.OpenClExample;
 import io.github.luckymcdev.common.cl.task.ClWorker;
 import net.neoforged.api.distmarker.Dist;
@@ -13,6 +15,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
@@ -61,6 +64,11 @@ public class ToolboxLib {
     public static class ClientModEvents {
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
+        }
+
+        @SubscribeEvent
+        public static void onClientTick(ClientTickEvent.Post event) {
+            Instances.getBuiltInEditor().handleTick();
         }
     }
 }

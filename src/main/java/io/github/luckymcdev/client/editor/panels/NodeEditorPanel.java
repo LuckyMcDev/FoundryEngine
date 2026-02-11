@@ -1,5 +1,6 @@
 package io.github.luckymcdev.client.editor.panels;
 
+import com.mojang.logging.LogUtils;
 import imgui.ImGui;
 import io.github.luckymcdev.client.editor.Panel;
 import io.github.luckymcdev.client.imgui.node.Node;
@@ -7,10 +8,12 @@ import io.github.luckymcdev.client.imgui.node.NodeEditorInstance;
 import io.github.luckymcdev.client.imgui.node.NodePinShape;
 import io.github.luckymcdev.client.imgui.node.NodePinType;
 import io.github.luckymcdev.common.Commons;
+import org.slf4j.Logger;
 
 import java.util.List;
 
 public class NodeEditorPanel extends Panel {
+    private static final Logger LOGGER = LogUtils.getLogger();
     public static final NodeEditorPanel INSTANCE = new NodeEditorPanel();
 
     private final NodeEditorInstance<String> nodeEditor;
@@ -46,5 +49,10 @@ public class NodeEditorPanel extends Panel {
             }
         });
 
+    }
+
+    @Override
+    public void tick() {
+        LOGGER.info("Ticked Panel Node editor.");
     }
 }

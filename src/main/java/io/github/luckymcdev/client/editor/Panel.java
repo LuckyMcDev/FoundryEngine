@@ -9,13 +9,13 @@ import io.github.luckymcdev.common.Instances;
 import net.minecraft.resources.ResourceLocation;
 
 public class Panel {
+    private boolean focused;
     public ResourceLocation id;
     public String label;
     public boolean open;
     public boolean temporary;
     public PanelStyle style;
     public ImGuiWindowType type;
-
 
     protected Panel(ResourceLocation id, String label) {
         this.id = id;
@@ -63,7 +63,7 @@ public class Panel {
     public void onClosed() {
     }
 
-    public final boolean handle() {
+    public final boolean handleRender() {
         int flags = getFlags();
         ImBoolean WINDOW = new ImBoolean(this.open);
 
@@ -84,6 +84,7 @@ public class Panel {
 
         if (menuOpen) {
             boolean shouldClose = !WINDOW.get();
+            this.focused = ImGui.isWindowFocused();
 
             this.content();
 
@@ -94,6 +95,8 @@ public class Panel {
             if (!open) {
                 onClosed();
             }
+        } else {
+            this.focused = false;
         }
 
         type = ImGuiWindowType.get(Instances.getWindow().handle());
@@ -102,12 +105,18 @@ public class Panel {
         return open;
     }
 
-    public void content() {
+    public boolean isFocused() {
+        return this.focused;
+    }
 
+    public final void handleTick() {
+        tick();
+    }
+
+    public void content() {
     }
 
     public void tick() {
-
     }
 
 }
