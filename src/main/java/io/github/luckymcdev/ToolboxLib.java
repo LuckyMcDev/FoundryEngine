@@ -1,11 +1,10 @@
 package io.github.luckymcdev;
 
 import com.mojang.logging.LogUtils;
-import io.github.luckymcdev.client.editor.BuiltInEditor;
 import io.github.luckymcdev.common.Commons;
 import io.github.luckymcdev.common.Instances;
-import io.github.luckymcdev.common.cl.OpenClExample;
-import io.github.luckymcdev.common.cl.task.ClWorker;
+import io.github.luckymcdev.common.opencl.OpenClExample;
+import io.github.luckymcdev.common.opencl.task.ClWorker;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
