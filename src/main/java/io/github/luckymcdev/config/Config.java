@@ -1,4 +1,4 @@
-package io.github.luckymcdev;
+package io.github.luckymcdev.config;
 
 import io.github.luckymcdev.common.Commons;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -10,7 +10,7 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 public class Config {
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
-    static final ModConfigSpec SPEC = BUILDER.build();
+    public static final ModConfigSpec SPEC = BUILDER.build();
 
     @SubscribeEvent
     static void onLoad(final ModConfigEvent event) {
