@@ -69,15 +69,15 @@ neoForge {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 dependencies {
-    implementation platform("org.lwjgl:lwjgl-bom:${project.lwjgl_version}")
+    jarJar(implementation(platform("org.lwjgl:lwjgl-bom:${project.lwjgl_version}")))
 
     jarJar(api(implementation("net.neoforged:render-nurse:${project.rendernurse_version}")))
 
-    jarJar(api(implementation( "org.lwjgl:lwjgl")))
-    jarJar(api(implementation( "org.lwjgl:lwjgl-meshoptimizer")))
-    jarJar(api(implementation( "org.lwjgl:lwjgl-opencl")))
-    jarJar(api(implementation( "org.lwjgl:lwjgl-par")))
-    jarJar(api(implementation( "org.lwjgl:lwjgl-shaderc")))
+    jarJar(api(implementation("org.lwjgl:lwjgl:${project.lwjgl_version}")))
+    jarJar(api(implementation("org.lwjgl:lwjgl-meshoptimizer:${project.lwjgl_version}")))
+    jarJar(api(implementation( "org.lwjgl:lwjgl-opencl:${project.lwjgl_version}")))
+    jarJar(api(implementation( "org.lwjgl:lwjgl-par:${project.lwjgl_version}")))
+    jarJar(api(implementation( "org.lwjgl:lwjgl-shaderc:${project.lwjgl_version}")))
 
     // 3. Add the natives (using the BOM version)
     def lwjglNatives = ["natives-windows", "natives-linux", "natives-macos"]
@@ -134,7 +134,7 @@ publishing {
     }
     repositories {
         maven {
-            url "file://${project.projectDir}/repo"
+            url = file("${projectDir}/repo").toURI()
         }
     }
 }
