@@ -1,4 +1,4 @@
-package io.github.luckymcdev.mixin;
+package io.github.luckymcdev.mixin.invoker;
 
 
 import com.mojang.blaze3d.pipeline.RenderPipeline;
