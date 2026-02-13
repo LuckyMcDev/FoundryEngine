@@ -31,6 +31,8 @@ neoForge {
         client {
             client()
 
+            jvmArgument("-javaagent:/path/to/RenderNurse.jar")
+
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
 
@@ -69,7 +71,9 @@ neoForge {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 dependencies {
-    implementation platform("org.lwjgl:lwjgl-bom:3.3.3")
+    implementation platform("org.lwjgl:lwjgl-bom:${project.lwjgl_version}")
+
+    implementation("net.neoforged:render-nurse:${project.rendernurse_version}")
 
     implementation "org.lwjgl:lwjgl"
     implementation "org.lwjgl:lwjgl-meshoptimizer"
