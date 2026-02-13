@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.Window;
 import io.github.luckymcdev.client.TbRenderSystem;
 import io.github.luckymcdev.client.imgui.ImGuiHandler;
 import io.github.luckymcdev.common.font.TTFFile;
+import io.github.luckymcdev.common.opencl.task.ClWorker;
 import io.github.luckymcdev.interfaces.TbMinecraft;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.main.GameConfig;
@@ -37,5 +38,6 @@ public class MinecraftMixin implements TbMinecraft {
     @Inject(method = "close", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/font/providers/FreeTypeUtil;destroy()V", shift = At.Shift.BEFORE))
     public void tb$close(CallbackInfo ci) {
         ImGuiHandler.dispose();
+        ClWorker.shutdown();
     }
 }
