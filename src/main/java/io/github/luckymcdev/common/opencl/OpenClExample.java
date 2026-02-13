@@ -55,6 +55,8 @@ public class OpenClExample {
         try {
             executeKernel(task, buffer, width, height, scale, octaves, 0.5f);
 
+            task.getCommandQueue().finish();
+
             BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
             for (int i = 0; i < width * height; i++) {
                 float val = buffer.get(i);

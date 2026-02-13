@@ -1,15 +1,16 @@
 package io.github.luckymcdev.common.opencl.buffer;
 
-import io.github.luckymcdev.common.opencl.core.ClDispatch;
+import io.github.luckymcdev.common.opencl.ClDispatch;
+import io.github.luckymcdev.common.opencl.core.ClCommandQueue;
 
 import java.nio.FloatBuffer;
 
 public class ClBuffer implements AutoCloseable {
     private final long id;
-    private final ClDispatch dispatch;
+    private final ClCommandQueue dispatch;
     private boolean released = false;
 
-    public ClBuffer(long id, ClDispatch dispatch) {
+    public ClBuffer(long id, ClCommandQueue dispatch) {
         this.id = id;
         this.dispatch = dispatch;
     }
@@ -18,7 +19,7 @@ public class ClBuffer implements AutoCloseable {
         return id;
     }
 
-    public void read( FloatBuffer dest) {
+    public void read(FloatBuffer dest) {
         dispatch.readBuffer(id, true, 0, dest);
     }
 
@@ -28,7 +29,7 @@ public class ClBuffer implements AutoCloseable {
 
     public void release() {
         if (!released) {
-            dispatch.releaseBuffer(id);
+            ClDispatch.releaseMemObject(id);
             released = true;
         }
     }

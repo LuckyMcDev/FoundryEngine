@@ -1,6 +1,7 @@
 package io.github.luckymcdev.common.opencl.core;
 
 import com.mojang.logging.LogUtils;
+import io.github.luckymcdev.common.opencl.ClDispatch;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.opencl.CL;
 import org.lwjgl.opencl.CLCapabilities;
@@ -32,14 +33,14 @@ public class OpenClContext {
         try (MemoryStack stack = stackPush()) {
             // Get platform
             IntBuffer numPlatforms = stack.mallocInt(1);
-            clGetPlatformIDs(null, numPlatforms);
+            ClDispatch.getPlatformIDs(null, numPlatforms);
 
             if (numPlatforms.get(0) == 0) {
                 throw new RuntimeException("No OpenCL platforms found");
             }
 
             PointerBuffer platforms = stack.mallocPointer(numPlatforms.get(0));
-            clGetPlatformIDs(platforms, (IntBuffer) null);
+            ClDispatch.getPlatformIDs(platforms, (IntBuffer) null);
             platform = platforms.get(0);
 
             // Create platform capabilities
@@ -64,36 +65,36 @@ public class OpenClContext {
 
             // Create context
             IntBuffer errcode = stack.mallocInt(1);
-            context = clCreateContext(null, device, null, NULL, errcode);
+            context = ClDispatch.createContext(null, device, null, NULL, errcode);
             checkCLError(errcode.get(0), "Failed to create context");
         }
     }
 
     private long getDevice(MemoryStack stack, long deviceType) {
         IntBuffer numDevices = stack.mallocInt(1);
-        int result = clGetDeviceIDs(platform, deviceType, null, numDevices);
+        int result = ClDispatch.getDeviceIDs(platform, deviceType, null, numDevices);
 
         if (result != CL_SUCCESS || numDevices.get(0) == 0) {
             return 0;
         }
 
         PointerBuffer devices = stack.mallocPointer(numDevices.get(0));
-        clGetDeviceIDs(platform, deviceType, devices, (IntBuffer) null);
+        ClDispatch.getDeviceIDs(platform, deviceType, devices, null);
         return devices.get(0);
     }
 
     private void printDeviceInfo(MemoryStack stack) {
         // Get device name
         PointerBuffer deviceNameSize = stack.mallocPointer(1);
-        clGetDeviceInfo(device, CL_DEVICE_NAME, (PointerBuffer) null, deviceNameSize);
+        ClDispatch.getDeviceInfo(device, CL_DEVICE_NAME, (IntBuffer) null, deviceNameSize);
 
         ByteBuffer deviceNameBuffer = stack.malloc((int) deviceNameSize.get(0));
-        clGetDeviceInfo(device, CL_DEVICE_NAME, deviceNameBuffer, null);
+        ClDispatch.getDeviceInfo(device, CL_DEVICE_NAME, deviceNameBuffer, null);
         String deviceName = memUTF8(deviceNameBuffer);
 
         // Get device type
         LongBuffer deviceTypeLongBuffer = stack.mallocLong(1);
-        clGetDeviceInfo(device, CL_DEVICE_TYPE, deviceTypeLongBuffer, null);
+        ClDispatch.getDeviceInfo(device, CL_DEVICE_TYPE, deviceTypeLongBuffer, null);
         long deviceTypeValue = deviceTypeLongBuffer.get(0);
 
         String typeName;
@@ -123,10 +124,10 @@ public class OpenClContext {
 
     private String getDeviceInfoString(MemoryStack stack, int param) {
         PointerBuffer size = stack.mallocPointer(1);
-        clGetDeviceInfo(device, param, (ByteBuffer) null, size);
+        ClDispatch.getDeviceInfo(device, param, (ByteBuffer) null, size);
 
         ByteBuffer buffer = stack.malloc((int) size.get(0));
-        clGetDeviceInfo(device, param, buffer, null);
+        ClDispatch.getDeviceInfo(device, param, buffer, null);
 
         return memUTF8(buffer);
     }
@@ -134,13 +135,13 @@ public class OpenClContext {
     // Helper methods to clean up the code
     private int getDeviceInfoInt(MemoryStack stack, int param) {
         IntBuffer buffer = stack.mallocInt(1);
-        clGetDeviceInfo(device, param, buffer, null);
+        ClDispatch.getDeviceInfo(device, param, buffer, null);
         return buffer.get(0);
     }
 
     private long getDeviceInfoLong(MemoryStack stack, int param) {
         LongBuffer buffer = stack.mallocLong(1);
-        clGetDeviceInfo(device, param, buffer, null);
+        ClDispatch.getDeviceInfo(device, param, buffer, null);
         return buffer.get(0);
     }
 
@@ -166,7 +167,7 @@ public class OpenClContext {
 
     public void cleanup() {
         if (context != 0) {
-            clReleaseContext(context);
+            ClDispatch.releaseContext(context);
             context = 0;
         }
     }

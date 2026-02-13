@@ -11,12 +11,25 @@ import java.util.function.Supplier;
 public class ClWorker {
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    // A single thread dedicated to OpenCL operations
     private static final ExecutorService CL_THREAD = Executors.newSingleThreadExecutor(runnable -> {
         Thread thread = new Thread(runnable, "OpenCL-Worker");
-        thread.setDaemon(true); // Won't block JVM shutdown
+        thread.setDaemon(true);
         return thread;
     });
+
+    public static boolean isOnClThread() {
+        return Thread.currentThread().getName().equals("OpenCL-Worker");
+    }
+
+    public static void assertOnClThread() {
+        if (!isOnClThread()) {
+            throw constructThreadException();
+        }
+    }
+
+    private static IllegalStateException constructThreadException() {
+        return new IllegalStateException("OpenCl called from wrong thread");
+    }
 
     /**
      * Runs a compute task asynchronously.
