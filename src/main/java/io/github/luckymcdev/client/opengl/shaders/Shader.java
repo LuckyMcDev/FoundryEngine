@@ -6,8 +6,7 @@ import io.github.luckymcdev.client.opengl.shaders.exeption.ShaderException;
 import io.github.luckymcdev.common.Commons;
 import net.minecraft.resources.ResourceLocation;
 
-import static org.lwjgl.opengl.GL43C.GL_COMPILE_STATUS;
-import static org.lwjgl.opengl.GL43C.GL_TRUE;
+import static org.lwjgl.opengl.GL43C.*;
 
 public class Shader extends OpenGlObject {
     private final ResourceLocation id;
@@ -21,6 +20,7 @@ public class Shader extends OpenGlObject {
         this.location = source.location();
         this.source = Commons.getRlSource(location);
         this.pointer = GlDispatch.glCreateShader(shaderType.glType());
+        setDebugLabel(this.id.toString());
     }
 
     public void bindSource() {
@@ -52,6 +52,12 @@ public class Shader extends OpenGlObject {
 
     public ResourceLocation getLocation() {
         return location;
+    }
+
+    private void setDebugLabel(String label) {
+        if (label != null && this.pointer != 0) {
+            GlDispatch.safeGlObjectLabel(GL_SHADER, this.pointer, label);
+        }
     }
 
     @Override
