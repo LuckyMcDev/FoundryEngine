@@ -59,7 +59,7 @@ public class TestRender {
 
             // 1. Bind Input (The Game Screen)
             GlDispatch.glActiveTexture(GL43C.GL_TEXTURE0);
-            int inputTextureId = Instances.getGlTexture(mainTarget).glId();
+            int inputTextureId = Instances.getGlColTexture(mainTarget).glId();
             GlDispatch.glBindTexture(GL43C.GL_TEXTURE_2D, inputTextureId);
 
             // 2. Prepare Output (Your Buffer)
@@ -131,7 +131,7 @@ public class TestRender {
     }
 
     private static int getMainFbo() {
-        GlTexture colorTexture = Instances.getGlTexture();
+        GlTexture colorTexture = Instances.getGlColTexture();
         GlDevice device = Instances.getGlDevice();
         return colorTexture.getFbo(device.directStateAccess(), null);
     }

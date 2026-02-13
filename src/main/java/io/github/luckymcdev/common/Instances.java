@@ -43,15 +43,21 @@ public interface Instances {
         return (GlDevice) mcDevice.getRealDevice();
     }
 
-    static GlTexture getGlTexture(RenderTarget target) {
+    static GlTexture getGlColTexture(RenderTarget target) {
         ValidationGpuTexture mcColTex = (ValidationGpuTexture) target.getColorTexture();
         return (GlTexture) mcColTex.getRealTexture();
     }
 
-    static GlTexture getGlTexture() {
+    static GlTexture getGlColTexture() {
         RenderTarget framebuffer = Instances.getMinecraft().getMainRenderTarget();
         ValidationGpuTexture mcColTex = (ValidationGpuTexture) framebuffer.getColorTexture();
         return (GlTexture) mcColTex.getRealTexture();
+    }
+
+    static GlTexture getGlDepthTexture() {
+        RenderTarget framebuffer = Instances.getMinecraft().getMainRenderTarget();
+        ValidationGpuTexture mcDepthTex = (ValidationGpuTexture) framebuffer.getDepthTexture();
+        return (GlTexture) mcDepthTex.getRealTexture();
     }
 
     static BuiltInEditor getBuiltInEditor() {

@@ -92,7 +92,7 @@ public final class ImGuiHandler {
 
     public static void beginImGuiRendering() {
         final RenderTarget framebuffer = Minecraft.getInstance().getMainRenderTarget();
-        GlTexture colorTexture = Instances.getGlTexture();
+        GlTexture colorTexture = Instances.getGlColTexture();
         GlDevice device = Instances.getGlDevice();
 
         GlStateManager._glBindFramebuffer(

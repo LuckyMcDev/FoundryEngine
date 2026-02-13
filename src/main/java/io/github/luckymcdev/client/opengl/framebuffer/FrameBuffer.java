@@ -7,6 +7,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.luckymcdev.client.opengl.GlDispatch;
 import io.github.luckymcdev.client.opengl.OpenGlObject;
 import io.github.luckymcdev.common.Commons;
+import io.github.luckymcdev.common.Instances;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.blaze3d.validation.ValidationGpuDevice;
 import net.neoforged.neoforge.client.blaze3d.validation.ValidationGpuTexture;
@@ -83,15 +84,13 @@ public class FrameBuffer extends OpenGlObject {
         if (target.getColorTexture() == null) {
             throw new IllegalArgumentException("RenderTarget has no color texture");
         }
-        ValidationGpuTexture colorValidation = (ValidationGpuTexture) target.getColorTexture();
-        GlTexture colorTexture = (GlTexture) colorValidation.getRealTexture();
+
+        GlTexture colorTexture = Instances.getGlColTexture();
         GlTexture depthTexture = null;
         if (target.getDepthTexture() != null) {
-            ValidationGpuTexture depthValidation = (ValidationGpuTexture) target.getDepthTexture();
-            depthTexture = (GlTexture) depthValidation.getRealTexture();
+            depthTexture = Instances.getGlDepthTexture();
         }
-        ValidationGpuDevice deviceValidation = (ValidationGpuDevice) RenderSystem.getDevice();
-        GlDevice device = (GlDevice) deviceValidation.getRealDevice();
+        GlDevice device = Instances.getGlDevice();
 
         FrameBuffer buffer = new FrameBuffer(Commons.id(target.toString()), target.width, target.height, true);
         int sourceFbo = colorTexture.getFbo(device.directStateAccess(), depthTexture);

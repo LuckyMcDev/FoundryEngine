@@ -7,7 +7,7 @@
   ],
   "client": [
     "MinecraftMixin",
-    "RenderPipelinesInvoker",
+    "invoker.RenderPipelinesInvoker",
     "input.KeyboardHandlerMixin",
     "input.MouseHandlerMixin",
     "render.GameRendererMixin",
