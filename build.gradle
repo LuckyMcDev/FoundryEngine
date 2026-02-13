@@ -31,8 +31,6 @@ neoForge {
         client {
             client()
 
-            jvmArgument("-javaagent:/path/to/RenderNurse.jar")
-
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
 
@@ -73,32 +71,32 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 dependencies {
     implementation platform("org.lwjgl:lwjgl-bom:${project.lwjgl_version}")
 
-    implementation("net.neoforged:render-nurse:${project.rendernurse_version}")
+    jarJar(api(implementation("net.neoforged:render-nurse:${project.rendernurse_version}")))
 
-    implementation "org.lwjgl:lwjgl"
-    implementation "org.lwjgl:lwjgl-meshoptimizer"
-    implementation "org.lwjgl:lwjgl-opencl"
-    implementation "org.lwjgl:lwjgl-par"
-    implementation "org.lwjgl:lwjgl-shaderc"
+    jarJar(api(implementation( "org.lwjgl:lwjgl")))
+    jarJar(api(implementation( "org.lwjgl:lwjgl-meshoptimizer")))
+    jarJar(api(implementation( "org.lwjgl:lwjgl-opencl")))
+    jarJar(api(implementation( "org.lwjgl:lwjgl-par")))
+    jarJar(api(implementation( "org.lwjgl:lwjgl-shaderc")))
 
     // 3. Add the natives (using the BOM version)
     def lwjglNatives = ["natives-windows", "natives-linux", "natives-macos"]
     lwjglNatives.each { platform ->
-        runtimeOnly "org.lwjgl:lwjgl::$platform"
-        runtimeOnly "org.lwjgl:lwjgl-meshoptimizer::$platform"
-        runtimeOnly "org.lwjgl:lwjgl-par::$platform"
-        runtimeOnly "org.lwjgl:lwjgl-shaderc::$platform"
+        jarJar(runtimeOnly "org.lwjgl:lwjgl::$platform")
+        jarJar(runtimeOnly "org.lwjgl:lwjgl-meshoptimizer::$platform")
+        jarJar(runtimeOnly "org.lwjgl:lwjgl-par::$platform")
+        jarJar(runtimeOnly "org.lwjgl:lwjgl-shaderc::$platform")
     }
 
 
-    implementation("io.github.spair:imgui-java-binding:${project.imgui_version}")
-    implementation("io.github.spair:imgui-java-lwjgl3:${project.imgui_version}") {
+    jarJar(api(implementation(("io.github.spair:imgui-java-binding:${project.imgui_version}"))))
+    jarJar(api(implementation(("io.github.spair:imgui-java-lwjgl3:${project.imgui_version}")))) {
         exclude group: "org.lwjgl"
     }
 
-    implementation("io.github.spair:imgui-java-natives-windows:${project.imgui_version}")
-    implementation("io.github.spair:imgui-java-natives-linux:${project.imgui_version}")
-    implementation("io.github.spair:imgui-java-natives-macos:${project.imgui_version}")
+    jarJar(api(implementation(("io.github.spair:imgui-java-natives-windows:${project.imgui_version}"))))
+    jarJar(api(implementation(("io.github.spair:imgui-java-natives-linux:${project.imgui_version}"))))
+    jarJar(api(implementation(("io.github.spair:imgui-java-natives-macos:${project.imgui_version}"))))
 
 }
 
