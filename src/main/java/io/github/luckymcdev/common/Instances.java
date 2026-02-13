@@ -44,26 +44,33 @@ public interface Instances {
         return InstancesInternal.IMGUI_HANDLER;
     }
 
-    static GlDevice getGlDevice() {
-        ValidationGpuDevice mcDevice = (ValidationGpuDevice) RenderSystem.getDevice();
-        return (GlDevice) mcDevice.getRealDevice();
-    }
-
     static GlTexture getGlColTexture(RenderTarget target) {
-        ValidationGpuTexture mcColTex = (ValidationGpuTexture) target.getColorTexture();
-        return (GlTexture) mcColTex.getRealTexture();
+        var tex = target.getColorTexture();
+        if (tex instanceof ValidationGpuTexture validationTex) {
+            return (GlTexture) validationTex.getRealTexture();
+        }
+        return (GlTexture) tex;
     }
 
     static GlTexture getGlColTexture() {
-        RenderTarget framebuffer = Instances.getMinecraft().getMainRenderTarget();
-        ValidationGpuTexture mcColTex = (ValidationGpuTexture) framebuffer.getColorTexture();
-        return (GlTexture) mcColTex.getRealTexture();
+        return getGlColTexture(getMinecraft().getMainRenderTarget());
     }
 
     static GlTexture getGlDepthTexture() {
-        RenderTarget framebuffer = Instances.getMinecraft().getMainRenderTarget();
-        ValidationGpuTexture mcDepthTex = (ValidationGpuTexture) framebuffer.getDepthTexture();
-        return (GlTexture) mcDepthTex.getRealTexture();
+        RenderTarget target = getMinecraft().getMainRenderTarget();
+        var tex = target.getDepthTexture();
+        if (tex instanceof ValidationGpuTexture validationTex) {
+            return (GlTexture) validationTex.getRealTexture();
+        }
+        return (GlTexture) tex;
+    }
+
+    static GlDevice getGlDevice() {
+        var device = RenderSystem.getDevice();
+        if (device instanceof ValidationGpuDevice validationDevice) {
+            return (GlDevice) validationDevice.getRealDevice();
+        }
+        return (GlDevice) device;
     }
 
     static BuiltInEditor getBuiltInEditor() {
