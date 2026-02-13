@@ -535,6 +535,14 @@ public class GlDispatch {
         wrap(GL43C::glFlush);
     }
 
+    public static void safeGlObjectLabel(int identifier, int name, String label) {
+        try {
+            glObjectLabel(identifier, name, label);
+        } catch (Exception ignored) {
+            // This is ignored, because if it's not supported we just don't do anything.
+        }
+    }
+
     public static void glObjectLabel(int identifier, int name, String label) {
         wrap(() -> GL43C.glObjectLabel(identifier, name, label));
     }
