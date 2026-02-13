@@ -1,7 +1,6 @@
 package io.github.luckymcdev.mixin;
 
 import com.mojang.blaze3d.platform.Window;
-import io.github.luckymcdev.client.TbRenderSystem;
 import io.github.luckymcdev.client.imgui.ImGuiHandler;
 import io.github.luckymcdev.common.font.TTFFile;
 import io.github.luckymcdev.common.opencl.task.ClWorker;
@@ -30,7 +29,6 @@ public class MinecraftMixin implements TbMinecraft {
     @Override
     @Inject(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;resizeDisplay()V", shift = At.Shift.BEFORE))
     public void tb$init(GameConfig gameConfig, CallbackInfo ci) {
-        TbRenderSystem.init();
         TTFFile.find(resourceManager);
         ImGuiHandler.create(window.handle());
     }

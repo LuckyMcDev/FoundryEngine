@@ -5,7 +5,9 @@ import com.mojang.blaze3d.opengl.GlTexture;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
+import io.github.luckymcdev.client.TbRenderer;
 import io.github.luckymcdev.client.editor.BuiltInEditor;
+import io.github.luckymcdev.client.imgui.ImGuiHandler;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
@@ -38,6 +40,10 @@ public interface Instances {
         return getGameRenderer().getMainCamera();
     }
 
+    static ImGuiHandler getImGuiHandler() {
+        return InstancesInternal.IMGUI_HANDLER;
+    }
+
     static GlDevice getGlDevice() {
         ValidationGpuDevice mcDevice = (ValidationGpuDevice) RenderSystem.getDevice();
         return (GlDevice) mcDevice.getRealDevice();
@@ -62,5 +68,9 @@ public interface Instances {
 
     static BuiltInEditor getBuiltInEditor() {
         return InstancesInternal.EDITOR;
+    }
+
+    static TbRenderer getTbRenderer() {
+        return InstancesInternal.RENDERER;
     }
 }

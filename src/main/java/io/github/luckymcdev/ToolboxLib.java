@@ -1,12 +1,12 @@
 package io.github.luckymcdev;
 
 import com.mojang.logging.LogUtils;
-import io.github.luckymcdev.client.TbRenderSystem;
-import io.github.luckymcdev.client.TbRenderer;
+import io.github.luckymcdev.client.imgui.ImGuiHandler;
 import io.github.luckymcdev.common.Commons;
 import io.github.luckymcdev.common.Instances;
 import io.github.luckymcdev.common.opencl.OpenClExample;
 import io.github.luckymcdev.common.opencl.task.ClWorker;
+import io.github.luckymcdev.config.Config;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -16,6 +16,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
@@ -54,7 +55,7 @@ public class ToolboxLib {
 
     @SubscribeEvent
     public void registerReloadListeners(AddServerReloadListenersEvent event) {
-        event.addListener(Commons.id("tbrenderer"),TbRenderSystem.renderer());
+        event.addListener(Commons.id("tbrenderer"),Instances.getTbRenderer());
     }
 
     @SubscribeEvent
@@ -69,6 +70,11 @@ public class ToolboxLib {
     public static class ClientModEvents {
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
+        }
+
+        @SubscribeEvent
+        public static void addClientReloadListener(AddClientReloadListenersEvent event) {
+            event.addListener(Commons.id("imguihandler"), Instances.getImGuiHandler());
         }
 
         @SubscribeEvent

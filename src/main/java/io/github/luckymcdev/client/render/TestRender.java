@@ -5,7 +5,6 @@ import com.mojang.blaze3d.opengl.GlTexture;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
-import io.github.luckymcdev.client.TbRenderSystem;
 import io.github.luckymcdev.client.opengl.GlDispatch;
 import io.github.luckymcdev.client.opengl.OpenGlStack;
 import io.github.luckymcdev.client.opengl.framebuffer.FrameBuffer;
@@ -77,7 +76,7 @@ public class TestRender {
             customBuffer.unbind();
 
             int mainFbo = getMainFbo();
-            TbRenderSystem.renderer().getFrameBufferManager().blit(customBuffer, mainFbo, mainTarget);
+            Instances.getTbRenderer().getFrameBufferManager().blit(customBuffer, mainFbo, mainTarget);
         } finally {
             glStack.pop();
         }

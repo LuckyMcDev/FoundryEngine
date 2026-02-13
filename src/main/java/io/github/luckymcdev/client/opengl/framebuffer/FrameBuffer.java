@@ -9,8 +9,6 @@ import io.github.luckymcdev.client.opengl.OpenGlObject;
 import io.github.luckymcdev.common.Commons;
 import io.github.luckymcdev.common.Instances;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.client.blaze3d.validation.ValidationGpuDevice;
-import net.neoforged.neoforge.client.blaze3d.validation.ValidationGpuTexture;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL43C;
 

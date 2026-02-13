@@ -27,6 +27,8 @@ import io.github.luckymcdev.common.font.TTFFile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.input.InputQuirks;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
@@ -35,7 +37,7 @@ import org.slf4j.Logger;
 
 import java.util.Date;
 
-public final class ImGuiHandler {
+public final class ImGuiHandler implements ResourceManagerReloadListener {
     private static final Logger LOGGER = LogUtils.getLogger();
 
     private final static ImGuiImplGlfw imGuiImplGlfw = new ImGuiImplGlfw();
@@ -82,8 +84,6 @@ public final class ImGuiHandler {
 
         imGuiImplGl3.init();
         imGuiImplGlfw.init(handle, true);
-
-        loadFonts(Instances.getResourceManager());
 
         var style = ImGui.getStyle();
         ImGui.styleColorsDark();
@@ -181,6 +181,7 @@ public final class ImGuiHandler {
             var bytes = TTFFile.JETBRAINS_MONO_NERDFONT_REGULAR.load(resourceManager);
             fonts.addFontFromMemoryTTF(bytes, 20F, config);
         } catch (Exception e) {
+            e.printStackTrace();
             LOGGER.error(e.getMessage());
             fonts.addFontDefault();
         }
@@ -234,5 +235,10 @@ public final class ImGuiHandler {
         imGuiImplGlfw.shutdown();
         CONTEXT_STACK.destroy();
         GRAPHICS_STACK.destroy();
+    }
+
+    @Override
+    public void onResourceManagerReload(@NotNull ResourceManager resourceManager) {
+        loadFonts(resourceManager);
     }
 }
