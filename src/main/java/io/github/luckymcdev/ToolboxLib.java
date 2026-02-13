@@ -1,6 +1,8 @@
 package io.github.luckymcdev;
 
 import com.mojang.logging.LogUtils;
+import io.github.luckymcdev.client.TbRenderSystem;
+import io.github.luckymcdev.client.TbRenderer;
 import io.github.luckymcdev.common.Commons;
 import io.github.luckymcdev.common.Instances;
 import io.github.luckymcdev.common.opencl.OpenClExample;
@@ -16,6 +18,7 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import org.slf4j.Logger;
@@ -47,8 +50,11 @@ public class ToolboxLib {
             //OpenCLExample.comparePerformance(7680, 4320, 300.0f, 6, 0.5f, 10);
             return "1";
         });
+    }
 
-
+    @SubscribeEvent
+    public void registerReloadListeners(AddServerReloadListenersEvent event) {
+        event.addListener(Commons.id("tbrenderer"),TbRenderSystem.renderer());
     }
 
     @SubscribeEvent
