@@ -13,6 +13,7 @@ import io.github.luckymcdev.common.Instances;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import org.lwjgl.opengl.GL33;
 import org.lwjgl.opengl.GL43C;
 
@@ -55,7 +56,7 @@ public class PostProcessManager {
     }
 
     @SubscribeEvent
-    public static void onRender(RenderGuiEvent.Post event) {
+    public static void onRender(RenderLevelStageEvent.AfterLevel event) {
         if (PIPELINES.isEmpty()) return;
 
         RenderSystem.assertOnRenderThread();
