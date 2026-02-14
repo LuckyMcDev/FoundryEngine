@@ -4,6 +4,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import io.github.luckymcdev.client.RegisterRenderingStuffEvent;
 import io.github.luckymcdev.client.imgui.ImGuiHandler;
+import io.github.luckymcdev.client.opengl.shaders.preprocessing.IncludeGLSLPreProcessor;
+import io.github.luckymcdev.client.opengl.shaders.preprocessing.RegisterGLSLPreProcessorEvent;
 import io.github.luckymcdev.client.post.RegisterPostPipelineEvent;
 import io.github.luckymcdev.client.render.TestRender;
 import io.github.luckymcdev.client.util.KeyBinding;
@@ -15,6 +17,7 @@ import io.github.luckymcdev.common.opencl.task.ClWorker;
 import io.github.luckymcdev.config.Config;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.network.chat.Component;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -77,6 +80,12 @@ public class ToolboxLib {
 
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
+            NeoForge.EVENT_BUS.post(new RegisterGLSLPreProcessorEvent());
+        }
+
+        @SubscribeEvent
+        public static void onRegisterGLSLPreProcessors(RegisterGLSLPreProcessorEvent event) {
+            event.register(new IncludeGLSLPreProcessor());
         }
 
         @SubscribeEvent
