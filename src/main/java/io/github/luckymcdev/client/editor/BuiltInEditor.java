@@ -38,6 +38,13 @@ public class BuiltInEditor {
         panelsToRemove.forEach(OPEN_PANELS::remove);
     }
 
+    public void togglePanel(Panel panel) {
+        if(checkOpen(panel)) {
+            closePanel(panel);
+        } else {
+            openPanel(panel);
+        }
+    }
     public void openPanel(Panel panel) {
         if (!checkOpen(panel)) {
             OPEN_PANELS.register(panel.getId(), panel);

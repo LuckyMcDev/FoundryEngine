@@ -2,6 +2,7 @@ package io.github.luckymcdev;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
+import io.github.luckymcdev.client.RegisterRenderingStuffEvent;
 import io.github.luckymcdev.client.imgui.ImGuiHandler;
 import io.github.luckymcdev.client.post.RegisterPostPipelineEvent;
 import io.github.luckymcdev.client.render.TestRender;
@@ -82,6 +83,7 @@ public class ToolboxLib {
             if (!shadersInitialized) {
                 shadersInitialized = true;
                 NeoForge.EVENT_BUS.post(new RegisterPostPipelineEvent());
+                NeoForge.EVENT_BUS.post(new RegisterRenderingStuffEvent(Instances.getTbRenderer(), Instances.getResourceManager()));
             }
         }
 

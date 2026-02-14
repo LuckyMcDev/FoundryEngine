@@ -4,6 +4,7 @@ import imgui.ImGui;
 
 import io.github.luckymcdev.client.editor.BuiltInEditor;
 import io.github.luckymcdev.client.editor.panels.NodeEditorPanel;
+import io.github.luckymcdev.client.editor.panels.PostProcessPanel;
 import io.github.luckymcdev.client.editor.panels.TestPanel;
 import io.github.luckymcdev.client.imgui.ImGuiHandler;
 
@@ -39,18 +40,16 @@ public class GameRendererMixin implements TbGameRenderer {
 
         ImGui.begin("editor manager");
 
-        if(ImGui.button("open test panel")) {
-            tb$builtInEditor.openPanel(TestPanel.INSTANCE);
-        }
-        if(ImGui.button("close test panel")) {
-            tb$builtInEditor.closePanel(TestPanel.INSTANCE);
+        if(ImGui.button("toggle test panel")) {
+            tb$builtInEditor.togglePanel(TestPanel.INSTANCE);
         }
         ImGui.separator();
-        if(ImGui.button("open node editor panel")) {
-            tb$builtInEditor.openPanel(NodeEditorPanel.INSTANCE);
+        if(ImGui.button("toggle node editor panel")) {
+            tb$builtInEditor.togglePanel(NodeEditorPanel.INSTANCE);
         }
-        if(ImGui.button("close node editor panel")) {
-            tb$builtInEditor.closePanel(NodeEditorPanel.INSTANCE);
+        ImGui.separator();
+        if(ImGui.button("toggle post processing panel")) {
+            tb$builtInEditor.togglePanel(PostProcessPanel.INSTANCE);
         }
 
         ImGui.end();

@@ -2,6 +2,7 @@ package io.github.luckymcdev.client.post;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
+import io.github.luckymcdev.client.RegisterRenderingStuffEvent;
 import io.github.luckymcdev.client.opengl.GlDispatch;
 import io.github.luckymcdev.client.opengl.OpenGlStack;
 import io.github.luckymcdev.client.opengl.framebuffer.FrameBuffer;
@@ -24,6 +25,7 @@ import java.util.List;
 public class PostProcessManager {
     private static final OpenGlStack GL_STACK = Instances.getOpenGlStack();
     private static final List<PostProcessPipeline> PIPELINES = new ArrayList<>();
+    private static final List<PostProcessPipeline> ENABLED_PIPELINES = new ArrayList<>();
 
     private static Mesh quad;
     private static FrameBuffer bufferPing;
@@ -34,11 +36,32 @@ public class PostProcessManager {
      * Register a post-processing pipeline.
      * Should be called during mod initialization, NOT during rendering.
      */
-    public static void addPipeline(PostProcessPipeline pipeline) {
+    public void addPipeline(PostProcessPipeline pipeline) {
         PIPELINES.add(pipeline);
     }
 
-    private static void init() {
+    public void enablePipeline(PostProcessPipeline pipeline) {
+        if(PIPELINES.contains(pipeline)) {
+            ENABLED_PIPELINES.add(pipeline);
+        }
+    }
+
+    public void disablePipeline(PostProcessPipeline pipeline) {
+        if(PIPELINES.contains(pipeline) && ENABLED_PIPELINES.contains(pipeline)) {
+            ENABLED_PIPELINES.remove(pipeline);
+        }
+    }
+
+    public List<PostProcessPipeline> getEnabledPipelines() {
+        return ENABLED_PIPELINES;
+    }
+
+    public List<PostProcessPipeline> getPipelines() {
+        return PIPELINES;
+    }
+
+    @SubscribeEvent
+    private static void init(RegisterRenderingStuffEvent event) {
         if (initialized) return;
 
         RenderTarget main = Instances.getMainRenderTarget();
@@ -58,9 +81,7 @@ public class PostProcessManager {
     @SubscribeEvent
     public static void onRender(RenderLevelStageEvent.AfterLevel event) {
         if (PIPELINES.isEmpty()) return;
-
         RenderSystem.assertOnRenderThread();
-        init();
 
         RenderTarget mainTarget = Instances.getMainRenderTarget();
         ensureBufferSize(mainTarget);
@@ -72,8 +93,8 @@ public class PostProcessManager {
         FrameBuffer currentInput = null;
         FrameBuffer currentOutput = bufferPing;
 
-        for (int i = 0; i < PIPELINES.size(); i++) {
-            PostProcessPipeline pipeline = PIPELINES.get(i);
+        for (int i = 0; i < ENABLED_PIPELINES.size(); i++) {
+            PostProcessPipeline pipeline = ENABLED_PIPELINES.get(i);
 
             // 1. Determine Input Texture ID
             int inputTexId = (i == 0)
@@ -106,8 +127,10 @@ public class PostProcessManager {
         }
 
         // Final Blit: The last 'currentInput' contains the finished result
-        int mainFbo = Instances.getGlColTexture().getFbo(Instances.getGlDevice().directStateAccess(), null);
-        Instances.getTbRenderer().getFrameBufferManager().blit(currentInput, mainFbo, mainTarget);
+        if(currentInput != null) {
+            int mainFbo = Instances.getGlColTexture().getFbo(Instances.getGlDevice().directStateAccess(), null);
+            Instances.getTbRenderer().getFrameBufferManager().blit(currentInput, mainFbo, mainTarget);
+        }
 
         GL_STACK.pop();
     }

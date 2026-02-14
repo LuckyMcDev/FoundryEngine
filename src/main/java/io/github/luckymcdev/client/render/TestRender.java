@@ -9,6 +9,7 @@ import io.github.luckymcdev.client.opengl.shaders.program.ShaderProgram;
 import io.github.luckymcdev.client.post.PostProcessManager;
 import io.github.luckymcdev.client.post.PostProcessPipeline;
 import io.github.luckymcdev.common.Commons;
+import io.github.luckymcdev.common.Instances;
 import org.slf4j.Logger;
 
 public class TestRender {
@@ -51,7 +52,7 @@ public class TestRender {
 
             // Create and register pipeline
             PostProcessPipeline grayScalePipeline = new PostProcessPipeline(grayScaleProgram);
-            PostProcessManager.addPipeline(grayScalePipeline);
+            Instances.getPostProcessManager().addPipeline(grayScalePipeline);
 
             LOGGER.info("Successfully registered grayscale post-processing pipeline");
 

@@ -9,6 +9,10 @@ import io.github.luckymcdev.client.TbRenderer;
 import io.github.luckymcdev.client.editor.BuiltInEditor;
 import io.github.luckymcdev.client.imgui.ImGuiHandler;
 import io.github.luckymcdev.client.opengl.OpenGlStack;
+import io.github.luckymcdev.client.opengl.framebuffer.FrameBuffer;
+import io.github.luckymcdev.client.opengl.framebuffer.FrameBufferManager;
+import io.github.luckymcdev.client.opengl.shaders.ShaderManager;
+import io.github.luckymcdev.client.post.PostProcessManager;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
@@ -16,7 +20,7 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.neoforged.neoforge.client.blaze3d.validation.ValidationGpuDevice;
 import net.neoforged.neoforge.client.blaze3d.validation.ValidationGpuTexture;
 
-import static io.github.luckymcdev.common.InstancesInternal.OPEN_GL_STACK;
+import static io.github.luckymcdev.common.InstancesInternal.*;
 
 public interface Instances {
     static Minecraft getMinecraft() {
@@ -89,5 +93,15 @@ public interface Instances {
 
     static OpenGlStack getOpenGlStack() {
         return OPEN_GL_STACK;
+    }
+
+    static PostProcessManager getPostProcessManager() {
+        return POST_PROCESS_MANAGER;
+    }
+    static FrameBufferManager getFrameBufferManager() {
+        return FRAME_BUFFER_MANAGER;
+    }
+    static ShaderManager getShaderManager() {
+        return SHADER_MANAGER;
     }
 }

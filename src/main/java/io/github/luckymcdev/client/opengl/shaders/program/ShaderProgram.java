@@ -109,6 +109,10 @@ public class ShaderProgram extends OpenGlObject {
         }
     }
 
+    public ResourceLocation getId() {
+        return id;
+    }
+
     @Override
     public void free() {
         delete();
