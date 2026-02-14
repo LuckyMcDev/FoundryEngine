@@ -89,8 +89,8 @@ public class ToolboxLib {
 
         @SubscribeEvent
         public static void addClientReloadListener(AddClientReloadListenersEvent event) {
-            event.addListener(Commons.id("imguihandler"), Instances.getImGuiHandler());
-            event.addListener(Commons.id("shadermanager"), Instances.getShaderManager());
+            event.addListener(Commons.id("imgui_handler"), Instances.getImGuiHandler());
+            event.addListener(Commons.id("shader_manager"), Instances.getShaderManager());
         }
 
         @SubscribeEvent
