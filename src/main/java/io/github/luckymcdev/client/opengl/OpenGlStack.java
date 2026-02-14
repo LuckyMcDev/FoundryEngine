@@ -11,6 +11,7 @@ import java.util.Deque;
  */
 public class OpenGlStack {
     private final Deque<State> stateStack = new ArrayDeque<>();
+    private static final int NUM_TEXTURE_UNITS = 16; // Most systems support at least 16
 
     /**
      * Push the current OpenGL state onto the stack
@@ -48,9 +49,9 @@ public class OpenGlStack {
      * Stores a snapshot of OpenGL state
      */
     private static class State {
-        // Texture state
+        // Texture state - save ALL texture units and ALL targets
         private final int activeTexture;
-        private final int boundTexture2D;
+        private final int[][] boundTextures; // [unit][target]
 
         // Framebuffer state
         private final int boundFramebuffer;
@@ -82,13 +83,35 @@ public class OpenGlStack {
         // Color mask
         private final boolean[] colorMask = new boolean[4];
 
+        // Texture targets to save
+        private static final int[] TEXTURE_TARGETS = {
+                GL43C.GL_TEXTURE_2D,
+                GL43C.GL_TEXTURE_1D,
+                GL43C.GL_TEXTURE_3D,
+                GL43C.GL_TEXTURE_CUBE_MAP,
+                GL43C.GL_TEXTURE_1D_ARRAY,
+                GL43C.GL_TEXTURE_2D_ARRAY,
+                GL43C.GL_TEXTURE_BUFFER,
+                GL43C.GL_TEXTURE_2D_MULTISAMPLE,
+                GL43C.GL_TEXTURE_2D_MULTISAMPLE_ARRAY
+        };
+
         /**
          * Capture the current OpenGL state
          */
         public State() {
-            // Texture state
+            // Save active texture unit
             this.activeTexture = GlDispatch.glGetInteger(GL43C.GL_ACTIVE_TEXTURE);
-            this.boundTexture2D = GlDispatch.glGetInteger(GL43C.GL_TEXTURE_BINDING_2D);
+
+            // Save bindings for all texture units and targets
+            this.boundTextures = new int[NUM_TEXTURE_UNITS][TEXTURE_TARGETS.length];
+            for (int unit = 0; unit < NUM_TEXTURE_UNITS; unit++) {
+                GlDispatch.glActiveTexture(GL43C.GL_TEXTURE0 + unit);
+                for (int targetIdx = 0; targetIdx < TEXTURE_TARGETS.length; targetIdx++) {
+                    int target = TEXTURE_TARGETS[targetIdx];
+                    boundTextures[unit][targetIdx] = GlDispatch.glGetInteger(getTextureBindingForTarget(target));
+                }
+            }
 
             // Framebuffer state
             this.boundFramebuffer = GlDispatch.glGetInteger(GL43C.GL_FRAMEBUFFER_BINDING);
@@ -119,12 +142,37 @@ public class OpenGlStack {
         }
 
         /**
+         * Get the appropriate GL_TEXTURE_BINDING constant for a given texture target
+         */
+        private static int getTextureBindingForTarget(int target) {
+            return switch (target) {
+                case GL43C.GL_TEXTURE_1D -> GL43C.GL_TEXTURE_BINDING_1D;
+                case GL43C.GL_TEXTURE_2D -> GL43C.GL_TEXTURE_BINDING_2D;
+                case GL43C.GL_TEXTURE_3D -> GL43C.GL_TEXTURE_BINDING_3D;
+                case GL43C.GL_TEXTURE_CUBE_MAP -> GL43C.GL_TEXTURE_BINDING_CUBE_MAP;
+                case GL43C.GL_TEXTURE_1D_ARRAY -> GL43C.GL_TEXTURE_BINDING_1D_ARRAY;
+                case GL43C.GL_TEXTURE_2D_ARRAY -> GL43C.GL_TEXTURE_BINDING_2D_ARRAY;
+                case GL43C.GL_TEXTURE_BUFFER -> GL43C.GL_TEXTURE_BINDING_BUFFER;
+                case GL43C.GL_TEXTURE_2D_MULTISAMPLE -> GL43C.GL_TEXTURE_BINDING_2D_MULTISAMPLE;
+                case GL43C.GL_TEXTURE_2D_MULTISAMPLE_ARRAY -> GL43C.GL_TEXTURE_BINDING_2D_MULTISAMPLE_ARRAY;
+                default -> GL43C.GL_TEXTURE_BINDING_2D;
+            };
+        }
+
+        /**
          * Restore this OpenGL state
          */
         public void restore() {
-            // Restore texture state
+            // Restore texture bindings for all units and targets
+            for (int unit = 0; unit < NUM_TEXTURE_UNITS; unit++) {
+                GlDispatch.glActiveTexture(GL43C.GL_TEXTURE0 + unit);
+                for (int targetIdx = 0; targetIdx < TEXTURE_TARGETS.length; targetIdx++) {
+                    int target = TEXTURE_TARGETS[targetIdx];
+                    GlDispatch.glBindTexture(target, boundTextures[unit][targetIdx]);
+                }
+            }
+            // Restore active texture unit last
             GlDispatch.glActiveTexture(activeTexture);
-            GlDispatch.glBindTexture(GL43C.GL_TEXTURE_2D, boundTexture2D);
 
             // Restore framebuffer state
             GlDispatch.glBindFramebuffer(GL43C.GL_FRAMEBUFFER, boundFramebuffer);

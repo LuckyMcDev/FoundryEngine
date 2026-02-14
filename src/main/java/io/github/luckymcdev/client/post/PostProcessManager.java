@@ -13,7 +13,6 @@ import io.github.luckymcdev.common.Commons;
 import io.github.luckymcdev.common.Instances;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import org.lwjgl.opengl.GL33;
 import org.lwjgl.opengl.GL43C;
@@ -30,11 +29,9 @@ public class PostProcessManager {
     private static Mesh quad;
     private static FrameBuffer bufferPing;
     private static FrameBuffer bufferPong;
+    private static int lastMainWidth = -1;
+    private static int lastMainHeight = -1;
 
-    /**
-     * Register a post-processing pipeline.
-     * Should be called during mod initialization, NOT during rendering.
-     */
     public void addPipeline(PostProcessPipeline pipeline) {
         PIPELINES.add(pipeline);
     }
@@ -46,24 +43,14 @@ public class PostProcessManager {
     }
 
     public void disablePipeline(PostProcessPipeline pipeline) {
-        if(PIPELINES.contains(pipeline) && ENABLED_PIPELINES.contains(pipeline)) {
-            ENABLED_PIPELINES.remove(pipeline);
-        }
-    }
-
-    public List<PostProcessPipeline> getEnabledPipelines() {
-        return ENABLED_PIPELINES;
-    }
-
-    public List<PostProcessPipeline> getPipelines() {
-        return PIPELINES;
+        ENABLED_PIPELINES.remove(pipeline);
     }
 
     @SubscribeEvent
     private static void init(RegisterRenderingStuffEvent event) {
         RenderTarget main = Instances.getMainRenderTarget();
-        bufferPing = new FrameBuffer(Commons.id("post_buffer_ping"), main.width, main.height);
-        bufferPong = new FrameBuffer(Commons.id("post_buffer_pong"), main.width, main.height);
+        bufferPing = new FrameBuffer(Commons.id("post_buffer_ping"), main.width, main.height, false, false);
+        bufferPong = new FrameBuffer(Commons.id("post_buffer_pong"), main.width, main.height, false, false);
 
         quad = new Mesh(
                 Vertices.FULLSCREEN_QUAD.vertices(),
@@ -72,71 +59,117 @@ public class PostProcessManager {
                 GL33.GL_TRIANGLES,
                 true
         );
+
+        lastMainWidth = main.width;
+        lastMainHeight = main.height;
     }
 
     @SubscribeEvent
     public static void onRender(RenderLevelStageEvent.AfterLevel event) {
-        if (PIPELINES.isEmpty()) return;
+        if (ENABLED_PIPELINES.isEmpty()) return;
         RenderSystem.assertOnRenderThread();
 
         RenderTarget mainTarget = Instances.getMainRenderTarget();
-        ensureBufferSize(mainTarget);
+
+        // Resize buffers if main target size changed
+        if (bufferPing == null || lastMainWidth != mainTarget.width || lastMainHeight != mainTarget.height) {
+            if (bufferPing != null) bufferPing.free();
+            bufferPing = new FrameBuffer(Commons.id("post_buffer_ping"), mainTarget.width, mainTarget.height, false, false);
+            lastMainWidth = mainTarget.width;
+            lastMainHeight = mainTarget.height;
+        }
+
+        if (bufferPong.width() != mainTarget.width || bufferPong.height() != mainTarget.height) {
+            bufferPong.resize(mainTarget.width, mainTarget.height);
+        }
 
         GL_STACK.push();
-        setupGlobalState();
+        try {
+            // Save initial state
+            int savedReadFbo = GlDispatch.glGetInteger(GL43C.GL_READ_FRAMEBUFFER_BINDING);
+            int savedDrawFbo = GlDispatch.glGetInteger(GL43C.GL_DRAW_FRAMEBUFFER_BINDING);
+            int savedActiveTexture = GlDispatch.glGetInteger(GL43C.GL_ACTIVE_TEXTURE);
+            int[] savedTextureBindings = new int[8];
+            for (int i = 0; i < 8; i++) {
+                GlDispatch.glActiveTexture(GL43C.GL_TEXTURE0 + i);
+                savedTextureBindings[i] = GlDispatch.glGetInteger(GL43C.GL_TEXTURE_BINDING_2D);
+            }
 
-        // Start Ping-Ponging
-        FrameBuffer currentInput = null;
-        FrameBuffer currentOutput = bufferPing;
+            setupGlobalState();
 
-        for (int i = 0; i < ENABLED_PIPELINES.size(); i++) {
-            PostProcessPipeline pipeline = ENABLED_PIPELINES.get(i);
+            FrameBuffer currentInput = bufferPing;
+            FrameBuffer currentOutput = bufferPong;
+            boolean isFirstPass = true;
 
-            // 1. Determine Input Texture ID
-            int inputTexId = (i == 0)
-                    ? Instances.getGlColTexture(mainTarget).glId()
-                    : currentInput.getColorTexture();
+            for (PostProcessPipeline pipeline : ENABLED_PIPELINES) {
+                // On first pass, bind the main target's color texture
+                // On subsequent passes, bind the previous output
+                GlDispatch.glActiveTexture(GL43C.GL_TEXTURE0);
+                if (isFirstPass) {
+                    var colorTexture = Instances.getGlColTexture();
+                    GlDispatch.glBindTexture(GL43C.GL_TEXTURE_2D, colorTexture.glId());
+                } else {
+                    currentInput.bindColorTexture();
+                }
 
-            // 2. Bind Input Texture
-            GlDispatch.glActiveTexture(GL43C.GL_TEXTURE0);
-            GlDispatch.glBindTexture(GL43C.GL_TEXTURE_2D, inputTexId);
+                // Always bind the main target's depth texture
+                GlDispatch.glActiveTexture(GL43C.GL_TEXTURE1);
+                var depthTexture = Instances.getGlDepthTexture();
+                if (depthTexture != null) {
+                    GlDispatch.glBindTexture(GL43C.GL_TEXTURE_2D, depthTexture.glId());
+                }
 
-            // 3. Prepare Output
-            currentOutput.bind();
-            GlDispatch.glViewport(0, 0, currentOutput.width(), currentOutput.height());
-            GlDispatch.glClearColor(0, 0, 0, 0);
-            GlDispatch.glClear(GL43C.GL_COLOR_BUFFER_BIT);
+                currentOutput.bind();
+                GlDispatch.glClear(GL43C.GL_COLOR_BUFFER_BIT);
 
-            // 4. Draw with the specific shader
-            pipeline.getProgram().use();
-            pipeline.setupDefaultUniforms();
-            pipeline.setupUniforms();
-            quad.draw();
-            pipeline.getProgram().disable();
+                pipeline.getProgram().use();
+                pipeline.setupDefaultUniforms();
+                pipeline.setupUniforms();
+                quad.draw();
+                pipeline.getProgram().disable();
 
-            // 5. Cleanup
-            GlDispatch.glBindTexture(GL43C.GL_TEXTURE_2D, 0);
-            currentOutput.unbind();
+                currentOutput.unbind();
 
-            // 6. Swap buffers for next pass
-            currentInput = currentOutput;
-            currentOutput = (currentOutput == bufferPing) ? bufferPong : bufferPing;
-        }
+                // After first pass, swap to ping-pong buffers
+                if (isFirstPass) {
+                    currentInput = currentOutput;
+                    currentOutput = currentInput == bufferPing ? bufferPong : bufferPing;
+                    isFirstPass = false;
+                } else {
+                    FrameBuffer temp = currentInput;
+                    currentInput = currentOutput;
+                    currentOutput = temp;
+                }
+            }
 
-        // Final Blit: The last 'currentInput' contains the finished result
-        if(currentInput != null) {
-            int mainFbo = Instances.getGlColTexture().getFbo(Instances.getGlDevice().directStateAccess(), null);
+            // Blit final result to main framebuffer
+            var colorTexture = Instances.getGlColTexture();
+            var device = Instances.getGlDevice();
+            int mainFbo = colorTexture.getFbo(device.directStateAccess(), null);
             Instances.getFrameBufferManager().blit(currentInput, mainFbo, mainTarget);
-        }
 
-        GL_STACK.pop();
+            // Restore framebuffer state
+            GlDispatch.glBindFramebuffer(GL43C.GL_READ_FRAMEBUFFER, savedReadFbo);
+            GlDispatch.glBindFramebuffer(GL43C.GL_DRAW_FRAMEBUFFER, savedDrawFbo);
+            GlDispatch.glBindFramebuffer(GL43C.GL_FRAMEBUFFER, savedDrawFbo);
+
+            // Restore texture unit and bindings
+            for (int i = 0; i < 8; i++) {
+                GlDispatch.glActiveTexture(GL43C.GL_TEXTURE0 + i);
+                GlDispatch.glBindTexture(GL43C.GL_TEXTURE_2D, savedTextureBindings[i]);
+            }
+            GlDispatch.glActiveTexture(savedActiveTexture);
+        } finally {
+            GL_STACK.pop();
+        }
     }
 
-    private static void ensureBufferSize(RenderTarget main) {
-        if (bufferPing.width() != main.width || bufferPing.height() != main.height) {
-            bufferPing.resize(main.width, main.height);
-            bufferPong.resize(main.width, main.height);
-        }
+    public List<PostProcessPipeline> getPipelines() {
+        return PIPELINES;
+    }
+
+    public List<PostProcessPipeline> getEnabledPipelines() {
+        return ENABLED_PIPELINES;
     }
 
     private static void setupGlobalState() {

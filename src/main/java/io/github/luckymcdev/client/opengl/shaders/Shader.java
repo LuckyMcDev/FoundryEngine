@@ -3,7 +3,9 @@ package io.github.luckymcdev.client.opengl.shaders;
 import io.github.luckymcdev.client.opengl.GlDispatch;
 import io.github.luckymcdev.client.opengl.OpenGlObject;
 import io.github.luckymcdev.client.opengl.shaders.exeption.ShaderException;
+import io.github.luckymcdev.client.opengl.shaders.preprocessing.GLSLPreProcessorManager;
 import io.github.luckymcdev.common.Commons;
+import io.github.luckymcdev.common.Instances;
 import net.minecraft.resources.ResourceLocation;
 
 import static org.lwjgl.opengl.GL43C.*;
@@ -18,7 +20,7 @@ public class Shader extends OpenGlObject {
         this.id = source.id();
         this.type = shaderType;
         this.location = source.location();
-        this.source = Commons.getRlSource(location);
+        this.source = loadSource();
         this.pointer = GlDispatch.glCreateShader(shaderType.glType());
         setDebugLabel(this.id.toString());
     }
@@ -28,9 +30,14 @@ public class Shader extends OpenGlObject {
      * @throws ShaderException if the new source fails to compile.
      */
     public void reload() throws ShaderException {
-        this.source = Commons.getRlSource(this.location);
+        this.source = loadSource();
         this.bindSource();
         this.compile();
+    }
+
+    private String loadSource() {
+        String unprocessedSource = Commons.getRlSource(this.location);
+        return Instances.getShaderManager().getPreProcessorManager().processAll(unprocessedSource);
     }
 
     public void bindSource() {

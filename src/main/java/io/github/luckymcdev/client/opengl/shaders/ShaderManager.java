@@ -3,6 +3,7 @@ package io.github.luckymcdev.client.opengl.shaders;
 import com.mojang.logging.LogUtils;
 import io.github.luckymcdev.client.opengl.shaders.compiler.ShaderCompiler;
 import io.github.luckymcdev.client.opengl.shaders.exeption.ShaderException;
+import io.github.luckymcdev.client.opengl.shaders.preprocessing.GLSLPreProcessorManager;
 import io.github.luckymcdev.client.opengl.shaders.program.ShaderProgram;
 import io.github.luckymcdev.common.registry.GenericRegistry;
 import net.minecraft.resources.ResourceLocation;
@@ -14,6 +15,7 @@ import org.slf4j.Logger;
 public class ShaderManager implements ResourceManagerReloadListener {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final ShaderCompiler SHADER_COMPILER = new ShaderCompiler();
+    private static final GLSLPreProcessorManager PRE_PROCESSOR_MANAGER = new GLSLPreProcessorManager();
     private static final GenericRegistry<ResourceLocation, Shader> SHADERS = new GenericRegistry<>();
     private static final GenericRegistry<ResourceLocation, ShaderProgram> PROGRAMS = new GenericRegistry<>();
 
@@ -48,6 +50,10 @@ public class ShaderManager implements ResourceManagerReloadListener {
 
     public ShaderCompiler getCompiler() {
         return SHADER_COMPILER;
+    }
+
+    public GLSLPreProcessorManager getPreProcessorManager() {
+        return PRE_PROCESSOR_MANAGER;
     }
 
     @Override
