@@ -8,32 +8,37 @@ import io.github.luckymcdev.client.opengl.shaders.Shader;
 import io.github.luckymcdev.client.opengl.shaders.compiler.ShaderCompiler;
 import io.github.luckymcdev.client.opengl.shaders.exeption.ShaderException;
 import io.github.luckymcdev.client.opengl.shaders.uniform.Uniform;
+import io.github.luckymcdev.common.Instances;
 import net.minecraft.resources.ResourceLocation;
 import org.joml.*;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class ShaderProgram extends OpenGlObject {
     private static final Logger LOGGER = LogUtils.getLogger();
 
     private final ArrayList<Shader> shaders = new ArrayList<>();
-    private final ShaderCompiler compiler;
     private final ResourceLocation id;
 
     public ShaderProgram(ResourceLocation id, Shader... shaders) {
         this.id = id;
-        this.compiler = new ShaderCompiler();
         this.pointer = GlDispatch.glCreateProgram();
+        this.shaders.addAll(List.of(shaders));
+        try {
+            attach();
+        } catch (ShaderException e) {
+            LOGGER.error("{}{}", e.getMessage(), e.getGlError());
+        }
+    }
 
-        for (Shader shader : shaders) {
-            this.shaders.add(shader);
-            try {
-                Shader compiled = compiler.getOrCompile(shader);
-                GlDispatch.glAttachShader(this.pointer, compiled.pointer());
-            } catch (ShaderException e) {
-                LOGGER.error(e.getMessage() + e.getGlError());
-            }
+    public void attach() throws ShaderException {
+        ShaderCompiler compiler = Instances.getShaderManager().getCompiler();
+        for (Shader shader : this.shaders) {
+            Shader compiled = compiler.getOrCompile(shader);
+            GlDispatch.glAttachShader(this.pointer, compiled.pointer());
         }
     }
 
@@ -46,6 +51,17 @@ public class ShaderProgram extends OpenGlObject {
         if (linkStatus != GlConst.GL_TRUE) {
             throw new ShaderException("Failed to link program: " + this.id.toString() + " Log: " + log);
         }
+    }
+
+    public void reload() throws ShaderException {
+        for(Shader shader : shaders) {
+            GlDispatch.glDetachShader(this.pointer, shader.pointer());
+        }
+
+        attach();
+
+        link();
+
     }
 
     public void use() {

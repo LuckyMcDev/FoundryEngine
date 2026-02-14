@@ -129,7 +129,7 @@ public class PostProcessManager {
         // Final Blit: The last 'currentInput' contains the finished result
         if(currentInput != null) {
             int mainFbo = Instances.getGlColTexture().getFbo(Instances.getGlDevice().directStateAccess(), null);
-            Instances.getTbRenderer().getFrameBufferManager().blit(currentInput, mainFbo, mainTarget);
+            Instances.getFrameBufferManager().blit(currentInput, mainFbo, mainTarget);
         }
 
         GL_STACK.pop();

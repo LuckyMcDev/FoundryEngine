@@ -9,7 +9,6 @@ import io.github.luckymcdev.client.TbRenderer;
 import io.github.luckymcdev.client.editor.BuiltInEditor;
 import io.github.luckymcdev.client.imgui.ImGuiHandler;
 import io.github.luckymcdev.client.opengl.OpenGlStack;
-import io.github.luckymcdev.client.opengl.framebuffer.FrameBuffer;
 import io.github.luckymcdev.client.opengl.framebuffer.FrameBufferManager;
 import io.github.luckymcdev.client.opengl.shaders.ShaderManager;
 import io.github.luckymcdev.client.post.PostProcessManager;

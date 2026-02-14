@@ -24,6 +24,10 @@ public class GenericRegistry<K, V> implements Registry<K, V> {
         return registryMap.values();
     }
 
+    public void clear() {
+        registryMap.clear();
+    }
+
     @Override
     public void remove(K key) {
         registryMap.remove(key);

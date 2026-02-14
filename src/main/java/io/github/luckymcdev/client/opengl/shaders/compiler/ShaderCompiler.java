@@ -23,6 +23,10 @@ public final class ShaderCompiler {
         return shader;
     }
 
+    public void clearCache() {
+        cache.clear();
+    }
+
     private record ShaderKey(ResourceLocation id, ExtendedShaderType type, String source) {
         static ShaderKey of(Shader shader) {
             return new ShaderKey(shader.getId(), shader.getType(), shader.getSource());

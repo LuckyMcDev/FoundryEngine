@@ -12,7 +12,7 @@ public class Shader extends OpenGlObject {
     private final ResourceLocation id;
     private final ExtendedShaderType type;
     private final ResourceLocation location;
-    private final String source;
+    private String source;
 
     public Shader(ExtendedShaderType shaderType, ShaderSource source) {
         this.id = source.id();
@@ -23,6 +23,16 @@ public class Shader extends OpenGlObject {
         setDebugLabel(this.id.toString());
     }
 
+    /**
+     * Reloads the shader source from the file system and recompiles.
+     * @throws ShaderException if the new source fails to compile.
+     */
+    public void reload() throws ShaderException {
+        this.source = Commons.getRlSource(this.location);
+        this.bindSource();
+        this.compile();
+    }
+
     public void bindSource() {
         GlDispatch.glBindShaderSource(this.pointer, this.source);
     }
@@ -31,9 +41,8 @@ public class Shader extends OpenGlObject {
         GlDispatch.glCompileShader(this.pointer);
 
         int compileStatus = GlDispatch.glGetShaderi(this.pointer, GL_COMPILE_STATUS);
-        String log = GlDispatch.glGetShaderInfoLog(this.pointer);
-
         if (compileStatus != GL_TRUE) {
+            String log = GlDispatch.glGetShaderInfoLog(this.pointer);
             throw new ShaderException("Failed to compile shader: " + this.id.toString(), log);
         }
     }

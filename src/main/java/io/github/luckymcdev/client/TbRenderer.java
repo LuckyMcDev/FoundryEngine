@@ -13,17 +13,6 @@ import org.slf4j.Logger;
 @EventBusSubscriber
 public class TbRenderer implements ResourceManagerReloadListener {
     private static final Logger LOGGER = LogUtils.getLogger();
-    private final FrameBufferManager frameBufferManager;
-
-
-    public TbRenderer() {
-        this.frameBufferManager = new FrameBufferManager();
-    }
-
-
-    public FrameBufferManager getFrameBufferManager() {
-        return frameBufferManager;
-    }
 
     @SubscribeEvent
     private static void updateClientMatrices(FrameGraphSetupEvent event) {

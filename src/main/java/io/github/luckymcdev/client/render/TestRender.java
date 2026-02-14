@@ -35,6 +35,8 @@ public class TestRender {
                     )
             );
 
+            Instances.getShaderManager().register(grayScaleFragment);
+
             Shader grayScaleVertex = new Shader(
                     ExtendedShaderType.VERTEX,
                     new ShaderSource(
@@ -43,12 +45,16 @@ public class TestRender {
                     )
             );
 
+            Instances.getShaderManager().register(grayScaleVertex);
+
             ShaderProgram grayScaleProgram = new ShaderProgram(
                     Commons.id("post_grayscale"),
                     grayScaleFragment,
                     grayScaleVertex
             );
             grayScaleProgram.link();
+
+            Instances.getShaderManager().register(grayScaleProgram);
 
             // Create and register pipeline
             PostProcessPipeline grayScalePipeline = new PostProcessPipeline(grayScaleProgram);
