@@ -109,6 +109,7 @@ public class PostProcessManager {
 
             // 4. Draw with the specific shader
             pipeline.getProgram().use();
+            pipeline.setupDefaultUniforms();
             pipeline.setupUniforms();
             quad.draw();
             pipeline.getProgram().disable();

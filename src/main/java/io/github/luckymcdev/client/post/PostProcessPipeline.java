@@ -1,7 +1,9 @@
 package io.github.luckymcdev.client.post;
 
+import io.github.luckymcdev.client.TbRenderer;
 import io.github.luckymcdev.client.opengl.shaders.program.ShaderProgram;
 import io.github.luckymcdev.client.opengl.shaders.uniform.Uniform;
+import io.github.luckymcdev.client.opengl.shaders.uniform.Uniforms;
 
 public class PostProcessPipeline {
     private final ShaderProgram program;
@@ -12,6 +14,10 @@ public class PostProcessPipeline {
 
     public ShaderProgram getProgram() {
         return program;
+    }
+
+    public void setupDefaultUniforms() {
+        program.setUniforms(Uniforms.getCollection());
     }
 
     /**
