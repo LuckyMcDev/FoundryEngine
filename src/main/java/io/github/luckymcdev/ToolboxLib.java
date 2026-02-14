@@ -6,12 +6,16 @@ import io.github.luckymcdev.client.RegisterRenderingStuffEvent;
 import io.github.luckymcdev.client.imgui.ImGuiHandler;
 import io.github.luckymcdev.client.post.RegisterPostPipelineEvent;
 import io.github.luckymcdev.client.render.TestRender;
+import io.github.luckymcdev.client.util.KeyBinding;
+import io.github.luckymcdev.client.util.RegisterKeyBindingEvent;
 import io.github.luckymcdev.common.Commons;
 import io.github.luckymcdev.common.Instances;
 import io.github.luckymcdev.common.opencl.OpenClExample;
 import io.github.luckymcdev.common.opencl.task.ClWorker;
 import io.github.luckymcdev.config.Config;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.network.chat.Component;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -23,11 +27,13 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
+import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 
 import javax.script.CompiledScript;
@@ -74,8 +80,21 @@ public class ToolboxLib {
         }
 
         @SubscribeEvent
+        public static void onRegisterKeyBinding(RegisterKeyBindingEvent event) {
+            event.register(new KeyBinding(
+                    new KeyMapping("key.toolboxlib.testkey", GLFW.GLFW_KEY_O, KeyMapping.Category.MISC),
+                    () -> Instances.getMinecraft().player.displayClientMessage(Component.literal("Hello"), false)
+            ));
+        }
+
+        @SubscribeEvent
         public static void onRegisterPostPipelines(RegisterPostPipelineEvent event) {
             TestRender.registerPipelines();
+        }
+
+        @SubscribeEvent
+        public static void onRegisterKeyMapping(RegisterKeyMappingsEvent event) {
+            NeoForge.EVENT_BUS.post(new RegisterKeyBindingEvent(Instances.getKeyBindingManager()));
         }
 
         @SubscribeEvent

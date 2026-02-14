@@ -12,6 +12,7 @@ import io.github.luckymcdev.client.opengl.OpenGlStack;
 import io.github.luckymcdev.client.opengl.framebuffer.FrameBufferManager;
 import io.github.luckymcdev.client.opengl.shaders.ShaderManager;
 import io.github.luckymcdev.client.post.PostProcessManager;
+import io.github.luckymcdev.client.util.KeyBindingManager;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
@@ -102,5 +103,8 @@ public interface Instances {
     }
     static ShaderManager getShaderManager() {
         return SHADER_MANAGER;
+    }
+    static KeyBindingManager getKeyBindingManager() {
+        return KEY_BINDING_MANAGER;
     }
 }
