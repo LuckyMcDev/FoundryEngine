@@ -12,6 +12,9 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL43C;
 
+/**
+ * A wrapper around a OpenGl FrameBuffer
+ */
 public class FrameBuffer extends OpenGlObject {
 
     private final ResourceLocation id;
@@ -25,6 +28,15 @@ public class FrameBuffer extends OpenGlObject {
     private int filterMode = GL43C.GL_LINEAR;
     private final float[] clearColor = new float[]{0.0f, 0.0f, 0.0f, 0.0f};
 
+    /**
+     * Instantiates a new Frame buffer.
+     *
+     * @param id         the id
+     * @param width      the width
+     * @param height     the height
+     * @param useDepth   uses depth
+     * @param useStencil uses stencil
+     */
     public FrameBuffer(ResourceLocation id, int width, int height, boolean useDepth, boolean useStencil) {
         this.id = id;
         this.width = width;
@@ -45,6 +57,13 @@ public class FrameBuffer extends OpenGlObject {
         setDebugLabel(this.id.toString());
     }
 
+    /**
+     * From target frame buffer.
+     *
+     * @param id     the id
+     * @param target the target
+     * @return the frame buffer
+     */
     public static @NotNull FrameBuffer fromTarget(ResourceLocation id, @NotNull RenderTarget target) {
         RenderSystem.assertOnRenderThread();
         if (target.getColorTexture() == null) {
@@ -68,33 +87,59 @@ public class FrameBuffer extends OpenGlObject {
         return buffer;
     }
 
+    /**
+     * Bind.
+     *
+     * @param setViewport weather to set the viewport
+     */
     public void bind(boolean setViewport) {
         GlDispatch.glBindFramebuffer(GL43C.GL_FRAMEBUFFER, this.pointer);
         if (setViewport) GlDispatch.glViewport(0, 0, this.width, this.height);
     }
 
+    /**
+     * Bind.
+     */
     public void bind() {
         bind(true);
     }
 
+    /**
+     * Unbind.
+     */
     public void unbind() {
         GlDispatch.glBindFramebuffer(GL43C.GL_FRAMEBUFFER, 0);
     }
 
+    /**
+     * Bind color texture.
+     */
     public void bindColorTexture() {
         GlDispatch.glBindTexture(GL43C.GL_TEXTURE_2D, colorTexture);
     }
 
+    /**
+     * Bind depth texture.
+     */
     public void bindDepthTexture() {
         if (hasDepth) GlDispatch.glBindTexture(GL43C.GL_TEXTURE_2D, depthTexture);
     }
 
+    /**
+     * Clear.
+     */
     public void clear() {
         bind(false);
         GlDispatch.glClearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3]);
         GlDispatch.glClear(clearMask);
     }
 
+    /**
+     * Resize.
+     *
+     * @param width  the width
+     * @param height the height
+     */
     public void resize(int width, int height) {
         if (this.width == width && this.height == height) return;
         this.width = width;
@@ -166,14 +211,55 @@ public class FrameBuffer extends OpenGlObject {
         this.pointer = 0;
     }
 
+    /**
+     * Gets color texture.
+     *
+     * @return the color texture
+     */
     public int getColorTexture() { return colorTexture; }
+
+    /**
+     * Gets depth texture.
+     *
+     * @return the depth texture
+     */
     public int getDepthTexture() { return depthTexture; }
+
+    /**
+     * Width int.
+     *
+     * @return the int
+     */
     public int width() { return width; }
+
+    /**
+     * Height int.
+     *
+     * @return the int
+     */
     public int height() { return height; }
+
+    /**
+     * Has depth attachment boolean.
+     *
+     * @return the boolean
+     */
     public boolean hasDepthAttachment() { return hasDepth; }
+
+    /**
+     * Has stencil boolean.
+     *
+     * @return the boolean
+     */
     public boolean hasStencil() {
         return hasStencil;
     }
+
+    /**
+     * Gets id.
+     *
+     * @return the id
+     */
     public ResourceLocation getId() {
         return id;
     }

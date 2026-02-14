@@ -8,6 +8,9 @@ import org.slf4j.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * The type Include glsl pre-processor.
+ */
 public class IncludeGLSLPreProcessor extends GLSLPreProcessor {
     private static final Logger LOGGER = LogUtils.getLogger();
 
@@ -17,6 +20,9 @@ public class IncludeGLSLPreProcessor extends GLSLPreProcessor {
             "(?:^|\\v)\\s*#include\\s+(?:\"([^\"]+)\"|<([^>]+)>)"
     );
 
+    /**
+     * Instantiates a new Include glsl pre-processor.
+     */
     public IncludeGLSLPreProcessor() {
         super(Commons.id("include_preprocessor"), INCLUDE_PATTERN);
     }

@@ -6,14 +6,29 @@ import io.github.luckymcdev.common.registry.GenericRegistry;
 import net.minecraft.resources.ResourceLocation;
 import org.lwjgl.opengl.GL43C;
 
+/**
+ * The type Frame buffer manager.
+ */
 public class FrameBufferManager {
-    public static final GenericRegistry<ResourceLocation, FrameBuffer> FRAMEBUFFERS = new GenericRegistry<>();
+    private static final GenericRegistry<ResourceLocation, FrameBuffer> FRAMEBUFFERS = new GenericRegistry<>();
 
 
+    /**
+     * Register.
+     *
+     * @param frameBuffer the frame buffer
+     */
     public void register(FrameBuffer frameBuffer) {
         FRAMEBUFFERS.register(frameBuffer.getId(), frameBuffer);
     }
 
+    /**
+     * Blit.
+     *
+     * @param src    the src
+     * @param dstFbo the dst fbo
+     * @param dst    the dst
+     */
     public void blit(FrameBuffer src, int dstFbo, RenderTarget dst) {
         // Save the current framebuffer bindings
         int prevRead = GlDispatch.glGetInteger(GL43C.GL_READ_FRAMEBUFFER_BINDING);

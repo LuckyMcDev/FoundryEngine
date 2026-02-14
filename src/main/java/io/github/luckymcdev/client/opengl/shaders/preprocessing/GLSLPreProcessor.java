@@ -4,27 +4,64 @@ import net.minecraft.resources.ResourceLocation;
 
 import java.util.regex.Pattern;
 
+/**
+ * A Glsl pre-processor. Can be used to replace Strings in the Shader source code.
+ */
 public abstract class GLSLPreProcessor {
+    /**
+     * The Id.
+     */
     protected final ResourceLocation id;
+    /**
+     * The Pattern.
+     */
     protected final Pattern pattern;
+    /**
+     * The Replacement.
+     */
     protected final String replacement;
 
+    /**
+     * Instantiates a new Glsl pre-processor.
+     *
+     * @param id          the id
+     * @param pattern     the pattern
+     * @param replacement the replacement
+     */
     protected GLSLPreProcessor(ResourceLocation id, Pattern pattern, String replacement) {
         this.id = id;
         this.pattern = pattern;
         this.replacement = replacement;
     }
 
+    /**
+     * Instantiates a new Glsl pre-processor.
+     * without a replacement, Overwrite apply()
+     *
+     * @param id      the id
+     * @param pattern the pattern
+     */
     protected GLSLPreProcessor(ResourceLocation id, Pattern pattern) {
         this.id = id;
         this.pattern = pattern;
         this.replacement = "YOU DIDNT OVERRIDE THE apply(String source) METHOD. CURSE YOU!!";
     }
 
+    /**
+     * Gets id.
+     *
+     * @return the id
+     */
     public ResourceLocation getId() {
         return id;
     }
 
+    /**
+     * What happens when you replace a String.
+     *
+     * @param source the source
+     * @return the string
+     */
     public String apply(String source) {
         return pattern.matcher(source).replaceAll(replacement);
     }
