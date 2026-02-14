@@ -1,7 +1,6 @@
 package io.github.luckymcdev.client;
 
 import com.mojang.logging.LogUtils;
-import io.github.luckymcdev.client.opengl.framebuffer.FrameBufferManager;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.neoforged.bus.api.SubscribeEvent;
