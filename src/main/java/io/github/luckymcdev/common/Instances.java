@@ -8,12 +8,15 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.luckymcdev.client.TbRenderer;
 import io.github.luckymcdev.client.editor.BuiltInEditor;
 import io.github.luckymcdev.client.imgui.ImGuiHandler;
+import io.github.luckymcdev.client.opengl.OpenGlStack;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.neoforged.neoforge.client.blaze3d.validation.ValidationGpuDevice;
 import net.neoforged.neoforge.client.blaze3d.validation.ValidationGpuTexture;
+
+import static io.github.luckymcdev.common.InstancesInternal.OPEN_GL_STACK;
 
 public interface Instances {
     static Minecraft getMinecraft() {
@@ -79,5 +82,9 @@ public interface Instances {
 
     static TbRenderer getTbRenderer() {
         return InstancesInternal.RENDERER;
+    }
+
+    static OpenGlStack getOpenGlStack() {
+        return OPEN_GL_STACK;
     }
 }

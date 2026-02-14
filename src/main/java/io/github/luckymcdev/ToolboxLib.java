@@ -1,12 +1,16 @@
 package io.github.luckymcdev;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import io.github.luckymcdev.client.imgui.ImGuiHandler;
+import io.github.luckymcdev.client.post.RegisterPostPipelineEvent;
+import io.github.luckymcdev.client.render.TestRender;
 import io.github.luckymcdev.common.Commons;
 import io.github.luckymcdev.common.Instances;
 import io.github.luckymcdev.common.opencl.OpenClExample;
 import io.github.luckymcdev.common.opencl.task.ClWorker;
 import io.github.luckymcdev.config.Config;
+import net.minecraft.client.renderer.GameRenderer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -18,11 +22,14 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import org.slf4j.Logger;
+
+import javax.script.CompiledScript;
 
 @Mod(Commons.MODID)
 public class ToolboxLib {
@@ -38,17 +45,8 @@ public class ToolboxLib {
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
-        /*
-        OpenCLExample.test();
-        OpenCLExample.testHills();
-        OpenCLExample.testPlains();
-        OpenCLExample.testMountains();
-        OpenCLExample.visualizeColorized();
-         */
-
         ClWorker.submit(() -> {
             OpenClExample.visualize(15630, 8640, 300.0f, 32, false);
-            //OpenCLExample.comparePerformance(7680, 4320, 300.0f, 6, 0.5f, 10);
             return "1";
         });
     }
@@ -68,8 +66,23 @@ public class ToolboxLib {
 
     @EventBusSubscriber(modid = Commons.MODID, value = Dist.CLIENT)
     public static class ClientModEvents {
+        private static boolean shadersInitialized = false;
+
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
+        }
+
+        @SubscribeEvent
+        public static void onRegisterPostPipelines(RegisterPostPipelineEvent event) {
+            TestRender.registerPipelines();
+        }
+
+        @SubscribeEvent
+        public static void onRenderLevel(RenderLevelStageEvent.AfterLevel event) {
+            if (!shadersInitialized) {
+                shadersInitialized = true;
+                NeoForge.EVENT_BUS.post(new RegisterPostPipelineEvent());
+            }
         }
 
         @SubscribeEvent
