@@ -9,36 +9,25 @@ import io.github.luckymcdev.client.opengl.OpenGlObject;
 import io.github.luckymcdev.common.Commons;
 import io.github.luckymcdev.common.Instances;
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL43C;
 
 import java.util.Map;
 
-public class FrameBuffer extends OpenGlObject {
+import static org.lwjgl.opengl.GL43C.GL_SHADER;
 
-    // Human-readable error messages for framebuffer status
-    protected static final Map<Integer, String> ERRORS = Map.of(
-            GL43C.GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT, "GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT",
-            GL43C.GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT, "GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT",
-            GL43C.GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER, "GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER",
-            GL43C.GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER, "GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER",
-            GL43C.GL_FRAMEBUFFER_UNSUPPORTED, "GL_FRAMEBUFFER_UNSUPPORTED",
-            GL43C.GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE, "GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE",
-            GL43C.GL_FRAMEBUFFER_UNDEFINED, "GL_FRAMEBUFFER_UNDEFINED",
-            GL43C.GL_OUT_OF_MEMORY, "GL_OUT_OF_MEMORY"
-    );
+public class FrameBuffer extends OpenGlObject {
 
     private final ResourceLocation id;
     private final boolean ownsFbo;
     private final boolean ownsAttachments;
     private final boolean hasDepth;
     private final boolean hasStencil;
-    private final String debugLabel;
     private final int clearMask;
     private int width;
     private int height;
     private int colorTexture;
-    private int depthRenderbuffer;
+    private int depthRenderBuffer;
     private int filterMode = GL43C.GL_LINEAR;
     private final float[] clearColor = new float[]{0.0f, 0.0f, 0.0f, 0.0f};
 
@@ -51,10 +40,6 @@ public class FrameBuffer extends OpenGlObject {
     }
 
     public FrameBuffer(ResourceLocation id, int width, int height, boolean useDepth, boolean useStencil) {
-        this(id, width, height, useDepth, useStencil, null);
-    }
-
-    public FrameBuffer(ResourceLocation id, int width, int height, boolean useDepth, boolean useStencil, @Nullable String debugLabel) {
         this.id = id;
         this.width = width;
         this.height = height;
@@ -62,7 +47,6 @@ public class FrameBuffer extends OpenGlObject {
         this.ownsAttachments = true;
         this.hasDepth = useDepth;
         this.hasStencil = useStencil && useDepth; // Stencil requires depth
-        this.debugLabel = debugLabel != null ? debugLabel : id.toString();
 
         // Calculate clear mask based on attachments
         int mask = GL43C.GL_COLOR_BUFFER_BIT;
@@ -74,10 +58,14 @@ public class FrameBuffer extends OpenGlObject {
         }
         this.clearMask = mask;
 
-        create();
+        this.pointer = GlDispatch.glGenFramebuffers();
+        bind(false);
+        createAttachments();
+        unbind();
+        setDebugLabel(this.id.toString());
     }
 
-    public static FrameBuffer fromTarget(RenderTarget target) {
+    public static @NotNull FrameBuffer fromTarget(@NotNull RenderTarget target) {
         RenderSystem.assertOnRenderThread();
         if (target.getColorTexture() == null) {
             throw new IllegalArgumentException("RenderTarget has no color texture");
@@ -216,7 +204,6 @@ public class FrameBuffer extends OpenGlObject {
         bind(false);
         deleteAttachments();
         createAttachments();
-        checkFramebufferStatus("after resize");
         unbind();
     }
 
@@ -237,8 +224,8 @@ public class FrameBuffer extends OpenGlObject {
     /**
      * Get the depth renderbuffer ID
      */
-    public int getDepthRenderbuffer() {
-        return depthRenderbuffer;
+    public int getDepthRenderBuffer() {
+        return depthRenderBuffer;
     }
 
     public int width() {
@@ -251,10 +238,6 @@ public class FrameBuffer extends OpenGlObject {
 
     public ResourceLocation id() {
         return id;
-    }
-
-    public String getDebugLabel() {
-        return debugLabel;
     }
 
     public int getClearMask() {
@@ -289,27 +272,6 @@ public class FrameBuffer extends OpenGlObject {
     }
 
     /**
-     * Create the framebuffer and attachments
-     */
-    private void create() {
-        this.set(GlDispatch.glGenFramebuffers());
-
-        // Set debug label if available (requires GL 4.3+)
-        if (debugLabel != null) {
-            try {
-                GlDispatch.glObjectLabel(GL43C.GL_FRAMEBUFFER, this.pointer, debugLabel);
-            } catch (Exception e) {
-                // Ignore if not supported
-            }
-        }
-
-        bind(false);
-        createAttachments();
-        checkFramebufferStatus("after creation");
-        unbind();
-    }
-
-    /**
      * Create color and depth attachments
      */
     private void createAttachments() {
@@ -341,19 +303,10 @@ public class FrameBuffer extends OpenGlObject {
 
         GlDispatch.glBindTexture(GL43C.GL_TEXTURE_2D, 0);
 
-        // Set debug label for texture
-        if (debugLabel != null) {
-            try {
-                GlDispatch.glObjectLabel(GL43C.GL_TEXTURE, colorTexture, debugLabel + " / Color");
-            } catch (Exception e) {
-                // Ignore if not supported
-            }
-        }
-
         // Create depth (and optionally stencil) renderbuffer
         if (hasDepth) {
-            depthRenderbuffer = GlDispatch.glGenRenderbuffers();
-            GlDispatch.glBindRenderbuffer(GL43C.GL_RENDERBUFFER, depthRenderbuffer);
+            depthRenderBuffer = GlDispatch.glGenRenderbuffers();
+            GlDispatch.glBindRenderbuffer(GL43C.GL_RENDERBUFFER, depthRenderBuffer);
 
             // Use depth24_stencil8 if stencil is needed, otherwise depth24
             int format = hasStencil ? GL43C.GL_DEPTH24_STENCIL8 : GL43C.GL_DEPTH_COMPONENT24;
@@ -364,7 +317,7 @@ public class FrameBuffer extends OpenGlObject {
                     GL43C.GL_FRAMEBUFFER,
                     GL43C.GL_DEPTH_ATTACHMENT,
                     GL43C.GL_RENDERBUFFER,
-                    depthRenderbuffer
+                    depthRenderBuffer
             );
 
             // Attach stencil if needed
@@ -373,19 +326,11 @@ public class FrameBuffer extends OpenGlObject {
                         GL43C.GL_FRAMEBUFFER,
                         GL43C.GL_STENCIL_ATTACHMENT,
                         GL43C.GL_RENDERBUFFER,
-                        depthRenderbuffer
+                        depthRenderBuffer
                 );
             }
 
-            // Set debug label for renderbuffer
-            if (debugLabel != null) {
-                try {
-                    String label = hasStencil ? debugLabel + " / Depth+Stencil" : debugLabel + " / Depth";
-                    GlDispatch.glObjectLabel(GL43C.GL_RENDERBUFFER, depthRenderbuffer, label);
-                } catch (Exception e) {
-                    // Ignore if not supported
-                }
-            }
+            GlDispatch.glBindRenderbuffer(GL43C.GL_RENDERBUFFER, 0);
         }
     }
 
@@ -397,23 +342,15 @@ public class FrameBuffer extends OpenGlObject {
             GlDispatch.glDeleteTextures(colorTexture);
             colorTexture = 0;
         }
-        if (depthRenderbuffer != 0) {
-            GlDispatch.glDeleteRenderbuffers(depthRenderbuffer);
-            depthRenderbuffer = 0;
+        if (depthRenderBuffer != 0) {
+            GlDispatch.glDeleteRenderbuffers(depthRenderBuffer);
+            depthRenderBuffer = 0;
         }
     }
 
-    /**
-     * Check framebuffer status and throw detailed exception if incomplete
-     */
-    private void checkFramebufferStatus(String context) {
-        int status = GlDispatch.glCheckFramebufferStatus(GL43C.GL_FRAMEBUFFER);
-        if (status != GL43C.GL_FRAMEBUFFER_COMPLETE) {
-            String errorName = ERRORS.getOrDefault(status, "UNKNOWN_ERROR");
-            throw new IllegalStateException(
-                    String.format("Framebuffer '%s' incomplete %s: %s (0x%x)",
-                            debugLabel, context, errorName, status)
-            );
+    private void setDebugLabel(String label) {
+        if (label != null && this.pointer != 0) {
+            GlDispatch.safeGlObjectLabel(GL43C.GL_FRAMEBUFFER, this.pointer, label);
         }
     }
 
