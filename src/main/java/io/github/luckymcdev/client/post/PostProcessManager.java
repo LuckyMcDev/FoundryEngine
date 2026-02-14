@@ -30,7 +30,6 @@ public class PostProcessManager {
     private static Mesh quad;
     private static FrameBuffer bufferPing;
     private static FrameBuffer bufferPong;
-    private static boolean initialized = false;
 
     /**
      * Register a post-processing pipeline.
@@ -62,8 +61,6 @@ public class PostProcessManager {
 
     @SubscribeEvent
     private static void init(RegisterRenderingStuffEvent event) {
-        if (initialized) return;
-
         RenderTarget main = Instances.getMainRenderTarget();
         bufferPing = new FrameBuffer(Commons.id("post_buffer_ping"), main.width, main.height);
         bufferPong = new FrameBuffer(Commons.id("post_buffer_pong"), main.width, main.height);
@@ -75,7 +72,6 @@ public class PostProcessManager {
                 GL33.GL_TRIANGLES,
                 true
         );
-        initialized = true;
     }
 
     @SubscribeEvent
