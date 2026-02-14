@@ -4,10 +4,16 @@ import imgui.ImGui;
 import io.github.luckymcdev.client.editor.Panel;
 import io.github.luckymcdev.common.Commons;
 
+/**
+ * The Test Panel Panel
+ */
 public class TestPanel extends Panel {
+    /**
+     * The constant INSTANCE.
+     */
     public static final TestPanel INSTANCE = new TestPanel();
 
-    public TestPanel() {
+    private TestPanel() {
         super(Commons.id("test_panel"), "My Panel");
     }
 

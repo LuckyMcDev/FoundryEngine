@@ -9,10 +9,16 @@ import io.github.luckymcdev.common.Instances;
 
 import java.util.List;
 
+/**
+ * The Post Process Panel
+ */
 public class PostProcessPanel extends Panel {
+    /**
+     * The constant INSTANCE.
+     */
     public static final PostProcessPanel INSTANCE = new PostProcessPanel();
 
-    public PostProcessPanel() {
+    private PostProcessPanel() {
         super(Commons.id("post_process_panel"), "Post Processing Panel");
     }
 

@@ -8,26 +8,48 @@ import org.slf4j.Logger;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The Built-In Editor
+ */
 public class BuiltInEditor {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final GenericRegistry<ResourceLocation, Panel> PANELS = new GenericRegistry<>();
     private static final GenericRegistry<ResourceLocation, Panel> OPEN_PANELS = new GenericRegistry<>();
 
+    /**
+     * Instantiates a new Built-in editor.
+     */
     public BuiltInEditor() {
     }
 
+    /**
+     * Registers a new panel to the Editor.
+     *
+     * @param panel the panel
+     */
     public void register(Panel panel) {
         PANELS.register(panel.getId(), panel);
     }
 
+    /**
+     * Removes a Panel.
+     *
+     * @param panel the panel
+     */
     public void remove(Panel panel) {
         PANELS.remove(panel.getId());
     }
 
+    /**
+     * Handles Ticking for all Panels.
+     */
     public void handleTick() {
         OPEN_PANELS.getValues().forEach(Panel::handleTick);
     }
 
+    /**
+     * Handles Rendering for all Panels.
+     */
     public void handleRender() {
         List<ResourceLocation> panelsToRemove = new ArrayList<>();
         OPEN_PANELS.getValues().forEach(panel -> {
@@ -38,6 +60,11 @@ public class BuiltInEditor {
         panelsToRemove.forEach(OPEN_PANELS::remove);
     }
 
+    /**
+     * Toggles a Panel On and Off.
+     *
+     * @param panel the panel
+     */
     public void togglePanel(Panel panel) {
         if(checkOpen(panel)) {
             closePanel(panel);
@@ -45,6 +72,13 @@ public class BuiltInEditor {
             openPanel(panel);
         }
     }
+
+    /**
+     * Opens a Panel.
+     * Ref: {@link BuiltInEditor#togglePanel(Panel panel)}
+     *
+     * @param panel the panel
+     */
     public void openPanel(Panel panel) {
         if (!checkOpen(panel)) {
             OPEN_PANELS.register(panel.getId(), panel);
@@ -52,6 +86,12 @@ public class BuiltInEditor {
         }
     }
 
+    /**
+     * Closes a Panel.
+     * Ref: {@link BuiltInEditor#togglePanel(Panel panel)}
+     *
+     * @param panel the panel
+     */
     public void closePanel(Panel panel) {
         if (checkOpen(panel)) {
             OPEN_PANELS.remove(panel.getId());

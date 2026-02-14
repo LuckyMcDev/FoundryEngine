@@ -8,15 +8,42 @@ import io.github.luckymcdev.client.editor.config.PanelStyle;
 import io.github.luckymcdev.common.Instances;
 import net.minecraft.resources.ResourceLocation;
 
+/**
+ * An ImGui Panel.
+ */
 public class Panel {
     private boolean focused;
+    /**
+     * The Id.
+     */
     public ResourceLocation id;
+    /**
+     * The Label.
+     */
     public String label;
+    /**
+     * If the Panel is Open.
+     */
     public boolean open;
+    /**
+     * If the Panel is Temporary.
+     */
     public boolean temporary;
+    /**
+     * The Panels Style.
+     */
     public PanelStyle style;
+    /**
+     * The Panels Type.
+     */
     public ImGuiWindowType type;
 
+    /**
+     * Instantiates a new Panel.
+     *
+     * @param id    the id
+     * @param label the label
+     */
     protected Panel(ResourceLocation id, String label) {
         this.id = id;
         this.label = label;
@@ -26,10 +53,20 @@ public class Panel {
         this.type = ImGuiWindowType.WINDOW;
     }
 
+    /**
+     * Gets id.
+     *
+     * @return the id
+     */
     public ResourceLocation getId() {
         return this.id;
     }
 
+    /**
+     * Gets label.
+     *
+     * @return the label
+     */
     public String getLabel() {
         return this.label;
     }
@@ -44,6 +81,9 @@ public class Panel {
         return flags;
     }
 
+    /**
+     * Opens the Panel.
+     */
     public final void open() {
         if (!this.open) {
             this.open = true;
@@ -51,18 +91,34 @@ public class Panel {
         onOpened();
     }
 
+    /**
+     * Closes the Panel.
+     */
     public final void close() {
         if (this.open) {
             this.open = false;
         }
     }
 
+    /**
+     * On opened.
+     * Override for custom functionality.
+     */
     public void onOpened() {
     }
 
+    /**
+     * On closed.
+     * Override for custom functionality.
+     */
     public void onClosed() {
     }
 
+    /**
+     * Handles rendering of the Panel.
+     *
+     * @return if the window is open
+     */
     public final boolean handleRender() {
         int flags = getFlags();
         ImBoolean WINDOW = new ImBoolean(this.open);
@@ -105,17 +161,33 @@ public class Panel {
         return open;
     }
 
+    /**
+     * Is focused boolean.
+     *
+     * @return focused
+     */
     public boolean isFocused() {
         return this.focused;
     }
 
+    /**
+     * Handle tick.
+     */
     public final void handleTick() {
         tick();
     }
 
+    /**
+     * Content.
+     * Overwrite for custom Functionality
+     */
     public void content() {
     }
 
+    /**
+     * Tick.
+     * Overwrite for custom Functionality
+     */
     public void tick() {
     }
 

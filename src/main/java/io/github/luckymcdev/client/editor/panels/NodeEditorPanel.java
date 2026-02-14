@@ -12,8 +12,14 @@ import org.slf4j.Logger;
 
 import java.util.List;
 
+/**
+ * The Node Editor Panel
+ */
 public class NodeEditorPanel extends Panel {
     private static final Logger LOGGER = LogUtils.getLogger();
+    /**
+     * The constant INSTANCE.
+     */
     public static final NodeEditorPanel INSTANCE = new NodeEditorPanel();
 
     private final NodeEditorInstance<String> nodeEditor;
