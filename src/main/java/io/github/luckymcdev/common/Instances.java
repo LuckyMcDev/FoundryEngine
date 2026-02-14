@@ -56,16 +56,19 @@ public interface Instances {
     }
 
     static GlTexture getGlColTexture() {
-        return getGlColTexture(getMinecraft().getMainRenderTarget());
+        return getGlColTexture(getMainRenderTarget());
     }
 
-    static GlTexture getGlDepthTexture() {
-        RenderTarget target = getMinecraft().getMainRenderTarget();
+    static GlTexture getGlDepthTexture(RenderTarget target) {
         var tex = target.getDepthTexture();
         if (tex instanceof ValidationGpuTexture validationTex) {
             return (GlTexture) validationTex.getRealTexture();
         }
         return (GlTexture) tex;
+    }
+
+    static GlTexture getGlDepthTexture() {
+        return getGlDepthTexture(getMainRenderTarget());
     }
 
     static GlDevice getGlDevice() {

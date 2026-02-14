@@ -15,10 +15,6 @@ public class TestRender {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static boolean initialized = false;
 
-    /**
-     * Registers all post-processing pipelines.
-     * Call this from your mod's client initialization (FMLClientSetupEvent).
-     */
     public static void registerPipelines() {
         if (initialized) {
             LOGGER.warn("TestRender.registerPipelines() called multiple times!");
