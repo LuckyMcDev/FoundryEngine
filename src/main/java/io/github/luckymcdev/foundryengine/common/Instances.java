@@ -98,12 +98,15 @@ public interface Instances {
     static PostProcessManager getPostProcessManager() {
         return POST_PROCESS_MANAGER;
     }
+
     static FrameBufferManager getFrameBufferManager() {
         return FRAME_BUFFER_MANAGER;
     }
+
     static ShaderManager getShaderManager() {
         return SHADER_MANAGER;
     }
+
     static KeyBindingManager getKeyBindingManager() {
         return KEY_BINDING_MANAGER;
     }

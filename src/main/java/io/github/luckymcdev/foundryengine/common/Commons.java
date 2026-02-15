@@ -2,17 +2,24 @@ package io.github.luckymcdev.foundryengine.common;
 
 import com.mojang.logging.LogUtils;
 import net.minecraft.resources.Identifier;
+import net.neoforged.fml.loading.FMLPaths;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.stream.Collectors;
 
 public interface Commons {
     Logger LOGGER = LogUtils.getLogger();
     String MODID = "foundryengine";
+    String MODNAME = "Foundry Engine";
+    Path CONFIG = FMLPaths.CONFIGDIR.get();
+    Path FOUNDRY_ENGINE_CONFIG = CONFIG.resolve(MODID);
+    Path DATABASE_CONFIG = CONFIG.resolve("database");
+    Path GAME = FMLPaths.GAMEDIR.get();
 
     static Identifier id(@NotNull String path) {
         return Identifier.fromNamespaceAndPath(MODID, path);
