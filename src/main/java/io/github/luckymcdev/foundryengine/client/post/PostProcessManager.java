@@ -9,6 +9,8 @@ import io.github.luckymcdev.foundryengine.client.opengl.framebuffer.FrameBuffer;
 import io.github.luckymcdev.foundryengine.client.opengl.vertex.Mesh;
 import io.github.luckymcdev.foundryengine.client.opengl.vertex.VertexLayout;
 import io.github.luckymcdev.foundryengine.client.opengl.vertex.Vertices;
+import io.github.luckymcdev.foundryengine.client.post.staged.PostProcessStage;
+import io.github.luckymcdev.foundryengine.client.post.staged.StagedPostProcessPipeline;
 import io.github.luckymcdev.foundryengine.common.Commons;
 import io.github.luckymcdev.foundryengine.common.Instances;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -18,13 +20,20 @@ import org.lwjgl.opengl.GL33;
 import org.lwjgl.opengl.GL43C;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 
 @EventBusSubscriber
 public class PostProcessManager {
     private static final OpenGlStack GL_STACK = Instances.getOpenGlStack();
     private static final List<PostProcessPipeline> PIPELINES = new ArrayList<>();
     private static final List<PostProcessPipeline> ENABLED_PIPELINES = new ArrayList<>();
+    private static final List<StagedPostProcessPipeline> STAGED_PIPELINES = new ArrayList<>();
+    private static final List<StagedPostProcessPipeline> ENABLED_STAGED_PIPELINES = new ArrayList<>();
+
+    // Map to organize enabled staged pipelines by their stage
+    private static final Map<PostProcessStage, List<StagedPostProcessPipeline>> PIPELINES_BY_STAGE = new EnumMap<>(PostProcessStage.class);
 
     private static Mesh quad;
     private static FrameBuffer bufferPing;
@@ -46,6 +55,35 @@ public class PostProcessManager {
         ENABLED_PIPELINES.remove(pipeline);
     }
 
+
+    public void addPipeline(StagedPostProcessPipeline pipeline) {
+        STAGED_PIPELINES.add(pipeline);
+    }
+
+    public void enablePipeline(StagedPostProcessPipeline pipeline) {
+        if(STAGED_PIPELINES.contains(pipeline) && !ENABLED_STAGED_PIPELINES.contains(pipeline)) {
+            ENABLED_STAGED_PIPELINES.add(pipeline);
+            rebuildStageMap();
+        }
+    }
+
+    public void disablePipeline(StagedPostProcessPipeline pipeline) {
+        if(ENABLED_STAGED_PIPELINES.remove(pipeline)) {
+            rebuildStageMap();
+        }
+    }
+
+    /**
+     * Rebuilds the map that organizes pipelines by their stage
+     */
+    private static void rebuildStageMap() {
+        PIPELINES_BY_STAGE.clear();
+        for (StagedPostProcessPipeline pipeline : ENABLED_STAGED_PIPELINES) {
+            PIPELINES_BY_STAGE.computeIfAbsent(pipeline.getStage(), k -> new ArrayList<>()).add(pipeline);
+        }
+    }
+
+
     @SubscribeEvent
     private static void init(RegisterRenderingStuffEvent event) {
         RenderTarget main = Instances.getMainRenderTarget();
@@ -64,9 +102,71 @@ public class PostProcessManager {
         lastMainHeight = main.height;
     }
 
+    // Event handlers for each stage
     @SubscribeEvent
-    public static void onRender(RenderLevelStageEvent.AfterLevel event) {
+    public static void onAfterSky(RenderLevelStageEvent.AfterSky event) {
+        runStagedPipelines(PostProcessStage.AFTER_SKY);
+    }
+
+    @SubscribeEvent
+    public static void onAfterOpaqueBlocks(RenderLevelStageEvent.AfterOpaqueBlocks event) {
+        runStagedPipelines(PostProcessStage.AFTER_OPAQUE_BLOCKS);
+    }
+
+    @SubscribeEvent
+    public static void onAfterEntities(RenderLevelStageEvent.AfterEntities event) {
+        runStagedPipelines(PostProcessStage.AFTER_ENTITIES);
+    }
+
+    @SubscribeEvent
+    public static void onAfterTranslucentBlocks(RenderLevelStageEvent.AfterTranslucentBlocks event) {
+        runStagedPipelines(PostProcessStage.AFTER_TRANSLUCENT_BLOCKS);
+    }
+
+    @SubscribeEvent
+    public static void onAfterTripwireBlocks(RenderLevelStageEvent.AfterTripwireBlocks event) {
+        runStagedPipelines(PostProcessStage.AFTER_TRIPWIRE_BLOCKS);
+    }
+
+    @SubscribeEvent
+    public static void onAfterParticles(RenderLevelStageEvent.AfterParticles event) {
+        runStagedPipelines(PostProcessStage.AFTER_PARTICLES);
+    }
+
+    @SubscribeEvent
+    public static void onAfterWeather(RenderLevelStageEvent.AfterWeather event) {
+        runStagedPipelines(PostProcessStage.AFTER_WEATHER);
+    }
+
+    @SubscribeEvent
+    public static void onAfterLevel(RenderLevelStageEvent.AfterLevel event) {
+        runStagedPipelines(PostProcessStage.AFTER_LEVEL);
+        // Also run non-staged pipelines at the end
+        runNonStagedPipelines();
+    }
+
+    /**
+     * Run all enabled staged pipelines for a specific stage
+     */
+    private static void runStagedPipelines(PostProcessStage stage) {
+        List<StagedPostProcessPipeline> pipelines = PIPELINES_BY_STAGE.get(stage);
+        if (pipelines == null || pipelines.isEmpty()) return;
+
+        runPipelines(pipelines);
+    }
+
+    /**
+     * Run non-staged pipelines (legacy support)
+     */
+    private static void runNonStagedPipelines() {
         if (ENABLED_PIPELINES.isEmpty()) return;
+        runPipelines(ENABLED_PIPELINES);
+    }
+
+    /**
+     * Core pipeline execution logic
+     */
+    private static void runPipelines(List<? extends PostProcessPipeline> pipelines) {
         RenderSystem.assertOnRenderThread();
 
         RenderTarget mainTarget = Instances.getMainRenderTarget();
@@ -101,7 +201,7 @@ public class PostProcessManager {
             FrameBuffer currentOutput = bufferPong;
             boolean isFirstPass = true;
 
-            for (PostProcessPipeline pipeline : ENABLED_PIPELINES) {
+            for (PostProcessPipeline pipeline : pipelines) {
                 // On first pass, bind the main target's color texture
                 // On subsequent passes, bind the previous output
                 GlDispatch.glActiveTexture(GL43C.GL_TEXTURE0);
@@ -170,6 +270,18 @@ public class PostProcessManager {
 
     public List<PostProcessPipeline> getEnabledPipelines() {
         return ENABLED_PIPELINES;
+    }
+
+    public List<StagedPostProcessPipeline> getStagedPipelines() {
+        return STAGED_PIPELINES;
+    }
+
+    public List<StagedPostProcessPipeline> getEnabledStagedPipelines() {
+        return ENABLED_STAGED_PIPELINES;
+    }
+
+    public Map<PostProcessStage, List<StagedPostProcessPipeline>> getPipelinesByStage() {
+        return PIPELINES_BY_STAGE;
     }
 
     private static void setupGlobalState() {

@@ -7,6 +7,8 @@ import io.github.luckymcdev.foundryengine.client.opengl.shaders.ShaderSource;
 import io.github.luckymcdev.foundryengine.client.opengl.shaders.exeption.ShaderException;
 import io.github.luckymcdev.foundryengine.client.opengl.shaders.program.ShaderProgram;
 import io.github.luckymcdev.foundryengine.client.post.PostProcessPipeline;
+import io.github.luckymcdev.foundryengine.client.post.staged.PostProcessStage;
+import io.github.luckymcdev.foundryengine.client.post.staged.StagedPostProcessPipeline;
 import io.github.luckymcdev.foundryengine.common.Commons;
 import io.github.luckymcdev.foundryengine.common.Instances;
 import org.slf4j.Logger;
@@ -62,7 +64,7 @@ public class TestRender {
         Instances.getShaderManager().register(grayScaleProgram);
 
         // Create and register pipeline
-        PostProcessPipeline grayScalePipeline = new PostProcessPipeline(grayScaleProgram);
+        StagedPostProcessPipeline grayScalePipeline = new StagedPostProcessPipeline(PostProcessStage.AFTER_SKY, grayScaleProgram);
         Instances.getPostProcessManager().addPipeline(grayScalePipeline);
     }
 
