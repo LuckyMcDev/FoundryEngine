@@ -78,6 +78,8 @@ dependencies {
     testImplementation "net.neoforged:testframework:${project.neo_version}"
     testRuntimeOnly "org.junit.platform:junit-platform-launcher"
 
+    jarJar(implementation("org.xerial:sqlite-jdbc:${project.sqlite_version}"))
+
     jarJar(implementation(platform("org.lwjgl:lwjgl-bom:${project.lwjgl_version}")))
 
     jarJar(api(implementation("net.neoforged:render-nurse:${project.rendernurse_version}")))
