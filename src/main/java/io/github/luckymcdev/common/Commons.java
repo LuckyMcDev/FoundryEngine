@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 public interface Commons {
     Logger LOGGER = LogUtils.getLogger();
-    String MODID = "toolboxlib";
+    String MODID = "foundryengine";
 
     static Identifier id(@NotNull String path) {
         return Identifier.fromNamespaceAndPath(MODID, path);

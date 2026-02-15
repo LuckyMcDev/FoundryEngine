@@ -64,11 +64,20 @@ neoForge {
             sourceSet(sourceSets.main)
         }
     }
+
+    unitTest {
+        enable()
+        testedMod = mods.named("${mod_id}")
+    }
 }
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 dependencies {
+    testImplementation "org.junit.jupiter:junit-jupiter:${project.junit_version}"
+    testImplementation "net.neoforged:testframework:${project.neo_version}"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+
     jarJar(implementation(platform("org.lwjgl:lwjgl-bom:${project.lwjgl_version}")))
 
     jarJar(api(implementation("net.neoforged:render-nurse:${project.rendernurse_version}")))
@@ -116,6 +125,10 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
     expand replaceProperties
     from "src/main/templates"
     into "build/generated/sources/modMetadata"
+}
+
+test {
+    useJUnitPlatform()
 }
 
 sourceSets.main.resources.srcDir generateModMetadata

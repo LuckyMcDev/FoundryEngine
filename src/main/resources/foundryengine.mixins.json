@@ -6,12 +6,7 @@
   "mixins": [
   ],
   "client": [
-    "MinecraftMixin",
-    "invoker.RenderPipelinesInvoker",
-    "input.KeyboardHandlerMixin",
-    "input.MouseHandlerMixin",
-    "render.GameRendererMixin",
-    "render.LevelRendererMixin"
+    "MinecraftMixin"
   ],
   "injectors": {
     "defaultRequire": 1

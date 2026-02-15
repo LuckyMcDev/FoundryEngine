@@ -9,13 +9,22 @@ version = "${mod_version}"
 displayName = "${mod_name}"
 #updateJSONURL="https://change.me.example.invalid/updates.json"
 displayURL = "https://github.com/LuckyMcDev"
-#logoFile="toolboxlib.png"
+#logoFile="foundryengine.png"
 #credits="" #optional
 authors = "${mod_authors}"
 description = '''${mod_description}'''
 
 [[mixins]]
+config = "${mod_id}.input.mixins.json"
+
+[[mixins]]
+config = "${mod_id}.invoker.mixins.json"
+
+[[mixins]]
 config = "${mod_id}.mixins.json"
+
+[[mixins]]
+config = "${mod_id}.render.mixins.json"
 
 #[[accessTransformers]]
 #"META-INF/accesstransformer.cfg"

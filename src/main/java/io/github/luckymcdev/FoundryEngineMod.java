@@ -36,10 +36,10 @@ import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 
 @Mod(Commons.MODID)
-public class ToolboxLib {
+public class FoundryEngineMod {
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    public ToolboxLib(IEventBus modEventBus, ModContainer modContainer) {
+    public FoundryEngineMod(IEventBus modEventBus, ModContainer modContainer) {
 
         modEventBus.addListener(this::commonSetup);
 
@@ -85,7 +85,7 @@ public class ToolboxLib {
         @SubscribeEvent
         public static void onRegisterKeyBinding(RegisterKeyBindingEvent event) {
             event.register(new KeyBinding(
-                    new KeyMapping("key.toolboxlib.testkey", GLFW.GLFW_KEY_O, KeyMapping.Category.MISC),
+                    new KeyMapping("key.foundryengine.testkey", GLFW.GLFW_KEY_O, KeyMapping.Category.MISC),
                     () -> Instances.getMinecraft().player.displayClientMessage(Component.literal("Hello"), false)
             ));
         }
