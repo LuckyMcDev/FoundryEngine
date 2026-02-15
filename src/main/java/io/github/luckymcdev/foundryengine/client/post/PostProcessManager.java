@@ -183,6 +183,8 @@ public class PostProcessManager {
             bufferPong.resize(mainTarget.width, mainTarget.height);
         }
 
+        GlDispatch.pushDebugGroup("Post-Process Pass (" + pipelines.size() + " pipelines)");
+
         GL_STACK.push();
         try {
             // Save initial state
@@ -204,41 +206,46 @@ public class PostProcessManager {
             for (PostProcessPipeline pipeline : pipelines) {
                 // On first pass, bind the main target's color texture
                 // On subsequent passes, bind the previous output
-                GlDispatch.glActiveTexture(GL43C.GL_TEXTURE0);
-                if (isFirstPass) {
-                    var colorTexture = Instances.getGlColTexture();
-                    GlDispatch.glBindTexture(GL43C.GL_TEXTURE_2D, colorTexture.glId());
-                } else {
-                    currentInput.bindColorTexture();
-                }
+                GlDispatch.pushDebugGroup("Pipeline: " + pipeline.getProgram().getId());
+                try {
+                    GlDispatch.glActiveTexture(GL43C.GL_TEXTURE0);
+                    if (isFirstPass) {
+                        var colorTexture = Instances.getGlColTexture();
+                        GlDispatch.glBindTexture(GL43C.GL_TEXTURE_2D, colorTexture.glId());
+                    } else {
+                        currentInput.bindColorTexture();
+                    }
 
-                // Always bind the main target's depth texture
-                GlDispatch.glActiveTexture(GL43C.GL_TEXTURE1);
-                var depthTexture = Instances.getGlDepthTexture();
-                if (depthTexture != null) {
-                    GlDispatch.glBindTexture(GL43C.GL_TEXTURE_2D, depthTexture.glId());
-                }
+                    // Always bind the main target's depth texture
+                    GlDispatch.glActiveTexture(GL43C.GL_TEXTURE1);
+                    var depthTexture = Instances.getGlDepthTexture();
+                    if (depthTexture != null) {
+                        GlDispatch.glBindTexture(GL43C.GL_TEXTURE_2D, depthTexture.glId());
+                    }
 
-                currentOutput.bind();
-                GlDispatch.glClear(GL43C.GL_COLOR_BUFFER_BIT);
+                    currentOutput.bind();
+                    GlDispatch.glClear(GL43C.GL_COLOR_BUFFER_BIT);
 
-                pipeline.getProgram().use();
-                pipeline.setupDefaultUniforms();
-                pipeline.setupUniforms();
-                quad.draw();
-                pipeline.getProgram().disable();
+                    pipeline.getProgram().use();
+                    pipeline.setupDefaultUniforms();
+                    pipeline.setupUniforms();
+                    quad.draw();
+                    pipeline.getProgram().disable();
 
-                currentOutput.unbind();
+                    currentOutput.unbind();
 
-                // After first pass, swap to ping-pong buffers
-                if (isFirstPass) {
-                    currentInput = currentOutput;
-                    currentOutput = currentInput == bufferPing ? bufferPong : bufferPing;
-                    isFirstPass = false;
-                } else {
-                    FrameBuffer temp = currentInput;
-                    currentInput = currentOutput;
-                    currentOutput = temp;
+                    // After first pass, swap to ping-pong buffers
+                    if (isFirstPass) {
+                        currentInput = currentOutput;
+                        currentOutput = currentInput == bufferPing ? bufferPong : bufferPing;
+                        isFirstPass = false;
+                    } else {
+                        FrameBuffer temp = currentInput;
+                        currentInput = currentOutput;
+                        currentOutput = temp;
+                    }
+                } finally {
+                    GlDispatch.popDebugGroup();
                 }
             }
 
@@ -260,6 +267,7 @@ public class PostProcessManager {
             }
             GlDispatch.glActiveTexture(savedActiveTexture);
         } finally {
+            GlDispatch.popDebugGroup();
             GL_STACK.pop();
         }
     }

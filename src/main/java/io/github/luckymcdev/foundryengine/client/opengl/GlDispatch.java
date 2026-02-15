@@ -547,6 +547,25 @@ public class GlDispatch {
         wrap(() -> GL43C.glObjectLabel(identifier, name, label));
     }
 
+    public static void glPushDebugGroup(int source, int id, String message) {
+        wrap(() -> GL43C.glPushDebugGroup(source, id, message));
+    }
+
+    public static void glPopDebugGroup() {
+        wrap(GL43C::glPopDebugGroup);
+    }
+
+    /**
+     * Convenience method for application-level debug groups
+     */
+    public static void pushDebugGroup(String name) {
+        glPushDebugGroup(GL43C.GL_DEBUG_SOURCE_APPLICATION, 0, name);
+    }
+
+    public static void popDebugGroup() {
+        glPopDebugGroup();
+    }
+
     private interface GlCall extends Runnable {
         void dispatch();
 
