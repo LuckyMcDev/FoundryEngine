@@ -6,9 +6,8 @@ import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.luckymcdev.client.opengl.GlDispatch;
 import io.github.luckymcdev.client.opengl.OpenGlObject;
-import io.github.luckymcdev.common.Commons;
 import io.github.luckymcdev.common.Instances;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL43C;
 
@@ -17,7 +16,7 @@ import org.lwjgl.opengl.GL43C;
  */
 public class FrameBuffer extends OpenGlObject {
 
-    private final ResourceLocation id;
+    private final Identifier id;
     private final boolean hasDepth;
     private final boolean hasStencil;
     private final int clearMask;
@@ -37,7 +36,7 @@ public class FrameBuffer extends OpenGlObject {
      * @param useDepth   uses depth
      * @param useStencil uses stencil
      */
-    public FrameBuffer(ResourceLocation id, int width, int height, boolean useDepth, boolean useStencil) {
+    public FrameBuffer(Identifier id, int width, int height, boolean useDepth, boolean useStencil) {
         this.id = id;
         this.width = width;
         this.height = height;
@@ -64,7 +63,7 @@ public class FrameBuffer extends OpenGlObject {
      * @param target the target
      * @return the frame buffer
      */
-    public static @NotNull FrameBuffer fromTarget(ResourceLocation id, @NotNull RenderTarget target) {
+    public static @NotNull FrameBuffer fromTarget(Identifier id, @NotNull RenderTarget target) {
         RenderSystem.assertOnRenderThread();
         if (target.getColorTexture() == null) {
             throw new IllegalArgumentException("RenderTarget has no color texture");
@@ -260,7 +259,7 @@ public class FrameBuffer extends OpenGlObject {
      *
      * @return the id
      */
-    public ResourceLocation getId() {
+    public Identifier getId() {
         return id;
     }
 }

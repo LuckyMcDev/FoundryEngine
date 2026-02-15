@@ -3,14 +3,14 @@ package io.github.luckymcdev.client.opengl.framebuffer;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import io.github.luckymcdev.client.opengl.GlDispatch;
 import io.github.luckymcdev.common.registry.GenericRegistry;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.lwjgl.opengl.GL43C;
 
 /**
  * The type Frame buffer manager.
  */
 public class FrameBufferManager {
-    private static final GenericRegistry<ResourceLocation, FrameBuffer> FRAMEBUFFERS = new GenericRegistry<>();
+    private static final GenericRegistry<Identifier, FrameBuffer> FRAMEBUFFERS = new GenericRegistry<>();
 
 
     /**

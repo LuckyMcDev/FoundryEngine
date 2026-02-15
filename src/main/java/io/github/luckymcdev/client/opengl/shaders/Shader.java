@@ -3,17 +3,16 @@ package io.github.luckymcdev.client.opengl.shaders;
 import io.github.luckymcdev.client.opengl.GlDispatch;
 import io.github.luckymcdev.client.opengl.OpenGlObject;
 import io.github.luckymcdev.client.opengl.shaders.exeption.ShaderException;
-import io.github.luckymcdev.client.opengl.shaders.preprocessing.GLSLPreProcessorManager;
 import io.github.luckymcdev.common.Commons;
 import io.github.luckymcdev.common.Instances;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import static org.lwjgl.opengl.GL43C.*;
 
 public class Shader extends OpenGlObject {
-    private final ResourceLocation id;
+    private final Identifier id;
     private final ExtendedShaderType type;
-    private final ResourceLocation location;
+    private final Identifier location;
     private String source;
 
     public Shader(ExtendedShaderType shaderType, ShaderSource source) {
@@ -58,7 +57,7 @@ public class Shader extends OpenGlObject {
         return type;
     }
 
-    public ResourceLocation getId() {
+    public Identifier getId() {
         return id;
     }
 
@@ -66,7 +65,7 @@ public class Shader extends OpenGlObject {
         return source;
     }
 
-    public ResourceLocation getLocation() {
+    public Identifier getLocation() {
         return location;
     }
 

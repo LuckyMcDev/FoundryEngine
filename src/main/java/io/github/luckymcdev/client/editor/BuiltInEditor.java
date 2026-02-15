@@ -2,7 +2,7 @@ package io.github.luckymcdev.client.editor;
 
 import com.mojang.logging.LogUtils;
 import io.github.luckymcdev.common.registry.GenericRegistry;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
@@ -13,8 +13,8 @@ import java.util.List;
  */
 public class BuiltInEditor {
     private static final Logger LOGGER = LogUtils.getLogger();
-    private static final GenericRegistry<ResourceLocation, Panel> PANELS = new GenericRegistry<>();
-    private static final GenericRegistry<ResourceLocation, Panel> OPEN_PANELS = new GenericRegistry<>();
+    private static final GenericRegistry<Identifier, Panel> PANELS = new GenericRegistry<>();
+    private static final GenericRegistry<Identifier, Panel> OPEN_PANELS = new GenericRegistry<>();
 
     /**
      * Instantiates a new Built-in editor.
@@ -51,7 +51,7 @@ public class BuiltInEditor {
      * Handles Rendering for all Panels.
      */
     public void handleRender() {
-        List<ResourceLocation> panelsToRemove = new ArrayList<>();
+        List<Identifier> panelsToRemove = new ArrayList<>();
         OPEN_PANELS.getValues().forEach(panel -> {
             if (!panel.handleRender()) {
                 panelsToRemove.add(panel.getId());

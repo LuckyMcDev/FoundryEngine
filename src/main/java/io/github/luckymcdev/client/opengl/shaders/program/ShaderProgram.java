@@ -9,21 +9,20 @@ import io.github.luckymcdev.client.opengl.shaders.compiler.ShaderCompiler;
 import io.github.luckymcdev.client.opengl.shaders.exeption.ShaderException;
 import io.github.luckymcdev.client.opengl.shaders.uniform.Uniform;
 import io.github.luckymcdev.common.Instances;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.joml.*;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class ShaderProgram extends OpenGlObject {
     private static final Logger LOGGER = LogUtils.getLogger();
 
     private final ArrayList<Shader> shaders = new ArrayList<>();
-    private final ResourceLocation id;
+    private final Identifier id;
 
-    public ShaderProgram(ResourceLocation id, Shader... shaders) {
+    public ShaderProgram(Identifier id, Shader... shaders) {
         this.id = id;
         this.pointer = GlDispatch.glCreateProgram();
         this.shaders.addAll(List.of(shaders));
@@ -125,7 +124,7 @@ public class ShaderProgram extends OpenGlObject {
         }
     }
 
-    public ResourceLocation getId() {
+    public Identifier getId() {
         return id;
     }
 

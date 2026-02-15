@@ -6,7 +6,7 @@ import io.github.luckymcdev.client.opengl.shaders.exeption.ShaderException;
 import io.github.luckymcdev.client.opengl.shaders.preprocessing.GLSLPreProcessorManager;
 import io.github.luckymcdev.client.opengl.shaders.program.ShaderProgram;
 import io.github.luckymcdev.common.registry.GenericRegistry;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import org.jetbrains.annotations.NotNull;
@@ -16,8 +16,8 @@ public class ShaderManager implements ResourceManagerReloadListener {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final ShaderCompiler SHADER_COMPILER = new ShaderCompiler();
     private static final GLSLPreProcessorManager PRE_PROCESSOR_MANAGER = new GLSLPreProcessorManager();
-    private static final GenericRegistry<ResourceLocation, Shader> SHADERS = new GenericRegistry<>();
-    private static final GenericRegistry<ResourceLocation, ShaderProgram> PROGRAMS = new GenericRegistry<>();
+    private static final GenericRegistry<Identifier, Shader> SHADERS = new GenericRegistry<>();
+    private static final GenericRegistry<Identifier, ShaderProgram> PROGRAMS = new GenericRegistry<>();
 
     public void register(Shader shader) {
         SHADERS.register(shader.getId(), shader);

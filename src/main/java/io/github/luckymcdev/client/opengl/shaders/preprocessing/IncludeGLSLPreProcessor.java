@@ -2,7 +2,7 @@ package io.github.luckymcdev.client.opengl.shaders.preprocessing;
 
 import com.mojang.logging.LogUtils;
 import io.github.luckymcdev.common.Commons;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
 
 import java.util.regex.Matcher;
@@ -40,14 +40,14 @@ public class IncludeGLSLPreProcessor extends GLSLPreProcessor {
 
             if (path != null) {
                 try {
-                    ResourceLocation loc;
+                    Identifier loc;
                     if (path.contains("/")) {
                         // Split "minecraft/fog.glsl" into "minecraft" and "fog.glsl"
                         String namespace = path.substring(0, path.indexOf("/"));
                         String remainingPath = path.substring(path.indexOf("/") + 1);
 
                         // Reconstruct the internal Minecraft path
-                        loc = ResourceLocation.fromNamespaceAndPath(namespace, "shaders/include/" + remainingPath);
+                        loc = Identifier.fromNamespaceAndPath(namespace, "shaders/include/" + remainingPath);
                     } else {
                         // Fallback for local files in your mod's namespace
                         loc = Commons.id("shaders/include/" + path);

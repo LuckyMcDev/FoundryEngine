@@ -1,7 +1,7 @@
 package io.github.luckymcdev.common;
 
 import com.mojang.logging.LogUtils;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
@@ -14,15 +14,15 @@ public interface Commons {
     Logger LOGGER = LogUtils.getLogger();
     String MODID = "toolboxlib";
 
-    static ResourceLocation id(@NotNull String path) {
-        return ResourceLocation.fromNamespaceAndPath(MODID, path);
+    static Identifier id(@NotNull String path) {
+        return Identifier.fromNamespaceAndPath(MODID, path);
     }
 
-    static String getRlSource(ResourceLocation location) {
+    static String getRlSource(Identifier location) {
         return getRlSource(location, StandardCharsets.UTF_8);
     }
 
-    static String getRlSource(ResourceLocation location, Charset charset) {
+    static String getRlSource(Identifier location, Charset charset) {
         try (InputStream stream = Instances.getResourceManager().getResourceOrThrow(location).open();
              Reader reader = new InputStreamReader(stream, charset);
              BufferedReader br = new BufferedReader(reader)) {

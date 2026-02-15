@@ -1,14 +1,13 @@
 package io.github.luckymcdev.client.opengl.shaders.preprocessing;
 
-import com.mojang.blaze3d.preprocessor.GlslPreprocessor;
 import io.github.luckymcdev.common.registry.GenericRegistry;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 /**
  * A Manager for all Glsl Pre-Processors.
  */
 public class GLSLPreProcessorManager {
-    private static final GenericRegistry<ResourceLocation, GLSLPreProcessor> PREPROCESSORS = new GenericRegistry<>();
+    private static final GenericRegistry<Identifier, GLSLPreProcessor> PREPROCESSORS = new GenericRegistry<>();
 
     /**
      * Registers a processor.

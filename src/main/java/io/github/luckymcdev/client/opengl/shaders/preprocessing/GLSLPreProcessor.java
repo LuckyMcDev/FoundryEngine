@@ -1,6 +1,6 @@
 package io.github.luckymcdev.client.opengl.shaders.preprocessing;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.regex.Pattern;
 
@@ -11,7 +11,7 @@ public abstract class GLSLPreProcessor {
     /**
      * The Id.
      */
-    protected final ResourceLocation id;
+    protected final Identifier id;
     /**
      * The Pattern.
      */
@@ -28,7 +28,7 @@ public abstract class GLSLPreProcessor {
      * @param pattern     the pattern
      * @param replacement the replacement
      */
-    protected GLSLPreProcessor(ResourceLocation id, Pattern pattern, String replacement) {
+    protected GLSLPreProcessor(Identifier id, Pattern pattern, String replacement) {
         this.id = id;
         this.pattern = pattern;
         this.replacement = replacement;
@@ -41,7 +41,7 @@ public abstract class GLSLPreProcessor {
      * @param id      the id
      * @param pattern the pattern
      */
-    protected GLSLPreProcessor(ResourceLocation id, Pattern pattern) {
+    protected GLSLPreProcessor(Identifier id, Pattern pattern) {
         this.id = id;
         this.pattern = pattern;
         this.replacement = "YOU DIDNT OVERRIDE THE apply(String source) METHOD. CURSE YOU!!";
@@ -52,7 +52,7 @@ public abstract class GLSLPreProcessor {
      *
      * @return the id
      */
-    public ResourceLocation getId() {
+    public Identifier getId() {
         return id;
     }
 

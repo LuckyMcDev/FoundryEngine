@@ -2,7 +2,7 @@ package io.github.luckymcdev.common.opencl.core;
 
 import io.github.luckymcdev.common.Commons;
 import io.github.luckymcdev.common.opencl.ClDispatch;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.system.MemoryStack;
 
@@ -10,7 +10,8 @@ import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.lwjgl.opencl.CL10.*;
+import static org.lwjgl.opencl.CL10.CL_PROGRAM_BUILD_LOG;
+import static org.lwjgl.opencl.CL10.CL_SUCCESS;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
@@ -20,7 +21,7 @@ public class ClProgram {
     private final Map<String, Long> kernels;
 
 
-    public ClProgram(OpenClContext context, ResourceLocation sourceLoc) {
+    public ClProgram(OpenClContext context, Identifier sourceLoc) {
         this.context = context;
         this.kernels = new HashMap<>();
         String source = Commons.getRlSource(sourceLoc);

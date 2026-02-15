@@ -9,10 +9,10 @@ import org.joml.Vector3f;
 import java.util.Collection;
 
 public class Uniforms {
-    public static final Uniform<?> CAMERA_POS = new Uniform<>("cameraPos", new Vector3f(Instances.getMainCamera().getPosition().toVector3f()));
-    public static final Uniform<?> LOOK_VECTOR = new Uniform<>("lookVector", Instances.getMainCamera().getLookVector());
-    public static final Uniform<?> UP_VECTOR = new Uniform<>("upVector", Instances.getMainCamera().getUpVector());
-    public static final Uniform<?> LEFT_VECTOR = new Uniform<>("leftVector", Instances.getMainCamera().getLeftVector());
+    public static final Uniform<?> CAMERA_POS = new Uniform<>("cameraPos", new Vector3f(Instances.getMainCamera().position().toVector3f()));
+    public static final Uniform<?> LOOK_VECTOR = new Uniform<>("lookVector", Instances.getMainCamera().forwardVector());
+    public static final Uniform<?> UP_VECTOR = new Uniform<>("upVector", Instances.getMainCamera().upVector());
+    public static final Uniform<?> LEFT_VECTOR = new Uniform<>("leftVector", Instances.getMainCamera().leftVector());
     public static final Uniform<?> INV_VIEW_MAT = new Uniform<>("invViewMat", ClientMatrices.MODEL_VIEW.invert());
     public static final Uniform<?> INV_PROJ_MAT = new Uniform<>("invProjMat", ClientMatrices.PROJECTION.invert());
     public static final Uniform<?> NEAR_PLANE_DISTANCE = new Uniform<>("nearPlaneDistance", GameRenderer.PROJECTION_Z_NEAR);

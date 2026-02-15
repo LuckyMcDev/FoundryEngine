@@ -6,7 +6,7 @@ import imgui.type.ImBoolean;
 import io.github.luckymcdev.client.editor.config.ImGuiWindowType;
 import io.github.luckymcdev.client.editor.config.PanelStyle;
 import io.github.luckymcdev.common.Instances;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 /**
  * An ImGui Panel.
@@ -16,7 +16,7 @@ public class Panel {
     /**
      * The Id.
      */
-    public ResourceLocation id;
+    public Identifier id;
     /**
      * The Label.
      */
@@ -44,7 +44,7 @@ public class Panel {
      * @param id    the id
      * @param label the label
      */
-    protected Panel(ResourceLocation id, String label) {
+    protected Panel(Identifier id, String label) {
         this.id = id;
         this.label = label;
         this.open = false;
@@ -58,7 +58,7 @@ public class Panel {
      *
      * @return the id
      */
-    public ResourceLocation getId() {
+    public Identifier getId() {
         return this.id;
     }
 

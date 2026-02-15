@@ -1,9 +1,7 @@
 package io.github.luckymcdev;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import io.github.luckymcdev.client.RegisterRenderingStuffEvent;
-import io.github.luckymcdev.client.imgui.ImGuiHandler;
 import io.github.luckymcdev.client.opengl.shaders.preprocessing.IncludeGLSLPreProcessor;
 import io.github.luckymcdev.client.opengl.shaders.preprocessing.RegisterGLSLPreProcessorEvent;
 import io.github.luckymcdev.client.post.RegisterPostPipelineEvent;
@@ -16,8 +14,6 @@ import io.github.luckymcdev.common.opencl.OpenClExample;
 import io.github.luckymcdev.common.opencl.task.ClWorker;
 import io.github.luckymcdev.config.Config;
 import net.minecraft.client.KeyMapping;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.network.chat.Component;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -38,8 +34,6 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
-
-import javax.script.CompiledScript;
 
 @Mod(Commons.MODID)
 public class ToolboxLib {

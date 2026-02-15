@@ -4,7 +4,7 @@ import io.github.luckymcdev.client.opengl.shaders.ExtendedShaderType;
 import io.github.luckymcdev.client.opengl.shaders.Shader;
 import io.github.luckymcdev.client.opengl.shaders.exeption.ShaderException;
 import io.github.luckymcdev.common.registry.GenericRegistry;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 /**
  * A class which compiles and caches Shaders.
@@ -40,7 +40,7 @@ public final class ShaderCompiler {
         cache.clear();
     }
 
-    private record ShaderKey(ResourceLocation id, ExtendedShaderType type, String source) {
+    private record ShaderKey(Identifier id, ExtendedShaderType type, String source) {
         /**
          * ShaderKey via Shader.
          *

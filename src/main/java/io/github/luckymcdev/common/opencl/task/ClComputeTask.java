@@ -6,7 +6,7 @@ import io.github.luckymcdev.common.opencl.core.ClCommandQueue;
 import io.github.luckymcdev.common.opencl.core.ClKernel;
 import io.github.luckymcdev.common.opencl.core.ClProgram;
 import io.github.luckymcdev.common.opencl.core.OpenClContext;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.system.MemoryStack;
 
@@ -41,7 +41,7 @@ public class ClComputeTask {
         this.buffers = new ArrayList<>();
     }
 
-    public static Builder create(ResourceLocation kernelFile, String kernelName) {
+    public static Builder create(Identifier kernelFile, String kernelName) {
         return new Builder(kernelFile, kernelName);
     }
 
@@ -160,11 +160,11 @@ public class ClComputeTask {
     }
 
     public static class Builder {
-        private final ResourceLocation kernelFile;
+        private final Identifier kernelFile;
         private final String kernelName;
         private boolean printInfo = false;
 
-        private Builder(ResourceLocation kernelFile, String kernelName) {
+        private Builder(Identifier kernelFile, String kernelName) {
             this.kernelFile = kernelFile;
             this.kernelName = kernelName;
         }
