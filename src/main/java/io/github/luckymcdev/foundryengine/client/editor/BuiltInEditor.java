@@ -66,7 +66,7 @@ public class BuiltInEditor {
      * @param panel the panel
      */
     public void togglePanel(Panel panel) {
-        if(checkOpen(panel)) {
+        if(isOpen(panel)) {
             closePanel(panel);
         } else {
             openPanel(panel);
@@ -75,12 +75,12 @@ public class BuiltInEditor {
 
     /**
      * Opens a Panel.
-     * Ref: {@link BuiltInEditor#togglePanel(Panel panel)}
+     * Ref: {@link BuiltInEditor#togglePanel(Panel)}
      *
      * @param panel the panel
      */
     public void openPanel(Panel panel) {
-        if (!checkOpen(panel)) {
+        if (!isOpen(panel)) {
             OPEN_PANELS.register(panel.getId(), panel);
             panel.open();
         }
@@ -88,18 +88,54 @@ public class BuiltInEditor {
 
     /**
      * Closes a Panel.
-     * Ref: {@link BuiltInEditor#togglePanel(Panel panel)}
+     * Ref: {@link BuiltInEditor#togglePanel(Panel)}
      *
      * @param panel the panel
      */
     public void closePanel(Panel panel) {
-        if (checkOpen(panel)) {
+        if (isOpen(panel)) {
             OPEN_PANELS.remove(panel.getId());
             panel.close();
         }
     }
 
-    private boolean checkOpen(Panel panel) {
+    /**
+     * Checks if a panel is currently open.
+     *
+     * @param panel the panel to check
+     * @return true if the panel is open, false otherwise
+     */
+    public boolean isOpen(Panel panel) {
         return OPEN_PANELS.contains(panel.getId());
+    }
+
+    /**
+     * Closes all currently open panels.
+     */
+    public void closeAllPanels() {
+        List<Identifier> allPanels = new ArrayList<>();
+        OPEN_PANELS.forEach(panel -> {
+            allPanels.add(panel.getId());
+            panel.close();
+        });
+        allPanels.forEach(OPEN_PANELS::remove);
+    }
+
+    /**
+     * Gets all registered panels.
+     *
+     * @return the panels registry
+     */
+    public GenericRegistry<Identifier, Panel> getPanels() {
+        return PANELS;
+    }
+
+    /**
+     * Gets all currently open panels.
+     *
+     * @return the open panels registry
+     */
+    public GenericRegistry<Identifier, Panel> getOpenPanels() {
+        return OPEN_PANELS;
     }
 }

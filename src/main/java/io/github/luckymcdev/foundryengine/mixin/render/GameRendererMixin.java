@@ -3,9 +3,7 @@ package io.github.luckymcdev.foundryengine.mixin.render;
 import imgui.ImGui;
 
 import io.github.luckymcdev.foundryengine.client.editor.BuiltInEditor;
-import io.github.luckymcdev.foundryengine.client.editor.panels.NodeEditorPanel;
-import io.github.luckymcdev.foundryengine.client.editor.panels.PostProcessPanel;
-import io.github.luckymcdev.foundryengine.client.editor.panels.TestPanel;
+import io.github.luckymcdev.foundryengine.client.editor.MainMenu;
 import io.github.luckymcdev.foundryengine.client.imgui.ImGuiHandler;
 
 import io.github.luckymcdev.foundryengine.common.Instances;
@@ -35,27 +33,12 @@ public class GameRendererMixin implements TbGameRenderer {
     public void tb$renderReturn(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci) {
         ImGuiHandler.beginImGuiRendering();
 
-        // Render the UI
+        // Render the main menu bar at the top
+        MainMenu.handleRender();
+
+        // Render all open panels
         tb$builtInEditor.handleRender();
-
-        ImGui.begin("editor manager");
-
-        if(ImGui.button("toggle test panel")) {
-            tb$builtInEditor.togglePanel(TestPanel.INSTANCE);
-        }
-        ImGui.separator();
-        if(ImGui.button("toggle node editor panel")) {
-            tb$builtInEditor.togglePanel(NodeEditorPanel.INSTANCE);
-        }
-        ImGui.separator();
-        if(ImGui.button("toggle post processing panel")) {
-            tb$builtInEditor.togglePanel(PostProcessPanel.INSTANCE);
-        }
-
-        ImGui.end();
 
         ImGuiHandler.endImGuiRendering();
     }
-
-
 }
