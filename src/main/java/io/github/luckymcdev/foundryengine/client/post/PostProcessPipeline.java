@@ -15,7 +15,7 @@ public class PostProcessPipeline {
         return program;
     }
 
-    public void setupDefaultUniforms() {
+    public final void setupDefaultUniforms() {
         program.setUniforms(Uniforms.getCollection());
         program.setUniform(new Uniform<>("screenTexture", 0));
         program.setUniform(new Uniform<>("depthTexture", 1));

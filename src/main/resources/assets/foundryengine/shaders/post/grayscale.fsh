@@ -1,5 +1,7 @@
 #version 330 core
 
+#include <minecraft/fog.glsl>
+
 in vec2 texCoord;
 out vec4 fragColor;
 

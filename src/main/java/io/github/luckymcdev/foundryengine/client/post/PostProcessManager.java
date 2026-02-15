@@ -15,6 +15,7 @@ import io.github.luckymcdev.foundryengine.common.Commons;
 import io.github.luckymcdev.foundryengine.common.Instances;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import org.lwjgl.opengl.GL33;
 import org.lwjgl.opengl.GL43C;
@@ -43,6 +44,8 @@ public class PostProcessManager {
 
     public void addPipeline(PostProcessPipeline pipeline) {
         PIPELINES.add(pipeline);
+        Instances.getShaderManager().register(pipeline.getProgram());
+        pipeline.getProgram().shaders().forEach(Instances.getShaderManager()::register);
     }
 
     public void enablePipeline(PostProcessPipeline pipeline) {
@@ -58,6 +61,8 @@ public class PostProcessManager {
 
     public void addPipeline(StagedPostProcessPipeline pipeline) {
         STAGED_PIPELINES.add(pipeline);
+        Instances.getShaderManager().register(pipeline.getProgram());
+        pipeline.getProgram().shaders().forEach(Instances.getShaderManager()::register);
     }
 
     public void enablePipeline(StagedPostProcessPipeline pipeline) {
@@ -141,8 +146,12 @@ public class PostProcessManager {
     @SubscribeEvent
     public static void onAfterLevel(RenderLevelStageEvent.AfterLevel event) {
         runStagedPipelines(PostProcessStage.AFTER_LEVEL);
-        // Also run non-staged pipelines at the end
         runNonStagedPipelines();
+    }
+
+    @SubscribeEvent
+    public static void onAfterRender(RenderGuiEvent.Post event) {
+
     }
 
     /**

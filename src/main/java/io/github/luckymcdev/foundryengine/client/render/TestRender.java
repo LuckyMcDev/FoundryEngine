@@ -6,6 +6,7 @@ import io.github.luckymcdev.foundryengine.client.opengl.shaders.Shader;
 import io.github.luckymcdev.foundryengine.client.opengl.shaders.ShaderSource;
 import io.github.luckymcdev.foundryengine.client.opengl.shaders.exeption.ShaderException;
 import io.github.luckymcdev.foundryengine.client.opengl.shaders.program.ShaderProgram;
+import io.github.luckymcdev.foundryengine.client.post.builtin.AsciiPostProcessPipeline;
 import io.github.luckymcdev.foundryengine.client.post.PostProcessPipeline;
 import io.github.luckymcdev.foundryengine.client.post.staged.PostProcessStage;
 import io.github.luckymcdev.foundryengine.client.post.staged.StagedPostProcessPipeline;
@@ -22,6 +23,7 @@ public class TestRender {
 
             registerGrayscale();
             registerDepthVisualize();
+            registerAscii();
 
         } catch (ShaderException e) {
             LOGGER.error("Failed to register post-processing pipelines", e);
@@ -41,9 +43,6 @@ public class TestRender {
                         Commons.id("shaders/post/grayscale.fsh")
                 )
         );
-
-        Instances.getShaderManager().register(grayScaleFragment);
-
         Shader grayScaleVertex = new Shader(
                 ExtendedShaderType.VERTEX,
                 new ShaderSource(
@@ -51,20 +50,14 @@ public class TestRender {
                         Commons.id("shaders/post/grayscale.vsh")
                 )
         );
-
-        Instances.getShaderManager().register(grayScaleVertex);
-
         ShaderProgram grayScaleProgram = new ShaderProgram(
                 Commons.id("post_grayscale"),
                 grayScaleFragment,
                 grayScaleVertex
         );
         grayScaleProgram.link();
-
-        Instances.getShaderManager().register(grayScaleProgram);
-
         // Create and register pipeline
-        StagedPostProcessPipeline grayScalePipeline = new StagedPostProcessPipeline(PostProcessStage.AFTER_SKY, grayScaleProgram);
+        StagedPostProcessPipeline grayScalePipeline = new StagedPostProcessPipeline(PostProcessStage.AFTER_ENTITIES, grayScaleProgram);
         Instances.getPostProcessManager().addPipeline(grayScalePipeline);
     }
 
@@ -78,9 +71,6 @@ public class TestRender {
                         Commons.id("shaders/post/depth_visualize.fsh")
                 )
         );
-
-        Instances.getShaderManager().register(depthVisualizeFrag);
-
         Shader depthVisualizeVert = new Shader(
                 ExtendedShaderType.VERTEX,
                 new ShaderSource(
@@ -88,20 +78,40 @@ public class TestRender {
                         Commons.id("shaders/post/depth_visualize.vsh")
                 )
         );
-
-        Instances.getShaderManager().register(depthVisualizeVert);
-
         ShaderProgram depthVisualizeProgram = new ShaderProgram(
                 Commons.id("post_depth_visualize"),
                 depthVisualizeFrag,
                 depthVisualizeVert
         );
         depthVisualizeProgram.link();
-
-        Instances.getShaderManager().register(depthVisualizeProgram);
-
         // Create and register pipeline
         PostProcessPipeline grayScalePipeline = new PostProcessPipeline(depthVisualizeProgram);
         Instances.getPostProcessManager().addPipeline(grayScalePipeline);
+    }
+
+    private static void registerAscii() throws ShaderException {
+        Shader asciiFrag = new Shader(
+                ExtendedShaderType.FRAGMENT,
+                new ShaderSource(
+                        Commons.id("post_ascii_frag"),
+                        Commons.id("shaders/post/ascii.fsh")
+                )
+        );
+        Shader asciiVert = new Shader(
+                ExtendedShaderType.VERTEX,
+                new ShaderSource(
+                        Commons.id("post_ascii_vert"),
+                        Commons.id("shaders/post/ascii.vsh")
+                )
+        );
+        ShaderProgram asciiProgram = new ShaderProgram(
+                Commons.id("post_ascii"),
+                asciiFrag,
+                asciiVert
+        );
+        asciiProgram.link();
+        // Create and register pipeline
+        AsciiPostProcessPipeline asciiPipeline = new AsciiPostProcessPipeline(asciiProgram);
+        Instances.getPostProcessManager().addPipeline(asciiPipeline);
     }
 }

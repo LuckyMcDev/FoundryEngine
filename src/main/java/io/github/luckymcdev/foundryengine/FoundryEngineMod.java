@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import io.github.luckymcdev.foundryengine.client.RegisterRenderingStuffEvent;
 import io.github.luckymcdev.foundryengine.client.opengl.shaders.preprocessing.IncludeGLSLPreProcessor;
 import io.github.luckymcdev.foundryengine.client.opengl.shaders.preprocessing.RegisterGLSLPreProcessorEvent;
+import io.github.luckymcdev.foundryengine.client.post.PostProcessPipeline;
 import io.github.luckymcdev.foundryengine.client.post.RegisterPostPipelineEvent;
 import io.github.luckymcdev.foundryengine.client.render.TestRender;
 import io.github.luckymcdev.foundryengine.client.util.KeyBinding;
@@ -104,7 +105,7 @@ public class FoundryEngineMod {
         public static void onRenderLevel(RenderLevelStageEvent.AfterLevel event) {
             if (!shadersInitialized) {
                 shadersInitialized = true;
-                NeoForge.EVENT_BUS.post(new RegisterPostPipelineEvent());
+                NeoForge.EVENT_BUS.post(new RegisterPostPipelineEvent(Instances.getPostProcessManager()));
                 NeoForge.EVENT_BUS.post(new RegisterRenderingStuffEvent(Instances.getTbRenderer(), Instances.getResourceManager()));
             }
         }

@@ -6,10 +6,12 @@ out vec4 fragColor;
 uniform sampler2D depthTexture;
 
 void main() {
+    // 1. Sample raw depth
     float depth = texture(depthTexture, texCoord).r;
-    float inverted = 1.0 - depth;
 
-    float visualDepth = pow(inverted, 0.4);
+    // 2. Do NOT invert if you want standard depth visualization
+    // where the sky is white and close objects are dark.
+    float visualDepth = pow(depth, 0.4);
 
     fragColor = vec4(vec3(visualDepth), 1.0);
 }
