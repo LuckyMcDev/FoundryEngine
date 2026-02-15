@@ -128,6 +128,10 @@ public class ShaderProgram extends OpenGlObject {
         return id;
     }
 
+    public ArrayList<Shader> shaders() {
+        return shaders;
+    }
+
     @Override
     public void free() {
         delete();
