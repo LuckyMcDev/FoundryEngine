@@ -58,17 +58,23 @@ public class MainMenu {
 
             ImGui.separator();
 
-            if (ImGui.menuItem("ImGui Demo", demoWindowOpen.get())) {
-                demoWindowOpen.set(true);
-                ImGui.showDemoWindow();
+            if (ImGui.menuItem("ImGui Demo", "", demoWindowOpen.get())) {
+                demoWindowOpen.set(!demoWindowOpen.get());
             }
 
-            if (ImGui.menuItem("ImGui Metrics", metricsWindowOpen.get())) {
-                metricsWindowOpen.set(true);
-                ImGui.showMetricsWindow();
+            if (ImGui.menuItem("ImGui Metrics", "", metricsWindowOpen.get())) {
+                metricsWindowOpen.set(!metricsWindowOpen.get());
             }
 
             ImGui.endMenu();
+        }
+
+        if (demoWindowOpen.get()) {
+            ImGui.showDemoWindow(demoWindowOpen);
+        }
+
+        if (metricsWindowOpen.get()) {
+            ImGui.showMetricsWindow(metricsWindowOpen);
         }
     }
 
