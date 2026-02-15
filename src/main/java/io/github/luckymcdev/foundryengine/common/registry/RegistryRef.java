@@ -1,31 +1,49 @@
 package io.github.luckymcdev.foundryengine.common.registry;
 
+import java.util.Objects;
+import java.util.function.Consumer;
+
 public class RegistryRef<K, V> {
     private final K key;
-    private V value;
+    private final Registry<K, V> registry;
+    private V cachedValue;
 
-    public RegistryRef(K key) {
-        this.key = key;
+    public RegistryRef(K key, Registry<K, V> registry) {
+        this.key = Objects.requireNonNull(key, "Registry key cannot be null");
+        this.registry = Objects.requireNonNull(registry, "Registry reference cannot be null");
     }
 
-    public RegistryRef(K key, V value) {
-        this.key = key;
-        this.value = value;
+    public V get() {
+        if (cachedValue != null) {
+            return cachedValue;
+        }
+
+        V value = registry.get(key);
+
+        if (registry.isFrozen() && value != null) {
+            this.cachedValue = value;
+        }
+
+        return value;
     }
 
     public K getKey() {
         return key;
     }
 
-    public V getValue() {
-        return value;
+    public boolean exists() {
+        return registry.contains(key);
     }
 
-    public void setValue(V value) {
-        this.value = value;
+    public void ifPresent(Consumer<V> action) {
+        V val = get();
+        if (val != null) {
+            action.accept(val);
+        }
     }
 
-    public boolean isSet() {
-        return value != null;
+    @Override
+    public String toString() {
+        return "RegistryRef{" + "key=" + key + ", cached=" + (cachedValue != null) + '}';
     }
 }
