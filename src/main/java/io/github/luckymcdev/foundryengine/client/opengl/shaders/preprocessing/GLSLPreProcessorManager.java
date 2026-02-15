@@ -35,7 +35,7 @@ public class GLSLPreProcessorManager {
      */
     public String processAll(String source) {
         String result = source;
-        for (GLSLPreProcessor processor : PREPROCESSORS.getValues()) {
+        for (GLSLPreProcessor processor : PREPROCESSORS.values()) {
             result = processor.apply(result);
         }
         return result;

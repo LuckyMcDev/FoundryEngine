@@ -38,11 +38,11 @@ public class ShaderManager implements ResourceManagerReloadListener {
     public void reload() throws ShaderException {
         getCompiler().clearCache();
 
-        for (Shader shader : SHADERS.getValues()) {
+        for (Shader shader : SHADERS.values()) {
             LOGGER.info("reloading shader: {}", shader.getId());
             shader.reload();
         }
-        for(ShaderProgram program : PROGRAMS.getValues() ) {
+        for(ShaderProgram program : PROGRAMS.values() ) {
             LOGGER.info("reloading program: {}", program.getId());
             program.reload();
         }

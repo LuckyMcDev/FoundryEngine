@@ -44,7 +44,7 @@ public class BuiltInEditor {
      * Handles Ticking for all Panels.
      */
     public void handleTick() {
-        OPEN_PANELS.getValues().forEach(Panel::handleTick);
+        OPEN_PANELS.forEach(Panel::handleTick);
     }
 
     /**
@@ -52,7 +52,7 @@ public class BuiltInEditor {
      */
     public void handleRender() {
         List<Identifier> panelsToRemove = new ArrayList<>();
-        OPEN_PANELS.getValues().forEach(panel -> {
+        OPEN_PANELS.forEach(panel -> {
             if (!panel.handleRender()) {
                 panelsToRemove.add(panel.getId());
             }
