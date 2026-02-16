@@ -1,23 +1,18 @@
 package io.github.luckymcdev.foundryengine.client.editor.panels;
 
 import imgui.ImGui;
+import imgui.flag.ImGuiTreeNodeFlags;
 import io.github.luckymcdev.foundryengine.client.editor.Panel;
-import io.github.luckymcdev.foundryengine.client.post.PostProcessPipeline;
-import io.github.luckymcdev.foundryengine.client.post.staged.PostProcessStage;
-import io.github.luckymcdev.foundryengine.client.post.staged.StagedPostProcessPipeline;
+import io.github.luckymcdev.foundryengine.client.post.pipeline.PostProcessPipeline;
+import io.github.luckymcdev.foundryengine.client.post.pipeline.staged.PostProcessStage;
+import io.github.luckymcdev.foundryengine.client.post.pipeline.staged.StagedPostProcessPipeline;
 import io.github.luckymcdev.foundryengine.common.Commons;
 import io.github.luckymcdev.foundryengine.common.Instances;
 
 import java.util.List;
 import java.util.Map;
 
-/**
- * The Post Process Panel
- */
 public class PostProcessPanel extends Panel {
-    /**
-     * The constant INSTANCE.
-     */
     public static final PostProcessPanel INSTANCE = new PostProcessPanel();
 
     private PostProcessPanel() {
@@ -26,103 +21,90 @@ public class PostProcessPanel extends Panel {
 
     @Override
     public void content() {
-        ImGui.text("Enable and Disable Pipelines right here");
+        ImGui.text("Post Processing Management");
         ImGui.separator();
 
-        // Non-Staged Pipelines Section
-        if (ImGui.collapsingHeader("Non-Staged Pipelines")) {
-            List<PostProcessPipeline> allPipelines = Instances.getPostProcessManager().getPipelines();
-            List<PostProcessPipeline> enabledPipelines = Instances.getPostProcessManager().getEnabledPipelines();
-
-            if (allPipelines.isEmpty()) {
-                ImGui.textDisabled("No non-staged pipelines registered");
-            } else {
-                for (PostProcessPipeline pipeline : allPipelines) {
-                    renderPipelineControls(pipeline, enabledPipelines.contains(pipeline));
-                }
-            }
+        if (ImGui.collapsingHeader("Global Pipelines")) {
+            renderNonStagedSection();
         }
 
         ImGui.separator();
 
-        // Staged Pipelines Section
-        if (ImGui.collapsingHeader("Staged Pipelines")) {
-            List<StagedPostProcessPipeline> allStagedPipelines = Instances.getPostProcessManager().getStagedPipelines();
-            List<StagedPostProcessPipeline> enabledStagedPipelines = Instances.getPostProcessManager().getEnabledStagedPipelines();
-            Map<PostProcessStage, List<StagedPostProcessPipeline>> pipelinesByStage = Instances.getPostProcessManager().getPipelinesByStage();
+        if (ImGui.collapsingHeader("Staged Pipelines", ImGuiTreeNodeFlags.DefaultOpen)) {
+            var postProcessManager = Instances.getPostProcessManager();
+            Map<PostProcessStage, List<StagedPostProcessPipeline>> pipelinesByStage = postProcessManager.getPipelinesByStage();
 
-            if (allStagedPipelines.isEmpty()) {
-                ImGui.textDisabled("No staged pipelines registered");
-            } else {
-                // Group by stage
-                for (PostProcessStage stage : PostProcessStage.values()) {
-                    List<StagedPostProcessPipeline> stagePipelines = pipelinesByStage.get(stage);
-                    boolean hasEnabledInStage = stagePipelines != null && !stagePipelines.isEmpty();
+            for (PostProcessStage stage : PostProcessStage.values()) {
+                List<StagedPostProcessPipeline> stagePipelines = pipelinesByStage.getOrDefault(stage, List.of());
+                int stageCount = stagePipelines.size();
 
-                    // Count total pipelines for this stage
-                    int totalInStage = 0;
-                    for (StagedPostProcessPipeline pipeline : allStagedPipelines) {
-                        if (pipeline.getStage() == stage) {
-                            totalInStage++;
+                if (ImGui.treeNode(stage.name() + " (" + stageCount + ")")) {
+                    if (stageCount == 0) {
+                        ImGui.textDisabled("  No pipelines in this stage");
+                    } else {
+                        for (StagedPostProcessPipeline pipeline : stagePipelines) {
+                            renderStagedPipelineRow(pipeline);
                         }
                     }
-
-                    if (totalInStage > 0) {
-                        String stageHeader = stage.name() + " (" + (stagePipelines != null ? stagePipelines.size() : 0) + "/" + totalInStage + " enabled)";
-
-                        if (ImGui.treeNode(stageHeader)) {
-                            for (StagedPostProcessPipeline pipeline : allStagedPipelines) {
-                                if (pipeline.getStage() == stage) {
-                                    renderStagedPipelineControls(pipeline, enabledStagedPipelines.contains(pipeline));
-                                }
-                            }
-                            ImGui.treePop();
-                        }
-                    }
+                    ImGui.treePop();
                 }
             }
         }
     }
 
-    private void renderPipelineControls(PostProcessPipeline pipeline, boolean isEnabled) {
-        ImGui.pushID(pipeline.getProgram().getId().toString());
+    private void renderNonStagedSection() {
+        List<PostProcessPipeline> allPipelines = Instances.getPostProcessManager().getPipelines();
+        if (allPipelines.isEmpty()) {
+            ImGui.textDisabled("No global pipelines registered");
+            return;
+        }
 
-        String id = pipeline.getProgram().getId().toString();
-        ImGui.text("Pipeline: " + id);
+        for (PostProcessPipeline pipeline : allPipelines) {
+            ImGui.pushID(pipeline.getName().toString());
+            boolean enabled = pipeline.isEnabled();
+            if (ImGui.checkbox("##enabled", enabled)) {
+                if (enabled) pipeline.disable(); else pipeline.enable();
+            }
+            ImGui.sameLine();
+            ImGui.text(pipeline.getName().toString());
+            ImGui.popID();
+        }
+    }
+
+    private void renderStagedPipelineRow(StagedPostProcessPipeline pipeline) {
+        ImGui.pushID(pipeline.getName().toString() + "_row");
+
+        boolean enabled = pipeline.isEnabled();
+        if (ImGui.checkbox("##enabled", enabled)) {
+            if (enabled) pipeline.disable(); else pipeline.enable();
+        }
+
         ImGui.sameLine();
+        ImGui.text(pipeline.getName().getPath());
 
-        if (!isEnabled) {
-            if (ImGui.button("Enable")) {
-                Instances.getPostProcessManager().enablePipeline(pipeline);
+        ImGui.sameLine();
+        ImGui.setNextItemWidth(200);
+
+        PostProcessStage currentStage = pipeline.getStage();
+        if (ImGui.beginCombo("##stage_select", currentStage.name())) {
+            for (PostProcessStage stageOption : PostProcessStage.values()) {
+                boolean isSelected = (currentStage == stageOption);
+                if (ImGui.selectable(stageOption.name(), isSelected)) {
+                    movePipelineToStage(pipeline, stageOption);
+                }
+                if (isSelected) {
+                    ImGui.setItemDefaultFocus();
+                }
             }
-        } else {
-            if (ImGui.button("Disable")) {
-                Instances.getPostProcessManager().disablePipeline(pipeline);
-            }
+            ImGui.endCombo();
         }
 
         ImGui.separator();
         ImGui.popID();
     }
 
-    private void renderStagedPipelineControls(StagedPostProcessPipeline pipeline, boolean isEnabled) {
-        ImGui.pushID(pipeline.getProgram().getId().toString() + "_staged");
-
-        String id = pipeline.getProgram().getId().toString();
-        ImGui.text("Pipeline: " + id);
-        ImGui.sameLine();
-
-        if (!isEnabled) {
-            if (ImGui.button("Enable")) {
-                Instances.getPostProcessManager().enablePipeline(pipeline);
-            }
-        } else {
-            if (ImGui.button("Disable")) {
-                Instances.getPostProcessManager().disablePipeline(pipeline);
-            }
-        }
-
-        ImGui.separator();
-        ImGui.popID();
+    private void movePipelineToStage(StagedPostProcessPipeline pipeline, PostProcessStage newStage) {
+        if (pipeline.getStage() == newStage) return;
+        Instances.getPostProcessManager().changePipelineStage(pipeline, newStage);
     }
 }

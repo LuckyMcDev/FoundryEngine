@@ -1,6 +1,7 @@
 package io.github.luckymcdev.foundryengine.client.post;
 
-import io.github.luckymcdev.foundryengine.client.post.staged.StagedPostProcessPipeline;
+import io.github.luckymcdev.foundryengine.client.post.pipeline.PostProcessPipeline;
+import io.github.luckymcdev.foundryengine.client.post.pipeline.staged.StagedPostProcessPipeline;
 import net.neoforged.bus.api.Event;
 
 public class RegisterPostPipelineEvent extends Event {

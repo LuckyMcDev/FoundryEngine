@@ -59,15 +59,21 @@ void main() {
     vec2 p = (charPos / 4.0) - vec2(1.0);
     vec2 centerUV = (blockPos * 8.0 + vec2(4.0)) / resolution;
 
-    vec3 col = texture(screenTexture, centerUV).rgb;
-    float lum = luminance(col);
-
-    lum = pow(lum * BRIGHTNESS_MULTIPLIER, CONTRAST_POWER);
-
     vec2 texel = 1.0 / resolution;
     float d = getDepth(centerUV);
     float dN = getDepth(centerUV + vec2(0, texel.y));
     float dE = getDepth(centerUV + vec2(texel.x, 0));
+
+    vec3 col = texture(screenTexture, centerUV).rgb;
+    float lum = luminance(col);
+
+    // When upstream passes are very dark (e.g., depth visualize),
+    // use depth as a fallback luminance and enforce a minimum floor.
+    float depthLum = pow(1.0 - d, 0.35);
+    float baseLum = max(lum, depthLum * 0.9);
+    baseLum = max(baseLum, 0.12);
+    float lumForChars = pow(baseLum * BRIGHTNESS_MULTIPLIER, CONTRAST_POWER);
+    vec3 baseCol = mix(col, vec3(baseLum), 0.6);
 
     float edgeDiff = abs(d - dN) + abs(d - dE);
     bool isEdge = edgeDiff > 0.02;
@@ -82,19 +88,19 @@ void main() {
     }
     else {
         // Smooth Luminance Ramp
-        if (lum > 0.10) charID = C_DOT;
-        if (lum > 0.25) charID = C_COMMA;
-        if (lum > 0.40) charID = C_MINUS; // Mid-tones get softer '-'
-        if (lum > 0.55) charID = C_TILDE; // instead of harsh '+'
-        if (lum > 0.70) charID = C_EQUAL;
-        if (lum > 0.85) charID = C_HASH;
-        if (lum > 0.95) charID = C_AT;
+        if (lumForChars > 0.10) charID = C_DOT;
+        if (lumForChars > 0.25) charID = C_COMMA;
+        if (lumForChars > 0.40) charID = C_MINUS; // Mid-tones get softer '-'
+        if (lumForChars > 0.55) charID = C_TILDE; // instead of harsh '+'
+        if (lumForChars > 0.70) charID = C_EQUAL;
+        if (lumForChars > 0.85) charID = C_HASH;
+        if (lumForChars > 0.95) charID = C_AT;
     }
 
     float mask = getBit(charID, p);
 
     // Soft blend: Keep 10% of original color in background for readability
-    vec3 finalCol = mix(col * 0.1, col * 1.2, mask);
+    vec3 finalCol = mix(baseCol * 0.2, baseCol * 1.2, mask);
 
     fragColor = vec4(finalCol, 1.0);
 }

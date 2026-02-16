@@ -79,6 +79,7 @@ dependencies {
     testRuntimeOnly "org.junit.platform:junit-platform-launcher"
 
     jarJar(implementation("org.xerial:sqlite-jdbc:${project.sqlite_version}"))
+    jarJar(implementation("com.j256:ormlite:${project.ormlite_version}"))
 
     jarJar(implementation(platform("org.lwjgl:lwjgl-bom:${project.lwjgl_version}")))
 

@@ -6,11 +6,13 @@ import io.github.luckymcdev.foundryengine.client.RegisterRenderingStuffEvent;
 import io.github.luckymcdev.foundryengine.client.opengl.GlDispatch;
 import io.github.luckymcdev.foundryengine.client.opengl.OpenGlStack;
 import io.github.luckymcdev.foundryengine.client.opengl.framebuffer.FrameBuffer;
+import io.github.luckymcdev.foundryengine.client.opengl.shaders.program.ShaderProgram;
 import io.github.luckymcdev.foundryengine.client.opengl.vertex.Mesh;
 import io.github.luckymcdev.foundryengine.client.opengl.vertex.VertexLayout;
 import io.github.luckymcdev.foundryengine.client.opengl.vertex.Vertices;
-import io.github.luckymcdev.foundryengine.client.post.staged.PostProcessStage;
-import io.github.luckymcdev.foundryengine.client.post.staged.StagedPostProcessPipeline;
+import io.github.luckymcdev.foundryengine.client.post.pipeline.PostProcessPipeline;
+import io.github.luckymcdev.foundryengine.client.post.pipeline.staged.PostProcessStage;
+import io.github.luckymcdev.foundryengine.client.post.pipeline.staged.StagedPostProcessPipeline;
 import io.github.luckymcdev.foundryengine.common.Commons;
 import io.github.luckymcdev.foundryengine.common.Instances;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -24,76 +26,60 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @EventBusSubscriber
 public class PostProcessManager {
     private static final OpenGlStack GL_STACK = Instances.getOpenGlStack();
     private static final List<PostProcessPipeline> PIPELINES = new ArrayList<>();
-    private static final List<PostProcessPipeline> ENABLED_PIPELINES = new ArrayList<>();
     private static final List<StagedPostProcessPipeline> STAGED_PIPELINES = new ArrayList<>();
-    private static final List<StagedPostProcessPipeline> ENABLED_STAGED_PIPELINES = new ArrayList<>();
-
-    // Map to organize enabled staged pipelines by their stage
-    private static final Map<PostProcessStage, List<StagedPostProcessPipeline>> PIPELINES_BY_STAGE = new EnumMap<>(PostProcessStage.class);
+    private static final int COLOR_TEXTURE_UNIT = 0;
+    private static final int DEPTH_TEXTURE_UNIT = 1;
+    private static final int SAVED_TEXTURE_UNIT_COUNT = 8;
+    private static final PostProcessStage STAGE_NOT_STAGED = null;
 
     private static Mesh quad;
     private static FrameBuffer bufferPing;
-    private static FrameBuffer bufferPong;
-    private static int lastMainWidth = -1;
-    private static int lastMainHeight = -1;
 
     public void addPipeline(PostProcessPipeline pipeline) {
         PIPELINES.add(pipeline);
-        Instances.getShaderManager().register(pipeline.getProgram());
-        pipeline.getProgram().shaders().forEach(Instances.getShaderManager()::register);
+        registerPipelineProgram(pipeline.getProgram());
     }
 
     public void enablePipeline(PostProcessPipeline pipeline) {
-        if(PIPELINES.contains(pipeline)) {
-            ENABLED_PIPELINES.add(pipeline);
+        if (PIPELINES.contains(pipeline)) {
+            pipeline.enable();
         }
     }
 
     public void disablePipeline(PostProcessPipeline pipeline) {
-        ENABLED_PIPELINES.remove(pipeline);
+        pipeline.disable();
     }
-
 
     public void addPipeline(StagedPostProcessPipeline pipeline) {
         STAGED_PIPELINES.add(pipeline);
-        Instances.getShaderManager().register(pipeline.getProgram());
-        pipeline.getProgram().shaders().forEach(Instances.getShaderManager()::register);
+        registerPipelineProgram(pipeline.getProgram());
     }
 
     public void enablePipeline(StagedPostProcessPipeline pipeline) {
-        if(STAGED_PIPELINES.contains(pipeline) && !ENABLED_STAGED_PIPELINES.contains(pipeline)) {
-            ENABLED_STAGED_PIPELINES.add(pipeline);
-            rebuildStageMap();
+        if (STAGED_PIPELINES.contains(pipeline) && !pipeline.isEnabled()) {
+            pipeline.enable();
         }
     }
 
     public void disablePipeline(StagedPostProcessPipeline pipeline) {
-        if(ENABLED_STAGED_PIPELINES.remove(pipeline)) {
-            rebuildStageMap();
-        }
+        pipeline.disable();
     }
 
-    /**
-     * Rebuilds the map that organizes pipelines by their stage
-     */
-    private static void rebuildStageMap() {
-        PIPELINES_BY_STAGE.clear();
-        for (StagedPostProcessPipeline pipeline : ENABLED_STAGED_PIPELINES) {
-            PIPELINES_BY_STAGE.computeIfAbsent(pipeline.getStage(), k -> new ArrayList<>()).add(pipeline);
-        }
+    private static void registerPipelineProgram(ShaderProgram program) {
+        Instances.getShaderManager().register(program);
+        program.shaders().forEach(Instances.getShaderManager()::register);
     }
-
 
     @SubscribeEvent
     private static void init(RegisterRenderingStuffEvent event) {
         RenderTarget main = Instances.getMainRenderTarget();
         bufferPing = new FrameBuffer(Commons.id("post_buffer_ping"), main.width, main.height, false, false);
-        bufferPong = new FrameBuffer(Commons.id("post_buffer_pong"), main.width, main.height, false, false);
 
         quad = new Mesh(
                 Vertices.FULLSCREEN_QUAD.vertices(),
@@ -102,182 +88,127 @@ public class PostProcessManager {
                 GL33.GL_TRIANGLES,
                 true
         );
-
-        lastMainWidth = main.width;
-        lastMainHeight = main.height;
     }
 
     // Event handlers for each stage
     @SubscribeEvent
     public static void onAfterSky(RenderLevelStageEvent.AfterSky event) {
-        runStagedPipelines(PostProcessStage.AFTER_SKY);
+        runStage(PostProcessStage.AFTER_SKY);
     }
 
     @SubscribeEvent
     public static void onAfterOpaqueBlocks(RenderLevelStageEvent.AfterOpaqueBlocks event) {
-        runStagedPipelines(PostProcessStage.AFTER_OPAQUE_BLOCKS);
+        runStage(PostProcessStage.AFTER_OPAQUE_BLOCKS);
     }
 
     @SubscribeEvent
     public static void onAfterEntities(RenderLevelStageEvent.AfterEntities event) {
-        runStagedPipelines(PostProcessStage.AFTER_ENTITIES);
+        runStage(PostProcessStage.AFTER_ENTITIES);
     }
 
     @SubscribeEvent
     public static void onAfterTranslucentBlocks(RenderLevelStageEvent.AfterTranslucentBlocks event) {
-        runStagedPipelines(PostProcessStage.AFTER_TRANSLUCENT_BLOCKS);
+        runStage(PostProcessStage.AFTER_TRANSLUCENT_BLOCKS);
     }
 
     @SubscribeEvent
     public static void onAfterTripwireBlocks(RenderLevelStageEvent.AfterTripwireBlocks event) {
-        runStagedPipelines(PostProcessStage.AFTER_TRIPWIRE_BLOCKS);
+        runStage(PostProcessStage.AFTER_TRIPWIRE_BLOCKS);
     }
 
     @SubscribeEvent
     public static void onAfterParticles(RenderLevelStageEvent.AfterParticles event) {
-        runStagedPipelines(PostProcessStage.AFTER_PARTICLES);
+        runStage(PostProcessStage.AFTER_PARTICLES);
     }
 
     @SubscribeEvent
     public static void onAfterWeather(RenderLevelStageEvent.AfterWeather event) {
-        runStagedPipelines(PostProcessStage.AFTER_WEATHER);
+        runStage(PostProcessStage.AFTER_WEATHER);
     }
 
     @SubscribeEvent
     public static void onAfterLevel(RenderLevelStageEvent.AfterLevel event) {
-        runStagedPipelines(PostProcessStage.AFTER_LEVEL);
+        runStage(PostProcessStage.AFTER_LEVEL);
         runNonStagedPipelines();
     }
 
     @SubscribeEvent
     public static void onAfterRender(RenderGuiEvent.Post event) {
+    }
 
+    private static void runStage(PostProcessStage stage) {
+        runStagedPipelines(stage);
     }
 
     /**
      * Run all enabled staged pipelines for a specific stage
      */
     private static void runStagedPipelines(PostProcessStage stage) {
-        List<StagedPostProcessPipeline> pipelines = PIPELINES_BY_STAGE.get(stage);
-        if (pipelines == null || pipelines.isEmpty()) return;
-
-        runPipelines(pipelines);
+        List<StagedPostProcessPipeline> pipelines = getEnabledPipelines(
+                STAGED_PIPELINES,
+                pipeline -> pipeline.getStage() == stage
+        );
+        if (pipelines.isEmpty()) return;
+        runPipelineBatch(pipelines, stage);
     }
 
     /**
      * Run non-staged pipelines (legacy support)
      */
     private static void runNonStagedPipelines() {
-        if (ENABLED_PIPELINES.isEmpty()) return;
-        runPipelines(ENABLED_PIPELINES);
+        List<PostProcessPipeline> pipelines = getEnabledPipelines(PIPELINES, p -> true);
+        if (pipelines.isEmpty()) return;
+        runPipelineBatch(pipelines, STAGE_NOT_STAGED);
+    }
+
+    private static <T extends PostProcessPipeline> List<T> getEnabledPipelines(
+            List<T> pipelines,
+            java.util.function.Predicate<T> extraFilter
+    ) {
+        return pipelines.stream()
+                .filter(PostProcessPipeline::isEnabled)
+                .filter(extraFilter)
+                .collect(Collectors.toList());
     }
 
     /**
      * Core pipeline execution logic
+     * Each pipeline: read from main -> render to temp -> blit back to main
      */
-    private static void runPipelines(List<? extends PostProcessPipeline> pipelines) {
+    private static void runPipelineBatch(List<? extends PostProcessPipeline> pipelines, PostProcessStage stage) {
         RenderSystem.assertOnRenderThread();
 
         RenderTarget mainTarget = Instances.getMainRenderTarget();
-
-        // Resize buffers if main target size changed
-        if (bufferPing == null || lastMainWidth != mainTarget.width || lastMainHeight != mainTarget.height) {
-            if (bufferPing != null) bufferPing.free();
-            bufferPing = new FrameBuffer(Commons.id("post_buffer_ping"), mainTarget.width, mainTarget.height, false, false);
-            lastMainWidth = mainTarget.width;
-            lastMainHeight = mainTarget.height;
-        }
-
-        if (bufferPong.width() != mainTarget.width || bufferPong.height() != mainTarget.height) {
-            bufferPong.resize(mainTarget.width, mainTarget.height);
-        }
-
-        GlDispatch.pushDebugGroup("Post-Process Pass (" + pipelines.size() + " pipelines)");
+        ensureBuffers(mainTarget);
+        GlDispatch.pushDebugGroup(buildDebugGroupLabel(pipelines.size(), stage));
 
         GL_STACK.push();
+        GlStateSnapshot saved = GlStateSnapshot.capture();
         try {
-            // Save initial state
-            int savedReadFbo = GlDispatch.glGetInteger(GL43C.GL_READ_FRAMEBUFFER_BINDING);
-            int savedDrawFbo = GlDispatch.glGetInteger(GL43C.GL_DRAW_FRAMEBUFFER_BINDING);
-            int savedActiveTexture = GlDispatch.glGetInteger(GL43C.GL_ACTIVE_TEXTURE);
-            int[] savedTextureBindings = new int[8];
-            for (int i = 0; i < 8; i++) {
-                GlDispatch.glActiveTexture(GL43C.GL_TEXTURE0 + i);
-                savedTextureBindings[i] = GlDispatch.glGetInteger(GL43C.GL_TEXTURE_BINDING_2D);
-            }
-
             setupGlobalState();
 
-            FrameBuffer currentInput = bufferPing;
-            FrameBuffer currentOutput = bufferPong;
-            boolean isFirstPass = true;
-
-            for (PostProcessPipeline pipeline : pipelines) {
-                // On first pass, bind the main target's color texture
-                // On subsequent passes, bind the previous output
-                GlDispatch.pushDebugGroup("Pipeline: " + pipeline.getProgram().getId());
-                try {
-                    GlDispatch.glActiveTexture(GL43C.GL_TEXTURE0);
-                    if (isFirstPass) {
-                        var colorTexture = Instances.getGlColTexture();
-                        GlDispatch.glBindTexture(GL43C.GL_TEXTURE_2D, colorTexture.glId());
-                    } else {
-                        currentInput.bindColorTexture();
-                    }
-
-                    // Always bind the main target's depth texture
-                    GlDispatch.glActiveTexture(GL43C.GL_TEXTURE1);
-                    var depthTexture = Instances.getGlDepthTexture();
-                    if (depthTexture != null) {
-                        GlDispatch.glBindTexture(GL43C.GL_TEXTURE_2D, depthTexture.glId());
-                    }
-
-                    currentOutput.bind();
-                    GlDispatch.glClear(GL43C.GL_COLOR_BUFFER_BIT);
-
-                    pipeline.getProgram().use();
-                    pipeline.setupDefaultUniforms();
-                    pipeline.setupUniforms();
-                    quad.draw();
-                    pipeline.getProgram().disable();
-
-                    currentOutput.unbind();
-
-                    // After first pass, swap to ping-pong buffers
-                    if (isFirstPass) {
-                        currentInput = currentOutput;
-                        currentOutput = currentInput == bufferPing ? bufferPong : bufferPing;
-                        isFirstPass = false;
-                    } else {
-                        FrameBuffer temp = currentInput;
-                        currentInput = currentOutput;
-                        currentOutput = temp;
-                    }
-                } finally {
-                    GlDispatch.popDebugGroup();
-                }
-            }
-
-            // Blit final result to main framebuffer
             var colorTexture = Instances.getGlColTexture();
+            int mainColorTextureId = colorTexture.glId();
+            int depthTextureId = Instances.getGlDepthTexture().glId();
             var device = Instances.getGlDevice();
             int mainFbo = colorTexture.getFbo(device.directStateAccess(), null);
-            Instances.getFrameBufferManager().blit(currentInput, mainFbo, mainTarget);
 
-            // Restore framebuffer state
-            GlDispatch.glBindFramebuffer(GL43C.GL_READ_FRAMEBUFFER, savedReadFbo);
-            GlDispatch.glBindFramebuffer(GL43C.GL_DRAW_FRAMEBUFFER, savedDrawFbo);
-            GlDispatch.glBindFramebuffer(GL43C.GL_FRAMEBUFFER, savedDrawFbo);
-
-            // Restore texture unit and bindings
-            for (int i = 0; i < 8; i++) {
-                GlDispatch.glActiveTexture(GL43C.GL_TEXTURE0 + i);
-                GlDispatch.glBindTexture(GL43C.GL_TEXTURE_2D, savedTextureBindings[i]);
+            for (PostProcessPipeline pipeline : pipelines) {
+                runPipeline(pipeline, mainTarget, mainFbo, mainColorTextureId, depthTextureId);
             }
-            GlDispatch.glActiveTexture(savedActiveTexture);
         } finally {
+            saved.restore();
             GlDispatch.popDebugGroup();
             GL_STACK.pop();
+        }
+    }
+
+    /**
+     * Change the stage of a staged pipeline at runtime
+     */
+    public void changePipelineStage(StagedPostProcessPipeline pipeline, PostProcessStage newStage) {
+        if (STAGED_PIPELINES.contains(pipeline)) {
+            pipeline.setStage(newStage);
         }
     }
 
@@ -286,7 +217,9 @@ public class PostProcessManager {
     }
 
     public List<PostProcessPipeline> getEnabledPipelines() {
-        return ENABLED_PIPELINES;
+        return PIPELINES.stream()
+                .filter(PostProcessPipeline::isEnabled)
+                .collect(Collectors.toList());
     }
 
     public List<StagedPostProcessPipeline> getStagedPipelines() {
@@ -294,11 +227,28 @@ public class PostProcessManager {
     }
 
     public List<StagedPostProcessPipeline> getEnabledStagedPipelines() {
-        return ENABLED_STAGED_PIPELINES;
+        return STAGED_PIPELINES.stream()
+                .filter(StagedPostProcessPipeline::isEnabled)
+                .collect(Collectors.toList());
     }
 
     public Map<PostProcessStage, List<StagedPostProcessPipeline>> getPipelinesByStage() {
-        return PIPELINES_BY_STAGE;
+        EnumMap<PostProcessStage, List<StagedPostProcessPipeline>> pipelinesByStage = initPipelinesByStage();
+        for (StagedPostProcessPipeline pipeline : STAGED_PIPELINES) {
+            pipelinesByStage
+                    .computeIfAbsent(pipeline.getStage(), stage -> new ArrayList<>())
+                    .add(pipeline);
+        }
+        return pipelinesByStage;
+    }
+
+    private static EnumMap<PostProcessStage, List<StagedPostProcessPipeline>> initPipelinesByStage() {
+        EnumMap<PostProcessStage, List<StagedPostProcessPipeline>> pipelinesByStage =
+                new EnumMap<>(PostProcessStage.class);
+        for (PostProcessStage stage : PostProcessStage.values()) {
+            pipelinesByStage.put(stage, new ArrayList<>());
+        }
+        return pipelinesByStage;
     }
 
     private static void setupGlobalState() {
@@ -306,5 +256,97 @@ public class PostProcessManager {
         GlDispatch.glDisable(GL43C.GL_BLEND);
         GlDispatch.glDisable(GL43C.GL_CULL_FACE);
         GlDispatch.glDepthMask(false);
+    }
+
+    private static void ensureBuffers(RenderTarget mainTarget) {
+        bufferPing = resizeOrCreate(bufferPing, "post_buffer_ping", mainTarget);
+    }
+
+    private static FrameBuffer resizeOrCreate(FrameBuffer buffer, String id, RenderTarget mainTarget) {
+        if (buffer == null || buffer.width() != mainTarget.width || buffer.height() != mainTarget.height) {
+            if (buffer != null) buffer.free();
+            return new FrameBuffer(Commons.id(id), mainTarget.width, mainTarget.height, false, false);
+        }
+        return buffer;
+    }
+
+    private static String buildDebugGroupLabel(int pipelineCount, PostProcessStage stage) {
+        String stageLabel = (stage == null) ? "UNSTAGED" : stage.name();
+        return "Post-Process Pass (" + pipelineCount + " pipelines, stage: " + stageLabel + ")";
+    }
+
+    private static void runPipeline(
+            PostProcessPipeline pipeline,
+            RenderTarget mainTarget,
+            int mainFbo,
+            int mainColorTextureId,
+            int depthTextureId
+    ) {
+        List<ShaderProgram> passes = pipeline.getPasses();
+        GlDispatch.pushDebugGroup("Pipeline: " + pipeline.getName());
+
+        for (int i = 0; i < passes.size(); i++) {
+            ShaderProgram program = passes.get(i);
+            renderPass(pipeline, program, i, bufferPing, mainColorTextureId, depthTextureId);
+            Instances.getFrameBufferManager().blit(bufferPing, mainFbo, mainTarget);
+        }
+
+        GlDispatch.popDebugGroup();
+    }
+
+    private static void renderPass(
+            PostProcessPipeline pipeline,
+            ShaderProgram program,
+            int passIndex,
+            FrameBuffer outputBuffer,
+            int mainColorTextureId,
+            int depthTextureId
+    ) {
+        GlDispatch.pushDebugGroup("Pass " + passIndex + ": " + program.getId());
+
+        outputBuffer.bind();
+        GlDispatch.glClear(GL43C.GL_COLOR_BUFFER_BIT);
+
+        GlDispatch.glActiveTexture(GL43C.GL_TEXTURE0 + COLOR_TEXTURE_UNIT);
+        GlDispatch.glBindTexture(GL43C.GL_TEXTURE_2D, mainColorTextureId);
+
+        GlDispatch.glActiveTexture(GL43C.GL_TEXTURE0 + DEPTH_TEXTURE_UNIT);
+        GlDispatch.glBindTexture(GL43C.GL_TEXTURE_2D, depthTextureId);
+
+        program.use();
+        pipeline.setupDefaultUniforms(program);
+        pipeline.setupUniforms(passIndex);
+        quad.draw();
+        program.disable();
+        outputBuffer.unbind();
+
+        GlDispatch.popDebugGroup();
+    }
+
+    private record GlStateSnapshot(int readFbo, int drawFbo, int activeTexture, int[] textureBindings) {
+
+        private static GlStateSnapshot capture() {
+                int readFbo = GlDispatch.glGetInteger(GL43C.GL_READ_FRAMEBUFFER_BINDING);
+                int drawFbo = GlDispatch.glGetInteger(GL43C.GL_DRAW_FRAMEBUFFER_BINDING);
+                int activeTexture = GlDispatch.glGetInteger(GL43C.GL_ACTIVE_TEXTURE);
+                int[] textureBindings = new int[SAVED_TEXTURE_UNIT_COUNT];
+                for (int i = 0; i < SAVED_TEXTURE_UNIT_COUNT; i++) {
+                    GlDispatch.glActiveTexture(GL43C.GL_TEXTURE0 + i);
+                    textureBindings[i] = GlDispatch.glGetInteger(GL43C.GL_TEXTURE_BINDING_2D);
+                }
+                return new GlStateSnapshot(readFbo, drawFbo, activeTexture, textureBindings);
+        }
+
+        private void restore() {
+            GlDispatch.glBindFramebuffer(GL43C.GL_READ_FRAMEBUFFER, readFbo);
+            GlDispatch.glBindFramebuffer(GL43C.GL_DRAW_FRAMEBUFFER, drawFbo);
+            GlDispatch.glBindFramebuffer(GL43C.GL_FRAMEBUFFER, drawFbo);
+
+            for (int i = 0; i < textureBindings.length; i++) {
+                GlDispatch.glActiveTexture(GL43C.GL_TEXTURE0 + i);
+                GlDispatch.glBindTexture(GL43C.GL_TEXTURE_2D, textureBindings[i]);
+            }
+            GlDispatch.glActiveTexture(activeTexture);
+        }
     }
 }
