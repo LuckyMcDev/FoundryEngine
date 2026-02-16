@@ -12,7 +12,6 @@ import io.github.luckymcdev.foundryengine.client.post.pipeline.pass.PostProcessP
 import io.github.luckymcdev.foundryengine.client.post.pipeline.staged.PostProcessStage;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.staged.StagedPostProcessPipeline;
 import io.github.luckymcdev.foundryengine.common.Commons;
-import io.github.luckymcdev.foundryengine.common.Instances;
 import org.slf4j.Logger;
 
 public class TestRender {
@@ -41,14 +40,14 @@ public class TestRender {
                 ExtendedShaderType.VERTEX,
                 new ShaderSource(
                         Commons.id("post_grayscale_vert"),
-                        Commons.id("shaders/post/grayscale.vsh")
+                        Commons.id("shaders/post/grayscale/grayscale.vsh")
                 )
         );
         Shader grayScaleFragment = new Shader(
                 ExtendedShaderType.FRAGMENT,
                 new ShaderSource(
                         Commons.id("post_grayscale_frag"),
-                        Commons.id("shaders/post/grayscale.fsh")
+                        Commons.id("shaders/post/grayscale/grayscale.fsh")
                 )
         );
 
@@ -75,14 +74,14 @@ public class TestRender {
                 ExtendedShaderType.VERTEX,
                 new ShaderSource(
                         Commons.id("post_depth_visualize_vert"),
-                        Commons.id("shaders/post/depth_visualize.vsh")
+                        Commons.id("shaders/post/depth/depth_visualize.vsh")
                 )
         );
         Shader depthVisualizeFrag = new Shader(
                 ExtendedShaderType.FRAGMENT,
                 new ShaderSource(
                         Commons.id("post_depth_visualize_frag"),
-                        Commons.id("shaders/post/depth_visualize.fsh")
+                        Commons.id("shaders/post/depth/depth_visualize.fsh")
                 )
         );
 
@@ -107,14 +106,14 @@ public class TestRender {
                 ExtendedShaderType.VERTEX,
                 new ShaderSource(
                         Commons.id("post_ascii_vert"),
-                        Commons.id("shaders/post/ascii.vsh")
+                        Commons.id("shaders/post/ascii/ascii.vsh")
                 )
         );
         Shader asciiFrag = new Shader(
                 ExtendedShaderType.FRAGMENT,
                 new ShaderSource(
                         Commons.id("post_ascii_frag"),
-                        Commons.id("shaders/post/ascii.fsh")
+                        Commons.id("shaders/post/ascii/ascii.fsh")
                 )
         );
 
