@@ -2,6 +2,7 @@ package io.github.luckymcdev.foundryengine.client.opengl.framebuffer;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import io.github.luckymcdev.foundryengine.client.opengl.GlDispatch;
+import io.github.luckymcdev.foundryengine.common.Instances;
 import io.github.luckymcdev.foundryengine.common.registry.GenericRegistry;
 import net.minecraft.resources.Identifier;
 import org.lwjgl.opengl.GL43C;
@@ -30,6 +31,74 @@ public class FrameBufferManager {
      * @param dst    the dst
      */
     public void blit(FrameBuffer src, int dstFbo, RenderTarget dst) {
+        // Save the current framebuffer bindings
+        int prevRead = GlDispatch.glGetInteger(GL43C.GL_READ_FRAMEBUFFER_BINDING);
+        int prevDraw = GlDispatch.glGetInteger(GL43C.GL_DRAW_FRAMEBUFFER_BINDING);
+
+        try {
+            // Set up for blitting
+            GlDispatch.glBindFramebuffer(GL43C.GL_READ_FRAMEBUFFER, src.pointer());
+            GlDispatch.glBindFramebuffer(GL43C.GL_DRAW_FRAMEBUFFER, dstFbo);
+
+            int mask = GL43C.GL_COLOR_BUFFER_BIT;
+            if (src.hasDepthAttachment() && dst.getDepthTexture() != null) {
+                mask |= GL43C.GL_DEPTH_BUFFER_BIT;
+            }
+            if (src.hasStencil() && dst.useStencil) {
+                mask |= GL43C.GL_STENCIL_BUFFER_BIT;
+            }
+
+            GlDispatch.glBlitFramebuffer(
+                    0, 0, src.width(), src.height(),
+                    0, 0, dst.width, dst.height,
+                    mask,
+                    GL43C.GL_NEAREST
+            );
+        } finally {
+            // Always restore the previous framebuffer state, even if blitting failed
+            GlDispatch.glBindFramebuffer(GL43C.GL_READ_FRAMEBUFFER, prevRead);
+            GlDispatch.glBindFramebuffer(GL43C.GL_DRAW_FRAMEBUFFER, prevDraw);
+            // Ensure both read and draw are pointing to the same target for normal rendering
+            GlDispatch.glBindFramebuffer(GL43C.GL_FRAMEBUFFER, prevDraw);
+        }
+    }
+
+    public void blit(RenderTarget src, FrameBuffer dst) {
+        var colorTexture = Instances.getGlColTexture(src);
+        var device = Instances.getGlDevice();
+        int srcFbo = colorTexture.getFbo(device.directStateAccess(), null);
+
+        // Save current bindings
+        int prevRead = GlDispatch.glGetInteger(GL43C.GL_READ_FRAMEBUFFER_BINDING);
+        int prevDraw = GlDispatch.glGetInteger(GL43C.GL_DRAW_FRAMEBUFFER_BINDING);
+
+        try {
+            // Source is the RenderTarget FBO
+            GlDispatch.glBindFramebuffer(GL43C.GL_READ_FRAMEBUFFER, srcFbo);
+            // Destination is our FrameBuffer object
+            GlDispatch.glBindFramebuffer(GL43C.GL_DRAW_FRAMEBUFFER, dst.pointer());
+
+            // We usually only need color for the backup snapshot
+            int mask = GL43C.GL_COLOR_BUFFER_BIT;
+
+            GlDispatch.glBlitFramebuffer(
+                    0, 0, src.width, src.height,
+                    0, 0, dst.width(), dst.height(),
+                    mask,
+                    GL43C.GL_NEAREST
+            );
+        } finally {
+            GlDispatch.glBindFramebuffer(GL43C.GL_READ_FRAMEBUFFER, prevRead);
+            GlDispatch.glBindFramebuffer(GL43C.GL_DRAW_FRAMEBUFFER, prevDraw);
+            GlDispatch.glBindFramebuffer(GL43C.GL_FRAMEBUFFER, prevDraw);
+        }
+    }
+
+    public void blit(FrameBuffer src, RenderTarget dst) {
+        var colorTexture = Instances.getGlColTexture(dst);
+        var device = Instances.getGlDevice();
+        int dstFbo = colorTexture.getFbo(device.directStateAccess(), null);
+
         // Save the current framebuffer bindings
         int prevRead = GlDispatch.glGetInteger(GL43C.GL_READ_FRAMEBUFFER_BINDING);
         int prevDraw = GlDispatch.glGetInteger(GL43C.GL_DRAW_FRAMEBUFFER_BINDING);
