@@ -55,7 +55,6 @@ public class FoundryEngineMod {
 
     @SubscribeEvent
     public void registerReloadListeners(AddServerReloadListenersEvent event) {
-        event.addListener(Commons.id("tbrenderer"),Instances.getTbRenderer());
     }
 
     @SubscribeEvent
