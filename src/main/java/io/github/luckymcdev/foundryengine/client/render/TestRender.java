@@ -8,7 +8,6 @@ import io.github.luckymcdev.foundryengine.client.opengl.shaders.exeption.ShaderE
 import io.github.luckymcdev.foundryengine.client.post.RegisterPostPipelineEvent;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.builtin.AsciiPostProcessPipeline;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.PostProcessPipeline;
-import io.github.luckymcdev.foundryengine.client.post.pipeline.builtin.BloomPostProcessPipeline;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.pass.PassTarget;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.pass.PostProcessPipelinePass;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.staged.PostProcessStage;
