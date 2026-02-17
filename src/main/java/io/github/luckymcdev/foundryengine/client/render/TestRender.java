@@ -8,6 +8,8 @@ import io.github.luckymcdev.foundryengine.client.opengl.shaders.exeption.ShaderE
 import io.github.luckymcdev.foundryengine.client.post.RegisterPostPipelineEvent;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.builtin.AsciiPostProcessPipeline;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.PostProcessPipeline;
+import io.github.luckymcdev.foundryengine.client.post.pipeline.builtin.BloomPostProcessPipeline;
+import io.github.luckymcdev.foundryengine.client.post.pipeline.pass.PassTarget;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.pass.PostProcessPipelinePass;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.staged.PostProcessStage;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.staged.StagedPostProcessPipeline;
@@ -35,15 +37,14 @@ public class TestRender {
     }
 
     private static void registerGrayscale(RegisterPostPipelineEvent event) throws ShaderException {
-        // Create grayscale shaders
-        Shader grayScaleVertex = new Shader(
+        Shader vert = new Shader(
                 ExtendedShaderType.VERTEX,
                 new ShaderSource(
                         Commons.id("post_grayscale_vert"),
                         Commons.id("shaders/post/grayscale/grayscale.vsh")
                 )
         );
-        Shader grayScaleFragment = new Shader(
+        Shader frag = new Shader(
                 ExtendedShaderType.FRAGMENT,
                 new ShaderSource(
                         Commons.id("post_grayscale_frag"),
@@ -51,33 +52,29 @@ public class TestRender {
                 )
         );
 
-        // Create pipeline pass
-        PostProcessPipelinePass grayscalePass = new PostProcessPipelinePass(
+        PostProcessPipelinePass pass = new PostProcessPipelinePass(
                 Commons.id("post_grayscale_pass"),
-                grayScaleVertex,
-                grayScaleFragment
+                PassTarget.MAIN, PassTarget.MAIN,
+                vert, frag
         );
 
-        // Create and register staged pipeline
-        StagedPostProcessPipeline grayScalePipeline = new StagedPostProcessPipeline(
+        StagedPostProcessPipeline pipeline = new StagedPostProcessPipeline(
                 Commons.id("post_grayscale"),
                 PostProcessStage.AFTER_ENTITIES,
-                grayscalePass
+                pass
         );
-        event.register(grayScalePipeline);
+        event.register(pipeline);
     }
 
-
     private static void registerDepthVisualize(RegisterPostPipelineEvent event) throws ShaderException {
-        // Create depth visualize shaders
-        Shader depthVisualizeVert = new Shader(
+        Shader vert = new Shader(
                 ExtendedShaderType.VERTEX,
                 new ShaderSource(
                         Commons.id("post_depth_visualize_vert"),
                         Commons.id("shaders/post/depth/depth_visualize.vsh")
                 )
         );
-        Shader depthVisualizeFrag = new Shader(
+        Shader frag = new Shader(
                 ExtendedShaderType.FRAGMENT,
                 new ShaderSource(
                         Commons.id("post_depth_visualize_frag"),
@@ -85,31 +82,28 @@ public class TestRender {
                 )
         );
 
-        // Create pipeline pass
-        PostProcessPipelinePass depthVisualizePass = new PostProcessPipelinePass(
+        PostProcessPipelinePass pass = new PostProcessPipelinePass(
                 Commons.id("post_depth_visualize_pass"),
-                depthVisualizeVert,
-                depthVisualizeFrag
+                PassTarget.MAIN, PassTarget.MAIN,
+                vert, frag
         );
 
-        // Create and register pipeline
-        PostProcessPipeline depthVisualize = new PostProcessPipeline(
+        PostProcessPipeline pipeline = new PostProcessPipeline(
                 Commons.id("post_depth_visualize"),
-                depthVisualizePass
+                pass
         );
-        event.register(depthVisualize);
+        event.register(pipeline);
     }
 
     private static void registerAscii(RegisterPostPipelineEvent event) throws ShaderException {
-        // Create ascii shaders
-        Shader asciiVert = new Shader(
+        Shader vert = new Shader(
                 ExtendedShaderType.VERTEX,
                 new ShaderSource(
                         Commons.id("post_ascii_vert"),
                         Commons.id("shaders/post/ascii/ascii.vsh")
                 )
         );
-        Shader asciiFrag = new Shader(
+        Shader frag = new Shader(
                 ExtendedShaderType.FRAGMENT,
                 new ShaderSource(
                         Commons.id("post_ascii_frag"),
@@ -117,18 +111,16 @@ public class TestRender {
                 )
         );
 
-        // Create pipeline pass
-        PostProcessPipelinePass asciiPass = new PostProcessPipelinePass(
+        PostProcessPipelinePass pass = new PostProcessPipelinePass(
                 Commons.id("post_ascii_pass"),
-                asciiVert,
-                asciiFrag
+                PassTarget.MAIN, PassTarget.MAIN,
+                vert, frag
         );
 
-        // Create and register pipeline
-        AsciiPostProcessPipeline asciiPipeline = new AsciiPostProcessPipeline(
+        AsciiPostProcessPipeline pipeline = new AsciiPostProcessPipeline(
                 Commons.id("post_ascii"),
-                asciiPass
+                pass
         );
-        event.register(asciiPipeline);
+        event.register(pipeline);
     }
 }
