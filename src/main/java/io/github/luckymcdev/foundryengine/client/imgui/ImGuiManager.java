@@ -37,7 +37,7 @@ import org.slf4j.Logger;
 
 import java.util.Date;
 
-public final class ImGuiHandler implements ResourceManagerReloadListener {
+public final class ImGuiManager implements ResourceManagerReloadListener {
     private static final Logger LOGGER = LogUtils.getLogger();
 
     private final static ImGuiImplGlfw imGuiImplGlfw = new ImGuiImplGlfw();

@@ -1,4 +1,4 @@
-package io.github.luckymcdev.foundryengine.client.render;
+package io.github.luckymcdev.foundryengine.client;
 
 import com.mojang.logging.LogUtils;
 import io.github.luckymcdev.foundryengine.client.opengl.shaders.ExtendedShaderType;

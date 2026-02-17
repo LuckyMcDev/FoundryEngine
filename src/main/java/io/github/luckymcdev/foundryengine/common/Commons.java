@@ -20,6 +20,8 @@ public interface Commons {
     Path FOUNDRY_ENGINE_CONFIG = CONFIG.resolve(MODID);
     Path DATABASE_CONFIG = CONFIG.resolve("database");
     Path GAME = FMLPaths.GAMEDIR.get();
+    Path FOUNDRY_ENGINE = GAME.resolve("FoundryEngine");
+    Path WORKSPACE = FOUNDRY_ENGINE.resolve("workspace");
 
     static Identifier id(@NotNull String path) {
         return Identifier.fromNamespaceAndPath(MODID, path);

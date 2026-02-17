@@ -1,15 +1,13 @@
 package io.github.luckymcdev.foundryengine.client.editor;
 
-import com.mojang.datafixers.kinds.IdF;
 import imgui.ImGui;
 import imgui.type.ImBoolean;
 import io.github.luckymcdev.foundryengine.client.editor.panels.NodeEditorPanel;
 import io.github.luckymcdev.foundryengine.client.editor.panels.PostProcessPanel;
 import io.github.luckymcdev.foundryengine.client.editor.panels.TestPanel;
-import io.github.luckymcdev.foundryengine.client.imgui.ImGuiHandler;
+import io.github.luckymcdev.foundryengine.client.imgui.ImGuiManager;
 import io.github.luckymcdev.foundryengine.client.imgui.graphics.ImGuiGraphicsStack;
 import io.github.luckymcdev.foundryengine.common.Instances;
-import net.minecraft.tags.InstrumentTags;
 
 public class MainMenu {
 
@@ -20,7 +18,7 @@ public class MainMenu {
 
     public static void handleRender() {
         if (ImGui.beginMainMenuBar()) {
-            ImGuiGraphicsStack gs = ImGuiHandler.getGraphicsStack();
+            ImGuiGraphicsStack gs = ImGuiManager.getGraphicsStack();
             gs.push();
 
             renderPanelsMenu();

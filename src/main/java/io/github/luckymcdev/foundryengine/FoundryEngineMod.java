@@ -1,11 +1,12 @@
 package io.github.luckymcdev.foundryengine;
 
 import com.mojang.logging.LogUtils;
+import io.github.luckymcdev.foundryengine.client.ClientMatrices;
 import io.github.luckymcdev.foundryengine.client.RegisterRenderingStuffEvent;
 import io.github.luckymcdev.foundryengine.client.opengl.shaders.preprocessing.IncludeGLSLPreProcessor;
 import io.github.luckymcdev.foundryengine.client.opengl.shaders.preprocessing.RegisterGLSLPreProcessorEvent;
 import io.github.luckymcdev.foundryengine.client.post.RegisterPostPipelineEvent;
-import io.github.luckymcdev.foundryengine.client.render.TestRender;
+import io.github.luckymcdev.foundryengine.client.TestRender;
 import io.github.luckymcdev.foundryengine.client.util.KeyBinding;
 import io.github.luckymcdev.foundryengine.client.util.RegisterKeyBindingEvent;
 import io.github.luckymcdev.foundryengine.common.Commons;
@@ -24,10 +25,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
@@ -96,6 +94,11 @@ public class FoundryEngineMod {
         }
 
         @SubscribeEvent
+        private static void updateClientMatrices(FrameGraphSetupEvent event) {
+            ClientMatrices.updateMain(event.getModelViewMatrix(), event.getProjectionMatrix());
+        }
+
+        @SubscribeEvent
         public static void onRegisterKeyMapping(RegisterKeyMappingsEvent event) {
             NeoForge.EVENT_BUS.post(new RegisterKeyBindingEvent(Instances.getKeyBindingManager()));
         }
@@ -105,7 +108,7 @@ public class FoundryEngineMod {
             if (!shadersInitialized) {
                 shadersInitialized = true;
                 NeoForge.EVENT_BUS.post(new RegisterPostPipelineEvent(Instances.getPostProcessManager()));
-                NeoForge.EVENT_BUS.post(new RegisterRenderingStuffEvent(Instances.getTbRenderer(), Instances.getResourceManager()));
+                NeoForge.EVENT_BUS.post(new RegisterRenderingStuffEvent(Instances.getResourceManager()));
             }
         }
 

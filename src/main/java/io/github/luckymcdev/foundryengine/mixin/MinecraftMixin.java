@@ -1,7 +1,7 @@
 package io.github.luckymcdev.foundryengine.mixin;
 
 import com.mojang.blaze3d.platform.Window;
-import io.github.luckymcdev.foundryengine.client.imgui.ImGuiHandler;
+import io.github.luckymcdev.foundryengine.client.imgui.ImGuiManager;
 import io.github.luckymcdev.foundryengine.common.font.TTFFile;
 import io.github.luckymcdev.foundryengine.common.opencl.task.ClWorker;
 import io.github.luckymcdev.foundryengine.interfaces.TbMinecraft;
@@ -30,12 +30,12 @@ public class MinecraftMixin implements TbMinecraft {
     @Inject(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;resizeDisplay()V", shift = At.Shift.BEFORE))
     public void tb$init(GameConfig gameConfig, CallbackInfo ci) {
         TTFFile.find(resourceManager);
-        ImGuiHandler.create(window.handle());
+        ImGuiManager.create(window.handle());
     }
 
     @Inject(method = "close", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/font/providers/FreeTypeUtil;destroy()V", shift = At.Shift.BEFORE))
     public void tb$close(CallbackInfo ci) {
-        ImGuiHandler.dispose();
+        ImGuiManager.dispose();
         ClWorker.shutdown();
     }
 }

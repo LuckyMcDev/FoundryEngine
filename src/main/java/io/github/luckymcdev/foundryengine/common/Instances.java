@@ -5,9 +5,8 @@ import com.mojang.blaze3d.opengl.GlTexture;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
-import io.github.luckymcdev.foundryengine.client.TbRenderer;
 import io.github.luckymcdev.foundryengine.client.editor.BuiltInEditor;
-import io.github.luckymcdev.foundryengine.client.imgui.ImGuiHandler;
+import io.github.luckymcdev.foundryengine.client.imgui.ImGuiManager;
 import io.github.luckymcdev.foundryengine.client.opengl.OpenGlStack;
 import io.github.luckymcdev.foundryengine.client.opengl.framebuffer.FrameBufferManager;
 import io.github.luckymcdev.foundryengine.client.opengl.shaders.ShaderManager;
@@ -26,31 +25,24 @@ public interface Instances {
     static Minecraft getMinecraft() {
         return Minecraft.getInstance();
     }
-
     static ResourceManager getResourceManager() {
         return getMinecraft().getResourceManager();
     }
-
     static Window getWindow() {
         return getMinecraft().getWindow();
     }
-
     static GameRenderer getGameRenderer() {
         return getMinecraft().gameRenderer;
     }
-
     static RenderTarget getMainRenderTarget() {
         return getMinecraft().getMainRenderTarget();
     }
-
     static Camera getMainCamera() {
         return getGameRenderer().getMainCamera();
     }
-
-    static ImGuiHandler getImGuiHandler() {
+    static ImGuiManager getImGuiHandler() {
         return InstancesInternal.IMGUI_HANDLER;
     }
-
     static GlTexture getGlColTexture(RenderTarget target) {
         var tex = target.getColorTexture();
         if (tex instanceof ValidationGpuTexture validationTex) {
@@ -58,11 +50,9 @@ public interface Instances {
         }
         return (GlTexture) tex;
     }
-
     static GlTexture getGlColTexture() {
         return getGlColTexture(getMainRenderTarget());
     }
-
     static GlTexture getGlDepthTexture(RenderTarget target) {
         var tex = target.getDepthTexture();
         if (tex instanceof ValidationGpuTexture validationTex) {
@@ -70,11 +60,9 @@ public interface Instances {
         }
         return (GlTexture) tex;
     }
-
     static GlTexture getGlDepthTexture() {
         return getGlDepthTexture(getMainRenderTarget());
     }
-
     static GlDevice getGlDevice() {
         var device = RenderSystem.getDevice();
         if (device instanceof ValidationGpuDevice validationDevice) {
@@ -82,31 +70,21 @@ public interface Instances {
         }
         return (GlDevice) device;
     }
-
     static BuiltInEditor getBuiltInEditor() {
         return InstancesInternal.EDITOR;
     }
-
-    static TbRenderer getTbRenderer() {
-        return InstancesInternal.RENDERER;
-    }
-
     static OpenGlStack getOpenGlStack() {
         return OPEN_GL_STACK;
     }
-
     static PostProcessManager getPostProcessManager() {
         return POST_PROCESS_MANAGER;
     }
-
     static FrameBufferManager getFrameBufferManager() {
         return FRAME_BUFFER_MANAGER;
     }
-
     static ShaderManager getShaderManager() {
         return SHADER_MANAGER;
     }
-
     static KeyBindingManager getKeyBindingManager() {
         return KEY_BINDING_MANAGER;
     }

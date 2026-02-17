@@ -1,10 +1,8 @@
 package io.github.luckymcdev.foundryengine.mixin.render;
 
-import imgui.ImGui;
-
 import io.github.luckymcdev.foundryengine.client.editor.BuiltInEditor;
 import io.github.luckymcdev.foundryengine.client.editor.MainMenu;
-import io.github.luckymcdev.foundryengine.client.imgui.ImGuiHandler;
+import io.github.luckymcdev.foundryengine.client.imgui.ImGuiManager;
 
 import io.github.luckymcdev.foundryengine.common.Instances;
 import io.github.luckymcdev.foundryengine.interfaces.TbGameRenderer;
@@ -31,7 +29,7 @@ public class GameRendererMixin implements TbGameRenderer {
     @Override
     @Inject(method = "render", at = @At("RETURN"))
     public void tb$renderReturn(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci) {
-        ImGuiHandler.beginImGuiRendering();
+        ImGuiManager.beginImGuiRendering();
 
         // Render the main menu bar at the top
         MainMenu.handleRender();
@@ -39,6 +37,6 @@ public class GameRendererMixin implements TbGameRenderer {
         // Render all open panels
         tb$builtInEditor.handleRender();
 
-        ImGuiHandler.endImGuiRendering();
+        ImGuiManager.endImGuiRendering();
     }
 }

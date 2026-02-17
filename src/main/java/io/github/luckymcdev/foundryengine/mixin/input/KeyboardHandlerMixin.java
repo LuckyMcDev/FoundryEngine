@@ -1,6 +1,6 @@
 package io.github.luckymcdev.foundryengine.mixin.input;
 
-import io.github.luckymcdev.foundryengine.client.imgui.ImGuiHandler;
+import io.github.luckymcdev.foundryengine.client.imgui.ImGuiManager;
 import io.github.luckymcdev.foundryengine.interfaces.TbKeyboardHandler;
 import net.minecraft.client.KeyboardHandler;
 import net.minecraft.client.input.CharacterEvent;
@@ -16,7 +16,7 @@ public class KeyboardHandlerMixin implements TbKeyboardHandler {
     @Override
     @Inject(method = "keyPress", at = @At("HEAD"), cancellable = true)
     public void tb$onKey(long p_window, int action, KeyEvent event, CallbackInfo ci) {
-        if (ImGuiHandler.shouldInterceptKeyboard()) {
+        if (ImGuiManager.shouldInterceptKeyboard()) {
             ci.cancel();
         }
     }
@@ -24,7 +24,7 @@ public class KeyboardHandlerMixin implements TbKeyboardHandler {
     @Override
     @Inject(method = "charTyped", at = @At("HEAD"), cancellable = true)
     public void tb$onChar(long p_window, CharacterEvent event, CallbackInfo ci) {
-        if (ImGuiHandler.shouldInterceptKeyboard()) {
+        if (ImGuiManager.shouldInterceptKeyboard()) {
             ci.cancel();
         }
     }
