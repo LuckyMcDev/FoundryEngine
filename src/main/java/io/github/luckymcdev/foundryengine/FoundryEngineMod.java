@@ -113,7 +113,7 @@ public class FoundryEngineMod {
 
         @SubscribeEvent
         public static void addClientReloadListener(AddClientReloadListenersEvent event) {
-            event.addListener(Commons.id("imgui_handler"), Instances.getImGuiHandler());
+            event.addListener(Commons.id("imgui_handler"), Instances.getImGuiManager());
             event.addListener(Commons.id("shader_manager"), Instances.getShaderManager());
         }
 

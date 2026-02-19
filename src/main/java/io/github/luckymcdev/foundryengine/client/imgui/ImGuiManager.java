@@ -15,10 +15,11 @@ import imgui.ImGuiIO;
 import imgui.flag.ImGuiConfigFlags;
 import imgui.flag.ImGuiDockNodeFlags;
 import imgui.flag.ImGuiWindowFlags;
-import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
+import io.github.luckymcdev.foundryengine.client.imgui.backend.FeImGuiImplGlfw;
 import io.github.luckymcdev.foundryengine.client.imgui.context.ImGuiContextStack;
 import io.github.luckymcdev.foundryengine.client.imgui.context.ImGuiContextTypes;
+import io.github.luckymcdev.foundryengine.client.imgui.backend.ImGuiImplGl3;
 import io.github.luckymcdev.foundryengine.client.imgui.graphics.ImGuiGraphics;
 import io.github.luckymcdev.foundryengine.client.imgui.graphics.ImGuiGraphicsStack;
 import io.github.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
@@ -33,19 +34,20 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL30C;
+import org.lwjgl.system.NativeResource;
 import org.slf4j.Logger;
 
 import java.util.Date;
 
-public final class ImGuiManager implements ResourceManagerReloadListener {
+public final class ImGuiManager implements ResourceManagerReloadListener, NativeResource {
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    private final static ImGuiImplGlfw imGuiImplGlfw = new ImGuiImplGlfw();
-    private final static ImGuiImplGl3 imGuiImplGl3 = new ImGuiImplGl3();
+    private final ImGuiImplGlfw imGuiImplGlfw = new FeImGuiImplGlfw();
+    private final ImGuiImplGl3 imGuiImplGl3 = new ImGuiImplGl3();
 
-    private final static ImGuiContextStack CONTEXT_STACK = new ImGuiContextStack();
-    private final static ImGuiGraphicsStack GRAPHICS_STACK = new ImGuiGraphicsStack();
-    private static final short[] GLYPH_RANGES = {
+    private final ImGuiContextStack CONTEXT_STACK = new ImGuiContextStack();
+    private final ImGuiGraphicsStack GRAPHICS_STACK = new ImGuiGraphicsStack();
+    private final short[] GLYPH_RANGES = {
             0x0020, 0x00FF, // Basic Latin
             0x0100, 0x017F, // Latin Extended-A
             0x0400, 0x052F, // Cyrillic
@@ -63,10 +65,10 @@ public final class ImGuiManager implements ResourceManagerReloadListener {
             0
     };
 
-    static int dockId;
-    static boolean infoBarEnabled = false;
+    int dockId;
+    boolean infoBarEnabled = false;
 
-    public static void create(final long handle) {
+    public void create(final long handle) {
 
         CONTEXT_STACK.addContextType(ImGuiContextTypes.IMGUI);
         CONTEXT_STACK.addContextType(ImGuiContextTypes.IMPLOT);
@@ -90,7 +92,7 @@ public final class ImGuiManager implements ResourceManagerReloadListener {
         ImGuiGraphics.setFullDefaultStyle(style);
     }
 
-    public static void beginImGuiRendering() {
+    public void begin() {
         final RenderTarget framebuffer = Minecraft.getInstance().getMainRenderTarget();
         GlTexture colorTexture = Instances.getGlColTexture();
         GlDevice device = Instances.getGlDevice();
@@ -143,7 +145,7 @@ public final class ImGuiManager implements ResourceManagerReloadListener {
         ImGui.end();
     }
 
-    public static void endImGuiRendering() {
+    public void end() {
         ImGui.render();
         imGuiImplGl3.renderDrawData(ImGui.getDrawData());
 
@@ -158,15 +160,15 @@ public final class ImGuiManager implements ResourceManagerReloadListener {
         }
     }
 
-    public static ImGuiContextStack getMainContextStack() {
+    public ImGuiContextStack getMainContextStack() {
         return CONTEXT_STACK;
     }
 
-    public static ImGuiGraphicsStack getGraphicsStack() {
+    public ImGuiGraphicsStack getGraphicsStack() {
         return GRAPHICS_STACK;
     }
 
-    public static void loadFonts(ResourceManager resourceManager) {
+    public void loadFonts(ResourceManager resourceManager) {
         var fonts = ImGui.getIO().getFonts();
         fonts.clear();
 
@@ -198,15 +200,15 @@ public final class ImGuiManager implements ResourceManagerReloadListener {
         }
     }
 
-    public static boolean shouldInterceptMouse() {
+    public boolean shouldInterceptMouse() {
         return ImGui.getIO().getWantCaptureMouse() && !Minecraft.getInstance().mouseHandler.isMouseGrabbed();
     }
 
-    public static boolean shouldInterceptKeyboard() {
+    public boolean shouldInterceptKeyboard() {
         return ImGui.getIO().getWantCaptureKeyboard();
     }
 
-    public static void topInfoBar() {
+    public void topInfoBar() {
         var now = new Date();
 
         String username = Minecraft.getInstance().getUser().getName();
@@ -230,11 +232,16 @@ public final class ImGuiManager implements ResourceManagerReloadListener {
         }
     }
 
-    public static void dispose() {
+    public void dispose() {
         imGuiImplGl3.shutdown();
         imGuiImplGlfw.shutdown();
         CONTEXT_STACK.destroy();
         GRAPHICS_STACK.destroy();
+    }
+
+    @Override
+    public void free() {
+        dispose();
     }
 
     @Override

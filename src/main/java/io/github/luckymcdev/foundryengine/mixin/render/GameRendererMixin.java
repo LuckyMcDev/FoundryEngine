@@ -29,7 +29,7 @@ public class GameRendererMixin implements TbGameRenderer {
     @Override
     @Inject(method = "render", at = @At("RETURN"))
     public void tb$renderReturn(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci) {
-        ImGuiManager.beginImGuiRendering();
+        Instances.getImGuiManager().begin();
 
         // Render the main menu bar at the top
         MainMenu.handleRender();
@@ -37,6 +37,6 @@ public class GameRendererMixin implements TbGameRenderer {
         // Render all open panels
         tb$builtInEditor.handleRender();
 
-        ImGuiManager.endImGuiRendering();
+        Instances.getImGuiManager().end();
     }
 }

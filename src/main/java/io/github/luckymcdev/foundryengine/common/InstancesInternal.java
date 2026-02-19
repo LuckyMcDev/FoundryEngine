@@ -11,7 +11,7 @@ import io.github.luckymcdev.foundryengine.client.util.KeyBindingManager;
 class InstancesInternal {
     static final OpenGlStack OPEN_GL_STACK = new OpenGlStack();
     static final BuiltInEditor EDITOR = new BuiltInEditor();
-    static final ImGuiManager IMGUI_HANDLER = new ImGuiManager();
+    static final ImGuiManager IMGUI_MANAGER = new ImGuiManager();
     static final PostProcessManager POST_PROCESS_MANAGER = new PostProcessManager();
     static final FrameBufferManager FRAME_BUFFER_MANAGER = new FrameBufferManager();
     static final ShaderManager SHADER_MANAGER = new ShaderManager();

@@ -1,5 +1,6 @@
 package io.github.luckymcdev.foundryengine.client.editor;
 
+import com.mojang.datafixers.kinds.IdF;
 import imgui.ImGui;
 import imgui.type.ImBoolean;
 import io.github.luckymcdev.foundryengine.client.editor.panels.NodeEditorPanel;
@@ -18,7 +19,7 @@ public class MainMenu {
 
     public static void handleRender() {
         if (ImGui.beginMainMenuBar()) {
-            ImGuiGraphicsStack gs = ImGuiManager.getGraphicsStack();
+            ImGuiGraphicsStack gs = Instances.getImGuiManager().getGraphicsStack();
             gs.push();
 
             renderPanelsMenu();

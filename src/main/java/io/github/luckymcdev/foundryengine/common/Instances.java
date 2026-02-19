@@ -40,8 +40,8 @@ public interface Instances {
     static Camera getMainCamera() {
         return getGameRenderer().getMainCamera();
     }
-    static ImGuiManager getImGuiHandler() {
-        return InstancesInternal.IMGUI_HANDLER;
+    static ImGuiManager getImGuiManager() {
+        return InstancesInternal.IMGUI_MANAGER;
     }
     static GlTexture getGlColTexture(RenderTarget target) {
         var tex = target.getColorTexture();
