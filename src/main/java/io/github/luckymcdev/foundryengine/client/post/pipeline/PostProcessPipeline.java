@@ -11,39 +11,9 @@ import net.minecraft.resources.Identifier;
 
 import java.util.*;
 
-/**
- * A named collection of {@link PostProcessPipelinePass passes} that together produce a
- * post-processing effect.
- *
- * <h3>Declaring temporary framebuffers</h3>
- * Call {@link #addTarget} in the subclass constructor to register {@link TemporaryTarget}s.
- * The {@code PostProcessManager} allocates one {@code FrameBuffer} per unique name per
- * pipeline, mirroring Minecraft's {@code PostChain} {@code <target>} entries.
- *
- * <pre>{@code
- * public class BloomPipeline extends PostProcessPipeline {
- *     public BloomPipeline(Identifier name, PostProcessPipelinePass... passes) {
- *         super(name, passes);
- *         addTarget(TemporaryTarget.named("blur_h"));
- *         addTarget(TemporaryTarget.named("blur_v"));
- *     }
- * }
- * }</pre>
- *
- * <h3>Declaring editable parameters</h3>
- * Call {@link #addParam} in the subclass constructor to register {@link PipelineParam}s.
- * They are automatically uploaded as uniforms every frame and exposed in the editor panel.
- *
- * <pre>{@code
- * private final PipelineParam<Float> brightness =
- *     addParam(PipelineParam.floatParam("brightness", 1.0f, 0.0f, 3.0f));
- * }</pre>
- */
 public class PostProcessPipeline {
-
-    /** Parallel lists: passes[i] ↔ programs[i] */
-    private final List<PostProcessPipelinePass> passes   = new ArrayList<>();
-    private final List<ShaderProgram>           programs = new ArrayList<>();
+    private final List<PostProcessPipelinePass> passes = new ArrayList<>();
+    private final List<ShaderProgram> programs = new ArrayList<>();
 
     /**
      * Named temporary framebuffer slots required by this pipeline.
@@ -75,26 +45,11 @@ public class PostProcessPipeline {
         }
     }
 
-    // =========================================================================
-    // Temporary target registration
-    // =========================================================================
-
-    /**
-     * Registers a {@link TemporaryTarget} for this pipeline.
-     * The manager will allocate (and auto-resize) a {@code FrameBuffer} for each
-     * unique target name before running the pipeline.
-     *
-     * <p>Call from the subclass constructor, <em>after</em> {@code super(...)}.</p>
-     */
     protected TemporaryTarget addTarget(TemporaryTarget target) {
         targets.put(target.name(), target);
         return target;
     }
 
-    /**
-     * Convenience overload – creates and registers a target in one call.
-     * <pre>{@code addTarget("blur_ping"); }</pre>
-     */
     protected TemporaryTarget addTarget(String name) {
         return addTarget(TemporaryTarget.named(name));
     }
@@ -103,10 +58,6 @@ public class PostProcessPipeline {
     public Map<String, TemporaryTarget> getTargets() {
         return Collections.unmodifiableMap(targets);
     }
-
-    // =========================================================================
-    // Param registration
-    // =========================================================================
 
     /**
      * Registers a {@link PipelineParam} and returns it so the subclass can keep
@@ -124,10 +75,6 @@ public class PostProcessPipeline {
         return Collections.unmodifiableMap(params);
     }
 
-    // =========================================================================
-    // Pass / program accessors
-    // =========================================================================
-
     public List<PostProcessPipelinePass> getPasses() {
         return Collections.unmodifiableList(passes);
     }
@@ -144,10 +91,6 @@ public class PostProcessPipeline {
     public List<ShaderProgram> getPrograms() {
         return programs;
     }
-
-    // =========================================================================
-    // Uniform helpers (called by PostProcessManager)
-    // =========================================================================
 
     /**
      * Sets the uniforms every pass needs: global engine uniforms, standard texture
@@ -177,10 +120,6 @@ public class PostProcessPipeline {
     public void setupUniforms(int passIndex, PostProcessPipelinePass pass) {
         // default: params already applied in setupDefaultUniforms
     }
-
-    // =========================================================================
-    // Enable / disable
-    // =========================================================================
 
     public final void enable()   { this.enabled = true;  }
     public final void disable()  { this.enabled = false; }
