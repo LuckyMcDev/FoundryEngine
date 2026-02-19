@@ -1,6 +1,8 @@
 package io.github.luckymcdev.foundryengine.client.editor;
 
+import com.j256.ormlite.stmt.query.Ge;
 import com.mojang.logging.LogUtils;
+import io.github.luckymcdev.foundryengine.client.editor.popup.PopUp;
 import io.github.luckymcdev.foundryengine.common.registry.GenericRegistry;
 import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
@@ -8,134 +10,72 @@ import org.slf4j.Logger;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * The Built-In Editor
- */
 public class BuiltInEditor {
+
     private static final Logger LOGGER = LogUtils.getLogger();
+
     private static final GenericRegistry<Identifier, Panel> PANELS = new GenericRegistry<>();
-    private static final GenericRegistry<Identifier, Panel> OPEN_PANELS = new GenericRegistry<>();
+    private static final GenericRegistry<Identifier, PopUp> POPUPS = new GenericRegistry<>();
 
-    /**
-     * Instantiates a new Built-in editor.
-     */
-    public BuiltInEditor() {
-    }
+    public BuiltInEditor() {}
 
-    /**
-     * Registers a new panel to the Editor.
-     *
-     * @param panel the panel
-     */
     public void register(Panel panel) {
         PANELS.register(panel.getId(), panel);
     }
 
-    /**
-     * Removes a Panel.
-     *
-     * @param panel the panel
-     */
     public void remove(Panel panel) {
+        closePanel(panel);
         PANELS.remove(panel.getId());
     }
 
-    /**
-     * Handles Ticking for all Panels.
-     */
-    public void handleTick() {
-        OPEN_PANELS.forEach(Panel::handleTick);
-    }
-
-    /**
-     * Handles Rendering for all Panels.
-     */
-    public void handleRender() {
-        List<Identifier> panelsToRemove = new ArrayList<>();
-        OPEN_PANELS.forEach(panel -> {
-            if (!panel.handleRender()) {
-                panelsToRemove.add(panel.getId());
-            }
-        });
-        panelsToRemove.forEach(OPEN_PANELS::remove);
-    }
-
-    /**
-     * Toggles a Panel On and Off.
-     *
-     * @param panel the panel
-     */
-    public void togglePanel(Panel panel) {
-        if(isOpen(panel)) {
-            closePanel(panel);
-        } else {
-            openPanel(panel);
-        }
-    }
-
-    /**
-     * Opens a Panel.
-     * Ref: {@link BuiltInEditor#togglePanel(Panel)}
-     *
-     * @param panel the panel
-     */
     public void openPanel(Panel panel) {
         if (!isOpen(panel)) {
-            OPEN_PANELS.register(panel.getId(), panel);
-            panel.open();
+            panel.onOpened();
         }
     }
 
-    /**
-     * Closes a Panel.
-     * Ref: {@link BuiltInEditor#togglePanel(Panel)}
-     *
-     * @param panel the panel
-     */
     public void closePanel(Panel panel) {
         if (isOpen(panel)) {
-            OPEN_PANELS.remove(panel.getId());
-            panel.close();
+            panel.onClosed();
         }
     }
 
-    /**
-     * Checks if a panel is currently open.
-     *
-     * @param panel the panel to check
-     * @return true if the panel is open, false otherwise
-     */
+    public void togglePanel(Panel panel) {
+        if (isOpen(panel)) closePanel(panel);
+        else openPanel(panel);
+    }
+
     public boolean isOpen(Panel panel) {
-        return OPEN_PANELS.contains(panel.getId());
+        return panel != null && panel.isOpen();
     }
 
-    /**
-     * Closes all currently open panels.
-     */
     public void closeAllPanels() {
-        List<Identifier> allPanels = new ArrayList<>();
-        OPEN_PANELS.forEach(panel -> {
-            allPanels.add(panel.getId());
-            panel.close();
+        List<Panel> snapshot = new ArrayList<>();
+        PANELS.forEach(panel -> {
+            if (panel.isOpen()) snapshot.add(panel);
         });
-        allPanels.forEach(OPEN_PANELS::remove);
+        snapshot.forEach(this::closePanel);
     }
 
-    /**
-     * Gets all registered panels.
-     *
-     * @return the panels registry
-     */
+    public void handleTick() {
+        PANELS.forEach(panel -> {
+            if (panel.isOpen()) panel.handleTick();
+        });
+    }
+
+    public void handleRender() {
+        List<Panel> toClose = new ArrayList<>();
+
+        PANELS.forEach(panel -> {
+            if (panel.isOpen() && !panel.handleRender()) {
+                toClose.add(panel);
+            }
+        });
+
+        toClose.forEach(this::closePanel);
+    }
+
     public GenericRegistry<Identifier, Panel> getPanels() {
         return PANELS;
-    }
-
-    /**
-     * Gets all currently open panels.
-     *
-     * @return the open panels registry
-     */
-    public GenericRegistry<Identifier, Panel> getOpenPanels() {
-        return OPEN_PANELS;
     }
 }

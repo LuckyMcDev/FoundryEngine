@@ -1,12 +1,7 @@
 package io.github.luckymcdev.foundryengine.client.editor;
 
-import com.mojang.datafixers.kinds.IdF;
 import imgui.ImGui;
 import imgui.type.ImBoolean;
-import io.github.luckymcdev.foundryengine.client.editor.panels.NodeEditorPanel;
-import io.github.luckymcdev.foundryengine.client.editor.panels.PostProcessPanel;
-import io.github.luckymcdev.foundryengine.client.editor.panels.TestPanel;
-import io.github.luckymcdev.foundryengine.client.imgui.ImGuiManager;
 import io.github.luckymcdev.foundryengine.client.imgui.graphics.ImGuiGraphicsStack;
 import io.github.luckymcdev.foundryengine.common.Instances;
 
@@ -33,17 +28,11 @@ public class MainMenu {
 
     private static void renderPanelsMenu() {
         if (ImGui.beginMenu("Panels")) {
-            if (ImGui.menuItem("Test Panel", "ctrl + t", isOpen(TestPanel.INSTANCE))) {
-                editor.togglePanel(TestPanel.INSTANCE);
-            }
-
-            if (ImGui.menuItem("Node Editor", "ctrl + n", isOpen(NodeEditorPanel.INSTANCE))) {
-                editor.togglePanel(NodeEditorPanel.INSTANCE);
-            }
-
-            if (ImGui.menuItem("Post Processing", "ctrl + p", isOpen(PostProcessPanel.INSTANCE))) {
-                editor.togglePanel(PostProcessPanel.INSTANCE);
-            }
+            editor.getPanels().forEach(panel -> {
+                if (ImGui.menuItem(panel.getLabel(), "", editor.isOpen(panel))) {
+                    editor.togglePanel(panel);
+                }
+            });
 
             ImGui.endMenu();
         }
@@ -52,7 +41,7 @@ public class MainMenu {
     private static void renderToolsMenu() {
         if (ImGui.beginMenu("Tools")) {
             if (ImGui.menuItem("Close All Panels")) {
-                closeAllPanels();
+                editor.closeAllPanels();
             }
 
             ImGui.separator();
@@ -68,30 +57,16 @@ public class MainMenu {
             ImGui.endMenu();
         }
 
-        if (demoWindowOpen.get()) {
-            ImGui.showDemoWindow(demoWindowOpen);
-        }
-
-        if (metricsWindowOpen.get()) {
-            ImGui.showMetricsWindow(metricsWindowOpen);
-        }
+        if (demoWindowOpen.get()) ImGui.showDemoWindow(demoWindowOpen);
+        if (metricsWindowOpen.get()) ImGui.showMetricsWindow(metricsWindowOpen);
     }
 
     private static void renderViewMenu() {
         if (ImGui.beginMenu("View")) {
             if (ImGui.menuItem("Reset Layout")) {
-                // Add layout reset logic if you implement docking
+                // TODO: docking layout reset
             }
-
             ImGui.endMenu();
         }
-    }
-
-    private static boolean isOpen(Panel panel) {
-        return editor.isOpen(panel);
-    }
-
-    private static void closeAllPanels() {
-        editor.closeAllPanels();
     }
 }

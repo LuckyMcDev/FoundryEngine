@@ -1,10 +1,7 @@
-package io.github.luckymcdev.foundryengine.client.editor.panels;
+package io.github.luckymcdev.foundryengine.client.editor.builtin;
 
 import imgui.ImGui;
 import imgui.flag.ImGuiTreeNodeFlags;
-import imgui.type.ImBoolean;
-import imgui.type.ImFloat;
-import imgui.type.ImInt;
 import io.github.luckymcdev.foundryengine.client.editor.Panel;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.PostProcessPipeline;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.param.PipelineParam;
@@ -122,10 +119,6 @@ public class PostProcessPanel extends Panel {
 
         ImGui.popID();
     }
-
-    // =========================================================================
-    // Param tree
-    // =========================================================================
 
     /**
      * Renders a collapsible tree of ImGui widgets for every {@link PipelineParam}

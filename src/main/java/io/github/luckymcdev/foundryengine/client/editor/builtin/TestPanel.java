@@ -1,4 +1,4 @@
-package io.github.luckymcdev.foundryengine.client.editor.panels;
+package io.github.luckymcdev.foundryengine.client.editor.builtin;
 
 import imgui.ImGui;
 import io.github.luckymcdev.foundryengine.client.editor.Panel;
