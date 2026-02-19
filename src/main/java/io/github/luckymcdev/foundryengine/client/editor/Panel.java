@@ -97,6 +97,7 @@ public class Panel {
     public final void close() {
         if (this.open) {
             this.open = false;
+            onClosed();
         }
     }
 
@@ -146,10 +147,6 @@ public class Panel {
 
             if (shouldClose) {
                 this.close();
-            }
-
-            if (!open) {
-                onClosed();
             }
         } else {
             this.focused = false;
