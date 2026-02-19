@@ -16,8 +16,11 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.neoforge.client.blaze3d.validation.ValidationGpuDevice;
 import net.neoforged.neoforge.client.blaze3d.validation.ValidationGpuTexture;
+import net.neoforged.neoforge.common.NeoForge;
 
 import static io.github.luckymcdev.foundryengine.common.InstancesInternal.*;
 
@@ -87,5 +90,11 @@ public interface Instances {
     }
     static KeyBindingManager getKeyBindingManager() {
         return KEY_BINDING_MANAGER;
+    }
+    static <T extends Event> T post(T event) {
+        return NeoForge.EVENT_BUS.post(event);
+    }
+    static <T extends Event> T post(EventPriority priority, T event) {
+        return NeoForge.EVENT_BUS.post(priority, event);
     }
 }

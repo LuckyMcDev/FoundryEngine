@@ -13,20 +13,27 @@ import java.nio.file.Path;
 import java.util.stream.Collectors;
 
 public interface Commons {
+    // Consts
     Logger LOGGER = LogUtils.getLogger();
     String MODID = "foundryengine";
     String MODNAME = "Foundry Engine";
+
+    // Config
     Path CONFIG = FMLPaths.CONFIGDIR.get();
     Path FOUNDRY_ENGINE_CONFIG = CONFIG.resolve(MODID);
     Path DATABASE_CONFIG = CONFIG.resolve("database");
+
+    // Game Dir stuff
     Path GAME = FMLPaths.GAMEDIR.get();
     Path FOUNDRY_ENGINE = GAME.resolve("FoundryEngine");
     Path WORKSPACE = FOUNDRY_ENGINE.resolve("workspace");
 
+    // Easy Id.
     static Identifier id(@NotNull String path) {
         return Identifier.fromNamespaceAndPath(MODID, path);
     }
 
+    // Resloc content
     static String getRlSource(Identifier location) {
         return getRlSource(location, StandardCharsets.UTF_8);
     }

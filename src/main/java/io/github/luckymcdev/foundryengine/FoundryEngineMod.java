@@ -3,10 +3,14 @@ package io.github.luckymcdev.foundryengine;
 import com.mojang.logging.LogUtils;
 import io.github.luckymcdev.foundryengine.client.ClientMatrices;
 import io.github.luckymcdev.foundryengine.client.RegisterRenderingStuffEvent;
+import io.github.luckymcdev.foundryengine.client.TestRender;
+import io.github.luckymcdev.foundryengine.client.editor.builtin.NodeEditorPanel;
+import io.github.luckymcdev.foundryengine.client.editor.builtin.PostProcessPanel;
+import io.github.luckymcdev.foundryengine.client.editor.builtin.TestPanel;
+import io.github.luckymcdev.foundryengine.client.editor.event.RegisterPanelEvent;
 import io.github.luckymcdev.foundryengine.client.opengl.shaders.preprocessing.IncludeGLSLPreProcessor;
 import io.github.luckymcdev.foundryengine.client.opengl.shaders.preprocessing.RegisterGLSLPreProcessorEvent;
 import io.github.luckymcdev.foundryengine.client.post.RegisterPostPipelineEvent;
-import io.github.luckymcdev.foundryengine.client.TestRender;
 import io.github.luckymcdev.foundryengine.client.util.KeyBinding;
 import io.github.luckymcdev.foundryengine.client.util.RegisterKeyBindingEvent;
 import io.github.luckymcdev.foundryengine.common.Commons;
@@ -25,7 +29,10 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.neoforge.client.event.*;
+import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.FrameGraphSetupEvent;
+import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
@@ -38,7 +45,7 @@ public class FoundryEngineMod {
     private static final Logger LOGGER = LogUtils.getLogger();
 
     public FoundryEngineMod(IEventBus modEventBus, ModContainer modContainer) {
-
+        // Register the common setup method to the mod event bus
         modEventBus.addListener(this::commonSetup);
 
         NeoForge.EVENT_BUS.register(this);
@@ -67,11 +74,19 @@ public class FoundryEngineMod {
 
     @EventBusSubscriber(modid = Commons.MODID, value = Dist.CLIENT)
     public static class ClientModEvents {
-        private static boolean shadersInitialized = false;
 
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
-            NeoForge.EVENT_BUS.post(new RegisterGLSLPreProcessorEvent());
+            event.enqueueWork(() -> {
+                Instances.post(new RegisterGLSLPreProcessorEvent());
+                Instances.post(new RegisterPanelEvent());
+                Instances.post(new RegisterPostPipelineEvent(Instances.getPostProcessManager()));
+            });
+        }
+
+        @SubscribeEvent
+        public static void onRegisterKeyMapping(RegisterKeyMappingsEvent event) {
+            Instances.post(new RegisterKeyBindingEvent(Instances.getKeyBindingManager()));
         }
 
         @SubscribeEvent
@@ -80,35 +95,15 @@ public class FoundryEngineMod {
         }
 
         @SubscribeEvent
-        public static void onRegisterKeyBinding(RegisterKeyBindingEvent event) {
-            event.register(new KeyBinding(
-                    new KeyMapping("key.foundryengine.testkey", GLFW.GLFW_KEY_O, KeyMapping.Category.MISC),
-                    () -> Instances.getMinecraft().player.displayClientMessage(Component.literal("Hello"), false)
-            ));
+        public static void onRegisterPanels(RegisterPanelEvent event) {
+            event.register(PostProcessPanel.INSTANCE);
+            event.register(TestPanel.INSTANCE);
+            event.register(NodeEditorPanel.INSTANCE);
         }
 
         @SubscribeEvent
         public static void onRegisterPostPipelines(RegisterPostPipelineEvent event) {
             TestRender.registerPipelines(event);
-        }
-
-        @SubscribeEvent
-        private static void updateClientMatrices(FrameGraphSetupEvent event) {
-            ClientMatrices.updateMain(event.getModelViewMatrix(), event.getProjectionMatrix());
-        }
-
-        @SubscribeEvent
-        public static void onRegisterKeyMapping(RegisterKeyMappingsEvent event) {
-            NeoForge.EVENT_BUS.post(new RegisterKeyBindingEvent(Instances.getKeyBindingManager()));
-        }
-
-        @SubscribeEvent
-        public static void onRenderLevel(RenderLevelStageEvent.AfterLevel event) {
-            if (!shadersInitialized) {
-                shadersInitialized = true;
-                NeoForge.EVENT_BUS.post(new RegisterPostPipelineEvent(Instances.getPostProcessManager()));
-                NeoForge.EVENT_BUS.post(new RegisterRenderingStuffEvent(Instances.getResourceManager()));
-            }
         }
 
         @SubscribeEvent
@@ -120,6 +115,19 @@ public class FoundryEngineMod {
         @SubscribeEvent
         public static void onClientTick(ClientTickEvent.Post event) {
             Instances.getBuiltInEditor().handleTick();
+        }
+
+        @SubscribeEvent
+        public static void updateClientMatrices(FrameGraphSetupEvent event) {
+            ClientMatrices.updateMain(event.getModelViewMatrix(), event.getProjectionMatrix());
+        }
+
+        @SubscribeEvent
+        public static void onRegisterKeyBinding(RegisterKeyBindingEvent event) {
+            event.register(new KeyBinding(
+                    new KeyMapping("key.foundryengine.testkey", GLFW.GLFW_KEY_O, KeyMapping.Category.MISC),
+                    () -> Instances.getMinecraft().player.displayClientMessage(Component.literal("Hello"), false)
+            ));
         }
     }
 }
