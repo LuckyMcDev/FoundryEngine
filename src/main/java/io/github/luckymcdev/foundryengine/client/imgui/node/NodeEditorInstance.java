@@ -83,6 +83,10 @@ public class NodeEditorInstance<T> {
     }
 
     public void render(Consumer<Node> onNodeContextMenu) {
+        render(onNodeContextMenu, null);
+    }
+
+    public void render(Consumer<Node> onNodeContextMenu, Consumer<Node> onNodeBody) {
         boolean mouseRightButton = ImGui.isMouseClicked(1);
 
         ImNodes.beginNodeEditor();
@@ -107,8 +111,11 @@ public class NodeEditorInstance<T> {
             ImGui.pushItemWidth(130F);
 
             if (node != root) {
-                // Custom node content here
-                ImGui.textUnformatted("Node Content");
+                if (onNodeBody != null) {
+                    onNodeBody.accept(node);
+                } else {
+                    ImGui.textUnformatted("Node Content");
+                }
             } else {
                 ImGui.textUnformatted("Root Node");
             }
