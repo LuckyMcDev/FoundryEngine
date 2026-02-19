@@ -30,13 +30,13 @@ public class BuiltInEditor {
 
     public void openPanel(Panel panel) {
         if (!isOpen(panel)) {
-            panel.onOpened();
+            panel.open();
         }
     }
 
     public void closePanel(Panel panel) {
         if (isOpen(panel)) {
-            panel.onClosed();
+            panel.close();
         }
     }
 
