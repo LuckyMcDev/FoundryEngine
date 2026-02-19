@@ -1,5 +1,9 @@
 package io.github.luckymcdev.foundryengine.client.post.pipeline.param;
 
+import io.github.luckymcdev.foundryengine.client.opengl.shaders.program.ShaderProgram;
+import io.github.luckymcdev.foundryengine.client.opengl.shaders.uniform.Uniform;
+import  org.joml.*;
+
 /**
  * A named, typed, mutable parameter belonging to a {@link io.github.luckymcdev.foundryengine.client.post.pipeline.PostProcessPipeline}.
  *
@@ -13,8 +17,8 @@ package io.github.luckymcdev.foundryengine.client.post.pipeline.param;
  *   <li>{@code Float}   – rendered as a drag/slider float</li>
  *   <li>{@code Integer} – rendered as a drag/slider int</li>
  *   <li>{@code Boolean} – rendered as a checkbox</li>
- *   <li>{@code org.joml.Vector2f} – rendered as two floats</li>
- *   <li>{@code org.joml.Vector3f} – rendered as three floats (colour picker or xyz)</li>
+ *   <li>{@code  Vector2f} – rendered as two floats</li>
+ *   <li>{@code  Vector3f} – rendered as three floats (color picker or xyz)</li>
  * </ul>
  *
  * @param <T> the value type
@@ -31,7 +35,7 @@ public class PipelineParam<T> {
     private final String displayName;
     private final float  min;
     private final float  max;
-    /** When true the panel renders a colour picker instead of xyz sliders for VEC3. */
+    /** When true the panel renders a color picker instead of xyz sliders for VEC3. */
     private final boolean colorPicker;
 
     // ── Factories ─────────────────────────────────────────────────────────────
@@ -60,19 +64,19 @@ public class PipelineParam<T> {
         return new PipelineParam<>(uniformName, displayName, Kind.BOOLEAN, value, 0, 1, false);
     }
 
-    public static PipelineParam<org.joml.Vector2f> vec2Param(String uniformName, org.joml.Vector2f value) {
+    public static PipelineParam<Vector2f> vec2Param(String uniformName, Vector2f value) {
         return new PipelineParam<>(uniformName, uniformName, Kind.VEC2, value, 0, 1, false);
     }
 
-    public static PipelineParam<org.joml.Vector3f> vec3Param(String uniformName, org.joml.Vector3f value) {
+    public static PipelineParam<Vector3f> vec3Param(String uniformName, Vector3f value) {
         return new PipelineParam<>(uniformName, uniformName, Kind.VEC3, value, 0, 1, false);
     }
 
-    public static PipelineParam<org.joml.Vector3f> colorParam(String uniformName, org.joml.Vector3f value) {
+    public static PipelineParam<Vector3f> colorParam(String uniformName, Vector3f value) {
         return new PipelineParam<>(uniformName, uniformName, Kind.VEC3, value, 0, 1, true);
     }
 
-    public static PipelineParam<org.joml.Vector3f> colorParam(String uniformName, String displayName, org.joml.Vector3f value) {
+    public static PipelineParam<Vector3f> colorParam(String uniformName, String displayName, Vector3f value) {
         return new PipelineParam<>(uniformName, displayName, Kind.VEC3, value, 0, 1, true);
     }
 
@@ -92,11 +96,11 @@ public class PipelineParam<T> {
     // ── Apply to shader ───────────────────────────────────────────────────────
 
     /**
-     * Uploads the current value to the given {@link io.github.luckymcdev.foundryengine.client.opengl.shaders.program.ShaderProgram}
+     * Uploads the current value to the given {@link ShaderProgram}
      * as a uniform named {@link #uniformName}.
      */
-    public void applyToProgram(io.github.luckymcdev.foundryengine.client.opengl.shaders.program.ShaderProgram program) {
-        program.setUniform(new io.github.luckymcdev.foundryengine.client.opengl.shaders.uniform.Uniform<>(uniformName, value));
+    public void applyToProgram(ShaderProgram program) {
+        program.setUniform(new Uniform<>(uniformName, value));
     }
 
     // ── Accessors ─────────────────────────────────────────────────────────────

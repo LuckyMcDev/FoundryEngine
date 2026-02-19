@@ -6,7 +6,7 @@ out vec4 fragColor;
 uniform sampler2D screenTexture;
 uniform sampler2D depthTexture;
 uniform vec2 resolution;
-uniform float cellSize;
+uniform int cellSize;
 
 // --- SETTINGS ---
 const float BRIGHTNESS_MULTIPLIER = 1.0;

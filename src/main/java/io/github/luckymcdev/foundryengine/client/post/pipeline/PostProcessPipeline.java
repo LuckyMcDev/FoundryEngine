@@ -6,33 +6,37 @@ import io.github.luckymcdev.foundryengine.client.opengl.shaders.uniform.Uniform;
 import io.github.luckymcdev.foundryengine.client.opengl.shaders.uniform.Uniforms;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.param.PipelineParam;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.pass.PostProcessPipelinePass;
+import io.github.luckymcdev.foundryengine.client.post.pipeline.pass.TemporaryTarget;
 import net.minecraft.resources.Identifier;
 
 import java.util.*;
 
 /**
- * A named collection of {@link PostProcessPipelinePass passes} that together
- * produce a post-processing effect.
+ * A named collection of {@link PostProcessPipelinePass passes} that together produce a
+ * post-processing effect.
  *
- * <h3>Declaring editable parameters</h3>
- * Subclasses call {@link #addParam} in their constructor to register
- * {@link PipelineParam} instances. These are:
- * <ul>
- *   <li>Automatically uploaded as uniforms to every pass each frame.</li>
- *   <li>Exposed to the {@code PostProcessPanel} so they can be tweaked live
- *       without any extra panel code.</li>
- * </ul>
+ * <h3>Declaring temporary framebuffers</h3>
+ * Call {@link #addTarget} in the subclass constructor to register {@link TemporaryTarget}s.
+ * The {@code PostProcessManager} allocates one {@code FrameBuffer} per unique name per
+ * pipeline, mirroring Minecraft's {@code PostChain} {@code <target>} entries.
  *
  * <pre>{@code
- * public class MyPipeline extends PostProcessPipeline {
- *     private final PipelineParam<Float> brightness =
- *         addParam(PipelineParam.floatParam("brightness", 1.0f, 0.0f, 3.0f));
- *
- *     public MyPipeline(Identifier name, PostProcessPipelinePass... passes) {
+ * public class BloomPipeline extends PostProcessPipeline {
+ *     public BloomPipeline(Identifier name, PostProcessPipelinePass... passes) {
  *         super(name, passes);
+ *         addTarget(TemporaryTarget.named("blur_h"));
+ *         addTarget(TemporaryTarget.named("blur_v"));
  *     }
- *     // No setupUniforms override needed – params are applied automatically.
  * }
+ * }</pre>
+ *
+ * <h3>Declaring editable parameters</h3>
+ * Call {@link #addParam} in the subclass constructor to register {@link PipelineParam}s.
+ * They are automatically uploaded as uniforms every frame and exposed in the editor panel.
+ *
+ * <pre>{@code
+ * private final PipelineParam<Float> brightness =
+ *     addParam(PipelineParam.floatParam("brightness", 1.0f, 0.0f, 3.0f));
  * }</pre>
  */
 public class PostProcessPipeline {
@@ -40,6 +44,12 @@ public class PostProcessPipeline {
     /** Parallel lists: passes[i] ↔ programs[i] */
     private final List<PostProcessPipelinePass> passes   = new ArrayList<>();
     private final List<ShaderProgram>           programs = new ArrayList<>();
+
+    /**
+     * Named temporary framebuffer slots required by this pipeline.
+     * Insertion order is preserved; the manager iterates these to allocate buffers.
+     */
+    private final LinkedHashMap<String, TemporaryTarget> targets = new LinkedHashMap<>();
 
     /**
      * Ordered map of uniform name → param.
@@ -63,6 +73,35 @@ public class PostProcessPipeline {
                 throw new RuntimeException("Failed to link pass: " + pass.name(), e);
             }
         }
+    }
+
+    // =========================================================================
+    // Temporary target registration
+    // =========================================================================
+
+    /**
+     * Registers a {@link TemporaryTarget} for this pipeline.
+     * The manager will allocate (and auto-resize) a {@code FrameBuffer} for each
+     * unique target name before running the pipeline.
+     *
+     * <p>Call from the subclass constructor, <em>after</em> {@code super(...)}.</p>
+     */
+    protected TemporaryTarget addTarget(TemporaryTarget target) {
+        targets.put(target.name(), target);
+        return target;
+    }
+
+    /**
+     * Convenience overload – creates and registers a target in one call.
+     * <pre>{@code addTarget("blur_ping"); }</pre>
+     */
+    protected TemporaryTarget addTarget(String name) {
+        return addTarget(TemporaryTarget.named(name));
+    }
+
+    /** Returns an unmodifiable view of this pipeline's declared temporary targets. */
+    public Map<String, TemporaryTarget> getTargets() {
+        return Collections.unmodifiableMap(targets);
     }
 
     // =========================================================================
@@ -130,11 +169,10 @@ public class PostProcessPipeline {
 
     /**
      * Override to supply per-pass uniforms that vary between passes, or that
-     * depend on runtime state (e.g. window resolution, camera data) not
-     * expressible as a static {@link PipelineParam}.
+     * depend on runtime state not expressible as a static {@link PipelineParam}.
      *
-     * <p>Most pipelines don't need to override this at all — declare
-     * {@link PipelineParam}s instead, and they'll be applied automatically.</p>
+     * <p>Most pipelines don't need to override this – declare {@link PipelineParam}s
+     * instead, and they'll be applied automatically.</p>
      */
     public void setupUniforms(int passIndex, PostProcessPipelinePass pass) {
         // default: params already applied in setupDefaultUniforms

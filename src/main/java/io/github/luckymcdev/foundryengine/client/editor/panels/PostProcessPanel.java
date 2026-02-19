@@ -36,7 +36,7 @@ public class PostProcessPanel extends Panel {
 
         ImGui.separator();
 
-        if (ImGui.collapsingHeader("Staged Pipelines", ImGuiTreeNodeFlags.DefaultOpen)) {
+        if (ImGui.collapsingHeader("Staged Pipelines")) {
             var postProcessManager = Instances.getPostProcessManager();
             Map<PostProcessStage, List<StagedPostProcessPipeline>> pipelinesByStage =
                     postProcessManager.getPipelinesByStage();
@@ -136,11 +136,10 @@ public class PostProcessPanel extends Panel {
         if (params.isEmpty()) return;
 
         ImGui.indent();
-        if (ImGui.treeNodeEx("Parameters##" + pipeline.getName(), ImGuiTreeNodeFlags.DefaultOpen)) {
+        if (ImGui.collapsingHeader("Parameters##" + pipeline.getName(), ImGuiTreeNodeFlags.DefaultOpen)) {
             for (PipelineParam<?> param : params.values()) {
                 renderParam(pipeline.getName().toString(), param);
-            }
-            ImGui.treePop();
+            };
         }
         ImGui.unindent();
     }

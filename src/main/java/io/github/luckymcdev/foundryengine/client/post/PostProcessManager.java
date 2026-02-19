@@ -11,8 +11,9 @@ import io.github.luckymcdev.foundryengine.client.opengl.vertex.Mesh;
 import io.github.luckymcdev.foundryengine.client.opengl.vertex.VertexLayout;
 import io.github.luckymcdev.foundryengine.client.opengl.vertex.Vertices;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.PostProcessPipeline;
-import io.github.luckymcdev.foundryengine.client.post.pipeline.pass.PassTarget;
+import io.github.luckymcdev.foundryengine.client.post.pipeline.pass.TargetRef;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.pass.PostProcessPipelinePass;
+import io.github.luckymcdev.foundryengine.client.post.pipeline.pass.TemporaryTarget;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.staged.PostProcessStage;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.staged.StagedPostProcessPipeline;
 import io.github.luckymcdev.foundryengine.common.Commons;
@@ -24,10 +25,8 @@ import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import org.lwjgl.opengl.GL33;
 import org.lwjgl.opengl.GL43C;
 
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @EventBusSubscriber
@@ -38,8 +37,8 @@ public class PostProcessManager {
     // -------------------------------------------------------------------------
 
     private static final OpenGlStack GL_STACK = Instances.getOpenGlStack();
-    private static final int COLOR_TEXTURE_UNIT = 0;
-    private static final int DEPTH_TEXTURE_UNIT = 1;
+    private static final int COLOR_TEXTURE_UNIT    = 0;
+    private static final int DEPTH_TEXTURE_UNIT    = 1;
     private static final int SAVED_TEXTURE_UNIT_COUNT = 8;
     private static final PostProcessStage STAGE_NOT_STAGED = null;
 
@@ -47,17 +46,34 @@ public class PostProcessManager {
     // Pipeline registries
     // -------------------------------------------------------------------------
 
-    private static final List<PostProcessPipeline> PIPELINES = new ArrayList<>();
+    private static final List<PostProcessPipeline>       PIPELINES        = new ArrayList<>();
     private static final List<StagedPostProcessPipeline> STAGED_PIPELINES = new ArrayList<>();
 
     /**
-     * Holds all manager-owned scratch {@link FrameBuffer}s.
-     * Only {@link PassTarget#isManagerOwned()} targets are stored here.
+     * Per-pipeline scratch buffers, keyed by pipeline identity then by target name.
+     *
+     * <p>Each pipeline gets its own map so that target names are scoped to the pipeline
+     * that declared them (just as Minecraft's {@code PostChain} targets are local to
+     * each chain file).  The special sentinel name {@code "main"} is never stored here.</p>
      */
-    private static final EnumMap<PassTarget, FrameBuffer> SCRATCH_BUFFERS =
-            new EnumMap<>(PassTarget.class);
+    private static final Map<PostProcessPipeline, Map<String, FrameBuffer>> PIPELINE_BUFFERS
+            = new IdentityHashMap<>();
+
+    /**
+     * A single shared "blit proxy" buffer used when a pass declares
+     * {@link TargetRef#MAIN} as its output.  We never render directly into
+     * Minecraft's main FBO, so we render here then blit.
+     *
+     * <p>This buffer is resized to match the main target each frame, exactly once,
+     * regardless of how many pipelines need it.</p>
+     */
+    private static FrameBuffer blitProxy;
 
     private static Mesh quad;
+
+    // -------------------------------------------------------------------------
+    // Pipeline management
+    // -------------------------------------------------------------------------
 
     public void addPipeline(PostProcessPipeline pipeline) {
         PIPELINES.add(pipeline);
@@ -65,9 +81,7 @@ public class PostProcessManager {
     }
 
     public void enablePipeline(PostProcessPipeline pipeline) {
-        if (PIPELINES.contains(pipeline)) {
-            pipeline.enable();
-        }
+        if (PIPELINES.contains(pipeline)) pipeline.enable();
     }
 
     public void disablePipeline(PostProcessPipeline pipeline) {
@@ -80,9 +94,7 @@ public class PostProcessManager {
     }
 
     public void enablePipeline(StagedPostProcessPipeline pipeline) {
-        if (STAGED_PIPELINES.contains(pipeline) && !pipeline.isEnabled()) {
-            pipeline.enable();
-        }
+        if (STAGED_PIPELINES.contains(pipeline) && !pipeline.isEnabled()) pipeline.enable();
     }
 
     public void disablePipeline(StagedPostProcessPipeline pipeline) {
@@ -90,9 +102,7 @@ public class PostProcessManager {
     }
 
     public void changePipelineStage(StagedPostProcessPipeline pipeline, PostProcessStage newStage) {
-        if (STAGED_PIPELINES.contains(pipeline)) {
-            pipeline.setStage(newStage);
-        }
+        if (STAGED_PIPELINES.contains(pipeline)) pipeline.setStage(newStage);
     }
 
     public List<PostProcessPipeline> getPipelines() { return PIPELINES; }
@@ -115,6 +125,10 @@ public class PostProcessManager {
         return map;
     }
 
+    // -------------------------------------------------------------------------
+    // Initialisation
+    // -------------------------------------------------------------------------
+
     @SubscribeEvent
     private static void init(RegisterRenderingStuffEvent event) {
         quad = new Mesh(
@@ -124,8 +138,12 @@ public class PostProcessManager {
                 GL33.GL_TRIANGLES,
                 true
         );
-        // Scratch buffers are created lazily in ensureScratchBuffers().
+        // All framebuffers are created lazily in ensureFrameBuffers().
     }
+
+    // -------------------------------------------------------------------------
+    // Stage event handlers
+    // -------------------------------------------------------------------------
 
     @SubscribeEvent
     public static void onAfterSky(RenderLevelStageEvent.AfterSky event) {
@@ -173,25 +191,23 @@ public class PostProcessManager {
         // Reserved for future GUI-stage pipelines.
     }
 
+    // -------------------------------------------------------------------------
+    // Run helpers
+    // -------------------------------------------------------------------------
+
     private static void runStage(PostProcessStage stage) {
-        List<StagedPostProcessPipeline> pipelines = getEnabledPipelines(
-                STAGED_PIPELINES, p -> p.getStage() == stage);
-        if (!pipelines.isEmpty()) {
-            runPipelineBatch(pipelines, stage);
-        }
+        List<StagedPostProcessPipeline> pipelines =
+                getEnabledPipelines(STAGED_PIPELINES, p -> p.getStage() == stage);
+        if (!pipelines.isEmpty()) runPipelineBatch(pipelines, stage);
     }
 
     private static void runNonStagedPipelines() {
         List<PostProcessPipeline> pipelines = getEnabledPipelines(PIPELINES, p -> true);
-        if (!pipelines.isEmpty()) {
-            runPipelineBatch(pipelines, STAGE_NOT_STAGED);
-        }
+        if (!pipelines.isEmpty()) runPipelineBatch(pipelines, STAGE_NOT_STAGED);
     }
 
     private static <T extends PostProcessPipeline> List<T> getEnabledPipelines(
-            List<T> source,
-            java.util.function.Predicate<T> extraFilter
-    ) {
+            List<T> source, Predicate<T> extraFilter) {
         return source.stream()
                 .filter(PostProcessPipeline::isEnabled)
                 .filter(extraFilter)
@@ -205,7 +221,7 @@ public class PostProcessManager {
         RenderSystem.assertOnRenderThread();
 
         RenderTarget mainTarget = Instances.getMainRenderTarget();
-        ensureScratchBuffers(mainTarget);
+        ensureFrameBuffers(pipelines, mainTarget);
 
         GlDispatch.pushDebugGroup(buildDebugGroupLabel(pipelines.size(), stage));
         GL_STACK.push();
@@ -213,7 +229,7 @@ public class PostProcessManager {
         try {
             setupGlobalState();
 
-            var colorTexture = Instances.getGlColTexture();
+            var colorTexture       = Instances.getGlColTexture();
             int mainColorTextureId = colorTexture.glId();
             int depthTextureId     = Instances.getGlDepthTexture().glId();
             var device             = Instances.getGlDevice();
@@ -229,18 +245,13 @@ public class PostProcessManager {
         }
     }
 
+    // -------------------------------------------------------------------------
+    // Per-pipeline execution
+    // -------------------------------------------------------------------------
+
     /**
-     * Executes every pass in the pipeline, routing inputs and outputs through the
-     * correct framebuffers according to each pass's {@link PassTarget} declarations.
-     *
-     * <p><b>How target resolution works:</b></p>
-     * <ul>
-     *   <li>{@link PassTarget#MAIN} as <em>input</em>  → the current "live" main colour texture.</li>
-     *   <li>{@link PassTarget#MAIN} as <em>output</em> → render into a scratch buffer, then blit
-     *       that scratch buffer back into the main framebuffer so the result is visible.</li>
-     *   <li>Any other target as <em>input</em>  → bind the colour texture of that scratch buffer.</li>
-     *   <li>Any other target as <em>output</em> → bind that scratch buffer as the draw target.</li>
-     * </ul>
+     * Executes every pass in the pipeline, routing inputs and outputs through
+     * the framebuffers that match each pass's {@link TargetRef} declarations.
      */
     private static void runPipeline(
             PostProcessPipeline pipeline,
@@ -249,28 +260,28 @@ public class PostProcessManager {
             int mainColorTextureId,
             int depthTextureId
     ) {
-        List<PostProcessPipelinePass> passes = pipeline.getPasses();
+        List<PostProcessPipelinePass> passes     = pipeline.getPasses();
+        Map<String, FrameBuffer>      localBuffers = PIPELINE_BUFFERS.get(pipeline);
+
         GlDispatch.pushDebugGroup("Pipeline: " + pipeline.getName());
 
         for (int i = 0; i < passes.size(); i++) {
             PostProcessPipelinePass pass    = passes.get(i);
             ShaderProgram           program = pipeline.getProgramForPass(i);
 
-            // ── Resolve the actual render target for this pass's output ──────
-            // When the declared output is MAIN we still render into a scratch buffer
-            // and blit at the end; we never render directly into the main FBO.
-            FrameBuffer drawBuffer = resolveOutputBuffer(pass.output(), mainTarget);
+            // ── Resolve draw target ───────────────────────────────────────────
+            // Writing to MAIN → render into the shared blitProxy, blit afterwards.
+            FrameBuffer drawBuffer = resolveOutputBuffer(pass.output(), localBuffers);
 
-            // ── Resolve the texture this pass reads ──────────────────────────
-            int inputColorTexId = resolveInputColorTexture(pass.input(), mainColorTextureId);
+            // ── Resolve input colour texture ──────────────────────────────────
+            int inputColorTexId = resolveInputColorTexture(pass.input(), mainColorTextureId, localBuffers);
 
             renderPass(pipeline, program, i, pass, drawBuffer, inputColorTexId, depthTextureId);
 
-            // ── If the pass wrote to a scratch buffer but declared MAIN as its
-            //    output, blit the scratch result back into the real main FBO ──
-            if (pass.output() == PassTarget.MAIN) {
+            // ── Blit proxy → main FBO when the pass declared MAIN as output ───
+            if (pass.output().isMain()) {
                 Instances.getFrameBufferManager().blit(drawBuffer, mainFbo, mainTarget);
-                // The main colour texture has changed – refresh for subsequent passes.
+                // Refresh the live colour texture ID for subsequent passes.
                 mainColorTextureId = Instances.getGlColTexture().glId();
             }
         }
@@ -290,19 +301,15 @@ public class PostProcessManager {
         GlDispatch.pushDebugGroup("Pass " + passIndex + ": " + program.getId()
                 + " [" + pass.input() + " -> " + pass.output() + "]");
 
-        // Bind the output framebuffer and clear it.
         outputBuffer.bind();
         GlDispatch.glClear(GL43C.GL_COLOR_BUFFER_BIT);
 
-        // Bind the input colour texture to unit 0.
         GlDispatch.glActiveTexture(GL43C.GL_TEXTURE0 + COLOR_TEXTURE_UNIT);
         GlDispatch.glBindTexture(GL43C.GL_TEXTURE_2D, inputColorTexId);
 
-        // Always bind the main depth texture to unit 1.
         GlDispatch.glActiveTexture(GL43C.GL_TEXTURE0 + DEPTH_TEXTURE_UNIT);
         GlDispatch.glBindTexture(GL43C.GL_TEXTURE_2D, depthTextureId);
 
-        // Activate shader, set uniforms, draw fullscreen quad.
         program.use();
         pipeline.setupDefaultUniforms(program);
         pipeline.setupUniforms(passIndex, pass);
@@ -314,50 +321,80 @@ public class PostProcessManager {
         GlDispatch.popDebugGroup();
     }
 
+    // -------------------------------------------------------------------------
+    // Target resolution
+    // -------------------------------------------------------------------------
+
     /**
-     * Returns the {@link FrameBuffer} to render into for the given declared output target.
+     * Returns the {@link FrameBuffer} to draw into for the given output target.
      *
-     * <p>When the declared output is {@link PassTarget#MAIN} we cannot render directly into
-     * Minecraft's framebuffer (it may be a native texture), so we redirect to
-     * {@link PassTarget#PING} as a proxy and let the caller blit afterwards.</p>
+     * <ul>
+     *   <li>{@link TargetRef#MAIN} → shared {@link #blitProxy} (blit back to main FBO afterwards)</li>
+     *   <li>Named temp → the pipeline-local buffer for that name</li>
+     * </ul>
      */
-    private static FrameBuffer resolveOutputBuffer(PassTarget output, RenderTarget mainTarget) {
-        if (output == PassTarget.MAIN) {
-            // Use PING as the intermediate scratch when writing back to MAIN.
-            return SCRATCH_BUFFERS.get(PassTarget.PING);
+    private static FrameBuffer resolveOutputBuffer(TargetRef output, Map<String, FrameBuffer> localBuffers) {
+        if (output.isMain()) {
+            return blitProxy;
         }
-        return SCRATCH_BUFFERS.get(output);
+        FrameBuffer buf = localBuffers.get(output.getName());
+        if (buf == null) {
+            throw new IllegalStateException(
+                    "No temporary target \"" + output.getName() + "\" found. " +
+                            "Did you call addTarget(\"" + output.getName() + "\") in your pipeline constructor?");
+        }
+        return buf;
     }
 
     /**
-     * Returns the OpenGL texture ID for the colour data this pass should sample.
+     * Returns the OpenGL colour texture ID that the given input target should sample.
      *
-     * @param input             the pass's declared input target
-     * @param mainColorTexId    the current main-target colour texture ID
+     * <ul>
+     *   <li>{@link TargetRef#MAIN} → the current live main colour texture ID</li>
+     *   <li>Named temp → the colour texture of the pipeline-local buffer for that name</li>
+     * </ul>
      */
-    private static int resolveInputColorTexture(PassTarget input, int mainColorTexId) {
-        if (input == PassTarget.MAIN) {
+    private static int resolveInputColorTexture(
+            TargetRef input,
+            int mainColorTexId,
+            Map<String, FrameBuffer> localBuffers
+    ) {
+        if (input.isMain()) {
             return mainColorTexId;
         }
-        FrameBuffer buf = SCRATCH_BUFFERS.get(input);
+        FrameBuffer buf = localBuffers.get(input.getName());
         if (buf == null) {
             throw new IllegalStateException(
-                    "No scratch buffer found for PassTarget." + input +
-                            ". This is a bug – ensureScratchBuffers() should have created it.");
+                    "No temporary target \"" + input.getName() + "\" found. " +
+                            "Did you call addTarget(\"" + input.getName() + "\") in your pipeline constructor?");
         }
         return buf.getColorTexture();
     }
 
+    // -------------------------------------------------------------------------
+    // Framebuffer lifecycle
+    // -------------------------------------------------------------------------
+
     /**
-     * Ensures every manager-owned {@link PassTarget} has a framebuffer that matches
-     * the current main render target's dimensions.  Stale or missing buffers are
-     * freed and re-created automatically.
+     * Ensures every pipeline has correctly-sized framebuffers for all its
+     * {@link TemporaryTarget}s, and that the shared {@link #blitProxy} is current.
+     * Stale or missing buffers are freed and re-created automatically.
      */
-    private static void ensureScratchBuffers(RenderTarget mainTarget) {
-        for (PassTarget target : PassTarget.values()) {
-            if (!target.isManagerOwned()) continue;  // skip PassTarget.MAIN
-            SCRATCH_BUFFERS.compute(target, (t, existing) ->
-                    resizeOrCreate(existing, t.name().toLowerCase(), mainTarget));
+    private static void ensureFrameBuffers(
+            List<? extends PostProcessPipeline> pipelines,
+            RenderTarget mainTarget
+    ) {
+        // Shared blit proxy (used for any MAIN output across all pipelines).
+        blitProxy = resizeOrCreate(blitProxy, "blit_proxy", mainTarget);
+
+        for (PostProcessPipeline pipeline : pipelines) {
+            Map<String, FrameBuffer> localBuffers =
+                    PIPELINE_BUFFERS.computeIfAbsent(pipeline, p -> new LinkedHashMap<>());
+
+            for (TemporaryTarget target : pipeline.getTargets().values()) {
+                localBuffers.compute(target.name(), (name, existing) ->
+                        resizeOrCreate(existing, pipeline.getName().getPath() + "_" + name, mainTarget));
+            }
         }
     }
 
@@ -365,17 +402,21 @@ public class PostProcessManager {
         if (buffer != null
                 && buffer.width()  == mainTarget.width
                 && buffer.height() == mainTarget.height) {
-            return buffer;  // still valid
+            return buffer;   // still valid, nothing to do
         }
         if (buffer != null) buffer.free();
         return new FrameBuffer(
-                Commons.id("post_scratch_" + idSuffix),
+                Commons.id("post_" + idSuffix),
                 mainTarget.width,
                 mainTarget.height,
                 false,
                 false
         );
     }
+
+    // -------------------------------------------------------------------------
+    // Misc helpers
+    // -------------------------------------------------------------------------
 
     private static void registerPipelinePrograms(PostProcessPipeline pipeline) {
         pipeline.getPrograms().forEach(Instances.getShaderManager()::register);
