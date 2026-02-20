@@ -37,7 +37,7 @@ public class AsciiPostProcessPipeline extends PostProcessPipeline {
                         new Shader(ExtendedShaderType.VERTEX,
                                 new ShaderSource(
                                         Commons.id("post_ascii_vert"),
-                                        Commons.id("shaders/post/ascii/ascii.vsh")
+                                        Commons.id("shaders/vert.vsh")
                                 )),
                         new Shader(ExtendedShaderType.FRAGMENT,
                                 new ShaderSource(

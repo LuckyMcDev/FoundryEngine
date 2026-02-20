@@ -27,7 +27,7 @@ public class GrayscalePipeline extends StagedPostProcessPipeline {
                         new Shader(ExtendedShaderType.VERTEX,
                                 new ShaderSource(
                                         Commons.id("post_grayscale_vert"),
-                                        Commons.id("shaders/post/grayscale/grayscale.vsh")
+                                        Commons.id("shaders/vert.vsh")
                                 )),
                         new Shader(ExtendedShaderType.FRAGMENT,
                                 new ShaderSource(

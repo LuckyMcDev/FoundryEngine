@@ -25,7 +25,7 @@ public class DepthVisualizePipeline extends PostProcessPipeline {
                         new Shader(ExtendedShaderType.VERTEX,
                                 new ShaderSource(
                                         Commons.id("post_depth_visualize_vert"),
-                                        Commons.id("shaders/post/depth/depth_visualize.vsh")
+                                        Commons.id("shaders/vert.vsh")
                                 )),
                         new Shader(ExtendedShaderType.FRAGMENT,
                                 new ShaderSource(
