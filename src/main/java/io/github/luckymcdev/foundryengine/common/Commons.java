@@ -10,6 +10,7 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -73,5 +74,9 @@ public interface Commons {
             LOGGER.error(e.getLocalizedMessage());
             return "";
         }
+    }
+
+    static <V> Supplier<V> supOf(V value) {
+        return () -> value;
     }
 }
