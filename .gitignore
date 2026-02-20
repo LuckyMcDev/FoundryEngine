@@ -119,3 +119,5 @@ runs/
 /.idea/
 /.run/
 /repo
+
+/.docs/
