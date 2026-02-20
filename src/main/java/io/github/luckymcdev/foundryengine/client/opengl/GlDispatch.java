@@ -280,6 +280,26 @@ public class GlDispatch {
         });
     }
 
+    public static void glUniform1fv(int location, float[] value) {
+        wrap(() -> org.lwjgl.opengl.GL43C.glUniform1fv(location, value));
+    }
+
+    public static void glUniform2fv(int location, float[] value) {
+        wrap(() -> org.lwjgl.opengl.GL43C.glUniform2fv(location, value));
+    }
+
+    public static void glUniform3fv(int location, float[] value) {
+        wrap(() -> org.lwjgl.opengl.GL43C.glUniform3fv(location, value));
+    }
+
+    public static void glUniform4fv(int location, float[] value) {
+        wrap(() -> org.lwjgl.opengl.GL43C.glUniform4fv(location, value));
+    }
+
+    public static void glUniform1iv(int location, int[] value) {
+        wrap(() -> org.lwjgl.opengl.GL43C.glUniform1iv(location, value));
+    }
+
     public static int glGetUniformBlockIndex(int program, String name) {
         return wrapReturn(() -> GL43C.glGetUniformBlockIndex(program, name));
     }

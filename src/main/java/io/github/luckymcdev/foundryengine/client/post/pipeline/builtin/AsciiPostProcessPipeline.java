@@ -51,6 +51,6 @@ public class AsciiPostProcessPipeline extends PostProcessPipeline {
     @Override
     public void setupUniforms(PostProcessPipelinePass pass, ShaderProgram program) {
         Minecraft mc = Instances.getMinecraft();
-        program.setUniform(new Uniform<>("resolution", new Vector2f(mc.getWindow().getWidth(), mc.getWindow().getHeight())));
+        program.setUniform(new Uniform<>("resolution", () -> new Vector2f(mc.getWindow().getWidth(), mc.getWindow().getHeight())));
     }
 }

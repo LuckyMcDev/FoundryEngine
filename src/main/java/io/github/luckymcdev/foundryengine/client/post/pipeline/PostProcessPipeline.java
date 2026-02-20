@@ -122,9 +122,9 @@ public class PostProcessPipeline {
      */
     public final void setupDefaultUniforms(ShaderProgram program) {
         program.setUniforms(Uniforms.getCollection());
-        program.setUniform(new Uniform<>("screenTexture", 0));
-        program.setUniform(new Uniform<>("depthTexture", 1));
-        program.setUniform(new Uniform<>("originalTexture", 2));
+        program.setUniform(new Uniform<>("screenTexture", () -> 0));
+        program.setUniform(new Uniform<>("depthTexture", () -> 1));
+        program.setUniform(new Uniform<>("originalTexture", () -> 2));
         
         for (PipelineParam<?> param : params.values()) {
             param.applyToProgram(program);

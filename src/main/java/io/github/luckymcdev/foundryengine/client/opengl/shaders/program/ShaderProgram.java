@@ -134,40 +134,31 @@ public class ShaderProgram extends OpenGlObject {
     }
 
     /**
-     * Sets a Uniform. Look at {@link io.github.luckymcdev.foundryengine.client.opengl.shaders.uniform.SupportedUniformTypes}
-     * @param uniform the {@link Uniform} to set.
+     * Sets a Uniform using its internal type definition.
      */
     public void setUniform(Uniform<?> uniform) {
         int location = getUniform(uniform);
-        if (location == -1) {
-            return;
-        }
+        if (location == -1) return;
 
-        Object value = uniform.value();
-        if (value instanceof Integer i) {
-            GlDispatch.glUniform1i(location, i);
-        } else if (value instanceof Float f) {
-            GlDispatch.glUniform1f(location, f);
-        } else if (value instanceof Vector2f v) {
-            GlDispatch.glUniform2f(location, v);
-        } else if (value instanceof Vector3f v) {
-            GlDispatch.glUniform3f(location, v);
-        } else if (value instanceof Vector4f v) {
-            GlDispatch.glUniform4f(location, v);
-        } else if (value instanceof Vector2i v) {
-            GlDispatch.glUniform2i(location, v);
-        } else if (value instanceof Vector3i v) {
-            GlDispatch.glUniform3i(location, v);
-        } else if (value instanceof Vector4i v) {
-            GlDispatch.glUniform4i(location, v);
-        } else if (value instanceof Matrix2f m) {
-            GlDispatch.glUniformMatrix2f(location, m);
-        } else if (value instanceof Matrix3f m) {
-            GlDispatch.glUniformMatrix3f(location, m);
-        } else if (value instanceof Matrix4f m) {
-            GlDispatch.glUniformMatrix4f(location, m);
-        } else {
-            throw new IllegalArgumentException("Unsupported Uniform Type. Look at SupportedUniformTypes");
+        Object value = uniform.getValue();
+        if (value == null) return;
+
+        switch (uniform.type()) {
+            case BOOL -> GlDispatch.glUniform1i(location, (Boolean) value ? 1 : 0);
+            case INT -> GlDispatch.glUniform1i(location, (Integer) value);
+            case FLOAT -> GlDispatch.glUniform1f(location, (Float) value);
+            case VEC2 -> GlDispatch.glUniform2f(location, (Vector2f) value);
+            case VEC3 -> GlDispatch.glUniform3f(location, (Vector3f) value);
+            case VEC4 -> GlDispatch.glUniform4f(location, (Vector4f) value);
+            case IVEC2 -> GlDispatch.glUniform2i(location, (Vector2i) value);
+            case IVEC3 -> GlDispatch.glUniform3i(location, (Vector3i) value);
+            case IVEC4 -> GlDispatch.glUniform4i(location, (Vector4i) value);
+            case MAT2 -> GlDispatch.glUniformMatrix2f(location, (Matrix2f) value);
+            case MAT3 -> GlDispatch.glUniformMatrix3f(location, (Matrix3f) value);
+            case MAT4 -> GlDispatch.glUniformMatrix4f(location, (Matrix4f) value);
+            case FLOAT_ARRAY -> GlDispatch.glUniform1fv(location, (float[]) value);
+            case INT_ARRAY -> GlDispatch.glUniform1iv(location, (int[]) value);
+            default -> throw new IllegalStateException("Unexpected uniform type: " + uniform.type());
         }
     }
 

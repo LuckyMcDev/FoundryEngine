@@ -117,7 +117,7 @@ public class PipelineParam<T> {
      * as a uniform named {@link #uniformName}.
      */
     public void applyToProgram(ShaderProgram program) {
-        program.setUniform(new Uniform<>(uniformName, value));
+        program.setUniform(new Uniform<>(uniformName, () -> value));
     }
 
     public String getUniformName() {
