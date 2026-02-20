@@ -27,7 +27,7 @@ public class ClProgram {
     public ClProgram(OpenClContext context, Identifier sourceLoc) {
         this.context = context;
         this.kernels = new HashMap<>();
-        String source = Commons.getRlSource(sourceLoc);
+        String source = Commons.getIdSource(sourceLoc);
         buildProgram(source);
     }
 

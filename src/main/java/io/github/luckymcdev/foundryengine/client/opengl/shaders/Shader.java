@@ -48,7 +48,7 @@ public class Shader extends OpenGlObject {
      * @return the processed source code.
      */
     private String loadSource() {
-        String unprocessedSource = Commons.getRlSource(this.location);
+        String unprocessedSource = Commons.getIdSource(this.location);
         return Instances.getShaderManager().getPreProcessorManager().processAll(unprocessedSource);
     }
 

@@ -52,7 +52,7 @@ public class FoundryEngineMod {
         NeoForge.EVENT_BUS.register(this);
         Instances.post(new RegisterEngineThreadEvent());
 
-        modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+        modContainer.registerConfig(ModConfig.Type.COMMON, Config.COMMON_SPEC);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {

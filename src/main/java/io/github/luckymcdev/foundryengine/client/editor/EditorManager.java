@@ -120,7 +120,7 @@ public class EditorManager {
     }
 
     /**
-     * Returns the {@link GenericRegistry<>} which contains all Panels
+     * Returns the {@link GenericRegistry} which contains all Panels
      * @return the Panel Registry.
      */
     public GenericRegistry<Identifier, Panel> getPanels() {

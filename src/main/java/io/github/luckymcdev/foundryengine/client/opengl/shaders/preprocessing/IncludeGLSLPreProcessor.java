@@ -61,7 +61,7 @@ public class IncludeGLSLPreProcessor extends GLSLPreProcessor {
                         loc = Commons.id("shaders/include/" + path);
                     }
 
-                    String rawSource = Commons.getRlSource(loc);
+                    String rawSource = Commons.getIdSource(loc);
 
                     if (rawSource == null || rawSource.isEmpty()) {
                         sb.append("\n/* Error: Source for ").append(loc).append(" was null or empty */\n");

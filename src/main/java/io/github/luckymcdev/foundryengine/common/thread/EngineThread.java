@@ -18,6 +18,13 @@ public class EngineThread extends Thread {
     private final AtomicBoolean accepting = new AtomicBoolean(true);
     private final AtomicBoolean started = new AtomicBoolean(false);
 
+    /**
+     * Create a new Engine Thread.
+     *
+     * @param id     the Identifier of the Thread
+     * @param label  the label to be displayed in the log.
+     * @param daemon if it is in daemon mode.
+     */
     public EngineThread(Identifier id, String label, boolean daemon) {
         super(resolveThreadName(id, label));
         this.id = id;
@@ -54,6 +61,9 @@ public class EngineThread extends Thread {
         }
     }
 
+    /**
+     * Asserts that the current Thread ({@link Thread#currentThread()}) is this Thread.
+     */
     public void assertOnThisThread() {
         if (Thread.currentThread() != this) {
             throw new WrongThreadException("Not on " + this.id + " Thread.");

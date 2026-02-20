@@ -9,11 +9,19 @@ import org.joml.Matrix4fc;
  * credit LatvianModder.
  */
 public interface ClientMatrices {
+    /**
+     * The Model View Matrix
+     */
     Matrix4f MODEL_VIEW = new Matrix4f();
+    /** The Projection Matrix */
     Matrix4f PROJECTION = new Matrix4f();
+    /** The World Matrix */
     Matrix4f WORLD = new Matrix4f();
+    /** The Inverse World Matrix */
     Matrix4f INVERSE_WORLD = new Matrix4f();
+    /** The Perspective Matrix */
     Matrix4f PERSPECTIVE = new Matrix4f();
+    /** The Frustum Matrix */
     Matrix4f FRUSTUM = new Matrix4f();
 
     /**

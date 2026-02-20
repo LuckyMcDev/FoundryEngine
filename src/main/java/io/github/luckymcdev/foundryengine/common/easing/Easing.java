@@ -18,14 +18,14 @@ import java.util.HashMap;
  * essentially a port from Penner's ActionScript utility,
  * with a few added tweaks.
  * <p>Examples:<pre>
- *    //no tween
- *    Easing e1 = Easing.LINEAR;
+ * //no tween
+ * Easing e1 = Easing.LINEAR;
  *
- *    //backOut tween, the overshoot is Easing.Back.DEFAULT_OVERSHOOT
- *    Easing e2 = Easing.BACK_OUT;
+ * //backOut tween, the overshoot is Easing.Back.DEFAULT_OVERSHOOT
+ * Easing e2 = Easing.BACK_OUT;
  *
- *    //backOut tween, the overshoot is 1.85f
- *    Easing.Back e3 = new Easing.BackOut(1.85f);
+ * //backOut tween, the overshoot is 1.85f
+ * Easing.Back e3 = new Easing.BackOut(1.85f);
  * </pre>
  * <a href="http://www.robertpenner.com/easing/">Robert Penner's Easing Functions</a>
  *
@@ -33,9 +33,13 @@ import java.util.HashMap;
  * @author davedes (java port)
  */
 public abstract class Easing {
-
+    /**
+     * Map of all Easings.
+     */
     public static final HashMap<String, Easing> EASINGS = new HashMap<>();
+    /** Codec For {@link Easing} */
     public static final Codec<Easing> CODEC = Codec.STRING.xmap(Easing::valueOf, e -> e.name);
+
     /**
      * Simple linear tweening - no easing.
      */
@@ -136,7 +140,6 @@ public abstract class Easing {
         }
     };
 
-    ///////////// QUADRATIC EASING: t^2 ///////////////////
     /**
      * Quintic easing in/out - acceleration until halfway, then deceleration.
      */
@@ -163,8 +166,6 @@ public abstract class Easing {
         }
     };
 
-
-    ///////////// CUBIC EASING: t^3 ///////////////////////
     /**
      * Sinusoidal easing in/out - accelerating until halfway, then decelerating.
      */
@@ -190,7 +191,6 @@ public abstract class Easing {
         }
     };
 
-    ///////////// QUARTIC EASING: t^4 /////////////////////
     /**
      * Exponential easing in/out - accelerating until halfway, then decelerating.
      */
@@ -219,7 +219,6 @@ public abstract class Easing {
         }
     };
 
-    ///////////// QUINTIC EASING: t^5  ////////////////////
     /**
      * Circular easing in/out - acceleration until halfway, then deceleration.
      */
@@ -239,7 +238,6 @@ public abstract class Easing {
     public static final Elastic ELASTIC_OUT = new ElasticOut();
 
 
-    ///////////// SINUSOIDAL EASING: sin(t) ///////////////
     /**
      * An ElasticInOut instance using the default values.
      */
@@ -253,7 +251,6 @@ public abstract class Easing {
      */
     public static final Back BACK_OUT = new BackOut();
 
-    ///////////// EXPONENTIAL EASING: 2^t /////////////////
     /**
      * An instance of BackInOut using the default overshoot.
      */
@@ -284,7 +281,6 @@ public abstract class Easing {
     };
 
 
-    /////////// CIRCULAR EASING: sqrt(1-t^2) //////////////
     /**
      * Bounce easing in/out.
      */
@@ -294,15 +290,24 @@ public abstract class Easing {
             return Easing.BOUNCE_OUT.ease(value * 2 - time, 0, max, time) * .5f + max * .5f + min;
         }
     };
+
+    /** Unique name of the Easing instance. */
     public final String name;
 
+    /**
+     * Create a new Easing from a Name.
+     * @param name the name of the Easing.
+     */
     public Easing(String name) {
         this.name = name;
         EASINGS.put(name, this);
     }
 
-    /// //////// ELASTIC EASING: exponentially decaying sine wave  //////////////
-
+    /**
+     * Retrieves an Easing instance by its unique name.
+     * @param name the name of the easing to retrieve.
+     * @return the matching Easing instance, or null if not found.
+     */
     public static Easing valueOf(String name) {
         return EASINGS.get(name);
     }
@@ -318,32 +323,89 @@ public abstract class Easing {
      */
     public abstract float ease(float value, float min, float max, float time);
 
+    /**
+     * The basic function for easing as doubles.
+     *
+     * @param value the time (either frames or in seconds/milliseconds)
+     * @param min   the beginning value
+     * @param max   the value changed
+     * @param time  the duration time
+     * @return the eased value
+     */
     public float ease(double value, double min, double max, double time) {
         return ease((float) value, (float) min, (float) max, (float) time);
     }
 
+    /**
+     * The basic function for easing without Time.
+     *
+     * @param value the time (either frames or in seconds/milliseconds)
+     * @param min   the beginning value
+     * @param max   the value changed
+     * @return the eased value
+     */
     public float ease(float value, float min, float max) {
         return ease(value, min, max, 1);
     }
 
+    /**
+     * The basic function for easing without Time as double.
+     *
+     * @param value the time (either frames or in seconds/milliseconds)
+     * @param min   the beginning value
+     * @param max   the value changed
+     * @return the eased value
+     */
     public float ease(double value, double min, double max) {
         return ease(value, min, max, 1);
     }
 
+    /**
+     * Clamped Ease
+     *
+     * @param value the time (either frames or in seconds/milliseconds)
+     * @param min   the beginning value
+     * @param max   the value changed
+     * @param time  the duration time
+     * @return the eased value
+     */
     public float clamped(float value, float min, float max, float time) {
         return ease(Mth.clamp(value, 0, time), min, max, time);
     }
 
+    /**
+     * Clamped Ease double
+     *
+     * @param value the time (either frames or in seconds/milliseconds)
+     * @param min   the beginning value
+     * @param max   the value changed
+     * @param time  the duration time
+     * @return the eased value
+     */
     public float clamped(double value, double min, double max, double time) {
         return clamped((float) value, (float) min, (float) max, (float) time);
     }
 
-    /// //////// BACK EASING: overshooting cubic easing: (s+1)*t^3 - s*t^2  //////////////
-
+    /**
+     * Clamped Ease with a default duration of 1.
+     *
+     * @param value the current time
+     * @param min   the starting value
+     * @param max   the change in value
+     * @return the clamped eased value
+     */
     public float clamped(float value, float min, float max) {
         return clamped(value, min, max, 1);
     }
 
+    /**
+     * Clamped Ease with a default duration of 1, using doubles.
+     *
+     * @param value the current time
+     * @param min   the starting value
+     * @param max   the change in value
+     * @return the clamped eased value
+     */
     public float clamped(double value, double min, double max) {
         return clamped(value, min, max, 1);
     }
@@ -358,6 +420,7 @@ public abstract class Easing {
         /**
          * Creates a new Elastic easing with the specified settings.
          *
+         * @param name      the name of this easing
          * @param amplitude the amplitude for the elastic function
          * @param period    the period for the elastic function
          */
@@ -369,6 +432,7 @@ public abstract class Easing {
 
         /**
          * Creates a new Elastic easing with default settings (-1f, 0f).
+         * @param name the name of this easing
          */
         public Elastic(String name) {
             this(name, -1f, 0f);
@@ -415,10 +479,18 @@ public abstract class Easing {
      * An Elastic easing used for ElasticIn functions.
      */
     public static class ElasticIn extends Elastic {
+        /**
+         * Creates an ElasticIn with custom settings.
+         * @param amplitude the amplitude
+         * @param period the period
+         */
         public ElasticIn(float amplitude, float period) {
             super("elasticIn", amplitude, period);
         }
 
+        /**
+         * Creates an ElasticIn with default settings.
+         */
         public ElasticIn() {
             super("elasticIn");
         }
@@ -442,10 +514,18 @@ public abstract class Easing {
      * An Elastic easing used for ElasticOut functions.
      */
     public static class ElasticOut extends Elastic {
+        /**
+         * Creates an ElasticOut with custom settings.
+         * @param amplitude the amplitude
+         * @param period the period
+         */
         public ElasticOut(float amplitude, float period) {
             super("elasticOut", amplitude, period);
         }
 
+        /**
+         * Creates an ElasticOut with default settings.
+         */
         public ElasticOut() {
             super("elasticOut");
         }
@@ -469,10 +549,18 @@ public abstract class Easing {
      * An Elastic easing used for ElasticInOut functions.
      */
     public static class ElasticInOut extends Elastic {
+        /**
+         * Creates an ElasticInOut with custom settings.
+         * @param amplitude the amplitude
+         * @param period the period
+         */
         public ElasticInOut(float amplitude, float period) {
             super("elasticInOut", amplitude, period);
         }
 
+        /**
+         * Creates an ElasticInOut with default settings.
+         */
         public ElasticInOut() {
             super("elasticInOut");
         }
@@ -507,6 +595,7 @@ public abstract class Easing {
 
         /**
          * Creates a new Back instance with the default overshoot (1.70158).
+         * @param name the name of the easing.
          */
         public Back(String name) {
             this(name, DEFAULT_OVERSHOOT);
@@ -515,9 +604,10 @@ public abstract class Easing {
         /**
          * Creates a new Back instance with the specified overshoot.
          *
+         * @param name      the name of the easing.
          * @param overshoot the amount to overshoot by -- higher number
-         *                  means more overshoot and an overshoot of 0 results in
-         *                  cubic easing with no overshoot
+         * means more overshoot and an overshoot of 0 results in
+         * cubic easing with no overshoot
          */
         public Back(String name, float overshoot) {
             super(name);
@@ -543,16 +633,18 @@ public abstract class Easing {
         }
     }
 
-    /////////// BOUNCE EASING: exponentially decaying parabolic bounce  //////////////
-
     /**
      * Back easing in - backtracking slightly, then reversing direction and moving to target.
      */
     public static class BackIn extends Back {
+        /** Default constructor for BackIn. */
         public BackIn() {
             super("backIn");
         }
 
+        /** * Constructor for BackIn with custom overshoot.
+         * @param overshoot the overshoot value.
+         */
         public BackIn(float overshoot) {
             super("backIn", overshoot);
         }
@@ -567,10 +659,14 @@ public abstract class Easing {
      * Back easing out - moving towards target, overshooting it slightly, then reversing and coming back to target.
      */
     public static class BackOut extends Back {
+        /** Default constructor for BackOut. */
         public BackOut() {
             super("backOut");
         }
 
+        /** * Constructor for BackOut with custom overshoot.
+         * @param overshoot the overshoot value.
+         */
         public BackOut(float overshoot) {
             super("backOut", overshoot);
         }
@@ -586,10 +682,14 @@ public abstract class Easing {
      * then overshooting target, reversing, and finally coming back to target.
      */
     public static class BackInOut extends Back {
+        /** Default constructor for BackInOut. */
         public BackInOut() {
             super("backInOut");
         }
 
+        /** * Constructor for BackInOut with custom overshoot.
+         * @param overshoot the overshoot value.
+         */
         public BackInOut(float overshoot) {
             super("backInOut", overshoot);
         }

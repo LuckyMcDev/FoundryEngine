@@ -12,21 +12,31 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.stream.Collectors;
 
+/**
+ * A Place for Commonly used Constants.
+ * Similar to {@link Instances} except tats for Instances.
+ */
 public interface Commons {
-    // Consts
+    /**
+     * Common Logger. Don't use, create your own.
+     */
     Logger LOGGER = LogUtils.getLogger();
+    /** Modid for FoundryEngine. */
     String MODID = "foundryengine";
+    /** Mod Name */
     String MODNAME = "Foundry Engine";
 
-    // Config
+    /** Base Config Dir*/
     Path CONFIG = FMLPaths.CONFIGDIR.get();
+    /** FoundryEngine config dir*/
     Path FOUNDRY_ENGINE_CONFIG = CONFIG.resolve(MODID);
+    /** WIP database config dir.*/
     Path DATABASE_CONFIG = CONFIG.resolve("database");
 
-    // Game Dir stuff
+    /** Game Dir*/
     Path GAME = FMLPaths.GAMEDIR.get();
+    /** FoundryEngine Game Dir*/
     Path FOUNDRY_ENGINE = GAME.resolve("FoundryEngine");
-    Path WORKSPACE = FOUNDRY_ENGINE.resolve("workspace");
 
     /**
      * Returns an {@link Identifier} where the namespace is {@link #MODID}
@@ -43,15 +53,18 @@ public interface Commons {
      * @param location the Location where to get the Contents.
      * @return the String content.
      */
-    static String getRlSource(Identifier location) {
-        return getRlSource(location, StandardCharsets.UTF_8);
+    static String getIdSource(Identifier location) {
+        return getIdSource(location, StandardCharsets.UTF_8);
     }
 
     /**
-     * {@link #getRlSource(Identifier)}
+     * {@link #getIdSource(Identifier)}
      * but with a specifiable {@link Charset}
+     * @param location the Identifier.
+     * @param charset the {@link Charset} with which to load the Identifier
+     * @return the String Content of the File.
      */
-    static String getRlSource(Identifier location, Charset charset) {
+    static String getIdSource(Identifier location, Charset charset) {
         try (InputStream stream = Instances.getResourceManager().getResourceOrThrow(location).open();
              Reader reader = new InputStreamReader(stream, charset);
              BufferedReader br = new BufferedReader(reader)) {
