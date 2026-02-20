@@ -46,6 +46,12 @@ import org.slf4j.Logger;
 public class FoundryEngineMod {
     private static final Logger LOGGER = LogUtils.getLogger();
 
+    /**
+     * Initializes the mod and registers events.
+     *
+     * @param modEventBus  the mod event bus
+     * @param modContainer the mod container
+     */
     public FoundryEngineMod(IEventBus modEventBus, ModContainer modContainer) {
         modEventBus.addListener(this::commonSetup);
 
@@ -66,6 +72,9 @@ public class FoundryEngineMod {
         event.register(ClDispatch.CL_THREAD);
     }
 
+    /**
+     * Container for client-side event handlers.
+     */
     @EventBusSubscriber(modid = Commons.MODID, value = Dist.CLIENT)
     public static class ClientModEvents {
 
