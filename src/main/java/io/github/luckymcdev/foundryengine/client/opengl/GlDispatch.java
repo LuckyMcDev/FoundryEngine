@@ -2,7 +2,9 @@ package io.github.luckymcdev.foundryengine.client.opengl;
 
 import com.mojang.blaze3d.opengl.GlDevice;
 import com.mojang.blaze3d.systems.RenderSystem;
+import io.github.luckymcdev.foundryengine.common.Commons;
 import io.github.luckymcdev.foundryengine.common.Instances;
+import io.github.luckymcdev.foundryengine.common.thread.EngineThread;
 import org.joml.*;
 import org.lwjgl.opengl.GL43C;
 import org.lwjgl.system.MemoryStack;
@@ -13,8 +15,6 @@ import java.nio.IntBuffer;
 import java.util.function.Supplier;
 
 public class GlDispatch {
-    public static GlDevice glDevice = Instances.getGlDevice();
-
     private static void wrap(GlCall call) {
         RenderSystem.assertOnRenderThread();
         call.dispatch();
