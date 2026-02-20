@@ -139,6 +139,19 @@ tasks.named("createMinecraftArtifacts") {
     dependsOn(generateModMetadata)
 }
 
+tasks.register('preCommit') {
+    group = 'verification'
+    description = 'Runs all things needed for a commit.'
+
+    dependsOn tasks.named('check')
+    dependsOn tasks.named('runData')
+    dependsOn tasks.named('build')
+
+    doLast {
+        println "Done"
+    }
+}
+
 publishing {
     publications {
         register('mavenJava', MavenPublication) {
