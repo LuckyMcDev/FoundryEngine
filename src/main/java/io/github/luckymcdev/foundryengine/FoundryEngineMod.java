@@ -15,8 +15,8 @@ import io.github.luckymcdev.foundryengine.client.util.KeyBinding;
 import io.github.luckymcdev.foundryengine.client.util.RegisterKeyBindingEvent;
 import io.github.luckymcdev.foundryengine.common.Commons;
 import io.github.luckymcdev.foundryengine.common.Instances;
+import io.github.luckymcdev.foundryengine.common.opencl.ClDispatch;
 import io.github.luckymcdev.foundryengine.common.opencl.OpenClExample;
-import io.github.luckymcdev.foundryengine.common.opencl.task.ClWorker;
 import io.github.luckymcdev.foundryengine.config.Config;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.network.chat.Component;
@@ -54,9 +54,8 @@ public class FoundryEngineMod {
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
-        ClWorker.submit(() -> {
+        Instances.getThreadManager().execute(ClDispatch.CL_THREAD, () -> {
             OpenClExample.visualize(15630, 8640, 300.0f, 32, false);
-            return "1";
         });
     }
 
@@ -95,7 +94,7 @@ public class FoundryEngineMod {
 
         @SubscribeEvent
         public static void onRegisterKeyBindingEvent(RegisterKeyBindingEvent event) {
-            event.register(new KeyBinding(new KeyMapping("test", GLFW.GLFW_KEY_G, KeyMapping.Category.MISC), () -> LOGGER.info("CLICKED")));
+            event.register(new KeyBinding(new KeyMapping("key.foundryengine.test", GLFW.GLFW_KEY_G, KeyMapping.Category.MISC), () -> LOGGER.info("CLICKED")));
         }
 
         @SubscribeEvent
@@ -129,14 +128,6 @@ public class FoundryEngineMod {
         @SubscribeEvent
         public static void updateClientMatrices(FrameGraphSetupEvent event) {
             ClientMatrices.updateMain(event.getModelViewMatrix(), event.getProjectionMatrix());
-        }
-
-        @SubscribeEvent
-        public static void onRegisterKeyBinding(RegisterKeyBindingEvent event) {
-            event.register(new KeyBinding(
-                    new KeyMapping("key.foundryengine.testkey", GLFW.GLFW_KEY_O, KeyMapping.Category.MISC),
-                    () -> Instances.getMinecraft().player.displayClientMessage(Component.literal("Hello"), false)
-            ));
         }
     }
 }

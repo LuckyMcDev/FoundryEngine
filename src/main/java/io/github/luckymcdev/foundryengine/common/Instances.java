@@ -12,6 +12,7 @@ import io.github.luckymcdev.foundryengine.client.opengl.framebuffer.FrameBufferM
 import io.github.luckymcdev.foundryengine.client.opengl.shaders.ShaderManager;
 import io.github.luckymcdev.foundryengine.client.post.PostProcessManager;
 import io.github.luckymcdev.foundryengine.client.util.KeyBindingManager;
+import io.github.luckymcdev.foundryengine.common.thread.ThreadManager;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
@@ -24,76 +25,72 @@ import net.neoforged.neoforge.common.NeoForge;
 
 import static io.github.luckymcdev.foundryengine.common.InstancesInternal.*;
 
+/**
+ * Global access point for Minecraft and FoundryEngine instances.
+ */
 public interface Instances {
-    static Minecraft getMinecraft() {
-        return Minecraft.getInstance();
-    }
-    static ResourceManager getResourceManager() {
-        return getMinecraft().getResourceManager();
-    }
-    static Window getWindow() {
-        return getMinecraft().getWindow();
-    }
-    static GameRenderer getGameRenderer() {
-        return getMinecraft().gameRenderer;
-    }
-    static RenderTarget getMainRenderTarget() {
-        return getMinecraft().getMainRenderTarget();
-    }
-    static Camera getMainCamera() {
-        return getGameRenderer().getMainCamera();
-    }
-    static ImGuiManager getImGuiManager() {
-        return InstancesInternal.IMGUI_MANAGER;
-    }
-    static GlTexture getGlColTexture(RenderTarget target) {
-        var tex = target.getColorTexture();
-        if (tex instanceof ValidationGpuTexture validationTex) {
-            return (GlTexture) validationTex.getRealTexture();
-        }
-        return (GlTexture) tex;
-    }
-    static GlTexture getGlColTexture() {
-        return getGlColTexture(getMainRenderTarget());
-    }
-    static GlTexture getGlDepthTexture(RenderTarget target) {
-        var tex = target.getDepthTexture();
-        if (tex instanceof ValidationGpuTexture validationTex) {
-            return (GlTexture) validationTex.getRealTexture();
-        }
-        return (GlTexture) tex;
-    }
-    static GlTexture getGlDepthTexture() {
-        return getGlDepthTexture(getMainRenderTarget());
-    }
+
+    // Minecraft Core
+
+    static Minecraft getMinecraft() { return Minecraft.getInstance(); }
+
+    static ResourceManager getResourceManager() { return getMinecraft().getResourceManager(); }
+
+    static Window getWindow() { return getMinecraft().getWindow(); }
+
+    static GameRenderer getGameRenderer() { return getMinecraft().gameRenderer; }
+
+    static RenderTarget getMainRenderTarget() { return getMinecraft().getMainRenderTarget(); }
+
+    static Camera getMainCamera() { return getGameRenderer().getMainCamera(); }
+
+    // Rendering
+
     static GlDevice getGlDevice() {
-        var device = RenderSystem.getDevice();
-        if (device instanceof ValidationGpuDevice validationDevice) {
-            return (GlDevice) validationDevice.getRealDevice();
-        }
-        return (GlDevice) device;
+        return (RenderSystem.getDevice() instanceof ValidationGpuDevice val) ? (GlDevice) val.getRealDevice() : (GlDevice) RenderSystem.getDevice();
     }
-    static BuiltInEditor getBuiltInEditor() {
-        return InstancesInternal.EDITOR;
+
+    static GlTexture getGlColTexture() { return getGlColTexture(getMainRenderTarget()); }
+
+    static GlTexture getGlColTexture(RenderTarget target) {
+        return unwrapTexture(target.getColorTexture());
     }
-    static OpenGlStack getOpenGlStack() {
-        return OPEN_GL_STACK;
+
+    static GlTexture getGlDepthTexture() { return getGlDepthTexture(getMainRenderTarget()); }
+
+    static GlTexture getGlDepthTexture(RenderTarget target) {
+        return unwrapTexture(target.getDepthTexture());
     }
-    static PostProcessManager getPostProcessManager() {
-        return POST_PROCESS_MANAGER;
+
+    /** Helper to strip NeoForge validation wrappers from textures */
+    private static GlTexture unwrapTexture(Object tex) {
+        return (tex instanceof ValidationGpuTexture val) ? (GlTexture) val.getRealTexture() : (GlTexture) tex;
     }
-    static FrameBufferManager getFrameBufferManager() {
-        return FRAME_BUFFER_MANAGER;
-    }
-    static ShaderManager getShaderManager() {
-        return SHADER_MANAGER;
-    }
-    static KeyBindingManager getKeyBindingManager() {
-        return KEY_BINDING_MANAGER;
-    }
+
+    // Engine Managers.
+
+    static ImGuiManager getImGuiManager() { return IMGUI_MANAGER; }
+
+    static BuiltInEditor getBuiltInEditor() { return BUILT_IN_EDITOR; }
+
+    static OpenGlStack getOpenGlStack() { return OPEN_GL_STACK; }
+
+    static PostProcessManager getPostProcessManager() { return POST_PROCESS_MANAGER; }
+
+    static FrameBufferManager getFrameBufferManager() { return FRAME_BUFFER_MANAGER; }
+
+    static ShaderManager getShaderManager() { return SHADER_MANAGER; }
+
+    static KeyBindingManager getKeyBindingManager() { return KEY_BINDING_MANAGER; }
+
+    static ThreadManager getThreadManager() { return THREAD_MANAGER; }
+
+    // Event Bus
+
     static <T extends Event> T post(T event) {
         return NeoForge.EVENT_BUS.post(event);
     }
+
     static <T extends Event> T post(EventPriority priority, T event) {
         return NeoForge.EVENT_BUS.post(priority, event);
     }

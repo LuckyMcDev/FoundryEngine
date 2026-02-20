@@ -1,6 +1,8 @@
 package io.github.luckymcdev.foundryengine.common.opencl;
 
-import io.github.luckymcdev.foundryengine.common.opencl.task.ClWorker;
+import io.github.luckymcdev.foundryengine.common.Commons;
+import io.github.luckymcdev.foundryengine.common.Instances;
+import io.github.luckymcdev.foundryengine.common.thread.EngineThread;
 import org.lwjgl.PointerBuffer;
 
 import java.nio.ByteBuffer;
@@ -12,8 +14,10 @@ import static org.lwjgl.opencl.CL10.*;
 import static org.lwjgl.opencl.CL12.clGetKernelArgInfo;
 
 public class ClDispatch {
+    public static final EngineThread CL_THREAD = new EngineThread(Commons.id("opencl_worker"), "OpenCl-Worker", true);
 
-    // ========== Platform and Device Operations ==========
+
+    // ========== Platform and Device Operations
 
     public static int getPlatformIDs(PointerBuffer platforms, IntBuffer numPlatforms) {
         return wrap(() -> clGetPlatformIDs(platforms, numPlatforms));
@@ -35,7 +39,7 @@ public class ClDispatch {
         return wrap(() -> clGetDeviceInfo(device, paramName, paramValue, paramValueSizeRet));
     }
 
-    // ========== Context Operations ==========
+    //   Context Operations
 
     public static long createContext(PointerBuffer properties, long device,
                                      org.lwjgl.opencl.CLContextCallback pfnNotify,
@@ -47,7 +51,7 @@ public class ClDispatch {
         return wrap(() -> clReleaseContext(context));
     }
 
-    // ========== Command Queue Operations ==========
+    //   Command Queue Operations
 
     public static long createCommandQueue(long context, long device, long properties, IntBuffer errcode) {
         return wrap(() -> clCreateCommandQueue(context, device, properties, errcode));
@@ -61,7 +65,7 @@ public class ClDispatch {
         return wrap(() -> clFinish(commandQueue));
     }
 
-    // ========== Buffer Operations ==========
+    //   Buffer Operations
 
     public static long createBuffer(long context, int flags, FloatBuffer hostData, IntBuffer errcode) {
         return wrap(() -> clCreateBuffer(context, flags, hostData, errcode));
@@ -87,7 +91,7 @@ public class ClDispatch {
         return wrap(() -> clEnqueueWriteBuffer(commandQueue, buffer, blockingWrite, offset, ptr, eventWaitList, event));
     }
 
-    // ========== Program Operations ==========
+    //   Program Operations
 
     public static long createProgramWithSource(long context, CharSequence source, IntBuffer errcode) {
         return wrap(() -> clCreateProgramWithSource(context, source, errcode));
@@ -107,7 +111,7 @@ public class ClDispatch {
         return wrap(() -> clReleaseProgram(program));
     }
 
-    // ========== Kernel Operations ==========
+    //   Kernel Operations
 
     public static long createKernel(long program, CharSequence kernelName, IntBuffer errcode) {
         return wrap(() -> clCreateKernel(program, kernelName, errcode));
@@ -168,19 +172,19 @@ public class ClDispatch {
                 globalWorkSize, localWorkSize, eventWaitList, event));
     }
 
-    // ========== Helper Methods ==========
+    //   Helper Methods
 
     private static int wrap(ClIntCall call) {
-        ClWorker.assertOnClThread();
+        Instances.getThreadManager().assertOnThread(CL_THREAD);
         return call.dispatch();
     }
 
     private static long wrap(ClLongCall call) {
-        ClWorker.assertOnClThread();
+        Instances.getThreadManager().assertOnThread(CL_THREAD);
         return call.dispatch();
     }
 
-    // ========== Functional Interfaces ==========
+    //   Functional Interfaces
 
     private interface ClIntCall {
         int dispatch();
