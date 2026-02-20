@@ -8,6 +8,12 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+/**
+ * {@link GenericRegistry}
+ *
+ * @param <K> Key Type.
+ * @param <V> Value Type.
+ */
 public interface Registry<K, V> {
     void register(K key, V value);
 

@@ -10,6 +10,10 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+/**
+ * See {@link ImGuiManager#shouldInterceptMouse()}
+ * Cancels Minecraft Mouse inputs if ImGui captures the Mouse.
+ */
 @Mixin(MouseHandler.class)
 public class MouseHandlerMixin implements TbMouseHandler {
 

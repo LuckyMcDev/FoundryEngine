@@ -1,6 +1,9 @@
 package io.github.luckymcdev.foundryengine.client.imgui.icon;
 
-
+/**
+ * A Library of Icons.
+ * All sub Interfaces are a Type of Icon from an Icon set.
+ */
 public class ImIcons {
     public enum DEV implements ImIcon {
         DEV_AARCH64('\uE700'),

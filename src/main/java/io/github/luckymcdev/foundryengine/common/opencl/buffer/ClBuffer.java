@@ -5,6 +5,9 @@ import io.github.luckymcdev.foundryengine.common.opencl.core.ClCommandQueue;
 
 import java.nio.FloatBuffer;
 
+/**
+ * A ClBuffer, which is a list of Commands openCl should run
+ */
 public class ClBuffer implements AutoCloseable {
     private final long id;
     private final ClCommandQueue dispatch;

@@ -16,12 +16,23 @@ import org.slf4j.Logger;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A Wrapper around a OpenGl ShaderProgram.
+ * Can attach X ammount of {@link Shader}, and manages them.
+ * Uniforms should be set using a {@link Uniform}
+ */
 public class ShaderProgram extends OpenGlObject {
     private static final Logger LOGGER = LogUtils.getLogger();
 
     private final ArrayList<Shader> shaders = new ArrayList<>();
     private final Identifier id;
 
+    /**
+     * Creates a new ShaderProgram from an {@link Identifier} and any ammount of {@link Shader}
+     *
+     * @param id      the {@link Identifier} for this ShaderProgram.
+     * @param shaders the {@link Shader} to add to ths Program.
+     */
     public ShaderProgram(Identifier id, Shader... shaders) {
         this.id = id;
         this.pointer = GlDispatch.glCreateProgram();
@@ -33,6 +44,10 @@ public class ShaderProgram extends OpenGlObject {
         }
     }
 
+    /**
+     * Attaches All Shaders to this Program.
+     * @throws ShaderException throws a {@link ShaderException} from {@link ShaderCompiler#getOrCompile(Shader)} if anything goes wrong.
+     */
     public void attach() throws ShaderException {
         ShaderCompiler compiler = Instances.getShaderManager().getCompiler();
         for (Shader shader : this.shaders) {
@@ -41,6 +56,10 @@ public class ShaderProgram extends OpenGlObject {
         }
     }
 
+    /**
+     * Links this Program.
+     * @throws ShaderException throws this if something goes wrong.
+     */
     public void link() throws ShaderException {
         GlDispatch.glLinkProgram(this.pointer);
 
@@ -52,8 +71,16 @@ public class ShaderProgram extends OpenGlObject {
         }
     }
 
+    /**
+     * Reloads this program:
+     * 1. Detaches all Shaders.
+     * 2. Re-Attaches them
+     * 3. Re-Links the Program.
+     *
+     * @throws ShaderException exception if something goes wrong.
+     */
     public void reload() throws ShaderException {
-        for(Shader shader : shaders) {
+        for (Shader shader : shaders) {
             GlDispatch.glDetachShader(this.pointer, shader.pointer());
         }
 
@@ -63,18 +90,32 @@ public class ShaderProgram extends OpenGlObject {
 
     }
 
+    /**
+     * Use this Proram.
+     */
     public void use() {
         GlDispatch.glUseProgram(this.pointer);
     }
 
+    /**
+     * Disable / Use Program 0
+     */
     public void disable() {
         GlDispatch.glUseProgram(0);
     }
 
+    /**
+     * Deletes this Program
+     */
     public void delete() {
         GlDispatch.glDeleteProgram(this.pointer);
     }
 
+    /**
+     * Binds a Uniform Block.
+     * @param blockName the name
+     * @param bindingPoint the point at which to bind.
+     */
     public void bindUniformBlock(String blockName, int bindingPoint) {
         int blockIndex = GlDispatch.glGetUniformBlockIndex(this.pointer, blockName);
         if (blockIndex != -1) {
@@ -92,6 +133,10 @@ public class ShaderProgram extends OpenGlObject {
         }
     }
 
+    /**
+     * Sets a Uniform. Look at {@link io.github.luckymcdev.foundryengine.client.opengl.shaders.uniform.SupportedUniformTypes}
+     * @param uniform the {@link Uniform} to set.
+     */
     public void setUniform(Uniform<?> uniform) {
         int location = getUniform(uniform);
         if (location == -1) {
@@ -121,6 +166,8 @@ public class ShaderProgram extends OpenGlObject {
             GlDispatch.glUniformMatrix3f(location, m);
         } else if (value instanceof Matrix4f m) {
             GlDispatch.glUniformMatrix4f(location, m);
+        } else {
+            throw new IllegalArgumentException("Unsupported Uniform Type. Look at SupportedUniformTypes");
         }
     }
 

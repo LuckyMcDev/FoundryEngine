@@ -7,6 +7,9 @@ import net.minecraft.client.Minecraft;
 
 import static org.lwjgl.glfw.GLFW.*;
 
+/**
+ * Extension to {@link ImGuiImplGlfw} which makes the Clipboard be handled by Minecraft.
+ */
 public class FeImGuiImplGlfw extends ImGuiImplGlfw {
 
     @Override
@@ -60,9 +63,9 @@ public class FeImGuiImplGlfw extends ImGuiImplGlfw {
 
     private int keyToModifier(final int key) {
         if (key == GLFW_KEY_LEFT_CONTROL || key == GLFW_KEY_RIGHT_CONTROL) return GLFW_MOD_CONTROL;
-        if (key == GLFW_KEY_LEFT_SHIFT   || key == GLFW_KEY_RIGHT_SHIFT)   return GLFW_MOD_SHIFT;
-        if (key == GLFW_KEY_LEFT_ALT     || key == GLFW_KEY_RIGHT_ALT)     return GLFW_MOD_ALT;
-        if (key == GLFW_KEY_LEFT_SUPER   || key == GLFW_KEY_RIGHT_SUPER)   return GLFW_MOD_SUPER;
+        if (key == GLFW_KEY_LEFT_SHIFT || key == GLFW_KEY_RIGHT_SHIFT) return GLFW_MOD_SHIFT;
+        if (key == GLFW_KEY_LEFT_ALT || key == GLFW_KEY_RIGHT_ALT) return GLFW_MOD_ALT;
+        if (key == GLFW_KEY_LEFT_SUPER || key == GLFW_KEY_RIGHT_SUPER) return GLFW_MOD_SUPER;
         return 0;
     }
 }

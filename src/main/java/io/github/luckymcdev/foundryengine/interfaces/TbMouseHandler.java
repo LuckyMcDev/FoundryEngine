@@ -5,5 +5,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 public interface TbMouseHandler {
     void tb$onMouseButton(long p_window, MouseButtonInfo buttonInfo, int action, CallbackInfo ci);
+
     void tb$onMouseScroll(long window, double horizontal, double vertical, CallbackInfo ci);
 }

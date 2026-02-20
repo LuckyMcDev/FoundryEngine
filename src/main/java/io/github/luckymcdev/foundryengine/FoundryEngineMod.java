@@ -3,7 +3,6 @@ package io.github.luckymcdev.foundryengine;
 import com.mojang.logging.LogUtils;
 import io.github.luckymcdev.foundryengine.client.ClientMatrices;
 import io.github.luckymcdev.foundryengine.client.RegisterRenderingStuffEvent;
-import io.github.luckymcdev.foundryengine.client.TestRender;
 import io.github.luckymcdev.foundryengine.client.editor.builtin.NodeEditorPanel;
 import io.github.luckymcdev.foundryengine.client.editor.builtin.PostProcessPanel;
 import io.github.luckymcdev.foundryengine.client.editor.builtin.TestPanel;
@@ -11,15 +10,18 @@ import io.github.luckymcdev.foundryengine.client.editor.event.RegisterPanelEvent
 import io.github.luckymcdev.foundryengine.client.opengl.shaders.preprocessing.IncludeGLSLPreProcessor;
 import io.github.luckymcdev.foundryengine.client.opengl.shaders.preprocessing.RegisterGLSLPreProcessorEvent;
 import io.github.luckymcdev.foundryengine.client.post.RegisterPostPipelineEvent;
+import io.github.luckymcdev.foundryengine.client.post.pipeline.builtin.AsciiPostProcessPipeline;
+import io.github.luckymcdev.foundryengine.client.post.pipeline.builtin.DepthVisualizePipeline;
+import io.github.luckymcdev.foundryengine.client.post.pipeline.builtin.GrayscalePipeline;
 import io.github.luckymcdev.foundryengine.client.util.KeyBinding;
 import io.github.luckymcdev.foundryengine.client.util.RegisterKeyBindingEvent;
 import io.github.luckymcdev.foundryengine.common.Commons;
 import io.github.luckymcdev.foundryengine.common.Instances;
 import io.github.luckymcdev.foundryengine.common.opencl.ClDispatch;
 import io.github.luckymcdev.foundryengine.common.opencl.OpenClExample;
+import io.github.luckymcdev.foundryengine.common.thread.RegisterEngineThreadEvent;
 import io.github.luckymcdev.foundryengine.config.Config;
 import net.minecraft.client.KeyMapping;
-import net.minecraft.network.chat.Component;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -34,21 +36,21 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.FrameGraphSetupEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
-import net.neoforged.neoforge.event.RegisterCommandsEvent;
-import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 
+/**
+ * Main Mod Entrypoint for FoundryEngine.
+ */
 @Mod(Commons.MODID)
 public class FoundryEngineMod {
     private static final Logger LOGGER = LogUtils.getLogger();
 
     public FoundryEngineMod(IEventBus modEventBus, ModContainer modContainer) {
-        // Register the common setup method to the mod event bus
         modEventBus.addListener(this::commonSetup);
 
         NeoForge.EVENT_BUS.register(this);
+        Instances.post(new RegisterEngineThreadEvent());
 
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
@@ -60,15 +62,8 @@ public class FoundryEngineMod {
     }
 
     @SubscribeEvent
-    public void registerReloadListeners(AddServerReloadListenersEvent event) {
-    }
-
-    @SubscribeEvent
-    public void onServerStarting(ServerStartingEvent event) {
-    }
-
-    @SubscribeEvent
-    public void onRegisterCommands(RegisterCommandsEvent event) {
+    public void onRegisterEngineThread(RegisterEngineThreadEvent event) {
+        event.register(ClDispatch.CL_THREAD);
     }
 
     @EventBusSubscriber(modid = Commons.MODID, value = Dist.CLIENT)
@@ -111,7 +106,9 @@ public class FoundryEngineMod {
 
         @SubscribeEvent
         public static void onRegisterPostPipelines(RegisterPostPipelineEvent event) {
-            TestRender.registerPipelines(event);
+            event.register(new GrayscalePipeline());
+            event.register(new DepthVisualizePipeline());
+            event.register(new AsciiPostProcessPipeline());
         }
 
         @SubscribeEvent
@@ -122,7 +119,7 @@ public class FoundryEngineMod {
 
         @SubscribeEvent
         public static void onClientTick(ClientTickEvent.Post event) {
-            Instances.getBuiltInEditor().handleTick();
+            Instances.getEditorManager().handleTick();
         }
 
         @SubscribeEvent

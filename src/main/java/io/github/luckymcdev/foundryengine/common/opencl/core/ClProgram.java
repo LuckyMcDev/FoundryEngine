@@ -15,10 +15,13 @@ import static org.lwjgl.opencl.CL10.CL_SUCCESS;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
+/**
+ * A OpenCl Program.
+ */
 public class ClProgram {
     private final OpenClContext context;
-    private long program;
     private final Map<String, Long> kernels;
+    private long program;
 
 
     public ClProgram(OpenClContext context, Identifier sourceLoc) {
@@ -51,7 +54,7 @@ public class ClProgram {
     private void printBuildLog(MemoryStack stack) {
         PointerBuffer logSize = stack.mallocPointer(1);
         ClDispatch.getProgramBuildInfo(program, context.getDevice(), CL_PROGRAM_BUILD_LOG,
-                (PointerBuffer) null, logSize);
+                null, logSize);
 
         int size = (int) logSize.get(0);
         if (size > 0) {

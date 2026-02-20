@@ -20,12 +20,12 @@ public class FrameBuffer extends OpenGlObject {
     private final boolean hasDepth;
     private final boolean hasStencil;
     private final int clearMask;
+    private final float[] clearColor = new float[]{0.0f, 0.0f, 0.0f, 0.0f};
     private int width;
     private int height;
     private int colorTexture;
     private int depthTexture;
-    private int filterMode = GL43C.GL_LINEAR;
-    private final float[] clearColor = new float[]{0.0f, 0.0f, 0.0f, 0.0f};
+    private final int filterMode = GL43C.GL_LINEAR;
 
     /**
      * Instantiates a new Frame buffer.
@@ -134,7 +134,7 @@ public class FrameBuffer extends OpenGlObject {
     }
 
     /**
-     * Resize.
+     * Resizes the FrameBuffer.
      *
      * @param width  the width
      * @param height the height
@@ -150,6 +150,9 @@ public class FrameBuffer extends OpenGlObject {
         unbind();
     }
 
+    /**
+     * Creates All Attachments. Depth and Stencil are optional, specified in the Constructor.
+     */
     private void createAttachments() {
         colorTexture = GlDispatch.glGenTextures();
         GlDispatch.glBindTexture(GL43C.GL_TEXTURE_2D, colorTexture);
@@ -171,11 +174,15 @@ public class FrameBuffer extends OpenGlObject {
             GlDispatch.glTexParameteri(GL43C.GL_TEXTURE_2D, GL43C.GL_TEXTURE_MIN_FILTER, GL43C.GL_NEAREST);
             GlDispatch.glTexParameteri(GL43C.GL_TEXTURE_2D, GL43C.GL_TEXTURE_MAG_FILTER, GL43C.GL_NEAREST);
             GlDispatch.glFramebufferTexture2D(GL43C.GL_FRAMEBUFFER, GL43C.GL_DEPTH_ATTACHMENT, GL43C.GL_TEXTURE_2D, depthTexture, 0);
-            if (hasStencil) GlDispatch.glFramebufferTexture2D(GL43C.GL_FRAMEBUFFER, GL43C.GL_STENCIL_ATTACHMENT, GL43C.GL_TEXTURE_2D, depthTexture, 0);
+            if (hasStencil)
+                GlDispatch.glFramebufferTexture2D(GL43C.GL_FRAMEBUFFER, GL43C.GL_STENCIL_ATTACHMENT, GL43C.GL_TEXTURE_2D, depthTexture, 0);
         }
         GlDispatch.glBindTexture(GL43C.GL_TEXTURE_2D, 0);
     }
 
+    /**
+     * Deletes all Attachments
+     */
     private void deleteAttachments() {
         if (colorTexture != 0) GlDispatch.glDeleteTextures(colorTexture);
         if (depthTexture != 0) GlDispatch.glDeleteTextures(depthTexture);
@@ -183,6 +190,9 @@ public class FrameBuffer extends OpenGlObject {
         depthTexture = 0;
     }
 
+    /**
+     * Validates the FrameBuffe.
+     */
     private void validateFramebufferComplete() {
         int status = GlDispatch.glCheckFramebufferStatus(GL43C.GL_FRAMEBUFFER);
         if (status != GL43C.GL_FRAMEBUFFER_COMPLETE) {
@@ -199,6 +209,11 @@ public class FrameBuffer extends OpenGlObject {
         }
     }
 
+    /**
+     * Sets a Debug Label
+     *
+     * @param label the String to set the Label to.
+     */
     private void setDebugLabel(String label) {
         if (label != null && this.pointer != 0) GlDispatch.safeGlObjectLabel(GL43C.GL_FRAMEBUFFER, this.pointer, label);
     }
@@ -215,35 +230,45 @@ public class FrameBuffer extends OpenGlObject {
      *
      * @return the color texture
      */
-    public int getColorTexture() { return colorTexture; }
+    public int getColorTexture() {
+        return colorTexture;
+    }
 
     /**
      * Gets depth texture.
      *
      * @return the depth texture
      */
-    public int getDepthTexture() { return depthTexture; }
+    public int getDepthTexture() {
+        return depthTexture;
+    }
 
     /**
      * Width int.
      *
      * @return the int
      */
-    public int width() { return width; }
+    public int width() {
+        return width;
+    }
 
     /**
      * Height int.
      *
      * @return the int
      */
-    public int height() { return height; }
+    public int height() {
+        return height;
+    }
 
     /**
      * Has depth attachment boolean.
      *
      * @return the boolean
      */
-    public boolean hasDepthAttachment() { return hasDepth; }
+    public boolean hasDepthAttachment() {
+        return hasDepth;
+    }
 
     /**
      * Has stencil boolean.

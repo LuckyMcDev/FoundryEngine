@@ -1,4 +1,4 @@
-package io.github.luckymcdev.foundryengine.client.opengl.vertex.objects;
+package io.github.luckymcdev.foundryengine.client.opengl.objects;
 
 import io.github.luckymcdev.foundryengine.client.opengl.GlDispatch;
 import io.github.luckymcdev.foundryengine.client.opengl.OpenGlObject;
@@ -7,6 +7,9 @@ import java.nio.IntBuffer;
 
 import static org.lwjgl.opengl.GL33.GL_ELEMENT_ARRAY_BUFFER;
 
+/**
+ * A wrapper around a EBO OpenGl Object.
+ */
 public class ElementBufferObject extends OpenGlObject {
 
     public ElementBufferObject() {

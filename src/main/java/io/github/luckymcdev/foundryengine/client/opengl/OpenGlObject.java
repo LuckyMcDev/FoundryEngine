@@ -1,7 +1,15 @@
 package io.github.luckymcdev.foundryengine.client.opengl;
 
+import io.github.luckymcdev.foundryengine.client.opengl.framebuffer.FrameBuffer;
+import io.github.luckymcdev.foundryengine.client.opengl.shaders.Shader;
+import io.github.luckymcdev.foundryengine.client.opengl.shaders.program.ShaderProgram;
 import org.lwjgl.system.NativeResource;
 
+/**
+ * A low level OpenGlObject, which mimics how opengl handles its stuff.
+ * All OpenGlObject Wrappers extend this. {@link FrameBuffer}
+ * {@link Shader} {@link ShaderProgram}
+ */
 public abstract class OpenGlObject implements NativeResource {
     protected int pointer;
     protected int[] pointers;

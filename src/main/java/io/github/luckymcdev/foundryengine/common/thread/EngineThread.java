@@ -3,14 +3,13 @@ package io.github.luckymcdev.foundryengine.common.thread;
 import net.minecraft.resources.Identifier;
 
 import java.util.Objects;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
+/**
+ * An Extension to a {@link Thread} which adds some extra Functionality.
+ */
 public class EngineThread extends Thread {
     private final Identifier id;
     private final String label;
@@ -24,6 +23,21 @@ public class EngineThread extends Thread {
         this.id = id;
         this.label = resolveLabel(id, label);
         setDaemon(daemon);
+    }
+
+    private static String resolveThreadName(Identifier id, String label) {
+        return resolveLabel(id, label);
+    }
+
+    private static String resolveLabel(Identifier id, String label) {
+        if (label != null && !label.isBlank()) {
+            return label;
+        }
+        if (id == null) {
+            return "engine-thread";
+        }
+        String path = id.getPath();
+        return (path == null || path.isBlank()) ? id.toString() : path;
     }
 
     public Identifier getIdentifier() {
@@ -102,20 +116,5 @@ public class EngineThread extends Thread {
             throw new RejectedExecutionException("Thread " + id + " is shutting down");
         }
         startThread();
-    }
-
-    private static String resolveThreadName(Identifier id, String label) {
-        return resolveLabel(id, label);
-    }
-
-    private static String resolveLabel(Identifier id, String label) {
-        if (label != null && !label.isBlank()) {
-            return label;
-        }
-        if (id == null) {
-            return "engine-thread";
-        }
-        String path = id.getPath();
-        return (path == null || path.isBlank()) ? id.toString() : path;
     }
 }

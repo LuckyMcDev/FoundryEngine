@@ -5,13 +5,18 @@ import imgui.type.ImBoolean;
 import io.github.luckymcdev.foundryengine.client.imgui.graphics.ImGuiGraphicsStack;
 import io.github.luckymcdev.foundryengine.common.Instances;
 
+/**
+ * The Main Menu implementation. Manages the top info bar and also all Panels in the Panel Menu
+ */
 public class MainMenu {
-
-    private static final BuiltInEditor editor = Instances.getBuiltInEditor();
-
+    private static final EditorManager editor = Instances.getEditorManager();
     private static final ImBoolean demoWindowOpen = new ImBoolean(false);
     private static final ImBoolean metricsWindowOpen = new ImBoolean(false);
 
+    /**
+     * Handles Rendering the Main Menu Bar.
+     * {@link ImGui#beginMainMenuBar()}
+     */
     public static void handleRender() {
         if (ImGui.beginMainMenuBar()) {
             ImGuiGraphicsStack gs = Instances.getImGuiManager().getGraphicsStack();
@@ -26,6 +31,9 @@ public class MainMenu {
         }
     }
 
+    /**
+     * Renders the Panels menu in the Main Menu Bar.
+     */
     private static void renderPanelsMenu() {
         if (ImGui.beginMenu("Panels")) {
             editor.getPanels().forEach(panel -> {
@@ -38,6 +46,9 @@ public class MainMenu {
         }
     }
 
+    /**
+     * Renders the tools Menu in the Main Menu Bar.
+     */
     private static void renderToolsMenu() {
         if (ImGui.beginMenu("Tools")) {
             if (ImGui.menuItem("Close All Panels")) {
@@ -61,6 +72,10 @@ public class MainMenu {
         if (metricsWindowOpen.get()) ImGui.showMetricsWindow(metricsWindowOpen);
     }
 
+    /**
+     * TODO: make Impl work.
+     * Renders the View Menu in the Main Menu Bar.
+     */
     private static void renderViewMenu() {
         if (ImGui.beginMenu("View")) {
             if (ImGui.menuItem("Reset Layout")) {

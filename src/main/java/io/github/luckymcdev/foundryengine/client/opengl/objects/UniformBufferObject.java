@@ -1,4 +1,4 @@
-package io.github.luckymcdev.foundryengine.client.opengl.shaders.uniform;
+package io.github.luckymcdev.foundryengine.client.opengl.objects;
 
 import io.github.luckymcdev.foundryengine.client.opengl.GlDispatch;
 import io.github.luckymcdev.foundryengine.client.opengl.OpenGlObject;
@@ -6,6 +6,11 @@ import org.lwjgl.opengl.GL31;
 
 import static org.lwjgl.opengl.GL33.GL_DYNAMIC_DRAW;
 
+/**
+ * A currently Unused Uniform Buffer Object OpenGl wrapper.
+ * <br>
+ * USES RAW OPENGL CALLS.
+ */
 public class UniformBufferObject extends OpenGlObject {
 
     public UniformBufferObject(int size, int usage) {

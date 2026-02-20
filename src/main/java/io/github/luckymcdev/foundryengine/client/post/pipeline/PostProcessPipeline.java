@@ -14,24 +14,20 @@ import java.util.*;
 public class PostProcessPipeline {
     private final List<PostProcessPipelinePass> passes = new ArrayList<>();
     private final List<ShaderProgram> programs = new ArrayList<>();
-
-    /**
-     * Named temporary framebuffer slots required by this pipeline.
-     * Insertion order is preserved; the manager iterates these to allocate buffers.
-     */
     private final LinkedHashMap<String, TemporaryTarget> targets = new LinkedHashMap<>();
-
-    /**
-     * Ordered map of uniform name → param.
-     * LinkedHashMap preserves insertion order for a predictable panel layout.
-     */
     private final Map<String, PipelineParam<?>> params = new LinkedHashMap<>();
 
     private final Identifier name;
     private boolean enabled;
 
+    /**
+     * Create a new PostProcessPipeline
+     *
+     * @param name   The unique identifier for this Post Process Pipeline.
+     * @param passes n Amount of Passes for this PostProcessPipeline
+     */
     public PostProcessPipeline(Identifier name, PostProcessPipelinePass... passes) {
-        this.name    = name;
+        this.name = name;
         this.enabled = false;
         for (PostProcessPipelinePass pass : passes) {
             ShaderProgram program = new ShaderProgram(pass.name(), pass.shaders());
@@ -45,16 +41,29 @@ public class PostProcessPipeline {
         }
     }
 
+    /**
+     * Add a new {@link TemporaryTarget} to this Pipeline.
+     * @param target the Target to add.
+     * @return the Target which got Added.
+     */
     protected TemporaryTarget addTarget(TemporaryTarget target) {
         targets.put(target.name(), target);
         return target;
     }
 
+    /**
+     * Same as {@link #addTarget(TemporaryTarget)} except with a String param instead of a Full {@link TemporaryTarget}
+     * @param name the name of the Target to add.
+     * @return the Target which got added.
+     */
     protected TemporaryTarget addTarget(String name) {
         return addTarget(TemporaryTarget.named(name));
     }
 
-    /** Returns an unmodifiable view of this pipeline's declared temporary targets. */
+    /**
+     * Returns a View of the Targets available in this Pipeline.
+     * @return the view of the Targets available.
+     */
     public Map<String, TemporaryTarget> getTargets() {
         return Collections.unmodifiableMap(targets);
     }
@@ -62,15 +71,22 @@ public class PostProcessPipeline {
     /**
      * Registers a {@link PipelineParam} and returns it so the subclass can keep
      * a typed reference for programmatic access.
-     *
-     * <p>Call this in the subclass constructor, <em>after</em> {@code super(...)}.</p>
+     *  <br>
+     * Call this in the subclass constructor, after {@code super(...)}.
+     * @param <T> the Type T
+     * @param <P> the Param P
+     * @param param the param
+     * @return the param.
      */
     protected <T, P extends PipelineParam<T>> P addParam(P param) {
         params.put(param.getUniformName(), param);
         return param;
     }
 
-    /** Returns all registered params in declaration order (used by the panel). */
+    /**
+     * Returns all registered params in declaration order (used by the panel).
+     * @return a Map of all params.
+     */
     public Map<String, PipelineParam<?>> getParams() {
         return Collections.unmodifiableMap(params);
     }
@@ -83,7 +99,10 @@ public class PostProcessPipeline {
         return programs.get(index);
     }
 
-    /** Convenience for single-pass pipelines. */
+    /**
+     * Convenience for single-pass pipelines.
+     * @return the first {@link ShaderProgram} out of the List.
+     */
     public ShaderProgram getProgram() {
         return programs.getFirst();
     }
@@ -93,37 +112,66 @@ public class PostProcessPipeline {
     }
 
     /**
-     * Sets the uniforms every pass needs: global engine uniforms, standard texture
-     * samplers on units 0/1/2, and all registered {@link PipelineParam}s.
-     *
-     * <p>Called by the manager before {@link #setupUniforms(int, PostProcessPipelinePass)}.</p>
+     * Sets a collection of default Uniforms.
+     * Includes:
+     *  - screenTexture
+     *  - depthTexture
+     * <br>
+     * You don't need to call this, it's done automatically.
+     * @param program the Program for which to set these Uniforms.
      */
     public final void setupDefaultUniforms(ShaderProgram program) {
         program.setUniforms(Uniforms.getCollection());
-        program.setUniform(new Uniform<>("screenTexture",   0));
-        program.setUniform(new Uniform<>("depthTexture",    1));
+        program.setUniform(new Uniform<>("screenTexture", 0));
+        program.setUniform(new Uniform<>("depthTexture", 1));
         program.setUniform(new Uniform<>("originalTexture", 2));
-
-        // Auto-apply every registered param to this program.
+        
         for (PipelineParam<?> param : params.values()) {
             param.applyToProgram(program);
         }
     }
 
     /**
-     * Override to supply per-pass uniforms that vary between passes, or that
-     * depend on runtime state not expressible as a static {@link PipelineParam}.
+     * Override this to set up Custom Uniforms for your PostProcessPipeline.
+     * Per Pass.
+     * <br>
+     * To check for a specific pass, you can use an if statement.
      *
-     * <p>Most pipelines don't need to override this – declare {@link PipelineParam}s
-     * instead, and they'll be applied automatically.</p>
+     * @param pass    the Pass for which to set the Uniforms
+     * @param program the Program with which you can set them {@link ShaderProgram#setUniform(Uniform)}
      */
-    public void setupUniforms(int passIndex, PostProcessPipelinePass pass) {
-        // default: params already applied in setupDefaultUniforms
+    public void setupUniforms(PostProcessPipelinePass pass, ShaderProgram program) {
     }
 
-    public final void enable()   { this.enabled = true;  }
-    public final void disable()  { this.enabled = false; }
-    public boolean isEnabled()   { return this.enabled;  }
+    /**
+     * Enables this Pipeline.
+     */
+    public final void enable() {
+        this.enabled = true;
+    }
 
-    public Identifier getName()  { return name; }
+    /**
+     * Disables this Pipeline
+     */
+    public final void disable() {
+        this.enabled = false;
+    }
+
+    /**
+     * Weather or not this Pipeline is enabled.
+     *
+     * @return enabled.
+     */
+    public boolean isEnabled() {
+        return this.enabled;
+    }
+
+    /**
+     * The Identifier for this Pipeline.
+     *
+     * @return the Identifier for this Pipeline.
+     */
+    public Identifier getName() {
+        return name;
+    }
 }

@@ -4,6 +4,7 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * An Exception for working with Shaders.
+ * Wraps a String error and a GlError.
  */
 public class ShaderException extends Exception {
     private final String glError;

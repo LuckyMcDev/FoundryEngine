@@ -49,7 +49,7 @@ public class ClComputeTask {
         try (MemoryStack stack = stackPush()) {
             IntBuffer errcode = stack.mallocInt(1);
             long bufferId = ClDispatch.createBuffer(
-                    context.getContext(), CL_MEM_WRITE_ONLY, numElements * Float.BYTES, errcode
+                    context.getContext(), CL_MEM_WRITE_ONLY, (long) numElements * Float.BYTES, errcode
             );
             OpenClContext.checkCLError(errcode.get(0), "Failed to create output buffer");
 
@@ -116,7 +116,7 @@ public class ClComputeTask {
 
             for (int i = 0; i < numArgs; i++) {
                 PointerBuffer sizeRet = stack.mallocPointer(1);
-                ClDispatch.getKernelArgInfo(kernelId, i, CL_KERNEL_ARG_NAME, (ByteBuffer) null, sizeRet);
+                ClDispatch.getKernelArgInfo(kernelId, i, CL_KERNEL_ARG_NAME, null, sizeRet);
 
                 ByteBuffer nameBuf = stack.malloc((int) sizeRet.get(0));
                 ClDispatch.getKernelArgInfo(kernelId, i, CL_KERNEL_ARG_NAME, nameBuf, null);

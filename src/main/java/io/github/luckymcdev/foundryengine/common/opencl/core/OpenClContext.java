@@ -17,6 +17,10 @@ import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 import static org.lwjgl.system.MemoryUtil.memUTF8;
 
+/**
+ * The OpenCL Context.
+ * Should be called from the {@link ClDispatch#CL_THREAD}
+ */
 public class OpenClContext {
     private static final Logger LOGGER = LogUtils.getLogger();
     private long platform;
@@ -27,6 +31,12 @@ public class OpenClContext {
 
     public OpenClContext(boolean printInfoLog) {
         initialize(printInfoLog);
+    }
+
+    public static void checkCLError(int errcode, String message) {
+        if (errcode != CL_SUCCESS) {
+            throw new RuntimeException(message + " (error code: " + errcode + ")");
+        }
     }
 
     private void initialize(boolean printInfoLog) {
@@ -40,7 +50,7 @@ public class OpenClContext {
             }
 
             PointerBuffer platforms = stack.mallocPointer(numPlatforms.get(0));
-            ClDispatch.getPlatformIDs(platforms, (IntBuffer) null);
+            ClDispatch.getPlatformIDs(platforms, null);
             platform = platforms.get(0);
 
             // Create platform capabilities
@@ -61,7 +71,7 @@ public class OpenClContext {
             deviceCaps = CL.createDeviceCapabilities(device, platformCaps);
 
             // Print device info
-            if(printInfoLog) printDeviceInfo(stack);
+            if (printInfoLog) printDeviceInfo(stack);
 
             // Create context
             IntBuffer errcode = stack.mallocInt(1);
@@ -169,12 +179,6 @@ public class OpenClContext {
         if (context != 0) {
             ClDispatch.releaseContext(context);
             context = 0;
-        }
-    }
-
-    public static void checkCLError(int errcode, String message) {
-        if (errcode != CL_SUCCESS) {
-            throw new RuntimeException(message + " (error code: " + errcode + ")");
         }
     }
 }

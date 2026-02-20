@@ -8,9 +8,26 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
+/**
+ * A Manager for all {@link EngineThread} Register via {@link RegisterEngineThreadEvent}.
+ */
 public class ThreadManager {
     private final GenericRegistry<Identifier, EngineThread> THREADS = new GenericRegistry<>();
 
+    private static String defaultLabel(Identifier id) {
+        if (id == null) {
+            return "engine-thread";
+        }
+        String path = id.getPath();
+        return (path == null || path.isBlank()) ? id.toString() : path;
+    }
+
+    /**
+     * Registers a new Thread to the Manager.
+     *
+     * @param thread the Thread to register.
+     * @return the registered and started Thread.
+     */
     public EngineThread register(EngineThread thread) {
         Objects.requireNonNull(thread, "thread");
         THREADS.register(thread.getIdentifier(), thread);
@@ -18,6 +35,11 @@ public class ThreadManager {
         return thread;
     }
 
+    /**
+     * Returns a {@link EngineThread} by its Identifier
+     * @param id the Identifier of the Thread.
+     * @return the {@link EngineThread}
+     */
     public EngineThread get(Identifier id) {
         EngineThread thread = THREADS.get(id);
         if (thread == null) {
@@ -32,21 +54,6 @@ public class ThreadManager {
 
     public boolean isRegistered(Identifier id) {
         return THREADS.contains(id);
-    }
-
-    public EngineThread getOrRegister(Identifier id, String label, boolean daemon) {
-        EngineThread existing = THREADS.get(id);
-        if (existing != null) {
-            return existing;
-        }
-        EngineThread created = new EngineThread(id, label, daemon);
-        THREADS.register(id, created);
-        created.startThread();
-        return created;
-    }
-
-    public EngineThread getOrRegister(Identifier id, boolean daemon) {
-        return getOrRegister(id, defaultLabel(id), daemon);
     }
 
     public boolean isOnThread(Identifier id) {
@@ -76,24 +83,32 @@ public class ThreadManager {
         }
     }
 
-    public void execute(Identifier id, Runnable action) {
-        getOrRegister(id, defaultLabel(id), true).execute(action);
-    }
-
-    public <T> CompletableFuture<T> submit(Identifier id, Supplier<T> action) {
-        return getOrRegister(id, defaultLabel(id), true).submit(action);
-    }
-
+    /**
+     * Executes an Action ({@link Runnable}) on a {@link EngineThread}.
+     * @param thread the Thread to execute the Action on.
+     * @param action the Action to execute.
+     */
     public void execute(EngineThread thread, Runnable action) {
         Objects.requireNonNull(thread, "thread");
         thread.execute(action);
     }
 
+    /**
+     * Submits an Async action with return to run on a {@link EngineThread}
+     * @param thread the Thread to execute the Action on.
+     * @param action the Action to execute.
+     * @return the computed Value.
+     * @param <T> the Type
+     */
     public <T> CompletableFuture<T> submit(EngineThread thread, Supplier<T> action) {
         Objects.requireNonNull(thread, "thread");
         return thread.submit(action);
     }
 
+    /**
+     * Shuts down a {@link EngineThread} by Identifier
+     * @param id the Identifier of the {@link EngineThread} to shut down
+     */
     public void shutdown(Identifier id) {
         EngineThread thread = THREADS.get(id);
         if (thread != null) {
@@ -101,15 +116,10 @@ public class ThreadManager {
         }
     }
 
+    /**
+     * Shuts down all {@link EngineThread} registered to the Manager.
+     */
     public void shutdownAll() {
         THREADS.forEach(EngineThread::shutdown);
-    }
-
-    private static String defaultLabel(Identifier id) {
-        if (id == null) {
-            return "engine-thread";
-        }
-        String path = id.getPath();
-        return (path == null || path.isBlank()) ? id.toString() : path;
     }
 }

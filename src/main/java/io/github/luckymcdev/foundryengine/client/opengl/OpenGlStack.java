@@ -10,8 +10,8 @@ import java.util.Deque;
  * Uses a stack-based approach to handle nested state changes.
  */
 public class OpenGlStack {
-    private final Deque<State> stateStack = new ArrayDeque<>();
     private static final int NUM_TEXTURE_UNITS = 16; // Most systems support at least 16
+    private final Deque<State> stateStack = new ArrayDeque<>();
 
     /**
      * Push the current OpenGL state onto the stack
@@ -49,40 +49,6 @@ public class OpenGlStack {
      * Stores a snapshot of OpenGL state
      */
     private static class State {
-        // Texture state - save ALL texture units and ALL targets
-        private final int activeTexture;
-        private final int[][] boundTextures; // [unit][target]
-
-        // Framebuffer state
-        private final int boundFramebuffer;
-        private final int boundReadFramebuffer;
-        private final int boundDrawFramebuffer;
-
-        // Shader state
-        private final int currentProgram;
-
-        // Viewport state
-        private final int[] viewport = new int[4];
-
-        // Enable/disable state
-        private final boolean depthTestEnabled;
-        private final boolean blendEnabled;
-        private final boolean cullFaceEnabled;
-        private final boolean scissorTestEnabled;
-        private final boolean stencilTestEnabled;
-
-        // Depth state
-        private final boolean depthMask;
-
-        // Blend state
-        private final int blendSrcRgb;
-        private final int blendDstRgb;
-        private final int blendSrcAlpha;
-        private final int blendDstAlpha;
-
-        // Color mask
-        private final boolean[] colorMask = new boolean[4];
-
         // Texture targets to save
         private static final int[] TEXTURE_TARGETS = {
                 GL43C.GL_TEXTURE_2D,
@@ -95,6 +61,32 @@ public class OpenGlStack {
                 GL43C.GL_TEXTURE_2D_MULTISAMPLE,
                 GL43C.GL_TEXTURE_2D_MULTISAMPLE_ARRAY
         };
+        // Texture state - save ALL texture units and ALL targets
+        private final int activeTexture;
+        private final int[][] boundTextures; // [unit][target]
+        // Framebuffer state
+        private final int boundFramebuffer;
+        private final int boundReadFramebuffer;
+        private final int boundDrawFramebuffer;
+        // Shader state
+        private final int currentProgram;
+        // Viewport state
+        private final int[] viewport = new int[4];
+        // Enable/disable state
+        private final boolean depthTestEnabled;
+        private final boolean blendEnabled;
+        private final boolean cullFaceEnabled;
+        private final boolean scissorTestEnabled;
+        private final boolean stencilTestEnabled;
+        // Depth state
+        private final boolean depthMask;
+        // Blend state
+        private final int blendSrcRgb;
+        private final int blendDstRgb;
+        private final int blendSrcAlpha;
+        private final int blendDstAlpha;
+        // Color mask
+        private final boolean[] colorMask = new boolean[4];
 
         /**
          * Capture the current OpenGL state

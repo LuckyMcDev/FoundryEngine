@@ -1,4 +1,4 @@
-package io.github.luckymcdev.foundryengine.client.opengl.vertex.objects;
+package io.github.luckymcdev.foundryengine.client.opengl.objects;
 
 import io.github.luckymcdev.foundryengine.client.opengl.GlDispatch;
 import io.github.luckymcdev.foundryengine.client.opengl.OpenGlObject;
@@ -7,6 +7,9 @@ import java.nio.FloatBuffer;
 
 import static org.lwjgl.opengl.GL33.GL_ARRAY_BUFFER;
 
+/**
+ * A wrapper around an VBO OpenGl Object.
+ */
 public class VertexBufferObject extends OpenGlObject {
 
     public VertexBufferObject() {

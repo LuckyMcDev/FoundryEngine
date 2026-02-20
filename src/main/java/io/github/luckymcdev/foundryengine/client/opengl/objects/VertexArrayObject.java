@@ -1,9 +1,12 @@
-package io.github.luckymcdev.foundryengine.client.opengl.vertex.objects;
+package io.github.luckymcdev.foundryengine.client.opengl.objects;
 
 
 import io.github.luckymcdev.foundryengine.client.opengl.GlDispatch;
 import io.github.luckymcdev.foundryengine.client.opengl.OpenGlObject;
 
+/**
+ * A wrapper around a VAO OpenGl Object.
+ */
 public class VertexArrayObject extends OpenGlObject {
 
     public VertexArrayObject() {

@@ -15,13 +15,34 @@ import org.joml.Vector3f;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * A panel for managing post-processing pipelines in the application.
+ * Provides a user interface for enabling/disabling pipelines, changing their stages,
+ * and adjusting their parameters.
+ * <p>
+ * The panel is divided into two main sections:
+ * - Global Pipelines: Lists all non-staged pipelines.
+ * - Staged Pipelines: Lists pipelines organized by their processing stage.
+ * <p>
+ * Each pipeline can be toggled on/off, and its parameters can be adjusted through
+ * appropriate UI controls (sliders, checkboxes, color pickers, etc.).
+ */
 public class PostProcessPanel extends Panel {
     public static final PostProcessPanel INSTANCE = new PostProcessPanel();
 
+    /**
+     * Private constructor to enforce singleton pattern.
+     */
     private PostProcessPanel() {
         super(Commons.id("post_process_panel"), "Post Processing Panel");
     }
 
+    /**
+     * Renders the main content of the post-processing panel.
+     * Displays the panel title, separator, and two main sections:
+     * - Global Pipelines: Shows all non-staged pipelines.
+     * - Staged Pipelines: Shows pipelines organized by their processing stages.
+     */
     @Override
     public void content() {
         ImGui.text("Post Processing Management");
@@ -56,10 +77,10 @@ public class PostProcessPanel extends Panel {
         }
     }
 
-    // =========================================================================
-    // Section renderers
-    // =========================================================================
-
+    /**
+     * Renders the section for non-staged pipelines.
+     * Displays all registered non-staged pipelines with their enable/disable checkboxes.
+     */
     private void renderNonStagedSection() {
         List<PostProcessPipeline> allPipelines = Instances.getPostProcessManager().getPipelines();
         if (allPipelines.isEmpty()) {
@@ -71,13 +92,20 @@ public class PostProcessPanel extends Panel {
         }
     }
 
+    /**
+     * Renders a row for a staged pipeline in the UI.
+     * Includes an enable/disable checkbox, pipeline name, stage selector, and parameter controls.
+     *
+     * @param pipeline The staged pipeline to render.
+     */
     private void renderStagedPipelineRow(StagedPostProcessPipeline pipeline) {
         ImGui.pushID(pipeline.getName().toString() + "_row");
 
         // Enable / disable checkbox
         boolean enabled = pipeline.isEnabled();
         if (ImGui.checkbox("##enabled", enabled)) {
-            if (enabled) pipeline.disable(); else pipeline.enable();
+            if (enabled) pipeline.disable();
+            else pipeline.enable();
         }
 
         ImGui.sameLine();
@@ -105,12 +133,20 @@ public class PostProcessPanel extends Panel {
         ImGui.popID();
     }
 
+    /**
+     * Renders a row for a pipeline in the UI.
+     * Includes an enable/disable checkbox, pipeline name, and parameter controls.
+     *
+     * @param pipeline The pipeline to render.
+     * @param staged Whether the pipeline is staged.
+     */
     private void renderPipelineRow(PostProcessPipeline pipeline, boolean staged) {
         ImGui.pushID(pipeline.getName().toString());
 
         boolean enabled = pipeline.isEnabled();
         if (ImGui.checkbox("##enabled", enabled)) {
-            if (enabled) pipeline.disable(); else pipeline.enable();
+            if (enabled) pipeline.disable();
+            else pipeline.enable();
         }
         ImGui.sameLine();
         ImGui.text(pipeline.getName().toString());
@@ -123,6 +159,8 @@ public class PostProcessPanel extends Panel {
     /**
      * Renders a collapsible tree of ImGui widgets for every {@link PipelineParam}
      * declared by the pipeline. Does nothing if the pipeline has no params.
+     *
+     * @param pipeline The pipeline whose parameters should be rendered.
      */
     private void renderParamTree(PostProcessPipeline pipeline) {
         Map<String, PipelineParam<?>> params = pipeline.getParams();
@@ -132,7 +170,7 @@ public class PostProcessPanel extends Panel {
         if (ImGui.collapsingHeader("Parameters##" + pipeline.getName(), ImGuiTreeNodeFlags.DefaultOpen)) {
             for (PipelineParam<?> param : params.values()) {
                 renderParam(pipeline.getName().toString(), param);
-            };
+            }
         }
         ImGui.unindent();
     }
@@ -141,6 +179,9 @@ public class PostProcessPanel extends Panel {
      * Renders the appropriate ImGui widget for a single {@link PipelineParam}.
      * Mutates the param's value in-place; the change is picked up next frame
      * when {@code setupDefaultUniforms} calls {@code param.applyToProgram}.
+     *
+     * @param pipelineId The ID of the pipeline this parameter belongs to.
+     * @param param The parameter to render.
      */
     @SuppressWarnings("unchecked")
     private void renderParam(String pipelineId, PipelineParam<?> param) {
@@ -149,14 +190,14 @@ public class PostProcessPanel extends Panel {
         switch (param.getKind()) {
             case FLOAT -> {
                 PipelineParam<Float> p = (PipelineParam<Float>) param;
-                float[] v = { p.getValue() };
+                float[] v = {p.getValue()};
                 if (ImGui.sliderFloat(label, v, p.getMin(), p.getMax())) {
                     p.setValue(v[0]);
                 }
             }
             case INT -> {
                 PipelineParam<Integer> p = (PipelineParam<Integer>) param;
-                int[] v = { p.getValue() };
+                int[] v = {p.getValue()};
                 if (ImGui.sliderInt(label, v, (int) p.getMin(), (int) p.getMax())) {
                     p.setValue(v[0]);
                 }
@@ -170,7 +211,7 @@ public class PostProcessPanel extends Panel {
             case VEC2 -> {
                 PipelineParam<Vector2f> p = (PipelineParam<Vector2f>) param;
                 Vector2f vec = p.getValue();
-                float[] v = { vec.x, vec.y };
+                float[] v = {vec.x, vec.y};
                 if (ImGui.dragFloat2(label, v)) {
                     p.setValue(new Vector2f(v[0], v[1]));
                 }
@@ -178,7 +219,7 @@ public class PostProcessPanel extends Panel {
             case VEC3 -> {
                 PipelineParam<Vector3f> p = (PipelineParam<Vector3f>) param;
                 Vector3f vec = p.getValue();
-                float[] v = { vec.x, vec.y, vec.z };
+                float[] v = {vec.x, vec.y, vec.z};
                 boolean changed = param.isColorPicker()
                         ? ImGui.colorEdit3(label, v)
                         : ImGui.dragFloat3(label, v);

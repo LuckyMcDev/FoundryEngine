@@ -3,11 +3,7 @@ package io.github.luckymcdev.foundryengine.client.editor.builtin;
 import com.mojang.logging.LogUtils;
 import imgui.ImGui;
 import io.github.luckymcdev.foundryengine.client.editor.Panel;
-import io.github.luckymcdev.foundryengine.client.imgui.node.Node;
-import io.github.luckymcdev.foundryengine.client.imgui.node.NodeEditorInstance;
-import io.github.luckymcdev.foundryengine.client.imgui.node.NodePinInfo;
-import io.github.luckymcdev.foundryengine.client.imgui.node.NodePinShape;
-import io.github.luckymcdev.foundryengine.client.imgui.node.NodePinType;
+import io.github.luckymcdev.foundryengine.client.imgui.node.*;
 import io.github.luckymcdev.foundryengine.common.Commons;
 import org.slf4j.Logger;
 
@@ -15,24 +11,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The Node Editor Panel
+ * The Node Editor Panel provides a visual interface for creating and editing shader nodes.
+ * It allows users to create a graph of connected nodes that represent shader operations,
+ * and generates GLSL code based on the node connections.
  */
 public class NodeEditorPanel extends Panel {
-    private static final Logger LOGGER = LogUtils.getLogger();
-    /**
-     * The constant INSTANCE.
-     */
     public static final NodeEditorPanel INSTANCE = new NodeEditorPanel();
-
+    private static final Logger LOGGER = LogUtils.getLogger();
     private final NodeEditorInstance<String> nodeEditor;
     private final NodePinType<String> floatType = new NodePinType<>("Float", NodePinShape.CIRCLE, null);
     private final NodePinType<String> vec3Type = new NodePinType<>("Vec3", NodePinShape.CIRCLE, null);
 
+    /**
+     * Private constructor to enforce singleton pattern.
+     */
     private NodeEditorPanel() {
         super(Commons.id("node_editor"), "Node Editor");
         this.nodeEditor = new NodeEditorInstance<>(new NodePinType<>("Float", NodePinShape.CIRCLE, null));
     }
 
+    /**
+     * Renders the main content of the node editor panel.
+     * Displays the node editor on the left and the shader preview on the right.
+     */
     @Override
     public void content() {
         float fullWidth = ImGui.getContentRegionAvailX();
@@ -110,6 +111,10 @@ public class NodeEditorPanel extends Panel {
         ImGui.endChild();
     }
 
+    /**
+     * Renders the shader preview panel on the right side of the node editor.
+     * Displays the generated GLSL code based on the current node connections.
+     */
     private void renderShaderPreview() {
         ImGui.textUnformatted("Generated GLSL (Fake)");
         ImGui.separator();
@@ -195,6 +200,14 @@ public class NodeEditorPanel extends Panel {
         }
     }
 
+    /**
+     * Gets the input value for a node's input pin.
+     *
+     * @param node     The node to get the input value for.
+     * @param index    The index of the input pin.
+     * @param fallback The fallback value if no input is connected.
+     * @return The input value or the fallback value if no input is connected.
+     */
     private String inputValue(Node node, int index, String fallback) {
         if (node.inputPins == null || index < 0 || index >= node.inputPins.size()) {
             return fallback;
@@ -208,11 +221,23 @@ public class NodeEditorPanel extends Panel {
         return varName(pin.inputLink.node);
     }
 
+    /**
+     * Generates a variable name for a node based on its name and ID.
+     *
+     * @param node The node to generate a variable name for.
+     * @return The generated variable name.
+     */
     private String varName(Node node) {
         String base = node.name == null ? "node" : node.name;
         return sanitizeIdent(base.toLowerCase()) + "_" + node.id;
     }
 
+    /**
+     * Sanitizes an identifier to make it a valid GLSL variable name.
+     *
+     * @param value The identifier to sanitize.
+     * @return The sanitized identifier.
+     */
     private String sanitizeIdent(String value) {
         if (value == null || value.isBlank()) {
             return "node";

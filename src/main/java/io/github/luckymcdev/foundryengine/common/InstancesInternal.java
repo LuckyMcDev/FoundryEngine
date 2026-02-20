@@ -1,6 +1,6 @@
 package io.github.luckymcdev.foundryengine.common;
 
-import io.github.luckymcdev.foundryengine.client.editor.BuiltInEditor;
+import io.github.luckymcdev.foundryengine.client.editor.EditorManager;
 import io.github.luckymcdev.foundryengine.client.imgui.ImGuiManager;
 import io.github.luckymcdev.foundryengine.client.opengl.OpenGlStack;
 import io.github.luckymcdev.foundryengine.client.opengl.framebuffer.FrameBufferManager;
@@ -15,22 +15,15 @@ import io.github.luckymcdev.foundryengine.common.thread.ThreadManager;
  */
 final class InstancesInternal {
 
-    private InstancesInternal() {
-        throw new UnsupportedOperationException("This is a static instance holder and cannot be instantiated.");
-    }
-
     // Core Systems
     static final OpenGlStack OPEN_GL_STACK;
     static final ShaderManager SHADER_MANAGER;
     static final FrameBufferManager FRAME_BUFFER_MANAGER;
-
     // Rendering
     static final PostProcessManager POST_PROCESS_MANAGER;
-
     // UI
     static final ImGuiManager IMGUI_MANAGER;
-    static final BuiltInEditor BUILT_IN_EDITOR;
-
+    static final EditorManager EDITOR_MANAGER;
     // Utilities
     static final KeyBindingManager KEY_BINDING_MANAGER;
     static final ThreadManager THREAD_MANAGER;
@@ -43,9 +36,13 @@ final class InstancesInternal {
         POST_PROCESS_MANAGER = new PostProcessManager();
 
         IMGUI_MANAGER = new ImGuiManager();
-        BUILT_IN_EDITOR = new BuiltInEditor();
+        EDITOR_MANAGER = new EditorManager();
 
         KEY_BINDING_MANAGER = new KeyBindingManager();
         THREAD_MANAGER = new ThreadManager();
+    }
+
+    private InstancesInternal() {
+        throw new UnsupportedOperationException("This is a static instance holder and cannot be instantiated.");
     }
 }

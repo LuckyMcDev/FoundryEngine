@@ -3,6 +3,12 @@ package io.github.luckymcdev.foundryengine.common.registry;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+/**
+ * A Reference to an Entry in a {@link Registry} / {@link GenericRegistry}.
+ *
+ * @param <K> Key Type.
+ * @param <V> Value Type.
+ */
 public class RegistryRef<K, V> {
     private final K key;
     private final Registry<K, V> registry;

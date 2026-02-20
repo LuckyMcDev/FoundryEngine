@@ -1,11 +1,6 @@
 package io.github.luckymcdev.foundryengine.client.imgui.backend;
 
-import imgui.ImDrawData;
-import imgui.ImFontAtlas;
-import imgui.ImGui;
-import imgui.ImGuiIO;
-import imgui.ImGuiViewport;
-import imgui.ImVec4;
+import imgui.*;
 import imgui.callback.ImPlatformFuncViewport;
 import imgui.flag.ImGuiBackendFlags;
 import imgui.flag.ImGuiConfigFlags;
@@ -16,11 +11,8 @@ import java.nio.ByteBuffer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.lwjgl.opengl.GL20.glDeleteShader;
-import static org.lwjgl.opengl.GL20.glDetachShader;
-import static org.lwjgl.opengl.GL20.glGetAttribLocation;
-import static org.lwjgl.opengl.GL20.glGetProgramiv;
-import static org.lwjgl.opengl.GL20.glGetUniformLocation;
+import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL32.*;
 import static org.lwjgl.opengl.GL32.GL_ACTIVE_TEXTURE;
 import static org.lwjgl.opengl.GL32.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL32.GL_ARRAY_BUFFER_BINDING;
@@ -46,12 +38,9 @@ import static org.lwjgl.opengl.GL32.GL_FUNC_ADD;
 import static org.lwjgl.opengl.GL32.GL_INFO_LOG_LENGTH;
 import static org.lwjgl.opengl.GL32.GL_LINEAR;
 import static org.lwjgl.opengl.GL32.GL_LINK_STATUS;
-import static org.lwjgl.opengl.GL32.GL_MAJOR_VERSION;
-import static org.lwjgl.opengl.GL32.GL_MINOR_VERSION;
 import static org.lwjgl.opengl.GL32.GL_ONE;
 import static org.lwjgl.opengl.GL32.GL_ONE_MINUS_SRC_ALPHA;
 import static org.lwjgl.opengl.GL32.GL_POLYGON_MODE;
-import static org.lwjgl.opengl.GL32.GL_PRIMITIVE_RESTART;
 import static org.lwjgl.opengl.GL32.GL_RGBA;
 import static org.lwjgl.opengl.GL32.GL_SCISSOR_BOX;
 import static org.lwjgl.opengl.GL32.GL_SCISSOR_TEST;
@@ -66,21 +55,19 @@ import static org.lwjgl.opengl.GL32.GL_TEXTURE_MIN_FILTER;
 import static org.lwjgl.opengl.GL32.GL_TRIANGLES;
 import static org.lwjgl.opengl.GL32.GL_TRUE;
 import static org.lwjgl.opengl.GL32.GL_UNPACK_ALIGNMENT;
+import static org.lwjgl.opengl.GL32.GL_UNPACK_ROW_LENGTH;
 import static org.lwjgl.opengl.GL32.GL_UNPACK_SKIP_PIXELS;
 import static org.lwjgl.opengl.GL32.GL_UNPACK_SKIP_ROWS;
-import static org.lwjgl.opengl.GL32.GL_UNPACK_ROW_LENGTH;
 import static org.lwjgl.opengl.GL32.GL_UNSIGNED_BYTE;
 import static org.lwjgl.opengl.GL32.GL_UNSIGNED_INT;
 import static org.lwjgl.opengl.GL32.GL_UNSIGNED_SHORT;
 import static org.lwjgl.opengl.GL32.GL_UPPER_LEFT;
-import static org.lwjgl.opengl.GL32.GL_VERTEX_ARRAY_BINDING;
 import static org.lwjgl.opengl.GL32.GL_VERTEX_SHADER;
 import static org.lwjgl.opengl.GL32.GL_VIEWPORT;
 import static org.lwjgl.opengl.GL32.glActiveTexture;
 import static org.lwjgl.opengl.GL32.glAttachShader;
 import static org.lwjgl.opengl.GL32.glBindBuffer;
 import static org.lwjgl.opengl.GL32.glBindTexture;
-import static org.lwjgl.opengl.GL32.glBindVertexArray;
 import static org.lwjgl.opengl.GL32.glBlendEquation;
 import static org.lwjgl.opengl.GL32.glBlendEquationSeparate;
 import static org.lwjgl.opengl.GL32.glBlendFuncSeparate;
@@ -93,15 +80,12 @@ import static org.lwjgl.opengl.GL32.glCreateShader;
 import static org.lwjgl.opengl.GL32.glDeleteBuffers;
 import static org.lwjgl.opengl.GL32.glDeleteProgram;
 import static org.lwjgl.opengl.GL32.glDeleteTextures;
-import static org.lwjgl.opengl.GL32.glDeleteVertexArrays;
 import static org.lwjgl.opengl.GL32.glDisable;
 import static org.lwjgl.opengl.GL32.glDrawElements;
-import static org.lwjgl.opengl.GL32.glDrawElementsBaseVertex;
 import static org.lwjgl.opengl.GL32.glEnable;
 import static org.lwjgl.opengl.GL32.glEnableVertexAttribArray;
 import static org.lwjgl.opengl.GL32.glGenBuffers;
 import static org.lwjgl.opengl.GL32.glGenTextures;
-import static org.lwjgl.opengl.GL32.glGenVertexArrays;
 import static org.lwjgl.opengl.GL32.glGetIntegerv;
 import static org.lwjgl.opengl.GL32.glGetProgramInfoLog;
 import static org.lwjgl.opengl.GL32.glGetShaderInfoLog;
@@ -138,61 +122,8 @@ import static org.lwjgl.opengl.GL45.GL_CLIP_ORIGIN;
 public class ImGuiImplGl3 {
     protected static final String OS = System.getProperty("os.name", "generic").toLowerCase();
     protected static final boolean IS_APPLE = OS.contains("mac") || OS.contains("darwin");
-
-    /**
-     * Data class to store implementation specific fields.
-     * Same as {@code ImGui_ImplOpenGL3_Data}.
-     */
-    protected static class Data {
-        protected int glVersion = 0; // Extracted at runtime using GL_MAJOR_VERSION, GL_MINOR_VERSION queries (e.g. 320 for GL 3.2)
-        protected String glslVersion = "";
-        protected int fontTexture = 0;
-        protected int shaderHandle = 0;
-        protected int attribLocationTex = 0; // Uniforms location
-        protected int attribLocationProjMtx = 0;
-        protected int attribLocationVtxPos = 0; // Vertex attributes location
-        protected int attribLocationVtxUV = 0;
-        protected int attribLocationVtxColor = 0;
-        protected int vboHandle = 0;
-        protected int elementsHandle = 0;
-        // protected int vertexBufferSize;
-        // protected int indexBufferSize;
-        protected boolean hasClipOrigin;
-    }
-
-    /**
-     * Internal class to store containers for frequently used arrays.
-     * This class helps minimize the number of object allocations on the JVM side,
-     * thereby improving performance and reducing garbage collection overhead.
-     */
-    private static final class Properties {
-        private final ImVec4 clipRect = new ImVec4();
-        private final float[] orthoProjMatrix = new float[4 * 4];
-        private final int[] lastActiveTexture = new int[1];
-        private final int[] lastProgram = new int[1];
-        private final int[] lastTexture = new int[1];
-        private final int[] lastSampler = new int[1];
-        private final int[] lastArrayBuffer = new int[1];
-        private final int[] lastVertexArrayObject = new int[1];
-        private final int[] lastPolygonMode = new int[2];
-        private final int[] lastViewport = new int[4];
-        private final int[] lastScissorBox = new int[4];
-        private final int[] lastBlendSrcRgb = new int[1];
-        private final int[] lastBlendDstRgb = new int[1];
-        private final int[] lastBlendSrcAlpha = new int[1];
-        private final int[] lastBlendDstAlpha = new int[1];
-        private final int[] lastBlendEquationRgb = new int[1];
-        private final int[] lastBlendEquationAlpha = new int[1];
-        private boolean lastEnableBlend = false;
-        private boolean lastEnableCullFace = false;
-        private boolean lastEnableDepthTest = false;
-        private boolean lastEnableStencilTest = false;
-        private boolean lastEnableScissorTest = false;
-        private boolean lastEnablePrimitiveRestart = false;
-    }
-
-    protected Data data = null;
     private final Properties props = new Properties();
+    protected Data data = null;
 
     protected Data newData() {
         return new Data();
@@ -700,23 +631,6 @@ public class ImGuiImplGl3 {
         destroyFontsTexture();
     }
 
-    //--------------------------------------------------------------------------------------------------------
-    // MULTI-VIEWPORT / PLATFORM INTERFACE SUPPORT
-    // This is an _advanced_ and _optional_ feature, allowing the backend to create and handle multiple viewports simultaneously.
-    // If you are new to dear imgui or creating a new binding for dear imgui, it is recommended that you completely ignore this section first..
-    //--------------------------------------------------------------------------------------------------------
-
-    private final class RendererRenderWindowFunction extends ImPlatformFuncViewport {
-        @Override
-        public void accept(final ImGuiViewport vp) {
-            if (!vp.hasFlags(ImGuiViewportFlags.NoRendererClear)) {
-                glClearColor(0, 0, 0, 0);
-                glClear(GL_COLOR_BUFFER_BIT);
-            }
-            renderDrawData(vp.getDrawData());
-        }
-    }
-
     protected void initPlatformInterface() {
         ImGui.getPlatformIO().setRendererRenderWindow(new RendererRenderWindowFunction());
     }
@@ -724,6 +638,12 @@ public class ImGuiImplGl3 {
     protected void shutdownPlatformInterface() {
         ImGui.destroyPlatformWindows();
     }
+
+    //--------------------------------------------------------------------------------------------------------
+    // MULTI-VIEWPORT / PLATFORM INTERFACE SUPPORT
+    // This is an _advanced_ and _optional_ feature, allowing the backend to create and handle multiple viewports simultaneously.
+    // If you are new to dear imgui or creating a new binding for dear imgui, it is recommended that you completely ignore this section first..
+    //--------------------------------------------------------------------------------------------------------
 
     protected String vertexShaderGlsl120() {
         return data.glslVersion + "\n"
@@ -839,5 +759,68 @@ public class ImGuiImplGl3 {
                 + "{\n"
                 + "    Out_Color = Frag_Color * texture(Texture, Frag_UV.st);\n"
                 + "}\n";
+    }
+
+    /**
+     * Data class to store implementation specific fields.
+     * Same as {@code ImGui_ImplOpenGL3_Data}.
+     */
+    protected static class Data {
+        protected int glVersion = 0; // Extracted at runtime using GL_MAJOR_VERSION, GL_MINOR_VERSION queries (e.g. 320 for GL 3.2)
+        protected String glslVersion = "";
+        protected int fontTexture = 0;
+        protected int shaderHandle = 0;
+        protected int attribLocationTex = 0; // Uniforms location
+        protected int attribLocationProjMtx = 0;
+        protected int attribLocationVtxPos = 0; // Vertex attributes location
+        protected int attribLocationVtxUV = 0;
+        protected int attribLocationVtxColor = 0;
+        protected int vboHandle = 0;
+        protected int elementsHandle = 0;
+        // protected int vertexBufferSize;
+        // protected int indexBufferSize;
+        protected boolean hasClipOrigin;
+    }
+
+    /**
+     * Internal class to store containers for frequently used arrays.
+     * This class helps minimize the number of object allocations on the JVM side,
+     * thereby improving performance and reducing garbage collection overhead.
+     */
+    private static final class Properties {
+        private final ImVec4 clipRect = new ImVec4();
+        private final float[] orthoProjMatrix = new float[4 * 4];
+        private final int[] lastActiveTexture = new int[1];
+        private final int[] lastProgram = new int[1];
+        private final int[] lastTexture = new int[1];
+        private final int[] lastSampler = new int[1];
+        private final int[] lastArrayBuffer = new int[1];
+        private final int[] lastVertexArrayObject = new int[1];
+        private final int[] lastPolygonMode = new int[2];
+        private final int[] lastViewport = new int[4];
+        private final int[] lastScissorBox = new int[4];
+        private final int[] lastBlendSrcRgb = new int[1];
+        private final int[] lastBlendDstRgb = new int[1];
+        private final int[] lastBlendSrcAlpha = new int[1];
+        private final int[] lastBlendDstAlpha = new int[1];
+        private final int[] lastBlendEquationRgb = new int[1];
+        private final int[] lastBlendEquationAlpha = new int[1];
+        private boolean lastEnableBlend = false;
+        private boolean lastEnableCullFace = false;
+        private boolean lastEnableDepthTest = false;
+        private boolean lastEnableStencilTest = false;
+        private boolean lastEnableScissorTest = false;
+        private boolean lastEnablePrimitiveRestart = false;
+    }
+
+    private final class RendererRenderWindowFunction extends ImPlatformFuncViewport {
+        @Override
+        public void accept(final ImGuiViewport vp) {
+            if (!vp.hasFlags(ImGuiViewportFlags.NoRendererClear)) {
+                glClearColor(0, 0, 0, 0);
+                glClear(GL_COLOR_BUFFER_BIT);
+            }
+            renderDrawData(vp.getDrawData());
+        }
     }
 }

@@ -1,10 +1,13 @@
-package io.github.luckymcdev.foundryengine.client.opengl.vertex;
+package io.github.luckymcdev.foundryengine.client.opengl.mesh;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL33.*;
 
+/**
+ * Vertex Layout to be used in {@link Mesh}
+ */
 public class VertexLayout {
     // Common predefined layouts
     public static final VertexLayout POS = new Builder()

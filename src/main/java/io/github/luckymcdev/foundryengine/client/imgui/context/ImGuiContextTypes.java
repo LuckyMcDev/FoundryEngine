@@ -7,9 +7,14 @@ import imgui.extension.implot.ImPlot;
 import imgui.extension.implot.ImPlotContext;
 import imgui.internal.ImGuiContext;
 
+/**
+ * The Built-In ImGuiContext Types. {@link ImNodesContext}, {@link ImGuiContext}, {@link ImPlotContext}
+ */
 public class ImGuiContextTypes {
 
-    // Built-in context types
+    /**
+     * {@link ImGuiContext}
+     */
     public static final ContextType<ImGuiContext> IMGUI = new ContextType<>() {
         @Override
         public ImGuiContext create() {
@@ -30,10 +35,11 @@ public class ImGuiContextTypes {
         public void setCurrent(ImGuiContext context) {
             ImGui.setCurrentContext(context);
         }
-
-
     };
 
+    /**
+     * {@link ImPlotContext}
+     */
     public static final ContextType<ImPlotContext> IMPLOT = new ContextType<>() {
         @Override
         public ImPlotContext create() {
@@ -54,10 +60,11 @@ public class ImGuiContextTypes {
         public void setCurrent(ImPlotContext context) {
             ImPlot.setCurrentContext(context);
         }
-
-
     };
 
+    /**
+     * {@link ImNodesContext}
+     */
     public static final ContextType<ImNodesContext> IMNODES = new ContextType<>() {
         @Override
         public ImNodesContext create() {
@@ -78,7 +85,5 @@ public class ImGuiContextTypes {
         public void setCurrent(ImNodesContext context) {
             ImNodes.setCurrentContext(context);
         }
-
-
     };
 }

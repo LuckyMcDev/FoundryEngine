@@ -5,9 +5,18 @@ import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiDir;
 import net.minecraft.util.ARGB;
 
+/**
+ * Manages the ImGuiGraphics. Uses the {@link ImGuiStyle} to set Style Vars.
+ * You should use {@link ImGuiGraphicsStack} to pop() and push() this kind of variable setting.
+ */
 public class ImGuiGraphics {
 
 
+    /**
+     * LatvianModder/vlidlib Style.
+     *
+     * @param style the {@link ImGuiStyle} of the curent {@link imgui.internal.ImGuiContext}
+     */
     public static void setFullDefaultStyle(ImGuiStyle style) {
         setDefaultStyle(style);
         style.setWindowPadding(4F, 4F);
@@ -49,7 +58,10 @@ public class ImGuiGraphics {
         style.setColor(key, ARGB.toABGR(color));
     }
 
-
+    /**
+     * Veil ImGui Style.
+     * @param style The {@link ImGuiStyle} of the current {@link imgui.internal.ImGuiContext}
+     */
     public static void setupStyles(ImGuiStyle style) {
         style.setColor(ImGuiCol.Text, 0.98f, 0.98f, 0.98f, 1.00f);
         style.setColor(ImGuiCol.TextDisabled, 0.55f, 0.55f, 0.56f, 1.00f);

@@ -9,7 +9,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * The type Include glsl pre-processor.
+ * A {@link GLSLPreProcessor} which resolves Includes from Minecraft and other include shaders.
+ * Looks for any #include in the shader and does so recursively.
+ * Includes should follow this syntax:
+ * <pre>{@code
+ * #include <minecraft/fog.glsl>
+ * }</pre>
+ * Where the / is like the : in a {@link Identifier}
  */
 public class IncludeGLSLPreProcessor extends GLSLPreProcessor {
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -21,7 +27,9 @@ public class IncludeGLSLPreProcessor extends GLSLPreProcessor {
     );
 
     /**
-     * Instantiates a new Include glsl pre-processor.
+     * Creates the {@link IncludeGLSLPreProcessor}.
+     * <br>
+     * SHOULD ONLY BE CALLED ONCE IN {@link io.github.luckymcdev.foundryengine.FoundryEngineMod}
      */
     public IncludeGLSLPreProcessor() {
         super(Commons.id("include_preprocessor"), INCLUDE_PATTERN);

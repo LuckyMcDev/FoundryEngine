@@ -28,16 +28,29 @@ public interface Commons {
     Path FOUNDRY_ENGINE = GAME.resolve("FoundryEngine");
     Path WORKSPACE = FOUNDRY_ENGINE.resolve("workspace");
 
-    // Easy Id.
+    /**
+     * Returns an {@link Identifier} where the namespace is {@link #MODID}
+     *
+     * @param path the Path of the {@link Identifier}
+     * @return returns the assembled {@link Identifier}
+     */
     static Identifier id(@NotNull String path) {
         return Identifier.fromNamespaceAndPath(MODID, path);
     }
 
-    // Resloc content
+    /**
+     * Returns the Content of a {@link Identifier} pointer as a String.
+     * @param location the Location where to get the Contents.
+     * @return the String content.
+     */
     static String getRlSource(Identifier location) {
         return getRlSource(location, StandardCharsets.UTF_8);
     }
 
+    /**
+     * {@link #getRlSource(Identifier)}
+     * but with a specifiable {@link Charset}
+     */
     static String getRlSource(Identifier location, Charset charset) {
         try (InputStream stream = Instances.getResourceManager().getResourceOrThrow(location).open();
              Reader reader = new InputStreamReader(stream, charset);

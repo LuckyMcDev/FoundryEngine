@@ -1,5 +1,8 @@
 package io.github.luckymcdev.foundryengine.client.imgui.icon;
 
+/**
+ * A Wrapper around a custom Char which is an icon.
+ */
 public interface ImIcon {
     char getIconChar();
 

@@ -1,7 +1,10 @@
 package io.github.luckymcdev.foundryengine.common.registry;
 
 import net.minecraft.util.RandomSource;
-import java.util.*;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.ReentrantLock;
@@ -9,6 +12,12 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+/**
+ * A Registry for registering things. Simple, Thread Safe.
+ *
+ * @param <K> Key Type.
+ * @param <V> Value Type.
+ */
 public class GenericRegistry<K, V> implements Registry<K, V> {
     private final ConcurrentHashMap<K, V> primaryLookup = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<V, K> reverseLookup = new ConcurrentHashMap<>();

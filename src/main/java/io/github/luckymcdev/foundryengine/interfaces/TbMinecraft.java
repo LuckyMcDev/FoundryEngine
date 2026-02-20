@@ -8,5 +8,6 @@ public interface TbMinecraft {
     default Minecraft tb$self() {
         return (Minecraft) this;
     }
+
     void tb$init(GameConfig gameConfig, CallbackInfo ci);
 }

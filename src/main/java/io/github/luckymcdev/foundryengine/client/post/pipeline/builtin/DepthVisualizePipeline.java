@@ -8,8 +8,14 @@ import io.github.luckymcdev.foundryengine.client.post.pipeline.pass.PostProcessP
 import io.github.luckymcdev.foundryengine.client.post.pipeline.pass.TargetRef;
 import io.github.luckymcdev.foundryengine.common.Commons;
 
+/**
+ * An Example PostProcessPipeline which visualizes the Depth Texture linearly.
+ */
 public class DepthVisualizePipeline extends PostProcessPipeline {
 
+    /**
+     * No Args Constructor.
+     */
     public DepthVisualizePipeline() {
         super(
                 Commons.id("post_depth_visualize"),

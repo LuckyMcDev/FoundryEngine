@@ -8,7 +8,8 @@ import net.minecraft.resources.Identifier;
 import org.lwjgl.opengl.GL43C;
 
 /**
- * The type Frame buffer manager.
+ * Manages FrameBuffers.
+ * Currently, it only does Blit.
  */
 public class FrameBufferManager {
     private static final GenericRegistry<Identifier, FrameBuffer> FRAMEBUFFERS = new GenericRegistry<>();
@@ -24,7 +25,7 @@ public class FrameBufferManager {
     }
 
     /**
-     * Blit.
+     * Blit FROM a {@link FrameBuffer} TO a {@link RenderTarget}
      *
      * @param src    the src
      * @param dstFbo the dst fbo
@@ -63,6 +64,12 @@ public class FrameBufferManager {
         }
     }
 
+    /**
+     * Blit FROM {@link RenderTarget} TO {@link FrameBuffer}
+     *
+     * @param src source {@link RenderTarget}
+     * @param dst destination {@link FrameBuffer}
+     */
     public void blit(RenderTarget src, FrameBuffer dst) {
         var colorTexture = Instances.getGlColTexture(src);
         var device = Instances.getGlDevice();
@@ -94,6 +101,11 @@ public class FrameBufferManager {
         }
     }
 
+    /**
+     * Blit FROM {@link FrameBuffer} TO {@link RenderTarget}
+     * @param src source {@link FrameBuffer}
+     * @param dst destination {@link RenderTarget}
+     */
     public void blit(FrameBuffer src, RenderTarget dst) {
         var colorTexture = Instances.getGlColTexture(dst);
         var device = Instances.getGlDevice();

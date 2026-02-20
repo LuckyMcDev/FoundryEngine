@@ -1,14 +1,19 @@
 package io.github.luckymcdev.foundryengine.common.font;
 
+import io.github.luckymcdev.foundryengine.client.imgui.ImGuiManager;
 import io.github.luckymcdev.foundryengine.common.Commons;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 
-import java.io.IOException;
-
+/**
+ * A Simple Record for a .ttf File for {@link ImGuiManager} to load.
+ *
+ * @param id       the Identifier of the Font.
+ * @param resource the actual Location of the Font File.
+ */
 public record TTFFile(Identifier id, Identifier resource) {
-    // Predefined fonts
+    /// The JetBrains Mono font which is the deafault for ImGui.
     public static final TTFFile JETBRAINS_MONO_NERDFONT_REGULAR =
             new TTFFile(Commons.id("jetbrains_mono_nerd"), Commons.id("fonts/jetbrainsmononerdfontmono-regular.ttf"));
 
@@ -18,7 +23,13 @@ public record TTFFile(Identifier id, Identifier resource) {
         return map;
     }
 
-    public byte[] load(ResourceManager resourceManager) throws IOException {
+    /**
+     * Loads the ttf File as a {@code byte[]}
+     *
+     * @param resourceManager the {@link ResourceManager} with which to load the File.
+     * @return the byte array of data.
+     */
+    public byte[] load(ResourceManager resourceManager) {
         try (var in = resourceManager.getResource(resource).orElseThrow().open()) {
             return in.readAllBytes();
         } catch (Exception e) {

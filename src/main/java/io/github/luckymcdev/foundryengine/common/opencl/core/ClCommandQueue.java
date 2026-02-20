@@ -9,6 +9,9 @@ import java.nio.IntBuffer;
 
 import static org.lwjgl.system.MemoryStack.stackPush;
 
+/**
+ * A Queue of {@link ClKernel} / Commands OpenCl should run.
+ */
 public class ClCommandQueue {
     private final OpenClContext context;
     private long commandQueue;

@@ -4,13 +4,14 @@ import io.github.luckymcdev.foundryengine.common.registry.GenericRegistry;
 import net.minecraft.resources.Identifier;
 
 /**
- * A Manager for all Glsl Pre-Processors.
+ * Manages All {@link GLSLPreProcessor} and processes them over a Shader source code.
  */
 public class GLSLPreProcessorManager {
     private static final GenericRegistry<Identifier, GLSLPreProcessor> PREPROCESSORS = new GenericRegistry<>();
 
     /**
      * Registers a processor.
+     * Do this when {@link RegisterGLSLPreProcessorEvent} is fired.
      *
      * @param preProcessor the pre-processor
      */
@@ -28,7 +29,8 @@ public class GLSLPreProcessorManager {
     }
 
     /**
-     * Process all string.
+     * Processes a {@link io.github.luckymcdev.foundryengine.client.opengl.shaders.Shader} Source Code
+     * by calling {@link GLSLPreProcessor#apply(String)} for all Registered ones.
      *
      * @param source the source
      * @return the string

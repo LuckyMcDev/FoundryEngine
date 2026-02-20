@@ -7,6 +7,12 @@ import imgui.ImVec4;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
+/**
+ * A {@link Deque} stack for ImGuiGraphics, so ImGui#pushStyleXYZ(ARGS) and ImGui#popStyleXYZ(ARGS)
+ * Don't have to be called manually.
+ * <br>
+ * Before changing style vars call {@link ImGuiGraphicsStack#push()} change via available Methods, then call {@link ImGuiGraphicsStack#pop()}
+ */
 public class ImGuiGraphicsStack {
     private final Deque<StackFrame> stack = new ArrayDeque<>();
 

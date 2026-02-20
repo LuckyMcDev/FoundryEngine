@@ -12,7 +12,6 @@ import net.minecraft.resources.Identifier;
  * An ImGui Panel.
  */
 public class Panel {
-    private boolean focused;
     /**
      * The Id.
      */
@@ -37,6 +36,7 @@ public class Panel {
      * The Panels Type.
      */
     public ImGuiWindowType type;
+    private boolean focused;
 
     /**
      * Instantiates a new Panel.

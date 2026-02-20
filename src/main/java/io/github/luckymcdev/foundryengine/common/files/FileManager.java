@@ -2,12 +2,14 @@ package io.github.luckymcdev.foundryengine.common.files;
 
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+@ApiStatus.Internal
 public class FileManager implements ResourceManagerReloadListener {
 
     public Path createDirectories(Path directory) throws IOException {

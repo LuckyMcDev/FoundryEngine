@@ -3,7 +3,10 @@ package io.github.luckymcdev.foundryengine.client;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.neoforged.bus.api.Event;
 
-public class RegisterRenderingStuffEvent extends Event{
+/**
+ * Simple Event to register "Rendering Stuff"
+ */
+public class RegisterRenderingStuffEvent extends Event {
     private final ResourceManager resourceManager;
 
     public RegisterRenderingStuffEvent(ResourceManager resourceManager) {

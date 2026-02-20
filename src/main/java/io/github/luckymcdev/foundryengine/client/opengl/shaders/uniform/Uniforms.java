@@ -4,10 +4,18 @@ import com.google.common.collect.Lists;
 import io.github.luckymcdev.foundryengine.client.ClientMatrices;
 import io.github.luckymcdev.foundryengine.common.Instances;
 import net.minecraft.client.renderer.GameRenderer;
+import org.jetbrains.annotations.ApiStatus;
 import org.joml.Vector3f;
 
 import java.util.Collection;
 
+/**
+ * A {@link Collection} of Uniforms.
+ * Contains common Uniforms you might want to use.
+ * <br>
+ * I think it might be broken and only setting them once and not updateing them sooo, maybe not use yet.
+ */
+@ApiStatus.Experimental
 public class Uniforms {
     public static final Uniform<?> CAMERA_POS = new Uniform<>("cameraPos", new Vector3f(Instances.getMainCamera().position().toVector3f()));
     public static final Uniform<?> LOOK_VECTOR = new Uniform<>("lookVector", Instances.getMainCamera().forwardVector());
@@ -20,6 +28,11 @@ public class Uniforms {
     public static final Uniform<?> FOV = new Uniform<>("fov", Math.toRadians(Instances.getMinecraft().options.fov().get()));
     public static final Uniform<?> ASPECT_RATIO = new Uniform<>("aspectRatio", Instances.getWindow().getWidth() / Instances.getWindow().getHeight());
 
+    /**
+     * Gets all Uniforms as a Collection for setting using {@link io.github.luckymcdev.foundryengine.client.opengl.shaders.program.ShaderProgram#setUniforms(Iterable)}
+     *
+     * @return the Uniform Collection
+     */
     public static Collection<Uniform<?>> getCollection() {
         return Lists.newArrayList(
                 CAMERA_POS,

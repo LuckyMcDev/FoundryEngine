@@ -1,36 +1,21 @@
 package io.github.luckymcdev.foundryengine.client.post.pipeline.pass;
 
+import com.mojang.blaze3d.pipeline.RenderTarget;
+import io.github.luckymcdev.foundryengine.client.opengl.framebuffer.FrameBuffer;
+
 /**
- * A reference to a named framebuffer used as the input or output of a pipeline pass.
- *
- * <p>There are two kinds of target:</p>
- * <ul>
- *   <li><b>Main</b> — the singleton {@link #MAIN} constant, representing Minecraft's
- *       primary render target.  When used as an <em>output</em> the manager renders into
- *       a temporary buffer and blits the result back into the main framebuffer.</li>
- *   <li><b>Temporary</b> — any name other than {@code "main"}, resolved against the
- *       {@link TemporaryTarget} declarations on the owning pipeline.  The manager
- *       allocates (and auto-resizes) one {@code FrameBuffer} per unique name per
- *       pipeline, mirroring Minecraft's {@code PostChain} targets.</li>
- * </ul>
- *
- * <h3>Usage</h3>
- * <pre>{@code
- * // Built-in sentinel
- * TargetRef.MAIN
- *
- * // Named temporary (must also appear in the pipeline's TemporaryTarget list)
- * TargetRef.of("blur_ping")
- * TargetRef.of("blur_pong")
- * TargetRef.of("brightness")
- * }</pre>
+ * A reference to a {@link FrameBuffer} / {@link RenderTarget}
+ * for Rendering. Used in {@link PostProcessPipelinePass}
  */
 public final class TargetRef {
-
-    /** The reserved name for the main render target. */
+    /**
+     * Minecraft's Main Framebuffer. Reserved Name!
+     */
     public static final String MAIN_NAME = "main";
 
-    /** Singleton representing Minecraft's primary render target. */
+    /**
+     * Minecraft's Primary Target.
+     */
     public static final TargetRef MAIN = new TargetRef(MAIN_NAME);
 
     private final String name;
@@ -40,11 +25,10 @@ public final class TargetRef {
     }
 
     /**
-     * Returns a {@link TargetRef} for the given name.
-     *
-     * @param name an arbitrary identifier for a temporary framebuffer declared via
-     *             {@link TemporaryTarget}.  Must not be {@code "main"} — use {@link #MAIN}.
-     * @throws IllegalArgumentException if {@code name} is {@code "main"} (use the constant)
+     * Returns a temporary target ref for the given name.
+     * <br> must NOT be {@link #MAIN_NAME}
+     * @param name the name of the target ref.
+     * @return the created Target Ref.
      */
     public static TargetRef of(String name) {
         if (MAIN_NAME.equalsIgnoreCase(name)) {
@@ -54,14 +38,24 @@ public final class TargetRef {
         return new TargetRef(name);
     }
 
-    /** Returns the raw name of this target. */
-    public String getName() { return name; }
+    /**
+     * Returns the raw name of this target.
+     */
+    public String getName() {
+        return name;
+    }
 
-    /** Returns {@code true} if this reference points to the main render target. */
-    public boolean isMain() { return MAIN_NAME.equals(name); }
+    /**
+     * Returns {@code true} if this reference points to the main render target.
+     */
+    public boolean isMain() {
+        return MAIN_NAME.equals(name);
+    }
 
     @Override
-    public String toString() { return name; }
+    public String toString() {
+        return name;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -69,5 +63,7 @@ public final class TargetRef {
     }
 
     @Override
-    public int hashCode() { return name.hashCode(); }
+    public int hashCode() {
+        return name.hashCode();
+    }
 }

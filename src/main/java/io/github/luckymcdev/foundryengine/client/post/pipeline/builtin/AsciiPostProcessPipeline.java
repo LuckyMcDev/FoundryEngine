@@ -3,6 +3,7 @@ package io.github.luckymcdev.foundryengine.client.post.pipeline.builtin;
 import io.github.luckymcdev.foundryengine.client.opengl.shaders.ExtendedShaderType;
 import io.github.luckymcdev.foundryengine.client.opengl.shaders.Shader;
 import io.github.luckymcdev.foundryengine.client.opengl.shaders.ShaderSource;
+import io.github.luckymcdev.foundryengine.client.opengl.shaders.program.ShaderProgram;
 import io.github.luckymcdev.foundryengine.client.opengl.shaders.uniform.Uniform;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.PostProcessPipeline;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.param.PipelineParam;
@@ -13,8 +14,20 @@ import io.github.luckymcdev.foundryengine.common.Instances;
 import net.minecraft.client.Minecraft;
 import org.joml.Vector2f;
 
+/**
+ * An example PostProcessPipeline which renders Minecraft as ASCII.
+ */
 public class AsciiPostProcessPipeline extends PostProcessPipeline {
 
+    /**
+     * Size of each ASCII character cell in pixels.
+     */
+    public final PipelineParam<Integer> cellSize =
+            addParam(PipelineParam.intParam("cellSize", "Cell Size", 8, 2, 32));
+
+    /**
+     * No Args Constructor.
+     */
     public AsciiPostProcessPipeline() {
         super(
                 Commons.id("post_ascii"),
@@ -35,15 +48,9 @@ public class AsciiPostProcessPipeline extends PostProcessPipeline {
         );
     }
 
-    /** Size of each ASCII character cell in pixels. */
-    public final PipelineParam<Integer> cellSize =
-            addParam(PipelineParam.intParam("cellSize", "Cell Size", 8, 2, 32));
-
     @Override
-    public void setupUniforms(int passIndex, PostProcessPipelinePass pass) {
+    public void setupUniforms(PostProcessPipelinePass pass, ShaderProgram program) {
         Minecraft mc = Instances.getMinecraft();
-        getProgramForPass(passIndex).setUniform(
-                new Uniform<>("resolution", new Vector2f(mc.getWindow().getWidth(), mc.getWindow().getHeight()))
-        );
+        program.setUniform(new Uniform<>("resolution", new Vector2f(mc.getWindow().getWidth(), mc.getWindow().getHeight())));
     }
 }

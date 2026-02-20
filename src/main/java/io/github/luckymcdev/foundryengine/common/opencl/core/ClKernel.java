@@ -1,5 +1,8 @@
 package io.github.luckymcdev.foundryengine.common.opencl.core;
 
+/**
+ * An OpenCl Kernel.
+ */
 public class ClKernel {
     private final long id;
 

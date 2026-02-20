@@ -9,22 +9,21 @@ import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.opengl.GlTexture;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.logging.LogUtils;
-import imgui.ImFontConfig;
-import imgui.ImGui;
-import imgui.ImGuiIO;
+import imgui.*;
 import imgui.flag.ImGuiConfigFlags;
 import imgui.flag.ImGuiDockNodeFlags;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.glfw.ImGuiImplGlfw;
 import io.github.luckymcdev.foundryengine.client.imgui.backend.FeImGuiImplGlfw;
+import io.github.luckymcdev.foundryengine.client.imgui.backend.ImGuiImplGl3;
 import io.github.luckymcdev.foundryengine.client.imgui.context.ImGuiContextStack;
 import io.github.luckymcdev.foundryengine.client.imgui.context.ImGuiContextTypes;
-import io.github.luckymcdev.foundryengine.client.imgui.backend.ImGuiImplGl3;
 import io.github.luckymcdev.foundryengine.client.imgui.graphics.ImGuiGraphics;
 import io.github.luckymcdev.foundryengine.client.imgui.graphics.ImGuiGraphicsStack;
 import io.github.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import io.github.luckymcdev.foundryengine.common.Instances;
 import io.github.luckymcdev.foundryengine.common.font.TTFFile;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.input.InputQuirks;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -36,17 +35,27 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL30C;
 import org.lwjgl.system.NativeResource;
 import org.slf4j.Logger;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Date;
 
+/**
+ * The Central ImGui Manager.
+ * Manages The low level ImGui Hooks and also has {@link ImGuiImplGlfw} and {@link ImGuiImplGl3} contexts.
+ * It uses OpenGl version 4.1 as the version for {@link ImGuiImplGl3#init(String version)}
+ */
 public final class ImGuiManager implements ResourceManagerReloadListener, NativeResource {
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    private final ImGuiImplGlfw imGuiImplGlfw = new FeImGuiImplGlfw();
+    private final FeImGuiImplGlfw imGuiImplGlfw = new FeImGuiImplGlfw();
     private final ImGuiImplGl3 imGuiImplGl3 = new ImGuiImplGl3();
 
     private final ImGuiContextStack CONTEXT_STACK = new ImGuiContextStack();
     private final ImGuiGraphicsStack GRAPHICS_STACK = new ImGuiGraphicsStack();
+
+    /**
+     * The Glyph Ranges for the {@link TTFFile#JETBRAINS_MONO_NERDFONT_REGULAR} Font.
+     */
     private final short[] GLYPH_RANGES = {
             0x0020, 0x00FF, // Basic Latin
             0x0100, 0x017F, // Latin Extended-A
@@ -68,6 +77,12 @@ public final class ImGuiManager implements ResourceManagerReloadListener, Native
     int dockId;
     boolean infoBarEnabled = false;
 
+    /**
+     * Creates a new ImGui context for the Window handle
+     * See Implementation {@link io.github.luckymcdev.foundryengine.mixin.render.GameRendererMixin#tb$renderHead(DeltaTracker, boolean, CallbackInfo)}
+     *
+     * @param handle the Window handle to use. Eg: {@link com.mojang.blaze3d.platform.Window#handle()}
+     */
     public void create(final long handle) {
 
         CONTEXT_STACK.addContextType(ImGuiContextTypes.IMGUI);
@@ -84,7 +99,7 @@ public final class ImGuiManager implements ResourceManagerReloadListener, Native
         io.setConfigWindowsMoveFromTitleBarOnly(true);
         io.setConfigMacOSXBehaviors(InputQuirks.ON_OSX);
 
-        imGuiImplGl3.init();
+        imGuiImplGl3.init("#version 410 core");
         imGuiImplGlfw.init(handle, true);
 
         var style = ImGui.getStyle();
@@ -92,6 +107,9 @@ public final class ImGuiManager implements ResourceManagerReloadListener, Native
         ImGuiGraphics.setFullDefaultStyle(style);
     }
 
+    /**
+     * Begins Rendering. Sets up custom FrameBuffer and other handling for ImGui rendering.
+     */
     public void begin() {
         final RenderTarget framebuffer = Minecraft.getInstance().getMainRenderTarget();
         GlTexture colorTexture = Instances.getGlColTexture();
@@ -145,6 +163,10 @@ public final class ImGuiManager implements ResourceManagerReloadListener, Native
         ImGui.end();
     }
 
+    /**
+     * Ends ImGui Rendering, drawing via {@link ImGuiImplGl3#renderDrawData(ImDrawData)} with {@link ImDrawData} being
+     * accessed by {@link ImGui#getDrawData()}
+     */
     public void end() {
         ImGui.render();
         imGuiImplGl3.renderDrawData(ImGui.getDrawData());
@@ -160,14 +182,28 @@ public final class ImGuiManager implements ResourceManagerReloadListener, Native
         }
     }
 
+    /**
+     * Returns the main {@link ImGuiContextStack}
+     * @return the {@link ImGuiContextStack}
+     */
     public ImGuiContextStack getMainContextStack() {
         return CONTEXT_STACK;
     }
 
+    /**
+     * Returns the Main {@link ImGuiGraphicsStack} although you should be able to create a new one using
+     * {@link ImGuiGraphicsStack} constructor.
+     * @return the {@link ImGuiGraphicsStack}
+     */
     public ImGuiGraphicsStack getGraphicsStack() {
         return GRAPHICS_STACK;
     }
 
+    /**
+     * Loads the {@link TTFFile#JETBRAINS_MONO_NERDFONT_REGULAR} font with a resource Manager.
+     * @param resourceManager the {@link ResourceManager} with which to access the resources.
+     * Handles a null Font / an error during Font Loading and goes back to {@link ImFontAtlas#addFontDefault()}
+     */
     public void loadFonts(ResourceManager resourceManager) {
         var fonts = ImGui.getIO().getFonts();
         fonts.clear();
@@ -200,25 +236,36 @@ public final class ImGuiManager implements ResourceManagerReloadListener, Native
         }
     }
 
+    /**
+     * Weather ImGui should intercept Mouse movement.
+     * @return if ImGui wants to capture the Mouse and the Mouse is not grabbed by Minecraft.
+     */
     public boolean shouldInterceptMouse() {
-        return ImGui.getIO().getWantCaptureMouse() && !Minecraft.getInstance().mouseHandler.isMouseGrabbed();
+        return ImGui.getIO().getWantCaptureMouse() && !Instances.getMinecraft().mouseHandler.isMouseGrabbed();
     }
 
+    /**
+     * Weather ImGui should intercept Mouse movement
+     * @return if ImGui wants to capture keyboard.
+     */
     public boolean shouldInterceptKeyboard() {
         return ImGui.getIO().getWantCaptureKeyboard();
     }
 
+    /**
+     * Renders a Top Info Bar, IS NOT ENABLED!
+     */
     public void topInfoBar() {
         var now = new Date();
 
-        String username = Minecraft.getInstance().getUser().getName();
+        String username = Instances.getMinecraft().getUser().getName();
         ImGui.text(ImIcons.FA.FA_USER + " " + username);
         ImGui.separator();
 
         ImGui.text(ImIcons.FA.FA_EARTH_EUROPE + " " + now);
         ImGui.separator();
 
-        ImGui.text(ImIcons.FA.FA_TACHOMETER + " " + Minecraft.getInstance().getFps() + " FPS");
+        ImGui.text(ImIcons.FA.FA_TACHOMETER + " " + Instances.getMinecraft().getFps() + " FPS");
         ImGui.separator();
 
         long maxMemory = Runtime.getRuntime().maxMemory();
@@ -226,12 +273,17 @@ public final class ImGuiManager implements ResourceManagerReloadListener, Native
         ImGui.text(ImIcons.FA.FA_MEMORY + " Used " + (usedMemory * 100 / maxMemory) + "% Memory");
         ImGui.separator();
 
-        var server = Minecraft.getInstance().getCurrentServer();
+        var server = Instances.getMinecraft().getCurrentServer();
         if (server != null) {
             ImGui.text(ImIcons.FA.FA_SERVER + " " + server.ip);
         }
     }
 
+    /**
+     * Disposes of all Implementations and the 2 Stacks.
+     * Called in {@link io.github.luckymcdev.foundryengine.mixin.MinecraftMixin#tb$close(CallbackInfo)}
+     * amd {@link ImGuiManager#free()} which is from {@link NativeResource}
+     */
     public void dispose() {
         imGuiImplGl3.shutdown();
         imGuiImplGlfw.shutdown();
@@ -244,6 +296,10 @@ public final class ImGuiManager implements ResourceManagerReloadListener, Native
         dispose();
     }
 
+    /**
+     * Reloads the Font if the Client Resources are Reloaded.
+     * @param resourceManager passed by {@link ResourceManagerReloadListener}
+     */
     @Override
     public void onResourceManagerReload(@NotNull ResourceManager resourceManager) {
         loadFonts(resourceManager);

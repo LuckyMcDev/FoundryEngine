@@ -11,8 +11,12 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.nio.FloatBuffer;
 
-import static org.lwjgl.system.MemoryUtil.*;
+import static org.lwjgl.system.MemoryUtil.memAllocFloat;
+import static org.lwjgl.system.MemoryUtil.memFree;
 
+/**
+ * An Example which showcases OpenCl.
+ */
 public class OpenClExample {
     private static final Logger LOGGER = LogUtils.getLogger();
 
@@ -116,7 +120,7 @@ public class OpenClExample {
                 float total = 0, freq = 1, amp = 1, maxV = 0;
                 for (int i = 0; i < octaves; i++) {
                     float noise = (float) Math.sin((x / scale * freq) * 12.9898f + (y / scale * freq) * 78.233f) * 43758.5453f;
-                    total += ( (noise - (float) Math.floor(noise)) * 2.0f - 1.0f ) * amp;
+                    total += ((noise - (float) Math.floor(noise)) * 2.0f - 1.0f) * amp;
                     maxV += amp;
                     amp *= persistence;
                     freq *= 2.0f;

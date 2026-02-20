@@ -11,12 +11,15 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+/**
+ * See {@link ImGuiManager#shouldInterceptKeyboard()}
+ * Cancels Minecraft Keyboard inputs if ImGui captures the keyboard.
+ */
 @Mixin(KeyboardHandler.class)
 public class KeyboardHandlerMixin implements TbKeyboardHandler {
 
-    @Override
     @Inject(method = "keyPress", at = @At("HEAD"), cancellable = true)
-    public void tb$onKey(long p_window, int action, KeyEvent event, CallbackInfo ci) {
+    public void fe$keyPress(long p_window, int action, KeyEvent event, CallbackInfo ci) {
         if (Instances.getImGuiManager().shouldInterceptKeyboard()) {
             ci.cancel();
         }
@@ -24,7 +27,7 @@ public class KeyboardHandlerMixin implements TbKeyboardHandler {
 
     @Override
     @Inject(method = "charTyped", at = @At("HEAD"), cancellable = true)
-    public void tb$onChar(long p_window, CharacterEvent event, CallbackInfo ci) {
+    public void fe$charTyped(long p_window, CharacterEvent event, CallbackInfo ci) {
         if (Instances.getImGuiManager().shouldInterceptKeyboard()) {
             ci.cancel();
         }

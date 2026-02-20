@@ -7,7 +7,8 @@ import io.github.luckymcdev.foundryengine.common.registry.GenericRegistry;
 import net.minecraft.resources.Identifier;
 
 /**
- * A class which compiles and caches Shaders.
+ * Shader Compiler.
+ * Compiles and Caches {@link Shader}
  */
 public final class ShaderCompiler {
     private final GenericRegistry<ShaderKey, Shader> cache = new GenericRegistry<>();
@@ -40,6 +41,13 @@ public final class ShaderCompiler {
         cache.clear();
     }
 
+    /**
+     * Private record for holding A Shader.
+     *
+     * @param id     the unique {@link Identifier}
+     * @param type   the type {@link ExtendedShaderType}
+     * @param source the source code as a {@link String}
+     */
     private record ShaderKey(Identifier id, ExtendedShaderType type, String source) {
         /**
          * ShaderKey via Shader.

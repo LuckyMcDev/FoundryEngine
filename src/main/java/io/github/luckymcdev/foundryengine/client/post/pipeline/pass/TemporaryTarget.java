@@ -1,31 +1,15 @@
 package io.github.luckymcdev.foundryengine.client.post.pipeline.pass;
 
 /**
- * Declares a named temporary framebuffer for a
- * {@link io.github.luckymcdev.foundryengine.client.post.pipeline.PostProcessPipeline}.
- *
- * <p>This mirrors Minecraft's {@code PostChain} {@code <target name="…"/>} entries.
- * Pipelines list their required temporaries in their constructor via
- * {@link io.github.luckymcdev.foundryengine.client.post.pipeline.PostProcessPipeline#addTarget},
- * and the {@code PostProcessManager} allocates (and auto-resizes) one
- * {@link io.github.luckymcdev.foundryengine.client.opengl.framebuffer.FrameBuffer} per
- * unique name per pipeline on every frame.</p>
- *
- * <h3>Example</h3>
- * <pre>{@code
- * public class BloomPipeline extends PostProcessPipeline {
- *     public BloomPipeline(Identifier name, PostProcessPipelinePass... passes) {
- *         super(name, passes);
- *         addTarget(new TemporaryTarget("blur_h"));
- *         addTarget(new TemporaryTarget("blur_v"));
- *     }
- * }
- * }</pre>
- *
- * @param name the unique name used in {@link TargetRef#of(String)} to refer to this buffer
+ * A temporary FrameBuffer for a given Name.
+ * @param name the name of the temporary Target.
  */
 public record TemporaryTarget(String name) {
-
+    /**
+     * Creates a new Temporary Target.
+     *
+     * @param name the name for the target. Must NOT be {@link TargetRef#MAIN_NAME}
+     */
     public TemporaryTarget {
         if (TargetRef.MAIN_NAME.equalsIgnoreCase(name)) {
             throw new IllegalArgumentException(
@@ -33,7 +17,11 @@ public record TemporaryTarget(String name) {
         }
     }
 
-    /** Convenience factory: {@code TemporaryTarget.named("blur_ping")} */
+    /**
+     * Convenience for creating a {@link TemporaryTarget}
+     * @param name the name of the target.
+     * @return the created Temporary Target.
+     */
     public static TemporaryTarget named(String name) {
         return new TemporaryTarget(name);
     }

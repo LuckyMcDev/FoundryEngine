@@ -7,6 +7,10 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
+/**
+ * The Context Stack to Manage All ImGui Contexts.
+ * An ImGui Context is an {@link ContextType} Which is a wrapper around an {@link ImGuiStruct}
+ */
 public class ImGuiContextStack {
     private final Deque<ImGuiContextStack> stack = new ArrayDeque<>();
     private final List<ContextEntry<?>> contexts = new ArrayList<>();
@@ -15,7 +19,9 @@ public class ImGuiContextStack {
         contexts.add(new ContextEntry<>(type));
     }
 
-    // Push: switch to stored contexts, return previous ones
+    /**
+     * Pushes to the previous {@link ImGuiContextStack}
+     */
     public void push() {
         ImGuiContextStack previous = new ImGuiContextStack();
 
@@ -26,7 +32,9 @@ public class ImGuiContextStack {
         stack.push(previous);
     }
 
-    // Pop: restore contexts from this stack
+    /**
+     * Restores the Contexts from This Stack.
+     */
     public void pop() {
         if (stack.isEmpty()) {
             throw new IllegalStateException("Context stack underflow");
@@ -36,7 +44,9 @@ public class ImGuiContextStack {
         previous.pop();
     }
 
-    // Destroy all contexts in this stack
+    /**
+     * Destroys all Contexts in this Stack.
+     */
     public void destroy() {
         for (ContextEntry<?> entry : contexts) {
             entry.destroy();
@@ -44,7 +54,11 @@ public class ImGuiContextStack {
         contexts.clear();
     }
 
-    // Internal storage
+    /**
+     * INTERNAL Storage for a Context Entry.
+     *
+     * @param <T> -
+     */
     private static class ContextEntry<T extends ImGuiStruct> {
         final ContextType<T> type;
         final T context;

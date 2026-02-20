@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
  */
 public abstract class GLSLPreProcessor {
     /**
-     * The Id.
+     * The unique Identifier.
      */
     protected final Identifier id;
     /**
@@ -17,7 +17,7 @@ public abstract class GLSLPreProcessor {
      */
     protected final Pattern pattern;
     /**
-     * The Replacement.
+     * The Replacement for the Pattern.
      */
     protected final String replacement;
 
@@ -36,7 +36,7 @@ public abstract class GLSLPreProcessor {
 
     /**
      * Instantiates a new Glsl pre-processor.
-     * without a replacement, Overwrite apply()
+     * without a replacement, You HAVE to Overwrite apply()
      *
      * @param id      the id
      * @param pattern the pattern
@@ -48,7 +48,7 @@ public abstract class GLSLPreProcessor {
     }
 
     /**
-     * Gets id.
+     * Gets the unique {@link Identifier}
      *
      * @return the id
      */

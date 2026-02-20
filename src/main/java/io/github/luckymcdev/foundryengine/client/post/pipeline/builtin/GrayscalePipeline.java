@@ -9,8 +9,14 @@ import io.github.luckymcdev.foundryengine.client.post.pipeline.staged.PostProces
 import io.github.luckymcdev.foundryengine.client.post.pipeline.staged.StagedPostProcessPipeline;
 import io.github.luckymcdev.foundryengine.common.Commons;
 
+/**
+ * An example StagedPostProcessPipeline which showcases a grayscale effect at different stages.
+ */
 public class GrayscalePipeline extends StagedPostProcessPipeline {
 
+    /**
+     * No Args Constructor.
+     */
     public GrayscalePipeline() {
         super(
                 Commons.id("post_grayscale"),
