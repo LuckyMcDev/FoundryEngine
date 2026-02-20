@@ -88,6 +88,14 @@ public class FoundryEngineMod {
         @SubscribeEvent
         public static void onRegisterKeyMapping(RegisterKeyMappingsEvent event) {
             Instances.post(new RegisterKeyBindingEvent(Instances.getKeyBindingManager()));
+            Instances.getKeyBindingManager().getKeyBindings().forEach(keyBinding ->
+                    event.register(keyBinding.getKeyMapping())
+            );
+        }
+
+        @SubscribeEvent
+        public static void onRegisterKeyBindingEvent(RegisterKeyBindingEvent event) {
+            event.register(new KeyBinding(new KeyMapping("test", GLFW.GLFW_KEY_G, KeyMapping.Category.MISC), () -> LOGGER.info("CLICKED")));
         }
 
         @SubscribeEvent

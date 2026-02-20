@@ -6,6 +6,8 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 
+import java.util.List;
+
 @EventBusSubscriber(Dist.CLIENT)
 public class KeyBindingManager {
     private static final GenericRegistry<String, KeyBinding> KEYBINDINGS = new GenericRegistry<>();
@@ -25,5 +27,9 @@ public class KeyBindingManager {
                 keyBinding.run();
             }
         });
+    }
+
+    public List<KeyBinding> getKeyBindings() {
+        return KEYBINDINGS.stream().toList();
     }
 }
