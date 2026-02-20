@@ -78,6 +78,7 @@ public class FoundryEngineMod {
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
             event.enqueueWork(() -> {
+                Instances.post(new RegisterRenderingStuffEvent(Instances.getResourceManager()));
                 Instances.post(new RegisterGLSLPreProcessorEvent());
                 Instances.post(new RegisterPanelEvent());
                 Instances.post(new RegisterPostPipelineEvent(Instances.getPostProcessManager()));
