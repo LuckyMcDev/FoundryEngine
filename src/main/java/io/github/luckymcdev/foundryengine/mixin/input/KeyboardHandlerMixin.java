@@ -1,6 +1,7 @@
 package io.github.luckymcdev.foundryengine.mixin.input;
 
 import io.github.luckymcdev.foundryengine.client.imgui.ImGuiManager;
+import io.github.luckymcdev.foundryengine.common.Commons;
 import io.github.luckymcdev.foundryengine.common.Instances;
 import io.github.luckymcdev.foundryengine.interfaces.TbKeyboardHandler;
 import net.minecraft.client.KeyboardHandler;
@@ -10,6 +11,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 
 /**
  * See {@link ImGuiManager#shouldInterceptKeyboard()}
@@ -22,6 +25,9 @@ public class KeyboardHandlerMixin implements TbKeyboardHandler {
     public void fe$keyPress(long p_window, int action, KeyEvent event, CallbackInfo ci) {
         if (Instances.getImGuiManager().shouldInterceptKeyboard()) {
             ci.cancel();
+        }
+        if (p_window == Instances.getWindow().handle() && action == GLFW_PRESS && Commons.EDITOR_KEY.mapping().matches(event)) {
+            Instances.getImGuiManager().toggle();
         }
     }
 

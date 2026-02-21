@@ -38,13 +38,14 @@ import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * The Central ImGui Manager.
  * Manages The low level ImGui Hooks and also has {@link ImGuiImplGlfw} and {@link ImGuiImplGl3} contexts.
  * It uses OpenGl version 4.1 as the version for {@link ImGuiImplGl3#init(String version)}
  */
-public final class ImGuiManager implements ResourceManagerReloadListener, NativeResource {
+public final class ImGuiManager implements EngineImGui, ResourceManagerReloadListener, NativeResource {
     private static final Logger LOGGER = LogUtils.getLogger();
 
     private final FeImGuiImplGlfw imGuiImplGlfw = new FeImGuiImplGlfw();
@@ -52,6 +53,8 @@ public final class ImGuiManager implements ResourceManagerReloadListener, Native
 
     private final ImGuiContextStack CONTEXT_STACK = new ImGuiContextStack();
     private final ImGuiGraphicsStack GRAPHICS_STACK = new ImGuiGraphicsStack();
+
+    private final AtomicBoolean enabled = new AtomicBoolean(false);
 
     /**
      * The Glyph Ranges for the {@link TTFFile#JETBRAINS_MONO_NERDFONT_REGULAR} Font.
@@ -83,6 +86,7 @@ public final class ImGuiManager implements ResourceManagerReloadListener, Native
      *
      * @param handle the Window handle to use. Eg: {@link com.mojang.blaze3d.platform.Window#handle()}
      */
+    @Override
     public void create(final long handle) {
 
         CONTEXT_STACK.addContextType(ImGuiContextTypes.IMGUI);
@@ -107,10 +111,39 @@ public final class ImGuiManager implements ResourceManagerReloadListener, Native
         ImGuiGraphics.setFullDefaultStyle(style);
     }
 
+    @Override
+    public void enable() {
+        enabled.set(true);
+    }
+
+    @Override
+    public void disable() {
+        enabled.set(false);
+    }
+
+    /**
+     * Toggles the ImGui state between enabled and disabled.
+     */
+    @Override
+    public void toggle() {
+        if (isEnabled()) {
+            disable();
+        } else {
+            enable();
+        }
+    }
+
+    public boolean isEnabled() {
+        return enabled.get();
+    }
+
     /**
      * Begins Rendering. Sets up custom FrameBuffer and other handling for ImGui rendering.
      */
+    @Override
     public void begin() {
+        if (!enabled.get()) return;
+
         final RenderTarget framebuffer = Minecraft.getInstance().getMainRenderTarget();
         GlTexture colorTexture = Instances.getGlColTexture();
         GlDevice device = Instances.getGlDevice();
@@ -167,7 +200,9 @@ public final class ImGuiManager implements ResourceManagerReloadListener, Native
      * Ends ImGui Rendering, drawing via {@link ImGuiImplGl3#renderDrawData(ImDrawData)} with {@link ImDrawData} being
      * accessed by {@link ImGui#getDrawData()}
      */
+    @Override
     public void end() {
+        if (!enabled.get()) return;
         ImGui.render();
         imGuiImplGl3.renderDrawData(ImGui.getDrawData());
 

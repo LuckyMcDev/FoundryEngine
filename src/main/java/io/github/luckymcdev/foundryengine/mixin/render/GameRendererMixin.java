@@ -30,8 +30,10 @@ public class GameRendererMixin implements TbGameRenderer {
     @Inject(method = "render", at = @At("RETURN"))
     public void tb$renderReturn(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci) {
         Instances.getImGuiManager().begin();
-        MainMenu.handleRender();
-        tb$EDITOR_MANAGER.handleRender();
+        if (Instances.getImGuiManager().isEnabled()) {
+            MainMenu.handleRender();
+            tb$EDITOR_MANAGER.handleRender();
+        }
         Instances.getImGuiManager().end();
     }
 }

@@ -1,6 +1,10 @@
 package io.github.luckymcdev.foundryengine.common;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.logging.LogUtils;
+import io.github.luckymcdev.foundryengine.client.util.KeyBinding;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.neoforged.fml.loading.FMLPaths;
 import org.jetbrains.annotations.NotNull;
@@ -38,6 +42,17 @@ public interface Commons {
     Path GAME = FMLPaths.GAMEDIR.get();
     /** FoundryEngine Game Dir*/
     Path FOUNDRY_ENGINE = GAME.resolve("FoundryEngine");
+
+    KeyBinding EDITOR_KEY = new KeyBinding(
+            new KeyMapping(
+                    Component.translatable("key.foundryengine.editor").getString(),
+                    InputConstants.Type.KEYSYM,
+                    InputConstants.KEY_F6,
+                    KeyMapping.Category.DEBUG
+            ),
+            () -> {
+            }
+    );
 
     /**
      * Returns an {@link Identifier} where the namespace is {@link #MODID}

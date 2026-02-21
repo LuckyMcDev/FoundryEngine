@@ -13,7 +13,6 @@ import io.github.luckymcdev.foundryengine.client.post.RegisterPostPipelineEvent;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.builtin.AsciiPostProcessPipeline;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.builtin.DepthVisualizePipeline;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.builtin.GrayscalePipeline;
-import io.github.luckymcdev.foundryengine.client.util.KeyBinding;
 import io.github.luckymcdev.foundryengine.client.util.RegisterKeyBindingEvent;
 import io.github.luckymcdev.foundryengine.common.Commons;
 import io.github.luckymcdev.foundryengine.common.Instances;
@@ -21,8 +20,6 @@ import io.github.luckymcdev.foundryengine.common.opencl.ClDispatch;
 import io.github.luckymcdev.foundryengine.common.opencl.OpenClExample;
 import io.github.luckymcdev.foundryengine.common.thread.RegisterEngineThreadEvent;
 import io.github.luckymcdev.foundryengine.config.Config;
-import net.minecraft.client.KeyMapping;
-import net.minecraft.network.chat.Component;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -37,7 +34,6 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.FrameGraphSetupEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 
 /**
@@ -93,13 +89,13 @@ public class FoundryEngineMod {
         public static void onRegisterKeyMapping(RegisterKeyMappingsEvent event) {
             Instances.post(new RegisterKeyBindingEvent(Instances.getKeyBindingManager()));
             Instances.getKeyBindingManager().getKeyBindings().forEach(keyBinding ->
-                    event.register(keyBinding.getKeyMapping())
+                    event.register(keyBinding.mapping())
             );
         }
 
         @SubscribeEvent
         public static void onRegisterKeyBindingEvent(RegisterKeyBindingEvent event) {
-            event.register(new KeyBinding(new KeyMapping(Component.translatable("key.categories.examplemod.tests").getString(), GLFW.GLFW_KEY_G, KeyMapping.Category.GAMEPLAY), () -> LOGGER.info("CLICKED")));
+            event.register(Commons.EDITOR_KEY);
         }
 
         @SubscribeEvent

@@ -14,7 +14,7 @@ public class KeyBinding {
         this.onConsumeClick = onConsumeClick;
     }
 
-    public KeyMapping getKeyMapping() {
+    public KeyMapping mapping() {
         return keyMapping;
     }
 

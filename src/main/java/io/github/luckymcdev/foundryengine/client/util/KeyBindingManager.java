@@ -18,7 +18,7 @@ public class KeyBindingManager {
     @SubscribeEvent
     private static void handleClick(ClientTickEvent.Post event) {
         KEYBINDINGS.forEach(keyBinding -> {
-            while (keyBinding.getKeyMapping().consumeClick()) {
+            while (keyBinding.mapping().consumeClick()) {
                 keyBinding.run();
             }
         });
