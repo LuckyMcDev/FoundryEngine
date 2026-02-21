@@ -74,38 +74,57 @@ neoForge {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 dependencies {
+    // Testing dependencies
+    testImplementation "org.junit.jupiter:junit-jupiter:${junit_version}"
+    testImplementation "net.neoforged:testframework:${neo_version}"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+}
+
+dependencies {
+    // SQLite and ORMLite
+    jarJar(implementation("org.xerial:sqlite-jdbc:${sqlite_version}"))
+    jarJar(implementation("com.j256:ormlite:${ormlite_version}"))
+}
+
+dependencies {
     def jarJarApiImpl = { String gav -> jarJar(api(implementation(gav))) }
 
-    testImplementation "org.junit.jupiter:junit-jupiter:${project.junit_version}"
-    testImplementation "net.neoforged:testframework:${project.neo_version}"
-    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+    // Groovy
+    jarJarApiImpl("org.apache.groovy:groovy:${groovy_version}")
+}
 
-    jarJar(implementation("org.xerial:sqlite-jdbc:${project.sqlite_version}"))
-    jarJar(implementation("com.j256:ormlite:${project.ormlite_version}"))
+dependencies {
+    def jarJarApiImpl = { String gav -> jarJar(api(implementation(gav))) }
 
-    jarJarApiImpl("org.apache.groovy:groovy:${project.groovy_version}")
+    jarJarApiImpl("org.lwjgl:lwjgl:${lwjgl_version}")
+    jarJarApiImpl("org.lwjgl:lwjgl-meshoptimizer:${lwjgl_version}")
+    jarJarApiImpl("org.lwjgl:lwjgl-opencl:${lwjgl_version}")
+    jarJarApiImpl("org.lwjgl:lwjgl-par:${lwjgl_version}")
+    jarJarApiImpl("org.lwjgl:lwjgl-shaderc:${lwjgl_version}")
 
-    jarJar(implementation(platform("org.lwjgl:lwjgl-bom:${project.lwjgl_version}")))
-    
-    def lwjglModules = ["lwjgl", "lwjgl-meshoptimizer", "lwjgl-opencl", "lwjgl-par", "lwjgl-shaderc"]
-    lwjglModules.each { module ->
-        jarJarApiImpl("org.lwjgl:${module}:${project.lwjgl_version}")
-    }
-
+    // Native platforms for LWJGL
     def lwjglNativePlatforms = ["natives-windows", "natives-linux", "natives-macos"]
     lwjglNativePlatforms.each { platform ->
-        ["lwjgl", "lwjgl-meshoptimizer", "lwjgl-par", "lwjgl-shaderc"].each { module ->
-            jarJar(runtimeOnly("org.lwjgl:${module}::${platform}"))
-        }
+        jarJar(runtimeOnly("org.lwjgl:lwjgl:${lwjgl_version}:${platform}"))
+        jarJar(runtimeOnly("org.lwjgl:lwjgl-meshoptimizer:${lwjgl_version}:${platform}"))
+        jarJar(runtimeOnly("org.lwjgl:lwjgl-par:${lwjgl_version}:${platform}"))
+        jarJar(runtimeOnly("org.lwjgl:lwjgl-shaderc:${lwjgl_version}:${platform}"))
+    }
+}
+
+dependencies {
+    def jarJarApiImpl = { String dep -> jarJar(api(implementation(dep))) }
+
+    // ImGui dependencies
+    jarJarApiImpl("io.github.spair:imgui-java-binding:${imgui_version}")
+    jarJar(api(implementation("io.github.spair:imgui-java-lwjgl3:${imgui_version}"))) {
+        exclude group: "org.lwjgl"
+        exclude group: 'org.lwjgl.lwjgl'
     }
 
-    jarJarApiImpl("io.github.spair:imgui-java-binding:${project.imgui_version}")
-    jarJar(api(implementation("io.github.spair:imgui-java-lwjgl3:${project.imgui_version}"))) {
-        exclude group: "org.lwjgl"
-    }
     def imguiNativeArtifacts = ["imgui-java-natives-windows", "imgui-java-natives-linux", "imgui-java-natives-macos"]
     imguiNativeArtifacts.each { artifact ->
-        jarJarApiImpl("io.github.spair:${artifact}:${project.imgui_version}")
+        jarJarApiImpl("io.github.spair:${artifact}:${imgui_version}")
     }
 }
 
