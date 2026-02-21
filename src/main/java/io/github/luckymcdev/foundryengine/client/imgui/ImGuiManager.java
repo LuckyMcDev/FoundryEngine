@@ -57,6 +57,8 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
 
     private final AtomicBoolean enabled = new AtomicBoolean(false);
 
+    private ImFont font;
+
     /**
      * The Glyph Ranges for the {@link TTFFile#JETBRAINS_MONO_NERDFONT_REGULAR} Font.
      */
@@ -192,7 +194,7 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
         if (ImGui.begin("###top-info-bar", flags)) {
             ImGui.setWindowFontScale(0.9F);
             if (ImGui.beginMenuBar()) {
-                topInfoBar();
+                sideInfoBar();
                 ImGui.endMenuBar();
             }
         }
@@ -256,7 +258,7 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
 
         try {
             var bytes = TTFFile.JETBRAINS_MONO_NERDFONT_REGULAR.load(resourceManager);
-            fonts.addFontFromMemoryTTF(bytes, 20F, config);
+            font = fonts.addFontFromMemoryTTF(bytes, 20F, config);
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.error(e.getMessage());
@@ -291,10 +293,14 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
         return ImGui.getIO().getWantCaptureKeyboard();
     }
 
+    public ImFont getFont() {
+        return font;
+    }
+
     /**
-     * Renders a Top Info Bar, IS NOT ENABLED!
+     * Renders a Side Info Bar, IS NOT ENABLED!
      */
-    public void topInfoBar() {
+    public void sideInfoBar() {
         var now = new Date();
 
         String username = Instances.getMinecraft().getUser().getName();
