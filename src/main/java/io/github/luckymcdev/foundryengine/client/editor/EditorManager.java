@@ -1,7 +1,7 @@
 package io.github.luckymcdev.foundryengine.client.editor;
 
 import com.mojang.logging.LogUtils;
-import io.github.luckymcdev.foundryengine.client.editor.popup.PopUp;
+import io.github.luckymcdev.foundryengine.common.Commons;
 import io.github.luckymcdev.foundryengine.common.registry.GenericRegistry;
 import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
@@ -19,12 +19,9 @@ public class EditorManager {
     private static final Logger LOGGER = LogUtils.getLogger();
 
     private static final GenericRegistry<Identifier, Panel> PANELS = new GenericRegistry<>();
-    private static final GenericRegistry<Identifier, PopUp> POPUPS = new GenericRegistry<>();
 
-    /**
-     * Public Constructor should only be used by {@link io.github.luckymcdev.foundryengine.common.InstancesInternal}
-     */
     public EditorManager() {
+        Commons.requireInternalAccess(this.getClass());
     }
 
     /**

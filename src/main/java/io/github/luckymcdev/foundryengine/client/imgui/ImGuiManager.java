@@ -21,6 +21,7 @@ import io.github.luckymcdev.foundryengine.client.imgui.context.ImGuiContextTypes
 import io.github.luckymcdev.foundryengine.client.imgui.graphics.ImGuiGraphics;
 import io.github.luckymcdev.foundryengine.client.imgui.graphics.ImGuiGraphicsStack;
 import io.github.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
+import io.github.luckymcdev.foundryengine.common.Commons;
 import io.github.luckymcdev.foundryengine.common.Instances;
 import io.github.luckymcdev.foundryengine.common.font.TTFFile;
 import net.minecraft.client.DeltaTracker;
@@ -80,6 +81,9 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
     int dockId;
     boolean infoBarEnabled = false;
 
+    public ImGuiManager() {
+        Commons.requireInternalAccess(this.getClass());
+    }
     /**
      * Creates a new ImGui context for the Window handle
      * See Implementation {@link io.github.luckymcdev.foundryengine.mixin.render.GameRendererMixin#tb$renderHead(DeltaTracker, boolean, CallbackInfo)}

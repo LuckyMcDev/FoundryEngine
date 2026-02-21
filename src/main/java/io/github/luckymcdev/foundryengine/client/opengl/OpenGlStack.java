@@ -1,5 +1,6 @@
 package io.github.luckymcdev.foundryengine.client.opengl;
 
+import io.github.luckymcdev.foundryengine.common.Commons;
 import org.lwjgl.opengl.GL43C;
 
 import java.util.ArrayDeque;
@@ -12,6 +13,10 @@ import java.util.Deque;
 public class OpenGlStack {
     private static final int NUM_TEXTURE_UNITS = 16; // Most systems support at least 16
     private final Deque<State> stateStack = new ArrayDeque<>();
+
+    public OpenGlStack() {
+        Commons.requireInternalAccess(this.getClass());
+    }
 
     /**
      * Push the current OpenGL state onto the stack

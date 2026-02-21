@@ -14,6 +14,7 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -86,12 +87,34 @@ public interface Commons {
              BufferedReader br = new BufferedReader(reader)) {
             return br.lines().collect(Collectors.joining("\n"));
         } catch (IOException e) {
-            LOGGER.error(e.getLocalizedMessage());
+            LOGGER.error(e.getLocalizedMessage() + Arrays.toString(e.getStackTrace()));
             return "";
         }
     }
 
     static <V> Supplier<V> supOf(V value) {
         return () -> value;
+    }
+
+    /**
+     * Utility Method used by most Constructors of Managers in {@link InstancesInternal}
+     * to make sure users don't instantiate them.
+     *
+     * @param target the class which requires only internal access.
+     */
+    static void requireInternalAccess(Class<?> target) {
+        Class<?> caller = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE)
+                .walk(frames -> frames
+                        .map(StackWalker.StackFrame::getDeclaringClass)
+                        .filter(clazz -> clazz != Commons.class && clazz != target)
+                        .findFirst()
+                        .orElse(null));
+
+        if (caller != InstancesInternal.class) {
+            throw new IllegalCallerException(
+                    "Engine Security Violation: [" + target.getName() + "] cannot be created manually.\n" +
+                            "Refer to the API at: " + Instances.class.getName()
+            );
+        }
     }
 }

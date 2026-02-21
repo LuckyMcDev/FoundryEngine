@@ -47,6 +47,9 @@ public class PostProcessManager {
     private static FrameBuffer blitProxy;
     private static Mesh quad;
 
+    public PostProcessManager() {
+        Commons.requireInternalAccess(this.getClass());
+    }
     /**
      * Initializes the GpuMesh quad.
      * @param event

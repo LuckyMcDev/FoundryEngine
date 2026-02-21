@@ -13,7 +13,7 @@ import io.github.luckymcdev.foundryengine.common.thread.ThreadManager;
  * Internal storage for engine singleton instances.
  * Access these via the {@link Instances} interface.
  */
-final class InstancesInternal {
+public final class InstancesInternal {
 
     // Core Systems
     static final OpenGlStack OPEN_GL_STACK;

@@ -2,6 +2,7 @@ package io.github.luckymcdev.foundryengine.client.opengl.framebuffer;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import io.github.luckymcdev.foundryengine.client.opengl.GlDispatch;
+import io.github.luckymcdev.foundryengine.common.Commons;
 import io.github.luckymcdev.foundryengine.common.Instances;
 import io.github.luckymcdev.foundryengine.common.registry.GenericRegistry;
 import net.minecraft.resources.Identifier;
@@ -14,6 +15,9 @@ import org.lwjgl.opengl.GL43C;
 public class FrameBufferManager {
     private static final GenericRegistry<Identifier, FrameBuffer> FRAMEBUFFERS = new GenericRegistry<>();
 
+    public FrameBufferManager() {
+        Commons.requireInternalAccess(this.getClass());
+    }
 
     /**
      * Register.

@@ -5,6 +5,7 @@ import io.github.luckymcdev.foundryengine.client.opengl.shaders.compiler.ShaderC
 import io.github.luckymcdev.foundryengine.client.opengl.shaders.exeption.ShaderException;
 import io.github.luckymcdev.foundryengine.client.opengl.shaders.preprocessing.GLSLPreProcessorManager;
 import io.github.luckymcdev.foundryengine.client.opengl.shaders.program.ShaderProgram;
+import io.github.luckymcdev.foundryengine.common.Commons;
 import io.github.luckymcdev.foundryengine.common.registry.GenericRegistry;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -24,6 +25,9 @@ public class ShaderManager implements ResourceManagerReloadListener {
     private static final GenericRegistry<Identifier, Shader> SHADERS = new GenericRegistry<>();
     private static final GenericRegistry<Identifier, ShaderProgram> PROGRAMS = new GenericRegistry<>();
 
+    public ShaderManager() {
+        Commons.requireInternalAccess(this.getClass());
+    }
     /**
      * Registers a Shader
      *

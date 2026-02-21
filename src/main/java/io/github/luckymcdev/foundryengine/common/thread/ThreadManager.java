@@ -1,5 +1,6 @@
 package io.github.luckymcdev.foundryengine.common.thread;
 
+import io.github.luckymcdev.foundryengine.common.Commons;
 import io.github.luckymcdev.foundryengine.common.registry.GenericRegistry;
 import net.minecraft.resources.Identifier;
 
@@ -13,6 +14,10 @@ import java.util.function.Supplier;
  */
 public class ThreadManager {
     private final GenericRegistry<Identifier, EngineThread> THREADS = new GenericRegistry<>();
+
+    public ThreadManager() {
+        Commons.requireInternalAccess(this.getClass());
+    }
 
     private static String defaultLabel(Identifier id) {
         if (id == null) {
