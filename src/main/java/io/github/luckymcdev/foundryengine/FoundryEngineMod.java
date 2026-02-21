@@ -22,6 +22,7 @@ import io.github.luckymcdev.foundryengine.common.opencl.OpenClExample;
 import io.github.luckymcdev.foundryengine.common.thread.RegisterEngineThreadEvent;
 import io.github.luckymcdev.foundryengine.config.Config;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.network.chat.Component;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -98,7 +99,7 @@ public class FoundryEngineMod {
 
         @SubscribeEvent
         public static void onRegisterKeyBindingEvent(RegisterKeyBindingEvent event) {
-            event.register(new KeyBinding(new KeyMapping("key.foundryengine.test", GLFW.GLFW_KEY_G, KeyMapping.Category.MISC), () -> LOGGER.info("CLICKED")));
+            event.register(new KeyBinding(new KeyMapping(Component.translatable("key.categories.examplemod.tests").getString(), GLFW.GLFW_KEY_G, KeyMapping.Category.GAMEPLAY), () -> LOGGER.info("CLICKED")));
         }
 
         @SubscribeEvent
