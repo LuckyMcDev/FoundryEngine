@@ -2,7 +2,7 @@ package io.github.luckymcdev.foundryengine.client.post;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
-import io.github.luckymcdev.foundryengine.client.RegisterRenderingStuffEvent;
+import io.github.luckymcdev.foundryengine.client.event.RegisterRenderingStuffEvent;
 import io.github.luckymcdev.foundryengine.client.opengl.GlDispatch;
 import io.github.luckymcdev.foundryengine.client.opengl.OpenGlStack;
 import io.github.luckymcdev.foundryengine.client.opengl.framebuffer.FrameBuffer;

@@ -18,24 +18,24 @@ public class BundleScriptLoader {
         IEventBus eventBus = bundle.eventBus();
         String bundleId = bundle.info().getId();
 
-        LOGGER.info("Loading scripts for bundle '{}', found {} scripts", bundleId, files.getScriptCount());
+        LOGGER.debug("Loading scripts for bundle '{}', found {} scripts", bundleId, files.getScriptCount());
 
         for (Path scriptPath : files.scripts()) {
             try {
-                LOGGER.info("Attempting to load script: {}", scriptPath);
+                LOGGER.debug("Attempting to load script: {}", scriptPath);
                 String scriptName = files.root().relativize(scriptPath).toString().replace('\\', '/');
 
                 Class<?> clazz = engine.getGroovyClassLoader().parseClass(scriptPath.toFile());
-                LOGGER.info("Loaded class: {}, is BundleScript: {}", clazz.getName(), BundleEntrypoint.class.isAssignableFrom(clazz));
+                LOGGER.debug("Loaded class: {}, is BundleScript: {}", clazz.getName(), BundleEntrypoint.class.isAssignableFrom(clazz));
 
                 if (BundleEntrypoint.class.isAssignableFrom(clazz)) {
                     BundleEntrypoint script = (BundleEntrypoint) clazz
                             .getConstructor(IEventBus.class)
                             .newInstance(eventBus);
                     script.onLoad();
-                    LOGGER.info("Loaded entry point script '{}' for bundle '{}'", scriptName, bundleId);
+                    LOGGER.debug("Loaded entry point script '{}' for bundle '{}'", scriptName, bundleId);
                 } else {
-                    LOGGER.warn("Script '{}' does not extend BundleScript, skipping", scriptName);
+                    LOGGER.debug("Script '{}' does not extend BundleScript, skipping", scriptName);
                 }
             } catch (Exception e) {
                 LOGGER.error("Failed to load script '{}' for bundle '{}'", scriptPath, bundleId, e);

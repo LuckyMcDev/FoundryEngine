@@ -1,4 +1,4 @@
-package io.github.luckymcdev.foundryengine.client;
+package io.github.luckymcdev.foundryengine.client.event;
 
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.neoforged.bus.api.Event;

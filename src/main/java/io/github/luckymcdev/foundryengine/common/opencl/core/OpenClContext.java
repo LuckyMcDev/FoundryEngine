@@ -124,12 +124,12 @@ public class OpenClContext {
         int computeUnits = getDeviceInfoInt(stack, CL_DEVICE_MAX_COMPUTE_UNITS);
         long maxWorkGroupSize = getDeviceInfoLong(stack, CL_DEVICE_MAX_WORK_GROUP_SIZE);
 
-        LOGGER.info("OpenCL Device: {} ({})", deviceName, typeName);
-        LOGGER.info("Compute Units: {}", computeUnits);
-        LOGGER.info("Max Work Group Size: {}", maxWorkGroupSize);
-        LOGGER.info("Vendor: {}", vendor);
-        LOGGER.info("Version: {}", version);
-        LOGGER.info("Driver Version: {}", driverVersion);
+        LOGGER.debug("OpenCL Device: {} ({})", deviceName, typeName);
+        LOGGER.debug("Compute Units: {}", computeUnits);
+        LOGGER.debug("Max Work Group Size: {}", maxWorkGroupSize);
+        LOGGER.debug("Vendor: {}", vendor);
+        LOGGER.debug("Version: {}", version);
+        LOGGER.debug("Driver Version: {}", driverVersion);
     }
 
     private String getDeviceInfoString(MemoryStack stack, int param) {

@@ -273,7 +273,7 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
 
         if (ImGui.getFont() == null) {
             ImGui.getIO().getFonts().addFontDefault();
-            LOGGER.info("Go back to default font, font corrupted?");
+            LOGGER.error("Go back to default font, font corrupted?");
         }
     }
 

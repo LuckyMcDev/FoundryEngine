@@ -70,11 +70,11 @@ public class ShaderManager implements ResourceManagerReloadListener {
         getCompiler().clearCache();
 
         for (Shader shader : SHADERS.values()) {
-            LOGGER.info("reloading shader: {}", shader.getId());
+            LOGGER.debug("reloading shader: {}", shader.getId());
             shader.reload();
         }
         for (ShaderProgram program : PROGRAMS.values()) {
-            LOGGER.info("reloading program: {}", program.getId());
+            LOGGER.debug("reloading program: {}", program.getId());
             program.reload();
         }
     }
@@ -98,7 +98,7 @@ public class ShaderManager implements ResourceManagerReloadListener {
     @Override
     public void onResourceManagerReload(@NotNull ResourceManager resourceManager) {
         try {
-            LOGGER.info("Reloading Shader Manager");
+            LOGGER.debug("Reloading Shader Manager");
             reload();
         } catch (ShaderException e) {
             LOGGER.error("{}{}", e.getMessage(), e.getGlError());

@@ -30,7 +30,7 @@ public class EngineRepositorySource implements RepositorySource {
     @Override
     public void loadPacks(Consumer<Pack> consumer) {
         Instances.getBundleManager().getBundles().forEach(bundle -> {
-            LOGGER.info("Registering pack for bundle: {}", bundle.info().getId());
+            LOGGER.debug("Registering pack for bundle: {}", bundle.info().getId());
             loadPackFor(bundle, consumer);
         });
     }

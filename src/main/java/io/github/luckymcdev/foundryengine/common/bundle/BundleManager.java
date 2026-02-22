@@ -9,6 +9,8 @@ import io.github.luckymcdev.foundryengine.common.bundle.info.BundleInfo;
 import io.github.luckymcdev.foundryengine.common.bundle.toml.BundleTomlParser;
 import io.github.luckymcdev.foundryengine.common.registry.GenericRegistry;
 import io.github.luckymcdev.foundryengine.common.script.BundleScriptLoader;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -20,7 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class BundleManager {
+public class BundleManager implements ResourceManagerReloadListener {
     private static final Logger LOGGER = LogUtils.getLogger();
     private final PathMatcher BUNDLES_FILE_MATCH = FileSystems.getDefault().getPathMatcher("glob:*.bundles.toml");
     private final GenericRegistry<String, Bundle> BUNDLES = new GenericRegistry<>();
@@ -31,8 +33,8 @@ public class BundleManager {
     }
 
     public void register(Bundle bundle) {
-        LOGGER.info("Registered Bundle: {} with Info: {}", bundle.info().getId(), bundle.info().toString());
         BUNDLES.register(bundle.info().getId(), bundle);
+        LOGGER.debug("Registered Bundle: {} with Info: {}", bundle.info().getId(), bundle.info());
     }
 
     public void remove(Bundle bundle) {
@@ -40,7 +42,7 @@ public class BundleManager {
     }
 
     public void discover(Path in) throws IOException {
-        LOGGER.info("Discovering Bundles in: {}", in);
+        LOGGER.debug("Discovering Bundles in: {}", in);
         try (Stream<Path> dirs = Files.list(in)) {
             dirs.filter(Files::isDirectory).forEach(dir -> {
                 try {
@@ -55,7 +57,7 @@ public class BundleManager {
 
     public void checkBundle(Path in) throws IOException {
         if (!hasBundleToml(in)) return;
-        LOGGER.info("Found Bundle directory: {}", in);
+        LOGGER.debug("Found Bundle directory: {}", in);
         loadedBundles++;
         discoverInDirectory(in);
     }
@@ -131,5 +133,10 @@ public class BundleManager {
 
     public Iterable<Bundle> getBundles() {
         return BUNDLES.values();
+    }
+
+    @Override
+    public void onResourceManagerReload(ResourceManager resourceManager) {
+        BUNDLES.forEach(BundleScriptLoader::loadScripts);
     }
 }
