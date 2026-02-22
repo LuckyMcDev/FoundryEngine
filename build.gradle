@@ -171,6 +171,14 @@ tasks.register('preCommit') {
     }
 }
 
+tasks.register('copyExampleBundles', Copy) {
+    group = 'foudryengine'
+    description = 'Copys the Example Bundles to the run directory for testing.'
+
+    from 'ExampleBundles'
+    into 'run/FoundryEngine/bundles'
+}
+
 publishing {
     publications {
         register('mavenJava', MavenPublication) {

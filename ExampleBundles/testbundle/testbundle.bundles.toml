@@ -1,0 +1,7 @@
+[[bundles]]
+bundleId = "testbundle"
+version = "0.1.0"
+displayName = "Test Bundle"
+displayURL = "https://github.com/Example"
+authors = "Example"
+description = '''This is a Description'''

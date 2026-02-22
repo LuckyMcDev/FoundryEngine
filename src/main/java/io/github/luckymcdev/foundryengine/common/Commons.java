@@ -43,6 +43,19 @@ public interface Commons {
     Path GAME = FMLPaths.GAMEDIR.get();
     /** FoundryEngine Game Dir*/
     Path FOUNDRY_ENGINE = GAME.resolve("FoundryEngine");
+    /**
+     * Bundles Path
+     */
+    Path BUNDLES = FOUNDRY_ENGINE.resolve("bundles");
+    /**
+     * Cache Path
+     */
+    Path CACHE = FOUNDRY_ENGINE.resolve(".cache");
+    /**
+     * Config Path
+     */
+    Path CONFIG_FE = FOUNDRY_ENGINE.resolve("config");
+
 
     KeyBinding EDITOR_KEY = new KeyBinding(
             new KeyMapping(

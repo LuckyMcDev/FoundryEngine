@@ -20,6 +20,8 @@ import io.github.luckymcdev.foundryengine.common.opencl.ClDispatch;
 import io.github.luckymcdev.foundryengine.common.opencl.OpenClExample;
 import io.github.luckymcdev.foundryengine.common.thread.RegisterEngineThreadEvent;
 import io.github.luckymcdev.foundryengine.config.Config;
+import io.github.luckymcdev.foundryengine.server.packs.EngineRepositorySource;
+import net.minecraft.server.packs.PackType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -29,12 +31,16 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLConstructModEvent;
 import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.FrameGraphSetupEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.AddPackFindersEvent;
 import org.slf4j.Logger;
+
+import java.io.IOException;
 
 /**
  * Main Mod Entrypoint for FoundryEngine.
@@ -52,13 +58,38 @@ public class FoundryEngineMod {
     public FoundryEngineMod(IEventBus modEventBus, ModContainer modContainer) {
         modEventBus.addListener(this::commonSetup);
 
+        modEventBus.addListener(this::onConstruct);
+
+        modEventBus.addListener(this::onAddPackFinders);
+
         NeoForge.EVENT_BUS.register(this);
         Instances.post(new RegisterEngineThreadEvent());
 
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.COMMON_SPEC);
     }
 
+    private void onAddPackFinders(AddPackFindersEvent event) {
+        if (event.getPackType() == PackType.CLIENT_RESOURCES || event.getPackType() == PackType.SERVER_DATA) {
+            event.addRepositorySource(new EngineRepositorySource(event.getPackType()));
+        }
+    }
+
+    private void onConstruct(final FMLConstructModEvent event) {
+        try {
+            Instances.getBundleManager().discover(Commons.BUNDLES);
+        } catch (IOException e) {
+            LOGGER.error("Error while Loading Bundles: {}", e.getLocalizedMessage());
+        }
+
+    }
+
     private void commonSetup(final FMLCommonSetupEvent event) {
+        try {
+            Instances.getFileManager().createMainDirectory();
+        } catch (IOException e) {
+            LOGGER.error("{}{}", e.getLocalizedMessage(), e.getStackTrace());
+        }
+
         Instances.getThreadManager().execute(ClDispatch.CL_THREAD, () -> {
             OpenClExample.visualize(15630, 8640, 300.0f, 32, false);
         });

@@ -1,0 +1,16 @@
+package io.github.luckymcdev.foundryengine.common.script;
+
+import net.neoforged.bus.api.IEventBus;
+
+public abstract class BundleEntrypoint {
+    protected final IEventBus eventBus;
+
+    protected BundleEntrypoint(IEventBus eventBus) {
+        this.eventBus = eventBus;
+    }
+
+    /**
+     * Called when the bundle is loaded. Override to register listeners, run setup logic, etc.
+     */
+    public abstract void onLoad();
+}

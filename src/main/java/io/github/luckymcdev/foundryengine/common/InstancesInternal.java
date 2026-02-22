@@ -7,6 +7,10 @@ import io.github.luckymcdev.foundryengine.client.opengl.framebuffer.FrameBufferM
 import io.github.luckymcdev.foundryengine.client.opengl.shaders.ShaderManager;
 import io.github.luckymcdev.foundryengine.client.post.PostProcessManager;
 import io.github.luckymcdev.foundryengine.client.util.KeyBindingManager;
+import io.github.luckymcdev.foundryengine.common.bundle.BundleManager;
+import io.github.luckymcdev.foundryengine.common.files.FileManager;
+import io.github.luckymcdev.foundryengine.common.script.ScriptEngineFactory;
+import io.github.luckymcdev.foundryengine.common.script.ScriptEventBusFactory;
 import io.github.luckymcdev.foundryengine.common.thread.ThreadManager;
 
 /**
@@ -28,6 +32,11 @@ public final class InstancesInternal {
     static final KeyBindingManager KEY_BINDING_MANAGER;
     static final ThreadManager THREAD_MANAGER;
 
+    static final FileManager FILE_MANAGER;
+    static final BundleManager BUNDLE_MANAGER;
+    static final ScriptEngineFactory SCRIPT_ENGINE_FACTORY;
+    static final ScriptEventBusFactory SCRIPT_EVENT_BUS_FACTORY;
+
     static {
         OPEN_GL_STACK = new OpenGlStack();
         SHADER_MANAGER = new ShaderManager();
@@ -40,6 +49,11 @@ public final class InstancesInternal {
 
         KEY_BINDING_MANAGER = new KeyBindingManager();
         THREAD_MANAGER = new ThreadManager();
+
+        FILE_MANAGER = new FileManager();
+        BUNDLE_MANAGER = new BundleManager();
+        SCRIPT_ENGINE_FACTORY = new ScriptEngineFactory();
+        SCRIPT_EVENT_BUS_FACTORY = new ScriptEventBusFactory();
     }
 
     private InstancesInternal() {

@@ -12,6 +12,10 @@ import io.github.luckymcdev.foundryengine.client.opengl.framebuffer.FrameBufferM
 import io.github.luckymcdev.foundryengine.client.opengl.shaders.ShaderManager;
 import io.github.luckymcdev.foundryengine.client.post.PostProcessManager;
 import io.github.luckymcdev.foundryengine.client.util.KeyBindingManager;
+import io.github.luckymcdev.foundryengine.common.bundle.BundleManager;
+import io.github.luckymcdev.foundryengine.common.files.FileManager;
+import io.github.luckymcdev.foundryengine.common.script.ScriptEngineFactory;
+import io.github.luckymcdev.foundryengine.common.script.ScriptEventBusFactory;
 import io.github.luckymcdev.foundryengine.common.thread.ThreadManager;
 import io.github.luckymcdev.foundryengine.interfaces.TbMinecraft;
 import net.minecraft.client.Camera;
@@ -115,6 +119,22 @@ public interface Instances {
 
     static ThreadManager getThreadManager() {
         return THREAD_MANAGER;
+    }
+
+    static FileManager getFileManager() {
+        return FILE_MANAGER;
+    }
+
+    static BundleManager getBundleManager() {
+        return BUNDLE_MANAGER;
+    }
+
+    static ScriptEngineFactory getScriptEngineFactory() {
+        return SCRIPT_ENGINE_FACTORY;
+    }
+
+    static ScriptEventBusFactory getEventBusFactory() {
+        return SCRIPT_EVENT_BUS_FACTORY;
     }
 
     // Event Bus

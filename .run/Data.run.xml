@@ -1,0 +1,14 @@
+<component name="ProjectRunConfigurationManager">
+    <configuration default="false" name="Data" type="Application" factoryName="Application">
+        <option name="MAIN_CLASS_NAME" value="net.neoforged.devlaunch.Main"/>
+        <module name="FoundryEngine.main"/>
+        <option name="PROGRAM_PARAMETERS"
+                value="@C:\\Data\\Projects\\FoundryEngine\\build\\moddev\\dataRunProgramArgs.txt"/>
+        <option name="VM_PARAMETERS"
+                value="@C:\\Data\\Projects\\FoundryEngine\\build\\moddev\\dataRunVmArgs.txt -Dfml.modFolders=foundryengine%%C:\\Data\\Projects\\FoundryEngine\\build\\classes\\java\\main;foundryengine%%C:\\Data\\Projects\\FoundryEngine\\build\\resources\\main"/>
+        <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/run"/>
+        <method v="2">
+            <option name="Make" enabled="true"/>
+        </method>
+    </configuration>
+</component>
