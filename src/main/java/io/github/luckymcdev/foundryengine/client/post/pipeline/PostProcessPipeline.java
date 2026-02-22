@@ -11,6 +11,12 @@ import net.minecraft.resources.Identifier;
 
 import java.util.*;
 
+/**
+ * A post Process pipeline for minecraft. look at {@link io.github.luckymcdev.foundryengine.client.post.pipeline.builtin}
+ * for some examples.
+ * By default, disabled. Call {@link PostProcessPipeline#enable()} in the constructor of your Pipeline
+ * to enable instantly.
+ */
 public class PostProcessPipeline {
     private final List<PostProcessPipelinePass> passes = new ArrayList<>();
     private final List<ShaderProgram> programs = new ArrayList<>();
