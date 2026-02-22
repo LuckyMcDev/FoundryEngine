@@ -8,9 +8,7 @@ import io.github.luckymcdev.foundryengine.client.event.RegisterRenderingStuffEve
 import io.github.luckymcdev.foundryengine.client.opengl.shaders.preprocessing.IncludeGLSLPreProcessor;
 import io.github.luckymcdev.foundryengine.client.opengl.shaders.preprocessing.RegisterGLSLPreProcessorEvent;
 import io.github.luckymcdev.foundryengine.client.post.RegisterPostPipelineEvent;
-import io.github.luckymcdev.foundryengine.client.post.pipeline.builtin.AsciiPostProcessPipeline;
-import io.github.luckymcdev.foundryengine.client.post.pipeline.builtin.DepthVisualizePipeline;
-import io.github.luckymcdev.foundryengine.client.post.pipeline.builtin.GrayscalePipeline;
+import io.github.luckymcdev.foundryengine.client.post.pipeline.builtin.*;
 import io.github.luckymcdev.foundryengine.client.util.RegisterKeyBindingEvent;
 import io.github.luckymcdev.foundryengine.common.Common;
 import net.neoforged.api.distmarker.Dist;
@@ -65,6 +63,9 @@ public class FoundryEngineModClient {
         event.register(new GrayscalePipeline());
         event.register(new DepthVisualizePipeline());
         event.register(new AsciiPostProcessPipeline());
+        event.register(new UpsideDownPipeline());
+        event.register(new InvertedColorsPipeline());
+        event.register(new CRTScanlinePipeline());
     }
 
     @SubscribeEvent
