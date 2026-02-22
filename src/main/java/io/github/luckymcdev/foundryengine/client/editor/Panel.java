@@ -3,9 +3,9 @@ package io.github.luckymcdev.foundryengine.client.editor;
 import imgui.ImGui;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImBoolean;
+import io.github.luckymcdev.foundryengine.client.Client;
 import io.github.luckymcdev.foundryengine.client.editor.config.ImGuiWindowType;
 import io.github.luckymcdev.foundryengine.client.editor.config.PanelStyle;
-import io.github.luckymcdev.foundryengine.common.Instances;
 import net.minecraft.resources.Identifier;
 
 /**
@@ -130,7 +130,7 @@ public class Panel {
                 flags |= ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoDecoration;
             }
 
-            ImGui.setNextWindowSizeConstraints(0F, 0F, 600F, Instances.getWindow().getHeight() - 80F);
+            ImGui.setNextWindowSizeConstraints(0F, 0F, 600F, Client.getWindow().getHeight() - 80F);
         } else {
             ImGui.setNextWindowSizeConstraints(160F, 90F, Float.MAX_VALUE, Float.MAX_VALUE);
         }
@@ -155,7 +155,7 @@ public class Panel {
             this.focused = false;
         }
 
-        type = ImGuiWindowType.get(Instances.getWindow().handle());
+        type = ImGuiWindowType.get(Client.getWindow().handle());
         ImGui.end();
 
         return open;

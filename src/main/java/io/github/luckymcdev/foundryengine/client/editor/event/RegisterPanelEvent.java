@@ -1,7 +1,7 @@
 package io.github.luckymcdev.foundryengine.client.editor.event;
 
+import io.github.luckymcdev.foundryengine.client.Client;
 import io.github.luckymcdev.foundryengine.client.editor.Panel;
-import io.github.luckymcdev.foundryengine.common.Instances;
 import net.neoforged.bus.api.Event;
 
 /**
@@ -14,6 +14,6 @@ public class RegisterPanelEvent extends Event {
      * @param panel The panel to register.
      */
     public void register(Panel panel) {
-        Instances.getEditorManager().register(panel);
+        Client.getEditorManager().register(panel);
     }
 }

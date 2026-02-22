@@ -1,5 +1,6 @@
 package io.github.luckymcdev.foundryengine.client.post.pipeline.builtin;
 
+import io.github.luckymcdev.foundryengine.client.Client;
 import io.github.luckymcdev.foundryengine.client.opengl.shaders.ExtendedShaderType;
 import io.github.luckymcdev.foundryengine.client.opengl.shaders.Shader;
 import io.github.luckymcdev.foundryengine.client.opengl.shaders.ShaderSource;
@@ -9,8 +10,7 @@ import io.github.luckymcdev.foundryengine.client.post.pipeline.PostProcessPipeli
 import io.github.luckymcdev.foundryengine.client.post.pipeline.param.PipelineParam;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.pass.PostProcessPipelinePass;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.pass.TargetRef;
-import io.github.luckymcdev.foundryengine.common.Commons;
-import io.github.luckymcdev.foundryengine.common.Instances;
+import io.github.luckymcdev.foundryengine.common.Common;
 import net.minecraft.client.Minecraft;
 import org.joml.Vector2f;
 
@@ -30,19 +30,19 @@ public class AsciiPostProcessPipeline extends PostProcessPipeline {
      */
     public AsciiPostProcessPipeline() {
         super(
-                Commons.id("post_ascii"),
+                Common.id("post_ascii"),
                 new PostProcessPipelinePass(
-                        Commons.id("post_ascii_pass"),
+                        Common.id("post_ascii_pass"),
                         TargetRef.MAIN, TargetRef.MAIN,
                         new Shader(ExtendedShaderType.VERTEX,
                                 new ShaderSource(
-                                        Commons.id("post_ascii_vert"),
-                                        Commons.id("shaders/vert.vsh")
+                                        Common.id("post_ascii_vert"),
+                                        Common.id("shaders/vert.vsh")
                                 )),
                         new Shader(ExtendedShaderType.FRAGMENT,
                                 new ShaderSource(
-                                        Commons.id("post_ascii_frag"),
-                                        Commons.id("shaders/post/ascii/ascii.fsh")
+                                        Common.id("post_ascii_frag"),
+                                        Common.id("shaders/post/ascii/ascii.fsh")
                                 ))
                 )
         );
@@ -50,7 +50,7 @@ public class AsciiPostProcessPipeline extends PostProcessPipeline {
 
     @Override
     public void setupUniforms(PostProcessPipelinePass pass, ShaderProgram program) {
-        Minecraft mc = Instances.getMinecraft();
+        Minecraft mc = Client.getMinecraft();
         program.setUniform(new Uniform<>("resolution", () -> new Vector2f(mc.getWindow().getWidth(), mc.getWindow().getHeight())));
     }
 }

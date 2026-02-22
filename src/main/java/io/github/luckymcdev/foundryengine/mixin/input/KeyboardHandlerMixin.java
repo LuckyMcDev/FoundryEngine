@@ -2,7 +2,6 @@ package io.github.luckymcdev.foundryengine.mixin.input;
 
 import io.github.luckymcdev.foundryengine.client.Client;
 import io.github.luckymcdev.foundryengine.client.imgui.ImGuiManager;
-import io.github.luckymcdev.foundryengine.common.Instances;
 import io.github.luckymcdev.foundryengine.interfaces.TbKeyboardHandler;
 import net.minecraft.client.KeyboardHandler;
 import net.minecraft.client.input.CharacterEvent;
@@ -23,18 +22,18 @@ public class KeyboardHandlerMixin implements TbKeyboardHandler {
 
     @Inject(method = "keyPress", at = @At("HEAD"), cancellable = true)
     public void fe$keyPress(long p_window, int action, KeyEvent event, CallbackInfo ci) {
-        if (Instances.getImGuiManager().shouldInterceptKeyboard()) {
+        if (Client.getImGuiManager().shouldInterceptKeyboard()) {
             ci.cancel();
         }
-        if (p_window == Instances.getWindow().handle() && action == GLFW_PRESS && Client.EDITOR_KEY.mapping().matches(event)) {
-            Instances.getImGuiManager().toggle();
+        if (p_window == Client.getWindow().handle() && action == GLFW_PRESS && Client.EDITOR_KEY.mapping().matches(event)) {
+            Client.getImGuiManager().toggle();
         }
     }
 
     @Override
     @Inject(method = "charTyped", at = @At("HEAD"), cancellable = true)
     public void fe$charTyped(long p_window, CharacterEvent event, CallbackInfo ci) {
-        if (Instances.getImGuiManager().shouldInterceptKeyboard()) {
+        if (Client.getImGuiManager().shouldInterceptKeyboard()) {
             ci.cancel();
         }
     }

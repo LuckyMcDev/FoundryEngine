@@ -2,13 +2,13 @@ package io.github.luckymcdev.foundryengine.client.opengl.shaders.program;
 
 import com.mojang.blaze3d.opengl.GlConst;
 import com.mojang.logging.LogUtils;
+import io.github.luckymcdev.foundryengine.client.Client;
 import io.github.luckymcdev.foundryengine.client.opengl.GlDispatch;
 import io.github.luckymcdev.foundryengine.client.opengl.OpenGlObject;
 import io.github.luckymcdev.foundryengine.client.opengl.shaders.Shader;
 import io.github.luckymcdev.foundryengine.client.opengl.shaders.compiler.ShaderCompiler;
 import io.github.luckymcdev.foundryengine.client.opengl.shaders.exeption.ShaderException;
 import io.github.luckymcdev.foundryengine.client.opengl.shaders.uniform.Uniform;
-import io.github.luckymcdev.foundryengine.common.Instances;
 import net.minecraft.resources.Identifier;
 import org.joml.*;
 import org.slf4j.Logger;
@@ -49,7 +49,7 @@ public class ShaderProgram extends OpenGlObject {
      * @throws ShaderException throws a {@link ShaderException} from {@link ShaderCompiler#getOrCompile(Shader)} if anything goes wrong.
      */
     public void attach() throws ShaderException {
-        ShaderCompiler compiler = Instances.getShaderManager().getCompiler();
+        ShaderCompiler compiler = Client.getShaderManager().getCompiler();
         for (Shader shader : this.shaders) {
             Shader compiled = compiler.getOrCompile(shader);
             GlDispatch.glAttachShader(this.pointer, compiled.pointer());

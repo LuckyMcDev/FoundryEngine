@@ -1,6 +1,5 @@
 package io.github.luckymcdev.foundryengine.client.opengl;
 
-import io.github.luckymcdev.foundryengine.common.Commons;
 import org.lwjgl.opengl.GL43C;
 
 import java.util.ArrayDeque;
@@ -15,7 +14,6 @@ public class OpenGlStack {
     private final Deque<State> stateStack = new ArrayDeque<>();
 
     public OpenGlStack() {
-        Commons.requireInternalAccess(this.getClass());
     }
 
     /**

@@ -1,7 +1,6 @@
 package io.github.luckymcdev.foundryengine.client.opengl.shaders.uniform;
 
-import io.github.luckymcdev.foundryengine.client.ClientMatrices;
-import io.github.luckymcdev.foundryengine.common.Instances;
+import io.github.luckymcdev.foundryengine.client.Client;
 import net.minecraft.client.renderer.GameRenderer;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Vector3f;
@@ -18,29 +17,29 @@ import java.util.function.Supplier;
 @ApiStatus.Experimental
 public class Uniforms {
     public static final Uniform<?> CAMERA_POS = new Uniform<>("cameraPos",
-            () -> new Vector3f(Instances.getMainCamera().position().toVector3f()));
+            () -> new Vector3f(Client.getMainCamera().position().toVector3f()));
     public static final Uniform<?> LOOK_VECTOR = new Uniform<>("lookVector",
-            () -> Instances.getMainCamera().forwardVector());
+            () -> Client.getMainCamera().forwardVector());
     public static final Uniform<?> UP_VECTOR = new Uniform<>("upVector",
-            () -> Instances.getMainCamera().upVector());
+            () -> Client.getMainCamera().upVector());
     public static final Uniform<?> LEFT_VECTOR = new Uniform<>("leftVector",
-            () -> Instances.getMainCamera().leftVector());
+            () -> Client.getMainCamera().leftVector());
     public static final Uniform<?> INV_VIEW_MAT = new Uniform<>("invViewMat",
-            () -> ClientMatrices.MODEL_VIEW.invert());
+            Client.MODEL_VIEW::invert);
     public static final Uniform<?> INV_PROJ_MAT = new Uniform<>("invProjMat",
-            () -> ClientMatrices.PROJECTION.invert());
+            Client.PROJECTION::invert);
     public static final Uniform<?> VIEW_MAT = new Uniform<>("viewMat",
-            () -> ClientMatrices.MODEL_VIEW);
+            () -> Client.MODEL_VIEW);
     public static final Uniform<?> PROJ_MAT = new Uniform<>("projMat",
-            () -> ClientMatrices.PROJECTION);
+            () -> Client.PROJECTION);
     public static final Uniform<?> NEAR_PLANE_DISTANCE = new Uniform<>("nearPlaneDistance",
             () -> GameRenderer.PROJECTION_Z_NEAR);
     public static final Uniform<?> FAR_PLANE_DISTANCE = new Uniform<>("farPlaneDistance",
-            () -> Instances.getGameRenderer().getDepthFar());
+            () -> Client.getGameRenderer().getDepthFar());
     public static final Uniform<?> FOV = new Uniform<>("fov",
-            () -> Math.toRadians(Instances.getMinecraft().options.fov().get()));
+            () -> Math.toRadians(Client.getMinecraft().options.fov().get()));
     public static final Uniform<?> ASPECT_RATIO = new Uniform<>("aspectRatio",
-            () -> (float) Instances.getWindow().getWidth() / (float) Instances.getWindow().getHeight());
+            () -> (float) Client.getWindow().getWidth() / (float) Client.getWindow().getHeight());
 
     /**
      * Gets all Uniforms as a Collection for setting using {@link io.github.luckymcdev.foundryengine.client.opengl.shaders.program.ShaderProgram#setUniforms(Iterable)}

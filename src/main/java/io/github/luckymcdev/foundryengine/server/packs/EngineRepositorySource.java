@@ -1,7 +1,7 @@
 package io.github.luckymcdev.foundryengine.server.packs;
 
 import com.mojang.logging.LogUtils;
-import io.github.luckymcdev.foundryengine.common.Instances;
+import io.github.luckymcdev.foundryengine.common.Common;
 import io.github.luckymcdev.foundryengine.common.bundle.info.Bundle;
 import io.github.luckymcdev.foundryengine.common.bundle.info.BundleFiles;
 import net.minecraft.network.chat.Component;
@@ -29,7 +29,7 @@ public class EngineRepositorySource implements RepositorySource {
 
     @Override
     public void loadPacks(Consumer<Pack> consumer) {
-        Instances.getBundleManager().getBundles().forEach(bundle -> {
+        Common.getBundleManager().getBundles().forEach(bundle -> {
             LOGGER.debug("Registering pack for bundle: {}", bundle.info().getId());
             loadPackFor(bundle, consumer);
         });

@@ -2,13 +2,13 @@ package io.github.luckymcdev.foundryengine.client.editor.builtin;
 
 import imgui.ImGui;
 import imgui.flag.ImGuiTreeNodeFlags;
+import io.github.luckymcdev.foundryengine.client.Client;
 import io.github.luckymcdev.foundryengine.client.editor.Panel;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.PostProcessPipeline;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.param.PipelineParam;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.staged.PostProcessStage;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.staged.StagedPostProcessPipeline;
-import io.github.luckymcdev.foundryengine.common.Commons;
-import io.github.luckymcdev.foundryengine.common.Instances;
+import io.github.luckymcdev.foundryengine.common.Common;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
@@ -34,7 +34,7 @@ public class PostProcessPanel extends Panel {
      * Private constructor to enforce singleton pattern.
      */
     private PostProcessPanel() {
-        super(Commons.id("post_process_panel"), "Post Processing Panel");
+        super(Common.id("post_process_panel"), "Post Processing Panel");
     }
 
     /**
@@ -55,7 +55,7 @@ public class PostProcessPanel extends Panel {
         ImGui.separator();
 
         if (ImGui.collapsingHeader("Staged Pipelines")) {
-            var postProcessManager = Instances.getPostProcessManager();
+            var postProcessManager = Client.getPostProcessManager();
             Map<PostProcessStage, List<StagedPostProcessPipeline>> pipelinesByStage =
                     postProcessManager.getPipelinesByStage();
 
@@ -82,7 +82,7 @@ public class PostProcessPanel extends Panel {
      * Displays all registered non-staged pipelines with their enable/disable checkboxes.
      */
     private void renderNonStagedSection() {
-        List<PostProcessPipeline> allPipelines = Instances.getPostProcessManager().getPipelines();
+        List<PostProcessPipeline> allPipelines = Client.getPostProcessManager().getPipelines();
         if (allPipelines.isEmpty()) {
             ImGui.textDisabled("No global pipelines registered");
             return;
@@ -119,7 +119,7 @@ public class PostProcessPanel extends Panel {
             for (PostProcessStage option : PostProcessStage.values()) {
                 boolean isSelected = (currentStage == option);
                 if (ImGui.selectable(option.name(), isSelected)) {
-                    Instances.getPostProcessManager().changePipelineStage(pipeline, option);
+                    Client.getPostProcessManager().changePipelineStage(pipeline, option);
                 }
                 if (isSelected) ImGui.setItemDefaultFocus();
             }

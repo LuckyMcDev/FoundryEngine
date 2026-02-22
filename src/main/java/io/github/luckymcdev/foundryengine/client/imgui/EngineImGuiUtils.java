@@ -2,15 +2,15 @@ package io.github.luckymcdev.foundryengine.client.imgui;
 
 import imgui.ImGui;
 import imgui.flag.ImGuiStyleVar;
+import io.github.luckymcdev.foundryengine.client.Client;
 import io.github.luckymcdev.foundryengine.client.imgui.icon.ImIcon;
 import io.github.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
-import io.github.luckymcdev.foundryengine.common.Instances;
 import io.github.luckymcdev.foundryengine.common.color.Color;
 import net.minecraft.client.StringSplitter;
 import net.minecraft.resources.Identifier;
 
 public class EngineImGuiUtils {
-    private static final StringSplitter IM_GUI_SPLITTER = new StringSplitter((charId, style) -> Instances.getImGuiManager().getFont().getCharAdvance(charId));
+    private static final StringSplitter IM_GUI_SPLITTER = new StringSplitter((charId, style) -> Client.getImGuiManager().getFont().getCharAdvance(charId));
 
     /**
      * Displays a (?) with a hover tooltip. Useful for example information.

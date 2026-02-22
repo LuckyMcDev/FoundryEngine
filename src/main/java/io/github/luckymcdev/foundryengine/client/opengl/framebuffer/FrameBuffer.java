@@ -4,9 +4,9 @@ import com.mojang.blaze3d.opengl.GlDevice;
 import com.mojang.blaze3d.opengl.GlTexture;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
+import io.github.luckymcdev.foundryengine.client.Client;
 import io.github.luckymcdev.foundryengine.client.opengl.GlDispatch;
 import io.github.luckymcdev.foundryengine.client.opengl.OpenGlObject;
-import io.github.luckymcdev.foundryengine.common.Instances;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL43C;
@@ -69,9 +69,9 @@ public class FrameBuffer extends OpenGlObject {
             throw new IllegalArgumentException("RenderTarget has no color texture");
         }
 
-        GlTexture colorTexture = Instances.getGlColTexture();
-        GlTexture depthTexture = target.getDepthTexture() != null ? Instances.getGlDepthTexture() : null;
-        GlDevice device = Instances.getGlDevice();
+        GlTexture colorTexture = Client.getGlColTexture();
+        GlTexture depthTexture = target.getDepthTexture() != null ? Client.getGlDepthTexture() : null;
+        GlDevice device = Client.getGlDevice();
 
         FrameBuffer buffer = new FrameBuffer(id, target.width, target.height, target.getDepthTexture() != null, target.useStencil);
         int sourceFbo = colorTexture.getFbo(device.directStateAccess(), depthTexture);

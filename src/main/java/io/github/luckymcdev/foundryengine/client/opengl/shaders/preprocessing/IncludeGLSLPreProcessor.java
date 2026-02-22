@@ -1,7 +1,8 @@
 package io.github.luckymcdev.foundryengine.client.opengl.shaders.preprocessing;
 
 import com.mojang.logging.LogUtils;
-import io.github.luckymcdev.foundryengine.common.Commons;
+import io.github.luckymcdev.foundryengine.client.Client;
+import io.github.luckymcdev.foundryengine.common.Common;
 import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
 
@@ -32,7 +33,7 @@ public class IncludeGLSLPreProcessor extends GLSLPreProcessor {
      * SHOULD ONLY BE CALLED ONCE IN {@link io.github.luckymcdev.foundryengine.FoundryEngineMod}
      */
     public IncludeGLSLPreProcessor() {
-        super(Commons.id("include_preprocessor"), INCLUDE_PATTERN);
+        super(Common.id("include_preprocessor"), INCLUDE_PATTERN);
     }
 
     @Override
@@ -58,10 +59,10 @@ public class IncludeGLSLPreProcessor extends GLSLPreProcessor {
                         loc = Identifier.fromNamespaceAndPath(namespace, "shaders/include/" + remainingPath);
                     } else {
                         // Fallback for local files in your mod's namespace
-                        loc = Commons.id("shaders/include/" + path);
+                        loc = Common.id("shaders/include/" + path);
                     }
 
-                    String rawSource = Commons.getIdSource(loc);
+                    String rawSource = Client.getIdSource(loc);
 
                     if (rawSource == null || rawSource.isEmpty()) {
                         sb.append("\n/* Error: Source for ").append(loc).append(" was null or empty */\n");

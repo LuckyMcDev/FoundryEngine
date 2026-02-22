@@ -14,6 +14,7 @@ import imgui.flag.ImGuiConfigFlags;
 import imgui.flag.ImGuiDockNodeFlags;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.glfw.ImGuiImplGlfw;
+import io.github.luckymcdev.foundryengine.client.Client;
 import io.github.luckymcdev.foundryengine.client.imgui.backend.FeImGuiImplGlfw;
 import io.github.luckymcdev.foundryengine.client.imgui.backend.ImGuiImplGl3;
 import io.github.luckymcdev.foundryengine.client.imgui.context.ImGuiContextStack;
@@ -21,8 +22,6 @@ import io.github.luckymcdev.foundryengine.client.imgui.context.ImGuiContextTypes
 import io.github.luckymcdev.foundryengine.client.imgui.graphics.ImGuiGraphics;
 import io.github.luckymcdev.foundryengine.client.imgui.graphics.ImGuiGraphicsStack;
 import io.github.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
-import io.github.luckymcdev.foundryengine.common.Commons;
-import io.github.luckymcdev.foundryengine.common.Instances;
 import io.github.luckymcdev.foundryengine.common.font.TTFFile;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
@@ -84,7 +83,6 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
     boolean infoBarEnabled = false;
 
     public ImGuiManager() {
-        Commons.requireInternalAccess(this.getClass());
     }
     /**
      * Creates a new ImGui context for the Window handle
@@ -151,8 +149,8 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
         if (!enabled.get()) return;
 
         final RenderTarget framebuffer = Minecraft.getInstance().getMainRenderTarget();
-        GlTexture colorTexture = Instances.getGlColTexture();
-        GlDevice device = Instances.getGlDevice();
+        GlTexture colorTexture = Client.getGlColTexture();
+        GlDevice device = Client.getGlDevice();
 
         GlStateManager._glBindFramebuffer(
                 GL30C.GL_FRAMEBUFFER, colorTexture.getFbo(device.directStateAccess(), null)
@@ -164,7 +162,7 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
         ImGui.newFrame();
 
         final ImGuiIO io = ImGui.getIO();
-        Minecraft mc = Instances.getMinecraft();
+        Minecraft mc = Client.getMinecraft();
 
         if (mc.mouseHandler.isMouseGrabbed()) {
             io.setMousePos(-1, -1);
@@ -282,7 +280,7 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
      * @return if ImGui wants to capture the Mouse and the Mouse is not grabbed by Minecraft.
      */
     public boolean shouldInterceptMouse() {
-        return ImGui.getIO().getWantCaptureMouse() && !Instances.getMinecraft().mouseHandler.isMouseGrabbed();
+        return ImGui.getIO().getWantCaptureMouse() && !Client.getMinecraft().mouseHandler.isMouseGrabbed();
     }
 
     /**
@@ -303,14 +301,14 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
     public void sideInfoBar() {
         var now = new Date();
 
-        String username = Instances.getMinecraft().getUser().getName();
+        String username = Client.getMinecraft().getUser().getName();
         ImGui.text(ImIcons.FA.FA_USER + " " + username);
         ImGui.separator();
 
         ImGui.text(ImIcons.FA.FA_EARTH_EUROPE + " " + now);
         ImGui.separator();
 
-        ImGui.text(ImIcons.FA.FA_TACHOMETER + " " + Instances.getMinecraft().getFps() + " FPS");
+        ImGui.text(ImIcons.FA.FA_TACHOMETER + " " + Client.getMinecraft().getFps() + " FPS");
         ImGui.separator();
 
         long maxMemory = Runtime.getRuntime().maxMemory();
@@ -318,7 +316,7 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
         ImGui.text(ImIcons.FA.FA_MEMORY + " Used " + (usedMemory * 100 / maxMemory) + "% Memory");
         ImGui.separator();
 
-        var server = Instances.getMinecraft().getCurrentServer();
+        var server = Client.getMinecraft().getCurrentServer();
         if (server != null) {
             ImGui.text(ImIcons.FA.FA_SERVER + " " + server.ip);
         }

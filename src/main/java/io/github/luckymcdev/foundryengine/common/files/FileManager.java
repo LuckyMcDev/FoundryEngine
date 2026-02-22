@@ -1,6 +1,6 @@
 package io.github.luckymcdev.foundryengine.common.files;
 
-import io.github.luckymcdev.foundryengine.common.Commons;
+import io.github.luckymcdev.foundryengine.common.Common;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import org.jetbrains.annotations.ApiStatus;
@@ -14,14 +14,13 @@ import java.nio.file.Paths;
 public class FileManager implements ResourceManagerReloadListener {
 
     public FileManager() {
-        Commons.requireInternalAccess(this.getClass());
     }
 
     public void createMainDirectory() throws IOException {
-        createDirectories(Commons.FOUNDRY_ENGINE);
-        createDirectories(Commons.BUNDLES);
-        createDirectories(Commons.CACHE);
-        createDirectories(Commons.CONFIG_FE);
+        createDirectories(Common.FOUNDRY_ENGINE);
+        createDirectories(Common.BUNDLES);
+        createDirectories(Common.CACHE);
+        createDirectories(Common.CONFIG_FE);
     }
 
     public Path createDirectories(Path directory) throws IOException {

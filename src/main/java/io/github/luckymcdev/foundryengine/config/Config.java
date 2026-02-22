@@ -1,6 +1,6 @@
 package io.github.luckymcdev.foundryengine.config;
 
-import io.github.luckymcdev.foundryengine.common.Commons;
+import io.github.luckymcdev.foundryengine.common.Common;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.config.ModConfigEvent;
@@ -9,7 +9,7 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 /**
  * The Config for FoundryEngine.
  */
-@EventBusSubscriber(modid = Commons.MODID)
+@EventBusSubscriber(modid = Common.MODID)
 public class Config {
     private static final ModConfigSpec.Builder COMMON_BUILDER = new ModConfigSpec.Builder();
     /**

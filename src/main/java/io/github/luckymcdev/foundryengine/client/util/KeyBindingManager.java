@@ -1,6 +1,5 @@
 package io.github.luckymcdev.foundryengine.client.util;
 
-import io.github.luckymcdev.foundryengine.common.Commons;
 import io.github.luckymcdev.foundryengine.common.registry.GenericRegistry;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -17,7 +16,6 @@ public class KeyBindingManager {
     private static final GenericRegistry<String, KeyBinding> KEYBINDINGS = new GenericRegistry<>();
 
     public KeyBindingManager() {
-        Commons.requireInternalAccess(this.getClass());
     }
 
     @SubscribeEvent

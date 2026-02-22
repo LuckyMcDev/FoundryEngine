@@ -1,10 +1,9 @@
 package io.github.luckymcdev.foundryengine.client.opengl.shaders;
 
+import io.github.luckymcdev.foundryengine.client.Client;
 import io.github.luckymcdev.foundryengine.client.opengl.GlDispatch;
 import io.github.luckymcdev.foundryengine.client.opengl.OpenGlObject;
 import io.github.luckymcdev.foundryengine.client.opengl.shaders.exeption.ShaderException;
-import io.github.luckymcdev.foundryengine.common.Commons;
-import io.github.luckymcdev.foundryengine.common.Instances;
 import net.minecraft.resources.Identifier;
 
 import static org.lwjgl.opengl.GL43C.*;
@@ -48,8 +47,8 @@ public class Shader extends OpenGlObject {
      * @return the processed source code.
      */
     private String loadSource() {
-        String unprocessedSource = Commons.getIdSource(this.location);
-        return Instances.getShaderManager().getPreProcessorManager().processAll(unprocessedSource);
+        String unprocessedSource = Client.getIdSource(this.location);
+        return Client.getShaderManager().getPreProcessorManager().processAll(unprocessedSource);
     }
 
     /**

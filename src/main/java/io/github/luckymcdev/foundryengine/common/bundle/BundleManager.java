@@ -1,8 +1,7 @@
 package io.github.luckymcdev.foundryengine.common.bundle;
 
 import com.mojang.logging.LogUtils;
-import io.github.luckymcdev.foundryengine.common.Commons;
-import io.github.luckymcdev.foundryengine.common.Instances;
+import io.github.luckymcdev.foundryengine.common.Common;
 import io.github.luckymcdev.foundryengine.common.bundle.info.Bundle;
 import io.github.luckymcdev.foundryengine.common.bundle.info.BundleFiles;
 import io.github.luckymcdev.foundryengine.common.bundle.info.BundleInfo;
@@ -29,7 +28,6 @@ public class BundleManager implements ResourceManagerReloadListener {
     private int loadedBundles = 0;
 
     public BundleManager() {
-        Commons.requireInternalAccess(this.getClass());
     }
 
     public void register(Bundle bundle) {
@@ -102,8 +100,8 @@ public class BundleManager implements ResourceManagerReloadListener {
             Bundle bundle = new Bundle(
                     info,
                     buildFileInfo(bundleDir),
-                    Instances.getScriptEngineFactory().createScriptEngine(bundleDir),
-                    Instances.getEventBusFactory().getEventBusFor(bundleDir));
+                    Common.getScriptEngineFactory().createScriptEngine(bundleDir),
+                    Common.getEventBusFactory().getEventBusFor(bundleDir));
             register(bundle);
             BundleScriptLoader.loadScripts(bundle);
         } catch (IOException e) {

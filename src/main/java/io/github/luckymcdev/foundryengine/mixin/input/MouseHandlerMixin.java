@@ -1,7 +1,7 @@
 package io.github.luckymcdev.foundryengine.mixin.input;
 
+import io.github.luckymcdev.foundryengine.client.Client;
 import io.github.luckymcdev.foundryengine.client.imgui.ImGuiManager;
-import io.github.luckymcdev.foundryengine.common.Instances;
 import io.github.luckymcdev.foundryengine.interfaces.TbMouseHandler;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.client.input.MouseButtonInfo;
@@ -20,7 +20,7 @@ public class MouseHandlerMixin implements TbMouseHandler {
     @Override
     @Inject(method = "onButton", at = @At("HEAD"), cancellable = true)
     public void tb$onMouseButton(long p_window, MouseButtonInfo buttonInfo, int action, CallbackInfo ci) {
-        if (Instances.getImGuiManager().shouldInterceptMouse()) {
+        if (Client.getImGuiManager().shouldInterceptMouse()) {
             ci.cancel();
         }
     }
@@ -28,7 +28,7 @@ public class MouseHandlerMixin implements TbMouseHandler {
     @Override
     @Inject(method = "onScroll", at = @At("HEAD"), cancellable = true)
     public void tb$onMouseScroll(long window, double horizontal, double vertical, CallbackInfo ci) {
-        if (Instances.getImGuiManager().shouldInterceptMouse()) {
+        if (Client.getImGuiManager().shouldInterceptMouse()) {
             ci.cancel();
         }
     }

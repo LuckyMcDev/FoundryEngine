@@ -12,8 +12,7 @@ import io.github.luckymcdev.foundryengine.client.post.pipeline.builtin.AsciiPost
 import io.github.luckymcdev.foundryengine.client.post.pipeline.builtin.DepthVisualizePipeline;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.builtin.GrayscalePipeline;
 import io.github.luckymcdev.foundryengine.client.util.RegisterKeyBindingEvent;
-import io.github.luckymcdev.foundryengine.common.Commons;
-import io.github.luckymcdev.foundryengine.common.Instances;
+import io.github.luckymcdev.foundryengine.common.Common;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -23,23 +22,23 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.FrameGraphSetupEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 
-@EventBusSubscriber(modid = Commons.MODID, value = Dist.CLIENT)
+@EventBusSubscriber(modid = Common.MODID, value = Dist.CLIENT)
 public class FoundryEngineModClient {
 
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
-            Instances.post(new RegisterRenderingStuffEvent(Instances.getResourceManager()));
-            Instances.post(new RegisterGLSLPreProcessorEvent());
-            Instances.post(new RegisterPanelEvent());
-            Instances.post(new RegisterPostPipelineEvent(Instances.getPostProcessManager()));
+            Common.post(new RegisterRenderingStuffEvent(Client.getResourceManager()));
+            Common.post(new RegisterGLSLPreProcessorEvent());
+            Common.post(new RegisterPanelEvent());
+            Common.post(new RegisterPostPipelineEvent(Client.getPostProcessManager()));
         });
     }
 
     @SubscribeEvent
     public static void onRegisterKeyMapping(RegisterKeyMappingsEvent event) {
-        Instances.post(new RegisterKeyBindingEvent(Instances.getKeyBindingManager()));
-        Instances.getKeyBindingManager().getKeyBindings().forEach(keyBinding ->
+        Common.post(new RegisterKeyBindingEvent(Client.getKeyBindingManager()));
+        Client.getKeyBindingManager().getKeyBindings().forEach(keyBinding ->
                 event.register(keyBinding.mapping())
         );
     }
@@ -70,17 +69,17 @@ public class FoundryEngineModClient {
 
     @SubscribeEvent
     public static void addClientReloadListener(AddClientReloadListenersEvent event) {
-        event.addListener(Commons.id("imgui_handler"), Instances.getImGuiManager());
-        event.addListener(Commons.id("shader_manager"), Instances.getShaderManager());
+        event.addListener(Common.id("imgui_handler"), Client.getImGuiManager());
+        event.addListener(Common.id("shader_manager"), Client.getShaderManager());
     }
 
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Post event) {
-        Instances.getEditorManager().handleTick();
+        Client.getEditorManager().handleTick();
     }
 
     @SubscribeEvent
     public static void updateClientMatrices(FrameGraphSetupEvent event) {
-        ClientMatrices.updateMain(event.getModelViewMatrix(), event.getProjectionMatrix());
+        Client.updateMain(event.getModelViewMatrix(), event.getProjectionMatrix());
     }
 }

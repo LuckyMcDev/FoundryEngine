@@ -1,21 +1,17 @@
 package io.github.luckymcdev.foundryengine;
 
 import com.mojang.logging.LogUtils;
-import io.github.luckymcdev.foundryengine.common.Commons;
-import io.github.luckymcdev.foundryengine.common.Instances;
-import io.github.luckymcdev.foundryengine.common.opencl.ClDispatch;
+import io.github.luckymcdev.foundryengine.common.Common;
 import io.github.luckymcdev.foundryengine.common.thread.RegisterEngineThreadEvent;
 import io.github.luckymcdev.foundryengine.config.Config;
 import io.github.luckymcdev.foundryengine.server.packs.EngineRepositorySource;
 import net.minecraft.server.packs.PackType;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLConstructModEvent;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import org.slf4j.Logger;
 
@@ -24,7 +20,7 @@ import java.io.IOException;
 /**
  * Main Mod Entrypoint for FoundryEngine.
  */
-@Mod(Commons.MODID)
+@Mod(Common.MODID)
 public class FoundryEngineMod {
     private static final Logger LOGGER = LogUtils.getLogger();
 
@@ -41,8 +37,7 @@ public class FoundryEngineMod {
 
         modEventBus.addListener(this::onAddPackFinders);
 
-        NeoForge.EVENT_BUS.register(this);
-        Instances.post(new RegisterEngineThreadEvent());
+        Common.post(new RegisterEngineThreadEvent());
 
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.COMMON_SPEC);
     }
@@ -55,7 +50,7 @@ public class FoundryEngineMod {
 
     private void onConstruct(final FMLConstructModEvent event) {
         try {
-            Instances.getBundleManager().discover(Commons.BUNDLES);
+            Common.getBundleManager().discover(Common.BUNDLES);
         } catch (IOException e) {
             LOGGER.error("Error while Loading Bundles: {}", e.getLocalizedMessage());
         }
@@ -64,18 +59,9 @@ public class FoundryEngineMod {
 
     private void commonSetup(final FMLCommonSetupEvent event) {
         try {
-            Instances.getFileManager().createMainDirectory();
+            Common.getFileManager().createMainDirectory();
         } catch (IOException e) {
             LOGGER.error("{}{}", e.getLocalizedMessage(), e.getStackTrace());
         }
-
-        Instances.getThreadManager().execute(ClDispatch.CL_THREAD, () -> {
-            //OpenClExample.visualize(15630, 8640, 300.0f, 32, false);
-        });
-    }
-
-    @SubscribeEvent
-    public void onRegisterEngineThread(RegisterEngineThreadEvent event) {
-        event.register(ClDispatch.CL_THREAD);
     }
 }

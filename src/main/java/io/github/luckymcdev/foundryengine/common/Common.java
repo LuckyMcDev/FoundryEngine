@@ -1,0 +1,106 @@
+package io.github.luckymcdev.foundryengine.common;
+
+import com.mojang.logging.LogUtils;
+import io.github.luckymcdev.foundryengine.common.bundle.BundleManager;
+import io.github.luckymcdev.foundryengine.common.files.FileManager;
+import io.github.luckymcdev.foundryengine.common.script.ScriptEngineFactory;
+import io.github.luckymcdev.foundryengine.common.script.ScriptEventBusFactory;
+import io.github.luckymcdev.foundryengine.common.thread.ThreadManager;
+import net.minecraft.resources.Identifier;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.common.NeoForge;
+import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+
+import java.nio.file.Path;
+import java.util.function.Supplier;
+
+
+public abstract class Common {
+    /**
+     * Common Logger. Don't use, create your own.
+     */
+    public static final Logger LOGGER = LogUtils.getLogger();
+    /** Modid for FoundryEngine. */
+    public static final String MODID = "foundryengine";
+    /** Mod Name */
+    public static final String MODNAME = "Foundry Engine";
+
+    /** Base Config Dir*/
+    public static final Path CONFIG = FMLPaths.CONFIGDIR.get();
+    /** FoundryEngine config dir*/
+    public static final Path FOUNDRY_ENGINE_CONFIG = CONFIG.resolve(MODID);
+    /** WIP database config dir.*/
+    public static final Path DATABASE_CONFIG = CONFIG.resolve("database");
+
+    /** Game Dir*/
+    public static final Path GAME = FMLPaths.GAMEDIR.get();
+    /** FoundryEngine Game Dir*/
+    public static final Path FOUNDRY_ENGINE = GAME.resolve("FoundryEngine");
+    /**
+     * Bundles Path
+     */
+    public static final Path BUNDLES = FOUNDRY_ENGINE.resolve("bundles");
+    /**
+     * Cache Path
+     */
+    public static final Path CACHE = FOUNDRY_ENGINE.resolve(".cache");
+    /**
+     * Config Path
+     */
+    public static final Path CONFIG_FE = FOUNDRY_ENGINE.resolve("config");
+
+    private static final ThreadManager THREAD_MANAGER = new ThreadManager();
+
+    private static final FileManager FILE_MANAGER = new FileManager();
+    private static final BundleManager BUNDLE_MANAGER = new BundleManager();
+    private static final ScriptEngineFactory SCRIPT_ENGINE_FACTORY = new ScriptEngineFactory();
+    private static final ScriptEventBusFactory SCRIPT_EVENT_BUS_FACTORY = new ScriptEventBusFactory();
+
+    /**
+     * Returns an {@link Identifier} where the namespace is {@link #MODID}
+     *
+     * @param path the Path of the {@link Identifier}
+     * @return returns the assembled {@link Identifier}
+     */
+    public static Identifier id(@NotNull String path) {
+        return Identifier.fromNamespaceAndPath(MODID, path);
+    }
+
+    public static <V> Supplier<V> supOf(V value) {
+        return () -> value;
+    }
+
+
+    public static ThreadManager getThreadManager() {
+        return THREAD_MANAGER;
+    }
+
+    public static FileManager getFileManager() {
+        return FILE_MANAGER;
+    }
+
+    public static BundleManager getBundleManager() {
+        return BUNDLE_MANAGER;
+    }
+
+    public static ScriptEngineFactory getScriptEngineFactory() {
+        return SCRIPT_ENGINE_FACTORY;
+    }
+
+    public static ScriptEventBusFactory getEventBusFactory() {
+        return SCRIPT_EVENT_BUS_FACTORY;
+    }
+
+    // Event Bus
+
+    public static <T extends Event> T post(T event) {
+        return NeoForge.EVENT_BUS.post(event);
+    }
+
+    public static <T extends Event> T post(EventPriority priority, T event) {
+        return NeoForge.EVENT_BUS.post(priority, event);
+    }
+}

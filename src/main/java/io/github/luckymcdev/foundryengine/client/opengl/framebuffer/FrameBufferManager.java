@@ -1,9 +1,8 @@
 package io.github.luckymcdev.foundryengine.client.opengl.framebuffer;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
+import io.github.luckymcdev.foundryengine.client.Client;
 import io.github.luckymcdev.foundryengine.client.opengl.GlDispatch;
-import io.github.luckymcdev.foundryengine.common.Commons;
-import io.github.luckymcdev.foundryengine.common.Instances;
 import io.github.luckymcdev.foundryengine.common.registry.GenericRegistry;
 import net.minecraft.resources.Identifier;
 import org.lwjgl.opengl.GL43C;
@@ -16,7 +15,6 @@ public class FrameBufferManager {
     private static final GenericRegistry<Identifier, FrameBuffer> FRAMEBUFFERS = new GenericRegistry<>();
 
     public FrameBufferManager() {
-        Commons.requireInternalAccess(this.getClass());
     }
 
     /**
@@ -75,8 +73,8 @@ public class FrameBufferManager {
      * @param dst destination {@link FrameBuffer}
      */
     public void blit(RenderTarget src, FrameBuffer dst) {
-        var colorTexture = Instances.getGlColTexture(src);
-        var device = Instances.getGlDevice();
+        var colorTexture = Client.getGlColTexture(src);
+        var device = Client.getGlDevice();
         int srcFbo = colorTexture.getFbo(device.directStateAccess(), null);
 
         // Save current bindings
@@ -111,8 +109,8 @@ public class FrameBufferManager {
      * @param dst destination {@link RenderTarget}
      */
     public void blit(FrameBuffer src, RenderTarget dst) {
-        var colorTexture = Instances.getGlColTexture(dst);
-        var device = Instances.getGlDevice();
+        var colorTexture = Client.getGlColTexture(dst);
+        var device = Client.getGlDevice();
         int dstFbo = colorTexture.getFbo(device.directStateAccess(), null);
 
         // Save the current framebuffer bindings

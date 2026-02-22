@@ -94,25 +94,6 @@ dependencies {
 }
 
 dependencies {
-    def jarJarApiImpl = { String gav -> jarJar(api(implementation(gav))) }
-
-    jarJarApiImpl("org.lwjgl:lwjgl:${lwjgl_version}")
-    jarJarApiImpl("org.lwjgl:lwjgl-meshoptimizer:${lwjgl_version}")
-    jarJarApiImpl("org.lwjgl:lwjgl-opencl:${lwjgl_version}")
-    jarJarApiImpl("org.lwjgl:lwjgl-par:${lwjgl_version}")
-    jarJarApiImpl("org.lwjgl:lwjgl-shaderc:${lwjgl_version}")
-
-    // Native platforms for LWJGL
-    def lwjglNativePlatforms = ["natives-windows", "natives-linux", "natives-macos"]
-    lwjglNativePlatforms.each { platform ->
-        jarJar(runtimeOnly("org.lwjgl:lwjgl:${lwjgl_version}:${platform}"))
-        jarJar(runtimeOnly("org.lwjgl:lwjgl-meshoptimizer:${lwjgl_version}:${platform}"))
-        jarJar(runtimeOnly("org.lwjgl:lwjgl-par:${lwjgl_version}:${platform}"))
-        jarJar(runtimeOnly("org.lwjgl:lwjgl-shaderc:${lwjgl_version}:${platform}"))
-    }
-}
-
-dependencies {
     def jarJarApiImpl = { String dep -> jarJar(api(implementation(dep))) }
 
     // ImGui dependencies

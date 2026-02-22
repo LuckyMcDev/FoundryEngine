@@ -2,6 +2,7 @@ package io.github.luckymcdev.foundryengine.client.post;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
+import io.github.luckymcdev.foundryengine.client.Client;
 import io.github.luckymcdev.foundryengine.client.event.RegisterRenderingStuffEvent;
 import io.github.luckymcdev.foundryengine.client.opengl.GlDispatch;
 import io.github.luckymcdev.foundryengine.client.opengl.OpenGlStack;
@@ -17,8 +18,8 @@ import io.github.luckymcdev.foundryengine.client.post.pipeline.pass.TargetRef;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.pass.TemporaryTarget;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.staged.PostProcessStage;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.staged.StagedPostProcessPipeline;
-import io.github.luckymcdev.foundryengine.common.Commons;
-import io.github.luckymcdev.foundryengine.common.Instances;
+import io.github.luckymcdev.foundryengine.common.Common;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
@@ -35,9 +36,9 @@ import java.util.stream.Collectors;
  * Register and Enable them from here.
  * Registering should be done via {@link RegisterPostPipelineEvent}
  */
-@EventBusSubscriber
+@EventBusSubscriber(Dist.CLIENT)
 public class PostProcessManager {
-    private static final OpenGlStack GL_STACK = Instances.getOpenGlStack();
+    private static final OpenGlStack GL_STACK = Client.getOpenGlStack();
     private static final int COLOR_TEXTURE_UNIT = 0;
     private static final int DEPTH_TEXTURE_UNIT = 1;
     private static final PostProcessStage STAGE_NOT_STAGED = null;
@@ -48,7 +49,6 @@ public class PostProcessManager {
     private static Mesh quad;
 
     public PostProcessManager() {
-        Commons.requireInternalAccess(this.getClass());
     }
     /**
      * Initializes the GpuMesh quad.
@@ -146,7 +146,7 @@ public class PostProcessManager {
     private static void runPipelineBatch(List<? extends PostProcessPipeline> pipelines, PostProcessStage stage) {
         RenderSystem.assertOnRenderThread();
 
-        RenderTarget mainTarget = Instances.getMainRenderTarget();
+        RenderTarget mainTarget = Client.getMainRenderTarget();
         ensureFrameBuffers(pipelines, mainTarget);
 
         GlDispatch.pushDebugGroup(buildDebugGroupLabel(pipelines.size(), stage));
@@ -154,10 +154,10 @@ public class PostProcessManager {
         try {
             setupGlobalState();
 
-            var colorTexture = Instances.getGlColTexture();
+            var colorTexture = Client.getGlColTexture();
             int mainColorTextureId = colorTexture.glId();
-            int depthTextureId = Instances.getGlDepthTexture().glId();
-            var device = Instances.getGlDevice();
+            int depthTextureId = Client.getGlDepthTexture().glId();
+            var device = Client.getGlDevice();
             int mainFbo = colorTexture.getFbo(device.directStateAccess(), null);
 
             for (PostProcessPipeline pipeline : pipelines) {
@@ -190,8 +190,8 @@ public class PostProcessManager {
             renderPass(pipeline, program, i, pass, drawBuffer, inputColorTexId, depthTextureId);
 
             if (pass.output().isMain()) {
-                Instances.getFrameBufferManager().blit(drawBuffer, mainFbo, mainTarget);
-                mainColorTextureId = Instances.getGlColTexture().glId();
+                Client.getFrameBufferManager().blit(drawBuffer, mainFbo, mainTarget);
+                mainColorTextureId = Client.getGlColTexture().glId();
             }
         }
 
@@ -295,7 +295,7 @@ public class PostProcessManager {
         }
         if (buffer != null) buffer.free();
         return new FrameBuffer(
-                Commons.id("post_" + idSuffix),
+                Common.id("post_" + idSuffix),
                 mainTarget.width,
                 mainTarget.height,
                 false,
@@ -304,10 +304,10 @@ public class PostProcessManager {
     }
 
     private static void registerPipelinePrograms(PostProcessPipeline pipeline) {
-        pipeline.getPrograms().forEach(Instances.getShaderManager()::register);
+        pipeline.getPrograms().forEach(Client.getShaderManager()::register);
         pipeline.getPasses().stream()
                 .flatMap(pass -> java.util.Arrays.stream(pass.shaders()))
-                .forEach(Instances.getShaderManager()::register);
+                .forEach(Client.getShaderManager()::register);
     }
 
     private static void setupGlobalState() {

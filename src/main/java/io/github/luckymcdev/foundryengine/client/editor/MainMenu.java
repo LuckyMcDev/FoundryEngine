@@ -2,14 +2,14 @@ package io.github.luckymcdev.foundryengine.client.editor;
 
 import imgui.ImGui;
 import imgui.type.ImBoolean;
+import io.github.luckymcdev.foundryengine.client.Client;
 import io.github.luckymcdev.foundryengine.client.imgui.graphics.ImGuiGraphicsStack;
-import io.github.luckymcdev.foundryengine.common.Instances;
 
 /**
  * The Main Menu implementation. Manages the top info bar and also all Panels in the Panel Menu
  */
 public class MainMenu {
-    private static final EditorManager editor = Instances.getEditorManager();
+    private static final EditorManager editor = Client.getEditorManager();
     private static final ImBoolean demoWindowOpen = new ImBoolean(false);
     private static final ImBoolean metricsWindowOpen = new ImBoolean(false);
 
@@ -19,7 +19,7 @@ public class MainMenu {
      */
     public static void handleRender() {
         if (ImGui.beginMainMenuBar()) {
-            ImGuiGraphicsStack gs = Instances.getImGuiManager().getGraphicsStack();
+            ImGuiGraphicsStack gs = Client.getImGuiManager().getGraphicsStack();
             gs.push();
 
             renderPanelsMenu();

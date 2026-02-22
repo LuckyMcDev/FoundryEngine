@@ -1,7 +1,6 @@
 package io.github.luckymcdev.foundryengine.client.editor;
 
 import com.mojang.logging.LogUtils;
-import io.github.luckymcdev.foundryengine.common.Commons;
 import io.github.luckymcdev.foundryengine.common.registry.GenericRegistry;
 import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
@@ -21,7 +20,6 @@ public class EditorManager {
     private static final GenericRegistry<Identifier, Panel> PANELS = new GenericRegistry<>();
 
     public EditorManager() {
-        Commons.requireInternalAccess(this.getClass());
     }
 
     /**

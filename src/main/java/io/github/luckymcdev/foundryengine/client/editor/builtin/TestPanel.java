@@ -4,7 +4,7 @@ import imgui.ImGui;
 import io.github.luckymcdev.foundryengine.client.editor.Panel;
 import io.github.luckymcdev.foundryengine.client.imgui.EngineImGuiUtils;
 import io.github.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
-import io.github.luckymcdev.foundryengine.common.Commons;
+import io.github.luckymcdev.foundryengine.common.Common;
 import io.github.luckymcdev.foundryengine.common.color.Color;
 
 /**
@@ -17,7 +17,7 @@ public class TestPanel extends Panel {
      * Private constructor to enforce singleton pattern.
      */
     private TestPanel() {
-        super(Commons.id("test_panel"), "My Panel");
+        super(Common.id("test_panel"), "My Panel");
     }
 
     /**
@@ -42,7 +42,7 @@ public class TestPanel extends Panel {
 
         EngineImGuiUtils.textCentered("center center", ImGui.getWindowWidth());
 
-        EngineImGuiUtils.resourceLocation(Commons.id("imguiiscool"));
+        EngineImGuiUtils.resourceLocation(Common.id("imguiiscool"));
 
     }
 }

@@ -6,7 +6,7 @@ import io.github.luckymcdev.foundryengine.client.opengl.shaders.ShaderSource;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.PostProcessPipeline;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.pass.PostProcessPipelinePass;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.pass.TargetRef;
-import io.github.luckymcdev.foundryengine.common.Commons;
+import io.github.luckymcdev.foundryengine.common.Common;
 
 /**
  * An Example PostProcessPipeline which visualizes the Depth Texture linearly.
@@ -18,19 +18,19 @@ public class DepthVisualizePipeline extends PostProcessPipeline {
      */
     public DepthVisualizePipeline() {
         super(
-                Commons.id("post_depth_visualize"),
+                Common.id("post_depth_visualize"),
                 new PostProcessPipelinePass(
-                        Commons.id("post_depth_visualize_pass"),
+                        Common.id("post_depth_visualize_pass"),
                         TargetRef.MAIN, TargetRef.MAIN,
                         new Shader(ExtendedShaderType.VERTEX,
                                 new ShaderSource(
-                                        Commons.id("post_depth_visualize_vert"),
-                                        Commons.id("shaders/vert.vsh")
+                                        Common.id("post_depth_visualize_vert"),
+                                        Common.id("shaders/vert.vsh")
                                 )),
                         new Shader(ExtendedShaderType.FRAGMENT,
                                 new ShaderSource(
-                                        Commons.id("post_depth_visualize_frag"),
-                                        Commons.id("shaders/post/depth/depth_visualize.fsh")
+                                        Common.id("post_depth_visualize_frag"),
+                                        Common.id("shaders/post/depth/depth_visualize.fsh")
                                 ))
                 )
         );
