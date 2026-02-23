@@ -2,7 +2,7 @@ package io.github.luckymcdev.foundryengine.server.packs;
 
 import com.mojang.logging.LogUtils;
 import io.github.luckymcdev.foundryengine.common.Common;
-import io.github.luckymcdev.foundryengine.common.bundle.info.Bundle;
+import io.github.luckymcdev.foundryengine.common.bundle.Bundle;
 import io.github.luckymcdev.foundryengine.common.bundle.info.BundleFiles;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.PackLocationInfo;
