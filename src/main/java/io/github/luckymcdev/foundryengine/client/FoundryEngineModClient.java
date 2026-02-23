@@ -1,8 +1,9 @@
 package io.github.luckymcdev.foundryengine.client;
 
-import io.github.luckymcdev.foundryengine.client.editor.builtin.NodeEditorPanel;
-import io.github.luckymcdev.foundryengine.client.editor.builtin.PostProcessPanel;
 import io.github.luckymcdev.foundryengine.client.editor.builtin.TestPanel;
+import io.github.luckymcdev.foundryengine.client.editor.builtin.editor.MainEditorPanel;
+import io.github.luckymcdev.foundryengine.client.editor.builtin.node.NodeEditorPanel;
+import io.github.luckymcdev.foundryengine.client.editor.builtin.post.PostProcessPanel;
 import io.github.luckymcdev.foundryengine.client.editor.event.RegisterPanelEvent;
 import io.github.luckymcdev.foundryengine.client.event.RegisterRenderingStuffEvent;
 import io.github.luckymcdev.foundryengine.client.opengl.shaders.preprocessing.IncludeGLSLPreProcessor;
@@ -56,6 +57,8 @@ public class FoundryEngineModClient {
         event.register(PostProcessPanel.INSTANCE);
         event.register(TestPanel.INSTANCE);
         event.register(NodeEditorPanel.INSTANCE);
+
+        event.register(MainEditorPanel.INSTANCE);
     }
 
     @SubscribeEvent

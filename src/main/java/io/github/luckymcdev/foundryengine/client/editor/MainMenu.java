@@ -3,6 +3,7 @@ package io.github.luckymcdev.foundryengine.client.editor;
 import imgui.ImGui;
 import imgui.type.ImBoolean;
 import io.github.luckymcdev.foundryengine.client.Client;
+import io.github.luckymcdev.foundryengine.client.editor.builtin.editor.EditorPanel;
 import io.github.luckymcdev.foundryengine.client.imgui.graphics.ImGuiGraphicsStack;
 import io.github.luckymcdev.foundryengine.client.util.Shortcut;
 
@@ -24,7 +25,11 @@ public class MainMenu {
             gs.push();
 
             renderOpenMenu();
+
+            renderEditorMenu();
+
             renderToolsMenu();
+
             renderViewMenu();
 
             gs.pop();
@@ -47,13 +52,30 @@ public class MainMenu {
      */
     private static void renderOpenMenu() {
         if (ImGui.beginMenu("Open")) {
-            editor.getPanels().forEach(panel -> {
-                if (ImGui.menuItem(panel.getLabel(), panel.getShortcut().toLabel(), editor.isOpen(panel))) {
-                    editor.togglePanel(panel);
-                }
-            });
-
+            editor.getPanels().stream()
+                    .filter(p -> !(p instanceof EditorPanel))
+                    .forEach(MainMenu::renderPanelMenuItem);
             ImGui.endMenu();
+        }
+    }
+
+
+    private static void renderEditorMenu() {
+        if (ImGui.beginMenu("Editor")) {
+            editor.getPanels().stream()
+                    .filter(p -> p instanceof EditorPanel)
+                    .forEach(MainMenu::renderPanelMenuItem);
+            ImGui.endMenu();
+        }
+    }
+
+    /**
+     * Renders a single panel as a menu item.
+     */
+    private static void renderPanelMenuItem(Panel panel) {
+        String shortcut = panel.getShortcut() != null ? panel.getShortcut().toLabel() : "";
+        if (ImGui.menuItem(panel.getLabel(), shortcut, editor.isOpen(panel))) {
+            editor.togglePanel(panel);
         }
     }
 

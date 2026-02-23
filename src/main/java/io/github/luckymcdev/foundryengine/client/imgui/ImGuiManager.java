@@ -55,6 +55,7 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
     private final ImGuiGraphicsStack GRAPHICS_STACK = new ImGuiGraphicsStack();
 
     private final AtomicBoolean enabled = new AtomicBoolean(false);
+    private boolean shouldBlockInput = false;
 
     private ImFont font;
 
@@ -103,7 +104,7 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
         io.addConfigFlags(ImGuiConfigFlags.DockingEnable);
         io.addConfigFlags(ImGuiConfigFlags.DpiEnableScaleFonts);
         io.addConfigFlags(ImGuiConfigFlags.DpiEnableScaleViewports);
-        io.setConfigDockingWithShift(false);
+        io.setConfigDockingWithShift(true);
         io.setConfigWindowsMoveFromTitleBarOnly(true);
         io.setConfigMacOSXBehaviors(InputQuirks.ON_OSX);
 
@@ -168,8 +169,11 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
             io.setMousePos(-1, -1);
         }
 
-        dockId = ImGui.dockSpaceOverViewport(2087402907, ImGui.getMainViewport(), ImGuiDockNodeFlags.NoDockingInCentralNode | ImGuiDockNodeFlags.PassthruCentralNode);
-        var centralNode = imgui.internal.ImGui.dockBuilderGetCentralNode(dockId);
+        dockId = ImGui.dockSpaceOverViewport(2087402907, ImGui.getMainViewport(), ImGuiDockNodeFlags.PassthruCentralNode);
+        imgui.internal.ImGuiDockNode centralNode = imgui.internal.ImGui.dockBuilderGetCentralNode(dockId);
+
+        shouldBlockInput = centralNode.isLeafNode() && !centralNode.isEmpty();
+
         var centralNodePos = centralNode.getPos();
         var centralNodeSize = centralNode.getSize();
 
@@ -280,7 +284,7 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
      * @return if ImGui wants to capture the Mouse and the Mouse is not grabbed by Minecraft.
      */
     public boolean shouldInterceptMouse() {
-        return ImGui.getIO().getWantCaptureMouse() && !Client.getMinecraft().mouseHandler.isMouseGrabbed();
+        return shouldBlockInput || (ImGui.getIO().getWantCaptureMouse() && !Client.getMinecraft().mouseHandler.isMouseGrabbed());
     }
 
     /**
@@ -288,7 +292,7 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
      * @return if ImGui wants to capture keyboard.
      */
     public boolean shouldInterceptKeyboard() {
-        return ImGui.getIO().getWantCaptureKeyboard();
+        return shouldBlockInput || ImGui.getIO().getWantCaptureKeyboard();
     }
 
     public ImFont getFont() {

@@ -1,4 +1,4 @@
-package io.github.luckymcdev.foundryengine.client.editor.builtin;
+package io.github.luckymcdev.foundryengine.client.editor.builtin.post;
 
 import imgui.ImGui;
 import imgui.flag.ImGuiKey;

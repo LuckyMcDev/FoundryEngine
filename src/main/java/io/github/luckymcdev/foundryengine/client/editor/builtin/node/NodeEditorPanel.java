@@ -1,4 +1,4 @@
-package io.github.luckymcdev.foundryengine.client.editor.builtin;
+package io.github.luckymcdev.foundryengine.client.editor.builtin.node;
 
 import com.mojang.logging.LogUtils;
 import imgui.ImGui;
