@@ -1,4 +1,4 @@
-package io.github.luckymcdev.foundryengine.client.imgui.node;
+package io.github.luckymcdev.foundryengine.client.imgui.node.pin;
 
 public enum NodePinConnectionType {
     OUTPUT("output"),

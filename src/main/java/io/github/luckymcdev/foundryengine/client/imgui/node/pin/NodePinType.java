@@ -1,4 +1,6 @@
-package io.github.luckymcdev.foundryengine.client.imgui.node;
+package io.github.luckymcdev.foundryengine.client.imgui.node.pin;
+
+import io.github.luckymcdev.foundryengine.client.imgui.node.Node;
 
 import java.util.List;
 import java.util.function.Consumer;

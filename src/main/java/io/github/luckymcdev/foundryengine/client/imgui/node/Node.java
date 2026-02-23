@@ -1,5 +1,9 @@
 package io.github.luckymcdev.foundryengine.client.imgui.node;
 
+import io.github.luckymcdev.foundryengine.client.imgui.node.pin.NodePin;
+import io.github.luckymcdev.foundryengine.client.imgui.node.pin.NodePinConnectionType;
+import io.github.luckymcdev.foundryengine.client.imgui.node.pin.NodePinInfo;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +22,6 @@ public class Node {
         if (pins != null) {
             for (var pin : pins) {
                 var pinInfo = new NodePinInfo(this, pin);
-
                 if (pin.connectionType() == NodePinConnectionType.OUTPUT) {
                     outputPins.add(pinInfo);
                 } else {

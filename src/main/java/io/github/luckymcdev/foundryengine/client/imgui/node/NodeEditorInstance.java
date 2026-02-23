@@ -4,11 +4,16 @@ import imgui.ImGui;
 import imgui.extension.imnodes.ImNodes;
 import imgui.extension.imnodes.flag.ImNodesMiniMapLocation;
 import imgui.type.ImInt;
+import io.github.luckymcdev.foundryengine.client.imgui.node.pin.NodePin;
+import io.github.luckymcdev.foundryengine.client.imgui.node.pin.NodePinConnectionType;
+import io.github.luckymcdev.foundryengine.client.imgui.node.pin.NodePinInfo;
+import io.github.luckymcdev.foundryengine.client.imgui.node.pin.NodePinType;
 import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 public class NodeEditorInstance<T> {
@@ -23,15 +28,24 @@ public class NodeEditorInstance<T> {
     private NodePinInfo lastDroppedPin;
 
     public NodeEditorInstance(NodePinType<T> type) {
+        this(type, type.singleRequiredInput);
+    }
+
+    /**
+     * Creates an editor with a custom set of pins on the root node.
+     *
+     * @param type     The primary pin type for this editor.
+     * @param rootPins The pins to attach to the root node.
+     */
+    public NodeEditorInstance(NodePinType<T> type, List<NodePin> rootPins) {
         this.type = type;
-        this.root = new Node("Root", type.singleRequiredInput);
+        this.root = new Node("Root", rootPins);
         this.nodes = new Int2ObjectLinkedOpenHashMap<>();
         this.pins = new Int2ObjectLinkedOpenHashMap<>();
         this.tempSrc = new ImInt();
         this.tempDst = new ImInt();
         this.miniMap = 0.1F;
         this.lastId = 0;
-
         addNode(root);
     }
 
@@ -50,7 +64,6 @@ public class NodeEditorInstance<T> {
             if (pin.id == 0) {
                 pin.id = nextId();
             }
-
             pins.put(pin.id, pin);
         }
 
@@ -58,7 +71,6 @@ public class NodeEditorInstance<T> {
             if (pin.id == 0) {
                 pin.id = nextId();
             }
-
             pins.put(pin.id, pin);
         }
     }
@@ -75,7 +87,6 @@ public class NodeEditorInstance<T> {
                     break;
                 }
             }
-
             lastDroppedPin = null;
         }
 
@@ -92,8 +103,6 @@ public class NodeEditorInstance<T> {
         ImNodes.beginNodeEditor();
         boolean nodeEditorHovered = ImNodes.isEditorHovered();
         Node removedNode = null;
-
-        // TODO: Figure out how to do zooming for the editor.
 
         for (var node : nodes.values()) {
             ImNodes.beginNode(node.id);
@@ -148,17 +157,14 @@ public class NodeEditorInstance<T> {
 
         ImNodes.endNodeEditor();
 
-        // Handle link creation
         if (ImNodes.isLinkCreated(tempSrc, tempDst)) {
             var src = pins.get(tempSrc.get());
             var dst = pins.get(tempDst.get());
             var in = src.pin.connectionType() == NodePinConnectionType.OUTPUT ? dst : src;
             var out = src.pin.connectionType() == NodePinConnectionType.OUTPUT ? src : dst;
-
             in.inputLink = out;
         }
 
-        // Handle link destruction
         if (ImNodes.isLinkDestroyed(tempSrc)) {
             var pin = pins.get(tempSrc.get());
             if (pin != null) {
@@ -166,13 +172,11 @@ public class NodeEditorInstance<T> {
             }
         }
 
-        // Handle link drop
         if (ImNodes.isLinkDropped(tempSrc, false)) {
             lastDroppedPin = pins.get(tempSrc.get());
             ImGui.openPopup("###context-menu");
         }
 
-        // Context menu on right click
         if (nodeEditorHovered && mouseRightButton && !ImGui.isAnyItemHovered()) {
             ImGui.openPopup("###context-menu");
         }
@@ -188,7 +192,6 @@ public class NodeEditorInstance<T> {
             lastDroppedPin = null;
         }
 
-        // Update selection states
         for (var node : nodes.values()) {
             node.selected = ImNodes.isNodeSelected(node.id);
         }
@@ -197,7 +200,6 @@ public class NodeEditorInstance<T> {
             pin.inputLinkSelected = pin.inputLink != null && ImNodes.isLinkSelected(pin.id);
         }
 
-        // Delete selected links with DELETE key
         if (ImGui.isKeyPressed(GLFW.GLFW_KEY_DELETE)) {
             for (var pin : pins.values()) {
                 if (pin.inputLinkSelected) {
@@ -206,16 +208,14 @@ public class NodeEditorInstance<T> {
                 }
             }
 
-            // Remove selected nodes with DELETE key
             for (var node : nodes.values()) {
                 if (node.selected && node != root) {
                     removedNode = node;
-                    break; // Remove one node at a time
+                    break;
                 }
             }
         }
 
-        // Remove node and its connections
         if (removedNode != null) {
             for (var pin : pins.values()) {
                 for (var oPin : removedNode.outputPins) {
