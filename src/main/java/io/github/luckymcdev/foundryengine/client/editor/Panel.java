@@ -6,6 +6,7 @@ import imgui.type.ImBoolean;
 import io.github.luckymcdev.foundryengine.client.Client;
 import io.github.luckymcdev.foundryengine.client.editor.config.ImGuiWindowType;
 import io.github.luckymcdev.foundryengine.client.editor.config.PanelStyle;
+import io.github.luckymcdev.foundryengine.client.util.Shortcut;
 import net.minecraft.resources.Identifier;
 
 /**
@@ -15,28 +16,47 @@ public class Panel {
     /**
      * The Id.
      */
-    public Identifier id;
+    private final Identifier id;
     /**
      * The Label.
      */
-    public String label;
-    /**
-     * If the Panel is Open.
-     */
-    public boolean open;
+    private final String label;
     /**
      * If the Panel is Temporary.
      */
-    public boolean temporary;
+    private final boolean temporary;
     /**
      * The Panels Style.
      */
-    public PanelStyle style;
+    private final PanelStyle style;
+    private final Shortcut shortcut;
+    /**
+     * If the Panel is Open.
+     */
+    private boolean open;
     /**
      * The Panels Type.
      */
-    public ImGuiWindowType type;
+    private ImGuiWindowType type;
+
     private boolean focused;
+
+    /**
+     * Instantiates a new Panel.
+     *
+     * @param id    the id
+     * @param label the label
+     * @param shortcut the Shortcut.
+     */
+    protected Panel(Identifier id, String label, Shortcut shortcut) {
+        this.id = id;
+        this.label = label;
+        this.shortcut = shortcut;
+        this.open = false;
+        this.temporary = false;
+        this.style = PanelStyle.NORMAL;
+        this.type = ImGuiWindowType.WINDOW;
+    }
 
     /**
      * Instantiates a new Panel.
@@ -45,12 +65,7 @@ public class Panel {
      * @param label the label
      */
     protected Panel(Identifier id, String label) {
-        this.id = id;
-        this.label = label;
-        this.open = false;
-        this.temporary = false;
-        this.style = PanelStyle.NORMAL;
-        this.type = ImGuiWindowType.WINDOW;
+        this(id, label, null);
     }
 
     /**
@@ -79,6 +94,15 @@ public class Panel {
         }
 
         return flags;
+    }
+
+    /**
+     * Gets Shortcut.
+     *
+     * @return the shortcut
+     */
+    public Shortcut getShortcut() {
+        return shortcut;
     }
 
     /**

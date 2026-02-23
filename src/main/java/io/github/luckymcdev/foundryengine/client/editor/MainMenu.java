@@ -4,6 +4,7 @@ import imgui.ImGui;
 import imgui.type.ImBoolean;
 import io.github.luckymcdev.foundryengine.client.Client;
 import io.github.luckymcdev.foundryengine.client.imgui.graphics.ImGuiGraphicsStack;
+import io.github.luckymcdev.foundryengine.client.util.Shortcut;
 
 /**
  * The Main Menu implementation. Manages the top info bar and also all Panels in the Panel Menu
@@ -22,7 +23,7 @@ public class MainMenu {
             ImGuiGraphicsStack gs = Client.getImGuiManager().getGraphicsStack();
             gs.push();
 
-            renderPanelsMenu();
+            renderOpenMenu();
             renderToolsMenu();
             renderViewMenu();
 
@@ -31,13 +32,23 @@ public class MainMenu {
         }
     }
 
+    public static void handleShortcuts() {
+        editor.getPanels().forEach(panel -> {
+            Shortcut shortcut = panel.getShortcut();
+            if (shortcut != null && shortcut.isPressed()) {
+                editor.togglePanel(panel);
+            }
+        });
+    }
+
+
     /**
      * Renders the Panels menu in the Main Menu Bar.
      */
-    private static void renderPanelsMenu() {
-        if (ImGui.beginMenu("Panels")) {
+    private static void renderOpenMenu() {
+        if (ImGui.beginMenu("Open")) {
             editor.getPanels().forEach(panel -> {
-                if (ImGui.menuItem(panel.getLabel(), "", editor.isOpen(panel))) {
+                if (ImGui.menuItem(panel.getLabel(), panel.getShortcut().toLabel(), editor.isOpen(panel))) {
                     editor.togglePanel(panel);
                 }
             });

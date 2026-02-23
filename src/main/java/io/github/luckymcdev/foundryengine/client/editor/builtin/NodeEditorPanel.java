@@ -2,8 +2,10 @@ package io.github.luckymcdev.foundryengine.client.editor.builtin;
 
 import com.mojang.logging.LogUtils;
 import imgui.ImGui;
+import imgui.flag.ImGuiKey;
 import io.github.luckymcdev.foundryengine.client.editor.Panel;
 import io.github.luckymcdev.foundryengine.client.imgui.node.*;
+import io.github.luckymcdev.foundryengine.client.util.Shortcut;
 import io.github.luckymcdev.foundryengine.common.Common;
 import org.slf4j.Logger;
 
@@ -26,7 +28,7 @@ public class NodeEditorPanel extends Panel {
      * Private constructor to enforce singleton pattern.
      */
     private NodeEditorPanel() {
-        super(Common.id("node_editor"), "Node Editor");
+        super(Common.id("node_editor"), "Node Editor", Shortcut.ctrl(ImGuiKey.N));
         this.nodeEditor = new NodeEditorInstance<>(new NodePinType<>("Float", NodePinShape.CIRCLE, null));
     }
 

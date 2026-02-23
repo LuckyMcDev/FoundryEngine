@@ -1,9 +1,11 @@
 package io.github.luckymcdev.foundryengine.client.editor.builtin;
 
 import imgui.ImGui;
+import imgui.flag.ImGuiKey;
 import io.github.luckymcdev.foundryengine.client.editor.Panel;
 import io.github.luckymcdev.foundryengine.client.imgui.EngineImGuiUtils;
 import io.github.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
+import io.github.luckymcdev.foundryengine.client.util.Shortcut;
 import io.github.luckymcdev.foundryengine.common.Common;
 import io.github.luckymcdev.foundryengine.common.color.Color;
 
@@ -17,7 +19,7 @@ public class TestPanel extends Panel {
      * Private constructor to enforce singleton pattern.
      */
     private TestPanel() {
-        super(Common.id("test_panel"), "My Panel");
+        super(Common.id("test_panel"), "My Panel", Shortcut.ctrl(ImGuiKey.T));
     }
 
     /**

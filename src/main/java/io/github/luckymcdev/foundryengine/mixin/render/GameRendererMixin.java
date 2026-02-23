@@ -32,6 +32,7 @@ public class GameRendererMixin implements TbGameRenderer {
         Client.getImGuiManager().begin();
         if (Client.getImGuiManager().isEnabled()) {
             MainMenu.handleRender();
+            MainMenu.handleShortcuts();
             tb$EDITOR_MANAGER.handleRender();
         }
         Client.getImGuiManager().end();

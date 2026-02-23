@@ -1,6 +1,7 @@
 package io.github.luckymcdev.foundryengine.client.editor.builtin;
 
 import imgui.ImGui;
+import imgui.flag.ImGuiKey;
 import imgui.flag.ImGuiTreeNodeFlags;
 import io.github.luckymcdev.foundryengine.client.Client;
 import io.github.luckymcdev.foundryengine.client.editor.Panel;
@@ -8,6 +9,7 @@ import io.github.luckymcdev.foundryengine.client.post.pipeline.PostProcessPipeli
 import io.github.luckymcdev.foundryengine.client.post.pipeline.param.PipelineParam;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.staged.PostProcessStage;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.staged.StagedPostProcessPipeline;
+import io.github.luckymcdev.foundryengine.client.util.Shortcut;
 import io.github.luckymcdev.foundryengine.common.Common;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -34,7 +36,7 @@ public class PostProcessPanel extends Panel {
      * Private constructor to enforce singleton pattern.
      */
     private PostProcessPanel() {
-        super(Common.id("post_process_panel"), "Post Processing Panel");
+        super(Common.id("post_process_panel"), "Post Processing Panel", Shortcut.ctrl(ImGuiKey.P));
     }
 
     /**
