@@ -45,9 +45,9 @@ public record Shortcut(int key, boolean ctrl, boolean shift, boolean alt) {
      */
     public String toLabel() {
         StringBuilder sb = new StringBuilder();
-        if (ctrl) sb.append("Ctrl+");
-        if (shift) sb.append("Shift+");
-        if (alt) sb.append("Alt+");
+        if (ctrl) sb.append("Ctrl + ");
+        if (shift) sb.append("Shift + ");
+        if (alt) sb.append("Alt + ");
         sb.append(ImGui.getKeyName(key));
         return sb.toString();
     }
