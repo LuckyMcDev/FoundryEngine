@@ -13,8 +13,11 @@ class TestBundle extends BundleEntrypoint {
     @Override
     void onLoad() {
         Dependency.hello()
+
+
+
+
         eventBus.addListener(ServerTickEvent.Post) { event ->
-            println "tick tack toe!"
         }
     }
 }
