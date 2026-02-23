@@ -13,4 +13,12 @@ public abstract class BundleEntrypoint {
      * Called when the bundle is loaded. Override to register listeners, run setup logic, etc.
      */
     public abstract void onLoad();
+
+    /**
+     * Called when the bundle is reloaded or removed.
+     */
+    public final void onUnload() {
+        // This removes any @SubscribeEvent methods on this object from the bus
+        eventBus.unregister(this);
+    }
 }

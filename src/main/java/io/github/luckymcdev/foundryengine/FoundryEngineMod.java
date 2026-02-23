@@ -12,7 +12,9 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLConstructModEvent;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
+import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -39,7 +41,13 @@ public class FoundryEngineMod {
 
         Common.post(new RegisterEngineThreadEvent());
 
+        NeoForge.EVENT_BUS.addListener(this::onAddReloadListeners);
+
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.COMMON_SPEC);
+    }
+
+    public void onAddReloadListeners(AddServerReloadListenersEvent event) {
+        event.addListener(Common.id("bundlemanager"), Common.getBundleManager());
     }
 
     private void onAddPackFinders(AddPackFindersEvent event) {

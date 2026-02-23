@@ -1,18 +1,24 @@
 package io.github.luckymcdev.foundryengine.common.bundle;
 
 import com.mojang.logging.LogUtils;
+import groovy.util.GroovyScriptEngine;
 import io.github.luckymcdev.foundryengine.common.Common;
 import io.github.luckymcdev.foundryengine.common.bundle.info.BundleFiles;
 import io.github.luckymcdev.foundryengine.common.bundle.info.BundleInfo;
 import io.github.luckymcdev.foundryengine.common.bundle.toml.BundleTomlParser;
 import io.github.luckymcdev.foundryengine.common.registry.GenericRegistry;
+import io.github.luckymcdev.foundryengine.common.script.BundleEntrypoint;
 import io.github.luckymcdev.foundryengine.common.script.BundleScriptLoader;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
+import net.neoforged.bus.api.IEventBus;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.file.*;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
@@ -126,22 +132,25 @@ public class BundleManager implements ResourceManagerReloadListener {
     private void loadBundleFile(Path file, Path bundleDir, FileSystem zipFs) {
         try {
             String content = Files.readString(file);
-            BundleTomlParser.parse(content).forEach(info -> loadBundleInfo(info, bundleDir, zipFs));
+            BundleTomlParser.parse(content).forEach(info -> loadBundle(info, bundleDir, zipFs));
         } catch (IOException e) {
             LOGGER.error("Failed to read bundle file: {}", file, e);
         }
     }
 
-    private void loadBundleInfo(BundleInfo info, Path bundleDir, FileSystem zipFs) {
+    private void loadBundle(BundleInfo info, Path bundleDir, @Nullable FileSystem zipFs) {
         try {
-            Bundle bundle = new Bundle(
-                    info,
-                    buildFileInfo(bundleDir),
-                    Common.getScriptEngineFactory().createScriptEngine(bundleDir),
-                    Common.getEventBusFactory().getEventBusFor(bundleDir),
-                    zipFs); // Bundle now owns the FileSystem
+            BundleFiles files = buildFileInfo(bundleDir);
+            GroovyScriptEngine engine = Common.getScriptEngineFactory().createScriptEngine(bundleDir);
+            IEventBus eventBus = Common.getEventBusFactory().getEventBusFor(bundleDir);
+
+            List<BundleEntrypoint> entrypoints = new ArrayList<>();
+
+            entrypoints.addAll(BundleScriptLoader.loadScripts(files, engine, eventBus, info.getId()));
+
+            Bundle bundle = new Bundle(info, files, engine, eventBus, entrypoints, zipFs);
+
             register(bundle);
-            BundleScriptLoader.loadScripts(bundle);
         } catch (IOException e) {
             LOGGER.error("Failed to create script engine for bundle '{}': {}", info.getId(), e.getLocalizedMessage());
         }
@@ -172,7 +181,33 @@ public class BundleManager implements ResourceManagerReloadListener {
     }
 
     @Override
-    public void onResourceManagerReload(ResourceManager resourceManager) {
-        BUNDLES.forEach(BundleScriptLoader::loadScripts);
+    public void onResourceManagerReload(@NonNull ResourceManager resourceManager) {
+        LOGGER.info("Reloading FoundryEngine Bundles...");
+
+        for (Bundle bundle : BUNDLES.values()) {
+            for (BundleEntrypoint ep : bundle.entrypoints()) {
+                try {
+                    ep.onUnload();
+                } catch (Exception e) {
+                    LOGGER.error("Error unloading script in bundle {}", bundle.info().getId(), e);
+                }
+            }
+
+            if (bundle.zipFileSystem() != null) {
+                try {
+                    bundle.zipFileSystem().close();
+                } catch (IOException ignored) {
+                }
+            }
+        }
+
+        this.BUNDLES.clear();
+        this.loadedBundles = 0;
+
+        try {
+            this.discover(Common.BUNDLES);
+        } catch (IOException e) {
+            LOGGER.error("Failed to reload bundles", e);
+        }
     }
 }

@@ -16,28 +16,39 @@ public class Panel {
     /**
      * The Id.
      */
-    private final Identifier id;
+    public final Identifier id;
     /**
      * The Label.
      */
-    private final String label;
+    public final String label;
+    /**
+     * The Panels opening Shortcut.
+     */
+    public final Shortcut shortcut;
     /**
      * If the Panel is Temporary.
      */
-    private final boolean temporary;
+    public boolean temporary;
+    /**
+     * If the Panel has a Menu Bar.
+     */
+    public boolean menuBar;
+    /**
+     * If the Panel is unsaved.
+     */
+    public boolean unsaved;
     /**
      * The Panels Style.
      */
-    private final PanelStyle style;
-    private final Shortcut shortcut;
+    public PanelStyle style;
     /**
      * If the Panel is Open.
      */
-    private boolean open;
+    public boolean open;
     /**
      * The Panels Type.
      */
-    private ImGuiWindowType type;
+    public ImGuiWindowType type;
 
     private boolean focused;
 
@@ -54,6 +65,7 @@ public class Panel {
         this.shortcut = shortcut;
         this.open = false;
         this.temporary = false;
+        this.menuBar = false;
         this.style = PanelStyle.NORMAL;
         this.type = ImGuiWindowType.WINDOW;
     }
@@ -89,11 +101,25 @@ public class Panel {
     private int getFlags() {
         int flags = ImGuiWindowFlags.None;
 
+        if (unsaved) {
+            flags |= ImGuiWindowFlags.UnsavedDocument;
+        }
+
         if (temporary) {
             flags |= ImGuiWindowFlags.NoSavedSettings;
         }
 
+        if (menuBar) {
+            flags |= ImGuiWindowFlags.MenuBar;
+        }
+
+        flags |= customFlags();
+
         return flags;
+    }
+
+    public int customFlags() {
+        return ImGuiWindowFlags.None;
     }
 
     /**

@@ -4,11 +4,11 @@ import imgui.flag.ImGuiKey;
 import io.github.luckymcdev.foundryengine.client.util.Shortcut;
 import io.github.luckymcdev.foundryengine.common.Common;
 
-public class MainEditorPanel extends EditorPanel {
-    public static final MainEditorPanel INSTANCE = new MainEditorPanel();
+public class MainEditor extends EditorPanel {
+    public static final MainEditor INSTANCE = new MainEditor();
 
 
-    private MainEditorPanel() {
+    private MainEditor() {
         super(Common.id("main_editor"), "Main Editor", Shortcut.ctrl(ImGuiKey.E));
     }
 }
