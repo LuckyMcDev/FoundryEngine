@@ -8,7 +8,6 @@ import imgui.type.ImString;
 import io.github.luckymcdev.foundryengine.client.Client;
 import io.github.luckymcdev.foundryengine.client.editor.builtin.FileExplorerPanel;
 import io.github.luckymcdev.foundryengine.client.editor.builtin.editor.EditorPanel;
-import io.github.luckymcdev.foundryengine.client.util.Shortcut;
 import net.minecraft.resources.Identifier;
 
 import java.util.function.Consumer;
@@ -21,7 +20,7 @@ public class CodeEditor extends EditorPanel {
     private Consumer<String> saveCallback;
 
     public CodeEditor(Identifier id, String fileName, String source) {
-        super(id, "Editor: " + fileName, Shortcut.ctrl(ImGuiKey.C));
+        super(id, "Editor: " + fileName);
         this.menuBar = true;
         this.fileName = fileName;
         this.originalSource = source;
