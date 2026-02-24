@@ -11,6 +11,7 @@ group = mod_group_id
 repositories {
     mavenLocal()
     mavenCentral()
+    maven { url = "https://keksuccino.github.io/maven/" }
 }
 
 base {
@@ -81,9 +82,8 @@ dependencies {
 }
 
 dependencies {
-    implementation "me.friwi:jcefmaven:${jcef_version}"
+    implementation "de.keksuccino:mcef-neoforge:${mcef_version}-${minecraft_version}"
 }
-
 
 dependencies {
     // SQLite and ORMLite

@@ -28,7 +28,6 @@ public class TestPanel extends Panel {
         // Render the panel's content
         ImGui.text("Hello, World!");
 
-
         ImGui.separator();
 
         ImGui.text("You dont know what i do? Hover it.");

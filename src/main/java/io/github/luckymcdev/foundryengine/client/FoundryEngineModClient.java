@@ -1,5 +1,6 @@
 package io.github.luckymcdev.foundryengine.client;
 
+import io.github.luckymcdev.foundryengine.client.editor.builtin.BrowserPanel;
 import io.github.luckymcdev.foundryengine.client.editor.builtin.FileExplorerPanel;
 import io.github.luckymcdev.foundryengine.client.editor.builtin.TestPanel;
 import io.github.luckymcdev.foundryengine.client.editor.builtin.editor.MainEditor;
@@ -57,6 +58,7 @@ public class FoundryEngineModClient {
     public static void onRegisterPanels(RegisterPanelEvent event) {
         event.register(PostProcessPanel.INSTANCE);
         event.register(TestPanel.INSTANCE);
+        event.register(BrowserPanel.INSTANCE);
         event.register(FileExplorerPanel.INSTANCE);
 
         event.register(GroovyEditorPanel.INSTANCE);

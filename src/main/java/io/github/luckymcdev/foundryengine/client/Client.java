@@ -129,7 +129,7 @@ public abstract class Client {
         return unwrapTexture(target.getDepthTexture());
     }
 
-    private static GlTexture unwrapTexture(Object tex) {
+    public static GlTexture unwrapTexture(Object tex) {
         return (tex instanceof ValidationGpuTexture val) ? (GlTexture) val.getRealTexture() : (GlTexture) tex;
     }
 
