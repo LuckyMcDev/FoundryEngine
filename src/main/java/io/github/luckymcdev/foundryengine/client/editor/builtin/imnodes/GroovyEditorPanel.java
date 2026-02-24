@@ -1,9 +1,9 @@
-package io.github.luckymcdev.foundryengine.client.editor.builtin.node;
+package io.github.luckymcdev.foundryengine.client.editor.builtin.imnodes;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import imgui.ImGui;
-import io.github.luckymcdev.foundryengine.client.imgui.node.lang.GroovyLanguageDefinition;
-import io.github.luckymcdev.foundryengine.client.imgui.node.lang.NodeLanguageDefinition;
+import io.github.luckymcdev.foundryengine.client.imgui.imnodes.lang.GroovyLanguageDefinition;
+import io.github.luckymcdev.foundryengine.client.imgui.imnodes.lang.NodeLanguageDefinition;
 import io.github.luckymcdev.foundryengine.client.util.Shortcut;
 import io.github.luckymcdev.foundryengine.common.Common;
 

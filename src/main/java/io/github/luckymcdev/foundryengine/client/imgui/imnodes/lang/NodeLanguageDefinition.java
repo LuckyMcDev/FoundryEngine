@@ -1,11 +1,11 @@
-package io.github.luckymcdev.foundryengine.client.imgui.node.lang;
+package io.github.luckymcdev.foundryengine.client.imgui.imnodes.lang;
 
 import imgui.ImGui;
-import io.github.luckymcdev.foundryengine.client.imgui.node.Node;
-import io.github.luckymcdev.foundryengine.client.imgui.node.NodeEditorInstance;
-import io.github.luckymcdev.foundryengine.client.imgui.node.pin.NodePin;
-import io.github.luckymcdev.foundryengine.client.imgui.node.pin.NodePinShape;
-import io.github.luckymcdev.foundryengine.client.imgui.node.pin.NodePinType;
+import io.github.luckymcdev.foundryengine.client.imgui.imnodes.Node;
+import io.github.luckymcdev.foundryengine.client.imgui.imnodes.NodeEditorInstance;
+import io.github.luckymcdev.foundryengine.client.imgui.imnodes.pin.NodePin;
+import io.github.luckymcdev.foundryengine.client.imgui.imnodes.pin.NodePinShape;
+import io.github.luckymcdev.foundryengine.client.imgui.imnodes.pin.NodePinType;
 
 import java.util.*;
 

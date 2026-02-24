@@ -5,6 +5,8 @@ import imgui.extension.imnodes.ImNodes;
 import imgui.extension.imnodes.ImNodesContext;
 import imgui.extension.implot.ImPlot;
 import imgui.extension.implot.ImPlotContext;
+import imgui.extension.nodeditor.NodeEditor;
+import imgui.extension.nodeditor.NodeEditorContext;
 import imgui.internal.ImGuiContext;
 
 /**
@@ -84,6 +86,31 @@ public class ImGuiContextTypes {
         @Override
         public void setCurrent(ImNodesContext context) {
             ImNodes.setCurrentContext(context);
+        }
+    };
+
+    /**
+     * {@link NodeEditorContext}
+     */
+    public static final ContextType<NodeEditorContext> NODE_EDITOR = new ContextType<>() {
+        @Override
+        public NodeEditorContext create() {
+            return new NodeEditorContext(NodeEditor.createEditor().ptr);
+        }
+
+        @Override
+        public NodeEditorContext getCurrent() {
+            return new NodeEditorContext(NodeEditor.getCurrentEditor().ptr);
+        }
+
+        @Override
+        public void setCurrent(NodeEditorContext context) {
+            NodeEditor.setCurrentEditor(context);
+        }
+
+        @Override
+        public void destroy(NodeEditorContext context) {
+            NodeEditor.destroyEditor(context);
         }
     };
 }

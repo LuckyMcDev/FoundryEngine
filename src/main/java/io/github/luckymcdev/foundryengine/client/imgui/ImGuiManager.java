@@ -97,6 +97,7 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
         CONTEXT_STACK.addContextType(ImGuiContextTypes.IMGUI);
         CONTEXT_STACK.addContextType(ImGuiContextTypes.IMPLOT);
         CONTEXT_STACK.addContextType(ImGuiContextTypes.IMNODES);
+        CONTEXT_STACK.addContextType(ImGuiContextTypes.NODE_EDITOR);
 
         final ImGuiIO io = ImGui.getIO();
         io.setIniFilename("toolbox.ini");

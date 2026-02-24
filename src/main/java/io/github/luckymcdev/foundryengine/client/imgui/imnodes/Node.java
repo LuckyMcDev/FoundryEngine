@@ -1,8 +1,8 @@
-package io.github.luckymcdev.foundryengine.client.imgui.node;
+package io.github.luckymcdev.foundryengine.client.imgui.imnodes;
 
-import io.github.luckymcdev.foundryengine.client.imgui.node.pin.NodePin;
-import io.github.luckymcdev.foundryengine.client.imgui.node.pin.NodePinConnectionType;
-import io.github.luckymcdev.foundryengine.client.imgui.node.pin.NodePinInfo;
+import io.github.luckymcdev.foundryengine.client.imgui.imnodes.pin.NodePin;
+import io.github.luckymcdev.foundryengine.client.imgui.imnodes.pin.NodePinConnectionType;
+import io.github.luckymcdev.foundryengine.client.imgui.imnodes.pin.NodePinInfo;
 
 import java.util.ArrayList;
 import java.util.List;

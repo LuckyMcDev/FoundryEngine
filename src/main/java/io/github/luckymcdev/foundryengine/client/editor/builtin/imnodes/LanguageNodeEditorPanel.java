@@ -1,9 +1,9 @@
-package io.github.luckymcdev.foundryengine.client.editor.builtin.node;
+package io.github.luckymcdev.foundryengine.client.editor.builtin.imnodes;
 
 import imgui.ImGui;
 import io.github.luckymcdev.foundryengine.client.editor.Panel;
-import io.github.luckymcdev.foundryengine.client.imgui.node.NodeEditorInstance;
-import io.github.luckymcdev.foundryengine.client.imgui.node.lang.NodeLanguageDefinition;
+import io.github.luckymcdev.foundryengine.client.imgui.imnodes.NodeEditorInstance;
+import io.github.luckymcdev.foundryengine.client.imgui.imnodes.lang.NodeLanguageDefinition;
 import io.github.luckymcdev.foundryengine.client.util.Shortcut;
 import net.minecraft.resources.Identifier;
 

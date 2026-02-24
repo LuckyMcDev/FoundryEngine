@@ -1,4 +1,4 @@
-package io.github.luckymcdev.foundryengine.client.imgui.node.pin;
+package io.github.luckymcdev.foundryengine.client.imgui.imnodes.pin;
 
 import imgui.extension.imnodes.flag.ImNodesPinShape;
 

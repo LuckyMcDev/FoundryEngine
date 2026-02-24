@@ -1,13 +1,13 @@
-package io.github.luckymcdev.foundryengine.client.imgui.node;
+package io.github.luckymcdev.foundryengine.client.imgui.imnodes;
 
 import imgui.ImGui;
 import imgui.extension.imnodes.ImNodes;
 import imgui.extension.imnodes.flag.ImNodesMiniMapLocation;
 import imgui.type.ImInt;
-import io.github.luckymcdev.foundryengine.client.imgui.node.pin.NodePin;
-import io.github.luckymcdev.foundryengine.client.imgui.node.pin.NodePinConnectionType;
-import io.github.luckymcdev.foundryengine.client.imgui.node.pin.NodePinInfo;
-import io.github.luckymcdev.foundryengine.client.imgui.node.pin.NodePinType;
+import io.github.luckymcdev.foundryengine.client.imgui.imnodes.pin.NodePin;
+import io.github.luckymcdev.foundryengine.client.imgui.imnodes.pin.NodePinConnectionType;
+import io.github.luckymcdev.foundryengine.client.imgui.imnodes.pin.NodePinInfo;
+import io.github.luckymcdev.foundryengine.client.imgui.imnodes.pin.NodePinType;
 import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import org.jetbrains.annotations.Nullable;
