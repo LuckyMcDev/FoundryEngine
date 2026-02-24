@@ -4,10 +4,8 @@ import imgui.ImGui;
 import imgui.flag.ImGuiKey;
 import io.github.luckymcdev.foundryengine.client.editor.Panel;
 import io.github.luckymcdev.foundryengine.client.imgui.EngineImGuiUtils;
-import io.github.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import io.github.luckymcdev.foundryengine.client.util.Shortcut;
 import io.github.luckymcdev.foundryengine.common.Common;
-import io.github.luckymcdev.foundryengine.common.color.Color;
 
 /**
  * A simple Test Panel.
@@ -35,10 +33,6 @@ public class TestPanel extends Panel {
 
         ImGui.text("You dont know what i do? Hover it.");
         EngineImGuiUtils.helpTooltip("BOO!");
-
-        EngineImGuiUtils.icon(ImIcons.FA.FA_NAVICON);
-
-        EngineImGuiUtils.icon(ImIcons.FA.FA_NAVICON, Color.RED);
 
         EngineImGuiUtils.h1(() -> ImGui.text("BIG"));
 

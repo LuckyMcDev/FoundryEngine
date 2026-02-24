@@ -31,22 +31,12 @@ public class EngineImGuiUtils {
     }
 
     /**
-     * Renders an icon
+     * Returns an icon
      *
      * @param icon The icon
      */
-    public static void icon(ImIcon icon) {
-        h3(() -> ImGui.text("" + icon));
-    }
-
-    /**
-     * Renders an icon with a color
-     *
-     * @param icon  The icon
-     * @param color The color of the icon
-     */
-    public static void icon(ImIcon icon, Color color) {
-        h3(() -> ImGui.textColored(color.argb(), "" + icon));
+    public static String icon(ImIcon icon) {
+        return "" + icon;
     }
 
     public static void h1(Runnable txt) {

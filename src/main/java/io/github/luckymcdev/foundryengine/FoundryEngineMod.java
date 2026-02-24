@@ -5,7 +5,6 @@ import io.github.luckymcdev.foundryengine.common.Common;
 import io.github.luckymcdev.foundryengine.common.thread.RegisterEngineThreadEvent;
 import io.github.luckymcdev.foundryengine.config.Config;
 import io.github.luckymcdev.foundryengine.server.packs.EngineRepositorySource;
-import net.minecraft.server.packs.PackType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -51,9 +50,7 @@ public class FoundryEngineMod {
     }
 
     private void onAddPackFinders(AddPackFindersEvent event) {
-        if (event.getPackType() == PackType.CLIENT_RESOURCES || event.getPackType() == PackType.SERVER_DATA) {
-            event.addRepositorySource(new EngineRepositorySource(event.getPackType()));
-        }
+        event.addRepositorySource(new EngineRepositorySource(event.getPackType()));
     }
 
     private void onConstruct(final FMLConstructModEvent event) {

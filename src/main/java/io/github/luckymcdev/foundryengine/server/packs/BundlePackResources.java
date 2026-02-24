@@ -40,17 +40,22 @@ public class BundlePackResources extends AbstractPackResources {
     @Override
     public IoSupplier<InputStream> getResource(PackType type, Identifier location) {
         if (type != packType) return null;
+
+        // Don't add type.getDirectory() again since root is already assets/ or data/
         Path file = root
-                .resolve(type.getDirectory())
                 .resolve(location.getNamespace())
                 .resolve(location.getPath());
+
         return Files.exists(file) ? () -> Files.newInputStream(file) : null;
     }
 
     @Override
     public void listResources(PackType type, String namespace, String prefix, ResourceOutput output) {
         if (type != packType) return;
-        Path namespacePath = root.resolve(type.getDirectory()).resolve(namespace);
+
+        // Don't add type.getDirectory() since root is already assets/ or data/
+        Path namespacePath = root.resolve(namespace);
+
         if (!Files.isDirectory(namespacePath)) return;
         try (var stream = Files.walk(namespacePath)) {
             stream.filter(Files::isRegularFile).forEach(file -> {
@@ -67,9 +72,11 @@ public class BundlePackResources extends AbstractPackResources {
     @Override
     public Set<String> getNamespaces(PackType type) {
         if (type != packType) return Set.of();
-        Path dir = root.resolve(type.getDirectory());
-        if (!Files.isDirectory(dir)) return Set.of();
-        try (var stream = Files.list(dir)) {
+
+        // root is already assets/ or data/, so list directly
+        if (!Files.isDirectory(root)) return Set.of();
+
+        try (var stream = Files.list(root)) {
             return stream.filter(Files::isDirectory)
                     .map(p -> p.getFileName().toString())
                     .collect(Collectors.toSet());

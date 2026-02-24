@@ -14,7 +14,8 @@ import net.minecraft.resources.Identifier;
 import java.util.function.Consumer;
 
 public class CodeEditor extends EditorPanel {
-    private final ImString codeBuffer = new ImString(100000);
+    private final ImString codeBuffer;
+    private final int bufferMultiplier = 1000;
     private String originalSource;
     private String fileName;
     private Consumer<String> saveCallback;
@@ -24,6 +25,7 @@ public class CodeEditor extends EditorPanel {
         this.menuBar = true;
         this.fileName = fileName;
         this.originalSource = source;
+        this.codeBuffer = new ImString(source.length() * bufferMultiplier);
         this.codeBuffer.set(source);
     }
 

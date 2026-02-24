@@ -2,6 +2,7 @@ package io.github.luckymcdev.foundryengine.client.post;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.logging.LogUtils;
 import io.github.luckymcdev.foundryengine.client.Client;
 import io.github.luckymcdev.foundryengine.client.event.RegisterRenderingStuffEvent;
 import io.github.luckymcdev.foundryengine.client.opengl.GlDispatch;
@@ -25,6 +26,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import org.lwjgl.opengl.GL43C;
+import org.slf4j.Logger;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -38,6 +40,7 @@ import java.util.stream.Collectors;
  */
 @EventBusSubscriber(Dist.CLIENT)
 public class PostProcessManager {
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final OpenGlStack GL_STACK = Client.getOpenGlStack();
     private static final int COLOR_TEXTURE_UNIT = 0;
     private static final int DEPTH_TEXTURE_UNIT = 1;
@@ -332,8 +335,16 @@ public class PostProcessManager {
     }
 
     public void addPipeline(PostProcessPipeline pipeline) {
-        PIPELINES.add(pipeline);
-        registerPipelinePrograms(pipeline);
+        // Check if a pipeline with this ID already exists
+        boolean exists = PIPELINES.stream()
+                .anyMatch(p -> p.getName().equals(pipeline.getName()));
+
+        if (!exists) {
+            PIPELINES.add(pipeline);
+            registerPipelinePrograms(pipeline);
+        } else {
+            LOGGER.debug("Pipeline '{}' already registered, skipping duplicate", pipeline.getName());
+        }
     }
 
     public void enablePipeline(PostProcessPipeline pipeline) {
@@ -345,8 +356,16 @@ public class PostProcessManager {
     }
 
     public void addPipeline(StagedPostProcessPipeline pipeline) {
-        STAGED_PIPELINES.add(pipeline);
-        registerPipelinePrograms(pipeline);
+        // Check if a pipeline with this ID already exists
+        boolean exists = STAGED_PIPELINES.stream()
+                .anyMatch(p -> p.getName().equals(pipeline.getName()));
+
+        if (!exists) {
+            STAGED_PIPELINES.add(pipeline);
+            registerPipelinePrograms(pipeline);
+        } else {
+            LOGGER.debug("Staged pipeline '{}' already registered, skipping duplicate", pipeline.getName());
+        }
     }
 
     public void enablePipeline(StagedPostProcessPipeline pipeline) {

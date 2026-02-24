@@ -81,6 +81,11 @@ dependencies {
 }
 
 dependencies {
+    implementation "me.friwi:jcefmaven:${jcef_version}"
+}
+
+
+dependencies {
     // SQLite and ORMLite
     jarJar(implementation("org.xerial:sqlite-jdbc:${sqlite_version}"))
     jarJar(implementation("com.j256:ormlite:${ormlite_version}"))

@@ -13,6 +13,7 @@ import io.github.luckymcdev.foundryengine.client.post.RegisterPostPipelineEvent;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.builtin.*;
 import io.github.luckymcdev.foundryengine.client.util.RegisterKeyBindingEvent;
 import io.github.luckymcdev.foundryengine.common.Common;
+import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -31,7 +32,6 @@ public class FoundryEngineModClient {
             Common.post(new RegisterRenderingStuffEvent(Client.getResourceManager()));
             Common.post(new RegisterGLSLPreProcessorEvent());
             Common.post(new RegisterPanelEvent());
-            Common.post(new RegisterPostPipelineEvent(Client.getPostProcessManager()));
         });
     }
 
@@ -78,6 +78,10 @@ public class FoundryEngineModClient {
     public static void addClientReloadListener(AddClientReloadListenersEvent event) {
         event.addListener(Common.id("imgui_handler"), Client.getImGuiManager());
         event.addListener(Common.id("shader_manager"), Client.getShaderManager());
+        event.addListener(Common.id("post_pipeline_init"),
+                (ResourceManagerReloadListener) resourceManager ->
+                        Common.post(new RegisterPostPipelineEvent(Client.getPostProcessManager()))
+        );
     }
 
     @SubscribeEvent
