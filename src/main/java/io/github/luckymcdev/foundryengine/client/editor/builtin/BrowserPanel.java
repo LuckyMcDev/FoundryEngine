@@ -14,6 +14,7 @@ public class BrowserPanel extends Panel {
     public static final BrowserPanel INSTANCE = new BrowserPanel();
     private final Minecraft minecraft = Minecraft.getInstance();
     private MCEFBrowser browser;
+    private String docType = "javadoc";
 
     private BrowserPanel() {
         super(Common.id("browser_panel"), "Web Browser");
@@ -22,7 +23,7 @@ public class BrowserPanel extends Panel {
     @Override
     public void onOpened() {
         if (browser == null) {
-            browser = MCEF.createBrowser("https://ace.c9.io/build/kitchen-sink.html", true);
+            browser = MCEF.createBrowser("https://google.com", true);
         }
     }
 
@@ -113,6 +114,22 @@ public class BrowserPanel extends Panel {
                 browser.sendMouseWheel(bX, bY, scrollY, 0);
             }
         }
+    }
+
+    public String getDocType() {
+        return docType;
+    }
+
+    public void setDocType(String newType) {
+        docType = newType;
+        if (docType.matches("javadoc"))
+            browser.loadURL("C:\\Data\\Projects\\FoundryEngine\\build\\docs\\javadoc\\index.html");
+        else if (docType.matches("doxygen"))
+            browser.loadURL("C:\\Data\\Projects\\FoundryEngine\\.docs\\html\\index.html");
+    }
+
+    public void reload() {
+        browser.reload();
     }
 
     @Override
