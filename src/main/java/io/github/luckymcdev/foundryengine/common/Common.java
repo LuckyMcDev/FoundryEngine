@@ -46,6 +46,10 @@ public abstract class Common {
      */
     public static final Path CACHE = FOUNDRY_ENGINE.resolve(".cache");
     /**
+     * Dumps Path
+     */
+    public static final Path DUMPS = CACHE.resolve("dumps");
+    /**
      * Config Path
      */
     public static final Path CONFIG_FE = FOUNDRY_ENGINE.resolve("config");

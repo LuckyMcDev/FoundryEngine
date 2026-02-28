@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import io.github.luckymcdev.foundryengine.common.Common;
 import io.github.luckymcdev.foundryengine.common.thread.RegisterEngineThreadEvent;
 import io.github.luckymcdev.foundryengine.config.Config;
+import io.github.luckymcdev.foundryengine.server.command.FoundryCommands;
 import io.github.luckymcdev.foundryengine.server.packs.EngineRepositorySource;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -14,6 +15,7 @@ import net.neoforged.fml.event.lifecycle.FMLConstructModEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -42,6 +44,8 @@ public class FoundryEngineMod {
 
         NeoForge.EVENT_BUS.addListener(this::onAddReloadListeners);
 
+        NeoForge.EVENT_BUS.addListener(this::onRegisterCommands);
+
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.COMMON_SPEC);
     }
 
@@ -51,6 +55,10 @@ public class FoundryEngineMod {
 
     private void onAddPackFinders(AddPackFindersEvent event) {
         event.addRepositorySource(new EngineRepositorySource(event.getPackType()));
+    }
+
+    private void onRegisterCommands(RegisterCommandsEvent event) {
+        FoundryCommands.registerAll(event.getDispatcher());
     }
 
     private void onConstruct(final FMLConstructModEvent event) {
