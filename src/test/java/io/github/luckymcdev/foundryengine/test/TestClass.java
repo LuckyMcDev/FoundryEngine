@@ -1,8 +1,7 @@
-package io.github.luckymcdev;
+package io.github.luckymcdev.foundryengine.test;
 
 import net.minecraft.server.MinecraftServer;
 import net.neoforged.testframework.junit.EphemeralTestServerProvider;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
