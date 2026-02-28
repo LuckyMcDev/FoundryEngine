@@ -1,5 +1,8 @@
 package io.github.luckymcdev.foundryengine.common.bundle.info;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import java.util.List;
 
 /**
@@ -8,6 +11,12 @@ import java.util.List;
  * All specified in "${bundleId}.bundles.toml"
  */
 public class BundleInfo {
+    public static final Codec<BundleInfo> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Codec.STRING.fieldOf("id").forGetter(BundleInfo::getId),
+            Codec.STRING.fieldOf("display_name").forGetter(BundleInfo::getDisplayName),
+            Codec.STRING.listOf().fieldOf("authors").forGetter(BundleInfo::getAuthors),
+            VersionInfo.CODEC.fieldOf("version").forGetter(BundleInfo::getBundleVersion)
+    ).apply(instance, BundleInfo::new));
 
     private final String id;
     private final String displayName;
@@ -43,6 +52,17 @@ public class BundleInfo {
     }
 
     public record VersionInfo(int major, int minor, int patch) {
+        public static final Codec<VersionInfo> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                Codec.INT.fieldOf("major").forGetter(VersionInfo::major),
+                Codec.INT.fieldOf("minor").forGetter(VersionInfo::minor),
+                Codec.INT.fieldOf("patch").forGetter(VersionInfo::patch)
+        ).apply(instance, VersionInfo::new));
+
+        public static final Codec<VersionInfo> STRING_CODEC = Codec.STRING.xmap(
+                VersionInfo::parse,
+                VersionInfo::toString
+        );
+
         public static VersionInfo parse(String version) {
             String[] parts = version.split("\\.");
             if (parts.length != 3) {
