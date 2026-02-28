@@ -19,8 +19,10 @@ import io.github.luckymcdev.foundryengine.interfaces.TbMinecraft;
 import net.minecraft.client.Camera;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.neoforged.neoforge.client.blaze3d.validation.ValidationGpuDevice;
@@ -34,6 +36,7 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public abstract class Client {
@@ -105,6 +108,18 @@ public abstract class Client {
 
     public static Camera getMainCamera() {
         return getGameRenderer().getMainCamera();
+    }
+
+    public static ClientPacketListener getConnection() {
+        return getMinecraft().getConnection();
+    }
+
+    public static void sendCommand(String command) {
+        Objects.requireNonNull(getConnection()).sendCommand(command);
+    }
+
+    public static void sendPacket(Packet<?> packet) {
+        Objects.requireNonNull(getConnection()).send(packet);
     }
 
     // Rendering
