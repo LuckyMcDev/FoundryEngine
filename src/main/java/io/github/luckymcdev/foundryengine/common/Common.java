@@ -3,8 +3,6 @@ package io.github.luckymcdev.foundryengine.common;
 import com.mojang.logging.LogUtils;
 import io.github.luckymcdev.foundryengine.common.bundle.BundleManager;
 import io.github.luckymcdev.foundryengine.common.files.FileManager;
-import io.github.luckymcdev.foundryengine.common.script.ScriptEngineFactory;
-import io.github.luckymcdev.foundryengine.common.script.ScriptEventBusFactory;
 import io.github.luckymcdev.foundryengine.common.thread.ThreadManager;
 import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.Event;
@@ -56,9 +54,6 @@ public abstract class Common {
 
     private static final FileManager FILE_MANAGER = new FileManager();
     private static final BundleManager BUNDLE_MANAGER = new BundleManager();
-    private static final ScriptEngineFactory SCRIPT_ENGINE_FACTORY = new ScriptEngineFactory();
-    private static final ScriptEventBusFactory SCRIPT_EVENT_BUS_FACTORY = new ScriptEventBusFactory();
-
     /**
      * Returns an {@link Identifier} where the namespace is {@link #MODID}
      *
@@ -84,14 +79,6 @@ public abstract class Common {
 
     public static BundleManager getBundleManager() {
         return BUNDLE_MANAGER;
-    }
-
-    public static ScriptEngineFactory getScriptEngineFactory() {
-        return SCRIPT_ENGINE_FACTORY;
-    }
-
-    public static ScriptEventBusFactory getEventBusFactory() {
-        return SCRIPT_EVENT_BUS_FACTORY;
     }
 
     // Event Bus
