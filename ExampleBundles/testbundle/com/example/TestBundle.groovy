@@ -9,8 +9,10 @@ import com.example.dep.Dependency
 import com.example.post.TestPostProcessPipeline
 import net.minecraft.network.chat.Component
 
+/**
+ * This File is a basic test for the Scripting.
+ */
 class TestBundle extends BundleEntrypoint {
-    private int tickCounter = 0
 
     TestBundle(IEventBus eventBus) {
         super(eventBus)
