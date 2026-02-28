@@ -43,7 +43,7 @@ public class HandCommand implements EngineCommand {
                         MutableComponent line = Component.literal("  - ")
                                 .append(Component.literal(typeId).withStyle(ChatFormatting.WHITE))
                                 .append(Component.literal(": ").withStyle(ChatFormatting.GRAY))
-                                .append(Component.literal(StringUtil.trimChatMessage(typ)).withStyle(ChatFormatting.GREEN));
+                                .append(Component.literal(StringUtil.trimChatMessage(typeId)).withStyle(ChatFormatting.GREEN));
 
                         line.withStyle(style -> style
                                 .withHoverEvent(new HoverEvent.ShowText(Component.literal(valueStr)))
