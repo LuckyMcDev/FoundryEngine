@@ -2,6 +2,7 @@ package io.github.luckymcdev.foundryengine;
 
 import com.mojang.logging.LogUtils;
 import io.github.luckymcdev.foundryengine.common.Common;
+import io.github.luckymcdev.foundryengine.common.log.EngineLogAppender;
 import io.github.luckymcdev.foundryengine.common.thread.RegisterEngineThreadEvent;
 import io.github.luckymcdev.foundryengine.config.Config;
 import io.github.luckymcdev.foundryengine.server.command.FoundryCommands;
@@ -26,7 +27,6 @@ import java.io.IOException;
 @Mod(Common.MODID)
 public class FoundryEngineMod {
     private static final Logger LOGGER = LogUtils.getLogger();
-
     /**
      * Initializes the mod and registers events.
      *
@@ -68,6 +68,7 @@ public class FoundryEngineMod {
             LOGGER.error("Error while Loading Bundles: {}", e.getLocalizedMessage());
         }
 
+        EngineLogAppender.Holder.addAppender();
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
