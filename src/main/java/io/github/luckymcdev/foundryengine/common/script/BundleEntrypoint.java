@@ -4,8 +4,10 @@ import net.neoforged.bus.api.IEventBus;
 
 public abstract class BundleEntrypoint {
     protected final IEventBus eventBus;
+    protected final IEventBus bundleBus;
 
-    protected BundleEntrypoint(IEventBus eventBus) {
+    protected BundleEntrypoint(IEventBus bundleBus, IEventBus eventBus) {
+        this.bundleBus = bundleBus;
         this.eventBus = eventBus;
     }
 

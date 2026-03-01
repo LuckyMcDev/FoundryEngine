@@ -22,6 +22,7 @@ public record Bundle(
         BundleFiles bundleFiles,
         GroovyScriptEngine scriptEngine,
         IEventBus eventBus,
+        IEventBus bundleBus,
         List<BundleEntrypoint> entrypoints,
         @Nullable FileSystem zipFileSystem
 ) {

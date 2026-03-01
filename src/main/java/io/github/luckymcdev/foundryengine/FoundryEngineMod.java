@@ -2,6 +2,7 @@ package io.github.luckymcdev.foundryengine;
 
 import com.mojang.logging.LogUtils;
 import io.github.luckymcdev.foundryengine.common.Common;
+import io.github.luckymcdev.foundryengine.common.bundle.Bundle;
 import io.github.luckymcdev.foundryengine.common.data.EngineGenerator;
 import io.github.luckymcdev.foundryengine.common.log.EngineLogAppender;
 import io.github.luckymcdev.foundryengine.common.thread.RegisterEngineThreadEvent;
@@ -14,10 +15,12 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLConstructModEvent;
+import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.registries.RegisterEvent;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -40,6 +43,10 @@ public class FoundryEngineMod {
         modEventBus.addListener(this::onConstruct);
 
         modEventBus.addListener(this::onAddPackFinders);
+
+        modEventBus.addListener(this::onInterModEnqueue);
+
+        modEventBus.addListener(this::onRegister);
 
         Common.post(new RegisterEngineThreadEvent());
 
@@ -69,14 +76,22 @@ public class FoundryEngineMod {
             LOGGER.error("Error while Loading Bundles: {}", e.getLocalizedMessage());
         }
 
+        EngineLogAppender.Holder.addAppender();
+    }
+
+    private void onInterModEnqueue(InterModEnqueueEvent event) {
         try {
             EngineGenerator engineGen = new EngineGenerator();
             engineGen.run();
         } catch (IOException e) {
             LOGGER.error("Error while running engine generator: {}", e.getLocalizedMessage());
         }
+    }
 
-        EngineLogAppender.Holder.addAppender();
+    private void onRegister(RegisterEvent event) {
+        for (Bundle bundle : Common.getBundleManager().getBundles()) {
+            bundle.bundleBus().post(event);
+        }
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {

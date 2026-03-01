@@ -16,7 +16,7 @@ public class BundleScriptLoader {
     private static final Logger LOGGER = LogUtils.getLogger();
 
     // Changed return type from void to List<BundleEntrypoint>
-    public static List<BundleEntrypoint> loadScripts(BundleFiles files, GroovyScriptEngine engine, IEventBus eventBus, String bundleId) {
+    public static List<BundleEntrypoint> loadScripts(BundleFiles files, GroovyScriptEngine engine, IEventBus bundleBus, IEventBus eventBus, String bundleId) {
         List<BundleEntrypoint> liveEntrypoints = new ArrayList<>();
 
         for (Path scriptPath : files.scripts()) {
@@ -27,11 +27,11 @@ public class BundleScriptLoader {
 
                     if (BundleEntrypoint.class.isAssignableFrom(clazz)) {
                         BundleEntrypoint script = (BundleEntrypoint) clazz
-                                .getConstructor(IEventBus.class)
-                                .newInstance(eventBus);
+                                .getConstructor(IEventBus.class, IEventBus.class)
+                                .newInstance(bundleBus, eventBus);
 
                         script.onLoad();
-                        liveEntrypoints.add(script); // Collect the instance
+                        liveEntrypoints.add(script);
                         LOGGER.debug("Loaded entry point script '{}' for bundle '{}'", scriptName, bundleId);
                     }
                 }

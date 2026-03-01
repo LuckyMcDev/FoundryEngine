@@ -12,6 +12,7 @@ import io.github.luckymcdev.foundryengine.common.script.BundleScriptLoader;
 import io.github.luckymcdev.foundryengine.common.script.ScriptEngineModifyEvent;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
+import net.neoforged.bus.api.BusBuilder;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.common.NeoForge;
@@ -155,11 +156,17 @@ public class BundleManager implements ResourceManagerReloadListener {
 
             IEventBus eventBus = NeoForge.EVENT_BUS;
 
+            IEventBus bundleBus = BusBuilder.builder().allowPerPhasePost()
+                    .setExceptionHandler((bus, event, listeners, index, throwable) -> {
+                        LOGGER.error("Bundle '{}' faulted during event {}: {}", info.getId(), event.getClass().getSimpleName(), throwable.getMessage());
+                    })
+                    .build();
+
             List<BundleEntrypoint> entrypoints = new ArrayList<>();
 
-            entrypoints.addAll(BundleScriptLoader.loadScripts(files, engine, eventBus, info.getId()));
+            entrypoints.addAll(BundleScriptLoader.loadScripts(files, engine, bundleBus, eventBus, info.getId()));
 
-            Bundle bundle = new Bundle(info, files, engine, eventBus, entrypoints, zipFs);
+            Bundle bundle = new Bundle(info, files, engine, eventBus, bundleBus, entrypoints, zipFs);
 
             register(bundle);
         } catch (IOException e) {
