@@ -19,7 +19,7 @@ public abstract class BundleEntrypoint {
     /**
      * Called when the bundle is reloaded or removed.
      */
-    public final void onUnload() {
+    public void onUnload() {
         // This removes any @SubscribeEvent methods on this object from the bus
         eventBus.unregister(this);
     }

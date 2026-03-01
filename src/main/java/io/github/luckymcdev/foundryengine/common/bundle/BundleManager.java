@@ -202,8 +202,7 @@ public class BundleManager implements ResourceManagerReloadListener {
         return BUNDLES.values();
     }
 
-    @Override
-    public void onResourceManagerReload(@NonNull ResourceManager resourceManager) {
+    public void reload() {
         LOGGER.info("Reloading FoundryEngine Bundles...");
 
         for (Bundle bundle : BUNDLES.values()) {
@@ -231,5 +230,10 @@ public class BundleManager implements ResourceManagerReloadListener {
         } catch (IOException e) {
             LOGGER.error("Failed to reload bundles", e);
         }
+    }
+
+    @Override
+    public void onResourceManagerReload(@NonNull ResourceManager resourceManager) {
+        reload();
     }
 }
