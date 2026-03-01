@@ -23,7 +23,7 @@ import java.util.Comparator;
 public class FileExplorerPanel extends Panel {
     private static final Logger LOGGER = LogUtils.getLogger();
     public static final FileExplorerPanel INSTANCE = new FileExplorerPanel();
-    private final File rootDir = new File(Common.FOUNDRY_ENGINE.toAbsolutePath().toString());
+    private final File rootDir = Common.FOUNDRY_ENGINE.toFile();
 
     public FileExplorerPanel() {
         super(Common.id("file_explorer"), "File Explorer", Shortcut.ctrl(ImGuiKey.F));
@@ -31,7 +31,6 @@ public class FileExplorerPanel extends Panel {
 
     @Override
     public void content() {
-        // Add a slight padding and search-bar-like header if desired
         ImGui.textDisabled("Project Root: " + rootDir.getName());
         ImGui.separator();
 
@@ -98,7 +97,7 @@ public class FileExplorerPanel extends Panel {
         }
 
         if (name.endsWith(".json") || name.endsWith(".toml") || name.endsWith(".yaml") || name.endsWith(".yml")) {
-            return EngineImGuiUtils.icon(ImIcons.FA.FA_FILE_IMPORT); // Good for config/data
+            return EngineImGuiUtils.icon(ImIcons.FA.FA_FILE_IMPORT);
         }
 
         if (name.endsWith(".png") || name.endsWith(".jpg") || name.endsWith(".jpeg") || name.endsWith(".tga")) {

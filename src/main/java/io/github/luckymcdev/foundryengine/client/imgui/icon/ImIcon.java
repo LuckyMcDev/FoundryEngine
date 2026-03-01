@@ -13,4 +13,8 @@ public interface ImIcon {
     default String iconName() {
         return ((Enum<?>) this).name();
     }
+
+    default String iconText(String text) {
+        return this + text;
+    }
 }

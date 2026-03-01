@@ -8,19 +8,20 @@ import imgui.type.ImString;
 import io.github.luckymcdev.foundryengine.client.Client;
 import io.github.luckymcdev.foundryengine.client.editor.builtin.FileExplorerPanel;
 import io.github.luckymcdev.foundryengine.client.editor.builtin.editor.EditorPanel;
+import io.github.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import net.minecraft.resources.Identifier;
 
 import java.util.function.Consumer;
 
 public class CodeEditor extends EditorPanel {
     private final ImString codeBuffer;
-    private final int bufferMultiplier = 1000;
+    private final int bufferMultiplier = 100;
     private String originalSource;
     private String fileName;
     private Consumer<String> saveCallback;
 
     public CodeEditor(Identifier id, String fileName, String source) {
-        super(id, "Editor: " + fileName);
+        super(id, ImIcons.FA.FA_EDIT + " Editor: " + fileName);
         this.menuBar = true;
         this.fileName = fileName;
         this.originalSource = source;
