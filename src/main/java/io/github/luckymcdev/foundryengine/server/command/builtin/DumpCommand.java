@@ -9,8 +9,10 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.IdentifierArgument;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.permissions.Permissions;
 import org.slf4j.Logger;
 
 import java.io.BufferedWriter;
@@ -28,8 +30,9 @@ public class DumpCommand implements EngineCommand {
     private static int dumpRegistries(CommandContext<CommandSourceStack> context, Optional<Identifier> filter) {
         CommandSourceStack source = context.getSource();
         String timestamp = LocalDateTime.now().format(TIME_FORMAT);
-        String fileName = filter.map(resourceLocation -> "dump-" + resourceLocation.getPath() + "-" + timestamp + ".txt")
-                .orElseGet(() -> "dump-all-" + timestamp + ".txt");
+
+        String fileName = filter.map(id -> "dump-" + id.getPath().replace(":", "_") + "-" + timestamp + ".txt")
+                .orElse("dump-all-" + timestamp + ".txt");
 
         Path outputPath = Common.DUMPS.resolve(fileName);
 
@@ -37,19 +40,19 @@ public class DumpCommand implements EngineCommand {
             Files.createDirectories(outputPath.getParent());
             try (BufferedWriter writer = Files.newBufferedWriter(outputPath)) {
                 writer.write("FoundryEngine Registry Dump - " + timestamp + "\n");
-                writer.write("==========================================\n\n");
+                writer.write("====================================================\n\n");
 
-                source.getServer().registryAccess().registries().forEach(entry -> {
-                    Identifier registryId = entry.key().identifier();
+                BuiltInRegistries.REGISTRY.entrySet().forEach(entry -> {
+                    Identifier registryId = entry.getKey().identifier();
 
-                    // If a filter is present, skip registries that don't match
                     if (filter.isPresent() && !filter.get().equals(registryId)) {
                         return;
                     }
 
-                    Registry<?> registry = entry.value();
+                    Registry<?> registry = entry.getValue();
                     try {
                         writer.write("Registry: " + registryId + " (" + registry.size() + " entries)\n");
+
                         registry.keySet().stream().sorted().forEach(key -> {
                             try {
                                 writer.write("  - " + key + "\n");
@@ -64,7 +67,7 @@ public class DumpCommand implements EngineCommand {
                 });
             }
 
-            source.sendSuccess(() -> Component.literal("Dump saved to: " + outputPath.getFileName()), true);
+            source.sendSuccess(() -> Component.literal("Built-in dump saved to: " + outputPath.getFileName()), true);
             return 1;
         } catch (IOException e) {
             LOGGER.error("Could not create dump file", e);
@@ -76,14 +79,14 @@ public class DumpCommand implements EngineCommand {
     @Override
     public LiteralArgumentBuilder<CommandSourceStack> build() {
         return Commands.literal("dump")
+                .requires(stack -> stack.permissions().hasPermission(Permissions.COMMANDS_ADMIN))
                 .then(Commands.literal("all")
                         .executes(context -> dumpRegistries(context, Optional.empty()))
                 )
                 .then(Commands.literal("registry")
                         .then(Commands.argument("registry_name", IdentifierArgument.id())
                                 .suggests((ctx, builder) -> {
-                                    ctx.getSource().getServer().registryAccess().registries()
-                                            .forEach(entry -> builder.suggest(entry.key().identifier().toString()));
+                                    BuiltInRegistries.REGISTRY.keySet().forEach(id -> builder.suggest(id.toString()));
                                     return builder.buildFuture();
                                 })
                                 .executes(context -> {
