@@ -6,6 +6,7 @@ import org.apache.logging.log4j.core.Layout;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.core.appender.AbstractAppender;
+import org.apache.logging.log4j.core.config.Property;
 
 import java.io.Serializable;
 import java.util.LinkedList;
@@ -17,12 +18,17 @@ public class EngineLogAppender extends AbstractAppender {
     public int maxLines = 1000;
     private Consumer<LogEntry> logListener;
 
-    protected EngineLogAppender(String name, Filter filter, Layout<? extends Serializable> layout, boolean ignoreExceptions) {
-        super(name, filter, layout, ignoreExceptions);
+    protected EngineLogAppender(
+            final String name,
+            final Filter filter,
+            final Layout<? extends Serializable> layout,
+            final boolean ignoreExceptions,
+            final Property[] properties) {
+        super(name, filter, layout, ignoreExceptions, properties);
     }
 
     public static EngineLogAppender create(String name) {
-        return new EngineLogAppender(name, null, null, true);
+        return new EngineLogAppender(name, null, null, true, Property.EMPTY_ARRAY);
     }
 
     public void setListener(Consumer<LogEntry> listener) {
