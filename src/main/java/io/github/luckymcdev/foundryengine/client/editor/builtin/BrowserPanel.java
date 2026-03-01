@@ -23,7 +23,7 @@ public class BrowserPanel extends Panel {
     @Override
     public void onOpened() {
         if (browser == null) {
-            browser = MCEF.createBrowser("https://google.com", true);
+            browser = MCEF.createBrowser("https://example.com", true);
         }
     }
 
