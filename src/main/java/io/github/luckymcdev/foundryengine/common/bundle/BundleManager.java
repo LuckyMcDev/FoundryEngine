@@ -9,11 +9,13 @@ import io.github.luckymcdev.foundryengine.common.bundle.toml.BundleTomlParser;
 import io.github.luckymcdev.foundryengine.common.registry.GenericRegistry;
 import io.github.luckymcdev.foundryengine.common.script.BundleEntrypoint;
 import io.github.luckymcdev.foundryengine.common.script.BundleScriptLoader;
+import io.github.luckymcdev.foundryengine.common.script.ScriptEngineModifyEvent;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.common.NeoForge;
+import org.codehaus.groovy.control.CompilerConfiguration;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 
@@ -145,6 +147,12 @@ public class BundleManager implements ResourceManagerReloadListener {
         try {
             BundleFiles files = buildFileInfo(bundleDir);
             GroovyScriptEngine engine = new GroovyScriptEngine(new URL[]{bundleDir.toUri().toURL()}, FMLLoader.getCurrent().getCurrentClassLoader());
+            CompilerConfiguration compilerConfiguration = new CompilerConfiguration();
+
+            Common.post(new ScriptEngineModifyEvent(engine, compilerConfiguration));
+
+            engine.setConfig(compilerConfiguration);
+
             IEventBus eventBus = NeoForge.EVENT_BUS;
 
             List<BundleEntrypoint> entrypoints = new ArrayList<>();
