@@ -33,7 +33,7 @@ class TestBundle extends BundleEntrypoint {
         if (event.getServer().tickCount % 20 == 0) {
             event.getServer().getPlayerList().getPlayers().forEach { player ->
 
-                player.sendSystemMessage(Component.literal("Live editing. Also from the ingame editor now!"))
+                //player.sendSystemMessage(Component.literal("Live editing. Also from the ingame editor now!"))
 			
 
                 Dependency.hello(player)
