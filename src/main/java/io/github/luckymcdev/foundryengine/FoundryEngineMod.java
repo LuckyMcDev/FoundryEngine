@@ -2,6 +2,7 @@ package io.github.luckymcdev.foundryengine;
 
 import com.mojang.logging.LogUtils;
 import io.github.luckymcdev.foundryengine.common.Common;
+import io.github.luckymcdev.foundryengine.common.generator.EngineGenerator;
 import io.github.luckymcdev.foundryengine.common.log.EngineLogAppender;
 import io.github.luckymcdev.foundryengine.common.thread.RegisterEngineThreadEvent;
 import io.github.luckymcdev.foundryengine.config.Config;
@@ -66,6 +67,13 @@ public class FoundryEngineMod {
             Common.getBundleManager().discover(Common.BUNDLES);
         } catch (IOException e) {
             LOGGER.error("Error while Loading Bundles: {}", e.getLocalizedMessage());
+        }
+
+        try {
+            EngineGenerator engineGen = new EngineGenerator();
+            engineGen.run();
+        } catch (IOException e) {
+            LOGGER.error("Error while running engine generator: {}", e.getLocalizedMessage());
         }
 
         EngineLogAppender.Holder.addAppender();

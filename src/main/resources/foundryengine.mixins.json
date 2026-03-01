@@ -4,6 +4,7 @@
   "package": "io.github.luckymcdev.foundryengine.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "data.DataGeneratorMixin"
   ],
   "client": [
     "MinecraftMixin"
