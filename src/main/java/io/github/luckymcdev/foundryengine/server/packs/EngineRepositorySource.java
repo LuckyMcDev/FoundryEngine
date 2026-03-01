@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import io.github.luckymcdev.foundryengine.common.Common;
 import io.github.luckymcdev.foundryengine.common.bundle.Bundle;
 import io.github.luckymcdev.foundryengine.common.bundle.info.BundleFiles;
+import io.github.luckymcdev.foundryengine.config.Config;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackResources;
@@ -28,15 +29,20 @@ public class EngineRepositorySource implements RepositorySource {
     }
 
     @Override
-    public void loadPacks(Consumer<Pack> consumer) {
+    public void loadPacks(@NonNull Consumer<Pack> consumer) {
+        if (!Config.RESOURCES_ENABLED.get()) {
+            LOGGER.info("Bundle resource loading is disabled in config.");
+            return;
+        }
+
         Common.getBundleManager().getBundles().forEach(bundle -> {
-            LOGGER.debug("Registering pack for bundle: {}", bundle.info().getId());
+            LOGGER.debug("Registering pack for bundle: {}", bundle.info().id());
             loadPackFor(bundle, consumer);
         });
     }
 
     private void loadPackFor(Bundle bundle, Consumer<Pack> consumer) {
-        String id = bundle.info().getId();
+        String id = bundle.info().id();
         BundleFiles files = bundle.bundleFiles();
 
         Path path = packType == PackType.CLIENT_RESOURCES ? files.assets() : files.data();

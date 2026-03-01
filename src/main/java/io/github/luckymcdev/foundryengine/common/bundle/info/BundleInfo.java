@@ -2,49 +2,22 @@ package io.github.luckymcdev.foundryengine.common.bundle.info;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.neoforged.neoforgespi.language.IModInfo;
 
 import java.util.List;
 
 /**
- * Similar to {@link net.neoforged.neoforgespi.language.IModInfo}
+ * Similar to {@link IModInfo}
  * <br>
  * All specified in "${bundleId}.bundles.toml"
  */
-public class BundleInfo {
+public record BundleInfo(String id, String displayName, List<String> authors, VersionInfo versionInfo) {
     public static final Codec<BundleInfo> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Codec.STRING.fieldOf("id").forGetter(BundleInfo::getId),
-            Codec.STRING.fieldOf("display_name").forGetter(BundleInfo::getDisplayName),
-            Codec.STRING.listOf().fieldOf("authors").forGetter(BundleInfo::getAuthors),
-            VersionInfo.CODEC.fieldOf("version").forGetter(BundleInfo::getBundleVersion)
+            Codec.STRING.fieldOf("id").forGetter(BundleInfo::id),
+            Codec.STRING.fieldOf("display_name").forGetter(BundleInfo::displayName),
+            Codec.STRING.listOf().fieldOf("authors").forGetter(BundleInfo::authors),
+            VersionInfo.CODEC.fieldOf("version").forGetter(BundleInfo::versionInfo)
     ).apply(instance, BundleInfo::new));
-
-    private final String id;
-    private final String displayName;
-    private final List<String> authors;
-    private final VersionInfo versionInfo;
-
-    public BundleInfo(String id, String displayName, List<String> authors, VersionInfo versionInfo) {
-        this.id = id;
-        this.displayName = displayName;
-        this.authors = authors;
-        this.versionInfo = versionInfo;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    public List<String> getAuthors() {
-        return authors;
-    }
-
-    public VersionInfo getBundleVersion() {
-        return versionInfo;
-    }
 
     @Override
     public String toString() {

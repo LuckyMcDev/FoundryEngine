@@ -5,6 +5,7 @@ import groovy.util.GroovyScriptEngine;
 import io.github.luckymcdev.foundryengine.common.Common;
 import io.github.luckymcdev.foundryengine.common.bundle.info.BundleFiles;
 import io.github.luckymcdev.foundryengine.common.bundle.info.BundleInfo;
+import io.github.luckymcdev.foundryengine.common.bundle.registry.BundleRegistryQuery;
 import io.github.luckymcdev.foundryengine.common.bundle.toml.BundleTomlParser;
 import io.github.luckymcdev.foundryengine.common.registry.GenericRegistry;
 import io.github.luckymcdev.foundryengine.common.script.BundleEntrypoint;
@@ -39,19 +40,19 @@ public class BundleManager implements ResourceManagerReloadListener {
     }
 
     public void register(Bundle bundle) {
-        BUNDLES.register(bundle.info().getId(), bundle);
-        LOGGER.debug("Registered Bundle: {} with Info: {}", bundle.info().getId(), bundle.info());
+        BUNDLES.register(bundle.info().id(), bundle);
+        LOGGER.debug("Registered Bundle: {} with Info: {}", bundle.info().id(), bundle.info());
     }
 
     public void remove(Bundle bundle) {
-        BUNDLES.remove(bundle.info().getId());
+        BUNDLES.remove(bundle.info().id());
         FileSystem fs = bundle.zipFileSystem();
         if (fs != null && fs.isOpen()) {
             try {
                 fs.close();
             } catch (IOException e) {
                 LOGGER.warn("Failed to close ZIP FileSystem for bundle '{}': {}",
-                        bundle.info().getId(), e.getLocalizedMessage());
+                        bundle.info().id(), e.getLocalizedMessage());
             }
         }
     }
@@ -158,19 +159,21 @@ public class BundleManager implements ResourceManagerReloadListener {
 
             IEventBus bundleBus = BusBuilder.builder().allowPerPhasePost()
                     .setExceptionHandler((bus, event, listeners, index, throwable) -> {
-                        LOGGER.error("Bundle '{}' faulted during event {}: {}", info.getId(), event.getClass().getSimpleName(), throwable.getMessage());
+                        LOGGER.error("Bundle '{}' faulted during event {}: {}", info.id(), event.getClass().getSimpleName(), throwable.getMessage());
                     })
                     .build();
 
             List<BundleEntrypoint> entrypoints = new ArrayList<>();
 
-            entrypoints.addAll(BundleScriptLoader.loadScripts(files, engine, bundleBus, eventBus, info.getId()));
+            entrypoints.addAll(BundleScriptLoader.loadScripts(files, engine, bundleBus, eventBus, info.id()));
 
-            Bundle bundle = new Bundle(info, files, engine, eventBus, bundleBus, entrypoints, zipFs);
+            var registryQuery = new BundleRegistryQuery(info.id());
+
+            Bundle bundle = new Bundle(info, files, engine, registryQuery, eventBus, bundleBus, entrypoints, zipFs);
 
             register(bundle);
         } catch (IOException e) {
-            LOGGER.error("Failed to create script engine for bundle '{}': {}", info.getId(), e.getLocalizedMessage());
+            LOGGER.error("Failed to create script engine for bundle '{}': {}", info.id(), e.getLocalizedMessage());
         }
     }
 
@@ -207,7 +210,7 @@ public class BundleManager implements ResourceManagerReloadListener {
                 try {
                     ep.onUnload();
                 } catch (Exception e) {
-                    LOGGER.error("Error unloading script in bundle {}", bundle.info().getId(), e);
+                    LOGGER.error("Error unloading script in bundle {}", bundle.info().id(), e);
                 }
             }
 

@@ -11,11 +11,31 @@ import net.neoforged.neoforge.common.ModConfigSpec;
  */
 @EventBusSubscriber(modid = Common.MODID)
 public class Config {
+
+    // Common
     private static final ModConfigSpec.Builder COMMON_BUILDER = new ModConfigSpec.Builder();
-    /**
-     * {@link ModConfigSpec} for FoundryEngines Common Config.
-     */
     public static final ModConfigSpec COMMON_SPEC = COMMON_BUILDER.build();
+
+    // Client
+    private static final ModConfigSpec.Builder CLIENT_BUILDER = new ModConfigSpec.Builder();
+    public static final ModConfigSpec CLIENT_SPEC = CLIENT_BUILDER.build();
+
+    // Server
+    private static final ModConfigSpec.Builder SERVER_BUILDER = new ModConfigSpec.Builder();
+    public static final ModConfigSpec SERVER_SPEC = SERVER_BUILDER.build();
+
+    // Startup
+    private static final ModConfigSpec.Builder STARTUP_BUILDER = new ModConfigSpec.Builder();
+
+    public static final ModConfigSpec.BooleanValue SCRIPTING_ENABLED = STARTUP_BUILDER
+            .comment("This enables / disables the loading of Scripts from Bundles.")
+            .define("SCRIPTING_ENABLED", true);
+
+    public static final ModConfigSpec.BooleanValue RESOURCES_ENABLED = STARTUP_BUILDER
+            .comment("This enables / disables the loading of Resources from Bundles.")
+            .define("RESOURCES_ENABLED", true);
+
+    public static final ModConfigSpec STARTUP_SPEC = STARTUP_BUILDER.build();
 
     /// Private Constructor
     private Config() {

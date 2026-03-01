@@ -1,7 +1,7 @@
 package io.github.luckymcdev.foundryengine.common.data;
 
 import io.github.luckymcdev.foundryengine.common.bundle.Bundle;
-import io.github.luckymcdev.foundryengine.common.bundle.registry.BundleRegistry;
+import io.github.luckymcdev.foundryengine.common.bundle.registry.BundleRegistryQuery;
 import net.minecraft.SharedConstants;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.DataGenerator;
@@ -16,7 +16,6 @@ public class BundleGenerator {
     private final Bundle bundle;
     private final DataGenerator dataGenerator;
     private final PackOutput pOut;
-    private final String id;
 
     public BundleGenerator(Bundle bundle) {
         this.bundle = bundle;
@@ -26,7 +25,6 @@ public class BundleGenerator {
                 true
         );
         this.pOut = dataGenerator.getPackOutput();
-        this.id = this.bundle.info().getId();
         addDefaults();
     }
 
@@ -35,7 +33,7 @@ public class BundleGenerator {
     }
 
     public void addLang(String locale) {
-        addProvider(new LangGenerator(pOut, id, locale));
+        addProvider(new LangGenerator(pOut, bundle, locale));
     }
 
     public void run() throws IOException {
@@ -48,23 +46,54 @@ public class BundleGenerator {
 
     private static class LangGenerator extends LanguageProvider {
         private final String id;
+        private final Bundle bundle;
 
-        public LangGenerator(PackOutput output, String modid, String locale) {
-            super(output, modid, locale);
-            id = modid;
+        public LangGenerator(PackOutput output, Bundle bundle, String locale) {
+            super(output, bundle.info().id(), locale);
+            this.id = bundle.info().id();
+            this.bundle = bundle;
         }
 
         @Override
         protected void addTranslations() {
-            BundleRegistry registry = new BundleRegistry(id);
+            BundleRegistryQuery query = bundle.registryQuery();
 
-            registry.getBundleBlocks().forEach(block ->
+            query.getBlocks().forEach(block ->
                     add(block, formatTitleCase(BuiltInRegistries.BLOCK.getKey(block).getPath()))
             );
 
-            registry.getBundleItems().forEach(item ->
+            query.getItems().forEach(item ->
                     add(item, formatTitleCase(BuiltInRegistries.ITEM.getKey(item).getPath()))
             );
+
+            query.getEntityTypes().forEach(entityType ->
+                    add(entityType, formatTitleCase(BuiltInRegistries.ENTITY_TYPE.getKey(entityType).getPath()))
+            );
+
+            query.getMobEffects().forEach(effect ->
+                    add(effect, formatTitleCase(BuiltInRegistries.MOB_EFFECT.getKey(effect).getPath()))
+            );
+
+            query.getPotions().forEach(potion -> {
+                String path = BuiltInRegistries.POTION.getKey(potion).getPath();
+                add("item.minecraft.potion.effect." + path, "Potion of " + formatTitleCase(path));
+                add("item.minecraft.splash_potion.effect." + path, "Splash Potion of " + formatTitleCase(path));
+                add("item.minecraft.lingering_potion.effect." + path, "Lingering Potion of " + formatTitleCase(path));
+                add("item.minecraft.tipped_arrow.effect." + path, "Arrow of " + formatTitleCase(path));
+            });
+
+            query.getFromRegistry(BuiltInRegistries.CREATIVE_MODE_TAB).forEach(tab -> {
+                String path = BuiltInRegistries.CREATIVE_MODE_TAB.getKey(tab).getPath();
+                add("itemGroup." + id + "." + path, formatTitleCase(path));
+            });
+
+            query.getAttributes().forEach(attr ->
+                    add(attr.getDescriptionId(), formatTitleCase(BuiltInRegistries.ATTRIBUTE.getKey(attr).getPath()))
+            );
+
+            query.getFromRegistry(BuiltInRegistries.CUSTOM_STAT).forEach(stat -> {
+                add("stat." + id + "." + stat.getPath(), formatTitleCase(stat.getPath()));
+            });
         }
 
         private String formatTitleCase(String input) {
