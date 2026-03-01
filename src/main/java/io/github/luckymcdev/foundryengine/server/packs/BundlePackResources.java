@@ -7,25 +7,27 @@ import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.pack.PackFormat;
 import net.minecraft.server.packs.resources.IoSupplier;
+import org.jspecify.annotations.NonNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class BundlePackResources extends AbstractPackResources {
-    private final Path root;
+    private final List<Path> roots;
     private final PackType packType;
-    private final String bundleId;
+    private final String packName;
 
-    public BundlePackResources(PackLocationInfo info, Path root, PackType packType, String bundleId) {
+    public BundlePackResources(PackLocationInfo info, List<Path> roots, PackType packType, String packName) {
         super(info);
-        this.root = root;
+        this.roots = roots;
         this.packType = packType;
-        this.bundleId = bundleId;
+        this.packName = packName;
     }
 
     @Override
@@ -33,56 +35,67 @@ public class BundlePackResources extends AbstractPackResources {
         if (paths.length == 1 && paths[0].equals("pack.mcmeta")) {
             return () -> new ByteArrayInputStream(generatePackMeta().getBytes());
         }
-        Path file = root.resolve(String.join("/", paths));
-        return Files.exists(file) ? () -> Files.newInputStream(file) : null;
+
+        String relativePath = String.join("/", paths);
+
+        for (Path rootPath : roots) {
+            Path file = rootPath.resolve(relativePath);
+            if (Files.exists(file)) {
+                return () -> Files.newInputStream(file);
+            }
+        }
+        return null;
     }
 
     @Override
     public IoSupplier<InputStream> getResource(PackType type, Identifier location) {
         if (type != packType) return null;
 
-        // Don't add type.getDirectory() again since root is already assets/ or data/
-        Path file = root
-                .resolve(location.getNamespace())
-                .resolve(location.getPath());
-
-        return Files.exists(file) ? () -> Files.newInputStream(file) : null;
+        for (Path root : roots) {
+            Path path = root.resolve(location.getNamespace()).resolve(location.getPath());
+            if (Files.exists(path)) {
+                return IoSupplier.create(path);
+            }
+        }
+        return null;
     }
 
     @Override
     public void listResources(PackType type, String namespace, String prefix, ResourceOutput output) {
         if (type != packType) return;
 
-        // Don't add type.getDirectory() since root is already assets/ or data/
-        Path namespacePath = root.resolve(namespace);
+        for (Path root : roots) {
+            Path namespacePath = root.resolve(namespace);
+            if (!Files.isDirectory(namespacePath)) continue;
 
-        if (!Files.isDirectory(namespacePath)) return;
-        try (var stream = Files.walk(namespacePath)) {
-            stream.filter(Files::isRegularFile).forEach(file -> {
-                String relative = namespacePath.relativize(file).toString().replace('\\', '/');
-                if (relative.startsWith(prefix)) {
-                    output.accept(Identifier.fromNamespaceAndPath(namespace, relative),
-                            () -> Files.newInputStream(file));
-                }
-            });
-        } catch (IOException ignored) {
+            try (var files = Files.walk(namespacePath)) {
+                files.filter(Files::isRegularFile).forEach(file -> {
+                    String relative = namespacePath.relativize(file).toString().replace('\\', '/');
+                    if (relative.startsWith(prefix)) {
+                        output.accept(Identifier.fromNamespaceAndPath(namespace, relative),
+                                () -> Files.newInputStream(file));
+                    }
+                });
+            } catch (IOException ignored) {
+            }
         }
     }
 
     @Override
-    public Set<String> getNamespaces(PackType type) {
+    public @NonNull Set<String> getNamespaces(@NonNull PackType type) {
         if (type != packType) return Set.of();
 
-        // root is already assets/ or data/, so list directly
-        if (!Files.isDirectory(root)) return Set.of();
-
-        try (var stream = Files.list(root)) {
-            return stream.filter(Files::isDirectory)
-                    .map(p -> p.getFileName().toString())
-                    .collect(Collectors.toSet());
-        } catch (IOException e) {
-            return Set.of();
+        Set<String> namespaces = new HashSet<>();
+        for (Path root : roots) {
+            if (!Files.isDirectory(root)) continue;
+            try (var stream = Files.list(root)) {
+                stream.filter(Files::isDirectory)
+                        .map(p -> p.getFileName().toString())
+                        .forEach(namespaces::add);
+            } catch (IOException ignored) {
+            }
         }
+        return namespaces;
     }
 
     private String packTypeName() {
@@ -98,13 +111,13 @@ public class BundlePackResources extends AbstractPackResources {
         return """
                 {
                   "pack": {
-                    "description": "Bundle %s (%s)",
+                    "description": "%s",
                     "pack_format": %d,
                     "min_format": %d,
                     "max_format": %d
                   }
                 }
-                """.formatted(packTypeName(), bundleId, major, major, major);
+                """.formatted(packName, major, major, major);
     }
 
     @Override

@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "testbundle:item/this_is_a_item"
+  }
+}

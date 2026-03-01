@@ -15,7 +15,6 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLConstructModEvent;
-import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
@@ -31,6 +30,7 @@ import java.io.IOException;
 @Mod(Common.MODID)
 public class FoundryEngineMod {
     private static final Logger LOGGER = LogUtils.getLogger();
+
     /**
      * Initializes the mod and registers events.
      *
@@ -38,22 +38,16 @@ public class FoundryEngineMod {
      * @param modContainer the mod container
      */
     public FoundryEngineMod(IEventBus modEventBus, ModContainer modContainer) {
+
         modEventBus.addListener(this::commonSetup);
-
         modEventBus.addListener(this::onConstruct);
-
         modEventBus.addListener(this::onAddPackFinders);
-
-        modEventBus.addListener(this::onInterModEnqueue);
-
         modEventBus.addListener(this::onRegister);
 
         Common.post(new RegisterEngineThreadEvent());
 
         NeoForge.EVENT_BUS.addListener(this::onAddReloadListeners);
-
         NeoForge.EVENT_BUS.addListener(this::onRegisterCommands);
-
 
         modContainer.registerConfig(ModConfig.Type.CLIENT, Config.CLIENT_SPEC);
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.COMMON_SPEC);
@@ -83,15 +77,6 @@ public class FoundryEngineMod {
         EngineLogAppender.Holder.addAppender();
     }
 
-    private void onInterModEnqueue(InterModEnqueueEvent event) {
-        try {
-            EngineGenerator engineGen = new EngineGenerator();
-            engineGen.run();
-        } catch (IOException e) {
-            LOGGER.error("Error while running engine generator: {}", e.getLocalizedMessage());
-        }
-    }
-
     private void onRegister(RegisterEvent event) {
         for (Bundle bundle : Common.getBundleManager().getBundles()) {
             bundle.bundleBus().post(event);
@@ -101,6 +86,7 @@ public class FoundryEngineMod {
     private void commonSetup(final FMLCommonSetupEvent event) {
         try {
             Common.getFileManager().createMainDirectory();
+            new EngineGenerator().run();
         } catch (IOException e) {
             LOGGER.error("{}{}", e.getLocalizedMessage(), e.getStackTrace());
         }

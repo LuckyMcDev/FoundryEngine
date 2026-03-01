@@ -180,8 +180,9 @@ public class BundleManager implements ResourceManagerReloadListener {
     private BundleFiles buildFileInfo(Path root) {
         Path assets = root.resolve("assets");
         Path data = root.resolve("data");
+        Path generated = root.resolve("generated");
         List<Path> scripts = findScripts(root, assets, data);
-        return new BundleFiles(root, assets, data, scripts);
+        return new BundleFiles(root, assets, generated, data, scripts);
     }
 
     private List<Path> findScripts(Path root, Path assets, Path data) {

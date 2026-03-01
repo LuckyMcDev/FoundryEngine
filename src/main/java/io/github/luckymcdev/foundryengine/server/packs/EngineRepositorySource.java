@@ -4,7 +4,6 @@ import com.mojang.logging.LogUtils;
 import io.github.luckymcdev.foundryengine.common.Common;
 import io.github.luckymcdev.foundryengine.common.bundle.Bundle;
 import io.github.luckymcdev.foundryengine.common.bundle.info.BundleFiles;
-import io.github.luckymcdev.foundryengine.config.Config;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackResources;
@@ -16,7 +15,10 @@ import net.minecraft.server.packs.repository.RepositorySource;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -29,48 +31,55 @@ public class EngineRepositorySource implements RepositorySource {
     }
 
     @Override
-    public void loadPacks(@NonNull Consumer<Pack> consumer) {
-        if (!Config.RESOURCES_ENABLED.get()) {
-            LOGGER.info("Bundle resource loading is disabled in config.");
-            return;
+    public void loadPacks(Consumer<Pack> consumer) {
+        List<Path> generatedPaths = new ArrayList<>();
+        List<Path> manualPaths = new ArrayList<>();
+
+        for (Bundle bundle : Common.getBundleManager().getBundles()) {
+            BundleFiles files = bundle.bundleFiles();
+
+            Path genPath = files.generated().resolve(packType.getDirectory());
+            if (Files.exists(genPath)) {
+                generatedPaths.add(genPath);
+            }
+
+            Path manPath = (packType == PackType.CLIENT_RESOURCES) ? files.assets() : files.data();
+            if (Files.exists(manPath)) {
+                manualPaths.add(manPath);
+            }
         }
 
-        Common.getBundleManager().getBundles().forEach(bundle -> {
-            LOGGER.debug("Registering pack for bundle: {}", bundle.info().id());
-            loadPackFor(bundle, consumer);
-        });
+        if (!generatedPaths.isEmpty()) {
+            loadAggregatePack("bundles_generated", "FoundryEngine: Generated", generatedPaths, consumer, Pack.Position.BOTTOM);
+        }
+        if (!manualPaths.isEmpty()) {
+            loadAggregatePack("bundles_manual", "FoundryEngine: Manual", manualPaths, consumer, Pack.Position.TOP);
+        }
     }
 
-    private void loadPackFor(Bundle bundle, Consumer<Pack> consumer) {
-        String id = bundle.info().id();
-        BundleFiles files = bundle.bundleFiles();
-
-        Path path = packType == PackType.CLIENT_RESOURCES ? files.assets() : files.data();
-        String label = packType == PackType.CLIENT_RESOURCES ? "Assets" : "Data";
+    private void loadAggregatePack(String id, String title, List<Path> paths, Consumer<Pack> consumer, Pack.Position position) {
+        String packId = "foundry/" + id;
+        Component packTitle = Component.literal(title);
 
         Pack pack = Pack.readMetaAndCreate(
-                new PackLocationInfo("bundle/" + id + "/" + label.toLowerCase(),
-                        Component.literal(id + " " + label),
-                        PackSource.DEFAULT, Optional.empty()),
-                supplier(path, packType, id),
+                new PackLocationInfo(packId, packTitle, PackSource.BUILT_IN, Optional.empty()),
+                new Pack.ResourcesSupplier() {
+                    @Override
+                    public @NonNull PackResources openPrimary(PackLocationInfo info) {
+                        return new BundlePackResources(info, paths, packType, title);
+                    }
+
+                    @Override
+                    public PackResources openFull(PackLocationInfo info, Pack.Metadata metadata) {
+                        return new BundlePackResources(info, paths, packType, title);
+                    }
+                },
                 packType,
-                new PackSelectionConfig(true, Pack.Position.TOP, false)
+                new PackSelectionConfig(true, position, false)
         );
 
-        if (pack != null) consumer.accept(pack);
-    }
-
-    private Pack.ResourcesSupplier supplier(Path path, PackType packType, String bundleId) {
-        return new Pack.ResourcesSupplier() {
-            @Override
-            public @NonNull PackResources openPrimary(@NonNull PackLocationInfo info) {
-                return new BundlePackResources(info, path, packType, bundleId);
-            }
-
-            @Override
-            public @NonNull PackResources openFull(@NonNull PackLocationInfo info, Pack.@NonNull Metadata metadata) {
-                return new BundlePackResources(info, path, packType, bundleId);
-            }
-        };
+        if (pack != null) {
+            consumer.accept(pack);
+        }
     }
 }
