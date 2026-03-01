@@ -2,7 +2,7 @@ package io.github.luckymcdev.foundryengine;
 
 import com.mojang.logging.LogUtils;
 import io.github.luckymcdev.foundryengine.common.Common;
-import io.github.luckymcdev.foundryengine.common.generator.EngineGenerator;
+import io.github.luckymcdev.foundryengine.common.data.EngineGenerator;
 import io.github.luckymcdev.foundryengine.common.log.EngineLogAppender;
 import io.github.luckymcdev.foundryengine.common.thread.RegisterEngineThreadEvent;
 import io.github.luckymcdev.foundryengine.config.Config;

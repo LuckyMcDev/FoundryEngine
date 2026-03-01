@@ -1,4 +1,4 @@
-package io.github.luckymcdev.foundryengine.common.generator;
+package io.github.luckymcdev.foundryengine.common.data;
 
 import io.github.luckymcdev.foundryengine.common.Common;
 import io.github.luckymcdev.foundryengine.common.bundle.Bundle;
