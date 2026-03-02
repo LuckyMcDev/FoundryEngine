@@ -98,6 +98,13 @@ public class BundlePackResources extends AbstractPackResources {
         return namespaces;
     }
 
+    private String packTypeName() {
+        return switch (packType) {
+            case CLIENT_RESOURCES -> "Assets";
+            case SERVER_DATA -> "Data";
+        };
+    }
+
     private String generatePackMeta() {
         PackFormat format = SharedConstants.getCurrentVersion().packVersion(packType);
         int major = format.major();
@@ -115,6 +122,5 @@ public class BundlePackResources extends AbstractPackResources {
 
     @Override
     public void close() {
-        roots.clear();
     }
 }
