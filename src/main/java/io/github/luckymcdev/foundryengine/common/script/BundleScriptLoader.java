@@ -20,7 +20,7 @@ public class BundleScriptLoader {
     public static List<BundleEntrypoint> loadScripts(BundleFiles files, GroovyScriptEngine engine, IEventBus bundleBus, IEventBus eventBus, String bundleId) {
         List<BundleEntrypoint> liveEntrypoints = new ArrayList<>();
 
-        if (!Config.SCRIPTING_ENABLED.get()) {
+        if (!Config.Startup.SCRIPTING_ENABLED.get()) {
             LOGGER.info("Script loading is disabled in config.");
             return liveEntrypoints;
         }

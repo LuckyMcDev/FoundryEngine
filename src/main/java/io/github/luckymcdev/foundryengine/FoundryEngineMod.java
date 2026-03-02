@@ -49,10 +49,10 @@ public class FoundryEngineMod {
         NeoForge.EVENT_BUS.addListener(this::onAddReloadListeners);
         NeoForge.EVENT_BUS.addListener(this::onRegisterCommands);
 
-        modContainer.registerConfig(ModConfig.Type.CLIENT, Config.CLIENT_SPEC);
-        modContainer.registerConfig(ModConfig.Type.COMMON, Config.COMMON_SPEC);
-        modContainer.registerConfig(ModConfig.Type.SERVER, Config.SERVER_SPEC);
-        modContainer.registerConfig(ModConfig.Type.STARTUP, Config.STARTUP_SPEC);
+        modContainer.registerConfig(ModConfig.Type.CLIENT, Config.Client.CLIENT_SPEC);
+        modContainer.registerConfig(ModConfig.Type.COMMON, Config.Common.COMMON_SPEC);
+        modContainer.registerConfig(ModConfig.Type.SERVER, Config.Server.SERVER_SPEC);
+        modContainer.registerConfig(ModConfig.Type.STARTUP, Config.Startup.STARTUP_SPEC);
     }
 
     public void onAddReloadListeners(AddServerReloadListenersEvent event) {

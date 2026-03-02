@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import io.github.luckymcdev.foundryengine.common.Common;
 import io.github.luckymcdev.foundryengine.common.bundle.Bundle;
 import io.github.luckymcdev.foundryengine.common.bundle.info.BundleFiles;
+import io.github.luckymcdev.foundryengine.config.Config;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackResources;
@@ -35,6 +36,11 @@ public class EngineRepositorySource implements RepositorySource {
         List<Path> generatedPaths = new ArrayList<>();
         List<Path> manualPaths = new ArrayList<>();
 
+
+        if (!Config.Startup.RESOURCES_ENABLED.get()) {
+            LOGGER.info("Resource loading is disabled in config.");
+        }
+
         for (Bundle bundle : Common.getBundleManager().getBundles()) {
             BundleFiles files = bundle.bundleFiles();
 
@@ -53,7 +59,7 @@ public class EngineRepositorySource implements RepositorySource {
             loadAggregatePack("bundles_generated", "FoundryEngine: Generated", generatedPaths, consumer, Pack.Position.BOTTOM);
         }
         if (!manualPaths.isEmpty()) {
-            loadAggregatePack("bundles_manual", "FoundryEngine: Manual", manualPaths, consumer, Pack.Position.TOP);
+            loadAggregatePack("bundles_manual", "FoundryEngine: Resources", manualPaths, consumer, Pack.Position.TOP);
         }
     }
 
