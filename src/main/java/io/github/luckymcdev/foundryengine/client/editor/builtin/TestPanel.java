@@ -33,18 +33,6 @@ public class TestPanel extends Panel {
         ImGui.text("You dont know what i do? Hover it.");
         EngineImGuiUtils.helpTooltip("BOO!");
 
-        if (ImGui.button("reloadBrowser")) {
-            BrowserPanel.INSTANCE.reload();
-        }
-
-        if (ImGui.button("docTypeSwitch")) {
-            if (BrowserPanel.INSTANCE.getDocType().matches("javadoc")) {
-                BrowserPanel.INSTANCE.setDocType("doxygen");
-            } else {
-                BrowserPanel.INSTANCE.setDocType("javadoc");
-            }
-        }
-
         EngineImGuiUtils.h1(() -> ImGui.text("BIG"));
 
         EngineImGuiUtils.textCentered("center center", ImGui.getWindowWidth());

@@ -18,6 +18,7 @@ import io.github.luckymcdev.foundryengine.common.Common;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
@@ -59,7 +60,10 @@ public class FoundryEngineModClient {
     public static void onRegisterPanels(RegisterPanelEvent event) {
         event.register(PostProcessPanel.INSTANCE);
         event.register(TestPanel.INSTANCE);
-        event.register(BrowserPanel.INSTANCE);
+        if (ModList.get().isLoaded("mcef")) {
+            event.register(BrowserPanel.INSTANCE);
+        }
+
         event.register(FileExplorerPanel.INSTANCE);
 
         event.register(ConsolePanel.INSTANCE);
