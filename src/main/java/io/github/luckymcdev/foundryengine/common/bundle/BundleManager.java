@@ -148,7 +148,8 @@ public class BundleManager implements ResourceManagerReloadListener {
     private void loadBundle(BundleInfo info, Path bundleDir, @Nullable FileSystem zipFs) {
         try {
             BundleFiles files = buildFileInfo(bundleDir);
-            GroovyScriptEngine engine = new GroovyScriptEngine(new URL[]{bundleDir.toUri().toURL()}, FMLLoader.getCurrent().getCurrentClassLoader());
+            URL[] roots = new URL[]{files.root().toUri().toURL(), files.generated().toUri().toURL()};
+            GroovyScriptEngine engine = new GroovyScriptEngine(roots, FMLLoader.getCurrent().getCurrentClassLoader());
             CompilerConfiguration compilerConfiguration = new CompilerConfiguration();
 
             Common.post(new ScriptEngineModifyEvent(engine, compilerConfiguration));
