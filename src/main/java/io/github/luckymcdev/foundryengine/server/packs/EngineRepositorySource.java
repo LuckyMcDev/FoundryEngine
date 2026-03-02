@@ -56,10 +56,10 @@ public class EngineRepositorySource implements RepositorySource {
         }
 
         if (!generatedPaths.isEmpty()) {
-            loadAggregatePack("bundles_generated", "FoundryEngine: Generated", generatedPaths, consumer, Pack.Position.BOTTOM);
+            loadAggregatePack("bundles_generated", "FoundryEngine: Generated", generatedPaths, consumer, Pack.Position.TOP);
         }
         if (!manualPaths.isEmpty()) {
-            loadAggregatePack("bundles_manual", "FoundryEngine: Resources", manualPaths, consumer, Pack.Position.TOP);
+            loadAggregatePack("bundles_resources", "FoundryEngine: Resources", manualPaths, consumer, Pack.Position.TOP);
         }
     }
 
