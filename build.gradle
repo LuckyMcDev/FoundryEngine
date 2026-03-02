@@ -84,7 +84,7 @@ dependencies {
 }
 
 dependencies {
-    implementation "de.keksuccino:mcef-neoforge:${mcef_version}-${minecraft_version}"
+    compileOnly "de.keksuccino:mcef-neoforge:${mcef_version}-${minecraft_version}"
 }
 
 dependencies {
