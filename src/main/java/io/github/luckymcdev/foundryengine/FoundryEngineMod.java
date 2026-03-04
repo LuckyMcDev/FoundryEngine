@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import io.github.luckymcdev.foundryengine.common.Common;
 import io.github.luckymcdev.foundryengine.common.bundle.Bundle;
 import io.github.luckymcdev.foundryengine.common.data.EngineGenerator;
+import io.github.luckymcdev.foundryengine.common.game.DirectWorldLoadBehavior;
 import io.github.luckymcdev.foundryengine.common.log.EngineLogAppender;
 import io.github.luckymcdev.foundryengine.common.thread.RegisterEngineThreadEvent;
 import io.github.luckymcdev.foundryengine.config.Config;
@@ -48,6 +49,10 @@ public class FoundryEngineMod {
 
         NeoForge.EVENT_BUS.addListener(this::onAddReloadListeners);
         NeoForge.EVENT_BUS.addListener(this::onRegisterCommands);
+
+        Common.getGameBehaviorManager().register(Common.id("direct_world_load"),
+                new DirectWorldLoadBehavior("testWorld")
+        );
 
         modContainer.registerConfig(ModConfig.Type.CLIENT, Config.Client.CLIENT_SPEC);
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.Common.COMMON_SPEC);

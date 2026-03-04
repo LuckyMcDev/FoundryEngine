@@ -16,18 +16,16 @@ description = '''${mod_description}'''
 
 [[mixins]]
 config = "${mod_id}.data.mixins.json"
-
 [[mixins]]
 config = "${mod_id}.input.mixins.json"
-
 [[mixins]]
 config = "${mod_id}.invoker.mixins.json"
-
 [[mixins]]
 config = "${mod_id}.mixins.json"
-
 [[mixins]]
 config = "${mod_id}.render.mixins.json"
+[[mixins]]
+config = "${mod_id}.screen.mixins.json"
 
 #[[accessTransformers]]
 #"META-INF/accesstransformer.cfg"

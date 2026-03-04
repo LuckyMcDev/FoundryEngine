@@ -3,6 +3,7 @@ package io.github.luckymcdev.foundryengine.common;
 import com.mojang.logging.LogUtils;
 import io.github.luckymcdev.foundryengine.common.bundle.BundleManager;
 import io.github.luckymcdev.foundryengine.common.files.FileManager;
+import io.github.luckymcdev.foundryengine.common.game.GameBehaviorManager;
 import io.github.luckymcdev.foundryengine.common.thread.ThreadManager;
 import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.Event;
@@ -57,7 +58,10 @@ public abstract class Common {
     private static final ThreadManager THREAD_MANAGER = new ThreadManager();
 
     private static final FileManager FILE_MANAGER = new FileManager();
+
     private static final BundleManager BUNDLE_MANAGER = new BundleManager();
+
+    private static final GameBehaviorManager GAME_BEHAVIOR_MANAGER = new GameBehaviorManager();
     /**
      * Returns an {@link Identifier} where the namespace is {@link #MODID}
      *
@@ -85,6 +89,9 @@ public abstract class Common {
         return BUNDLE_MANAGER;
     }
 
+    public static GameBehaviorManager getGameBehaviorManager() {
+        return GAME_BEHAVIOR_MANAGER;
+    }
     // Event Bus
 
     public static <T extends Event> T post(T event) {
