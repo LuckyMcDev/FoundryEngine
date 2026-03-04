@@ -68,7 +68,7 @@ public abstract class Client {
             new KeyMapping(
                     Component.translatable("key.foundryengine.editor").getString(),
                     InputConstants.Type.KEYSYM,
-                    InputConstants.KEY_F6,
+                    InputConstants.KEY_F7,
                     KeyMapping.Category.DEBUG
             ),
             () -> {
