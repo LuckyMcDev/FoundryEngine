@@ -6,7 +6,7 @@ import io.github.luckymcdev.foundryengine.client.opengl.shaders.uniform.Uniform;
 import io.github.luckymcdev.foundryengine.client.opengl.shaders.uniform.Uniforms;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.param.PipelineParam;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.pass.PostProcessPipelinePass;
-import io.github.luckymcdev.foundryengine.client.post.pipeline.pass.TemporaryTarget;
+import io.github.luckymcdev.foundryengine.client.post.pipeline.pass.TargetRef;
 import net.minecraft.resources.Identifier;
 
 import java.util.*;
@@ -20,7 +20,7 @@ import java.util.*;
 public class PostProcessPipeline {
     private final List<PostProcessPipelinePass> passes = new ArrayList<>();
     private final List<ShaderProgram> programs = new ArrayList<>();
-    private final LinkedHashMap<String, TemporaryTarget> targets = new LinkedHashMap<>();
+    private final LinkedHashMap<String, TargetRef> targets = new LinkedHashMap<>();
     private final Map<String, PipelineParam<?>> params = new LinkedHashMap<>();
 
     private final Identifier name;
@@ -48,29 +48,29 @@ public class PostProcessPipeline {
     }
 
     /**
-     * Add a new {@link TemporaryTarget} to this Pipeline.
+     * Add a new {@link TargetRef} to this Pipeline.
      * @param target the Target to add.
      * @return the Target which got Added.
      */
-    protected TemporaryTarget addTarget(TemporaryTarget target) {
+    protected TargetRef addTarget(TargetRef target) {
         targets.put(target.name(), target);
         return target;
     }
 
     /**
-     * Same as {@link #addTarget(TemporaryTarget)} except with a String param instead of a Full {@link TemporaryTarget}
+     * Same as {@link #addTarget(TargetRef)} except with a String param instead of a Full {@link TargetRef}
      * @param name the name of the Target to add.
      * @return the Target which got added.
      */
-    protected TemporaryTarget addTarget(String name) {
-        return addTarget(TemporaryTarget.named(name));
+    protected TargetRef addTarget(String name) {
+        return addTarget(TargetRef.named(name));
     }
 
     /**
      * Returns a View of the Targets available in this Pipeline.
      * @return the view of the Targets available.
      */
-    public Map<String, TemporaryTarget> getTargets() {
+    public Map<String, TargetRef> getTargets() {
         return Collections.unmodifiableMap(targets);
     }
 

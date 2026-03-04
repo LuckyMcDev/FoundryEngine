@@ -24,6 +24,10 @@ public final class TargetRef {
         this.name = name;
     }
 
+    public static TargetRef named(String name) {
+        return new TargetRef(name);
+    }
+
     /**
      * Returns a temporary target ref for the given name.
      * <br> must NOT be {@link #MAIN_NAME}
@@ -41,7 +45,7 @@ public final class TargetRef {
     /**
      * Returns the raw name of this target.
      */
-    public String getName() {
+    public String name() {
         return name;
     }
 

@@ -16,7 +16,6 @@ import io.github.luckymcdev.foundryengine.client.opengl.shaders.program.ShaderPr
 import io.github.luckymcdev.foundryengine.client.post.pipeline.PostProcessPipeline;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.pass.PostProcessPipelinePass;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.pass.TargetRef;
-import io.github.luckymcdev.foundryengine.client.post.pipeline.pass.TemporaryTarget;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.staged.PostProcessStage;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.staged.StagedPostProcessPipeline;
 import io.github.luckymcdev.foundryengine.common.Common;
@@ -240,11 +239,11 @@ public class PostProcessManager {
         if (output.isMain()) {
             return blitProxy;
         }
-        FrameBuffer buf = localBuffers.get(output.getName());
+        FrameBuffer buf = localBuffers.get(output.name());
         if (buf == null) {
             throw new IllegalStateException(
-                    "No temporary target \"" + output.getName() + "\" found. " +
-                            "Did you call addTarget(\"" + output.getName() + "\") in your pipeline constructor?");
+                    "No temporary target \"" + output.name() + "\" found. " +
+                            "Did you call addTarget(\"" + output.name() + "\") in your pipeline constructor?");
         }
         return buf;
     }
@@ -261,18 +260,18 @@ public class PostProcessManager {
         if (input.isMain()) {
             return mainColorTexId;
         }
-        FrameBuffer buf = localBuffers.get(input.getName());
+        FrameBuffer buf = localBuffers.get(input.name());
         if (buf == null) {
             throw new IllegalStateException(
-                    "No temporary target \"" + input.getName() + "\" found. " +
-                            "Did you call addTarget(\"" + input.getName() + "\") in your pipeline constructor?");
+                    "No temporary target \"" + input.name() + "\" found. " +
+                            "Did you call addTarget(\"" + input.name() + "\") in your pipeline constructor?");
         }
         return buf.getColorTexture();
     }
 
     /**
      * Ensures every pipeline has correctly-sized framebuffers for all its
-     * {@link TemporaryTarget}s, and that the shared {@link #blitProxy} is current.
+     * {@link TargetRef}s, and that the shared {@link #blitProxy} is current.
      * Stale or missing buffers are freed and re-created automatically.
      */
     private static void ensureFrameBuffers(List<? extends PostProcessPipeline> pipelines, RenderTarget mainTarget) {
@@ -283,7 +282,7 @@ public class PostProcessManager {
             Map<String, FrameBuffer> localBuffers =
                     PIPELINE_BUFFERS.computeIfAbsent(pipeline, p -> new LinkedHashMap<>());
 
-            for (TemporaryTarget target : pipeline.getTargets().values()) {
+            for (TargetRef target : pipeline.getTargets().values()) {
                 localBuffers.compute(target.name(), (name, existing) ->
                         resizeOrCreate(existing, pipeline.getName().getPath() + "_" + name, mainTarget));
             }
