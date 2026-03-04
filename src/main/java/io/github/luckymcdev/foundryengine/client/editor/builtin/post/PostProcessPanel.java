@@ -8,7 +8,6 @@ import io.github.luckymcdev.foundryengine.client.editor.Panel;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.PostProcessPipeline;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.param.PipelineParam;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.staged.PostProcessStage;
-import io.github.luckymcdev.foundryengine.client.post.pipeline.staged.StagedPostProcessPipeline;
 import io.github.luckymcdev.foundryengine.client.util.Shortcut;
 import io.github.luckymcdev.foundryengine.common.Common;
 import org.joml.Vector2f;
@@ -58,18 +57,18 @@ public class PostProcessPanel extends Panel {
 
         if (ImGui.collapsingHeader("Staged Pipelines")) {
             var postProcessManager = Client.getPostProcessManager();
-            Map<PostProcessStage, List<StagedPostProcessPipeline>> pipelinesByStage =
+            Map<PostProcessStage, List<PostProcessPipeline>> pipelinesByStage =
                     postProcessManager.getPipelinesByStage();
 
             for (PostProcessStage stage : PostProcessStage.values()) {
-                List<StagedPostProcessPipeline> stagePipelines =
+                List<PostProcessPipeline> stagePipelines =
                         pipelinesByStage.getOrDefault(stage, List.of());
 
                 if (ImGui.treeNode(stage.name() + " (" + stagePipelines.size() + ")")) {
                     if (stagePipelines.isEmpty()) {
                         ImGui.textDisabled("  No pipelines in this stage");
                     } else {
-                        for (StagedPostProcessPipeline pipeline : stagePipelines) {
+                        for (PostProcessPipeline pipeline : stagePipelines) {
                             renderStagedPipelineRow(pipeline);
                         }
                     }
@@ -100,7 +99,7 @@ public class PostProcessPanel extends Panel {
      *
      * @param pipeline The staged pipeline to render.
      */
-    private void renderStagedPipelineRow(StagedPostProcessPipeline pipeline) {
+    private void renderStagedPipelineRow(PostProcessPipeline pipeline) {
         ImGui.pushID(pipeline.getName().toString() + "_row");
 
         // Enable / disable checkbox

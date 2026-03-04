@@ -17,7 +17,6 @@ import io.github.luckymcdev.foundryengine.client.post.pipeline.PostProcessPipeli
 import io.github.luckymcdev.foundryengine.client.post.pipeline.pass.PostProcessPipelinePass;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.pass.TargetRef;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.staged.PostProcessStage;
-import io.github.luckymcdev.foundryengine.client.post.pipeline.staged.StagedPostProcessPipeline;
 import io.github.luckymcdev.foundryengine.common.Common;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -45,7 +44,6 @@ public class PostProcessManager {
     private static final int DEPTH_TEXTURE_UNIT = 1;
     private static final PostProcessStage STAGE_NOT_STAGED = null;
     private static final List<PostProcessPipeline> PIPELINES = new ArrayList<>();
-    private static final List<StagedPostProcessPipeline> STAGED_PIPELINES = new ArrayList<>();
     private static final Map<PostProcessPipeline, Map<String, FrameBuffer>> PIPELINE_BUFFERS = new IdentityHashMap<>();
     private static FrameBuffer blitProxy;
     private static Mesh quad;
@@ -99,7 +97,7 @@ public class PostProcessManager {
     @SubscribeEvent
     public static void onAfterLevel(RenderLevelStageEvent.AfterLevel event) {
         runStage(PostProcessStage.AFTER_LEVEL);
-        runNonStagedPipelines();
+        runStage(PostProcessStage.FINAL);
     }
 
     @SubscribeEvent
@@ -112,17 +110,9 @@ public class PostProcessManager {
      * @param stage the Stage to Run.
      */
     private static void runStage(PostProcessStage stage) {
-        List<StagedPostProcessPipeline> pipelines =
-                getEnabledPipelines(STAGED_PIPELINES, p -> p.getStage() == stage);
+        List<PostProcessPipeline> pipelines =
+                getEnabledPipelines(PIPELINES, p -> p.getStage() == stage);
         if (!pipelines.isEmpty()) runPipelineBatch(pipelines, stage);
-    }
-
-    /**
-     * Runs all non-Staged Pipelines.
-     */
-    private static void runNonStagedPipelines() {
-        List<PostProcessPipeline> pipelines = getEnabledPipelines(PIPELINES, p -> true);
-        if (!pipelines.isEmpty()) runPipelineBatch(pipelines, STAGE_NOT_STAGED);
     }
 
     /**
@@ -324,13 +314,25 @@ public class PostProcessManager {
         return "Post-Process Pass (" + count + " pipelines, stage: " + stageLabel + ")";
     }
 
-    private static EnumMap<PostProcessStage, List<StagedPostProcessPipeline>> initPipelinesByStage() {
-        EnumMap<PostProcessStage, List<StagedPostProcessPipeline>> map =
+    private static EnumMap<PostProcessStage, List<PostProcessPipeline>> initPipelinesByStage() {
+        EnumMap<PostProcessStage, List<PostProcessPipeline>> map =
                 new EnumMap<>(PostProcessStage.class);
         for (PostProcessStage stage : PostProcessStage.values()) {
             map.put(stage, new ArrayList<>());
         }
         return map;
+    }
+
+    public void enablePipeline(PostProcessPipeline pipeline) {
+        if (PIPELINES.contains(pipeline)) pipeline.enable();
+    }
+
+    public void disablePipeline(PostProcessPipeline pipeline) {
+        pipeline.disable();
+    }
+
+    public void changePipelineStage(PostProcessPipeline pipeline, PostProcessStage newStage) {
+        if (PIPELINES.contains(pipeline)) pipeline.setStage(newStage);
     }
 
     public void addPipeline(PostProcessPipeline pipeline) {
@@ -342,41 +344,8 @@ public class PostProcessManager {
             PIPELINES.add(pipeline);
             registerPipelinePrograms(pipeline);
         } else {
-            LOGGER.debug("Pipeline '{}' already registered, skipping duplicate", pipeline.getName());
-        }
-    }
-
-    public void enablePipeline(PostProcessPipeline pipeline) {
-        if (PIPELINES.contains(pipeline)) pipeline.enable();
-    }
-
-    public void disablePipeline(PostProcessPipeline pipeline) {
-        pipeline.disable();
-    }
-
-    public void addPipeline(StagedPostProcessPipeline pipeline) {
-        // Check if a pipeline with this ID already exists
-        boolean exists = STAGED_PIPELINES.stream()
-                .anyMatch(p -> p.getName().equals(pipeline.getName()));
-
-        if (!exists) {
-            STAGED_PIPELINES.add(pipeline);
-            registerPipelinePrograms(pipeline);
-        } else {
             LOGGER.debug("Staged pipeline '{}' already registered, skipping duplicate", pipeline.getName());
         }
-    }
-
-    public void enablePipeline(StagedPostProcessPipeline pipeline) {
-        if (STAGED_PIPELINES.contains(pipeline) && !pipeline.isEnabled()) pipeline.enable();
-    }
-
-    public void disablePipeline(StagedPostProcessPipeline pipeline) {
-        pipeline.disable();
-    }
-
-    public void changePipelineStage(StagedPostProcessPipeline pipeline, PostProcessStage newStage) {
-        if (STAGED_PIPELINES.contains(pipeline)) pipeline.setStage(newStage);
     }
 
     public List<PostProcessPipeline> getPipelines() {
@@ -387,17 +356,9 @@ public class PostProcessManager {
         return PIPELINES.stream().filter(PostProcessPipeline::isEnabled).collect(Collectors.toList());
     }
 
-    public List<StagedPostProcessPipeline> getStagedPipelines() {
-        return STAGED_PIPELINES;
-    }
-
-    public List<StagedPostProcessPipeline> getEnabledStagedPipelines() {
-        return STAGED_PIPELINES.stream().filter(StagedPostProcessPipeline::isEnabled).collect(Collectors.toList());
-    }
-
-    public Map<PostProcessStage, List<StagedPostProcessPipeline>> getPipelinesByStage() {
-        EnumMap<PostProcessStage, List<StagedPostProcessPipeline>> map = initPipelinesByStage();
-        for (StagedPostProcessPipeline p : STAGED_PIPELINES) {
+    public Map<PostProcessStage, List<PostProcessPipeline>> getPipelinesByStage() {
+        EnumMap<PostProcessStage, List<PostProcessPipeline>> map = initPipelinesByStage();
+        for (PostProcessPipeline p : PIPELINES) {
             map.computeIfAbsent(p.getStage(), s -> new ArrayList<>()).add(p);
         }
         return map;

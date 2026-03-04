@@ -15,7 +15,8 @@ public enum PostProcessStage {
     AFTER_TRIPWIRE_BLOCKS(RenderLevelStageEvent.AfterTripwireBlocks.class),
     AFTER_PARTICLES(RenderLevelStageEvent.AfterParticles.class),
     AFTER_WEATHER(RenderLevelStageEvent.AfterWeather.class),
-    AFTER_LEVEL(RenderLevelStageEvent.AfterLevel.class);
+    AFTER_LEVEL(RenderLevelStageEvent.AfterLevel.class),
+    FINAL(RenderLevelStageEvent.AfterLevel.class);
 
     private final Class<? extends Event> eventClass;
 

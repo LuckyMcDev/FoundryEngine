@@ -9,7 +9,7 @@ import io.github.luckymcdev.foundryengine.client.opengl.shaders.uniform.Uniform;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.PostProcessPipeline;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.param.PipelineParam;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.pass.PostProcessPipelinePass;
-import io.github.luckymcdev.foundryengine.client.post.pipeline.pass.TargetRef;
+import io.github.luckymcdev.foundryengine.client.post.pipeline.staged.PostProcessStage;
 import io.github.luckymcdev.foundryengine.common.Common;
 import net.minecraft.client.Minecraft;
 import org.joml.Vector2f;
@@ -31,9 +31,9 @@ public class AsciiPostProcessPipeline extends PostProcessPipeline {
     public AsciiPostProcessPipeline() {
         super(
                 Common.id("post_ascii"),
+                PostProcessStage.FINAL,
                 new PostProcessPipelinePass(
                         Common.id("post_ascii_pass"),
-                        TargetRef.MAIN, TargetRef.MAIN,
                         new Shader(ExtendedShaderType.VERTEX,
                                 new ShaderSource(
                                         Common.id("post_ascii_vert"),

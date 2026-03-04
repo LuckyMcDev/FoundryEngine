@@ -7,6 +7,7 @@ import io.github.luckymcdev.foundryengine.client.opengl.shaders.uniform.Uniforms
 import io.github.luckymcdev.foundryengine.client.post.pipeline.param.PipelineParam;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.pass.PostProcessPipelinePass;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.pass.TargetRef;
+import io.github.luckymcdev.foundryengine.client.post.pipeline.staged.PostProcessStage;
 import net.minecraft.resources.Identifier;
 
 import java.util.*;
@@ -25,6 +26,7 @@ public class PostProcessPipeline {
 
     private final Identifier name;
     private boolean enabled;
+    private PostProcessStage stage;
 
     /**
      * Create a new PostProcessPipeline
@@ -32,9 +34,10 @@ public class PostProcessPipeline {
      * @param name   The unique identifier for this Post Process Pipeline.
      * @param passes n Amount of Passes for this PostProcessPipeline
      */
-    public PostProcessPipeline(Identifier name, PostProcessPipelinePass... passes) {
+    public PostProcessPipeline(Identifier name, PostProcessStage stage, PostProcessPipelinePass... passes) {
         this.name = name;
         this.enabled = false;
+        this.stage = stage;
         for (PostProcessPipelinePass pass : passes) {
             ShaderProgram program = new ShaderProgram(pass.name(), pass.shaders());
             try {
@@ -179,5 +182,23 @@ public class PostProcessPipeline {
      */
     public Identifier getName() {
         return name;
+    }
+
+    /**
+     * Gets the stage at which this pipeline renders.
+     *
+     * @return The {@link PostProcessStage} of this pipeline.
+     */
+    public PostProcessStage getStage() {
+        return stage;
+    }
+
+    /**
+     * Sets the stage at which this pipeline renders.
+     *
+     * @param stage The new {@link PostProcessStage} for this pipeline.
+     */
+    public void setStage(PostProcessStage stage) {
+        this.stage = stage;
     }
 }
