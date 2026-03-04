@@ -18,6 +18,8 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.common.NeoForge;
 import org.codehaus.groovy.control.CompilerConfiguration;
+import org.codehaus.groovy.control.customizers.ImportCustomizer;
+import org.codehaus.groovy.control.customizers.SecureASTCustomizer;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 
@@ -148,13 +150,28 @@ public class BundleManager implements ResourceManagerReloadListener {
     private void loadBundle(BundleInfo info, Path bundleDir, @Nullable FileSystem zipFs) {
         try {
             BundleFiles files = buildFileInfo(bundleDir);
+
             URL[] roots = new URL[]{files.root().toUri().toURL(), files.generated().toUri().toURL()};
+
             GroovyScriptEngine engine = new GroovyScriptEngine(roots, FMLLoader.getCurrent().getCurrentClassLoader());
+
             CompilerConfiguration compilerConfiguration = new CompilerConfiguration();
 
             Common.post(new ScriptEngineModifyEvent(engine, compilerConfiguration));
-
             engine.setConfig(compilerConfiguration);
+
+            ImportCustomizer importCustomizer = new ImportCustomizer();
+            compilerConfiguration.addCompilationCustomizers(importCustomizer);
+            SecureASTCustomizer secure = new SecureASTCustomizer();
+            secure.setClosuresAllowed(true);
+            secure.setMethodDefinitionAllowed(true);
+            secure.setDisallowedImports(
+                    List.of("java.io.*", "java.net.*", "javax.*", "sun.*", "com.sun.*", "jdk.*")
+            );
+            secure.setDisallowedReceivers(
+                    List.of("System", "Runtime", "Thread", "Class")
+            );
+            compilerConfiguration.addCompilationCustomizers(secure);
 
             IEventBus eventBus = NeoForge.EVENT_BUS;
 
