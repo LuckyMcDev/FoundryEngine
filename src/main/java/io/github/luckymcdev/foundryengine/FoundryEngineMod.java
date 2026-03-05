@@ -63,7 +63,7 @@ public class FoundryEngineMod {
     }
 
     public void onAddReloadListeners(AddServerReloadListenersEvent event) {
-        event.addListener(Common.id("bundlemanager"), Common.getBundleManager());
+        event.addListener(Common.id("bundle_manager"), Common.getBundleManager());
     }
 
     private void onAddPackFinders(AddPackFindersEvent event) {
