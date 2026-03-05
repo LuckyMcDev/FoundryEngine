@@ -31,6 +31,7 @@ import java.io.IOException;
 @Mod(Common.MODID)
 public class FoundryEngineMod {
     private static final Logger LOGGER = LogUtils.getLogger();
+    private static final IEventBus BUS = NeoForge.EVENT_BUS;
 
     /**
      * Initializes the mod and registers events.
@@ -39,16 +40,17 @@ public class FoundryEngineMod {
      * @param modContainer the mod container
      */
     public FoundryEngineMod(IEventBus modEventBus, ModContainer modContainer) {
+        LOGGER.debug("FoundryEngineMod setup called");
 
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(this::onConstruct);
         modEventBus.addListener(this::onAddPackFinders);
         modEventBus.addListener(this::onRegister);
 
-        Common.post(new RegisterEngineThreadEvent());
+        BUS.post(new RegisterEngineThreadEvent());
 
-        NeoForge.EVENT_BUS.addListener(this::onAddReloadListeners);
-        NeoForge.EVENT_BUS.addListener(this::onRegisterCommands);
+        BUS.addListener(this::onAddReloadListeners);
+        BUS.addListener(this::onRegisterCommands);
 
         Common.getGameBehaviorManager().register(Common.id("direct_world_load"),
                 new DirectWorldLoadBehavior("testWorld")
