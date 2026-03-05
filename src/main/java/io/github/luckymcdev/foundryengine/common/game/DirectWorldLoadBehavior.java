@@ -1,11 +1,13 @@
 package io.github.luckymcdev.foundryengine.common.game;
 
+import com.mojang.logging.LogUtils;
 import io.github.luckymcdev.foundryengine.common.priority.Priority;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+import org.slf4j.Logger;
 
 public class DirectWorldLoadBehavior extends MenuBehavior {
-
+    private static final Logger LOGGER = LogUtils.getLogger();
     private final String worldName;
 
     public DirectWorldLoadBehavior(String worldName) {
@@ -20,11 +22,9 @@ public class DirectWorldLoadBehavior extends MenuBehavior {
         minecraft.setScreen(null);
 
         try {
-            minecraft.createWorldOpenFlows().openWorld(worldName, () -> {
-                minecraft.setScreen(currentScreen);
-            });
+            minecraft.createWorldOpenFlows().openWorld(worldName, () -> minecraft.setScreen(currentScreen));
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error(e.getLocalizedMessage());
             minecraft.setScreen(currentScreen);
         }
 
