@@ -4,7 +4,7 @@ import com.mojang.logging.LogUtils;
 import io.github.luckymcdev.foundryengine.common.Common;
 import io.github.luckymcdev.foundryengine.common.bundle.Bundle;
 import io.github.luckymcdev.foundryengine.common.data.EngineGenerator;
-import io.github.luckymcdev.foundryengine.common.game.DirectWorldLoadBehavior;
+import io.github.luckymcdev.foundryengine.common.game.behavior.DirectWorldLoadBehavior;
 import io.github.luckymcdev.foundryengine.common.log.EngineLogAppender;
 import io.github.luckymcdev.foundryengine.common.thread.RegisterEngineThreadEvent;
 import io.github.luckymcdev.foundryengine.config.Config;

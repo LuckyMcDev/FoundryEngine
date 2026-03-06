@@ -1,4 +1,4 @@
-package io.github.luckymcdev.foundryengine.common.game;
+package io.github.luckymcdev.foundryengine.common.game.behavior;
 
 public enum GameBehaviorCancelation {
     CONTINUE,

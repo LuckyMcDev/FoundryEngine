@@ -3,7 +3,7 @@ package io.github.luckymcdev.foundryengine.common;
 import com.mojang.logging.LogUtils;
 import io.github.luckymcdev.foundryengine.common.bundle.BundleManager;
 import io.github.luckymcdev.foundryengine.common.files.FileManager;
-import io.github.luckymcdev.foundryengine.common.game.GameBehaviorManager;
+import io.github.luckymcdev.foundryengine.common.game.behavior.GameBehaviorManager;
 import io.github.luckymcdev.foundryengine.common.thread.ThreadManager;
 import io.github.luckymcdev.foundryengine.common.util.FirstRun;
 import net.minecraft.resources.Identifier;

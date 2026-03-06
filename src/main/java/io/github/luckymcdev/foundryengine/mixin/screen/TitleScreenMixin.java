@@ -1,8 +1,8 @@
 package io.github.luckymcdev.foundryengine.mixin.screen;
 
 import io.github.luckymcdev.foundryengine.common.Common;
-import io.github.luckymcdev.foundryengine.common.game.GameBehaviorCancelation;
-import io.github.luckymcdev.foundryengine.common.game.MenuBehavior;
+import io.github.luckymcdev.foundryengine.common.game.behavior.GameBehaviorCancelation;
+import io.github.luckymcdev.foundryengine.common.game.behavior.MenuBehavior;
 import io.github.luckymcdev.foundryengine.interfaces.FeTitleScreen;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.TitleScreen;

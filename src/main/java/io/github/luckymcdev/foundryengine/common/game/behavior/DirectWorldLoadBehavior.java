@@ -1,4 +1,4 @@
-package io.github.luckymcdev.foundryengine.common.game;
+package io.github.luckymcdev.foundryengine.common.game.behavior;
 
 import com.mojang.logging.LogUtils;
 import io.github.luckymcdev.foundryengine.common.priority.Priority;

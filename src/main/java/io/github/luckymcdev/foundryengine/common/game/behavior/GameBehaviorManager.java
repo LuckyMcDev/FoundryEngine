@@ -1,4 +1,4 @@
-package io.github.luckymcdev.foundryengine.common.game;
+package io.github.luckymcdev.foundryengine.common.game.behavior;
 
 import io.github.luckymcdev.foundryengine.common.registry.GenericRegistry;
 import net.minecraft.resources.Identifier;

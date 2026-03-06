@@ -1,4 +1,4 @@
-package io.github.luckymcdev.foundryengine.common.game;
+package io.github.luckymcdev.foundryengine.common.game.behavior;
 
 import net.minecraft.client.gui.screens.Screen;
 
