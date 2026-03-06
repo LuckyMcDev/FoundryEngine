@@ -5,6 +5,7 @@ import io.github.luckymcdev.foundryengine.common.bundle.BundleManager;
 import io.github.luckymcdev.foundryengine.common.files.FileManager;
 import io.github.luckymcdev.foundryengine.common.game.GameBehaviorManager;
 import io.github.luckymcdev.foundryengine.common.thread.ThreadManager;
+import io.github.luckymcdev.foundryengine.common.util.FirstRun;
 import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.EventPriority;
@@ -13,6 +14,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.Supplier;
 
@@ -27,33 +29,20 @@ public abstract class Common {
     /** Mod Name */
     public static final String MODNAME = "Foundry Engine";
 
+    public static final Path GAMEDIR = FMLPaths.GAMEDIR.get().normalize().toAbsolutePath();
+
     /** Base Config Dir*/
     public static final Path CONFIG = FMLPaths.CONFIGDIR.get();
     /** FoundryEngine config dir*/
     public static final Path FOUNDRY_ENGINE_CONFIG = CONFIG.resolve(MODID);
     /** WIP database config dir.*/
     public static final Path DATABASE_CONFIG = CONFIG.resolve("database");
-
-    /** Game Dir*/
-    public static final Path GAME = FMLPaths.GAMEDIR.get();
-    /** FoundryEngine Game Dir*/
-    public static final Path FOUNDRY_ENGINE = GAME.resolve("FoundryEngine");
-    /**
-     * Bundles Path
-     */
-    public static final Path BUNDLES = FOUNDRY_ENGINE.resolve("bundles");
-    /**
-     * Cache Path
-     */
-    public static final Path CACHE = FOUNDRY_ENGINE.resolve(".cache");
-    /**
-     * Dumps Path
-     */
-    public static final Path DUMPS = CACHE.resolve("dumps");
-    /**
-     * Config Path
-     */
-    public static final Path CONFIG_FE = FOUNDRY_ENGINE.resolve("config");
+    private static final boolean FIRST_RUN = FirstRun.isFor(MODID);
+    public static final Path DIRECTORY = dir(GAMEDIR.resolve("FoundryEngine"));
+    public static final Path BUNDLES = dir(DIRECTORY.resolve("bundles"));
+    public static final Path CACHE = dir(DIRECTORY.resolve(".cache"));
+    public static final Path DUMPS = dir(CACHE.resolve("dumps"));
+    public static final Path CONFIG_FE = dir(DIRECTORY.resolve("config"));
 
     private static final ThreadManager THREAD_MANAGER = new ThreadManager();
 
@@ -100,5 +89,16 @@ public abstract class Common {
 
     public static <T extends Event> T post(EventPriority priority, T event) {
         return NeoForge.EVENT_BUS.post(priority, event);
+    }
+
+    static Path dir(Path dir) {
+        if (Files.notExists(dir) && FIRST_RUN) {
+            try {
+                Files.createDirectories(dir);
+            } catch (Exception ex) {
+                LOGGER.error(ex.getLocalizedMessage());
+            }
+        }
+        return dir;
     }
 }

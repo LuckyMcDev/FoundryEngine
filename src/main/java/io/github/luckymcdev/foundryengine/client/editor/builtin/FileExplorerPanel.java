@@ -23,7 +23,7 @@ import java.util.Comparator;
 public class FileExplorerPanel extends Panel {
     private static final Logger LOGGER = LogUtils.getLogger();
     public static final FileExplorerPanel INSTANCE = new FileExplorerPanel();
-    private final File rootDir = Common.FOUNDRY_ENGINE.toFile();
+    private final File rootDir = Common.DIRECTORY.toFile();
 
     public FileExplorerPanel() {
         super(Common.id("file_explorer"), "File Explorer", Shortcut.ctrl(ImGuiKey.F));

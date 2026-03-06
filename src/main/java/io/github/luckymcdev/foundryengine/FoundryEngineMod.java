@@ -92,7 +92,6 @@ public class FoundryEngineMod {
 
     private void commonSetup(final FMLCommonSetupEvent event) {
         try {
-            Common.getFileManager().createMainDirectory();
             new EngineGenerator().run();
         } catch (IOException e) {
             LOGGER.error("{}{}", e.getLocalizedMessage(), e.getStackTrace());
