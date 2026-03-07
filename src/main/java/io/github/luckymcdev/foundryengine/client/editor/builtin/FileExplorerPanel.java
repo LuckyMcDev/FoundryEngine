@@ -32,7 +32,7 @@ public class FileExplorerPanel extends Panel {
     @Override
     public void content() {
         if (!Client.getMinecraft().isSingleplayer()) {
-            ImGui.text("Not in singleplayer, so no File Explorer.");
+            ImGui.text("Not in singleplayer.");
             return;
         }
         ImGui.textDisabled("Project Root: " + rootDir.getName());
