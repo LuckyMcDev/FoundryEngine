@@ -12,7 +12,7 @@ public class DirectWorldLoadBehavior extends MenuBehavior {
 
     public DirectWorldLoadBehavior(String worldName) {
         this.worldName = worldName;
-        this.enabled = true;
+        this.enabled = false;
     }
 
     @Override
