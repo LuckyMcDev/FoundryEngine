@@ -54,6 +54,7 @@ public class FoundryEngineMod {
 
         BUS.addListener(this::onAddReloadListeners);
         BUS.addListener(this::onRegisterCommands);
+        BUS.addListener(GameStageHandler::onPlayerTick);
 
         Common.getGameBehaviorManager().register(Common.id("direct_world_load"),
                 new DirectWorldLoadBehavior("testWorld")

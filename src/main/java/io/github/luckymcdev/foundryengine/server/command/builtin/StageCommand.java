@@ -11,7 +11,9 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.TriState;
 
+import java.util.Collection;
 import java.util.Set;
 
 public class StageCommand implements EngineCommand {
@@ -22,27 +24,38 @@ public class StageCommand implements EngineCommand {
                 .then(Commands.argument("targets", EntityArgument.players())
                         .then(Commands.literal("add").requires(this::isAdmin)
                                 .then(Commands.argument("stage", StringArgumentType.word())
-                                        .executes(ctx -> modifyStage(ctx, true))))
+                                        .executes(ctx -> modifyStage(ctx, TriState.TRUE))))
                         .then(Commands.literal("remove").requires(this::isAdmin)
                                 .then(Commands.argument("stage", StringArgumentType.word())
-                                        .executes(ctx -> modifyStage(ctx, false))))
+                                        .executes(ctx -> modifyStage(ctx, TriState.FALSE))))
+                        .then(Commands.literal("clear").requires(this::isAdmin)
+                                .executes(ctx -> modifyStage(ctx, TriState.DEFAULT)))
                         .then(Commands.literal("list")
                                 .executes(this::listStages)));
     }
 
-    private int modifyStage(CommandContext<CommandSourceStack> ctx, boolean add) throws CommandSyntaxException {
-        var players = EntityArgument.getPlayers(ctx, "targets");
-        String stage = StringArgumentType.getString(ctx, "stage");
+    private int modifyStage(CommandContext<CommandSourceStack> ctx, TriState type) throws CommandSyntaxException {
+        Collection<ServerPlayer> players = EntityArgument.getPlayers(ctx, "targets");
+        String stage = type.isDefault() ? "" : StringArgumentType.getString(ctx, "stage");
         int count = 0;
 
         for (ServerPlayer player : players) {
-            if (add ? GameStageHandler.addStage(player, stage) : GameStageHandler.removeStage(player, stage)) {
-                count++;
+            if (type.isTrue()) {
+                GameStageHandler.addStage(player, stage);
+            } else if (type.isFalse()) {
+                GameStageHandler.removeStage(player, stage);
+            } else {
+                GameStageHandler.clearStages(player);
             }
+            count++;
         }
 
-        String action = add ? "Added" : "Removed";
-        sendSuccess(ctx, String.format("%s stage '%s' for %d player(s)", action, stage, count), true);
+        String action = type.isTrue() ? "Added" : type.isFalse() ? "Removed" : "Cleared all";
+        String stageSuffix = type.isDefault() ? "" : String.format(" '%s'", stage);
+        int finalCount = count;
+        ctx.getSource().sendSuccess(() -> Component.literal(
+                String.format("%s%s for %d player(s)", action, stageSuffix, finalCount)
+        ), true);
 
         return count;
     }

@@ -1,30 +1,31 @@
 package io.github.luckymcdev.foundryengine.common.game.stage;
 
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import groovyjarjarantlr4.v4.runtime.misc.Nullable;
 import io.github.luckymcdev.foundryengine.common.Common;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.attachment.AttachmentSyncHandler;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Supplier;
 
 public class GameStageHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(GameStageHandler.class);
+    private static final List<Pair<StageAdditionPredicate, String>> PENDING_STAGES = new ArrayList<>();
     private static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, Common.MODID);
     private static final Codec<Set<String>> STRING_SET_CODEC = Codec.STRING.listOf().xmap(
             HashSet::new,
@@ -95,11 +96,35 @@ public class GameStageHandler {
         return false;
     }
 
+    /**
+     * Clears all Stages from the Player
+     */
+    public static void clearStages(Player player) {
+        Set<String> stages = player.getData(PLAYER_STAGES);
+        stages.clear();
+        player.setData(PLAYER_STAGES, stages);
+    }
+
     public static boolean hasStage(Player player, String stage) {
         return player.getData(PLAYER_STAGES).contains(stage);
     }
 
     public static Set<String> getStages(Player player) {
         return Collections.unmodifiableSet(player.getData(PLAYER_STAGES));
+    }
+
+    public static void addStageOn(StageAdditionPredicate predicate, String stageToAdd) {
+        PENDING_STAGES.add(Pair.of(predicate, stageToAdd));
+    }
+
+    public static void onPlayerTick(ServerTickEvent.Post event) {
+        MinecraftServer server = event.getServer();
+        server.getPlayerList().getPlayers().forEach(serverPlayer -> {
+            for (Pair<StageAdditionPredicate, String> task : PENDING_STAGES) {
+                if (task.getFirst().test(serverPlayer)) {
+                    addStage(serverPlayer, task.getSecond());
+                }
+            }
+        });
     }
 }
