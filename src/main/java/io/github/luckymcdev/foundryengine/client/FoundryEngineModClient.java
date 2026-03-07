@@ -78,13 +78,11 @@ public class FoundryEngineModClient {
         if (ModList.get().isLoaded("mcef")) {
             event.register(BrowserPanel.INSTANCE);
         }
-
-        event.register(FileExplorerPanel.INSTANCE);
-
-        event.register(ConsolePanel.INSTANCE);
-
-        event.register(GroovyEditorPanel.INSTANCE);
-
+        if (Client.getMinecraft().isSingleplayer()) {
+            event.register(FileExplorerPanel.INSTANCE);
+            event.register(GroovyEditorPanel.INSTANCE);
+            event.register(ConsolePanel.INSTANCE);
+        }
         event.register(MainEditor.INSTANCE);
     }
 
