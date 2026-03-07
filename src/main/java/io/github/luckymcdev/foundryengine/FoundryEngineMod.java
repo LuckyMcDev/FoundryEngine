@@ -5,6 +5,7 @@ import io.github.luckymcdev.foundryengine.common.Common;
 import io.github.luckymcdev.foundryengine.common.bundle.Bundle;
 import io.github.luckymcdev.foundryengine.common.data.EngineGenerator;
 import io.github.luckymcdev.foundryengine.common.game.behavior.DirectWorldLoadBehavior;
+import io.github.luckymcdev.foundryengine.common.game.stage.GameStageHandler;
 import io.github.luckymcdev.foundryengine.common.log.EngineLogAppender;
 import io.github.luckymcdev.foundryengine.common.thread.RegisterEngineThreadEvent;
 import io.github.luckymcdev.foundryengine.config.Config;
@@ -36,16 +37,18 @@ public class FoundryEngineMod {
     /**
      * Initializes the mod and registers events.
      *
-     * @param modEventBus  the mod event bus
+     * @param modBus  the mod event bus
      * @param modContainer the mod container
      */
-    public FoundryEngineMod(IEventBus modEventBus, ModContainer modContainer) {
+    public FoundryEngineMod(IEventBus modBus, ModContainer modContainer) {
         LOGGER.debug("FoundryEngineMod setup called");
 
-        modEventBus.addListener(this::commonSetup);
-        modEventBus.addListener(this::onConstruct);
-        modEventBus.addListener(this::onAddPackFinders);
-        modEventBus.addListener(this::onRegister);
+        registerModBus(modBus);
+
+        modBus.addListener(this::commonSetup);
+        modBus.addListener(this::onConstruct);
+        modBus.addListener(this::onAddPackFinders);
+        modBus.addListener(this::onRegister);
 
         BUS.post(new RegisterEngineThreadEvent());
 
@@ -62,7 +65,11 @@ public class FoundryEngineMod {
         modContainer.registerConfig(ModConfig.Type.STARTUP, Config.Startup.STARTUP_SPEC);
     }
 
-    public void onAddReloadListeners(AddServerReloadListenersEvent event) {
+    private void registerModBus(IEventBus modBus) {
+        GameStageHandler.register(modBus);
+    }
+
+    private void onAddReloadListeners(AddServerReloadListenersEvent event) {
         event.addListener(Common.id("bundle_manager"), Common.getBundleManager());
     }
 

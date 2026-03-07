@@ -27,7 +27,7 @@ public abstract class Common {
     /** Modid for FoundryEngine. */
     public static final String MODID = "foundryengine";
     /** Mod Name */
-    public static final String MODNAME = "Foundry Engine";
+    public static final String MODNAME = "FoundryEngine";
 
     public static final Path GAMEDIR = FMLPaths.GAMEDIR.get().normalize().toAbsolutePath();
 

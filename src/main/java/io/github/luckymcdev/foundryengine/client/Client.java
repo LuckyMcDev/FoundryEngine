@@ -25,6 +25,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.client.blaze3d.validation.ValidationGpuDevice;
 import net.neoforged.neoforge.client.blaze3d.validation.ValidationGpuTexture;
 import net.neoforged.neoforge.client.event.FrameGraphSetupEvent;
@@ -112,6 +113,10 @@ public abstract class Client {
 
     public static ClientPacketListener getConnection() {
         return getMinecraft().getConnection();
+    }
+
+    public static Player getPlayer() {
+        return getMinecraft().player;
     }
 
     public static void sendCommand(String command) {

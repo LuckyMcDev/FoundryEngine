@@ -11,6 +11,7 @@ import io.github.luckymcdev.foundryengine.client.editor.builtin.post.PostProcess
 import io.github.luckymcdev.foundryengine.client.editor.event.RegisterPanelEvent;
 import io.github.luckymcdev.foundryengine.client.event.RegisterRenderingStuffEvent;
 import io.github.luckymcdev.foundryengine.client.gui.debug.BundleDebugEntry;
+import io.github.luckymcdev.foundryengine.client.gui.debug.GameStagesDebugEntry;
 import io.github.luckymcdev.foundryengine.client.gui.debug.PostProcessDebugEntry;
 import io.github.luckymcdev.foundryengine.client.opengl.shaders.preprocessing.IncludeGLSLPreProcessor;
 import io.github.luckymcdev.foundryengine.client.opengl.shaders.preprocessing.RegisterGLSLPreProcessorEvent;
@@ -67,6 +68,7 @@ public class FoundryEngineModClient {
     public static void onRegisterDebugEntry(RegisterDebugEntriesEvent event) {
         event.register(Common.id("bundles_info"), new BundleDebugEntry(Common.getBundleManager()));
         event.register(Common.id("post_info"), new PostProcessDebugEntry(Client.getPostProcessManager()));
+        event.register(Common.id("gamestages_info"), new GameStagesDebugEntry());
     }
 
     @SubscribeEvent
