@@ -1,6 +1,7 @@
 package io.github.luckymcdev.foundryengine.client.editor.builtin.imnodes;
 
 import imgui.ImGui;
+import io.github.luckymcdev.foundryengine.client.Client;
 import io.github.luckymcdev.foundryengine.client.editor.Panel;
 import io.github.luckymcdev.foundryengine.client.imgui.imnodes.NodeEditorInstance;
 import io.github.luckymcdev.foundryengine.client.imgui.imnodes.lang.NodeLanguageDefinition;
@@ -73,6 +74,10 @@ public abstract class LanguageNodeEditorPanel extends Panel {
 
     @Override
     public final void content() {
+        if (!Client.getMinecraft().isSingleplayer()) {
+            ImGui.text("Not in singleplayer.");
+            return;
+        }
         float fullWidth = ImGui.getContentRegionAvailX();
         float leftWidth = Math.max(graphMinWidth, fullWidth * graphWidthFraction);
 

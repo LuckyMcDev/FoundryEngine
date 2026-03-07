@@ -52,7 +52,10 @@ public class CodeEditor extends EditorPanel {
 
     @Override
     public void content() {
-        if (!Client.getMinecraft().isSingleplayer()) return;
+        if (!Client.getMinecraft().isSingleplayer()) {
+            ImGui.text("Not in singleplayer.");
+            return;
+        }
         this.unsaved = isDirty();
 
         renderMenuBar();

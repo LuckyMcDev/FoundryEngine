@@ -53,6 +53,10 @@ public class ConsolePanel extends Panel {
 
     @Override
     public void content() {
+        if (!Client.getMinecraft().isSingleplayer()) {
+            ImGui.text("Not in singleplayer.");
+            return;
+        }
         renderControls();
         ImGui.separator();
 
