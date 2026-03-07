@@ -51,7 +51,7 @@ public class GameStageHandler {
     );
 
     public static void register(IEventBus modEventbus) {
-        LOGGER.debug("Registered {} Attachments", Common.MODNAME);
+        LOGGER.debug("Registered {} GameStageHandler", Common.MODNAME);
         ATTACHMENT_TYPES.register(modEventbus);
     }
 
