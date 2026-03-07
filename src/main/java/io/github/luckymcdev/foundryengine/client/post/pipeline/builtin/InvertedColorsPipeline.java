@@ -7,13 +7,25 @@ import io.github.luckymcdev.foundryengine.client.post.pipeline.PostProcessPipeli
 import io.github.luckymcdev.foundryengine.client.post.pipeline.pass.PostProcessPipelinePass;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.staged.PostProcessStage;
 import io.github.luckymcdev.foundryengine.common.Common;
+import net.minecraft.resources.Identifier;
+
+import java.util.List;
 
 public class InvertedColorsPipeline extends PostProcessPipeline {
 
-    public InvertedColorsPipeline() {
-        super(
-                Common.id("post_inverted"),
-                PostProcessStage.FINAL,
+    @Override
+    public Identifier getName() {
+        return Common.id("post_inverted");
+    }
+
+    @Override
+    public PostProcessStage getInitialStage() {
+        return PostProcessStage.FINAL;
+    }
+
+    @Override
+    public List<PostProcessPipelinePass> getPasses() {
+        return List.of(
                 new PostProcessPipelinePass(
                         Common.id("post_inverted_pass"),
                         new Shader(ExtendedShaderType.VERTEX,

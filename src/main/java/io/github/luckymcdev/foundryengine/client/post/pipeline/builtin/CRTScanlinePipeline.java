@@ -12,7 +12,10 @@ import io.github.luckymcdev.foundryengine.client.post.pipeline.pass.PostProcessP
 import io.github.luckymcdev.foundryengine.client.post.pipeline.staged.PostProcessStage;
 import io.github.luckymcdev.foundryengine.common.Common;
 import net.minecraft.client.Minecraft;
+import net.minecraft.resources.Identifier;
 import org.joml.Vector2f;
+
+import java.util.List;
 
 public class CRTScanlinePipeline extends PostProcessPipeline {
 
@@ -22,10 +25,19 @@ public class CRTScanlinePipeline extends PostProcessPipeline {
     public final PipelineParam<Float> gain =
             addParam(PipelineParam.floatParam("gain", "Brightness Gain", 0.5f, 0.1f, 1.0f));
 
-    public CRTScanlinePipeline() {
-        super(
-                Common.id("post_crt_bfi"),
-                PostProcessStage.FINAL,
+    @Override
+    public Identifier getName() {
+        return Common.id("post_crt_bfi");
+    }
+
+    @Override
+    public PostProcessStage getInitialStage() {
+        return PostProcessStage.FINAL;
+    }
+
+    @Override
+    public List<PostProcessPipelinePass> getPasses() {
+        return List.of(
                 new PostProcessPipelinePass(
                         Common.id("post_crt_bfi_pass"),
                         new Shader(ExtendedShaderType.VERTEX,

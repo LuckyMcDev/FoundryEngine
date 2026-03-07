@@ -12,7 +12,10 @@ import io.github.luckymcdev.foundryengine.client.post.pipeline.pass.PostProcessP
 import io.github.luckymcdev.foundryengine.client.post.pipeline.staged.PostProcessStage;
 import io.github.luckymcdev.foundryengine.common.Common;
 import net.minecraft.client.Minecraft;
+import net.minecraft.resources.Identifier;
 import org.joml.Vector2f;
+
+import java.util.List;
 
 /**
  * An example PostProcessPipeline which renders Minecraft as ASCII.
@@ -25,13 +28,19 @@ public class AsciiPostProcessPipeline extends PostProcessPipeline {
     public final PipelineParam<Integer> cellSize =
             addParam(PipelineParam.intParam("cellSize", "Cell Size", 8, 2, 32));
 
-    /**
-     * No Args Constructor.
-     */
-    public AsciiPostProcessPipeline() {
-        super(
-                Common.id("post_ascii"),
-                PostProcessStage.FINAL,
+    @Override
+    public Identifier getName() {
+        return Common.id("post_ascii");
+    }
+
+    @Override
+    public PostProcessStage getInitialStage() {
+        return PostProcessStage.FINAL;
+    }
+
+    @Override
+    public List<PostProcessPipelinePass> getPasses() {
+        return List.of(
                 new PostProcessPipelinePass(
                         Common.id("post_ascii_pass"),
                         new Shader(ExtendedShaderType.VERTEX,

@@ -18,37 +18,36 @@ import java.util.*;
  * By default, disabled. Call {@link PostProcessPipeline#enable()} in the constructor of your Pipeline
  * to enable instantly.
  */
-public class PostProcessPipeline {
-    private final List<PostProcessPipelinePass> passes = new ArrayList<>();
+public abstract class PostProcessPipeline {
     private final List<ShaderProgram> programs = new ArrayList<>();
     private final LinkedHashMap<String, TargetRef> targets = new LinkedHashMap<>();
     private final Map<String, PipelineParam<?>> params = new LinkedHashMap<>();
-
-    private final Identifier name;
     private boolean enabled;
     private PostProcessStage stage;
 
     /**
      * Create a new PostProcessPipeline
-     *
-     * @param name   The unique identifier for this Post Process Pipeline.
-     * @param passes n Amount of Passes for this PostProcessPipeline
      */
-    public PostProcessPipeline(Identifier name, PostProcessStage stage, PostProcessPipelinePass... passes) {
-        this.name = name;
+    public PostProcessPipeline() {
         this.enabled = false;
-        this.stage = stage;
-        for (PostProcessPipelinePass pass : passes) {
+        this.stage = getInitialStage();
+        List<PostProcessPipelinePass> declaredPasses = getPasses();
+        for (PostProcessPipelinePass pass : declaredPasses) {
             ShaderProgram program = new ShaderProgram(pass.name(), pass.shaders());
             try {
                 program.link();
-                this.passes.add(pass);
                 this.programs.add(program);
             } catch (ShaderException e) {
                 throw new RuntimeException("Failed to link pass: " + pass.name(), e);
             }
         }
     }
+
+    public abstract Identifier getName();
+
+    public abstract PostProcessStage getInitialStage();
+
+    public abstract List<PostProcessPipelinePass> getPasses();
 
     /**
      * Add a new {@link TargetRef} to this Pipeline.
@@ -100,10 +99,6 @@ public class PostProcessPipeline {
         return Collections.unmodifiableMap(params);
     }
 
-    public List<PostProcessPipelinePass> getPasses() {
-        return Collections.unmodifiableList(passes);
-    }
-
     public ShaderProgram getProgramForPass(int index) {
         return programs.get(index);
     }
@@ -134,7 +129,7 @@ public class PostProcessPipeline {
         program.setUniform(new Uniform<>("screenTexture", () -> 0));
         program.setUniform(new Uniform<>("depthTexture", () -> 1));
         program.setUniform(new Uniform<>("originalTexture", () -> 2));
-        
+
         for (PipelineParam<?> param : params.values()) {
             param.applyToProgram(program);
         }
@@ -173,15 +168,6 @@ public class PostProcessPipeline {
      */
     public boolean isEnabled() {
         return this.enabled;
-    }
-
-    /**
-     * The Identifier for this Pipeline.
-     *
-     * @return the Identifier for this Pipeline.
-     */
-    public Identifier getName() {
-        return name;
     }
 
     /**
