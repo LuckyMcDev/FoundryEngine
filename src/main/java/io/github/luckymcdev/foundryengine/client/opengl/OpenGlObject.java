@@ -1,8 +1,8 @@
 package io.github.luckymcdev.foundryengine.client.opengl;
 
 import io.github.luckymcdev.foundryengine.client.opengl.framebuffer.FrameBuffer;
+import io.github.luckymcdev.foundryengine.client.opengl.program.ShaderProgram;
 import io.github.luckymcdev.foundryengine.client.opengl.shaders.Shader;
-import io.github.luckymcdev.foundryengine.client.opengl.shaders.program.ShaderProgram;
 import org.lwjgl.system.NativeResource;
 
 /**

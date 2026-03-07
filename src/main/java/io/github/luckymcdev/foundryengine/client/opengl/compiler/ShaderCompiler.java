@@ -1,8 +1,8 @@
-package io.github.luckymcdev.foundryengine.client.opengl.shaders.compiler;
+package io.github.luckymcdev.foundryengine.client.opengl.compiler;
 
+import io.github.luckymcdev.foundryengine.client.opengl.exeption.ShaderException;
 import io.github.luckymcdev.foundryengine.client.opengl.shaders.ExtendedShaderType;
 import io.github.luckymcdev.foundryengine.client.opengl.shaders.Shader;
-import io.github.luckymcdev.foundryengine.client.opengl.shaders.exeption.ShaderException;
 import io.github.luckymcdev.foundryengine.common.registry.GenericRegistry;
 import net.minecraft.resources.Identifier;
 

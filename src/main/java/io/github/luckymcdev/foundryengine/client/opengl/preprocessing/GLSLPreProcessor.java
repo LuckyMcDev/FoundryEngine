@@ -1,4 +1,4 @@
-package io.github.luckymcdev.foundryengine.client.opengl.shaders.preprocessing;
+package io.github.luckymcdev.foundryengine.client.opengl.preprocessing;
 
 import net.minecraft.resources.Identifier;
 

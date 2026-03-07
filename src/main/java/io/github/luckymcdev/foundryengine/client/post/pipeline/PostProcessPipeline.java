@@ -1,9 +1,9 @@
 package io.github.luckymcdev.foundryengine.client.post.pipeline;
 
-import io.github.luckymcdev.foundryengine.client.opengl.shaders.exeption.ShaderException;
-import io.github.luckymcdev.foundryengine.client.opengl.shaders.program.ShaderProgram;
-import io.github.luckymcdev.foundryengine.client.opengl.shaders.uniform.Uniform;
-import io.github.luckymcdev.foundryengine.client.opengl.shaders.uniform.Uniforms;
+import io.github.luckymcdev.foundryengine.client.opengl.exeption.ShaderException;
+import io.github.luckymcdev.foundryengine.client.opengl.program.ShaderProgram;
+import io.github.luckymcdev.foundryengine.client.opengl.uniform.Uniform;
+import io.github.luckymcdev.foundryengine.client.opengl.uniform.Uniforms;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.param.PipelineParam;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.pass.PostProcessPipelinePass;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.pass.TargetRef;

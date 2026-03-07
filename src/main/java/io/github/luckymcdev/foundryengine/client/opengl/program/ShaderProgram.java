@@ -1,14 +1,14 @@
-package io.github.luckymcdev.foundryengine.client.opengl.shaders.program;
+package io.github.luckymcdev.foundryengine.client.opengl.program;
 
 import com.mojang.blaze3d.opengl.GlConst;
 import com.mojang.logging.LogUtils;
 import io.github.luckymcdev.foundryengine.client.Client;
 import io.github.luckymcdev.foundryengine.client.opengl.GlDispatch;
 import io.github.luckymcdev.foundryengine.client.opengl.OpenGlObject;
+import io.github.luckymcdev.foundryengine.client.opengl.compiler.ShaderCompiler;
+import io.github.luckymcdev.foundryengine.client.opengl.exeption.ShaderException;
 import io.github.luckymcdev.foundryengine.client.opengl.shaders.Shader;
-import io.github.luckymcdev.foundryengine.client.opengl.shaders.compiler.ShaderCompiler;
-import io.github.luckymcdev.foundryengine.client.opengl.shaders.exeption.ShaderException;
-import io.github.luckymcdev.foundryengine.client.opengl.shaders.uniform.Uniform;
+import io.github.luckymcdev.foundryengine.client.opengl.uniform.Uniform;
 import net.minecraft.resources.Identifier;
 import org.joml.*;
 import org.slf4j.Logger;

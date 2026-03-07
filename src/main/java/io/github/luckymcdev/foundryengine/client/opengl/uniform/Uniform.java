@@ -1,4 +1,4 @@
-package io.github.luckymcdev.foundryengine.client.opengl.shaders.uniform;
+package io.github.luckymcdev.foundryengine.client.opengl.uniform;
 
 import java.util.function.Supplier;
 

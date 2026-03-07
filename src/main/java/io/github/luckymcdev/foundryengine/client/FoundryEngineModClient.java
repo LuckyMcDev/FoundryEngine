@@ -13,8 +13,8 @@ import io.github.luckymcdev.foundryengine.client.event.RegisterRenderingStuffEve
 import io.github.luckymcdev.foundryengine.client.gui.debug.BundleDebugEntry;
 import io.github.luckymcdev.foundryengine.client.gui.debug.GameStagesDebugEntry;
 import io.github.luckymcdev.foundryengine.client.gui.debug.PostProcessDebugEntry;
-import io.github.luckymcdev.foundryengine.client.opengl.shaders.preprocessing.IncludeGLSLPreProcessor;
-import io.github.luckymcdev.foundryengine.client.opengl.shaders.preprocessing.RegisterGLSLPreProcessorEvent;
+import io.github.luckymcdev.foundryengine.client.opengl.preprocessing.IncludeGLSLPreProcessor;
+import io.github.luckymcdev.foundryengine.client.opengl.preprocessing.RegisterGLSLPreProcessorEvent;
 import io.github.luckymcdev.foundryengine.client.post.RegisterPostPipelineEvent;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.builtin.*;
 import io.github.luckymcdev.foundryengine.client.util.RegisterKeyBindingEvent;

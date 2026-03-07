@@ -12,7 +12,7 @@ import io.github.luckymcdev.foundryengine.client.opengl.mesh.DrawMode;
 import io.github.luckymcdev.foundryengine.client.opengl.mesh.Mesh;
 import io.github.luckymcdev.foundryengine.client.opengl.mesh.VertexLayout;
 import io.github.luckymcdev.foundryengine.client.opengl.mesh.Vertices;
-import io.github.luckymcdev.foundryengine.client.opengl.shaders.program.ShaderProgram;
+import io.github.luckymcdev.foundryengine.client.opengl.program.ShaderProgram;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.PostProcessPipeline;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.pass.PostProcessPipelinePass;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.pass.TargetRef;

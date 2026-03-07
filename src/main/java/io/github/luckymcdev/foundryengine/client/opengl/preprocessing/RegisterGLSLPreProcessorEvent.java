@@ -1,4 +1,4 @@
-package io.github.luckymcdev.foundryengine.client.opengl.shaders.preprocessing;
+package io.github.luckymcdev.foundryengine.client.opengl.preprocessing;
 
 import io.github.luckymcdev.foundryengine.client.Client;
 import net.neoforged.bus.api.Event;

@@ -1,6 +1,7 @@
-package io.github.luckymcdev.foundryengine.client.opengl.shaders.uniform;
+package io.github.luckymcdev.foundryengine.client.opengl.uniform;
 
 import io.github.luckymcdev.foundryengine.client.Client;
+import io.github.luckymcdev.foundryengine.client.opengl.program.ShaderProgram;
 import net.minecraft.client.renderer.GameRenderer;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Vector3f;
@@ -42,7 +43,7 @@ public class Uniforms {
             () -> (float) Client.getWindow().getWidth() / (float) Client.getWindow().getHeight());
 
     /**
-     * Gets all Uniforms as a Collection for setting using {@link io.github.luckymcdev.foundryengine.client.opengl.shaders.program.ShaderProgram#setUniforms(Iterable)}
+     * Gets all Uniforms as a Collection for setting using {@link ShaderProgram#setUniforms(Iterable)}
      *
      * @return the Uniform Collection
      */

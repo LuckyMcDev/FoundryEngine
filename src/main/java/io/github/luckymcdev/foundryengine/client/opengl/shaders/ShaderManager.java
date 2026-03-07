@@ -1,10 +1,10 @@
 package io.github.luckymcdev.foundryengine.client.opengl.shaders;
 
 import com.mojang.logging.LogUtils;
-import io.github.luckymcdev.foundryengine.client.opengl.shaders.compiler.ShaderCompiler;
-import io.github.luckymcdev.foundryengine.client.opengl.shaders.exeption.ShaderException;
-import io.github.luckymcdev.foundryengine.client.opengl.shaders.preprocessing.GLSLPreProcessorManager;
-import io.github.luckymcdev.foundryengine.client.opengl.shaders.program.ShaderProgram;
+import io.github.luckymcdev.foundryengine.client.opengl.compiler.ShaderCompiler;
+import io.github.luckymcdev.foundryengine.client.opengl.exeption.ShaderException;
+import io.github.luckymcdev.foundryengine.client.opengl.preprocessing.GLSLPreProcessorManager;
+import io.github.luckymcdev.foundryengine.client.opengl.program.ShaderProgram;
 import io.github.luckymcdev.foundryengine.common.registry.GenericRegistry;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;

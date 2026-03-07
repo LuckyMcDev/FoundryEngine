@@ -1,4 +1,4 @@
-package io.github.luckymcdev.foundryengine.client.opengl.shaders.preprocessing;
+package io.github.luckymcdev.foundryengine.client.opengl.preprocessing;
 
 import com.mojang.logging.LogUtils;
 import io.github.luckymcdev.foundryengine.client.Client;

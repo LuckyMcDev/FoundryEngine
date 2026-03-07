@@ -3,7 +3,8 @@ package io.github.luckymcdev.foundryengine.client.opengl.shaders;
 import io.github.luckymcdev.foundryengine.client.Client;
 import io.github.luckymcdev.foundryengine.client.opengl.GlDispatch;
 import io.github.luckymcdev.foundryengine.client.opengl.OpenGlObject;
-import io.github.luckymcdev.foundryengine.client.opengl.shaders.exeption.ShaderException;
+import io.github.luckymcdev.foundryengine.client.opengl.compiler.ShaderCompiler;
+import io.github.luckymcdev.foundryengine.client.opengl.exeption.ShaderException;
 import net.minecraft.resources.Identifier;
 
 import static org.lwjgl.opengl.GL43C.*;
@@ -61,7 +62,7 @@ public class Shader extends OpenGlObject {
     /**
      * Compiles the Shader.
      * <br>
-     * {@link io.github.luckymcdev.foundryengine.client.opengl.shaders.compiler.ShaderCompiler}
+     * {@link ShaderCompiler}
      * @throws ShaderException exception to throw if something is wrong.
      */
     public void compile() throws ShaderException {

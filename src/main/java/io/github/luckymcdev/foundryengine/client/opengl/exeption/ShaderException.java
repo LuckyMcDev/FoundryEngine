@@ -1,4 +1,4 @@
-package io.github.luckymcdev.foundryengine.client.opengl.shaders.exeption;
+package io.github.luckymcdev.foundryengine.client.opengl.exeption;
 
 import org.jetbrains.annotations.Nullable;
 

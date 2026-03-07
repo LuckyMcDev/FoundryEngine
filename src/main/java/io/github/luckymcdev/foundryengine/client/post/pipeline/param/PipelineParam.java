@@ -1,8 +1,8 @@
 package io.github.luckymcdev.foundryengine.client.post.pipeline.param;
 
 import io.github.luckymcdev.foundryengine.client.editor.builtin.post.PostProcessPanel;
-import io.github.luckymcdev.foundryengine.client.opengl.shaders.program.ShaderProgram;
-import io.github.luckymcdev.foundryengine.client.opengl.shaders.uniform.Uniform;
+import io.github.luckymcdev.foundryengine.client.opengl.program.ShaderProgram;
+import io.github.luckymcdev.foundryengine.client.opengl.uniform.Uniform;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
