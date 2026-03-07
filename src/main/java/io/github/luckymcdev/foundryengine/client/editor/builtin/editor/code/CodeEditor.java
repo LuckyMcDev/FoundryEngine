@@ -52,6 +52,7 @@ public class CodeEditor extends EditorPanel {
 
     @Override
     public void content() {
+        if (!Client.getMinecraft().isSingleplayer()) return;
         this.unsaved = isDirty();
 
         renderMenuBar();
