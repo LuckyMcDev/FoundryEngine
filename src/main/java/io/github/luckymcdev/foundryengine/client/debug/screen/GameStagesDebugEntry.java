@@ -1,4 +1,4 @@
-package io.github.luckymcdev.foundryengine.client.gui.debug;
+package io.github.luckymcdev.foundryengine.client.debug.screen;
 
 import io.github.luckymcdev.foundryengine.client.Client;
 import io.github.luckymcdev.foundryengine.common.Common;

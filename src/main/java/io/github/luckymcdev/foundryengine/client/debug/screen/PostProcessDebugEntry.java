@@ -1,4 +1,4 @@
-package io.github.luckymcdev.foundryengine.client.gui.debug;
+package io.github.luckymcdev.foundryengine.client.debug.screen;
 
 import groovyjarjarantlr4.v4.runtime.misc.Nullable;
 import io.github.luckymcdev.foundryengine.client.post.PostProcessManager;

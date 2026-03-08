@@ -1,6 +1,10 @@
 package io.github.luckymcdev.foundryengine.client;
 
 import com.mojang.logging.LogUtils;
+import io.github.luckymcdev.foundryengine.client.debug.renderer.SimpleDebugScreenRenderer;
+import io.github.luckymcdev.foundryengine.client.debug.screen.BundleDebugEntry;
+import io.github.luckymcdev.foundryengine.client.debug.screen.GameStagesDebugEntry;
+import io.github.luckymcdev.foundryengine.client.debug.screen.PostProcessDebugEntry;
 import io.github.luckymcdev.foundryengine.client.editor.builtin.BrowserPanel;
 import io.github.luckymcdev.foundryengine.client.editor.builtin.ConsolePanel;
 import io.github.luckymcdev.foundryengine.client.editor.builtin.FileExplorerPanel;
@@ -10,16 +14,16 @@ import io.github.luckymcdev.foundryengine.client.editor.builtin.imnodes.GroovyEd
 import io.github.luckymcdev.foundryengine.client.editor.builtin.post.PostProcessPanel;
 import io.github.luckymcdev.foundryengine.client.editor.event.RegisterPanelEvent;
 import io.github.luckymcdev.foundryengine.client.event.RegisterRenderingStuffEvent;
-import io.github.luckymcdev.foundryengine.client.gui.debug.BundleDebugEntry;
-import io.github.luckymcdev.foundryengine.client.gui.debug.GameStagesDebugEntry;
-import io.github.luckymcdev.foundryengine.client.gui.debug.PostProcessDebugEntry;
 import io.github.luckymcdev.foundryengine.client.opengl.preprocessing.IncludeGLSLPreProcessor;
 import io.github.luckymcdev.foundryengine.client.opengl.preprocessing.RegisterGLSLPreProcessorEvent;
 import io.github.luckymcdev.foundryengine.client.post.RegisterPostPipelineEvent;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.builtin.*;
 import io.github.luckymcdev.foundryengine.client.util.RegisterKeyBindingEvent;
 import io.github.luckymcdev.foundryengine.common.Common;
+import net.minecraft.gizmos.Gizmos;
+import net.minecraft.gizmos.TextGizmo;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -69,6 +73,34 @@ public class FoundryEngineModClient {
         event.register(Common.id("bundles_info"), new BundleDebugEntry(Common.getBundleManager()));
         event.register(Common.id("post_info"), new PostProcessDebugEntry(Client.getPostProcessManager()));
         event.register(Common.id("gamestages_info"), new GameStagesDebugEntry());
+    }
+
+    @SubscribeEvent
+    public static void onRegisterDebugRenderers(RegisterDebugRenderersEvent event) {
+//        event.register(minecraft -> new SimpleDebugScreenRenderer(
+//                minecraft,
+//                (mc, camPos, debug, frustum, partialTick) -> {
+//                    Vector3d forward = camPos.add(
+//                            mc.player.getViewVector(partialTick).x * 2,
+//                            mc.player.getViewVector(partialTick).y * 2,
+//                            mc.player.getViewVector(partialTick).z * 2,
+//                            new Vector3d()
+//                    );
+//                    Gizmos.point(new Vec3(forward.x, forward.y, forward.z), 0xFF00FF00, 10F);
+//                }
+//        ));
+
+        event.register(minecraft -> new SimpleDebugScreenRenderer(
+                minecraft,
+                (mc, camPos, debug, frustum, partialTick) -> {
+                    camPos.add(0, 2, 0);
+                    Gizmos.billboardText(
+                            "TEST",
+                            new Vec3(camPos.x(), camPos.y(), camPos.z()),
+                            TextGizmo.Style.forColorAndCentered(0xFF00FF).withScale(2F));
+                }
+        ));
+
     }
 
     @SubscribeEvent
