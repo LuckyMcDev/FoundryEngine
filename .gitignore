@@ -118,6 +118,7 @@ run
 /.idea/
 /repo
 
+package-lock.json
 docs/generated
 docs/.vitepress/dist
 */.vitepress/cache
