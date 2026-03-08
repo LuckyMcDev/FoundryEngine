@@ -4,7 +4,7 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 
 /**
- * An Enum which contains all the Possible Stages for a {@link StagedPostProcessPipeline} to render at.
+ * An Enum which contains all the Possible Stages for a {@link io.github.luckymcdev.foundryengine.client.post.pipeline.PostProcessPipeline} to render at.
  * Will be expanded with more Possible Stages soon.
  */
 public enum PostProcessStage {
