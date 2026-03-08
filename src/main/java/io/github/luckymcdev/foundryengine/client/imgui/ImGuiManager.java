@@ -112,6 +112,9 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
         imGuiImplGl3.init("#version 410 core");
         imGuiImplGlfw.init(handle, true);
 
+        var fonts = io.getFonts();
+        if (!fonts.isBuilt()) fonts.build();
+
         var style = ImGui.getStyle();
         ImGui.styleColorsDark();
         ImGuiGraphics.setFullDefaultStyle(style);
@@ -259,24 +262,40 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
         config.setRasterizerMultiply(1.2f);
         config.setGlyphOffset(0, 0);
 
+        boolean fontLoadSuccess = false;
         try {
             var bytes = TTFFile.JETBRAINS_MONO_NERDFONT_REGULAR.load(resourceManager);
             font = fonts.addFontFromMemoryTTF(bytes, 20F, config);
+            fontLoadSuccess = (font != null);
         } catch (Exception e) {
-            e.printStackTrace();
-            LOGGER.error(e.getMessage());
-            fonts.addFontDefault();
+            LOGGER.error("Failed to load custom font: {}", e.getMessage(), e);
         }
+
+        if (!fontLoadSuccess) {
+            LOGGER.warn("Using default font due to custom font load failure");
+            font = fonts.addFontDefault();
+        }
+
+        if (!fonts.build()) {
+            LOGGER.error("Failed to build font atlas!");
+            fonts.clear();
+            font = fonts.addFontDefault();
+            fonts.build();
+        }
+
         imGuiImplGl3.destroyFontsTexture();
-        fonts.build();
         imGuiImplGl3.createFontsTexture();
+
         config.destroy();
         fonts.clearTexData();
 
-
         if (ImGui.getFont() == null) {
-            ImGui.getIO().getFonts().addFontDefault();
-            LOGGER.error("Go back to default font, font corrupted?");
+            LOGGER.error("Font still null after loading, reinitializing with default");
+            fonts.clear();
+            fonts.addFontDefault();
+            fonts.build();
+            imGuiImplGl3.destroyFontsTexture();
+            imGuiImplGl3.createFontsTexture();
         }
     }
 
