@@ -35,20 +35,27 @@ public class Shader extends OpenGlObject {
 
     /**
      * Reloads the shader source from the file system and recompiles.
+     * Only recompiles if the source code has actually changed.
      * @throws ShaderException if the new source fails to compile.
      */
     public void reload() throws ShaderException {
-        this.source = loadSource();
-        this.bindSource();
-        this.compile();
+        String newSource = loadSource();
+
+        // Only recompile if source actually changed
+        if (!newSource.equals(this.source)) {
+            this.source = newSource;
+            this.bindSource();
+            this.compile();
+        }
     }
 
     /**
      * Loads and Processes a Shader Source Code.
+     * Uses cached source from ShaderManager to avoid repeated file I/O.
      * @return the processed source code.
      */
     private String loadSource() {
-        String unprocessedSource = Client.getIdSource(this.location);
+        String unprocessedSource = Client.getShaderManager().getCachedSource(this.location);
         return Client.getShaderManager().getPreProcessorManager().processAll(unprocessedSource);
     }
 

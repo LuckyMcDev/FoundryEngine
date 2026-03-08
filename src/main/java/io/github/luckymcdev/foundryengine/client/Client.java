@@ -33,12 +33,13 @@ import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 import org.slf4j.Logger;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public abstract class Client {
     /**
@@ -202,12 +203,34 @@ public abstract class Client {
      * @return the String Content of the File.
      */
     public static String getIdSource(Identifier location, Charset charset) {
-        try (InputStream stream = Client.getResourceManager().getResourceOrThrow(location).open();
-             Reader reader = new InputStreamReader(stream, charset);
-             BufferedReader br = new BufferedReader(reader)) {
-            return br.lines().collect(Collectors.joining("\n"));
+        try (InputStream stream = Client.getResourceManager().getResourceOrThrow(location).open()) {
+            // Read entire stream into byte array, then decode once
+            byte[] bytes = stream.readAllBytes();
+            return new String(bytes, charset);
         } catch (IOException e) {
-            LOGGER.error(e.getLocalizedMessage() + Arrays.toString(e.getStackTrace()));
+            LOGGER.error("Failed to load resource: {}", location, e);
+            return "";
+        }
+    }
+
+    /**
+     * Alternative implementation with reusable buffer for very large files.
+     */
+    public static String getIdSourceBuffered(Identifier location, Charset charset) {
+        try (InputStream stream = Client.getResourceManager().getResourceOrThrow(location).open();
+             Reader reader = new InputStreamReader(stream, charset)) {
+
+            StringBuilder sb = new StringBuilder(2048); // Pre-allocate reasonable size for shaders
+            char[] buffer = new char[2048]; // Reusable buffer
+            int charsRead;
+
+            while ((charsRead = reader.read(buffer)) != -1) {
+                sb.append(buffer, 0, charsRead);
+            }
+
+            return sb.toString();
+        } catch (IOException e) {
+            LOGGER.error("Failed to load resource: {}", location, e);
             return "";
         }
     }

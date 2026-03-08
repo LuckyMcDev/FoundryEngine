@@ -1,6 +1,7 @@
 package io.github.luckymcdev.foundryengine.client.opengl.shaders;
 
 import com.mojang.logging.LogUtils;
+import io.github.luckymcdev.foundryengine.client.Client;
 import io.github.luckymcdev.foundryengine.client.opengl.compiler.ShaderCompiler;
 import io.github.luckymcdev.foundryengine.client.opengl.exeption.ShaderException;
 import io.github.luckymcdev.foundryengine.client.opengl.preprocessing.GLSLPreProcessorManager;
@@ -11,6 +12,8 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
+
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A Manager for all Shaders. If you're just using the {@link io.github.luckymcdev.foundryengine.client.post.pipeline.PostProcessPipeline}
@@ -23,6 +26,7 @@ public class ShaderManager implements ResourceManagerReloadListener {
     private static final GLSLPreProcessorManager PRE_PROCESSOR_MANAGER = new GLSLPreProcessorManager();
     private static final GenericRegistry<Identifier, Shader> SHADERS = new GenericRegistry<>();
     private static final GenericRegistry<Identifier, ShaderProgram> PROGRAMS = new GenericRegistry<>();
+    private final ConcurrentHashMap<Identifier, String> sourceCache = new ConcurrentHashMap<>();
 
     public ShaderManager() {
     }
@@ -65,6 +69,8 @@ public class ShaderManager implements ResourceManagerReloadListener {
      * @throws ShaderException exception if something goes wrong when reloading.
      */
     public void reload() throws ShaderException {
+        // Clear caches to force fresh loads
+        clearSourceCache();
         getCompiler().clearCache();
 
         for (Shader shader : SHADERS.values()) {
@@ -91,6 +97,54 @@ public class ShaderManager implements ResourceManagerReloadListener {
      */
     public GLSLPreProcessorManager getPreProcessorManager() {
         return PRE_PROCESSOR_MANAGER;
+    }
+
+    /**
+     * Gets shader source from cache or loads it from the file system.
+     * This significantly reduces heap allocations by avoiding repeated file I/O
+     * for the same shader sources.
+     *
+     * @param location the shader file location
+     * @return the raw (unprocessed) shader source code
+     */
+    public String getCachedSource(Identifier location) {
+        return sourceCache.computeIfAbsent(location, Client::getIdSource);
+    }
+
+    /**
+     * Invalidates a specific shader source in the cache.
+     * Useful for hot-reloading a single shader during development.
+     *
+     * @param location the shader file location to invalidate
+     */
+    public void invalidateSource(Identifier location) {
+        sourceCache.remove(location);
+        LOGGER.debug("Invalidated cached source for: {}", location);
+    }
+
+    /**
+     * Clears all cached shader sources.
+     * Called automatically during resource reload.
+     */
+    public void clearSourceCache() {
+        int count = sourceCache.size();
+        sourceCache.clear();
+        LOGGER.debug("Cleared {} cached shader sources", count);
+    }
+
+    /**
+     * Gets cache statistics for debugging and monitoring.
+     *
+     * @return formatted string with cache size and estimated memory usage
+     */
+    public String getSourceCacheStats() {
+        int count = sourceCache.size();
+        long totalChars = sourceCache.values().stream()
+                .mapToInt(String::length)
+                .sum();
+        long estimatedKB = totalChars * 2 / 1024;
+
+        return String.format("Shader Source Cache: %d files, ~%d KB", count, estimatedKB);
     }
 
     @Override
