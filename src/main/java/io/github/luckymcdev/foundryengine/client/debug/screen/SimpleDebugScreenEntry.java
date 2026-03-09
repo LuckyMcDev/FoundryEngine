@@ -9,6 +9,10 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+/**
+ * An Inline Implementation of a DebugScreenEntry.
+ * For Rendering see {@link io.github.luckymcdev.foundryengine.client.debug.renderer.SimpleDebugScreenRenderer}
+ */
 public class SimpleDebugScreenEntry implements DebugScreenEntry {
 
     private final QuadConsumer<DebugScreenDisplayer, Level, LevelChunk, LevelChunk> renderer;

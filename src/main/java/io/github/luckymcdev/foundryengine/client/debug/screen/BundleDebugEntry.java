@@ -15,6 +15,9 @@ import org.jspecify.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Debug Entry to display info about Bundles.
+ */
 public class BundleDebugEntry implements DebugScreenEntry {
     public static final Identifier GROUP = Common.id("bundles");
     private final BundleManager manager;

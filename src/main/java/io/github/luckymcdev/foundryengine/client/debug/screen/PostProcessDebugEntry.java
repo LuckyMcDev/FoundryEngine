@@ -15,6 +15,9 @@ import org.jspecify.annotations.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Debug Entry to display info about PostProcessing.
+ */
 public class PostProcessDebugEntry implements DebugScreenEntry {
     public static final Identifier GROUP = Common.id("post_processing");
     private final PostProcessManager manager;
