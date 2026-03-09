@@ -1,7 +1,11 @@
+import org.jetbrains.dokka.gradle.engine.parameters.VisibilityModifier
+
 plugins {
     id 'java-library'
     id 'maven-publish'
     id 'idea'
+    id 'org.jetbrains.dokka' version "2.1.0"
+    id 'org.jetbrains.dokka-javadoc' version "2.1.0"
     id 'net.neoforged.moddev' version '2.0.140'
 }
 
@@ -160,11 +164,62 @@ tasks.register('preCommit') {
 }
 
 tasks.register('copyExampleBundles', Copy) {
-    group = 'foudryengine'
+    group = 'foundryengine'
     description = 'Copys the Example Bundles to the run directory for testing.'
 
     from 'ExampleBundles'
     into 'run/FoundryEngine/bundles'
+}
+
+// To generate documentation in HTML
+tasks.register('dokkaHtmlJar', Jar) {
+    description = 'A HTML Documentation JAR containing Dokka HTML'
+    from(tasks.named('dokkaGeneratePublicationHtml').flatMap { it.outputDirectory })
+    archiveClassifier.set('html-doc')
+}
+
+// To generate documentation in Javadoc
+tasks.register('dokkaJavadocJar', Jar) {
+    description = 'A Javadoc JAR containing Dokka Javadoc'
+    from(tasks.named('dokkaGeneratePublicationJavadoc').flatMap { it.outputDirectory })
+    archiveClassifier.set('javadoc')
+}
+
+
+dokka {
+
+    dokkaPublications {
+        html {
+            outputDirectory.set(file("docs/generated/html"))
+        }
+        javadoc {
+            outputDirectory.set(file("docs/generated/javadoc"))
+        }
+    }
+
+    dokkaSourceSets.configureEach {
+
+        displayName.set("FoundryEngine")
+        moduleVersion.set(mod_version.toString())
+
+        documentedVisibilities.set([
+                VisibilityModifier.Public,
+                VisibilityModifier.Protected
+        ] as Set)
+
+        reportUndocumented.set(false)
+
+        skipEmptyPackages.set(true)
+        skipDeprecated.set(false)
+
+        jdkVersion.set(21)
+
+        sourceLink {
+            localDirectory.set(file("src/main/java"))
+            remoteUrl.set(new URI("https://github.com/LuckyMcDev"))
+            remoteLineSuffix.set("#L")
+        }
+    }
 }
 
 publishing {
