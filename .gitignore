@@ -1,28 +1,46 @@
-# User-specific stuff
+# IDE & System
 .idea/
-
 *.iml
 *.ipr
 *.iws
-
-# IntelliJ
 out/
-# mpeltonen/sbt-idea plugin
-.idea_modules/
+.DS_Store
+Thumbs.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
 
-# JIRA plugin
-atlassian-ide-plugin.xml
-
-# Compiled class file
+# Gradle & Java
+.gradle/
+build/
+**/build/
+.gradletasknamecache
+gradle-app.setting
+!gradle-wrapper.jar
 *.class
-
-# Log file
 *.log
+hs_err_pid*
 
-# BlueJ files
-*.ctxt
+# Minecraft Modding Specific
+/run/
+/repo/
 
-# Package Files #
+# Node / VitePress
+node_modules/
+package-lock.json
+docs/generated/
+docs/.vitepress/dist/
+docs/.vitepress/cache/
+
+# Temporary & OS Junk
+*~
+*.stackdump
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+._*
+
+# Compiled Artifacts
 *.jar
 *.war
 *.nar
@@ -30,96 +48,3 @@ atlassian-ide-plugin.xml
 *.zip
 *.tar.gz
 *.rar
-
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
-
-*~
-
-# temporary files which can be created if a process still has a handle open of a deleted file
-.fuse_hidden*
-
-# KDE directory preferences
-.directory
-
-# Linux trash folder which might appear on any partition or disk
-.Trash-*
-
-# .nfs files are created when an open file is removed but is still being accessed
-.nfs*
-
-# General
-.DS_Store
-.AppleDouble
-.LSOverride
-
-
-# Thumbnails
-._*
-
-# Files that might appear in the root of a volume
-.DocumentRevisions-V100
-.fseventsd
-.Spotlight-V100
-.TemporaryItems
-.Trashes
-.VolumeIcon.icns
-.com.apple.timemachine.donotpresent
-
-# Directories potentially created on remote AFP share
-.AppleDB
-.AppleDesktop
-Network Trash Folder
-Temporary Items
-.apdisk
-
-# Windows thumbnail cache files
-Thumbs.db
-Thumbs.db:encryptable
-ehthumbs.db
-ehthumbs_vista.db
-
-# Dump file
-*.stackdump
-
-# Folder config file
-[Dd]esktop.ini
-
-# Recycle Bin used on file shares
-$RECYCLE.BIN/
-
-# Windows Installer files
-*.cab
-*.msi
-*.msix
-*.msm
-*.msp
-
-# Windows shortcuts
-*.lnk
-
-.gradle
-build/
-
-# Ignore Gradle GUI config
-gradle-app.setting
-
-# Cache of project
-.gradletasknamecache
-
-**/build/
-
-# Common working directory
-run
-
-# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
-!gradle-wrapper.jar
-
-/.idea/
-/repo
-
-package-lock.json
-docs/generated
-docs/.vitepress/dist
-*/.vitepress/cache
-/node_modules
