@@ -1,10 +1,7 @@
 package io.github.luckymcdev.foundryengine.server.command;
 
 import com.mojang.brigadier.CommandDispatcher;
-import io.github.luckymcdev.foundryengine.server.command.builtin.DumpCommand;
-import io.github.luckymcdev.foundryengine.server.command.builtin.HandCommand;
-import io.github.luckymcdev.foundryengine.server.command.builtin.ReloadCommand;
-import io.github.luckymcdev.foundryengine.server.command.builtin.StageCommand;
+import io.github.luckymcdev.foundryengine.server.command.builtin.*;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 
@@ -18,7 +15,8 @@ public class FoundryCommands {
             new DumpCommand(),
             new HandCommand(),
             new ReloadCommand(),
-            new StageCommand()
+            new StageCommand(),
+            new TestCommand()
     );
 
     public static void registerAll(CommandDispatcher<CommandSourceStack> dispatcher) {
