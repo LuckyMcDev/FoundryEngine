@@ -4,7 +4,7 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: "FoundryEngine",
   description: "Foundry Engine Docs",
-  base: '/FoundryEngine'
+  base: '/FoundryEngine',
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
