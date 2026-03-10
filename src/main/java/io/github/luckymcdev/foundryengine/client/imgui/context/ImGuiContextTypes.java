@@ -12,7 +12,7 @@ import imgui.internal.ImGuiContext;
 /**
  * The Built-In ImGuiContext Types. {@link ImNodesContext}, {@link ImGuiContext}, {@link ImPlotContext}
  */
-@Deprecated(forRemoval = true)
+@Deprecated()
 public class ImGuiContextTypes {
 
     /**
