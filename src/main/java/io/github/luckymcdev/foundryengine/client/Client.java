@@ -19,6 +19,7 @@ import io.github.luckymcdev.foundryengine.interfaces.TbMinecraft;
 import net.minecraft.client.Camera;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
@@ -118,6 +119,10 @@ public abstract class Client {
 
     public static Player getPlayer() {
         return getMinecraft().player;
+    }
+
+    public static void setScreen(Screen screen) {
+        getMinecraft().setScreen(screen);
     }
 
     public static void sendCommand(String command) {
