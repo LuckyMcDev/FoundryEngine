@@ -26,7 +26,6 @@ hs_err_pid*
 
 # Node / VitePress
 node_modules/
-package-lock.json
 docs/generated/
 docs/.vitepress/dist/
 docs/.vitepress/cache/
