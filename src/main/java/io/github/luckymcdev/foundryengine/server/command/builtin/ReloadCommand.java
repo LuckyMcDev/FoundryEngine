@@ -6,14 +6,16 @@ import io.github.luckymcdev.foundryengine.server.command.EngineCommand;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.permissions.Permissions;
 
+/**
+ * Command to reload all bundles.
+ */
 public class ReloadCommand implements EngineCommand {
 
     @Override
     public LiteralArgumentBuilder<CommandSourceStack> build() {
         return Commands.literal("reload")
-                .requires(stack -> stack.permissions().hasPermission(Permissions.COMMANDS_ADMIN))
+                .requires(this::isAdmin)
                 .executes(context -> {
                     CommandSourceStack source = context.getSource();
                     try {

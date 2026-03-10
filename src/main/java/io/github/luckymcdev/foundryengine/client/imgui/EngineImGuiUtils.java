@@ -9,6 +9,10 @@ import io.github.luckymcdev.foundryengine.common.color.Color;
 import net.minecraft.client.StringSplitter;
 import net.minecraft.resources.Identifier;
 
+/**
+ * A Class which has static methods for
+ * some ImGui utils.
+ */
 public class EngineImGuiUtils {
     private static final StringSplitter IM_GUI_SPLITTER = new StringSplitter((charId, style) -> Client.getImGuiManager().getFont().getCharAdvance(charId));
 

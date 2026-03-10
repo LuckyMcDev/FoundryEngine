@@ -18,7 +18,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.Supplier;
 
-
+/**
+ * Common things for FoundryEngine.
+ */
 public abstract class Common {
     /**
      * Common Logger. Don't use, create your own.

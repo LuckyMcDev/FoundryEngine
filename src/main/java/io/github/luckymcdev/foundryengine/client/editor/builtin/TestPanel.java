@@ -9,23 +9,17 @@ import io.github.luckymcdev.foundryengine.common.Common;
 
 /**
  * A simple Test Panel.
+ * Shows some weird test stuff i guess.
  */
 public class TestPanel extends Panel {
     public static final TestPanel INSTANCE = new TestPanel();
 
-    /**
-     * Private constructor to enforce singleton pattern.
-     */
     private TestPanel() {
         super(Common.id("test_panel"), "My Panel", Shortcut.ctrl(ImGuiKey.T));
     }
 
-    /**
-     * Renders Main Content.
-     */
     @Override
     public void content() {
-        // Render the panel's content
         ImGui.text("Hello, World!");
 
         ImGui.separator();

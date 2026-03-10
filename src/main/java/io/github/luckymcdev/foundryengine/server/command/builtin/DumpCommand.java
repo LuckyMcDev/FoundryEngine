@@ -13,7 +13,6 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.permissions.Permissions;
 import org.slf4j.Logger;
 
 import java.io.BufferedWriter;
@@ -25,6 +24,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Command to dump Registry data to a file.
+ */
 public class DumpCommand implements EngineCommand {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -100,7 +102,7 @@ public class DumpCommand implements EngineCommand {
     @Override
     public LiteralArgumentBuilder<CommandSourceStack> build() {
         return Commands.literal("dump")
-                .requires(stack -> stack.permissions().hasPermission(Permissions.COMMANDS_ADMIN))
+                .requires(this::isAdmin)
                 .then(Commands.literal("all")
                         .executes(context -> dumpRegistries(context, Optional.empty()))
                 )

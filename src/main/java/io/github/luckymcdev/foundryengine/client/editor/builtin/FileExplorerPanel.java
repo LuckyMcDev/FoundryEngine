@@ -20,6 +20,10 @@ import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Comparator;
 
+/**
+ * A File explorer Panel to open the {@link CodeEditor} for editing any kind of file during
+ * Runtime. Is disabled on anything other than Singleplayer
+ */
 public class FileExplorerPanel extends Panel {
     private static final Logger LOGGER = LogUtils.getLogger();
     public static final FileExplorerPanel INSTANCE = new FileExplorerPanel();

@@ -13,6 +13,11 @@ import net.minecraft.resources.Identifier;
 
 import java.util.function.Consumer;
 
+/**
+ * An Ingame Code Editor.
+ * Does NOT have syntax highlighting and only exists due to
+ * ImGui java not having the ColorTextEditor in it from version 1.89 anymore.
+ */
 public class CodeEditor extends EditorPanel {
     private final ImString codeBuffer;
     private final int bufferMultiplier = 100;

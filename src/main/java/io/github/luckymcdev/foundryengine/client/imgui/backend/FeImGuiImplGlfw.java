@@ -4,12 +4,14 @@ import imgui.callback.ImStrConsumer;
 import imgui.callback.ImStrSupplier;
 import imgui.glfw.ImGuiImplGlfw;
 import net.minecraft.client.Minecraft;
+import org.jetbrains.annotations.ApiStatus;
 
 import static org.lwjgl.glfw.GLFW.*;
 
 /**
  * Extension to {@link ImGuiImplGlfw} which makes the Clipboard be handled by Minecraft.
  */
+@ApiStatus.Internal
 public class FeImGuiImplGlfw extends ImGuiImplGlfw {
 
     @Override

@@ -7,6 +7,15 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+/**
+ * A Record of data related to Bundle Files.
+ *
+ * @param root      the root path of a bundle
+ * @param assets    the assets path of a bundle
+ * @param generated the generated files of a bundle
+ * @param data      the data path of a bundle
+ * @param scripts   the scripts paths of a bundle
+ */
 public record BundleFiles(Path root, Path assets, Path generated, Path data, List<Path> scripts) {
     private static final Codec<Path> PATH_CODEC = Codec.STRING.xmap(Paths::get, Path::toString);
 

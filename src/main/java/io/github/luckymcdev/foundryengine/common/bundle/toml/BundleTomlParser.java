@@ -9,6 +9,9 @@ import java.io.StringReader;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Parses the Toml for a bundle.
+ */
 public class BundleTomlParser {
 
     public static List<BundleInfo> parse(String tomlContent) {

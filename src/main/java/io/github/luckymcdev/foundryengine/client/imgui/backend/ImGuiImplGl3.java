@@ -6,6 +6,7 @@ import imgui.flag.ImGuiBackendFlags;
 import imgui.flag.ImGuiConfigFlags;
 import imgui.flag.ImGuiViewportFlags;
 import imgui.type.ImInt;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.nio.ByteBuffer;
 import java.util.regex.Matcher;
@@ -118,6 +119,7 @@ import static org.lwjgl.opengl.GL45.GL_CLIP_ORIGIN;
  * This implementation has an ability to use a GLSL version provided during the initialization.
  * Please read the documentation for the {@link #init(String)}.
  */
+@ApiStatus.Internal
 @SuppressWarnings({"checkstyle:DesignForExtension", "checkstyle:NeedBraces", "checkstyle:LocalVariableName", "checkstyle:FinalLocalVariable", "checkstyle:ParameterName", "checkstyle:EmptyBlock", "checkstyle:AvoidNestedBlocks"})
 public class ImGuiImplGl3 {
     protected static final String OS = System.getProperty("os.name", "generic").toLowerCase();

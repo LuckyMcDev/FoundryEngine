@@ -18,7 +18,7 @@ import java.util.concurrent.CompletableFuture;
 
 /**
  * Handles server-side data generation for bundles.
- * Server data includes: recipes, loot tables, advancements, tags, worldgen, datamaps.
+ * Server data includes: recipes, loot tables, advancements, tags, worldgen, data-maps.
  */
 public class BundleServerGenerator {
     private final Bundle bundle;

@@ -4,6 +4,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.main.GameConfig;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+/**
+ * TODO: Rename
+ * Minecraft Extension
+ */
 public interface TbMinecraft {
     default Minecraft tb$self() {
         return (Minecraft) this;

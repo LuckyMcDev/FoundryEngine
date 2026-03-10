@@ -12,21 +12,33 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 @EventBusSubscriber(modid = Common.MODID)
 public class Config {
 
+    /**
+     * Common Config
+     */
     public static class Common {
         private static final ModConfigSpec.Builder COMMON_BUILDER = new ModConfigSpec.Builder();
         public static final ModConfigSpec COMMON_SPEC = COMMON_BUILDER.build();
     }
 
+    /**
+     * Client Config
+     */
     public static class Client {
         private static final ModConfigSpec.Builder CLIENT_BUILDER = new ModConfigSpec.Builder();
         public static final ModConfigSpec CLIENT_SPEC = CLIENT_BUILDER.build();
     }
 
+    /**
+     * Server Config
+     */
     public static class Server {
         private static final ModConfigSpec.Builder SERVER_BUILDER = new ModConfigSpec.Builder();
         public static final ModConfigSpec SERVER_SPEC = SERVER_BUILDER.build();
     }
 
+    /**
+     * Startup Config
+     */
     public static class Startup {
         private static final ModConfigSpec.Builder STARTUP_BUILDER = new ModConfigSpec.Builder();
 

@@ -6,6 +6,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import org.slf4j.Logger;
 
+/**
+ * A Game Behavior, which makes you load into a specific world by default.
+ */
 public class DirectWorldLoadBehavior extends MenuBehavior {
     private static final Logger LOGGER = LogUtils.getLogger();
     private final String worldName;
@@ -16,7 +19,7 @@ public class DirectWorldLoadBehavior extends MenuBehavior {
     }
 
     @Override
-    public GameBehaviorCancelation onSingleplayerButtonClick(Screen currentScreen) {
+    public GameBehaviorCancellation onSingleplayerButtonClick(Screen currentScreen) {
         Minecraft minecraft = Minecraft.getInstance();
 
         minecraft.setScreen(null);
@@ -28,7 +31,7 @@ public class DirectWorldLoadBehavior extends MenuBehavior {
             minecraft.setScreen(currentScreen);
         }
 
-        return GameBehaviorCancelation.CANCEL;
+        return GameBehaviorCancellation.CANCEL;
     }
 
     @Override

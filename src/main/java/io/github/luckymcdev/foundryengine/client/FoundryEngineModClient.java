@@ -10,7 +10,6 @@ import io.github.luckymcdev.foundryengine.client.editor.builtin.ConsolePanel;
 import io.github.luckymcdev.foundryengine.client.editor.builtin.FileExplorerPanel;
 import io.github.luckymcdev.foundryengine.client.editor.builtin.TestPanel;
 import io.github.luckymcdev.foundryengine.client.editor.builtin.editor.MainEditor;
-import io.github.luckymcdev.foundryengine.client.editor.builtin.imnodes.GroovyEditorPanel;
 import io.github.luckymcdev.foundryengine.client.editor.builtin.post.PostProcessPanel;
 import io.github.luckymcdev.foundryengine.client.editor.event.RegisterPanelEvent;
 import io.github.luckymcdev.foundryengine.client.event.RegisterRenderingStuffEvent;
@@ -111,7 +110,6 @@ public class FoundryEngineModClient {
             event.register(BrowserPanel.INSTANCE);
         }
         event.register(FileExplorerPanel.INSTANCE);
-        event.register(GroovyEditorPanel.INSTANCE);
         event.register(ConsolePanel.INSTANCE);
         event.register(MainEditor.INSTANCE);
     }

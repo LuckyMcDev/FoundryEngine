@@ -14,8 +14,7 @@ import java.nio.file.FileSystem;
 import java.nio.file.Path;
 
 /**
- * Simplified BundleManager that coordinates bundle lifecycle and delegates
- * construction/discovery to specialized classes.
+ * Bundle Manager that manages Bundle Lifecylces.
  */
 public class BundleManager implements ResourceManagerReloadListener {
     private static final Logger LOGGER = LogUtils.getLogger();

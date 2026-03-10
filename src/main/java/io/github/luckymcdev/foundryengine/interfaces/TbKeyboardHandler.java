@@ -4,6 +4,10 @@ import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+/**
+ * TODO: Rename
+ * Keyboard Handler Extension
+ */
 public interface TbKeyboardHandler {
     void fe$keyPress(long p_window, int action, KeyEvent event, CallbackInfo ci);
 

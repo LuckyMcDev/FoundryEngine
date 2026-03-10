@@ -9,6 +9,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+/**
+ * Basically Unused. I don't know how long it will continue to exist for.
+ */
 @ApiStatus.Internal
 public class FileManager implements ResourceManagerReloadListener {
 

@@ -11,6 +11,7 @@ import java.util.List;
  * The Context Stack to Manage All ImGui Contexts.
  * An ImGui Context is an {@link ContextType} Which is a wrapper around an {@link ImGuiStruct}
  */
+@Deprecated(forRemoval = true)
 public class ImGuiContextStack {
     private final Deque<ImGuiContextStack> stack = new ArrayDeque<>();
     private final List<ContextEntry<?>> contexts = new ArrayList<>();

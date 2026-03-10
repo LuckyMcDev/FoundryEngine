@@ -2,6 +2,11 @@ package io.github.luckymcdev.foundryengine.common.game.behavior;
 
 import io.github.luckymcdev.foundryengine.common.priority.Priority;
 
+/**
+ * Represents a Game Modification type deal.
+ * <br>
+ * No good description yet.
+ */
 public abstract class GameBehavior {
     public boolean enabled;
 

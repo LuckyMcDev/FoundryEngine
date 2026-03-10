@@ -9,6 +9,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.permissions.Permissions;
 
+/**
+ * Util for creating commands for the /engine command.
+ */
 public interface EngineCommand {
     /**
      * Define the command structure here.

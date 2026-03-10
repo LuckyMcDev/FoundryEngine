@@ -14,6 +14,9 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.StringUtil;
 import net.minecraft.world.item.ItemStack;
 
+/**
+ * Command to supply info about the item you're holding.
+ */
 public class HandCommand implements EngineCommand {
 
     @Override

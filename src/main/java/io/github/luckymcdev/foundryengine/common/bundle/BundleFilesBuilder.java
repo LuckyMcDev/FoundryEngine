@@ -26,7 +26,7 @@ public class BundleFilesBuilder {
         return new BundleFiles(root, assets, generated, data, scripts);
     }
 
-    private static List<Path> findScripts(Path root, Path assets, Path data) {
+    private static List<Path> findScripts(final Path root, final Path assets, final Path data) {
         try (Stream<Path> files = Files.walk(root)) {
             return files
                     .filter(Files::isRegularFile)

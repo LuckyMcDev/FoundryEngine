@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 /**
- * A Registry for registering things. Simple, Thread Safe.
+ * A Registry for registering things.
  *
  * @param <K> Key Type.
  * @param <V> Value Type.
@@ -21,6 +21,7 @@ import java.util.stream.Stream;
 public class GenericRegistry<K, V> implements Registry<K, V> {
     private final ConcurrentHashMap<K, V> primaryLookup = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<V, K> reverseLookup = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<K, RegistryRef<K, V>> refCache = new ConcurrentHashMap<>();
     private final CopyOnWriteArrayList<K> keys = new CopyOnWriteArrayList<>();
     private final CopyOnWriteArrayList<V> values = new CopyOnWriteArrayList<>();
     private final CopyOnWriteArrayList<Runnable> onFreezeCallbacks = new CopyOnWriteArrayList<>();
@@ -65,6 +66,11 @@ public class GenericRegistry<K, V> implements Registry<K, V> {
     public V get(K key) {
         V value = primaryLookup.get(key);
         return value != null ? value : defaultValue;
+    }
+
+    @Override
+    public RegistryRef<K, V> getRef(K key) {
+        return refCache.computeIfAbsent(key, k -> new RegistryRef<>(k, this));
     }
 
     @Override
@@ -161,6 +167,7 @@ public class GenericRegistry<K, V> implements Registry<K, V> {
         try {
             primaryLookup.clear();
             reverseLookup.clear();
+            refCache.clear();
             keys.clear();
             values.clear();
             onFreezeCallbacks.clear();

@@ -4,6 +4,9 @@ import groovy.util.GroovyScriptEngine;
 import net.neoforged.bus.api.Event;
 import org.codehaus.groovy.control.CompilerConfiguration;
 
+/**
+ * An Event to modify the Script Engine.
+ */
 public class ScriptEngineModifyEvent extends Event {
     private final GroovyScriptEngine scriptEngine;
     private final CompilerConfiguration compilerConfiguration;

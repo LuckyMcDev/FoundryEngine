@@ -1,5 +1,8 @@
 package io.github.luckymcdev.foundryengine.common.color;
 
+/**
+ * Utility class for handling Colors.
+ */
 public class Color {
     public static final Color WHITE = new Color(1.0f, 1.0f, 1.0f, 1.0f);
     public static final Color RED = new Color(1.0f, 0.0f, 0.0f, 1.0f);

@@ -4,6 +4,10 @@ import imgui.flag.ImGuiKey;
 import io.github.luckymcdev.foundryengine.client.util.Shortcut;
 import io.github.luckymcdev.foundryengine.common.Common;
 
+/**
+ * The Main Editor which has all the functionality for the generation
+ * see {@link EditorPanel}
+ */
 public class MainEditor extends EditorPanel {
     public static final MainEditor INSTANCE = new MainEditor();
 

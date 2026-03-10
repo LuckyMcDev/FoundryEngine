@@ -3,6 +3,10 @@ package io.github.luckymcdev.foundryengine.interfaces;
 import net.minecraft.client.input.MouseButtonInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+/**
+ * TODO: Rename
+ * Mouse Handler Extension
+ */
 public interface TbMouseHandler {
     void tb$onMouseButton(long p_window, MouseButtonInfo buttonInfo, int action, CallbackInfo ci);
 

@@ -10,6 +10,9 @@ import net.minecraft.commands.Commands;
 
 import java.util.List;
 
+/**
+ * Command Registry.
+ */
 public class FoundryCommands {
     private static final List<EngineCommand> COMMANDS = List.of(
             new DumpCommand(),
@@ -20,7 +23,7 @@ public class FoundryCommands {
 
     public static void registerAll(CommandDispatcher<CommandSourceStack> dispatcher) {
         for (EngineCommand command : COMMANDS) {
-            dispatcher.register(Commands.literal("foundry").then(
+            dispatcher.register(Commands.literal("engine").then(
                     command.build()
             ));
         }

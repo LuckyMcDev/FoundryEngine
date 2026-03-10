@@ -22,7 +22,7 @@ public final class ShaderCompiler {
      */
     public Shader getOrCompile(Shader shader) throws ShaderException {
         ShaderKey key = ShaderKey.of(shader);
-        Shader cached = cache.get(key);
+        Shader cached = cache.getRef(key).get();
         if (cached != null) {
             return cached;
         }

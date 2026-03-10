@@ -37,6 +37,9 @@ public class MainMenu {
         }
     }
 
+    /**
+     * Handles the shortcuts for each Panel.
+     */
     public static void handleShortcuts() {
         editor.getPanels().forEach(panel -> {
             Shortcut shortcut = panel.getShortcut();

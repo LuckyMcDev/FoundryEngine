@@ -16,6 +16,9 @@ import net.minecraft.util.TriState;
 import java.util.Collection;
 import java.util.Set;
 
+/**
+ * Command to modify stages. See {@link GameStageHandler}
+ */
 public class StageCommand implements EngineCommand {
 
     @Override

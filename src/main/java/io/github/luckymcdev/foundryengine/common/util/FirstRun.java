@@ -7,6 +7,9 @@ import org.slf4j.Logger;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Simple Util to check if it's a mods first load.
+ */
 public class FirstRun {
     private static final List<String> notFirstLoad = new ArrayList<>();
     private static final Logger LOGGER = LogUtils.getLogger();

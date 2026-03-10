@@ -10,6 +10,11 @@ import io.github.luckymcdev.foundryengine.common.Common;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
 
+/**
+ * A Test Browser Panel, which can display Documentation / google
+ * HEAVILY WIP / DESTINED TO BE REMOVED AT ANY TIME.
+ * Conditionally loaded if mcef is present.
+ */
 public class BrowserPanel extends Panel {
     public static final BrowserPanel INSTANCE = new BrowserPanel();
     private final Minecraft minecraft = Minecraft.getInstance();
@@ -52,12 +57,9 @@ public class BrowserPanel extends Panel {
         float startY = ImGui.getCursorScreenPosY();
 
         if (glId != -1) {
-            // We use the full available area.
-            // Tip: If it's still blurry, try: Math.round(availX)
             ImGui.image(glId, availX, availY, 0, 0, 1, 1);
         }
 
-        // Sync Resolution - Critical for blurriness
         int scaledWidth = (int) (availX * minecraft.getWindow().getGuiScale());
         int scaledHeight = (int) (availY * minecraft.getWindow().getGuiScale());
 
@@ -65,12 +67,10 @@ public class BrowserPanel extends Panel {
             browser.resize(scaledWidth, scaledHeight);
         }
 
-        // Input Handling
         if (ImGui.isWindowHovered()) {
             handleMouse(startX, startY, availX, availY);
         }
 
-        // Only handle keyboard if the ImGui window itself is focused
         if (ImGui.isWindowFocused()) {
             handleKeyboard();
         }
@@ -80,27 +80,23 @@ public class BrowserPanel extends Panel {
     }
 
     private void handleMouse(float startX, float startY, float width, float height) {
-        // Calculate mouse position relative to the image start
         float mouseX = ImGui.getMousePosX() - startX;
         float mouseY = ImGui.getMousePosY() - startY;
 
-        // Only send input if the mouse is actually within the browser bounds
         if (mouseX >= 0 && mouseX <= width && mouseY >= 0 && mouseY <= height) {
             int bX = (int) (mouseX * minecraft.getWindow().getGuiScale());
             int bY = (int) (mouseY * minecraft.getWindow().getGuiScale());
 
             browser.sendMouseMove(bX, bY);
 
-            // Left Click
             if (ImGui.isMouseClicked(0)) {
                 browser.sendMousePress(bX, bY, 0);
-                browser.setFocus(true); // Ensure CEF knows it's active
+                browser.setFocus(true);
             }
             if (ImGui.isMouseReleased(0)) {
                 browser.sendMouseRelease(bX, bY, 0);
             }
 
-            // Right Click (Button 1)
             if (ImGui.isMouseClicked(1)) {
                 browser.sendMousePress(bX, bY, 1);
             }
@@ -108,7 +104,6 @@ public class BrowserPanel extends Panel {
                 browser.sendMouseRelease(bX, bY, 1);
             }
 
-            // Scroll
             float scrollY = ImGui.getIO().getMouseWheel();
             if (scrollY != 0) {
                 browser.sendMouseWheel(bX, bY, scrollY, 0);

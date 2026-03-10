@@ -1,11 +1,14 @@
 package io.github.luckymcdev.foundryengine.interfaces;
 
-import io.github.luckymcdev.foundryengine.common.game.behavior.GameBehaviorCancelation;
+import io.github.luckymcdev.foundryengine.common.game.behavior.GameBehaviorCancellation;
 
+/**
+ * Title Screen Extension
+ */
 public interface FeTitleScreen {
-    GameBehaviorCancelation fe$onSingleplayerClick();
+    GameBehaviorCancellation fe$onSingleplayerClick();
 
-    GameBehaviorCancelation fe$onMultiplayerClick();
+    GameBehaviorCancellation fe$onMultiplayerClick();
 
-    GameBehaviorCancelation fe$onRealmsClick();
+    GameBehaviorCancellation fe$onRealmsClick();
 }

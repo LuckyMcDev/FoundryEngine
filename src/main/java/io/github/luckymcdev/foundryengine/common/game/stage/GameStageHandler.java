@@ -23,6 +23,9 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.function.Supplier;
 
+/**
+ * Handles the Attachment and All Game Stages for all Players.
+ */
 public class GameStageHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(GameStageHandler.class);
     private static final List<Pair<StageAdditionPredicate, String>> PENDING_STAGES = new ArrayList<>();

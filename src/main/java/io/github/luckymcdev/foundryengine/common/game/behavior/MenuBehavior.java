@@ -4,19 +4,19 @@ import net.minecraft.client.gui.screens.Screen;
 
 public abstract class MenuBehavior extends GameBehavior {
 
-    public GameBehaviorCancelation onSingleplayerButtonClick(Screen currentScreen) {
-        return GameBehaviorCancelation.CONTINUE;
+    public GameBehaviorCancellation onSingleplayerButtonClick(Screen currentScreen) {
+        return GameBehaviorCancellation.CONTINUE;
     }
 
-    public GameBehaviorCancelation onMultiplayerButtonClick(Screen currentScreen) {
-        return GameBehaviorCancelation.CONTINUE;
+    public GameBehaviorCancellation onMultiplayerButtonClick(Screen currentScreen) {
+        return GameBehaviorCancellation.CONTINUE;
     }
 
-    public GameBehaviorCancelation onOptionsButtonClick(Screen currentScreen) {
-        return GameBehaviorCancelation.CONTINUE;
+    public GameBehaviorCancellation onOptionsButtonClick(Screen currentScreen) {
+        return GameBehaviorCancellation.CONTINUE;
     }
 
-    public GameBehaviorCancelation onQuitButtonClick(Screen currentScreen) {
-        return GameBehaviorCancelation.CONTINUE;
+    public GameBehaviorCancellation onQuitButtonClick(Screen currentScreen) {
+        return GameBehaviorCancellation.CONTINUE;
     }
 }

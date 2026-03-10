@@ -8,6 +8,10 @@ import net.minecraft.world.item.Item;
 
 import java.util.function.Function;
 
+/**
+ * An Item Builder, which allows for Item registering in a Builder format.
+ * Inspired by KubeJs
+ */
 public class ItemBuilder extends BuilderBase<Item> {
     private Item.Properties properties;
     private Function<Item.Properties, Item> factory;

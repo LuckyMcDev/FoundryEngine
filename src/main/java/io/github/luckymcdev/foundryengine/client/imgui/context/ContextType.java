@@ -11,6 +11,7 @@ import imgui.internal.ImGuiContext;
  *
  * @param <T> A Context of ImGuiStruct Type. eg {@link imgui.internal.ImGuiContext}
  */
+@Deprecated(forRemoval = true)
 public interface ContextType<T extends ImGuiStruct> {
     /**
      * Create a new Context. Eg: {@link ImGui#createContext()}

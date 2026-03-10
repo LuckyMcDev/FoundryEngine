@@ -1,7 +1,7 @@
 package io.github.luckymcdev.foundryengine.mixin.screen;
 
 import io.github.luckymcdev.foundryengine.common.Common;
-import io.github.luckymcdev.foundryengine.common.game.behavior.GameBehaviorCancelation;
+import io.github.luckymcdev.foundryengine.common.game.behavior.GameBehaviorCancellation;
 import io.github.luckymcdev.foundryengine.common.game.behavior.MenuBehavior;
 import io.github.luckymcdev.foundryengine.interfaces.FeTitleScreen;
 import net.minecraft.client.gui.components.Button;
@@ -12,6 +12,9 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 import java.util.List;
 
+/**
+ * Mixin to make the{@link MenuBehavior} work
+ */
 @Mixin(TitleScreen.class)
 public abstract class TitleScreenMixin implements FeTitleScreen {
 
@@ -26,7 +29,7 @@ public abstract class TitleScreenMixin implements FeTitleScreen {
     )
     private Button.OnPress modifySingleplayerCallback(Button.OnPress original) {
         return button -> {
-            if (this.fe$onSingleplayerClick() == GameBehaviorCancelation.CANCEL) {
+            if (this.fe$onSingleplayerClick() == GameBehaviorCancellation.CANCEL) {
                 return;
             }
             original.onPress(button);
@@ -44,7 +47,7 @@ public abstract class TitleScreenMixin implements FeTitleScreen {
     )
     private Button.OnPress modifyMultiplayerCallback(Button.OnPress original) {
         return button -> {
-            if (this.fe$onMultiplayerClick() == GameBehaviorCancelation.CANCEL) {
+            if (this.fe$onMultiplayerClick() == GameBehaviorCancellation.CANCEL) {
                 return;
             }
             original.onPress(button);
@@ -62,7 +65,7 @@ public abstract class TitleScreenMixin implements FeTitleScreen {
     )
     private Button.OnPress modifyRealmsCallback(Button.OnPress original) {
         return button -> {
-            if (this.fe$onRealmsClick() == GameBehaviorCancelation.CANCEL) {
+            if (this.fe$onRealmsClick() == GameBehaviorCancellation.CANCEL) {
                 return;
             }
             original.onPress(button);
@@ -70,38 +73,38 @@ public abstract class TitleScreenMixin implements FeTitleScreen {
     }
 
     @Override
-    public GameBehaviorCancelation fe$onSingleplayerClick() {
+    public GameBehaviorCancellation fe$onSingleplayerClick() {
         TitleScreen screen = (TitleScreen) (Object) this;
         List<MenuBehavior> behaviors = Common.getGameBehaviorManager().getBehaviors(MenuBehavior.class);
 
         for (MenuBehavior behavior : behaviors) {
-            GameBehaviorCancelation result = behavior.onSingleplayerButtonClick(screen);
-            if (result == GameBehaviorCancelation.CANCEL) {
-                return GameBehaviorCancelation.CANCEL;
+            GameBehaviorCancellation result = behavior.onSingleplayerButtonClick(screen);
+            if (result == GameBehaviorCancellation.CANCEL) {
+                return GameBehaviorCancellation.CANCEL;
             }
         }
 
-        return GameBehaviorCancelation.CONTINUE;
+        return GameBehaviorCancellation.CONTINUE;
     }
 
     @Override
-    public GameBehaviorCancelation fe$onMultiplayerClick() {
+    public GameBehaviorCancellation fe$onMultiplayerClick() {
         TitleScreen screen = (TitleScreen) (Object) this;
         List<MenuBehavior> behaviors = Common.getGameBehaviorManager().getBehaviors(MenuBehavior.class);
 
         for (MenuBehavior behavior : behaviors) {
-            GameBehaviorCancelation result = behavior.onMultiplayerButtonClick(screen);
-            if (result == GameBehaviorCancelation.CANCEL) {
-                return GameBehaviorCancelation.CANCEL;
+            GameBehaviorCancellation result = behavior.onMultiplayerButtonClick(screen);
+            if (result == GameBehaviorCancellation.CANCEL) {
+                return GameBehaviorCancellation.CANCEL;
             }
         }
 
-        return GameBehaviorCancelation.CONTINUE;
+        return GameBehaviorCancellation.CONTINUE;
     }
 
     @Override
-    public GameBehaviorCancelation fe$onRealmsClick() {
+    public GameBehaviorCancellation fe$onRealmsClick() {
         //TODO
-        return GameBehaviorCancelation.CONTINUE;
+        return GameBehaviorCancellation.CONTINUE;
     }
 }

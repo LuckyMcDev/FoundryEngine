@@ -11,11 +11,15 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+/**
+ * A Builder for registering a block in the {@link net.neoforged.neoforge.registries.RegisterEvent}
+ * or anywhere else, where you can register a block easily
+ */
 public class BlockBuilder extends BuilderBase<Block> {
+    private final BiFunction<Block, Item.Properties, Item> itemFactory;
     private BlockBehaviour.Properties properties;
     private Function<BlockBehaviour.Properties, Block> blockFactory;
     private boolean hasItem = true;
-    private final BiFunction<Block, Item.Properties, Item> itemFactory;
     private Function<Item.Properties, Item.Properties> itemPropertyModifier = p -> p;
 
     public BlockBuilder(Identifier id) {

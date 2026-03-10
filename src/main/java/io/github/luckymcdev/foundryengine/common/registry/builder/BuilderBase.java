@@ -11,6 +11,14 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Supplier;
 
+/**
+ * A Generic Builder, used by {@link BlockBuilder} and {@link ItemBuilder}.
+ * Will add a RecipeBuilder / more for any and all registerable things,
+ * Will also get a method for making it so I can easily generate scripts
+ * for the Editor.
+ *
+ * @param <T>
+ */
 public abstract class BuilderBase<T> implements Supplier<T> {
     public final Identifier id;
     public ResourceKey<Registry<T>> registryKey;

@@ -13,10 +13,6 @@ import java.util.List;
 
 /**
  * Represents a loaded bundle.
- *
- * @param zipFileSystem The ZIP FileSystem backing this bundle's paths, or {@code null} for
- *                      folder-based bundles. Owned by this bundle — callers must close it
- *                      via BundleManager.remove() when the bundle is unloaded.
  */
 public record Bundle(
         BundleInfo info,

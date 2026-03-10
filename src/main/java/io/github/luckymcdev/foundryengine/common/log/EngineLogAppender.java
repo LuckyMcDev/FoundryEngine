@@ -13,6 +13,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 
+/**
+ * A Log Appender to make the {@link io.github.luckymcdev.foundryengine.client.editor.builtin.ConsolePanel} work.
+ * {@link Holder} is the way of creating this, Although I don't like that and will likely remove it.
+ */
 public class EngineLogAppender extends AbstractAppender {
     private final List<LogEntry> logHistory = new LinkedList<>();
     public int maxLines = 1000;
