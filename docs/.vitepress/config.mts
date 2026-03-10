@@ -22,7 +22,11 @@ export default defineConfig({
     ],
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/LuckyMcDev' }
+      { icon: 'github', link: 'https://github.com/LuckyMcDev/FoundryEngine' }
     ]
   }
 })
+
+export default {
+  base: '/FoundryEngine'
+}
