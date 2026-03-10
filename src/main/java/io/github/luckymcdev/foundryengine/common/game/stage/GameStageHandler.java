@@ -1,6 +1,5 @@
 package io.github.luckymcdev.foundryengine.common.game.stage;
 
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import groovyjarjarantlr4.v4.runtime.misc.Nullable;
 import io.github.luckymcdev.foundryengine.common.Common;
@@ -16,6 +15,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -124,8 +124,8 @@ public class GameStageHandler {
         MinecraftServer server = event.getServer();
         server.getPlayerList().getPlayers().forEach(serverPlayer -> {
             for (Pair<StageAdditionCondition, String> task : PENDING_STAGES) {
-                if (task.getFirst().test(serverPlayer)) {
-                    addStage(serverPlayer, task.getSecond());
+                if (task.getKey().test(serverPlayer)) {
+                    addStage(serverPlayer, task.getValue());
                 }
             }
         });
