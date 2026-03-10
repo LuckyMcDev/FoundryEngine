@@ -28,7 +28,7 @@ import java.util.function.Supplier;
  */
 public class GameStageHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(GameStageHandler.class);
-    private static final List<Pair<StageAdditionPredicate, String>> PENDING_STAGES = new ArrayList<>();
+    private static final List<Pair<StageAdditionCondition, String>> PENDING_STAGES = new ArrayList<>();
     private static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, Common.MODID);
     private static final Codec<Set<String>> STRING_SET_CODEC = Codec.STRING.listOf().xmap(
             HashSet::new,
@@ -116,14 +116,14 @@ public class GameStageHandler {
         return Collections.unmodifiableSet(player.getData(PLAYER_STAGES));
     }
 
-    public static void addStageOn(StageAdditionPredicate predicate, String stageToAdd) {
-        PENDING_STAGES.add(Pair.of(predicate, stageToAdd));
+    public static void addStageIf(StageAdditionCondition condition, String stage) {
+        PENDING_STAGES.add(Pair.of(condition, stage));
     }
 
     public static void onPlayerTick(ServerTickEvent.Post event) {
         MinecraftServer server = event.getServer();
         server.getPlayerList().getPlayers().forEach(serverPlayer -> {
-            for (Pair<StageAdditionPredicate, String> task : PENDING_STAGES) {
+            for (Pair<StageAdditionCondition, String> task : PENDING_STAGES) {
                 if (task.getFirst().test(serverPlayer)) {
                     addStage(serverPlayer, task.getSecond());
                 }
