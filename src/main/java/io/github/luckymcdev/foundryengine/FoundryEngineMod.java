@@ -5,12 +5,15 @@ import io.github.luckymcdev.foundryengine.common.Common;
 import io.github.luckymcdev.foundryengine.common.bundle.Bundle;
 import io.github.luckymcdev.foundryengine.common.data.EngineGenerator;
 import io.github.luckymcdev.foundryengine.common.game.behavior.DirectWorldLoadBehavior;
-import io.github.luckymcdev.foundryengine.common.game.stage.GameStageHandler;
 import io.github.luckymcdev.foundryengine.common.log.EngineLogAppender;
 import io.github.luckymcdev.foundryengine.common.thread.RegisterEngineThreadEvent;
 import io.github.luckymcdev.foundryengine.config.Config;
 import io.github.luckymcdev.foundryengine.server.command.FoundryCommands;
 import io.github.luckymcdev.foundryengine.server.packs.EngineRepositorySource;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -54,11 +57,16 @@ public class FoundryEngineMod {
 
         BUS.addListener(this::onAddReloadListeners);
         BUS.addListener(this::onRegisterCommands);
-        BUS.addListener(GameStageHandler::onPlayerTick);
+        BUS.addListener(Common.getGameStageHandler()::onPlayerTick);
 
         Common.getGameBehaviorManager().register(Common.id("direct_world_load"),
                 new DirectWorldLoadBehavior("testWorld")
         );
+
+        Common.getGameStageHandler().dimensions().requireStages(Level.END, "end");
+        Common.getGameStageHandler().item().requireStages(Items.STICK, "stick");
+        Common.getGameStageHandler().loot().requireStages(BuiltInLootTables.END_CITY_TREASURE, "mineshaft");
+        Common.getGameStageHandler().mobs().requireStages(EntityType.ZOMBIE, "zombie");
 
         modContainer.registerConfig(ModConfig.Type.CLIENT, Config.Client.CLIENT_SPEC);
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.Common.COMMON_SPEC);
@@ -67,7 +75,7 @@ public class FoundryEngineMod {
     }
 
     private void registerModBus(IEventBus modBus) {
-        GameStageHandler.register(modBus);
+        Common.getGameStageHandler().register(modBus);
     }
 
     private void onAddReloadListeners(AddServerReloadListenersEvent event) {

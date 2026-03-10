@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import io.github.luckymcdev.foundryengine.common.bundle.BundleManager;
 import io.github.luckymcdev.foundryengine.common.files.FileManager;
 import io.github.luckymcdev.foundryengine.common.game.behavior.GameBehaviorManager;
+import io.github.luckymcdev.foundryengine.common.game.stage.GameStageHandler;
 import io.github.luckymcdev.foundryengine.common.thread.ThreadManager;
 import io.github.luckymcdev.foundryengine.common.util.FirstRun;
 import net.minecraft.resources.Identifier;
@@ -53,6 +54,9 @@ public abstract class Common {
     private static final BundleManager BUNDLE_MANAGER = new BundleManager();
 
     private static final GameBehaviorManager GAME_BEHAVIOR_MANAGER = new GameBehaviorManager();
+
+    private static final GameStageHandler GAME_STAGE_HANDLER = new GameStageHandler();
+
     /**
      * Returns an {@link Identifier} where the namespace is {@link #MODID}
      *
@@ -83,6 +87,11 @@ public abstract class Common {
     public static GameBehaviorManager getGameBehaviorManager() {
         return GAME_BEHAVIOR_MANAGER;
     }
+
+    public static GameStageHandler getGameStageHandler() {
+        return GAME_STAGE_HANDLER;
+    }
+
     // Event Bus
 
     public static <T extends Event> T post(T event) {

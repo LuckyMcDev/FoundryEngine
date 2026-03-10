@@ -4,6 +4,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import io.github.luckymcdev.foundryengine.common.Common;
 import io.github.luckymcdev.foundryengine.common.game.stage.GameStageHandler;
 import io.github.luckymcdev.foundryengine.server.command.EngineCommand;
 import net.minecraft.commands.CommandSourceStack;
@@ -44,11 +45,11 @@ public class StageCommand implements EngineCommand {
 
         for (ServerPlayer player : players) {
             if (type.isTrue()) {
-                GameStageHandler.addStage(player, stage);
+                Common.getGameStageHandler().addStage(player, stage);
             } else if (type.isFalse()) {
-                GameStageHandler.removeStage(player, stage);
+                Common.getGameStageHandler().removeStage(player, stage);
             } else {
-                GameStageHandler.clearStages(player);
+                Common.getGameStageHandler().clearStages(player);
             }
             count++;
         }
@@ -67,7 +68,7 @@ public class StageCommand implements EngineCommand {
         var players = EntityArgument.getPlayers(ctx, "targets");
 
         for (ServerPlayer player : players) {
-            Set<String> stages = GameStageHandler.getStages(player);
+            Set<String> stages = Common.getGameStageHandler().getStages(player);
             String stageList = stages.isEmpty() ? "None" : String.join(", ", stages);
 
             ctx.getSource().sendSuccess(() -> Component.literal(

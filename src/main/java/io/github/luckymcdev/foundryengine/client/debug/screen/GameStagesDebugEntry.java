@@ -2,7 +2,6 @@ package io.github.luckymcdev.foundryengine.client.debug.screen;
 
 import io.github.luckymcdev.foundryengine.client.Client;
 import io.github.luckymcdev.foundryengine.common.Common;
-import io.github.luckymcdev.foundryengine.common.game.stage.GameStageHandler;
 import net.minecraft.client.gui.components.debug.DebugEntryCategory;
 import net.minecraft.client.gui.components.debug.DebugScreenDisplayer;
 import net.minecraft.client.gui.components.debug.DebugScreenEntry;
@@ -34,7 +33,7 @@ public class GameStagesDebugEntry implements DebugScreenEntry {
             return;
         }
 
-        Set<String> stages = player.getData(GameStageHandler.PLAYER_STAGES);
+        Set<String> stages = player.getData(Common.getGameStageHandler().ATTACHMENT);
 
         infoLines.addFirst("Stages:");
         infoLines.add(Arrays.toString(stages.toArray()));

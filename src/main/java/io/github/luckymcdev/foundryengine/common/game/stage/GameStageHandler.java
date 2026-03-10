@@ -1,8 +1,10 @@
 package io.github.luckymcdev.foundryengine.common.game.stage;
 
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import groovyjarjarantlr4.v4.runtime.misc.Nullable;
 import io.github.luckymcdev.foundryengine.common.Common;
+import io.github.luckymcdev.foundryengine.common.game.stage.addon.builtin.*;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.MinecraftServer;
@@ -16,9 +18,9 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.function.Supplier;
@@ -27,14 +29,19 @@ import java.util.function.Supplier;
  * Handles the Attachment and All Game Stages for all Players.
  */
 public class GameStageHandler {
-    private static final Logger LOGGER = LoggerFactory.getLogger(GameStageHandler.class);
-    private static final List<Pair<StageAdditionCondition, String>> PENDING_STAGES = new ArrayList<>();
-    private static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, Common.MODID);
-    private static final Codec<Set<String>> STRING_SET_CODEC = Codec.STRING.listOf().xmap(
+    private final Logger LOGGER = LogUtils.getLogger();
+    private final DimensionStages DIMENSIONS = new DimensionStages();
+    private final ItemStages ITEMS = new ItemStages();
+    private final LootStages LOOT = new LootStages();
+    private final MobStages MOBS = new MobStages();
+    private final RecipeStages RECIPES = new RecipeStages();
+    private final List<Pair<StageAdditionCondition, String>> PENDING_STAGES = new ArrayList<>();
+    private final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, Common.MODID);
+    private final Codec<Set<String>> STRING_SET_CODEC = Codec.STRING.listOf().xmap(
             HashSet::new,
             ArrayList::new
     );
-    public static final Supplier<AttachmentType<Set<String>>> PLAYER_STAGES = ATTACHMENT_TYPES.register(
+    public final Supplier<AttachmentType<Set<String>>> ATTACHMENT = ATTACHMENT_TYPES.register(
             "player_stages",
             () -> AttachmentType.builder(() -> (Set<String>) new HashSet<String>())
                     .serialize(STRING_SET_CODEC.fieldOf("stages"))
@@ -53,9 +60,14 @@ public class GameStageHandler {
                     .build()
     );
 
-    public static void register(IEventBus modEventbus) {
+    public void register(IEventBus modEventbus) {
         LOGGER.debug("Registered {} GameStageHandler", Common.MODNAME);
         ATTACHMENT_TYPES.register(modEventbus);
+        NeoForge.EVENT_BUS.register(DIMENSIONS);
+        NeoForge.EVENT_BUS.register(ITEMS);
+        NeoForge.EVENT_BUS.register(LOOT);
+        NeoForge.EVENT_BUS.register(MOBS);
+        NeoForge.EVENT_BUS.register(RECIPES);
     }
 
     /**
@@ -63,14 +75,14 @@ public class GameStageHandler {
      *
      * @return true if the stage was added, false if they already had it.
      */
-    public static boolean addStage(Player player, String stage) {
+    public boolean addStage(Player player, String stage) {
         if (hasStage(player, stage)) return false;
         GameStageEvent.Add event = new GameStageEvent.Add(player, stage);
         if (NeoForge.EVENT_BUS.post(event).isCanceled()) return false;
 
-        Set<String> newStages = new HashSet<>(player.getData(PLAYER_STAGES));
+        Set<String> newStages = new HashSet<>(player.getData(ATTACHMENT));
         if (newStages.add(stage)) {
-            player.setData(PLAYER_STAGES, newStages);
+            player.setData(ATTACHMENT, newStages);
 
             NeoForge.EVENT_BUS.post(new GameStageEvent.Added(player, stage));
             return true;
@@ -83,15 +95,15 @@ public class GameStageHandler {
      *
      * @return true if the stage was removed, false if they didn't have it.
      */
-    public static boolean removeStage(Player player, String stage) {
+    public boolean removeStage(Player player, String stage) {
         if (!hasStage(player, stage)) return false;
 
         GameStageEvent.Remove event = new GameStageEvent.Remove(player, stage);
         if (NeoForge.EVENT_BUS.post(event).isCanceled()) return false;
 
-        Set<String> newStages = new HashSet<>(player.getData(PLAYER_STAGES));
+        Set<String> newStages = new HashSet<>(player.getData(ATTACHMENT));
         if (newStages.remove(stage)) {
-            player.setData(PLAYER_STAGES, newStages);
+            player.setData(ATTACHMENT, newStages);
 
             NeoForge.EVENT_BUS.post(new GameStageEvent.Removed(player, stage));
             return true;
@@ -102,25 +114,25 @@ public class GameStageHandler {
     /**
      * Clears all Stages from the Player
      */
-    public static void clearStages(Player player) {
-        Set<String> stages = player.getData(PLAYER_STAGES);
+    public void clearStages(Player player) {
+        Set<String> stages = player.getData(ATTACHMENT);
         stages.clear();
-        player.setData(PLAYER_STAGES, stages);
+        player.setData(ATTACHMENT, stages);
     }
 
-    public static boolean hasStage(Player player, String stage) {
-        return player.getData(PLAYER_STAGES).contains(stage);
+    public boolean hasStage(Player player, String stage) {
+        return player.getData(ATTACHMENT).contains(stage);
     }
 
-    public static Set<String> getStages(Player player) {
-        return Collections.unmodifiableSet(player.getData(PLAYER_STAGES));
+    public Set<String> getStages(Player player) {
+        return Collections.unmodifiableSet(player.getData(ATTACHMENT));
     }
 
-    public static void addStageIf(StageAdditionCondition condition, String stage) {
+    public void addStageIf(StageAdditionCondition condition, String stage) {
         PENDING_STAGES.add(Pair.of(condition, stage));
     }
 
-    public static void onPlayerTick(ServerTickEvent.Post event) {
+    public void onPlayerTick(ServerTickEvent.Post event) {
         MinecraftServer server = event.getServer();
         server.getPlayerList().getPlayers().forEach(serverPlayer -> {
             for (Pair<StageAdditionCondition, String> task : PENDING_STAGES) {
@@ -129,5 +141,27 @@ public class GameStageHandler {
                 }
             }
         });
+    }
+
+    public DimensionStages dimensions() {
+        return DIMENSIONS;
+    }
+
+    public ItemStages item() {
+        return ITEMS;
+    }
+
+    @ApiStatus.Experimental
+    public LootStages loot() {
+        return LOOT;
+    }
+
+    public MobStages mobs() {
+        return MOBS;
+    }
+
+    @ApiStatus.Experimental
+    public RecipeStages recipes() {
+        return RECIPES;
     }
 }
