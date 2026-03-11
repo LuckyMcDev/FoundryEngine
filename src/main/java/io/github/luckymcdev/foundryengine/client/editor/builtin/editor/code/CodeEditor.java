@@ -6,8 +6,8 @@ import imgui.flag.ImGuiKey;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImString;
 import io.github.luckymcdev.foundryengine.client.Client;
-import io.github.luckymcdev.foundryengine.client.editor.builtin.FileExplorerPanel;
 import io.github.luckymcdev.foundryengine.client.editor.builtin.editor.EditorPanel;
+import io.github.luckymcdev.foundryengine.client.editor.builtin.editor.FileExplorerPanel;
 import io.github.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import net.minecraft.resources.Identifier;
 

@@ -1,4 +1,4 @@
-package io.github.luckymcdev.foundryengine.client.editor.builtin;
+package io.github.luckymcdev.foundryengine.client.editor.builtin.editor;
 
 import com.mojang.logging.LogUtils;
 import imgui.ImGui;
@@ -24,7 +24,7 @@ import java.util.Comparator;
  * A File explorer Panel to open the {@link CodeEditor} for editing any kind of file during
  * Runtime. Is disabled on anything other than Singleplayer
  */
-public class FileExplorerPanel extends Panel {
+public class FileExplorerPanel extends EditorPanel {
     private static final Logger LOGGER = LogUtils.getLogger();
     public static final FileExplorerPanel INSTANCE = new FileExplorerPanel();
     private final File rootDir = Common.DIRECTORY.toFile();
