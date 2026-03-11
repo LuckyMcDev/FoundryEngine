@@ -14,7 +14,6 @@ import java.util.Arrays;
 
 public class EngineMarkdownParser {
     private static final Logger LOGGER = LogUtils.getLogger();
-    private static final Parser DEFAULT_PARSER = Parser.builder().build();
     private static final Parser GFM_PARSER = Parser.builder()
             .extensions(Arrays.asList(
                     TablesExtension.create(),
@@ -23,10 +22,6 @@ public class EngineMarkdownParser {
             )).build();
 
     public static MutableComponent parse(String input) {
-        return parse(input, true);
-    }
-
-    public static MutableComponent parse(String input, boolean useGfmExtensions) {
         if (input == null || input.isEmpty()) {
             return Component.literal("");
         }

@@ -8,6 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
 
 public class TestCommand implements EngineCommand {
@@ -20,7 +21,7 @@ public class TestCommand implements EngineCommand {
                     CommandSourceStack source = context.getSource();
                     ServerPlayer player = source.getPlayerOrException();
 
-                    Component parsedMarkdown = EngineMarkdownParser.parse("""
+                    MutableComponent parsedMarkdown = EngineMarkdownParser.parse("""
                             # FoundryEngine Markdown Test
                             
                             Welcome to the **FoundryEngine Markdown Viewer**.
