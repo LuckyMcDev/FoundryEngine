@@ -16,7 +16,7 @@ import io.github.luckymcdev.foundryengine.client.opengl.shaders.ShaderManager;
 import io.github.luckymcdev.foundryengine.client.post.PostProcessManager;
 import io.github.luckymcdev.foundryengine.client.util.KeyBinding;
 import io.github.luckymcdev.foundryengine.client.util.KeyBindingManager;
-import io.github.luckymcdev.foundryengine.interfaces.TbMinecraft;
+import io.github.luckymcdev.foundryengine.interfaces.EngineMinecraft;
 import net.minecraft.client.Camera;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -92,7 +92,7 @@ public abstract class Client {
     // Minecraft Core
 
     public static Minecraft getMinecraft() {
-        return ((TbMinecraft) Minecraft.getInstance()).tb$self();
+        return ((EngineMinecraft) Minecraft.getInstance()).tb$self();
     }
 
     public static ResourceManager getResourceManager() {

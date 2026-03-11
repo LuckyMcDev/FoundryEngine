@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * TODO: Rename
  * Keyboard Handler Extension
  */
-public interface TbKeyboardHandler {
+public interface EngineKeyboardHandler {
     void fe$keyPress(long p_window, int action, KeyEvent event, CallbackInfo ci);
 
     void fe$charTyped(long p_window, CharacterEvent event, CallbackInfo ci);

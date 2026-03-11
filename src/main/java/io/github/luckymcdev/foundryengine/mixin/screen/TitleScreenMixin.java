@@ -3,7 +3,7 @@ package io.github.luckymcdev.foundryengine.mixin.screen;
 import io.github.luckymcdev.foundryengine.common.Common;
 import io.github.luckymcdev.foundryengine.common.game.behavior.GameBehaviorCancellation;
 import io.github.luckymcdev.foundryengine.common.game.behavior.MenuBehavior;
-import io.github.luckymcdev.foundryengine.interfaces.FeTitleScreen;
+import io.github.luckymcdev.foundryengine.interfaces.EngineTitleScreen;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.TitleScreen;
 import org.spongepowered.asm.mixin.Mixin;
@@ -16,7 +16,7 @@ import java.util.List;
  * Mixin to make the{@link MenuBehavior} work
  */
 @Mixin(TitleScreen.class)
-public abstract class TitleScreenMixin implements FeTitleScreen {
+public abstract class TitleScreenMixin implements EngineTitleScreen {
 
     @ModifyArg(
             method = "createNormalMenuOptions",

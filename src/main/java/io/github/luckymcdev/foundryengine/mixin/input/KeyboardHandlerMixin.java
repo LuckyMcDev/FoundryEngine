@@ -2,7 +2,7 @@ package io.github.luckymcdev.foundryengine.mixin.input;
 
 import io.github.luckymcdev.foundryengine.client.Client;
 import io.github.luckymcdev.foundryengine.client.imgui.ImGuiManager;
-import io.github.luckymcdev.foundryengine.interfaces.TbKeyboardHandler;
+import io.github.luckymcdev.foundryengine.interfaces.EngineKeyboardHandler;
 import net.minecraft.client.KeyboardHandler;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
@@ -18,7 +18,7 @@ import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
  * Cancels Minecraft Keyboard inputs if ImGui captures the keyboard.
  */
 @Mixin(KeyboardHandler.class)
-public class KeyboardHandlerMixin implements TbKeyboardHandler {
+public class KeyboardHandlerMixin implements EngineKeyboardHandler {
 
     @Inject(method = "keyPress", at = @At("HEAD"), cancellable = true)
     public void fe$keyPress(long p_window, int action, KeyEvent event, CallbackInfo ci) {

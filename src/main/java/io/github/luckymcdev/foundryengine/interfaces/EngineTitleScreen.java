@@ -5,7 +5,7 @@ import io.github.luckymcdev.foundryengine.common.game.behavior.GameBehaviorCance
 /**
  * Title Screen Extension
  */
-public interface FeTitleScreen {
+public interface EngineTitleScreen {
     GameBehaviorCancellation fe$onSingleplayerClick();
 
     GameBehaviorCancellation fe$onMultiplayerClick();

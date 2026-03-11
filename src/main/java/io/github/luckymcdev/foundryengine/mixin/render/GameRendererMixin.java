@@ -2,7 +2,7 @@ package io.github.luckymcdev.foundryengine.mixin.render;
 
 import io.github.luckymcdev.foundryengine.client.Client;
 import io.github.luckymcdev.foundryengine.client.editor.EditorManager;
-import io.github.luckymcdev.foundryengine.interfaces.TbGameRenderer;
+import io.github.luckymcdev.foundryengine.interfaces.EngineGameRenderer;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.renderer.GameRenderer;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * Mixin to render ImGui.
  */
 @Mixin(GameRenderer.class)
-public class GameRendererMixin implements TbGameRenderer {
+public class GameRendererMixin implements EngineGameRenderer {
 
     @Unique
     private static final EditorManager tb$EDITOR_MANAGER = Client.getEditorManager();

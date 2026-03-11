@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * TODO: Rename
  * Mouse Handler Extension
  */
-public interface TbMouseHandler {
+public interface EngineMouseHandler {
     void tb$onMouseButton(long p_window, MouseButtonInfo buttonInfo, int action, CallbackInfo ci);
 
     void tb$onMouseScroll(long window, double horizontal, double vertical, CallbackInfo ci);

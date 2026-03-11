@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.Window;
 import io.github.luckymcdev.foundryengine.client.Client;
 import io.github.luckymcdev.foundryengine.common.Common;
 import io.github.luckymcdev.foundryengine.common.font.TTFFile;
-import io.github.luckymcdev.foundryengine.interfaces.TbMinecraft;
+import io.github.luckymcdev.foundryengine.interfaces.EngineMinecraft;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.main.GameConfig;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * Mixin to enable things when Minecraft starts, and to remove things when Minecraft closes.
  */
 @Mixin(Minecraft.class)
-public class MinecraftMixin implements TbMinecraft {
+public class MinecraftMixin implements EngineMinecraft {
 
     @Shadow
     @Final

@@ -2,7 +2,7 @@ package io.github.luckymcdev.foundryengine.mixin.input;
 
 import io.github.luckymcdev.foundryengine.client.Client;
 import io.github.luckymcdev.foundryengine.client.imgui.ImGuiManager;
-import io.github.luckymcdev.foundryengine.interfaces.TbMouseHandler;
+import io.github.luckymcdev.foundryengine.interfaces.EngineMouseHandler;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.client.input.MouseButtonInfo;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * Cancels Minecraft Mouse inputs if ImGui captures the Mouse.
  */
 @Mixin(MouseHandler.class)
-public class MouseHandlerMixin implements TbMouseHandler {
+public class MouseHandlerMixin implements EngineMouseHandler {
 
     @Override
     @Inject(method = "onButton", at = @At("HEAD"), cancellable = true)

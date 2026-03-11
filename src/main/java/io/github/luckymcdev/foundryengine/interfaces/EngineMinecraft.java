@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * TODO: Rename
  * Minecraft Extension
  */
-public interface TbMinecraft {
+public interface EngineMinecraft {
     default Minecraft tb$self() {
         return (Minecraft) this;
     }
