@@ -2,6 +2,7 @@ package io.github.luckymcdev.foundryengine.common.data;
 
 import io.github.luckymcdev.foundryengine.common.bundle.Bundle;
 import io.github.luckymcdev.foundryengine.common.data.provider.client.*;
+import io.github.luckymcdev.foundryengine.interfaces.EngineDataGenerator;
 import net.minecraft.SharedConstants;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
@@ -15,7 +16,7 @@ import java.util.concurrent.CompletableFuture;
  * Handles client-side data generation for bundles.
  * Client data includes: models, textures, sounds, particles, equipment assets, languages.
  */
-public class BundleClientGenerator {
+public class BundleClientGenerator implements EngineDataGenerator {
     private final Bundle bundle;
     private final DataGenerator dataGenerator;
     private final PackOutput pOut;
@@ -43,7 +44,12 @@ public class BundleClientGenerator {
     }
 
     public void run() throws IOException {
-        dataGenerator.run();
+        DataGeneratorContext.setEngineGenerator(this);
+        try {
+            dataGenerator.run();
+        } finally {
+            DataGeneratorContext.clear();
+        }
     }
 
     public <T extends DataProvider> T addProvider(T provider) {

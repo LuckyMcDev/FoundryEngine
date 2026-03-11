@@ -2,6 +2,7 @@ package io.github.luckymcdev.foundryengine.common.data;
 
 import io.github.luckymcdev.foundryengine.common.bundle.Bundle;
 import io.github.luckymcdev.foundryengine.common.data.provider.server.*;
+import io.github.luckymcdev.foundryengine.interfaces.EngineDataGenerator;
 import net.minecraft.SharedConstants;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistrySetBuilder;
@@ -20,7 +21,7 @@ import java.util.concurrent.CompletableFuture;
  * Handles server-side data generation for bundles.
  * Server data includes: recipes, loot tables, advancements, tags, worldgen, data-maps.
  */
-public class BundleServerGenerator {
+public class BundleServerGenerator implements EngineDataGenerator {
     private final Bundle bundle;
     private final DataGenerator dataGenerator;
     private final PackOutput pOut;
@@ -59,7 +60,12 @@ public class BundleServerGenerator {
     }
 
     public void run() throws IOException {
-        dataGenerator.run();
+        DataGeneratorContext.setEngineGenerator(this);
+        try {
+            dataGenerator.run();
+        } finally {
+            DataGeneratorContext.clear();
+        }
     }
 
     public <T extends DataProvider> T addProvider(T provider) {
