@@ -1,7 +1,6 @@
 package io.github.luckymcdev.foundryengine.client.editor.builtin;
 
 import imgui.ImGui;
-import imgui.flag.ImGuiKey;
 import io.github.luckymcdev.foundryengine.client.editor.Panel;
 import io.github.luckymcdev.foundryengine.client.imgui.EngineImGuiUtils;
 import io.github.luckymcdev.foundryengine.client.util.Shortcut;
@@ -15,7 +14,7 @@ public class TestPanel extends Panel {
     public static final TestPanel INSTANCE = new TestPanel();
 
     private TestPanel() {
-        super(Common.id("test_panel"), "My Panel", Shortcut.ctrl(ImGuiKey.T));
+        super(Common.id("test_panel"), "My Panel", Shortcut.empty());
     }
 
     @Override

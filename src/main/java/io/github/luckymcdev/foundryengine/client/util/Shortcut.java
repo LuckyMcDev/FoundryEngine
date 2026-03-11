@@ -30,6 +30,10 @@ public record Shortcut(int key, boolean ctrl, boolean shift, boolean alt) {
         return new Shortcut(key, true, false, true);
     }
 
+    public static Shortcut empty() {
+        return new Shortcut(ImGuiKey.None, false, false, false);
+    }
+
     /**
      * Returns true on the frame this shortcut is pressed.
      */
