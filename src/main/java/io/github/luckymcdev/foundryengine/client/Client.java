@@ -8,6 +8,7 @@ import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import io.github.luckymcdev.foundryengine.client.editor.EditorManager;
+import io.github.luckymcdev.foundryengine.client.editor.MainMenu;
 import io.github.luckymcdev.foundryengine.client.imgui.ImGuiManager;
 import io.github.luckymcdev.foundryengine.client.opengl.OpenGlStack;
 import io.github.luckymcdev.foundryengine.client.opengl.framebuffer.FrameBufferManager;
@@ -84,6 +85,7 @@ public abstract class Client {
     static FrameBufferManager FRAME_BUFFER_MANAGER = new FrameBufferManager();
     static PostProcessManager POST_PROCESS_MANAGER = new PostProcessManager();
     static ImGuiManager IMGUI_MANAGER = new ImGuiManager();
+    static MainMenu MAIN_MENU = new MainMenu();
     static EditorManager EDITOR_MANAGER = new EditorManager();
     static KeyBindingManager KEY_BINDING_MANAGER = new KeyBindingManager();
 
@@ -163,6 +165,10 @@ public abstract class Client {
 
     public static ImGuiManager getImGuiManager() {
         return IMGUI_MANAGER;
+    }
+
+    public static MainMenu getMainMenu() {
+        return MAIN_MENU;
     }
 
     public static EditorManager getEditorManager() {

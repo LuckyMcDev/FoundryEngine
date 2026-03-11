@@ -34,6 +34,7 @@ public class MinecraftMixin implements TbMinecraft {
     public void tb$init(GameConfig gameConfig, CallbackInfo ci) {
         TTFFile.find(resourceManager);
         Client.getImGuiManager().create(window.handle());
+        Client.getMainMenu().register();
     }
 
     @Inject(method = "close", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/font/providers/FreeTypeUtil;destroy()V", shift = At.Shift.BEFORE))

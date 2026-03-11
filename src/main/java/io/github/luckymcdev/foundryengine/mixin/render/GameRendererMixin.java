@@ -2,7 +2,6 @@ package io.github.luckymcdev.foundryengine.mixin.render;
 
 import io.github.luckymcdev.foundryengine.client.Client;
 import io.github.luckymcdev.foundryengine.client.editor.EditorManager;
-import io.github.luckymcdev.foundryengine.client.editor.MainMenu;
 import io.github.luckymcdev.foundryengine.interfaces.TbGameRenderer;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.renderer.GameRenderer;
@@ -31,8 +30,8 @@ public class GameRendererMixin implements TbGameRenderer {
     public void tb$renderReturn(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci) {
         Client.getImGuiManager().begin();
         if (Client.getImGuiManager().isEnabled()) {
-            MainMenu.handleRender();
-            MainMenu.handleShortcuts();
+            Client.getMainMenu().handleShortcuts();
+            Client.getMainMenu().render();
             tb$EDITOR_MANAGER.handleRender();
         }
         Client.getImGuiManager().end();
