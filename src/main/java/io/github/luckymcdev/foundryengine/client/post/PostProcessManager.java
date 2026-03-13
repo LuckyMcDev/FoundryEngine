@@ -23,6 +23,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import org.jetbrains.annotations.ApiStatus;
 import org.lwjgl.opengl.GL43C;
 import org.slf4j.Logger;
 
@@ -36,6 +37,7 @@ import java.util.stream.Collectors;
  * Register and Enable them from here.
  * Registering should be done via {@link RegisterPostPipelineEvent}
  */
+@ApiStatus.Experimental
 @EventBusSubscriber(Dist.CLIENT)
 public class PostProcessManager {
     private static final Logger LOGGER = LogUtils.getLogger();

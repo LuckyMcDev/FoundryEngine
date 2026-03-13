@@ -9,6 +9,7 @@ import io.github.luckymcdev.foundryengine.client.post.pipeline.pass.PostProcessP
 import io.github.luckymcdev.foundryengine.client.post.pipeline.pass.TargetRef;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.staged.PostProcessStage;
 import net.minecraft.resources.Identifier;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
 
@@ -18,6 +19,7 @@ import java.util.*;
  * By default, disabled. Call {@link PostProcessPipeline#enable()} in the constructor of your Pipeline
  * to enable instantly.
  */
+@ApiStatus.Experimental
 public abstract class PostProcessPipeline {
     private final List<ShaderProgram> programs = new ArrayList<>();
     private final LinkedHashMap<String, TargetRef> targets = new LinkedHashMap<>();
