@@ -1,7 +1,7 @@
 package io.github.luckymcdev.foundryengine.client.editor.builtin.editor;
 
 import io.github.luckymcdev.foundryengine.client.editor.Panel;
-import io.github.luckymcdev.foundryengine.client.util.Shortcut;
+import io.github.luckymcdev.foundryengine.client.util.key.Shortcut;
 import net.minecraft.resources.Identifier;
 
 /**

@@ -2,7 +2,7 @@ package io.github.luckymcdev.foundryengine.client.editor.menu;
 
 import io.github.luckymcdev.foundryengine.client.editor.EditorManager;
 import io.github.luckymcdev.foundryengine.client.editor.Panel;
-import io.github.luckymcdev.foundryengine.client.util.Shortcut;
+import io.github.luckymcdev.foundryengine.client.util.key.Shortcut;
 
 public class ShortcutHandler implements MenuSection {
     private final EditorManager editor;

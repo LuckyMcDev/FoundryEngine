@@ -9,7 +9,7 @@ import io.github.luckymcdev.foundryengine.client.post.PostProcessManager;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.PostProcessPipeline;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.param.PipelineParam;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.staged.PostProcessStage;
-import io.github.luckymcdev.foundryengine.client.util.Shortcut;
+import io.github.luckymcdev.foundryengine.client.util.key.Shortcut;
 import io.github.luckymcdev.foundryengine.common.Common;
 import org.joml.Vector2f;
 import org.joml.Vector3f;

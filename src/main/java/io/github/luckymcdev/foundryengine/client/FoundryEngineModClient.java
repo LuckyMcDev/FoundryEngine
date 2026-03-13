@@ -17,7 +17,7 @@ import io.github.luckymcdev.foundryengine.client.opengl.preprocessing.IncludeGLS
 import io.github.luckymcdev.foundryengine.client.opengl.preprocessing.RegisterGLSLPreProcessorEvent;
 import io.github.luckymcdev.foundryengine.client.post.RegisterPostPipelineEvent;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.builtin.*;
-import io.github.luckymcdev.foundryengine.client.util.RegisterKeyBindingEvent;
+import io.github.luckymcdev.foundryengine.client.util.key.RegisterKeyBindingEvent;
 import io.github.luckymcdev.foundryengine.common.Common;
 import net.minecraft.gizmos.Gizmos;
 import net.minecraft.gizmos.TextGizmo;

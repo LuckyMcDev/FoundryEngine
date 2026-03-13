@@ -1,4 +1,4 @@
-package io.github.luckymcdev.foundryengine.client.util;
+package io.github.luckymcdev.foundryengine.client.util.key;
 
 import io.github.luckymcdev.foundryengine.common.registry.GenericRegistry;
 import net.neoforged.api.distmarker.Dist;

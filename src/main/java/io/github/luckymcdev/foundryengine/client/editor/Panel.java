@@ -6,7 +6,7 @@ import imgui.type.ImBoolean;
 import io.github.luckymcdev.foundryengine.client.Client;
 import io.github.luckymcdev.foundryengine.client.editor.config.ImGuiWindowType;
 import io.github.luckymcdev.foundryengine.client.editor.config.PanelStyle;
-import io.github.luckymcdev.foundryengine.client.util.Shortcut;
+import io.github.luckymcdev.foundryengine.client.util.key.Shortcut;
 import net.minecraft.resources.Identifier;
 
 /**

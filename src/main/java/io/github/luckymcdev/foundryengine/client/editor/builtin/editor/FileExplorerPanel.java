@@ -9,7 +9,7 @@ import io.github.luckymcdev.foundryengine.client.editor.Panel;
 import io.github.luckymcdev.foundryengine.client.editor.builtin.editor.code.CodeEditor;
 import io.github.luckymcdev.foundryengine.client.imgui.EngineImGuiUtils;
 import io.github.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
-import io.github.luckymcdev.foundryengine.client.util.Shortcut;
+import io.github.luckymcdev.foundryengine.client.util.key.Shortcut;
 import io.github.luckymcdev.foundryengine.common.Common;
 import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;

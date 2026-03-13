@@ -1,7 +1,7 @@
 package io.github.luckymcdev.foundryengine.client.editor.builtin.editor;
 
 import imgui.flag.ImGuiKey;
-import io.github.luckymcdev.foundryengine.client.util.Shortcut;
+import io.github.luckymcdev.foundryengine.client.util.key.Shortcut;
 import io.github.luckymcdev.foundryengine.common.Common;
 
 /**

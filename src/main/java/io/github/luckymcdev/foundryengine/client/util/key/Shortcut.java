@@ -1,4 +1,4 @@
-package io.github.luckymcdev.foundryengine.client.util;
+package io.github.luckymcdev.foundryengine.client.util.key;
 
 import imgui.ImGui;
 import imgui.flag.ImGuiKey;

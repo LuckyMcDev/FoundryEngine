@@ -3,7 +3,7 @@ package io.github.luckymcdev.foundryengine.client.editor.builtin;
 import imgui.ImGui;
 import io.github.luckymcdev.foundryengine.client.editor.Panel;
 import io.github.luckymcdev.foundryengine.client.imgui.EngineImGuiUtils;
-import io.github.luckymcdev.foundryengine.client.util.Shortcut;
+import io.github.luckymcdev.foundryengine.client.util.key.Shortcut;
 import io.github.luckymcdev.foundryengine.common.Common;
 
 /**

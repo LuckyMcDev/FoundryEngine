@@ -1,4 +1,4 @@
-package io.github.luckymcdev.foundryengine.client.util;
+package io.github.luckymcdev.foundryengine.client.util.key;
 
 import net.minecraft.client.KeyMapping;
 
