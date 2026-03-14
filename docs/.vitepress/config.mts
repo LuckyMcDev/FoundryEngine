@@ -9,7 +9,7 @@ export default defineConfig({
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: 'Docs', link: '/' },
-      { text: 'Javadoc', link: '/javadoc/' }
+      { text: 'Javadoc', link: '/javadoc/index.html' }
     ],
 
     sidebar: [
