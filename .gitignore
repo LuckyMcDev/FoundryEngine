@@ -40,7 +40,6 @@ docs/.vitepress/cache/
 ._*
 
 # Compiled Artifacts
-*.jar
 *.war
 *.nar
 *.ear
