@@ -2,6 +2,7 @@ package com.example
 
 import io.github.luckymcdev.foundryengine.client.post.RegisterPostPipelineEvent
 import io.github.luckymcdev.foundryengine.common.registry.builder.ItemBuilder
+import io.github.luckymcdev.foundryengine.common.registry.builder.BlockBuilder
 import io.github.luckymcdev.foundryengine.common.script.BundleEntrypoint
 import net.minecraft.core.component.DataComponents
 import net.minecraft.core.registries.Registries
@@ -43,6 +44,11 @@ class TestBundle extends BundleEntrypoint {
         bundleBus.register(BundleEvents)
     }
 
+    @Override
+    void onUnload() {
+
+    }
+
     /**
      * Handlers for global game events (ServerTick, etc.)
      */
@@ -68,47 +74,50 @@ class TestBundle extends BundleEntrypoint {
      * Handlers for bundle-specific events (Registration, etc.)
      */
     static class BundleEvents {
-        @SubscribeEvent
-        static void onRegister(RegisterEvent event) {
-            event.register(Registries.ITEM) { registry ->
-                ItemBuilder itemOne = new ItemBuilder(Identifier.fromNamespaceAndPath(BUNDLEID, "this_is_a_item"))
-                        .fireResistant()
-                        .component(DataComponents.RARITY, Rarity.RARE)
-                        .stacksTo(67)
-                registry.register(itemOne.id, itemOne.build())
+        // Defining ItemBuilders as static constants
+        private static final ItemBuilder THIS_IS_A_ITEM = new ItemBuilder(Identifier.fromNamespaceAndPath(BUNDLEID, "this_is_a_item"))
+                .fireResistant()
+                .component(DataComponents.RARITY, Rarity.RARE)
+                .stacksTo(67)
 
-
-                List<Component> lines = List.of(
+        private static final ItemBuilder ITEM_TWO = new ItemBuilder(Identifier.fromNamespaceAndPath(BUNDLEID, "item_two"))
+                .component(DataComponents.LORE, new ItemLore(List.of(
                         Component.literal("The legendary blade,"),
                         Component.literal("forged in the deeps.")
-                )
-                ItemBuilder itemTwo = new ItemBuilder(Identifier.fromNamespaceAndPath(BUNDLEID, "item_two"))
-                        .component(DataComponents.LORE, new ItemLore(lines))
-                        .component(DataComponents.RARITY, Rarity.UNCOMMON)
-                        .stacksTo(3)
-                registry.register(itemTwo.id, itemTwo.build())
+                )))
+                .component(DataComponents.RARITY, Rarity.UNCOMMON)
+                .stacksTo(3)
 
-
-                FoodProperties cosmicFood = new FoodProperties.Builder()
+        private static final ItemBuilder COSMIC_APPLE = new ItemBuilder(Identifier.fromNamespaceAndPath(BUNDLEID, "cosmic_apple"))
+                .component(DataComponents.LORE, new ItemLore(List.of(
+                        Component.literal("A shimmering fruit from"),
+                        Component.literal("another dimension.")
+                )))
+                .component(DataComponents.RARITY, Rarity.EPIC)
+                .component(DataComponents.FOOD, new FoodProperties.Builder()
                         .nutrition(4)
                         .saturationModifier(0.3f)
                         .alwaysEdible()
-                        .build()
+                        .build())
+                .component(DataComponents.CONSUMABLE, Consumables.defaultFood().build())
+                .stacksTo(16)
 
-                List<Component> appleLore = List.of(
-                        Component.literal("A shimmering fruit from"),
-                        Component.literal("another dimension.")
-                )
+        private static final BlockBuilder MY_BLOCK = new BlockBuilder(Identifier.fromNamespaceAndPath(BUNDLEID, "my_block"))
+                .properties(p -> p.strength(2.0f, 3.0f))
+                .itemProperties(p -> p.rarity(Rarity.COMMON))
 
-                ItemBuilder itemThree = new ItemBuilder(Identifier.fromNamespaceAndPath(BUNDLEID, "cosmic_apple"))
-                        .component(DataComponents.LORE, new ItemLore(appleLore))
-                        .component(DataComponents.RARITY, Rarity.EPIC)
-                        .component(DataComponents.FOOD, cosmicFood)
-                        .component(DataComponents.CONSUMABLE, Consumables.defaultFood().build())
-                        .stacksTo(16)
+        @SubscribeEvent
+        static void onRegister(RegisterEvent event) {
+            event.register(Registries.BLOCK, registry -> {
+                MY_BLOCK.registerBlock(registry)
+            })
 
-                registry.register(itemThree.id, itemThree.build())
-            }
+            event.register(Registries.ITEM, registry -> {
+                THIS_IS_A_ITEM.register(registry)
+                ITEM_TWO.register(registry)
+                COSMIC_APPLE.register(registry)
+                MY_BLOCK.registerItem(registry)
+            })
         }
     }
 }

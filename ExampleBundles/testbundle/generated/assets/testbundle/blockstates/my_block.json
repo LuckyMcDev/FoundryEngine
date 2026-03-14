@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "testbundle:block/my_block"
+    }
+  }
+}
