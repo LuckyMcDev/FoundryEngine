@@ -7,6 +7,7 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.neoforged.neoforge.registries.RegisterEvent;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -54,6 +55,33 @@ public class BlockBuilder extends BuilderBase<Block> {
     public BlockBuilder itemProperties(Function<Item.Properties, Item.Properties> action) {
         this.itemPropertyModifier = action;
         return this;
+    }
+
+    /**
+     * Registers the Block into the block registry.
+     * MUST be called BEFORE {@link #registerItem(RegisterEvent.RegisterHelper)}
+     */
+    public Block registerBlock(RegisterEvent.RegisterHelper<Block> helper) {
+        Block block = build();
+        helper.register(this.id, block);
+        this.object = block;
+        return block;
+    }
+
+    /**
+     * Registers the associated BlockItem into the item registry.
+     * Only works if hasItem is true and if {@link #registerBlock(RegisterEvent.RegisterHelper)} has been called.
+     */
+    public Item registerItem(RegisterEvent.RegisterHelper<Item> helper) {
+        if (!hasItem) {
+            throw new IllegalStateException("Cannot register item for block " + id + " because noItem() was called.");
+        }
+
+        ItemBuilder itemBuilder = new ItemBuilder(id)
+                .factory(props -> itemFactory.apply(object, props))
+                .properties(itemPropertyModifier);
+
+        return itemBuilder.register(helper);
     }
 
     @Override

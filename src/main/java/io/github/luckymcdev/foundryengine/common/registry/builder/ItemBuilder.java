@@ -5,6 +5,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;
+import net.neoforged.neoforge.registries.RegisterEvent;
 
 import java.util.function.Function;
 
@@ -25,7 +26,7 @@ public class ItemBuilder extends BuilderBase<Item> {
 
     /**
      * Set a custom factory if you want to use a specific Item subclass
-     * (e.g., SwordItem, PickaxeItem, or a custom class).
+     * (e.g. a custom class).
      */
     public ItemBuilder factory(Function<Item.Properties, Item> factory) {
         this.factory = factory;
@@ -56,9 +57,19 @@ public class ItemBuilder extends BuilderBase<Item> {
         return this;
     }
 
+    /**
+     * Add a component to the item.
+     */
     public <T> ItemBuilder component(DataComponentType<T> type, T value) {
         this.properties = this.properties.component(type, value);
         return this;
+    }
+
+    public Item register(RegisterEvent.RegisterHelper<Item> helper) {
+        Item item = build();
+        helper.register(this.id, item);
+        this.object = item;
+        return item;
     }
 
     @Override
