@@ -7,14 +7,15 @@ hero:
   text: ""
   tagline: Turning Minecraft into a Game Engine
   actions:
-    - theme: brand
-      text: Documentation
-    - theme: alt
-      text: Javadoc
-      link: /javadoc/
 
 features:
-  - title: Javadoc
-    details: Browse the full generated Java API documentation
-    link: /javadoc/index.html
+  - title: "Guide"
+    text: "Learn how to use Foundry Engine."
+    link: "/guide"
+  - title: "Api"
+    text: "Developer Api Documentation."
+    link: "/api"
+  - title: "Javadoc"
+    text: "Generated Javadoc for the latest version of Foundry Engine."
+    link: "/javadoc/index.html"
 ---
