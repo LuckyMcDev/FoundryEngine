@@ -1,41 +1,48 @@
+name: Build & Deploy Docs
+
 on:
   push:
     branches: [ master ]
   workflow_dispatch:
 
 jobs:
-  build:
+  vitepress:
     if: startsWith(github.event.head_commit.message, 'wiki:')
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-      - name: Setup Node
-        uses: actions/setup-node@v6
-        with:
-          node-version: 24
-          cache: npm
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-      - name: Install dependencies
-        run: npm ci
-      - name: Build with VitePress
-        run: npm run docs:build
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v4
-        with:
-          path: docs/.vitepress/dist
+    uses: ./.github/workflows/build-vitepress.yml
+
+  javadoc:
+    if: startsWith(github.event.head_commit.message, 'wiki:')
+    uses: ./.github/workflows/build-javadoc.yml
 
   deploy:
     if: startsWith(github.event.head_commit.message, 'wiki:')
-    needs: build
+    needs: [ vitepress, javadoc ]
     runs-on: ubuntu-latest
+
+    permissions:
+      pages: write
+      id-token: write
+
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+
     steps:
-      - name: Deploy to GitHub Pages
+      - uses: actions/download-artifact@v8
+        with:
+          path: site
+
+      - name: Merge artifacts
+        run: |
+          mkdir final
+          cp -r site/vitepress/* final/
+          mkdir -p final/javadoc
+          cp -r site/javadoc/* final/javadoc/
+
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: final
+
+      - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4

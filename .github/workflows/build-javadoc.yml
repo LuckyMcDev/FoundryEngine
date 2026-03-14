@@ -1,0 +1,26 @@
+name: Build Javadoc
+
+on:
+  workflow_call:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: gradle
+
+      - name: Generate Javadoc
+        run: ./gradlew dokkaGenerateJavadoc
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: javadoc
+          path: build/dokka/javadoc
