@@ -4,23 +4,26 @@ on:
   workflow_call:
 
 jobs:
-  # We call the common gradle runner here
-  generate-docs:
-    uses: ./.github/workflows/run-gradle.yml
-    with:
-      task: "dokkaGenerateJavadoc"
-      java-version: "21"
-
-  # We still need a step to upload the specific Javadoc artifact for your deployment
-  upload-results:
-    needs: generate-docs
+  build:
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v6
 
-      - name: Download Generated Javadoc
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      - name: Generate Javadoc
+        run: ./gradlew dokkaGeneratePublicationJavadoc
+
+      - name: Upload Javadoc
         uses: actions/upload-artifact@v7
         with:
           name: javadoc
-          path: build/dokka/javadoc
+          path: docs/generated/javadoc
