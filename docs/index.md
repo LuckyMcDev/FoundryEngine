@@ -16,5 +16,5 @@ hero:
 features:
   - title: Javadoc
     details: Browse the full generated Java API documentation
-    link: /javadoc/
+    link: /javadoc/index.html
 ---
