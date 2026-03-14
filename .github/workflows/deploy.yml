@@ -5,6 +5,11 @@ on:
     branches: [ master ]
   workflow_dispatch:
 
+# Add concurrency to prevent multiple runs
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
 jobs:
   vitepress:
     if: github.event_name == 'workflow_dispatch' || startsWith(github.event.head_commit.message, 'wiki:')
@@ -35,13 +40,22 @@ jobs:
       - name: Merge artifacts
         run: |
           mkdir final
-          cp -r site/vitepress/* final/
-          mkdir -p final/javadoc
-          cp -r site/javadoc/* final/javadoc/
+          
+          # Copy VitePress if it exists
+          if [ -d "site/vitepress" ]; then
+            cp -r site/vitepress/* final/
+          fi
+          
+          # Copy Javadoc if it exists
+          if [ -d "site/javadoc" ]; then
+            mkdir -p final/javadoc
+            cp -r site/javadoc/* final/javadoc/
+          fi
 
       - uses: actions/upload-pages-artifact@v4
         with:
           path: final
+          retention-days: 1  # ← Clean up old artifacts quickly
 
       - name: Deploy
         id: deployment
