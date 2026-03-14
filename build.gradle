@@ -225,7 +225,7 @@ dokka {
 
         sourceLink {
             localDirectory.set(file("src/main/java"))
-            remoteUrl.set(new URI("https://github.com/LuckyMcDev/FoundryEngine"))
+            remoteUrl.set(new URI("https://github.com/LuckyMcDev/FoundryEngine/blob/master/src/main/java"))
             remoteLineSuffix.set("#L")
         }
     }
