@@ -1,0 +1,45 @@
+name: Gradle Runner
+
+on:
+  workflow_call:
+    inputs:
+      task:
+        required: true
+        type: string
+        description: "The Gradle task(s) to run"
+      java-version:
+        required: false
+        type: string
+        default: "21"
+
+jobs:
+  execute:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v6
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: ${{ inputs.java-version }}
+
+      - name: Setup Gradle
+        # Using the official action for advanced caching and security
+        uses: gradle/actions/setup-gradle@v5
+
+      - name: Grant Execute Permission
+        run: chmod +x gradlew
+
+      - name: Run Task
+        run: ./gradlew ${{ inputs.task }}
+
+      # Optional: Upload build artifacts if they exist
+      - name: Upload Build Artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: gradle-results-${{ github.run_id }}
+          path: build/reports
+          if-no-files-found: ignore
