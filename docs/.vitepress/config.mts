@@ -1,5 +1,4 @@
 import { defineConfig } from 'vitepress'
-import { configureDiagramsPlugin } from "vitepress-plugin-diagrams";
 
 const nav = (text: string, link: string) => ({ text, link })
 
