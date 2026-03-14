@@ -7,8 +7,8 @@
     <envs>
       <env name="renderdoccmd" value="C:\Program Files\RenderDoc\renderdoccmd.exe" />
     </envs>
-    <option name="SCRIPT_NAME" value="./RenderDoc.bat" />
-    <option name="PARAMETERS" value="-Dterminal.ansi=true"/>
+      <option name="SCRIPT_NAME" value="./.run/bat/RenderDoc.bat"/>
+      <option name="PARAMETERS" value="-Dterminal.ansi=true"/>
     <method v="2">
       <option name="Make" enabled="true" />
       <option name="Gradle.BeforeRunTask" enabled="true" tasks="createClientLaunchScript compileJava" externalProjectPath="$PROJECT_DIR$" vmOptions="" scriptParameters="" />

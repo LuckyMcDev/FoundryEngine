@@ -1,1 +1,4 @@
-renderdoccmd capture -w --opt-hook-children "%~dp0build\moddev\runClient.cmd"
+
+
+
+renderdoccmd capture -w --opt-hook-children "%~dp0\..\..\build\moddev\runClient.cmd"
