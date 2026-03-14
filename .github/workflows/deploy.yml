@@ -3,24 +3,25 @@ name: Build & Deploy Docs
 on:
   push:
     branches: [ master ]
+    paths:
+      - 'docs/**'
+      - '.github/workflows/build-vitepress.yml'
+      - '.github/workflows/build-javadoc.yml'
+      - '.github/workflows/deploy.yml'
   workflow_dispatch:
 
-# Add concurrency to prevent multiple runs
 concurrency:
   group: pages
   cancel-in-progress: false
 
 jobs:
   vitepress:
-    if: github.event_name == 'workflow_dispatch' || startsWith(github.event.head_commit.message, 'wiki:')
     uses: ./.github/workflows/build-vitepress.yml
 
   javadoc:
-    if: github.event_name == 'workflow_dispatch' || startsWith(github.event.head_commit.message, 'wiki:')
     uses: ./.github/workflows/build-javadoc.yml
 
   deploy:
-    if: github.event_name == 'workflow_dispatch' || startsWith(github.event.head_commit.message, 'wiki:')
     needs: [ vitepress, javadoc ]
     runs-on: ubuntu-latest
 
@@ -55,7 +56,7 @@ jobs:
       - uses: actions/upload-pages-artifact@v4
         with:
           path: final
-          retention-days: 1  # ← Clean up old artifacts quickly
+          retention-days: 1
 
       - name: Deploy
         id: deployment
