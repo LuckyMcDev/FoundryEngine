@@ -7,15 +7,15 @@ on:
 
 jobs:
   vitepress:
-    if: startsWith(github.event.head_commit.message, 'wiki:')
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.event.head_commit.message, 'wiki:')
     uses: ./.github/workflows/build-vitepress.yml
 
   javadoc:
-    if: startsWith(github.event.head_commit.message, 'wiki:')
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.event.head_commit.message, 'wiki:')
     uses: ./.github/workflows/build-javadoc.yml
 
   deploy:
-    if: startsWith(github.event.head_commit.message, 'wiki:')
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.event.head_commit.message, 'wiki:')
     needs: [ vitepress, javadoc ]
     runs-on: ubuntu-latest
 

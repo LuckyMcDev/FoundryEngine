@@ -7,14 +7,14 @@ hero:
   text: ""
   tagline: Turning Minecraft into a Game Engine
   actions:
-  #- theme: brand
-  #  text: Markdown Examples
-  #  link: /markdown-examples
-  #- theme: alt
-  #  text: API Examples
-  #  link: /api-examples
+    - theme: brand
+      text: Documentation
+    - theme: alt
+      text: Javadoc
+      link: /javadoc/
 
 features:
-  - title: Bundles
-    details: A way to create custom scripts via the groovy language
+  - title: Javadoc
+    details: Browse the full generated Java API documentation
+    link: /javadoc/
 ---
