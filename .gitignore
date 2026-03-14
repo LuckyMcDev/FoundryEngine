@@ -38,6 +38,7 @@ docs/.vitepress/cache/
 .Trash-*
 .nfs*
 ._*
+*.rdc
 
 # Compiled Artifacts
 *.war
