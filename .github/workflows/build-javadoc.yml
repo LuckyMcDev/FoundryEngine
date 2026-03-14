@@ -17,12 +17,9 @@ jobs:
           java-version: 21
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v5
+        uses: gradle/gradle-build-action@v3
 
-      - name: Make Gradle wrapper executable
-        run: chmod +x ./gradlew
-
-      - name: Generate Javadoc
+      - name: Execute Gradle build
         run: ./gradlew dokkaGenerateJavadoc
 
       - name: Upload Javadoc
