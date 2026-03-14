@@ -12,23 +12,34 @@ import net.minecraft.resources.Identifier
 
 
 class TestPostProcessPipeline extends PostProcessPipeline {
-    TestPostProcessPipeline() {
-        super(
-                Identifier.fromNamespaceAndPath("testbundle", "post_test"),
-                new PostProcessPipelinePass(
-                        Identifier.fromNamespaceAndPath("testbundle", "post_test_pass"),
-                        TargetRef.MAIN, TargetRef.MAIN,
-                        new Shader(ExtendedShaderType.VERTEX,
-                                new ShaderSource(
-                                        Identifier.fromNamespaceAndPath("testbundle", "post_test_vert"),
-                                        Common.id("shaders/vert.vsh")
-                                )),
-                        new Shader(ExtendedShaderType.FRAGMENT,
-                                new ShaderSource(
-                                        Identifier.fromNamespaceAndPath("testbundle","post_test_frag"),
-                                        Identifier.fromNamespaceAndPath("testbundle", "shaders/post/test_post.fsh")
-                                ))
-                )
+
+    @Override
+    Identifier getName() {
+        return Identifier.fromNamespaceAndPath("testbundle", "post_test_pipeline")
+    }
+
+    @Override
+    PostProcessStage getInitialStage() {
+        return PostProcessStage.FINAL
+    }
+
+    @Override
+    List<PostProcessPipelinePass> getPasses() {
+        return List.of(
+            new PostProcessPipelinePass(
+                    Identifier.fromNamespaceAndPath("testbundle", "post_test_pass"),
+                    TargetRef.MAIN, TargetRef.MAIN,
+                    new Shader(ExtendedShaderType.VERTEX,
+                            new ShaderSource(
+                                    Identifier.fromNamespaceAndPath("testbundle", "post_test_vert"),
+                                    Common.id("shaders/vert.vsh")
+                            )),
+                    new Shader(ExtendedShaderType.FRAGMENT,
+                            new ShaderSource(
+                                    Identifier.fromNamespaceAndPath("testbundle","post_test_frag"),
+                                    Identifier.fromNamespaceAndPath("testbundle", "shaders/post/test_post.fsh")
+                            ))
+            )
         )
     }
 }
