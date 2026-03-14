@@ -10,7 +10,7 @@ export default defineConfig({
     nav: [
       { text: 'Docs', link: '/' },
       { text: 'Javadoc', link: '/javadoc/' }
-    ]
+    ],
 
     sidebar: [
       {

@@ -15,12 +15,18 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
-          cache: gradle
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      - name: Make Gradle wrapper executable
+        run: chmod +x ./gradlew
 
       - name: Generate Javadoc
         run: ./gradlew dokkaGenerateJavadoc
 
-      - uses: actions/upload-artifact@v7
+      - name: Upload Javadoc
+        uses: actions/upload-artifact@v7
         with:
           name: javadoc
           path: build/dokka/javadoc
