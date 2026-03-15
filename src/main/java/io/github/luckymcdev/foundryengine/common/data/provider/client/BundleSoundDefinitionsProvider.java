@@ -12,6 +12,6 @@ public class BundleSoundDefinitionsProvider extends SoundDefinitionsProvider {
 
     @Override
     public void registerSounds() {
-
+        // Not implemented yet.
     }
 }

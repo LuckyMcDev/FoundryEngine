@@ -9,6 +9,8 @@ import imgui.internal.ImGuiContext;
  * See {@link ImGuiContextTypes#IMGUI}, {@link ImGuiContextTypes#IMNODES} and {@link ImGuiContextTypes#IMPLOT}
  * New Context Types have to be added to the {@link ImGuiContextStack} via {@link ImGuiContextStack#addContextType(ContextType)}
  *
+ * @deprecated
+ *
  * @param <T> A Context of ImGuiStruct Type. eg {@link imgui.internal.ImGuiContext}
  */
 @Deprecated()

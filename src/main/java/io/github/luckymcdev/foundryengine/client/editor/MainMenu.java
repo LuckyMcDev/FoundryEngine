@@ -17,7 +17,6 @@ import io.github.luckymcdev.foundryengine.common.registry.GenericRegistry;
  */
 public class MainMenu {
     private final GenericRegistry<String, MenuSection> menuSections = new GenericRegistry<>();
-    private EditorManager editor;
     private ImGuiGraphicsStack graphicsStack;
     private ShortcutHandler shortcutHandler;
 
@@ -26,14 +25,14 @@ public class MainMenu {
     }
 
     public void register() {
-        this.editor = Client.getEditorManager();
+        var editor = Client.getEditorManager();
         this.graphicsStack = Client.getImGuiManager().getGraphicsStack();
-        this.shortcutHandler = new ShortcutHandler(this.editor);
+        this.shortcutHandler = new ShortcutHandler(editor);
 
-        this.register("open", new OpenMenuSection(this.editor));
-        this.register("editor", new EditorMenuSection(this.editor));
-        this.register("tools", new ToolsMenuSection(this.editor));
-        this.register("view", new ViewMenuSection(this.editor));
+        this.register("open", new OpenMenuSection(editor));
+        this.register("editor", new EditorMenuSection(editor));
+        this.register("tools", new ToolsMenuSection(editor));
+        this.register("view", new ViewMenuSection());
     }
 
     public void register(String name, MenuSection section) {

@@ -19,7 +19,7 @@ public class EditorMenuSection implements MenuSection {
     public void render() {
         if (ImGui.beginMenu("Editor")) {
             editor.getPanels().stream()
-                    .filter(p -> p instanceof EditorPanel)
+                    .filter(EditorPanel.class::isInstance)
                     .forEach(menuItemRenderer::render);
             ImGui.endMenu();
         }

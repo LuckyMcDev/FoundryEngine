@@ -4,7 +4,6 @@ import net.minecraft.client.input.MouseButtonInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * TODO: Rename
  * Mouse Handler Extension
  */
 public interface EngineMouseHandler {

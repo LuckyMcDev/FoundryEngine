@@ -1,15 +1,10 @@
 package io.github.luckymcdev.foundryengine.client.editor.menu.builtin;
 
 import imgui.ImGui;
-import io.github.luckymcdev.foundryengine.client.editor.EditorManager;
+import io.github.luckymcdev.foundryengine.client.Client;
 import io.github.luckymcdev.foundryengine.client.editor.menu.MenuSection;
 
 public class ViewMenuSection implements MenuSection {
-    private final EditorManager editor;
-
-    public ViewMenuSection(EditorManager editor) {
-        this.editor = editor;
-    }
 
     @Override
     public void render() {
@@ -20,16 +15,14 @@ public class ViewMenuSection implements MenuSection {
     }
 
     private void renderResetLayout() {
-        if (ImGui.menuItem("Reset Layout")) {
-            // TODO: Implement docking layout reset
-            resetLayout();
+        if (ImGui.menuItem("Reset Docking")) {
+            resetDocking();
         }
     }
 
-    /**
-     * TODO: Implement layout reset functionality.
-     */
-    private void resetLayout() {
-        // Future implementation for resetting the docking layout
+    private void resetDocking() {
+        int dockspaceId = Client.getImGuiManager().getDockId();
+        imgui.internal.ImGui.dockBuilderRemoveNodeChildNodes(dockspaceId);
+        imgui.internal.ImGui.dockBuilderRemoveNodeDockedWindows(dockspaceId);
     }
 }

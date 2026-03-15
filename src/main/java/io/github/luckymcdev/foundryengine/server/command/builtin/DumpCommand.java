@@ -81,7 +81,7 @@ public class DumpCommand implements EngineCommand {
                         int index = 1;
 
                         for (Identifier key : sortedKeys) {
-                            writer.write(String.format("| `%03d` | `%s` |\n", index++, key.toString()));
+                            writer.write(String.format("| `%03d` | `%s` |%n", index++, key.toString()));
                         }
                         writer.write("\n---\n\n");
                         writer.write("[Back to top](#foundry-engine-registry-dump)\n\n");

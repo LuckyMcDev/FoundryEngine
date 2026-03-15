@@ -16,6 +16,7 @@ import io.github.luckymcdev.foundryengine.client.opengl.shaders.ShaderManager;
 import io.github.luckymcdev.foundryengine.client.post.PostProcessManager;
 import io.github.luckymcdev.foundryengine.client.util.key.KeyBinding;
 import io.github.luckymcdev.foundryengine.client.util.key.KeyBindingManager;
+import io.github.luckymcdev.foundryengine.common.exeptions.EngineException;
 import io.github.luckymcdev.foundryengine.interfaces.EngineMinecraft;
 import net.minecraft.client.Camera;
 import net.minecraft.client.KeyMapping;
@@ -44,6 +45,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 public abstract class Client {
+    // Core Systems
+    private static final OpenGlStack OPEN_GL_STACK = new OpenGlStack();
+
     /**
      * The Model View Matrix
      */
@@ -79,15 +83,17 @@ public abstract class Client {
             }
     );
     private static final Logger LOGGER = LogUtils.getLogger();
-    // Core Systems
-    static OpenGlStack OPEN_GL_STACK = new OpenGlStack();
-    static ShaderManager SHADER_MANAGER = new ShaderManager();
-    static FrameBufferManager FRAME_BUFFER_MANAGER = new FrameBufferManager();
-    static PostProcessManager POST_PROCESS_MANAGER = new PostProcessManager();
-    static ImGuiManager IMGUI_MANAGER = new ImGuiManager();
-    static MainMenu MAIN_MENU = new MainMenu();
-    static EditorManager EDITOR_MANAGER = new EditorManager();
-    static KeyBindingManager KEY_BINDING_MANAGER = new KeyBindingManager();
+    private static final ShaderManager SHADER_MANAGER = new ShaderManager();
+    private static final FrameBufferManager FRAME_BUFFER_MANAGER = new FrameBufferManager();
+    private static final PostProcessManager POST_PROCESS_MANAGER = new PostProcessManager();
+    private static final ImGuiManager IMGUI_MANAGER = new ImGuiManager();
+    private static final MainMenu MAIN_MENU = new MainMenu();
+    private static final EditorManager EDITOR_MANAGER = new EditorManager();
+    private static final KeyBindingManager KEY_BINDING_MANAGER = new KeyBindingManager();
+
+    private Client() {
+        throw new EngineException();
+    }
 
     // Minecraft Core
 

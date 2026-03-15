@@ -1,6 +1,7 @@
 package io.github.luckymcdev.foundryengine.config;
 
 import io.github.luckymcdev.foundryengine.common.Common;
+import io.github.luckymcdev.foundryengine.common.exeptions.UtilityClassException;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.config.ModConfigEvent;
@@ -12,10 +13,26 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 @EventBusSubscriber(modid = Common.MODID)
 public class Config {
 
+    private Config() {
+    }
+
+    /**
+     * On Config Load Handler.
+     *
+     * @param event config load event.
+     */
+    @SubscribeEvent
+    static void onLoad(final ModConfigEvent event) {
+        // No functionality needed, may be added at some point tho.
+    }
+
     /**
      * Common Config
      */
     public static class Common {
+        private Common() {
+            throw new UtilityClassException();
+        }
         private static final ModConfigSpec.Builder COMMON_BUILDER = new ModConfigSpec.Builder();
         public static final ModConfigSpec COMMON_SPEC = COMMON_BUILDER.build();
     }
@@ -24,6 +41,9 @@ public class Config {
      * Client Config
      */
     public static class Client {
+        private Client() {
+            throw new UtilityClassException();
+        }
         private static final ModConfigSpec.Builder CLIENT_BUILDER = new ModConfigSpec.Builder();
         public static final ModConfigSpec CLIENT_SPEC = CLIENT_BUILDER.build();
     }
@@ -32,6 +52,9 @@ public class Config {
      * Server Config
      */
     public static class Server {
+        private Server() {
+            throw new UtilityClassException();
+        }
         private static final ModConfigSpec.Builder SERVER_BUILDER = new ModConfigSpec.Builder();
         public static final ModConfigSpec SERVER_SPEC = SERVER_BUILDER.build();
     }
@@ -40,6 +63,9 @@ public class Config {
      * Startup Config
      */
     public static class Startup {
+        private Startup() {
+            throw new UtilityClassException();
+        }
         private static final ModConfigSpec.Builder STARTUP_BUILDER = new ModConfigSpec.Builder();
 
         public static final ModConfigSpec.BooleanValue SCRIPTING_ENABLED = STARTUP_BUILDER
@@ -59,17 +85,5 @@ public class Config {
                 .defineInRange("EVAL_COMMAND_PERMISSION", 4, 0, 4);
 
         public static final ModConfigSpec STARTUP_SPEC = STARTUP_BUILDER.build();
-    }
-
-    private Config() {
-    }
-
-    /**
-     * On Config Load Handler.
-     *
-     * @param event config load event.
-     */
-    @SubscribeEvent
-    static void onLoad(final ModConfigEvent event) {
     }
 }

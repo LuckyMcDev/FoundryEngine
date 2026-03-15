@@ -48,7 +48,7 @@ public class BundlePackResources extends AbstractPackResources {
     }
 
     @Override
-    public IoSupplier<InputStream> getResource(PackType type, Identifier location) {
+    public IoSupplier<InputStream> getResource(@NonNull PackType type, @NonNull Identifier location) {
         if (type != packType) return null;
 
         for (Path root : roots) {

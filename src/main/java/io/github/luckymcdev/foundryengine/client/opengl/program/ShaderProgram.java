@@ -166,7 +166,7 @@ public class ShaderProgram extends OpenGlObject {
         return id;
     }
 
-    public ArrayList<Shader> shaders() {
+    public List<Shader> shaders() {
         return shaders;
     }
 

@@ -14,6 +14,6 @@ public class BundleSpriteSourceProvider extends SpriteSourceProvider {
 
     @Override
     protected void gather() {
-
+        // Not implemented yet.
     }
 }

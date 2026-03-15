@@ -47,7 +47,7 @@ public enum Priority {
      * @param keyExtractor function to extract priority from object
      * @return reverse comparator for sorting objects by priority
      */
-    public static <T> Comparator<Object> comparingReversed(Function<Object, Priority> keyExtractor) {
+    public static Comparator<Object> comparingReversed(Function<Object, Priority> keyExtractor) {
         return Comparator.comparingInt(obj -> keyExtractor.apply(obj).getValue()).reversed();
     }
 

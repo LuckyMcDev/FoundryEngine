@@ -16,5 +16,6 @@ public class BundleEquipmentAssetProvider extends EquipmentAssetProvider {
 
     @Override
     protected void registerModels(BiConsumer<ResourceKey<EquipmentAsset>, EquipmentClientInfo> output) {
+        // This is empty, as there is currently no easy way to generate this for each bundle / i haven't gotten around to it.
     }
 }

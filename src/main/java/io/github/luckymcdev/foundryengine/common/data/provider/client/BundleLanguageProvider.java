@@ -55,9 +55,8 @@ public class BundleLanguageProvider extends LanguageProvider {
                 add(attr.getDescriptionId(), formatTitleCase(BuiltInRegistries.ATTRIBUTE.getKey(attr).getPath()))
         );
 
-        query.getFromRegistry(BuiltInRegistries.CUSTOM_STAT).forEach(stat -> {
-            add("stat." + bundleId + "." + stat.getPath(), formatTitleCase(stat.getPath()));
-        });
+        query.getFromRegistry(BuiltInRegistries.CUSTOM_STAT).forEach(stat ->
+                add("stat." + bundleId + "." + stat.getPath(), formatTitleCase(stat.getPath())));
     }
 
     private String formatTitleCase(String input) {

@@ -43,7 +43,7 @@ public class FoundryEngineModClient {
     public static void onClientSetup(FMLClientSetupEvent event) {
         LOGGER.debug("FoundryEngineModClient setup called");
 
-        ModPathBroadcaster.onClientSetup(event);
+        ModPathBroadcaster.onClientSetup();
 
         event.enqueueWork(() -> {
             BUS.post(new RegisterRenderingStuffEvent(Client.getResourceManager()));

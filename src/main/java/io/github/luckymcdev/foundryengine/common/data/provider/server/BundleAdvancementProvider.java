@@ -18,7 +18,7 @@ public class BundleAdvancementProvider extends AdvancementProvider {
     static class BundleAdvancementSubProvider implements AdvancementSubProvider {
         @Override
         public void generate(HolderLookup.Provider registries, Consumer<AdvancementHolder> writer) {
-
+            // This is empty, as there is currently no easy way to generate this for each bundle / i havent gotten around to it.
         }
     }
 }

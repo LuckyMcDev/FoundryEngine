@@ -66,12 +66,11 @@ public class BundleFactory {
     private IEventBus createBundleBus(BundleInfo info) {
         return BusBuilder.builder()
                 .allowPerPhasePost()
-                .setExceptionHandler((bus, event, listeners, index, throwable) -> {
-                    LOGGER.error("Bundle '{}' faulted during event {}: {}",
-                            info.id(),
-                            event.getClass().getSimpleName(),
-                            throwable.getMessage());
-                })
+                .setExceptionHandler((bus, event, listeners, index, throwable) ->
+                        LOGGER.error("Bundle '{}' faulted during event {}: {}",
+                                info.id(),
+                                event.getClass().getSimpleName(),
+                                throwable.getMessage()))
                 .build();
     }
 

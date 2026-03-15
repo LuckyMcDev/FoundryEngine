@@ -3,6 +3,7 @@ package io.github.luckymcdev.foundryengine.common.script;
 import com.mojang.logging.LogUtils;
 import groovy.util.GroovyScriptEngine;
 import io.github.luckymcdev.foundryengine.common.bundle.info.BundleFiles;
+import io.github.luckymcdev.foundryengine.common.exeptions.EngineException;
 import io.github.luckymcdev.foundryengine.common.priority.Priority;
 import io.github.luckymcdev.foundryengine.config.Config;
 import net.neoforged.bus.api.IEventBus;
@@ -98,8 +99,7 @@ public class BundleScriptLoader {
 
         Class<?> scriptClass = engine.loadScriptByName(scriptName);
         if (BundleEntrypoint.class.isAssignableFrom(scriptClass)) {
-            BundleEntrypoint entrypoint = instantiateEntrypoint(scriptClass, bundleBus, eventBus);
-            return entrypoint;
+            return instantiateEntrypoint(scriptClass, bundleBus, eventBus);
         }
 
         LOGGER.trace("Script '{}' is not a BundleEntrypoint, skipping", scriptName);
@@ -121,7 +121,7 @@ public class BundleScriptLoader {
                         clazz.getSimpleName());
                 return instance;
             } catch (NoSuchMethodException ex) {
-                throw new IllegalStateException(
+                throw new EngineException(
                         "BundleEntrypoint class must have either (IEventBus, IEventBus) or no-arg constructor: "
                                 + clazz.getName(), ex);
             }

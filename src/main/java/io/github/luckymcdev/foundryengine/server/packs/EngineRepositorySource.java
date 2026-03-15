@@ -32,7 +32,7 @@ public class EngineRepositorySource implements RepositorySource {
     }
 
     @Override
-    public void loadPacks(Consumer<Pack> consumer) {
+    public void loadPacks(@NonNull Consumer<Pack> consumer) {
         List<Path> generatedPaths = new ArrayList<>();
         List<Path> manualPaths = new ArrayList<>();
 

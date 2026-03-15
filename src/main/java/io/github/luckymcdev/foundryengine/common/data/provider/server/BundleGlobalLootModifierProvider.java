@@ -14,5 +14,6 @@ public class BundleGlobalLootModifierProvider extends GlobalLootModifierProvider
 
     @Override
     protected void start() {
+        // This method is empty, as there is no good way to generate a global loot modifier for a bundle ye.
     }
 }

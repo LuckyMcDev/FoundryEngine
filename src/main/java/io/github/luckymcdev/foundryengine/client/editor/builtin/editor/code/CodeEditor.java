@@ -20,7 +20,7 @@ import java.util.function.Consumer;
  */
 public class CodeEditor extends EditorPanel {
     private final ImString codeBuffer;
-    private final int bufferMultiplier = 100;
+    private static final int BUFFER_MUL = 100;
     private String originalSource;
     private String fileName;
     private Consumer<String> saveCallback;
@@ -30,7 +30,7 @@ public class CodeEditor extends EditorPanel {
         this.menuBar = true;
         this.fileName = fileName;
         this.originalSource = source;
-        this.codeBuffer = new ImString(source.length() * bufferMultiplier);
+        this.codeBuffer = new ImString(source.length() * BUFFER_MUL);
         this.codeBuffer.set(source);
     }
 

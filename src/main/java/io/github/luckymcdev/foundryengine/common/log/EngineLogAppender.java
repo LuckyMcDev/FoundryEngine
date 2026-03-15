@@ -76,20 +76,18 @@ public class EngineLogAppender extends AbstractAppender {
     }
 
     public static class Holder {
-        public static EngineLogAppender LOG_APPENDER;
+        public static final EngineLogAppender logAppender = EngineLogAppender.create("EngineLogAppender");
 
         public static void addAppender() {
-            LOG_APPENDER = EngineLogAppender.create("EngineLogAppender");
-
             Logger rootLogger = (Logger) LogManager.getRootLogger();
 
-            LOG_APPENDER.start();
+            logAppender.start();
 
-            rootLogger.addAppender(LOG_APPENDER);
+            rootLogger.addAppender(logAppender);
         }
 
         public static EngineLogAppender get() {
-            return LOG_APPENDER;
+            return logAppender;
         }
     }
 }

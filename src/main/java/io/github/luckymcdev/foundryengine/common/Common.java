@@ -2,6 +2,7 @@ package io.github.luckymcdev.foundryengine.common;
 
 import com.mojang.logging.LogUtils;
 import io.github.luckymcdev.foundryengine.common.bundle.BundleManager;
+import io.github.luckymcdev.foundryengine.common.exeptions.UtilityClassException;
 import io.github.luckymcdev.foundryengine.common.files.FileManager;
 import io.github.luckymcdev.foundryengine.common.game.behavior.GameBehaviorManager;
 import io.github.luckymcdev.foundryengine.common.game.stage.GameStageHandler;
@@ -23,6 +24,8 @@ import java.util.function.Supplier;
  * Common things for FoundryEngine.
  */
 public abstract class Common {
+    public static final Path DIRECTORY = dir(GAMEDIR.resolve(MODNAME));
+
     /**
      * Common Logger. Don't use, create your own.
      */
@@ -41,7 +44,10 @@ public abstract class Common {
     /** WIP database config dir.*/
     public static final Path DATABASE_CONFIG = CONFIG.resolve("database");
     private static final boolean FIRST_RUN = FirstRun.isFor(MODID);
-    public static final Path DIRECTORY = dir(GAMEDIR.resolve("FoundryEngine"));
+
+    private Common() {
+        throw new UtilityClassException();
+    }
     public static final Path BUNDLES = dir(DIRECTORY.resolve("bundles"));
     public static final Path CACHE = dir(DIRECTORY.resolve(".cache"));
     public static final Path DUMPS = dir(CACHE.resolve("dumps"));

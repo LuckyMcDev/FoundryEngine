@@ -13,6 +13,7 @@ public class ShortcutHandler implements MenuSection {
 
     @Override
     public void render() {
+        // Empty as It's only for handling shortcuts and doesn't need to render anything.
     }
 
     public void handleShortcuts() {

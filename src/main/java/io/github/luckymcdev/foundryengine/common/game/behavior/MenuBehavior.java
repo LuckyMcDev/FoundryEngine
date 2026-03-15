@@ -12,6 +12,10 @@ public abstract class MenuBehavior extends GameBehavior {
         return GameBehaviorCancellation.CONTINUE;
     }
 
+    public GameBehaviorCancellation onRealmsButtonClick(Screen currentScreen) {
+        return GameBehaviorCancellation.CONTINUE;
+    }
+
     public GameBehaviorCancellation onOptionsButtonClick(Screen currentScreen) {
         return GameBehaviorCancellation.CONTINUE;
     }

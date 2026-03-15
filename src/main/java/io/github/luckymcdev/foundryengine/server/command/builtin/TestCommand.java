@@ -10,7 +10,6 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.server.level.ServerPlayer;
 
 public class TestCommand implements EngineCommand {
 
@@ -20,7 +19,6 @@ public class TestCommand implements EngineCommand {
                 .requires(this::isAdmin)
                 .executes(context -> {
                     CommandSourceStack source = context.getSource();
-                    ServerPlayer player = source.getPlayerOrException();
 
                     MutableComponent parsedMarkdown = EngineMarkdownParser.parse("""
                             # FoundryEngine Markdown Test

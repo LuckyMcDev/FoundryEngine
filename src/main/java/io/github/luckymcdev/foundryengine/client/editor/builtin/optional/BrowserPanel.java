@@ -77,6 +77,8 @@ public class BrowserPanel extends Panel {
     }
 
     private void handleKeyboard() {
+        // This method is empty, as ImGui java 1.90 doesnt yet support getting all pressed keys.
+        // Once it is updated, this will be implemented.
     }
 
     private void handleMouse(float startX, float startY, float width, float height) {

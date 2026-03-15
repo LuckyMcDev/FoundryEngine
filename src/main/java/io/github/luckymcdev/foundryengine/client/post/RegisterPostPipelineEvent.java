@@ -9,13 +9,13 @@ import org.jetbrains.annotations.ApiStatus;
  */
 @ApiStatus.Experimental
 public class RegisterPostPipelineEvent extends Event {
-    private final PostProcessManager MANAGER;
+    private final PostProcessManager manager;
 
     public RegisterPostPipelineEvent(PostProcessManager manager) {
-        MANAGER = manager;
+        this.manager = manager;
     }
 
     public void register(PostProcessPipeline pipeline) {
-        MANAGER.addPipeline(pipeline);
+        manager.addPipeline(pipeline);
     }
 }

@@ -16,6 +16,7 @@ import java.nio.file.Paths;
 public class FileManager implements ResourceManagerReloadListener {
 
     public FileManager() {
+        // WIP
     }
 
     public Path createDirectories(Path directory) throws IOException {
@@ -42,6 +43,6 @@ public class FileManager implements ResourceManagerReloadListener {
 
     @Override
     public void onResourceManagerReload(ResourceManager resourceManager) {
-
+        // WIP so empty.
     }
 }

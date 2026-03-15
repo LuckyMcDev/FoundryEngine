@@ -11,6 +11,7 @@ import net.neoforged.neoforge.registries.RegisterEvent;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 /**
  * A Builder for registering a block in the {@link net.neoforged.neoforge.registries.RegisterEvent}
@@ -21,7 +22,7 @@ public class BlockBuilder extends BuilderBase<Block> {
     private BlockBehaviour.Properties properties;
     private Function<BlockBehaviour.Properties, Block> blockFactory;
     private boolean hasItem = true;
-    private Function<Item.Properties, Item.Properties> itemPropertyModifier = p -> p;
+    private UnaryOperator<Item.Properties> itemPropertyModifier = p -> p;
 
     public BlockBuilder(Identifier id) {
         super(id);
@@ -36,7 +37,7 @@ public class BlockBuilder extends BuilderBase<Block> {
         return this;
     }
 
-    public BlockBuilder properties(Function<BlockBehaviour.Properties, BlockBehaviour.Properties> action) {
+    public BlockBuilder properties(UnaryOperator<BlockBehaviour.Properties> action) {
         this.properties = action.apply(this.properties);
         return this;
     }
@@ -52,7 +53,7 @@ public class BlockBuilder extends BuilderBase<Block> {
     /**
      * Customizes the BlockItem properties (e.g., set stack size or rarity).
      */
-    public BlockBuilder itemProperties(Function<Item.Properties, Item.Properties> action) {
+    public BlockBuilder itemProperties(UnaryOperator<Item.Properties> action) {
         this.itemPropertyModifier = action;
         return this;
     }
@@ -88,15 +89,5 @@ public class BlockBuilder extends BuilderBase<Block> {
     public Block build() {
         this.properties.setId(ResourceKey.create(Registries.BLOCK, id));
         return blockFactory.apply(this.properties);
-    }
-
-    @Override
-    public Block transformObject(Block block) {
-        if (hasItem) {
-            ItemBuilder itemBuilder = new ItemBuilder(id)
-                    .factory(props -> itemFactory.apply(block, props))
-                    .properties(itemPropertyModifier);
-        }
-        return block;
     }
 }

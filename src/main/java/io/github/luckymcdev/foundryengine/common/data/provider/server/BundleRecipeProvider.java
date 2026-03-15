@@ -16,6 +16,7 @@ public class BundleRecipeProvider extends RecipeProvider {
 
     @Override
     protected void buildRecipes() {
+        // This is empty, as I haven't gotten around to implementing this yet, but is added in anticipation to it.
     }
 
     public static class Runner extends RecipeProvider.Runner {

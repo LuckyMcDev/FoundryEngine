@@ -12,7 +12,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 public abstract class GameStageEvent extends PlayerEvent {
     private final String name;
 
-    public GameStageEvent(Player player, String name) {
+    protected GameStageEvent(Player player, String name) {
         super(player);
         this.name = name;
     }

@@ -3,6 +3,8 @@ package io.github.luckymcdev.foundryengine.common.bundle.toml;
 import com.electronwill.nightconfig.core.CommentedConfig;
 import com.electronwill.nightconfig.toml.TomlFormat;
 import io.github.luckymcdev.foundryengine.common.bundle.info.BundleInfo;
+import io.github.luckymcdev.foundryengine.common.exeptions.EngineException;
+import io.github.luckymcdev.foundryengine.common.exeptions.UtilityClassException;
 
 import java.io.Reader;
 import java.io.StringReader;
@@ -13,13 +15,16 @@ import java.util.List;
  * Parses the Toml for a bundle.
  */
 public class BundleTomlParser {
+    private BundleTomlParser() {
+        throw new UtilityClassException();
+    }
 
     public static List<BundleInfo> parse(String tomlContent) {
         try (Reader reader = new StringReader(tomlContent)) {
             CommentedConfig config = TomlFormat.instance().createParser().parse(reader);
             return parseBundles(config);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to parse bundle TOML", e);
+            throw new EngineException("Failed to parse bundle TOML", e);
         }
     }
 

@@ -8,7 +8,7 @@ import io.github.luckymcdev.foundryengine.common.priority.Priority;
  * No good description yet.
  */
 public abstract class GameBehavior {
-    public boolean enabled;
+    protected boolean enabled;
 
     public void onRegister() {
     }

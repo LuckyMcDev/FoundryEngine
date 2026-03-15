@@ -5,7 +5,6 @@ import net.minecraft.client.input.KeyEvent;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * TODO: Rename
  * Keyboard Handler Extension
  */
 public interface EngineKeyboardHandler {

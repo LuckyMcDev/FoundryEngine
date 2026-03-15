@@ -32,7 +32,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
- * Manager for all {@link PostProcessPipeline} and {@link StagedPostProcessPipeline}
+ * Manager for all {@link PostProcessPipeline}
  * <p>
  * Register and Enable them from here.
  * Registering should be done via {@link RegisterPostPipelineEvent}
@@ -44,7 +44,6 @@ public class PostProcessManager {
     private static final OpenGlStack GL_STACK = Client.getOpenGlStack();
     private static final int COLOR_TEXTURE_UNIT = 0;
     private static final int DEPTH_TEXTURE_UNIT = 1;
-    private static final PostProcessStage STAGE_NOT_STAGED = null;
     private static final List<PostProcessPipeline> PIPELINES = new ArrayList<>();
     private static final Map<PostProcessPipeline, Map<String, FrameBuffer>> PIPELINE_BUFFERS = new IdentityHashMap<>();
     private static FrameBuffer blitProxy;

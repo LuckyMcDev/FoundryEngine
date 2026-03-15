@@ -91,20 +91,14 @@ public class GfmComponentBuildingVisitor extends ComponentBuildingVisitor {
         while (node != null) {
             Node next = node.getNext();
 
-            if (node instanceof Strikethrough) {
-                visit((Strikethrough) node);
-            } else if (node instanceof TableBlock) {
-                visit((TableBlock) node);
-            } else if (node instanceof TableHead) {
-                visit((TableHead) node);
-            } else if (node instanceof TableBody) {
-                visit((TableBody) node);
-            } else if (node instanceof TableRow) {
-                visit((TableRow) node);
-            } else if (node instanceof TableCell) {
-                visit((TableCell) node);
-            } else {
-                node.accept(this);
+            switch (node) {
+                case Strikethrough strikethrough -> visit(strikethrough);
+                case TableBlock tableBlock -> visit(tableBlock);
+                case TableHead tableHead -> visit(tableHead);
+                case TableBody tableBody -> visit(tableBody);
+                case TableRow tableRow -> visit(tableRow);
+                case TableCell tableCell -> visit(tableCell);
+                default -> node.accept(this);
             }
 
             node = next;

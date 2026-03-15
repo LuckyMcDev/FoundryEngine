@@ -52,7 +52,7 @@ public class FileExplorerPanel extends EditorPanel {
         File[] files = dir.listFiles();
         if (files == null) return;
 
-        /// Sort files by dir, then files by alphabet
+        // Sort files by dir, then files by alphabet
         Arrays.sort(files, Comparator.comparing(File::isFile).thenComparing(File::getName));
 
         for (File file : files) {
@@ -141,7 +141,7 @@ public class FileExplorerPanel extends EditorPanel {
             }
 
             CodeEditor newEditor = new CodeEditor(editorId, file.getName(), content);
-            newEditor.setSaveCallback((newContent) -> {
+            newEditor.setSaveCallback(newContent -> {
                 try {
                     Files.writeString(file.toPath(), newContent);
                 } catch (IOException e) {

@@ -8,6 +8,7 @@ import io.github.luckymcdev.foundryengine.client.post.pipeline.param.PipelinePar
 import io.github.luckymcdev.foundryengine.client.post.pipeline.pass.PostProcessPipelinePass;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.pass.TargetRef;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.staged.PostProcessStage;
+import io.github.luckymcdev.foundryengine.common.exeptions.EngineException;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -30,7 +31,7 @@ public abstract class PostProcessPipeline {
     /**
      * Create a new PostProcessPipeline
      */
-    public PostProcessPipeline() {
+    protected PostProcessPipeline() {
         this.enabled = false;
         this.stage = getInitialStage();
         List<PostProcessPipelinePass> declaredPasses = getPasses();
@@ -40,7 +41,7 @@ public abstract class PostProcessPipeline {
                 program.link();
                 this.programs.add(program);
             } catch (ShaderException e) {
-                throw new RuntimeException("Failed to link pass: " + pass.name(), e);
+                throw new EngineException("Failed to link pass: " + pass.name(), e);
             }
         }
     }

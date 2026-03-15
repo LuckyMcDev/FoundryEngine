@@ -80,8 +80,8 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
             0
     };
 
-    int dockId;
-    boolean infoBarEnabled = false;
+    private final boolean infoBarEnabled = false;
+    private int dockId;
 
     public ImGuiManager() {
     }
@@ -244,6 +244,10 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
      */
     public ImGuiGraphicsStack getGraphicsStack() {
         return GRAPHICS_STACK;
+    }
+
+    public int getDockId() {
+        return dockId;
     }
 
     /**

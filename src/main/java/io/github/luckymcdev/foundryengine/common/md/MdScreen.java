@@ -46,12 +46,11 @@ public class MdScreen extends Screen {
 
         contentLayout.arrangeElements();
 
-        ScrollableLayout scrollableLayout = new ScrollableLayout(
+        return new ScrollableLayout(
                 this.minecraft,
                 contentLayout,
                 this.height - (padding * 2) - titleHeight
         );
-        return scrollableLayout;
     }
 
     @Override

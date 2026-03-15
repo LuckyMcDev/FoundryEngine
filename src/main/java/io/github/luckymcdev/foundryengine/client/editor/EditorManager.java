@@ -14,12 +14,12 @@ import java.util.List;
  * Methods provided are for opening and closing as well as registering / removing Panels from the Registry.
  */
 public class EditorManager {
-
     private static final Logger LOGGER = LogUtils.getLogger();
 
     private static final GenericRegistry<Identifier, Panel> PANELS = new GenericRegistry<>();
 
     public EditorManager() {
+        // No need for setting anything so empty.
     }
 
     /**

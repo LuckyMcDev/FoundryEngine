@@ -2,6 +2,7 @@ package io.github.luckymcdev.foundryengine.common.bundle;
 
 import com.mojang.logging.LogUtils;
 import io.github.luckymcdev.foundryengine.common.bundle.info.BundleFiles;
+import io.github.luckymcdev.foundryengine.common.exeptions.UtilityClassException;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -16,6 +17,10 @@ import java.util.stream.Stream;
  */
 public class BundleFilesBuilder {
     private static final Logger LOGGER = LogUtils.getLogger();
+
+    private BundleFilesBuilder() {
+        throw new UtilityClassException();
+    }
 
     public static BundleFiles build(Path root) {
         Path assets = root.resolve("assets");

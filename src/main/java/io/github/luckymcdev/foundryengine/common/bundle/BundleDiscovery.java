@@ -3,6 +3,7 @@ package io.github.luckymcdev.foundryengine.common.bundle;
 import com.mojang.logging.LogUtils;
 import io.github.luckymcdev.foundryengine.common.bundle.info.BundleInfo;
 import io.github.luckymcdev.foundryengine.common.bundle.toml.BundleTomlParser;
+import io.github.luckymcdev.foundryengine.common.exeptions.EngineException;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -71,6 +72,7 @@ public class BundleDiscovery {
             try {
                 zipFs.close();
             } catch (IOException ignore) {
+                // ignore, as we failed.
             }
             throw e;
         }
@@ -86,10 +88,7 @@ public class BundleDiscovery {
     private boolean checkAndLoadBundle(Path directory, FileSystem zipFs) throws IOException {
         if (!hasBundleToml(directory)) {
             if (zipFs != null) {
-                try {
-                    zipFs.close();
-                } catch (IOException ignore) {
-                }
+                zipFs.close();
             }
             return false;
         }
@@ -111,7 +110,7 @@ public class BundleDiscovery {
         List<Path> bundleFiles = getBundleFiles(directory);
 
         if (bundleFiles.size() > 1) {
-            throw new RuntimeException("More than one bundle file exists for bundle: " + directory);
+            throw new EngineException("More than one bundle file exists for bundle: " + directory);
         }
 
         bundleFiles.forEach(file -> loadBundleFile(file, directory, zipFs));

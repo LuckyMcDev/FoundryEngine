@@ -44,7 +44,7 @@ public class EngineThread extends Thread {
             return "engine-thread";
         }
         String path = id.getPath();
-        return (path == null || path.isBlank()) ? id.toString() : path;
+        return (path.isBlank()) ? id.toString() : path;
     }
 
     public Identifier getIdentifier() {
@@ -87,8 +87,8 @@ public class EngineThread extends Thread {
         queue.add(() -> {
             try {
                 future.complete(action.get());
-            } catch (Throwable t) {
-                future.completeExceptionally(t);
+            } catch (Exception e) {
+                future.completeExceptionally(e);
             }
         });
         return future;

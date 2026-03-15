@@ -104,7 +104,16 @@ public abstract class TitleScreenMixin implements EngineTitleScreen {
 
     @Override
     public GameBehaviorCancellation fe$onRealmsClick() {
-        //TODO
+        TitleScreen screen = (TitleScreen) (Object) this;
+        List<MenuBehavior> behaviors = Common.getGameBehaviorManager().getBehaviors(MenuBehavior.class);
+
+        for (MenuBehavior behavior : behaviors) {
+            GameBehaviorCancellation result = behavior.onRealmsButtonClick(screen);
+            if (result == GameBehaviorCancellation.CANCEL) {
+                return GameBehaviorCancellation.CANCEL;
+            }
+        }
+
         return GameBehaviorCancellation.CONTINUE;
     }
 }

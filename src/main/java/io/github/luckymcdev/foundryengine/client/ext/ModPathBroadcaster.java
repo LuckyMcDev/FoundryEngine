@@ -1,7 +1,6 @@
 package io.github.luckymcdev.foundryengine.client.ext;
 
 import com.mojang.logging.LogUtils;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.loading.FMLPaths;
 import org.slf4j.Logger;
 
@@ -19,7 +18,7 @@ public class ModPathBroadcaster {
     private static final int CONNECTION_TIMEOUT_MS = 5000;
     private static final String THREAD_NAME = "ModPathBroadcaster-Thread";
 
-    public static void onClientSetup(FMLClientSetupEvent event) {
+    public static void onClientSetup() {
         Path modsPath = FMLPaths.MODSDIR.get();
         broadcastModPath(modsPath.toAbsolutePath().toString());
     }

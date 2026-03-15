@@ -5,7 +5,6 @@ import net.minecraft.client.main.GameConfig;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * TODO: Rename
  * Minecraft Extension
  */
 public interface EngineMinecraft {

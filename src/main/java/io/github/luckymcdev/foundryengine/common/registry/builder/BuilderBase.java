@@ -1,5 +1,6 @@
 package io.github.luckymcdev.foundryengine.common.registry.builder;
 
+import io.github.luckymcdev.foundryengine.common.exeptions.EngineException;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -24,12 +25,12 @@ public abstract class BuilderBase<T> implements Supplier<T> {
     public ResourceKey<Registry<T>> registryKey;
     public String translationKey;
     public Component displayName;
-    public boolean formattedDisplayName;
-    public transient boolean dummyBuilder;
-    public transient Set<Identifier> defaultTags;
+    private final boolean dummyBuilder;
+    public Set<Identifier> defaultTags;
+    private boolean formattedDisplayName;
     protected T object;
 
-    public BuilderBase(Identifier id) {
+    protected BuilderBase(Identifier id) {
         this.id = id;
         this.object = null;
         this.translationKey = "";
@@ -51,9 +52,9 @@ public abstract class BuilderBase<T> implements Supplier<T> {
             return object;
         } catch (Exception ex) {
             if (dummyBuilder) {
-                throw new RuntimeException("Object '" + id + "' of registry '" + registryKey.identifier() + "' is from a dummy builder and doesn't have a value!");
+                throw new EngineException("Object '" + id + "' of registry '" + registryKey.identifier() + "' is from a dummy builder and doesn't have a value!");
             } else {
-                throw new RuntimeException("Object '" + id + "' of registry '" + registryKey.identifier() + "' hasn't been registered yet!", ex);
+                throw new EngineException("Object '" + id + "' of registry '" + registryKey.identifier() + "' hasn't been registered yet!", ex);
             }
         }
     }
