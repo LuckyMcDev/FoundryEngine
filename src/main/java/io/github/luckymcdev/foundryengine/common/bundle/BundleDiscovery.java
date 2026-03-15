@@ -149,4 +149,8 @@ public class BundleDiscovery {
             LOGGER.error("Failed to create bundle '{}': {}", info.id(), e.getMessage(), e);
         }
     }
+
+    public BundleFactory getBundleFactory() {
+        return bundleFactory;
+    }
 }

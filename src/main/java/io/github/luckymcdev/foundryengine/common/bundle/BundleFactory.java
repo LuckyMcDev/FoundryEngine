@@ -74,4 +74,8 @@ public class BundleFactory {
                 })
                 .build();
     }
+
+    public ScriptEngineFactory getScriptEngineFactory() {
+        return scriptEngineFactory;
+    }
 }

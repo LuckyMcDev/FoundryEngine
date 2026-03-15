@@ -120,6 +120,10 @@ public class BundleManager implements ResourceManagerReloadListener {
         }
     }
 
+    public BundleDiscovery getBundleDiscovery() {
+        return bundleDiscovery;
+    }
+
     @Override
     public void onResourceManagerReload(@NonNull ResourceManager resourceManager) {
         this.reload();

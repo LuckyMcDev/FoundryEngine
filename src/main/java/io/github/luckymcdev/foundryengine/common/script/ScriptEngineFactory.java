@@ -41,7 +41,7 @@ public class ScriptEngineFactory {
         };
     }
 
-    private CompilerConfiguration createCompilerConfiguration() {
+    public CompilerConfiguration createCompilerConfiguration() {
         CompilerConfiguration config = new CompilerConfiguration();
 
         ImportCustomizer importCustomizer = new ImportCustomizer();
