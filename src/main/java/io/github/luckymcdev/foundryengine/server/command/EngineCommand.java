@@ -8,6 +8,8 @@ import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.permissions.Permission;
+import net.minecraft.server.permissions.PermissionLevel;
 import net.minecraft.server.permissions.Permissions;
 
 /**
@@ -33,6 +35,11 @@ public interface EngineCommand {
 
     default boolean isOwner(CommandSourceStack source) {
         return source.permissions().hasPermission(Permissions.COMMANDS_OWNER);
+    }
+
+    default boolean is(CommandSourceStack source, int permissionLevel) {
+        PermissionLevel level = PermissionLevel.byId(permissionLevel);
+        return source.permissions().hasPermission(new Permission.HasCommandLevel(level));
     }
 
     /**

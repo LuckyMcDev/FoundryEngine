@@ -54,6 +54,10 @@ public class Config {
                 .comment("This enables / disables the /engine eval command.")
                 .define("EVAL_COMMAND_ENABLED", true);
 
+        public static final ModConfigSpec.IntValue EVAL_COMMAND_PERMISSION = STARTUP_BUILDER
+                .comment("This is the level at which the eval command can be ran.")
+                .defineInRange("EVAL_COMMAND_PERMISSION", 4, 0, 4);
+
         public static final ModConfigSpec STARTUP_SPEC = STARTUP_BUILDER.build();
     }
 

@@ -21,7 +21,8 @@ public class EvalCommand implements EngineCommand {
 
     @Override
     public LiteralArgumentBuilder<CommandSourceStack> build(CommandBuildContext buildContext) {
-        return Commands.literal("eval").requires(this::isOwner)
+        return Commands.literal("eval")
+                .requires(src -> is(src, Config.Startup.EVAL_COMMAND_PERMISSION.get()))
                 .then(Commands.argument("code", StringArgumentType.greedyString())
                         .executes(ctx -> {
                             String code = StringArgumentType.getString(ctx, "code");
