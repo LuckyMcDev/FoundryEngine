@@ -13,7 +13,7 @@ import java.nio.file.Path;
 public class ModPathBroadcaster {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final String GRADLE_HOST = "localhost";
-    private static final int GRADLE_PORT = 25566;
+    private static final int GRADLE_PORT = 56656;
     private static final int MAX_RETRIES = 3;
     private static final int RETRY_DELAY_MS = 2000;
     private static final int CONNECTION_TIMEOUT_MS = 5000;
