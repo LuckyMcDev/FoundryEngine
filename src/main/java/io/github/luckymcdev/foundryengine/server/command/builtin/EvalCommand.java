@@ -5,6 +5,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.logging.LogUtils;
 import groovy.lang.GroovyShell;
 import io.github.luckymcdev.foundryengine.common.Common;
+import io.github.luckymcdev.foundryengine.config.Config;
 import io.github.luckymcdev.foundryengine.server.command.EngineCommand;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
@@ -24,6 +25,11 @@ public class EvalCommand implements EngineCommand {
                 .then(Commands.argument("code", StringArgumentType.greedyString())
                         .executes(ctx -> {
                             String code = StringArgumentType.getString(ctx, "code");
+
+                            if (!Config.Startup.EVAL_COMMAND_ENABLED.get()) {
+                                sendFailure(ctx, "Eval command is disabled in the config.");
+                                return 0;
+                            }
 
                             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                             PrintStream printStream = new PrintStream(outputStream);

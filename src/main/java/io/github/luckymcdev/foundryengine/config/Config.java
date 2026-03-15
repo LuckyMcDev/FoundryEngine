@@ -50,6 +50,10 @@ public class Config {
                 .comment("This enables / disables the loading of Resources from Bundles.")
                 .define("RESOURCES_ENABLED", true);
 
+        public static final ModConfigSpec.BooleanValue EVAL_COMMAND_ENABLED = STARTUP_BUILDER
+                .comment("This enables / disables the /engine eval command.")
+                .define("EVAL_COMMAND_ENABLED", true);
+
         public static final ModConfigSpec STARTUP_SPEC = STARTUP_BUILDER.build();
     }
 
