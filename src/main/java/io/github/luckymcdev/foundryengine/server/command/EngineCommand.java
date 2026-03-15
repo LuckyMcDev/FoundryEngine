@@ -21,22 +21,37 @@ public interface EngineCommand {
      */
     LiteralArgumentBuilder<CommandSourceStack> build(CommandBuildContext context);
 
+    /**
+     * Checks if the source is Moderator.
+     */
     default boolean isModerator(CommandSourceStack source) {
         return source.permissions().hasPermission(Permissions.COMMANDS_MODERATOR);
     }
 
+    /**
+     * Checks if the source is Game master.
+     */
     default boolean isGamemaster(CommandSourceStack source) {
         return source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER);
     }
 
+    /**
+     * Checks if the source is Admin.
+     */
     default boolean isAdmin(CommandSourceStack source) {
         return source.permissions().hasPermission(Permissions.COMMANDS_ADMIN);
     }
 
+    /**
+     * Checks if the source is Owner.
+     */
     default boolean isOwner(CommandSourceStack source) {
         return source.permissions().hasPermission(Permissions.COMMANDS_OWNER);
     }
 
+    /**
+     * Checks if the source has a permission based on an int level.
+     */
     default boolean is(CommandSourceStack source, int permissionLevel) {
         PermissionLevel level = PermissionLevel.byId(permissionLevel);
         return source.permissions().hasPermission(new Permission.HasCommandLevel(level));
@@ -53,7 +68,7 @@ public interface EngineCommand {
      * Sends a successful message with automatic color formatting.
      */
     default void sendSuccess(CommandContext<CommandSourceStack> ctx, String message, boolean broadcastToOps) {
-        ctx.getSource().sendSuccess(() -> Component.literal(message).withStyle(ChatFormatting.GREEN), broadcastToOps);
+        ctx.getSource().sendSuccess(() -> Component.literal(message).withStyle(ChatFormatting.DARK_GREEN), broadcastToOps);
     }
 
     /**
