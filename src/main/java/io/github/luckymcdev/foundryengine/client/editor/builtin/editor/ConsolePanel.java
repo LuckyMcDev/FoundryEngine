@@ -1,4 +1,4 @@
-package io.github.luckymcdev.foundryengine.client.editor.builtin;
+package io.github.luckymcdev.foundryengine.client.editor.builtin.editor;
 
 import imgui.ImGui;
 import imgui.flag.ImGuiCol;
@@ -6,7 +6,6 @@ import imgui.flag.ImGuiInputTextFlags;
 import imgui.flag.ImGuiKey;
 import imgui.type.ImString;
 import io.github.luckymcdev.foundryengine.client.Client;
-import io.github.luckymcdev.foundryengine.client.editor.Panel;
 import io.github.luckymcdev.foundryengine.client.util.key.Shortcut;
 import io.github.luckymcdev.foundryengine.common.Common;
 import io.github.luckymcdev.foundryengine.common.log.EngineLogAppender;
@@ -18,11 +17,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A Panel to display the Console output ingame. Can be used to see any errors without having to look
+ * A Panel to display the Console output in game. Can be used to see any errors without having to look
  * at an outside program.
  * Starts capturing the Log at {@link FMLConstructModEvent}
  */
-public class ConsolePanel extends Panel {
+public class ConsolePanel extends EditorPanel {
     public static final ConsolePanel INSTANCE = new ConsolePanel();
 
     private final ImString filter = new ImString(256);

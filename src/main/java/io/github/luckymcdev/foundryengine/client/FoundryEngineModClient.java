@@ -5,11 +5,11 @@ import io.github.luckymcdev.foundryengine.client.debug.renderer.SimpleDebugScree
 import io.github.luckymcdev.foundryengine.client.debug.screen.BundleDebugEntry;
 import io.github.luckymcdev.foundryengine.client.debug.screen.GameStagesDebugEntry;
 import io.github.luckymcdev.foundryengine.client.debug.screen.PostProcessDebugEntry;
-import io.github.luckymcdev.foundryengine.client.editor.builtin.BrowserPanel;
-import io.github.luckymcdev.foundryengine.client.editor.builtin.ConsolePanel;
 import io.github.luckymcdev.foundryengine.client.editor.builtin.TestPanel;
+import io.github.luckymcdev.foundryengine.client.editor.builtin.editor.ConsolePanel;
 import io.github.luckymcdev.foundryengine.client.editor.builtin.editor.FileExplorerPanel;
 import io.github.luckymcdev.foundryengine.client.editor.builtin.editor.MainEditor;
+import io.github.luckymcdev.foundryengine.client.editor.builtin.optional.BrowserPanel;
 import io.github.luckymcdev.foundryengine.client.editor.builtin.post.PostProcessPanel;
 import io.github.luckymcdev.foundryengine.client.editor.event.RegisterPanelEvent;
 import io.github.luckymcdev.foundryengine.client.event.RegisterRenderingStuffEvent;

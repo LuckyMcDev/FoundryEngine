@@ -1,4 +1,4 @@
-package io.github.luckymcdev.foundryengine.client.editor.builtin;
+package io.github.luckymcdev.foundryengine.client.editor.builtin.optional;
 
 import com.cinemamod.mcef.MCEF;
 import com.cinemamod.mcef.MCEFBrowser;

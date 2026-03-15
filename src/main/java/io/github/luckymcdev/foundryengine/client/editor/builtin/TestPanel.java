@@ -8,7 +8,7 @@ import io.github.luckymcdev.foundryengine.common.Common;
 
 /**
  * A simple Test Panel.
- * Shows some weird test stuff i guess.
+ * Shows some weird test stuff I guess.
  */
 public class TestPanel extends Panel {
     public static final TestPanel INSTANCE = new TestPanel();
