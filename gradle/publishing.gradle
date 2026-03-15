@@ -1,0 +1,60 @@
+// Dokka HTML Documentation JAR
+tasks.register('dokkaHtmlJar', Jar) {
+    description = 'A HTML Documentation JAR containing Dokka HTML'
+    from(tasks.named('dokkaGeneratePublicationHtml').flatMap { it.outputDirectory })
+    archiveClassifier.set('html-doc')
+}
+
+// Dokka Javadoc JAR
+tasks.register('dokkaJavadocJar', Jar) {
+    description = 'A Javadoc JAR containing Dokka Javadoc'
+    from(tasks.named('dokkaGeneratePublicationJavadoc').flatMap { it.outputDirectory })
+    archiveClassifier.set('javadoc')
+}
+
+// Dokka configuration
+dokka {
+    dokkaPublications {
+        html {
+            outputDirectory.set(file("docs/generated/html"))
+        }
+        javadoc {
+            outputDirectory.set(file("docs/generated/javadoc"))
+        }
+    }
+
+    dokkaSourceSets.configureEach {
+        displayName.set("FoundryEngine")
+        moduleVersion.set(mod_version.toString())
+
+        documentedVisibilities.set([
+                VisibilityModifier.Public,
+                VisibilityModifier.Protected
+        ] as Set)
+
+        reportUndocumented.set(false)
+        skipEmptyPackages.set(true)
+        skipDeprecated.set(false)
+        jdkVersion.set(21)
+
+        sourceLink {
+            localDirectory.set(file("src/main/java"))
+            remoteUrl.set(new URI("https://github.com/LuckyMcDev/FoundryEngine/blob/master/src/main/java"))
+            remoteLineSuffix.set("#L")
+        }
+    }
+}
+
+// Publishing configuration
+publishing {
+    publications {
+        register('mavenJava', MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            url = file("${projectDir}/repo").toURI()
+        }
+    }
+}

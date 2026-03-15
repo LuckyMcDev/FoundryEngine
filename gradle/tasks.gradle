@@ -1,0 +1,22 @@
+// Pre-commit verification task
+tasks.register('preCommit') {
+    group = 'verification'
+    description = 'Runs all things needed for a commit.'
+
+    dependsOn tasks.named('check')
+    dependsOn tasks.named('runData')
+    dependsOn tasks.named('build')
+
+    doLast {
+        println "Done"
+    }
+}
+
+// Copy example bundles for testing
+tasks.register('copyExampleBundles', Copy) {
+    group = 'foundryengine'
+    description = 'Copys the Example Bundles to the run directory for testing.'
+
+    from 'ExampleBundles'
+    into 'run/FoundryEngine/bundles'
+}

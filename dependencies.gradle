@@ -1,0 +1,36 @@
+dependencies {
+    def bundle = { String gav -> jarJar(api(implementation(gav))) }
+
+
+    // Testing dependencies
+    testImplementation "org.junit.jupiter:junit-jupiter:${junit_version}"
+    testImplementation "net.neoforged:testframework:${neo_version}"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+
+    // MCEF compile only
+    compileOnly "de.keksuccino:mcef-neoforge:${mcef_version}-${minecraft_version}"
+
+    // CommonMark (Markdown) dependencies
+    bundle "org.commonmark:commonmark:${commonmark_version}"
+    bundle "org.commonmark:commonmark-ext-gfm-tables:${commonmark_version}"
+    bundle "org.commonmark:commonmark-ext-gfm-strikethrough:${commonmark_version}"
+    bundle "org.commonmark:commonmark-ext-autolink:${commonmark_version}"
+
+    // SQLite and ORMLite
+    jarJar(implementation("org.xerial:sqlite-jdbc:${sqlite_version}"))
+    jarJar(implementation("com.j256:ormlite:${ormlite_version}"))
+
+    // Groovy
+    bundle "org.apache.groovy:groovy:${groovy_version}"
+
+    // ImGui dependencies
+    bundle "io.github.spair:imgui-java-binding:${imgui_version}"
+    jarJar(api(implementation("io.github.spair:imgui-java-lwjgl3:${imgui_version}"))) {
+        exclude group: "org.lwjgl"
+        exclude group: 'org.lwjgl.lwjgl'
+    }
+    def imguiNativeArtifacts = ["imgui-java-natives-windows", "imgui-java-natives-linux", "imgui-java-natives-macos"]
+    imguiNativeArtifacts.each { artifact ->
+        bundle("io.github.spair:${artifact}:${imgui_version}")
+    }
+}
