@@ -13,6 +13,7 @@ import io.github.luckymcdev.foundryengine.client.editor.builtin.optional.Browser
 import io.github.luckymcdev.foundryengine.client.editor.builtin.post.PostProcessPanel;
 import io.github.luckymcdev.foundryengine.client.editor.event.RegisterPanelEvent;
 import io.github.luckymcdev.foundryengine.client.event.RegisterRenderingStuffEvent;
+import io.github.luckymcdev.foundryengine.client.ext.ModPathBroadcaster;
 import io.github.luckymcdev.foundryengine.client.opengl.preprocessing.IncludeGLSLPreProcessor;
 import io.github.luckymcdev.foundryengine.client.opengl.preprocessing.RegisterGLSLPreProcessorEvent;
 import io.github.luckymcdev.foundryengine.client.post.RegisterPostPipelineEvent;
@@ -41,6 +42,8 @@ public class FoundryEngineModClient {
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {
         LOGGER.debug("FoundryEngineModClient setup called");
+
+        ModPathBroadcaster.onClientSetup(event);
 
         event.enqueueWork(() -> {
             BUS.post(new RegisterRenderingStuffEvent(Client.getResourceManager()));
