@@ -3,6 +3,7 @@ package io.github.luckymcdev.foundryengine.server.command.builtin;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import io.github.luckymcdev.foundryengine.server.command.EngineCommand;
 import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.component.TypedDataComponent;
@@ -20,7 +21,7 @@ import net.minecraft.world.item.ItemStack;
 public class HandCommand implements EngineCommand {
 
     @Override
-    public LiteralArgumentBuilder<CommandSourceStack> build() {
+    public LiteralArgumentBuilder<CommandSourceStack> build(CommandBuildContext buildContext) {
         return Commands.literal("hand")
                 .executes(context -> {
                     CommandSourceStack source = context.getSource();

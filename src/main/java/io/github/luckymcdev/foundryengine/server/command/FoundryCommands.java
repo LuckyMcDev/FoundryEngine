@@ -1,7 +1,9 @@
 package io.github.luckymcdev.foundryengine.server.command;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import io.github.luckymcdev.foundryengine.server.command.builtin.*;
+import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 
@@ -16,14 +18,15 @@ public class FoundryCommands {
             new HandCommand(),
             new ReloadCommand(),
             new StageCommand(),
-            new TestCommand()
+            new TestCommand(),
+            new EvalCommand()
     );
 
-    public static void registerAll(CommandDispatcher<CommandSourceStack> dispatcher) {
+    public static void registerAll(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext context) {
+        LiteralArgumentBuilder<CommandSourceStack> engineRoot = Commands.literal("engine");
         for (EngineCommand command : COMMANDS) {
-            dispatcher.register(Commands.literal("engine").then(
-                    command.build()
-            ));
+            engineRoot.then(command.build(context));
         }
+        dispatcher.register(engineRoot);
     }
 }

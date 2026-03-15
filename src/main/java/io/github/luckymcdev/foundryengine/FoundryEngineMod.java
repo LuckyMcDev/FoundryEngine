@@ -87,7 +87,7 @@ public class FoundryEngineMod {
     }
 
     private void onRegisterCommands(RegisterCommandsEvent event) {
-        FoundryCommands.registerAll(event.getDispatcher());
+        FoundryCommands.registerAll(event.getDispatcher(), event.getBuildContext());
     }
 
     private void onConstruct(final FMLConstructModEvent event) {

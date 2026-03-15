@@ -6,6 +6,7 @@ import com.mojang.logging.LogUtils;
 import io.github.luckymcdev.foundryengine.common.Common;
 import io.github.luckymcdev.foundryengine.server.command.EngineCommand;
 import net.minecraft.SharedConstants;
+import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.IdentifierArgument;
@@ -100,7 +101,7 @@ public class DumpCommand implements EngineCommand {
     }
 
     @Override
-    public LiteralArgumentBuilder<CommandSourceStack> build() {
+    public LiteralArgumentBuilder<CommandSourceStack> build(CommandBuildContext buildContext) {
         return Commands.literal("dump")
                 .requires(this::isAdmin)
                 .then(Commands.literal("all")

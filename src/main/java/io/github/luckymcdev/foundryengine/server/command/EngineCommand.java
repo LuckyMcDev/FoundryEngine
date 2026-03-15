@@ -4,6 +4,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -16,7 +17,7 @@ public interface EngineCommand {
     /**
      * Define the command structure here.
      */
-    LiteralArgumentBuilder<CommandSourceStack> build();
+    LiteralArgumentBuilder<CommandSourceStack> build(CommandBuildContext context);
 
     default boolean isModerator(CommandSourceStack source) {
         return source.permissions().hasPermission(Permissions.COMMANDS_MODERATOR);

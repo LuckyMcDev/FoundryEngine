@@ -7,6 +7,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.github.luckymcdev.foundryengine.common.Common;
 import io.github.luckymcdev.foundryengine.common.game.stage.GameStageHandler;
 import io.github.luckymcdev.foundryengine.server.command.EngineCommand;
+import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -23,7 +24,7 @@ import java.util.Set;
 public class StageCommand implements EngineCommand {
 
     @Override
-    public LiteralArgumentBuilder<CommandSourceStack> build() {
+    public LiteralArgumentBuilder<CommandSourceStack> build(CommandBuildContext buildContext) {
         return Commands.literal("stage")
                 .then(Commands.argument("targets", EntityArgument.players())
                         .then(Commands.literal("add").requires(this::isAdmin)

@@ -5,6 +5,7 @@ import io.github.luckymcdev.foundryengine.common.md.EngineMarkdownParser;
 import io.github.luckymcdev.foundryengine.common.md.MdScreen;
 import io.github.luckymcdev.foundryengine.server.command.EngineCommand;
 import net.minecraft.client.Minecraft;
+import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
@@ -14,7 +15,7 @@ import net.minecraft.server.level.ServerPlayer;
 public class TestCommand implements EngineCommand {
 
     @Override
-    public LiteralArgumentBuilder<CommandSourceStack> build() {
+    public LiteralArgumentBuilder<CommandSourceStack> build(CommandBuildContext buildContext) {
         return Commands.literal("test")
                 .requires(this::isAdmin)
                 .executes(context -> {
