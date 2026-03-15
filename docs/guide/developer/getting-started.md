@@ -11,7 +11,7 @@ For more detailed information about specific Parts of the API, please refer to t
 First, clone or download the Bundle Template from GitHub.
 
 ```bash
-git clone https://github.com/LuckyMcDev/FoundryEngineBundleTemplate.git
+git clone https://github.com/LuckyMcDev/ExampleBundle.git
 ```
 
 This contains a basic setup for how to write your first Bundle,
@@ -31,7 +31,7 @@ Or run this gradle task:
 buildBundle
 ```
 
-That should create a new folder in your ./build/libs/ directory with the name of your Bundle and version number.
+That should create a new folder in your ./build/bundles/ directory with the name of your Bundle and version number.
 
 ## Distributing your Bundle
 

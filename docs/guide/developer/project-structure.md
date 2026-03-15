@@ -26,3 +26,5 @@ The Project Structure of a Bundle looks like this:
   `assets` folder acts as a minecraft resource pack, and the `data` folder acts as a minecraft datapack.
   The resources folder also contains the `${bundle name}.bundles.toml` file, which is
   the [Configuration](configuration.md) file for your Bundle. 
+- `gradle.properties` - This file contains important information about your Bundle, such as its name and version number.
+  The content of this file HAS to match the content of `${bundle name}.bundles.toml`!
