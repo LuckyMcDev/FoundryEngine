@@ -24,8 +24,6 @@ import java.util.function.Supplier;
  * Common things for FoundryEngine.
  */
 public abstract class Common {
-    public static final Path DIRECTORY = dir(GAMEDIR.resolve(MODNAME));
-
     /**
      * Common Logger. Don't use, create your own.
      */
@@ -48,6 +46,8 @@ public abstract class Common {
     private Common() {
         throw new UtilityClassException();
     }
+
+    public static final Path DIRECTORY = dir(GAMEDIR.resolve(MODNAME));
     public static final Path BUNDLES = dir(DIRECTORY.resolve("bundles"));
     public static final Path CACHE = dir(DIRECTORY.resolve(".cache"));
     public static final Path DUMPS = dir(CACHE.resolve("dumps"));
