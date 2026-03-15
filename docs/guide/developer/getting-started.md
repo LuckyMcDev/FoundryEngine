@@ -38,17 +38,17 @@ That should create a new folder in your ./build/bundles/ directory with the name
 To load all the mods that you are using in your development environment, you need to run this Gradle task:
 
 ```bash
-gradlew modPathDaemon
+gradlew modPathListener
 ```
 
-This will start a daemon that will run in the background.
+This will start a listener that will run in the background.
 
 Next, start your minecraft instance with all the mods you need in your mods' folder.
 It also needs FoundryEngine installed.
 
 Once you have started your instance, you can close it again and in your development environment, you should have seen a
 message in the console that says:
-`[Daemon] Received mod path:` followed by the path to your mods' directory.
+`Received mod path:` followed by the path to your mods' directory.
 
 Now, you need to run this task:
 
@@ -59,7 +59,7 @@ gradlew build
 to refresh your dependencies, and you should have autocompletion and all your mod dependencies should be available in
 your development environment.
 
-If you keep using the same Minecraft instance, you shouldn't have to run the daemon again, it should automatically
+If you keep using the same Minecraft instance, you shouldn't have to run the listener again, it should automatically
 update
 when you run the build task again. Just make sure to run this if you change your mods or add new ones.
 
