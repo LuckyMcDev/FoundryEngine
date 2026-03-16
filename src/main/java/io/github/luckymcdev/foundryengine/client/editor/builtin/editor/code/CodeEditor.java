@@ -1,6 +1,7 @@
 package io.github.luckymcdev.foundryengine.client.editor.builtin.editor.code;
 
 import imgui.ImGui;
+import imgui.flag.ImGuiFocusedFlags;
 import imgui.flag.ImGuiInputTextFlags;
 import imgui.flag.ImGuiKey;
 import imgui.flag.ImGuiWindowFlags;
@@ -124,8 +125,8 @@ public class CodeEditor extends EditorPanel {
     }
 
     private void handleShortcuts() {
-        if (ImGui.isWindowFocused(imgui.flag.ImGuiFocusedFlags.RootAndChildWindows) && ImGui.getIO().getKeyCtrl()) {
-            if (ImGui.isKeyPressed(ImGuiKey.S) && isDirty()) {
+        if (ImGui.isWindowFocused(ImGuiFocusedFlags.RootAndChildWindows)) {
+            if (ImGui.getIO().getKeyCtrl() && ImGui.isKeyPressed(ImGuiKey.S) && isDirty()) {
                 save();
             }
         }

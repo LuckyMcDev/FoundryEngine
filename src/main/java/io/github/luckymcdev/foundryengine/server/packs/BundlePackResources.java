@@ -31,7 +31,7 @@ public class BundlePackResources extends AbstractPackResources {
     }
 
     @Override
-    public IoSupplier<InputStream> getRootResource(String... paths) {
+    public IoSupplier<@NonNull InputStream> getRootResource(String... paths) {
         if (paths.length == 1 && paths[0].equals("pack.mcmeta")) {
             return () -> new ByteArrayInputStream(generatePackMeta().getBytes());
         }
@@ -48,7 +48,7 @@ public class BundlePackResources extends AbstractPackResources {
     }
 
     @Override
-    public IoSupplier<InputStream> getResource(@NonNull PackType type, @NonNull Identifier location) {
+    public IoSupplier<@NonNull InputStream> getResource(@NonNull PackType type, @NonNull Identifier location) {
         if (type != packType) return null;
 
         for (Path root : roots) {
@@ -96,13 +96,6 @@ public class BundlePackResources extends AbstractPackResources {
             }
         }
         return namespaces;
-    }
-
-    private String packTypeName() {
-        return switch (packType) {
-            case CLIENT_RESOURCES -> "Assets";
-            case SERVER_DATA -> "Data";
-        };
     }
 
     private String generatePackMeta() {

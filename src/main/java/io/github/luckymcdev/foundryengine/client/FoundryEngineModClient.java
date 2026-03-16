@@ -94,7 +94,7 @@ public class FoundryEngineModClient {
 
         event.register(minecraft -> new SimpleDebugScreenRenderer(
                 minecraft,
-                (mc, camPos, debug, frustum, partialTick) -> {
+                (mc, camPos, debugValueAccess, frustum, partialTick) -> {
                     camPos.add(0, 2, 0);
                     Gizmos.billboardText(
                             "TEST",

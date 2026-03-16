@@ -7,6 +7,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.luckymcdev.foundryengine.client.Client;
 import io.github.luckymcdev.foundryengine.client.opengl.GlDispatch;
 import io.github.luckymcdev.foundryengine.client.opengl.OpenGlObject;
+import io.github.luckymcdev.foundryengine.common.exeptions.EngineException;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL43C;
@@ -205,7 +206,7 @@ public class FrameBuffer extends OpenGlObject {
                 case GL43C.GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE -> "INCOMPLETE_MULTISAMPLE";
                 default -> "UNKNOWN (" + status + ")";
             };
-            throw new RuntimeException("Framebuffer " + id + " is not complete: " + error);
+            throw new EngineException("Framebuffer " + id + " is not complete: " + error);
         }
     }
 

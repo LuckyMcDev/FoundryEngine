@@ -22,7 +22,7 @@ public class ThreadManager {
             return "engine-thread";
         }
         String path = id.getPath();
-        return (path == null || path.isBlank()) ? id.toString() : path;
+        return (path.isBlank()) ? id.toString() : path;
     }
 
     /**

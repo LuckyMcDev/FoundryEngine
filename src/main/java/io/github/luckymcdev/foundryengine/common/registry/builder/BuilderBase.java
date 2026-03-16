@@ -74,12 +74,12 @@ public abstract class BuilderBase<T> implements Supplier<T> {
         return registryKey.identifier().getPath().replace('/', '.');
     }
 
-    public BuilderBase<T> translationKey(String key) {
+    public BuilderBase<T> getTranslationKey(String key) {
         translationKey = key;
         return this;
     }
 
-    public BuilderBase<T> displayName(Component name) {
+    public BuilderBase<T> setDisplayName(Component name) {
         displayName = name;
         return this;
     }
@@ -90,7 +90,7 @@ public abstract class BuilderBase<T> implements Supplier<T> {
     }
 
     public BuilderBase<T> formattedDisplayName(Component name) {
-        return formattedDisplayName().displayName(name);
+        return formattedDisplayName().setDisplayName(name);
     }
 
     public BuilderBase<T> tag(Identifier[] tag) {

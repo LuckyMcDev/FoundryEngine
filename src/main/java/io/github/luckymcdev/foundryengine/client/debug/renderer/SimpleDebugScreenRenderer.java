@@ -31,7 +31,7 @@ public class SimpleDebugScreenRenderer implements DebugRenderer.SimpleDebugRende
     }
 
     @FunctionalInterface
-    public interface SimpleDebugScreenRendererContext<Minecraft, Vector3d, DebugValueAccess, Frustum, Float> {
+    public interface SimpleDebugScreenRendererContext<minecraft, camPos, debugValueAccess, frustum, partialTick> {
         void accept(Minecraft minecraft, Vector3d camPos, DebugValueAccess debugValueAccess, Frustum frustum, Float partialTicks);
     }
 }

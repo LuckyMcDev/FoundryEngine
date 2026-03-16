@@ -8,6 +8,7 @@ import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 /**
  * An Item Builder, which allows for Item registering in a Builder format.
@@ -36,7 +37,7 @@ public class ItemBuilder extends BuilderBase<Item> {
     /**
      * Directly modify the Minecraft Item.Properties.
      */
-    public ItemBuilder properties(Function<Item.Properties, Item.Properties> propertiesAction) {
+    public ItemBuilder properties(UnaryOperator<Item.Properties> propertiesAction) {
         this.properties = propertiesAction.apply(this.properties);
         return this;
     }

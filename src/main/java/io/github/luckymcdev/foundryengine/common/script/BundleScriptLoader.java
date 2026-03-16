@@ -2,6 +2,8 @@ package io.github.luckymcdev.foundryengine.common.script;
 
 import com.mojang.logging.LogUtils;
 import groovy.util.GroovyScriptEngine;
+import groovy.util.ResourceException;
+import groovy.util.ScriptException;
 import io.github.luckymcdev.foundryengine.common.bundle.info.BundleFiles;
 import io.github.luckymcdev.foundryengine.common.exeptions.EngineException;
 import io.github.luckymcdev.foundryengine.common.priority.Priority;
@@ -9,6 +11,7 @@ import io.github.luckymcdev.foundryengine.config.Config;
 import net.neoforged.bus.api.IEventBus;
 import org.slf4j.Logger;
 
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -94,7 +97,7 @@ public class BundleScriptLoader {
      * Loads a single script class and instantiates it as a BundleEntrypoint.
      * Does NOT call onLoad() - that happens later in priority order.
      */
-    private BundleEntrypoint loadScriptClass(Path scriptPath, BundleFiles files, GroovyScriptEngine engine, IEventBus bundleBus, IEventBus eventBus) throws Exception {
+    private BundleEntrypoint loadScriptClass(Path scriptPath, BundleFiles files, GroovyScriptEngine engine, IEventBus bundleBus, IEventBus eventBus) throws InvocationTargetException, InstantiationException, IllegalAccessException, ResourceException, ScriptException {
         String scriptName = getRelativeScriptName(files.root(), scriptPath);
 
         Class<?> scriptClass = engine.loadScriptByName(scriptName);
@@ -109,7 +112,7 @@ public class BundleScriptLoader {
     /**
      * Instantiates a BundleEntrypoint from a class using the expected constructor.
      */
-    private BundleEntrypoint instantiateEntrypoint(Class<?> clazz, IEventBus bundleBus, IEventBus eventBus) throws Exception {
+    private BundleEntrypoint instantiateEntrypoint(Class<?> clazz, IEventBus bundleBus, IEventBus eventBus) throws InvocationTargetException, InstantiationException, IllegalAccessException {
         try {
             return (BundleEntrypoint) clazz
                     .getConstructor(IEventBus.class, IEventBus.class)

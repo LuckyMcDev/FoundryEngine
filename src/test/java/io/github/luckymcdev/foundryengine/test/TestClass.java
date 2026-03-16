@@ -6,8 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(EphemeralTestServerProvider.class)
-public class TestClass {
+class TestClass {
     @Test
-    public void testMethod(MinecraftServer server) {
+    void testMethod(MinecraftServer server) {
+        assert server != null;
     }
 }

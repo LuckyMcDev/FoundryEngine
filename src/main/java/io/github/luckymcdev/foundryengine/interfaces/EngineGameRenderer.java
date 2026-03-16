@@ -4,7 +4,6 @@ import net.minecraft.client.DeltaTracker;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * TODO: Rename
  * Game Renderer Extension
  */
 public interface EngineGameRenderer {
