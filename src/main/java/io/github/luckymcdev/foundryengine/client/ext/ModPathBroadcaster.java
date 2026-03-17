@@ -45,14 +45,14 @@ public class ModPathBroadcaster {
                         LOGGER.error("No acknowledgment received from Gradle");
                     }
                 } catch (IOException e) {
-                    LOGGER.error("Connection failed on attempt {}: {}", attempt, e.getMessage());
+                    LOGGER.warn("Connection failed on attempt {}: {}", attempt, e.getMessage());
                 } catch (InterruptedException e) {
-                    LOGGER.error("Broadcast thread interrupted");
+                    LOGGER.warn("Broadcast thread interrupted");
                     Thread.currentThread().interrupt();
                     return;
                 }
             }
-            LOGGER.error("Failed to broadcast mod path after {} attempts", MAX_RETRIES);
+            LOGGER.warn("Failed to broadcast mod path after {} attempts", MAX_RETRIES);
         });
     }
 }
