@@ -5,7 +5,7 @@ import imgui.flag.ImGuiStyleVar;
 import io.github.luckymcdev.foundryengine.client.Client;
 import io.github.luckymcdev.foundryengine.client.imgui.icon.ImIcon;
 import io.github.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
-import io.github.luckymcdev.foundryengine.common.color.Color;
+import io.github.luckymcdev.foundryengine.common.util.color.Color;
 import net.minecraft.client.StringSplitter;
 import net.minecraft.resources.Identifier;
 

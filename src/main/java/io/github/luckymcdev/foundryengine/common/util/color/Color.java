@@ -1,4 +1,4 @@
-package io.github.luckymcdev.foundryengine.common.color;
+package io.github.luckymcdev.foundryengine.common.util.color;
 
 /**
  * Utility class for handling Colors.

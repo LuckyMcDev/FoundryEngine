@@ -3,7 +3,6 @@ package io.github.luckymcdev.foundryengine.common;
 import com.mojang.logging.LogUtils;
 import io.github.luckymcdev.foundryengine.common.bundle.BundleManager;
 import io.github.luckymcdev.foundryengine.common.exeptions.UtilityClassException;
-import io.github.luckymcdev.foundryengine.common.files.FileManager;
 import io.github.luckymcdev.foundryengine.common.game.behavior.GameBehaviorManager;
 import io.github.luckymcdev.foundryengine.common.game.stage.GameStageHandler;
 import io.github.luckymcdev.foundryengine.common.thread.ThreadManager;
@@ -55,8 +54,6 @@ public abstract class Common {
 
     private static final ThreadManager THREAD_MANAGER = new ThreadManager();
 
-    private static final FileManager FILE_MANAGER = new FileManager();
-
     private static final BundleManager BUNDLE_MANAGER = new BundleManager();
 
     private static final GameBehaviorManager GAME_BEHAVIOR_MANAGER = new GameBehaviorManager();
@@ -80,10 +77,6 @@ public abstract class Common {
 
     public static ThreadManager getThreadManager() {
         return THREAD_MANAGER;
-    }
-
-    public static FileManager getFileManager() {
-        return FILE_MANAGER;
     }
 
     public static BundleManager getBundleManager() {
