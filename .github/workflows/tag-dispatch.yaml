@@ -2,7 +2,7 @@ name: Tag Dispatch
 on:
   push:
     branches:
-      [ * ]
+      - master
 
 jobs:
   check-tags:
