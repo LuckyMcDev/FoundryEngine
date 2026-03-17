@@ -8,6 +8,8 @@ import org.slf4j.Logger;
 
 /**
  * A Game Behavior, which makes you load into a specific world by default.
+ * <br>
+ * THIS WILL MAYBE BE CHANGED TO BE JUST EVENTS! USE WITH CAUTION
  */
 public class DirectWorldLoadBehavior extends MenuBehavior {
     private static final Logger LOGGER = LogUtils.getLogger();

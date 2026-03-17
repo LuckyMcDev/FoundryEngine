@@ -9,6 +9,7 @@ import java.util.List;
 
 /**
  * Manager for all Game Behavior.
+ * THIS WILL MAYBE BE CHANGED TO BE JUST EVENTS! USE WITH CAUTION
  */
 public class GameBehaviorManager {
     private final GenericRegistry<Identifier, GameBehavior> BEHAVIORS = new GenericRegistry<>();

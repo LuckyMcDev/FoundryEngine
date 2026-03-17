@@ -2,6 +2,9 @@ package io.github.luckymcdev.foundryengine.common.game.behavior;
 
 import net.minecraft.client.gui.screens.Screen;
 
+/**
+ * THIS WILL MAYBE BE CHANGED TO BE JUST EVENTS! USE WITH CAUTION
+ */
 public abstract class MenuBehavior extends GameBehavior {
 
     public GameBehaviorCancellation onSingleplayerButtonClick(Screen currentScreen) {

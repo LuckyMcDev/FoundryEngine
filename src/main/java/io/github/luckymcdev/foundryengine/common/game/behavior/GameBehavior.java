@@ -5,7 +5,7 @@ import io.github.luckymcdev.foundryengine.common.priority.Priority;
 /**
  * Represents a Game Modification type deal.
  * <br>
- * No good description yet.
+ * THIS WILL MAYBE BE CHANGED TO BE JUST EVENTS! USE WITH CAUTION
  */
 public abstract class GameBehavior {
     protected boolean enabled;
