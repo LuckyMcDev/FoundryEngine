@@ -6,7 +6,6 @@ import io.github.luckymcdev.foundryengine.common.bundle.Bundle;
 import io.github.luckymcdev.foundryengine.common.data.EngineGenerator;
 import io.github.luckymcdev.foundryengine.common.game.behavior.DirectWorldLoadBehavior;
 import io.github.luckymcdev.foundryengine.common.log.EngineLogAppender;
-import io.github.luckymcdev.foundryengine.common.registry.EngineRegistry;
 import io.github.luckymcdev.foundryengine.common.thread.RegisterEngineThreadEvent;
 import io.github.luckymcdev.foundryengine.config.Config;
 import io.github.luckymcdev.foundryengine.server.command.FoundryCommands;
@@ -77,7 +76,6 @@ public class FoundryEngineMod {
 
     private void registerModBus(IEventBus modBus) {
         Common.getGameStageHandler().register(modBus);
-        EngineRegistry.register(modBus);
     }
 
     private void onAddReloadListeners(AddServerReloadListenersEvent event) {

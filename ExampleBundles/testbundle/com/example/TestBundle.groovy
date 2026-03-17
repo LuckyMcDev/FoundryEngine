@@ -1,10 +1,15 @@
 package com.example
 
 import io.github.luckymcdev.foundryengine.client.post.RegisterPostPipelineEvent
+import io.github.luckymcdev.foundryengine.common.registry.EngineRegistries
 import io.github.luckymcdev.foundryengine.common.registry.builder.ItemBuilder
 import io.github.luckymcdev.foundryengine.common.registry.builder.BlockBuilder
+import io.github.luckymcdev.foundryengine.common.registry.builder.RecipeBuilder
 import io.github.luckymcdev.foundryengine.common.script.BundleEntrypoint
+import net.minecraft.advancements.Criterion
+import net.minecraft.advancements.criterion.InventoryChangeTrigger
 import net.minecraft.core.component.DataComponents
+import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.core.registries.Registries
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.Identifier
@@ -13,6 +18,7 @@ import net.minecraft.util.datafix.fixes.FoodToConsumableFix
 import net.minecraft.world.food.FoodConstants
 import net.minecraft.world.food.FoodProperties
 import net.minecraft.world.item.Item
+import net.minecraft.world.item.Items
 import net.minecraft.world.item.Rarity
 import net.minecraft.world.item.component.Consumable
 import net.minecraft.world.item.component.Consumables
@@ -28,7 +34,7 @@ import net.neoforged.neoforge.registries.RegisterEvent
  * Updated TestBundle with fixed event registration.
  */
 class TestBundle extends BundleEntrypoint {
-    private static final String BUNDLEID = "testbundle"
+    public static final String BUNDLEID = "testbundle"
 
     TestBundle(IEventBus bundleBus, IEventBus eventBus) {
         super(bundleBus, eventBus)
@@ -47,6 +53,10 @@ class TestBundle extends BundleEntrypoint {
     @Override
     void onUnload() {
 
+    }
+
+    static Identifier id(String path) {
+        return Identifier.fromNamespaceAndPath(BUNDLEID, path)
     }
 
     /**
@@ -75,12 +85,12 @@ class TestBundle extends BundleEntrypoint {
      */
     static class BundleEvents {
         // Defining ItemBuilders as static constants
-        private static final ItemBuilder THIS_IS_A_ITEM = new ItemBuilder(Identifier.fromNamespaceAndPath(BUNDLEID, "this_is_a_item"))
+        private static final ItemBuilder THIS_IS_A_ITEM = new ItemBuilder(id("this_is_a_item"))
                 .fireResistant()
                 .component(DataComponents.RARITY, Rarity.RARE)
                 .stacksTo(67)
 
-        private static final ItemBuilder ITEM_TWO = new ItemBuilder(Identifier.fromNamespaceAndPath(BUNDLEID, "item_two"))
+        private static final ItemBuilder ITEM_TWO = new ItemBuilder(id("item_two"))
                 .component(DataComponents.LORE, new ItemLore(List.of(
                         Component.literal("The legendary blade,"),
                         Component.literal("forged in the deeps.")
@@ -88,7 +98,7 @@ class TestBundle extends BundleEntrypoint {
                 .component(DataComponents.RARITY, Rarity.UNCOMMON)
                 .stacksTo(3)
 
-        private static final ItemBuilder COSMIC_APPLE = new ItemBuilder(Identifier.fromNamespaceAndPath(BUNDLEID, "cosmic_apple"))
+        private static final ItemBuilder COSMIC_APPLE = new ItemBuilder(id("cosmic_apple"))
                 .component(DataComponents.LORE, new ItemLore(List.of(
                         Component.literal("A shimmering fruit from"),
                         Component.literal("another dimension.")
@@ -102,9 +112,13 @@ class TestBundle extends BundleEntrypoint {
                 .component(DataComponents.CONSUMABLE, Consumables.defaultFood().build())
                 .stacksTo(16)
 
-        private static final BlockBuilder MY_BLOCK = new BlockBuilder(Identifier.fromNamespaceAndPath(BUNDLEID, "my_block"))
+        private static final BlockBuilder MY_BLOCK = new BlockBuilder(id("my_block"))
                 .properties(p -> p.strength(2.0f, 3.0f))
                 .itemProperties(p -> p.rarity(Rarity.COMMON))
+
+        private static final RecipeBuilder RECIPE = RecipeBuilder.shapeless(id("custom_recipe"), Items.STICK)
+                .requires(Items.DIAMOND)
+                .unlockedBy("has_log", InventoryChangeTrigger.TriggerInstance.hasItems(Items.OAK_LOG))
 
         @SubscribeEvent
         static void onRegister(RegisterEvent event) {
@@ -117,6 +131,10 @@ class TestBundle extends BundleEntrypoint {
                 ITEM_TWO.register(registry)
                 COSMIC_APPLE.register(registry)
                 MY_BLOCK.registerItem(registry)
+            })
+
+            event.register(EngineRegistries.Keys.RECIPE_BUILDERS, registry -> {
+                RECIPE.register(registry)
             })
         }
     }

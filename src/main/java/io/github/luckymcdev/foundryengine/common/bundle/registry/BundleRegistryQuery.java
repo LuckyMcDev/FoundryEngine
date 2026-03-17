@@ -1,6 +1,6 @@
 package io.github.luckymcdev.foundryengine.common.bundle.registry;
 
-import io.github.luckymcdev.foundryengine.common.registry.EngineRegistry;
+import io.github.luckymcdev.foundryengine.common.registry.EngineRegistries;
 import io.github.luckymcdev.foundryengine.common.registry.builder.RecipeBuilder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleType;
@@ -99,6 +99,6 @@ public class BundleRegistryQuery {
     }
 
     public List<RecipeBuilder> getRecipeBuilders() {
-        return getFromRegistry(EngineRegistry.RECIPE_BUILDERS);
+        return getFromRegistry(EngineRegistries.RECIPE_BUILDERS);
     }
 }
