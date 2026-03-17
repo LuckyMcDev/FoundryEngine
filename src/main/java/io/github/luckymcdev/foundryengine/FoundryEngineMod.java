@@ -5,7 +5,10 @@ import io.github.luckymcdev.foundryengine.common.Common;
 import io.github.luckymcdev.foundryengine.common.bundle.Bundle;
 import io.github.luckymcdev.foundryengine.common.game.behavior.DirectWorldLoadBehavior;
 import io.github.luckymcdev.foundryengine.common.log.EngineLogAppender;
+import io.github.luckymcdev.foundryengine.common.registry.EngineRegistries;
 import io.github.luckymcdev.foundryengine.common.thread.RegisterEngineThreadEvent;
+import io.github.luckymcdev.foundryengine.common.vpacks.BundleVirtualPacks;
+import io.github.luckymcdev.foundryengine.common.vpacks.event.RegisterVirtualPackEvent;
 import io.github.luckymcdev.foundryengine.config.Config;
 import io.github.luckymcdev.foundryengine.server.command.FoundryCommands;
 import io.github.luckymcdev.foundryengine.server.packs.EngineRepositorySource;
@@ -19,6 +22,8 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLConstructModEvent;
+import net.neoforged.neoforge.client.gui.ConfigurationScreen;
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
@@ -58,6 +63,8 @@ public class FoundryEngineMod {
         BUS.addListener(this::onRegisterCommands);
         BUS.addListener(Common.getGameStageHandler()::onPlayerTick);
 
+        BUS.addListener(this::onRegisterVirtualPacks);
+
         Common.getGameBehaviorManager().register(Common.id("direct_world_load"),
                 new DirectWorldLoadBehavior("testWorld")
         );
@@ -71,10 +78,12 @@ public class FoundryEngineMod {
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.Common.COMMON_SPEC);
         modContainer.registerConfig(ModConfig.Type.SERVER, Config.Server.SERVER_SPEC);
         modContainer.registerConfig(ModConfig.Type.STARTUP, Config.Startup.STARTUP_SPEC);
+        modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
     }
 
     private void registerModBus(IEventBus modBus) {
         Common.getGameStageHandler().register(modBus);
+        EngineRegistries.register(modBus);
     }
 
     private void onAddReloadListeners(AddServerReloadListenersEvent event) {
@@ -83,6 +92,10 @@ public class FoundryEngineMod {
 
     private void onAddPackFinders(AddPackFindersEvent event) {
         event.addRepositorySource(new EngineRepositorySource(event.getPackType()));
+    }
+
+    private void onRegisterVirtualPacks(RegisterVirtualPackEvent.BeforeUser event) {
+        BundleVirtualPacks.create().forEach(event::addPack);
     }
 
     private void onRegisterCommands(RegisterCommandsEvent event) {

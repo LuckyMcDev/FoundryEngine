@@ -61,7 +61,7 @@ public class BundlePackResources extends AbstractPackResources {
     }
 
     @Override
-    public void listResources(PackType type, String namespace, String prefix, ResourceOutput output) {
+    public void listResources(@NonNull PackType type, @NonNull String namespace, @NonNull String prefix, @NonNull ResourceOutput output) {
         if (type != packType) return;
 
         for (Path root : roots) {
@@ -77,6 +77,7 @@ public class BundlePackResources extends AbstractPackResources {
                     }
                 });
             } catch (IOException ignored) {
+                //ignored
             }
         }
     }
@@ -93,6 +94,7 @@ public class BundlePackResources extends AbstractPackResources {
                         .map(p -> p.getFileName().toString())
                         .forEach(namespaces::add);
             } catch (IOException ignored) {
+                //ignored
             }
         }
         return namespaces;

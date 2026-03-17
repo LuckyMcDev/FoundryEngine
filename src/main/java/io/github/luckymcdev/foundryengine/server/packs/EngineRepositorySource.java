@@ -33,21 +33,15 @@ public class EngineRepositorySource implements RepositorySource {
 
     @Override
     public void loadPacks(@NonNull Consumer<Pack> consumer) {
-        List<Path> generatedPaths = new ArrayList<>();
         List<Path> manualPaths = new ArrayList<>();
-
 
         if (!Config.Startup.RESOURCES_ENABLED.get()) {
             LOGGER.info("Resource loading is disabled in config.");
+            return;
         }
 
         for (Bundle bundle : Common.getBundleManager().getBundles()) {
             BundleFiles files = bundle.bundleFiles();
-
-            Path genPath = files.generated().resolve(packType.getDirectory());
-            if (Files.exists(genPath)) {
-                generatedPaths.add(genPath);
-            }
 
             Path manPath = (packType == PackType.CLIENT_RESOURCES) ? files.assets() : files.data();
             if (Files.exists(manPath)) {
@@ -55,9 +49,6 @@ public class EngineRepositorySource implements RepositorySource {
             }
         }
 
-        if (!generatedPaths.isEmpty()) {
-            loadAggregatePack("bundles_generated", "FoundryEngine: Generated", generatedPaths, consumer, Pack.Position.TOP);
-        }
         if (!manualPaths.isEmpty()) {
             loadAggregatePack("bundles_resources", "FoundryEngine: Resources", manualPaths, consumer, Pack.Position.TOP);
         }

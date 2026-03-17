@@ -4,12 +4,16 @@
   "package": "io.github.luckymcdev.foundryengine.mixin.data",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "DataGeneratorMixin"
+    "FolderRepositorySourceMixin",
+    "PackMixin"
   ],
   "injectors": {
     "defaultRequire": 1
   },
   "overwrites": {
     "requireAnnotations": true
-  }
+  },
+  "client": [
+    "RenderTypeAccessor"
+  ]
 }

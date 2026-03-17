@@ -34,6 +34,14 @@ public class Config {
             throw new UtilityClassException();
         }
         private static final ModConfigSpec.Builder COMMON_BUILDER = new ModConfigSpec.Builder();
+
+        public static final ModConfigSpec.BooleanValue DUMP = COMMON_BUILDER
+                .comment("Whether to dump the generated resource packs to the dump directory. Used for debugging.")
+                .define("dump", false);
+        public static final ModConfigSpec.ConfigValue<String> DUMP_DIRECTORY = COMMON_BUILDER
+                .comment("The directory where the resource packs are dumped to.")
+                .define("dumpDirectory", System.getProperty("java.io.tmpdir") + "\\foundryengine");
+
         public static final ModConfigSpec COMMON_SPEC = COMMON_BUILDER.build();
     }
 
