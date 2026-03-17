@@ -5,6 +5,7 @@ import io.github.luckymcdev.foundryengine.common.bundle.info.BundleFiles;
 import io.github.luckymcdev.foundryengine.common.bundle.info.BundleInfo;
 import io.github.luckymcdev.foundryengine.common.bundle.registry.BundleRegistryQuery;
 import io.github.luckymcdev.foundryengine.common.script.BundleEntrypoint;
+import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.IEventBus;
 import org.jspecify.annotations.Nullable;
 
@@ -24,4 +25,7 @@ public record Bundle(
         List<BundleEntrypoint> entrypoints,
         @Nullable FileSystem zipFileSystem
 ) {
+    public Identifier id(String path) {
+        return Identifier.fromNamespaceAndPath(this.info.id(), path);
+    }
 }
