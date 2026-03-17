@@ -3,7 +3,6 @@ package io.github.luckymcdev.foundryengine;
 import com.mojang.logging.LogUtils;
 import io.github.luckymcdev.foundryengine.common.Common;
 import io.github.luckymcdev.foundryengine.common.bundle.Bundle;
-import io.github.luckymcdev.foundryengine.common.data.EngineGenerator;
 import io.github.luckymcdev.foundryengine.common.game.behavior.DirectWorldLoadBehavior;
 import io.github.luckymcdev.foundryengine.common.log.EngineLogAppender;
 import io.github.luckymcdev.foundryengine.common.thread.RegisterEngineThreadEvent;
@@ -107,10 +106,5 @@ public class FoundryEngineMod {
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
-        try {
-            new EngineGenerator().run();
-        } catch (IOException e) {
-            LOGGER.error("{}{}", e.getLocalizedMessage(), e.getStackTrace());
-        }
     }
 }
