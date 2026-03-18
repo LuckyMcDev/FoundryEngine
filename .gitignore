@@ -22,6 +22,8 @@ hs_err_pid*
 
 # Minecraft Modding Specific
 /runs/
+/runs/client
+/runs/server
 /repo/
 
 # Node / VitePress
