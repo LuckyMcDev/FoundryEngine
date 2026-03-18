@@ -1,5 +1,7 @@
-package io.github.luckymcdev.foundryengine.common.registry.builder;
+package io.github.luckymcdev.foundryengine.common.registry.builder.block;
 
+import io.github.luckymcdev.foundryengine.common.registry.builder.BuilderBase;
+import io.github.luckymcdev.foundryengine.common.registry.builder.item.ItemBuilder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;

@@ -117,7 +117,7 @@ class TestBundle extends BundleEntrypoint {
                 .itemProperties(p -> p.rarity(Rarity.COMMON))
 
         private static final RecipeBuilder RECIPE = RecipeBuilder.shapeless(id("custom_recipe"), Items.STICK)
-                .requires(Items.DIAMOND)
+                .requires(Items.DIAMOND).count(1)
                 .unlockedBy("has_log", InventoryChangeTrigger.TriggerInstance.hasItems(Items.OAK_LOG))
 
         @SubscribeEvent

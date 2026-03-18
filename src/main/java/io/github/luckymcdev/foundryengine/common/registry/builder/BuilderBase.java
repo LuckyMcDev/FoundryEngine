@@ -1,6 +1,8 @@
 package io.github.luckymcdev.foundryengine.common.registry.builder;
 
 import io.github.luckymcdev.foundryengine.common.exeptions.EngineException;
+import io.github.luckymcdev.foundryengine.common.registry.builder.block.BlockBuilder;
+import io.github.luckymcdev.foundryengine.common.registry.builder.item.ItemBuilder;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
