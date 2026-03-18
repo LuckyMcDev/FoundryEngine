@@ -21,7 +21,7 @@ gradle-app.setting
 hs_err_pid*
 
 # Minecraft Modding Specific
-/run/
+/runs/
 /repo/
 
 # Node / VitePress
