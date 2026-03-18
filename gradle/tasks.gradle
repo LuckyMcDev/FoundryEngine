@@ -18,6 +18,7 @@ tasks.register("copyExampleBundles") {
 
     dependsOn tasks.named('copyExampleBundlesToServer')
     dependsOn tasks.named('copyExampleBundlesToClient')
+    dependsOn tasks.named('copyExampleBundlesToGameTestServer')
 }
 
 tasks.register("copyExampleBundlesToServer", Copy) {
@@ -27,6 +28,15 @@ tasks.register("copyExampleBundlesToServer", Copy) {
     from 'ExampleBundles'
 
     into('runs/server/FoundryEngine/bundles')
+}
+
+tasks.register("copyExampleBundlesToGameTestServer", Copy) {
+    group = 'foundryengine'
+    description = 'Copies the Example Bundles to the server run directory for testing.'
+
+    from 'ExampleBundles'
+
+    into('runs/gameTestServer/FoundryEngine/bundles')
 }
 
 tasks.register("copyExampleBundlesToClient", Copy) {
