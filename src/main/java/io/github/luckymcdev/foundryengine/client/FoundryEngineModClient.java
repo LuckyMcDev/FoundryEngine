@@ -20,27 +20,49 @@ import io.github.luckymcdev.foundryengine.client.post.RegisterPostPipelineEvent;
 import io.github.luckymcdev.foundryengine.client.post.pipeline.builtin.*;
 import io.github.luckymcdev.foundryengine.client.util.key.RegisterKeyBindingEvent;
 import io.github.luckymcdev.foundryengine.common.Common;
+import io.github.luckymcdev.foundryengine.config.Config;
 import net.minecraft.gizmos.Gizmos;
 import net.minecraft.gizmos.TextGizmo;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
-import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.*;
+import net.neoforged.neoforge.client.gui.ConfigurationScreen;
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.NeoForge;
 import org.slf4j.Logger;
 
-@EventBusSubscriber(modid = Common.MODID, value = Dist.CLIENT)
+@Mod(value = Common.MODID, dist = Dist.CLIENT)
 public class FoundryEngineModClient {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final IEventBus BUS = NeoForge.EVENT_BUS;
 
-    @SubscribeEvent
-    public static void onClientSetup(FMLClientSetupEvent event) {
+    public FoundryEngineModClient(IEventBus modBus, ModContainer modContainer) {
+
+        modBus.addListener(this::onClientSetup);
+        modBus.addListener(this::addClientReloadListener);
+        modBus.addListener(this::onRegisterKeyMapping);
+        modBus.addListener(this::onRegisterDebugEntry);
+        modBus.addListener(this::onRegisterDebugRenderers);
+
+        BUS.addListener(this::onRegisterKeyBinding);
+        BUS.addListener(this::onRegisterGLSLPreProcessors);
+        BUS.addListener(this::onRegisterPanels);
+        BUS.addListener(this::onRegisterPostPipelines);
+        BUS.addListener(this::onClientTick);
+        BUS.addListener(this::onFrameGraphSetup);
+
+        modContainer.registerConfig(ModConfig.Type.CLIENT, Config.Client.CLIENT_SPEC);
+        modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
+    }
+
+    private void onClientSetup(FMLClientSetupEvent event) {
         LOGGER.debug("FoundryEngineModClient setup called");
 
         ModPathBroadcaster.onClientSetup();
@@ -52,33 +74,28 @@ public class FoundryEngineModClient {
         });
     }
 
-    @SubscribeEvent
-    public static void onRegisterKeyMapping(RegisterKeyMappingsEvent event) {
+    private void onRegisterKeyMapping(RegisterKeyMappingsEvent event) {
         BUS.post(new RegisterKeyBindingEvent(Client.getKeyBindingManager()));
         Client.getKeyBindingManager().getKeyBindings().forEach(keyBinding ->
                 event.register(keyBinding.mapping())
         );
     }
 
-    @SubscribeEvent
-    public static void onRegisterKeyBindingEvent(RegisterKeyBindingEvent event) {
+    private void onRegisterKeyBinding(RegisterKeyBindingEvent event) {
         event.register(Client.EDITOR_KEY);
     }
 
-    @SubscribeEvent
-    public static void onRegisterGLSLPreProcessors(RegisterGLSLPreProcessorEvent event) {
+    private void onRegisterGLSLPreProcessors(RegisterGLSLPreProcessorEvent event) {
         event.register(new IncludeGLSLPreProcessor());
     }
 
-    @SubscribeEvent
-    public static void onRegisterDebugEntry(RegisterDebugEntriesEvent event) {
+    private void onRegisterDebugEntry(RegisterDebugEntriesEvent event) {
         event.register(Common.id("bundles_info"), new BundleDebugEntry(Common.getBundleManager()));
         event.register(Common.id("post_info"), new PostProcessDebugEntry(Client.getPostProcessManager()));
         event.register(Common.id("gamestages_info"), new GameStagesDebugEntry());
     }
 
-    @SubscribeEvent
-    public static void onRegisterDebugRenderers(RegisterDebugRenderersEvent event) {
+    private void onRegisterDebugRenderers(RegisterDebugRenderersEvent event) {
 //        event.register(minecraft -> new SimpleDebugScreenRenderer(
 //                minecraft,
 //                (mc, camPos, debug, frustum, partialTick) -> {
@@ -105,8 +122,7 @@ public class FoundryEngineModClient {
 
     }
 
-    @SubscribeEvent
-    public static void onRegisterPanels(RegisterPanelEvent event) {
+    private void onRegisterPanels(RegisterPanelEvent event) {
         event.register(PostProcessPanel.INSTANCE);
         event.register(TestPanel.INSTANCE);
         if (ModList.get().isLoaded("mcef")) {
@@ -117,8 +133,7 @@ public class FoundryEngineModClient {
         event.register(MainEditor.INSTANCE);
     }
 
-    @SubscribeEvent
-    public static void onRegisterPostPipelines(RegisterPostPipelineEvent event) {
+    private void onRegisterPostPipelines(RegisterPostPipelineEvent event) {
         event.register(new GrayscalePipeline());
         event.register(new DepthVisualizePipeline());
         event.register(new AsciiPostProcessPipeline());
@@ -127,8 +142,7 @@ public class FoundryEngineModClient {
         event.register(new CRTScanlinePipeline());
     }
 
-    @SubscribeEvent
-    public static void addClientReloadListener(AddClientReloadListenersEvent event) {
+    private void addClientReloadListener(AddClientReloadListenersEvent event) {
         event.addListener(Common.id("imgui_handler"), Client.getImGuiManager());
         event.addListener(Common.id("shader_manager"), Client.getShaderManager());
         event.addListener(Common.id("post_pipeline_init"),
@@ -137,13 +151,11 @@ public class FoundryEngineModClient {
         );
     }
 
-    @SubscribeEvent
-    public static void onClientTick(ClientTickEvent.Post event) {
+    private void onClientTick(ClientTickEvent.Post event) {
         Client.getEditorManager().handleTick();
     }
 
-    @SubscribeEvent
-    public static void updateClientMatrices(FrameGraphSetupEvent event) {
+    private void onFrameGraphSetup(FrameGraphSetupEvent event) {
         Client.updateMain(event.getModelViewMatrix(), event.getProjectionMatrix());
     }
 }

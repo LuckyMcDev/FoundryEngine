@@ -22,8 +22,6 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLConstructModEvent;
-import net.neoforged.neoforge.client.gui.ConfigurationScreen;
-import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
@@ -74,11 +72,9 @@ public class FoundryEngineMod {
         Common.getGameStageHandler().loot().requireStages(BuiltInLootTables.END_CITY_TREASURE, "mineshaft");
         Common.getGameStageHandler().mobs().requireStages(EntityType.ZOMBIE, "zombie");
 
-        modContainer.registerConfig(ModConfig.Type.CLIENT, Config.Client.CLIENT_SPEC);
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.Common.COMMON_SPEC);
         modContainer.registerConfig(ModConfig.Type.SERVER, Config.Server.SERVER_SPEC);
         modContainer.registerConfig(ModConfig.Type.STARTUP, Config.Startup.STARTUP_SPEC);
-        modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
     }
 
     private void registerModBus(IEventBus modBus) {
