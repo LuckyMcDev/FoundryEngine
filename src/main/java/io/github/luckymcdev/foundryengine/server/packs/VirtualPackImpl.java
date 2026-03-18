@@ -131,7 +131,7 @@ public class VirtualPackImpl implements VirtualResourcePack {
             object.addProperty("max_format", packFormat.major());
         }
 
-        object.addProperty("description", "runtime resource pack");
+        object.addProperty("description", "virtual resource pack");
         return object;
     }
 
@@ -142,7 +142,7 @@ public class VirtualPackImpl implements VirtualResourcePack {
         try {
             writer.close();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new EngineException(e);
         }
         return byteArrayOutputStream.getBytes();
     }
@@ -307,7 +307,7 @@ public class VirtualPackImpl implements VirtualResourcePack {
                 this.write(data, entry.getKey(), entry.getValue().get());
             }
         } catch (IOException exception) {
-            throw new RuntimeException(exception);
+            throw new EngineException(exception);
 
         }
     }
@@ -343,7 +343,7 @@ public class VirtualPackImpl implements VirtualResourcePack {
                         return arrayOutputStream.getBytes();
                     } catch (Throwable e) {
                         LOGGER.error("Error adding recolored image to runtime resource pack", e);
-                        throw new RuntimeException(e);
+                        throw new EngineException(e);
                     }
                 });
     }
@@ -422,7 +422,7 @@ public class VirtualPackImpl implements VirtualResourcePack {
         try {
             ImageIO.write(image, "png", byteArrayOutputStream);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new EngineException(e);
         }
         return this.addAsset(formatIdentifier(path, "textures", "png"), byteArrayOutputStream.getBytes());
     }

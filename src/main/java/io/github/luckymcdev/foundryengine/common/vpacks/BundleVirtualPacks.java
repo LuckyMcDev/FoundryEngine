@@ -2,6 +2,7 @@ package io.github.luckymcdev.foundryengine.common.vpacks;
 
 import io.github.luckymcdev.foundryengine.common.Common;
 import io.github.luckymcdev.foundryengine.common.bundle.Bundle;
+import io.github.luckymcdev.foundryengine.common.registry.builder.recipe.RecipeResult;
 import io.github.luckymcdev.foundryengine.common.vpacks.json.JLang;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -33,11 +34,12 @@ public class BundleVirtualPacks {
 
     private static VirtualResourcePack createPack(Bundle bundle, int count) {
         VirtualResourcePack pack = VirtualResourcePack.create(bundle.id("virtual_pack_" + count));
-        pack.addLang(bundle.id("en_us"), lang(bundle));
+        lang(pack, bundle);
+        recipes(pack, bundle);
         return pack;
     }
 
-    private static JLang lang(Bundle bundle) {
+    private static void lang(VirtualResourcePack pack, Bundle bundle) {
         JLang lang = JLang.lang();
 
         for (Item item : bundle.registryQuery().getItems()) {
@@ -66,7 +68,13 @@ public class BundleVirtualPacks {
             lang.addAllPotionTranslations(id, name, name, name, name);
         }
 
-        return lang;
+        pack.addLang(bundle.id("en_us"), lang);
+    }
+
+    private static void recipes(VirtualResourcePack pack, Bundle bundle) {
+        for (RecipeResult recipe : bundle.registryQuery().getRecipes()) {
+            pack.addRecipe(recipe.id(), recipe.get());
+        }
     }
 
     private static <T> void addTranslations(T object, Registry<T> registry, BiConsumer<T, String> translationAdder) {
