@@ -21,18 +21,18 @@ import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 public class KeyboardHandlerMixin implements EngineKeyboardHandler {
 
     @Inject(method = "keyPress", at = @At("HEAD"), cancellable = true)
-    public void fe$keyPress(long p_window, int action, KeyEvent event, CallbackInfo ci) {
+    public void fe$keyPress(long handle, int action, KeyEvent event, CallbackInfo ci) {
         if (Client.getImGuiManager().shouldInterceptKeyboard()) {
             ci.cancel();
         }
-        if (p_window == Client.getWindow().handle() && action == GLFW_PRESS && Client.EDITOR_KEY.mapping().matches(event)) {
+        if (handle == Client.getWindow().handle() && action == GLFW_PRESS && Client.EDITOR_KEY.mapping().matches(event)) {
             Client.getImGuiManager().toggle();
         }
     }
 
     @Override
     @Inject(method = "charTyped", at = @At("HEAD"), cancellable = true)
-    public void fe$charTyped(long p_window, CharacterEvent event, CallbackInfo ci) {
+    public void fe$charTyped(long handle, CharacterEvent event, CallbackInfo ci) {
         if (Client.getImGuiManager().shouldInterceptKeyboard()) {
             ci.cancel();
         }

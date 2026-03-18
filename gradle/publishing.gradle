@@ -35,7 +35,7 @@ dokka {
         reportUndocumented.set(false)
         skipEmptyPackages.set(true)
         skipDeprecated.set(false)
-        jdkVersion.set(21)
+        jdkVersion.set(25)
 
         sourceLink {
             localDirectory.set(file("src/main/java"))

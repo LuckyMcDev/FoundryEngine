@@ -2,7 +2,6 @@ package io.github.luckymcdev.foundryengine.client.opengl.uniform;
 
 import io.github.luckymcdev.foundryengine.client.Client;
 import io.github.luckymcdev.foundryengine.client.opengl.program.ShaderProgram;
-import net.minecraft.client.renderer.GameRenderer;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Vector3f;
 
@@ -33,10 +32,6 @@ public class Uniforms {
             () -> Client.MODEL_VIEW);
     public static final Uniform<?> PROJ_MAT = new Uniform<>("projMat",
             () -> Client.PROJECTION);
-    public static final Uniform<?> NEAR_PLANE_DISTANCE = new Uniform<>("nearPlaneDistance",
-            () -> GameRenderer.PROJECTION_Z_NEAR);
-    public static final Uniform<?> FAR_PLANE_DISTANCE = new Uniform<>("farPlaneDistance",
-            () -> Client.getGameRenderer().getDepthFar());
     public static final Uniform<?> FOV = new Uniform<>("fov",
             () -> Math.toRadians(Client.getMinecraft().options.fov().get()));
     public static final Uniform<?> ASPECT_RATIO = new Uniform<>("aspectRatio",
@@ -50,8 +45,7 @@ public class Uniforms {
     public static Collection<Uniform<?>> getCollection() {
         return List.of(
                 CAMERA_POS, LOOK_VECTOR, UP_VECTOR, LEFT_VECTOR,
-                INV_VIEW_MAT, INV_PROJ_MAT, NEAR_PLANE_DISTANCE,
-                FAR_PLANE_DISTANCE, FOV, ASPECT_RATIO
+                INV_VIEW_MAT, INV_PROJ_MAT, FOV, ASPECT_RATIO
         );
     }
 }

@@ -18,6 +18,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 @Mixin(FolderRepositorySource.class)
@@ -31,7 +32,7 @@ public class FolderRepositorySourceMixin {
         Common.LOGGER.info("Getting 'BeforeUser' packs");
         List<PackResources> packs = NeoForge.EVENT_BUS.post(new RegisterVirtualPackEvent.BeforeUser()).getPacks();
         for (PackResources pack : packs) {
-            pOnLoad.accept(Pack.readMetaAndCreate(pack.location(), new Pack.ResourcesSupplier() {
+            pOnLoad.accept(Objects.requireNonNull(Pack.readMetaAndCreate(pack.location(), new Pack.ResourcesSupplier() {
                         @Override
                         public @NotNull PackResources openPrimary(@NotNull PackLocationInfo pLocation) {
                             return pack;
@@ -44,7 +45,7 @@ public class FolderRepositorySourceMixin {
                     },
                     this.packType,
                     new PackSelectionConfig(true, Pack.Position.TOP, false)
-            ));
+            )));
         }
     }
 }

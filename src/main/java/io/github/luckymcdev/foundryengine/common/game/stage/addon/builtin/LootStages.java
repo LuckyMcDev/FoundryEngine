@@ -33,7 +33,7 @@ public class LootStages extends StageAddon<ResourceKey<LootTable>> {
 
             if (!canAccess(player, lootTable)) {
                 event.getDrops().clear();
-                player.displayClientMessage(getMissingStagesMessage(player, lootTable), true);
+                player.sendSystemMessage(getMissingStagesMessage(player, lootTable));
             }
         });
     }
@@ -53,7 +53,7 @@ public class LootStages extends StageAddon<ResourceKey<LootTable>> {
             Player player = event.getEntity();
             if (!canAccess(player, lootTable)) {
                 event.setCanceled(true);
-                player.displayClientMessage(getMissingStagesMessage(player, lootTable), true);
+                player.sendSystemMessage(getMissingStagesMessage(player, lootTable));
             }
         }
     }

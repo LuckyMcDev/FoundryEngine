@@ -9,7 +9,6 @@ import io.github.luckymcdev.foundryengine.client.editor.builtin.TestPanel;
 import io.github.luckymcdev.foundryengine.client.editor.builtin.editor.ConsolePanel;
 import io.github.luckymcdev.foundryengine.client.editor.builtin.editor.FileExplorerPanel;
 import io.github.luckymcdev.foundryengine.client.editor.builtin.editor.MainEditor;
-import io.github.luckymcdev.foundryengine.client.editor.builtin.optional.BrowserPanel;
 import io.github.luckymcdev.foundryengine.client.editor.builtin.post.PostProcessPanel;
 import io.github.luckymcdev.foundryengine.client.editor.event.RegisterPanelEvent;
 import io.github.luckymcdev.foundryengine.client.event.RegisterRenderingStuffEvent;
@@ -28,7 +27,6 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
@@ -56,7 +54,7 @@ public class FoundryEngineModClient {
         BUS.addListener(this::onRegisterPanels);
         BUS.addListener(this::onRegisterPostPipelines);
         BUS.addListener(this::onClientTick);
-        BUS.addListener(this::onFrameGraphSetup);
+        //BUS.addListener(this::onFrameGraphSetup);
 
         modContainer.registerConfig(ModConfig.Type.CLIENT, Config.Client.CLIENT_SPEC);
         modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
@@ -125,9 +123,6 @@ public class FoundryEngineModClient {
     private void onRegisterPanels(RegisterPanelEvent event) {
         event.register(PostProcessPanel.INSTANCE);
         event.register(TestPanel.INSTANCE);
-        if (ModList.get().isLoaded("mcef")) {
-            event.register(BrowserPanel.INSTANCE);
-        }
         event.register(FileExplorerPanel.INSTANCE);
         event.register(ConsolePanel.INSTANCE);
         event.register(MainEditor.INSTANCE);
@@ -155,7 +150,11 @@ public class FoundryEngineModClient {
         Client.getEditorManager().handleTick();
     }
 
+    /*
+    Soo, we dont have the getProjectionMatrix() anymore.
+    TODO: fix this
     private void onFrameGraphSetup(FrameGraphSetupEvent event) {
         Client.updateMain(event.getModelViewMatrix(), event.getProjectionMatrix());
     }
+     */
 }

@@ -19,7 +19,7 @@ public class MouseHandlerMixin implements EngineMouseHandler {
 
     @Override
     @Inject(method = "onButton", at = @At("HEAD"), cancellable = true)
-    public void tb$onMouseButton(long p_window, MouseButtonInfo buttonInfo, int action, CallbackInfo ci) {
+    public void tb$onMouseButton(long handle, MouseButtonInfo buttonInfo, int action, CallbackInfo ci) {
         if (Client.getImGuiManager().shouldInterceptMouse()) {
             ci.cancel();
         }
@@ -27,7 +27,7 @@ public class MouseHandlerMixin implements EngineMouseHandler {
 
     @Override
     @Inject(method = "onScroll", at = @At("HEAD"), cancellable = true)
-    public void tb$onMouseScroll(long window, double horizontal, double vertical, CallbackInfo ci) {
+    public void tb$onMouseScroll(long handle, double horizontal, double vertical, CallbackInfo ci) {
         if (Client.getImGuiManager().shouldInterceptMouse()) {
             ci.cancel();
         }

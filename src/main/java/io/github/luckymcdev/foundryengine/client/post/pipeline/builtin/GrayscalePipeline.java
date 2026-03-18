@@ -22,7 +22,7 @@ public class GrayscalePipeline extends PostProcessPipeline {
 
     @Override
     public PostProcessStage getInitialStage() {
-        return PostProcessStage.AFTER_ENTITIES;
+        return PostProcessStage.AFTER_OPAQUE_BLOCKS;
     }
 
     @Override

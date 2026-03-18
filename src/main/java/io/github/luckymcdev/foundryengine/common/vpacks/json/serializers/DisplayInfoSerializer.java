@@ -6,7 +6,7 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import io.github.luckymcdev.foundryengine.common.vpacks.json.JsonUtil;
 import net.minecraft.advancements.DisplayInfo;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 
 import java.lang.reflect.Type;
 
@@ -15,7 +15,7 @@ public class DisplayInfoSerializer implements JsonSerializer<DisplayInfo> {
     public JsonElement serialize(DisplayInfo src, Type type, JsonSerializationContext context) {
         JsonObject displayInfo = new JsonObject();
 
-        displayInfo.add("icon", JsonUtil.serializeCodec(src.getIcon(), ItemStack.CODEC));
+        displayInfo.add("icon", JsonUtil.serializeCodec(src.getIcon(), ItemStackTemplate.CODEC));
         displayInfo.add("title", context.serialize(src.getTitle()));
         displayInfo.add("description", context.serialize(src.getDescription()));
         displayInfo.add("frame", context.serialize(src.getType().getSerializedName()));

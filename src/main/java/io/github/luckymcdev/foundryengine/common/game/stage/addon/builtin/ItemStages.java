@@ -29,7 +29,7 @@ public class ItemStages extends StageAddon<Item> {
 
         if (!canAccess(player, stack.getItem())) {
             event.setCanceled(true);
-            player.displayClientMessage(getMissingStagesMessage(player, stack.getItem()), true);
+            player.sendSystemMessage(getMissingStagesMessage(player, stack.getItem()));
         }
     }
 
@@ -40,7 +40,7 @@ public class ItemStages extends StageAddon<Item> {
 
         if (!canAccess(player, stack.getItem())) {
             event.setCanceled(true);
-            player.displayClientMessage(getMissingStagesMessage(player, stack.getItem()), true);
+            player.sendSystemMessage(getMissingStagesMessage(player, stack.getItem()));
         }
     }
 
@@ -51,7 +51,7 @@ public class ItemStages extends StageAddon<Item> {
 
         if (!canAccess(player, stack.getItem())) {
             event.setCanceled(true);
-            player.displayClientMessage(getMissingStagesMessage(player, stack.getItem()), true);
+            player.sendSystemMessage(getMissingStagesMessage(player, stack.getItem()));
         }
     }
 
@@ -62,7 +62,7 @@ public class ItemStages extends StageAddon<Item> {
 
         if (!canAccess(player, stack.getItem())) {
             stack.setCount(0);
-            player.displayClientMessage(getMissingStagesMessage(player, stack.getItem()), true);
+            player.sendSystemMessage(getMissingStagesMessage(player, stack.getItem()));
         }
     }
 
@@ -73,7 +73,7 @@ public class ItemStages extends StageAddon<Item> {
 
         if (!canAccess(player, stack.getItem())) {
             stack.setCount(0);
-            player.displayClientMessage(getMissingStagesMessage(player, stack.getItem()), true);
+            player.sendSystemMessage(getMissingStagesMessage(player, stack.getItem()));
         }
     }
 

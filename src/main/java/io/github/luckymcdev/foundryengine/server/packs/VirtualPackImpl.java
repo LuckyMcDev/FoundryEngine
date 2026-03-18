@@ -36,13 +36,13 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.packs.AbstractPackResources;
 import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.MetadataSectionType;
 import net.minecraft.server.packs.metadata.pack.PackFormat;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.resources.IoSupplier;
+import net.minecraft.server.packs.resources.ResourceMetadata;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -208,40 +208,28 @@ public class VirtualPackImpl implements VirtualResourcePack {
         return this.getMetadataSection(pSectionType, null);
     }
 
-    public @Nullable <T> T getMetadataSection(@NotNull MetadataSectionType<@NotNull T> pSectionType,
-                                              PackFormat
-                                                      packFormat
-    ) {
-        InputStream inputStream = null;
+    public @Nullable <T> T getMetadataSection(@NotNull MetadataSectionType<@NotNull T> pSectionType, @Nullable PackFormat packFormat) {
         try {
             IoSupplier<@NotNull InputStream> ioSupplier = this.getRootResource("pack.mcmeta");
             if (ioSupplier != null) {
-                inputStream = ioSupplier.get();
+                try (InputStream inputStream = ioSupplier.get()) {
+                    ResourceMetadata metadata = ResourceMetadata.fromJsonStream(inputStream);
+                    return metadata.getSection(pSectionType).orElse(null);
+                }
             }
         } catch (IOException exception) {
             throw new EngineException(exception);
         }
-        if (inputStream != null) {
-            return AbstractPackResources.getMetadataFromStream(
-                    pSectionType,
-                    inputStream,
-                    this.info
-            );
-        } else {
-            if (pSectionType.name().equals("pack")) {
-                DataResult<T> result = pSectionType.codec().parse(JsonOps.INSTANCE, createPackMeta(packFormat));
-                if (result.isSuccess()) {
-                    return result.getOrThrow();
-                } else {
-                    result.getOrThrow();
-                    throw new EngineException("Resource Pack information could not be parsed.");
-                }
-            }
-            if (KEY_WARNINGS.add(pSectionType.name())) {
-                LOGGER.debug("\"{}\" is an unsupported metadata key", pSectionType.name());
-            }
-            return null;
+
+        if (pSectionType.name().equals("pack")) {
+            DataResult<T> result = pSectionType.codec().parse(JsonOps.INSTANCE, createPackMeta(packFormat));
+            return result.getOrThrow(s -> new EngineException("Resource Pack information could not be parsed: " + s));
         }
+
+        if (KEY_WARNINGS.add(pSectionType.name())) {
+            LOGGER.debug("\"{}\" is an unsupported metadata key", pSectionType.name());
+        }
+        return null;
     }
 
     @Override

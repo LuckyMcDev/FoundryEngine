@@ -45,7 +45,7 @@ public class MobStages extends StageAddon<EntityType<?>> {
 
         if (!canAccess(player, type)) {
             event.setCanceled(true);
-            player.displayClientMessage(getMissingStagesMessage(player, type), true);
+            player.sendSystemMessage(getMissingStagesMessage(player, type));
         }
     }
 
@@ -62,7 +62,7 @@ public class MobStages extends StageAddon<EntityType<?>> {
 
         if (!canAccess(player, type)) {
             event.setCanceled(true);
-            player.displayClientMessage(getMissingStagesMessage(player, type), true);
+            player.sendSystemMessage(getMissingStagesMessage(player, type));
         }
     }
 

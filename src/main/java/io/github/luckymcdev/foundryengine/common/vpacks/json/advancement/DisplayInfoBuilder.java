@@ -6,6 +6,7 @@ import net.minecraft.core.ClientAsset;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 
 import java.util.Optional;
 
@@ -65,7 +66,7 @@ public class DisplayInfoBuilder {
     }
 
     public DisplayInfo build() {
-        return new DisplayInfo(this.icon, this.title, this.description, Optional.ofNullable(this.background), this.type,
+        return new DisplayInfo(ItemStackTemplate.fromNonEmptyStack(this.icon), this.title, this.description, Optional.ofNullable(this.background), this.type,
                 this.showToast, this.announceChat, this.hidden);
     }
 }

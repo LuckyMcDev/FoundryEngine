@@ -28,7 +28,7 @@ public class DimensionStages extends StageAddon<ResourceKey<Level>> {
 
         if (!canAccess(player, destination)) {
             event.setCanceled(true);
-            player.displayClientMessage(getMissingStagesMessage(player, destination), true);
+            player.sendOverlayMessage(getMissingStagesMessage(player, destination));
         }
     }
 }

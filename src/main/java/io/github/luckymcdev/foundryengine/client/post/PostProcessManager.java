@@ -71,23 +71,8 @@ public class PostProcessManager {
     }
 
     @SubscribeEvent
-    public static void onAfterEntities(RenderLevelStageEvent.AfterEntities event) {
-        runStage(PostProcessStage.AFTER_ENTITIES);
-    }
-
-    @SubscribeEvent
     public static void onAfterTranslucentBlocks(RenderLevelStageEvent.AfterTranslucentBlocks event) {
         runStage(PostProcessStage.AFTER_TRANSLUCENT_BLOCKS);
-    }
-
-    @SubscribeEvent
-    public static void onAfterTripwireBlocks(RenderLevelStageEvent.AfterTripwireBlocks event) {
-        runStage(PostProcessStage.AFTER_TRIPWIRE_BLOCKS);
-    }
-
-    @SubscribeEvent
-    public static void onAfterParticles(RenderLevelStageEvent.AfterParticles event) {
-        runStage(PostProcessStage.AFTER_PARTICLES);
     }
 
     @SubscribeEvent

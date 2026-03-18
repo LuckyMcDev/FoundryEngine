@@ -17,6 +17,7 @@ import io.github.luckymcdev.foundryengine.client.post.PostProcessManager;
 import io.github.luckymcdev.foundryengine.client.util.key.KeyBinding;
 import io.github.luckymcdev.foundryengine.client.util.key.KeyBindingManager;
 import io.github.luckymcdev.foundryengine.common.exeptions.EngineException;
+import io.github.luckymcdev.foundryengine.interfaces.EngineGpuDevice;
 import io.github.luckymcdev.foundryengine.interfaces.EngineMinecraft;
 import net.minecraft.client.Camera;
 import net.minecraft.client.KeyMapping;
@@ -29,11 +30,10 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.client.blaze3d.validation.ValidationGpuDevice;
-import net.neoforged.neoforge.client.blaze3d.validation.ValidationGpuTexture;
 import net.neoforged.neoforge.client.event.FrameGraphSetupEvent;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -121,11 +121,11 @@ public abstract class Client {
         return getGameRenderer().getMainCamera();
     }
 
-    public static ClientPacketListener getConnection() {
+    public static @Nullable ClientPacketListener getConnection() {
         return getMinecraft().getConnection();
     }
 
-    public static Player getPlayer() {
+    public static @Nullable Player getPlayer() {
         return getMinecraft().player;
     }
 
@@ -144,7 +144,7 @@ public abstract class Client {
     // Rendering
 
     public static GlDevice getGlDevice() {
-        return (RenderSystem.getDevice() instanceof ValidationGpuDevice val) ? (GlDevice) val.getRealDevice() : (GlDevice) RenderSystem.getDevice();
+        return (GlDevice) ((EngineGpuDevice) RenderSystem.getDevice()).engine$getBackend();
     }
 
     public static GlTexture getGlColTexture() {
@@ -164,7 +164,7 @@ public abstract class Client {
     }
 
     public static GlTexture unwrapTexture(Object tex) {
-        return (tex instanceof ValidationGpuTexture val) ? (GlTexture) val.getRealTexture() : (GlTexture) tex;
+        return (GlTexture) tex;
     }
 
     // Engine Managers.

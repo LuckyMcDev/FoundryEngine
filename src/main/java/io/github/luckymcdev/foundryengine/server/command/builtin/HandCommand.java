@@ -35,7 +35,7 @@ public class HandCommand implements EngineCommand {
 
                     source.sendSuccess(() -> Component.literal("--- Item Information ---").withStyle(ChatFormatting.GOLD), false);
 
-                    String itemId = stack.getItemHolder().unwrapKey().map(key -> key.identifier().toString()).orElse("unknown");
+                    String itemId = stack.typeHolder().unwrapKey().map(key -> key.identifier().toString()).orElse("unknown");
                     source.sendSuccess(() -> Component.literal("ID: ").withStyle(ChatFormatting.GRAY).append(Component.literal(itemId).withStyle(ChatFormatting.AQUA)), false);
 
                     source.sendSuccess(() -> Component.literal("Components:").withStyle(ChatFormatting.GRAY), false);

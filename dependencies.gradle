@@ -7,9 +7,6 @@ dependencies {
     testImplementation "net.neoforged:testframework:${neo_version}"
     testRuntimeOnly "org.junit.platform:junit-platform-launcher"
 
-    // MCEF compile only
-    compileOnly "de.keksuccino:mcef-neoforge:${mcef_version}-${minecraft_version}"
-
     // CommonMark (Markdown) dependencies
     bundle "org.commonmark:commonmark:${commonmark_version}"
     bundle "org.commonmark:commonmark-ext-gfm-tables:${commonmark_version}"

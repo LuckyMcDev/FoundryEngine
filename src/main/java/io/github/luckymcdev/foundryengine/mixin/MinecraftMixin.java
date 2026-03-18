@@ -30,7 +30,7 @@ public class MinecraftMixin implements EngineMinecraft {
     private Window window;
 
     @Override
-    @Inject(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;resizeDisplay()V", shift = At.Shift.BEFORE))
+    @Inject(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;resizeGui()V", shift = At.Shift.BEFORE))
     public void tb$init(GameConfig gameConfig, CallbackInfo ci) {
         TTFFile.find(resourceManager);
         Client.getImGuiManager().create(window.handle());
