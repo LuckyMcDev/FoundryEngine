@@ -15,8 +15,9 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 /**
- * A Generic Builder, used by {@link BlockBuilder} and {@link ItemBuilder}.
- * Will add a RecipeBuilder / more for any and all registerable things,
+ * A Generic Builder class for building objects to be registered in the {@link net.neoforged.neoforge.registries.RegisterEvent}.
+ * This is the base class for all builders, such as {@link BlockBuilder} and {@link ItemBuilder}.
+ * <p>
  * Will also get a method for making it so I can easily generate scripts
  * for the Editor.
  *
