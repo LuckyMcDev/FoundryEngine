@@ -35,10 +35,7 @@ public class ScriptEngineFactory {
     }
 
     private URL[] buildRoots(BundleFiles files) throws IOException {
-        return new URL[]{
-                files.root().toUri().toURL(),
-                files.generated().toUri().toURL()
-        };
+        return new URL[]{files.root().toUri().toURL()};
     }
 
     public CompilerConfiguration createCompilerConfiguration() {

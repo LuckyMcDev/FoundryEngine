@@ -25,10 +25,9 @@ public class BundleFilesBuilder {
     public static BundleFiles build(Path root) {
         Path assets = root.resolve("assets");
         Path data = root.resolve("data");
-        Path generated = root.resolve("generated");
         List<Path> scripts = findScripts(root, assets, data);
 
-        return new BundleFiles(root, assets, generated, data, scripts);
+        return new BundleFiles(root, assets, data, scripts);
     }
 
     private static List<Path> findScripts(final Path root, final Path assets, final Path data) {
