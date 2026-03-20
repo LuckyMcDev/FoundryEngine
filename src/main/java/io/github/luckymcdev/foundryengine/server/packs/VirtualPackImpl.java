@@ -119,7 +119,7 @@ public class VirtualPackImpl implements VirtualResourcePack {
         this.id = resourceLocation;
         this.info = new PackLocationInfo(
                 this.id.getNamespace() + ";" + this.id.getPath(),
-                Component.literal("Resources for" + this.id),
+                Component.literal(this.id.toString()),
                 PackSource.DEFAULT,
                 Optional.empty());
     }
