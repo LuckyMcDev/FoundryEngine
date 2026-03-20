@@ -219,6 +219,17 @@ public interface VirtualResourcePack extends PackResources {
      */
     byte[] addItemModifier(Identifier path, ItemAttributeModifiers.Builder modifiers);
 
+    /**
+     * Adds an item definition.
+     * <br />
+     * ".json" is automatically added to the path.
+     *
+     * @param itemId         the id of the item to define
+     * @param modelReference the reference to the items model
+     * @return TODO: Add return information
+     */
+    byte[] addItemDefinition(Identifier itemId, String modelReference);
+
     void load(Path path) throws IOException;
 
     void load(ZipInputStream zipStream) throws IOException;

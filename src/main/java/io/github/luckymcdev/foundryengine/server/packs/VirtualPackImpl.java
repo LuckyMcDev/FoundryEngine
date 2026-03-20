@@ -126,10 +126,9 @@ public class VirtualPackImpl implements VirtualResourcePack {
 
     private static JsonObject createPackMeta(PackFormat packFormat) {
         JsonObject object = new JsonObject();
-        if (packFormat != null) {
-            object.addProperty("min_format", packFormat.major());
-            object.addProperty("max_format", packFormat.major());
-        }
+
+        object.addProperty("min_format", packFormat.major());
+        object.addProperty("max_format", packFormat.major());
 
         object.addProperty("description", "virtual resource pack");
         return object;
@@ -441,6 +440,24 @@ public class VirtualPackImpl implements VirtualResourcePack {
     }
 
     @Override
+    public byte[] addItemDefinition(Identifier itemId, String modelReference) {
+        JsonObject modelObj = new JsonObject();
+        modelObj.addProperty("type", "minecraft:model");
+        modelObj.addProperty("model", modelReference);
+
+        JsonObject root = new JsonObject();
+        root.add("model", modelObj);
+
+        byte[] bytes = GSON.toJson(root).getBytes(StandardCharsets.UTF_8);
+
+        Identifier assetPath = Identifier.fromNamespaceAndPath(
+                itemId.getNamespace(),
+                "items/" + itemId.getPath() + ".json"
+        );
+        return this.addAsset(assetPath, bytes);
+    }
+
+    @Override
     public void load(Path directory) throws IOException {
         try (Stream<Path> stream = Files.walk(directory)) {
             for (Path file : (Iterable<Path>) () -> stream.filter(Files::isRegularFile).map(directory::relativize).iterator()) {
@@ -495,11 +512,12 @@ public class VirtualPackImpl implements VirtualResourcePack {
     private class Memoized<T> implements Supplier<byte[]> {
         private final BiFunction<VirtualResourcePack, T, byte[]> function;
         private final T path;
-        private byte[] data;
+        private byte @Nullable [] data;
 
         public Memoized(BiFunction<VirtualResourcePack, T, byte[]> function, T path) {
             this.function = function;
             this.path = path;
+            this.data = null;
         }
 
         @Override
