@@ -15,6 +15,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.Supplier;
@@ -89,6 +90,15 @@ public abstract class Common {
 
     public static GameStageHandler getGameStageHandler() {
         return GAME_STAGE_HANDLER;
+    }
+
+    public static String getFileContent(Path file) {
+        try (InputStream is = Files.newInputStream(file)) {
+            return new String(is.readAllBytes());
+        } catch (Exception ex) {
+            LOGGER.error("Failed to read file content: {}", file, ex);
+            return "";
+        }
     }
 
     // Event Bus
