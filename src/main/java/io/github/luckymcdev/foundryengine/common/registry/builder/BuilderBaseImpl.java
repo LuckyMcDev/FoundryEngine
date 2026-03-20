@@ -1,8 +1,9 @@
 package io.github.luckymcdev.foundryengine.common.registry.builder;
 
+import io.github.luckymcdev.foundryengine.api.builder.BuilderBase;
 import io.github.luckymcdev.foundryengine.common.exeptions.EngineException;
-import io.github.luckymcdev.foundryengine.common.registry.builder.block.BlockBuilder;
-import io.github.luckymcdev.foundryengine.common.registry.builder.item.ItemBuilder;
+import io.github.luckymcdev.foundryengine.common.registry.builder.block.BlockBuilderImpl;
+import io.github.luckymcdev.foundryengine.common.registry.builder.item.ItemBuilderImpl;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -12,18 +13,17 @@ import net.minecraft.util.Util;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Supplier;
 
 /**
  * A Generic Builder class for building objects to be registered in the {@link net.neoforged.neoforge.registries.RegisterEvent}.
- * This is the base class for all builders, such as {@link BlockBuilder} and {@link ItemBuilder}.
+ * This is the base class for all builders, such as {@link BlockBuilderImpl} and {@link ItemBuilderImpl}.
  * <p>
  * Will also get a method for making it so I can easily generate scripts
  * for the Editor.
  *
  * @param <T>
  */
-public abstract class BuilderBase<T> implements Supplier<T> {
+public abstract class BuilderBaseImpl<T> implements BuilderBase<T> {
     public final Identifier id;
     public ResourceKey<Registry<T>> registryKey;
     public String translationKey;
@@ -33,7 +33,7 @@ public abstract class BuilderBase<T> implements Supplier<T> {
     private boolean formattedDisplayName;
     protected T object;
 
-    protected BuilderBase(Identifier id) {
+    protected BuilderBaseImpl(Identifier id) {
         this.id = id;
         this.object = null;
         this.translationKey = "";
@@ -43,6 +43,7 @@ public abstract class BuilderBase<T> implements Supplier<T> {
         this.defaultTags = new HashSet<>();
     }
 
+    @Override
     public abstract T build();
 
     public T transformObject(T obj) {
@@ -62,6 +63,7 @@ public abstract class BuilderBase<T> implements Supplier<T> {
         }
     }
 
+    @Override
     public T getOrCreate() {
         if (object == null) {
             createTransformedObject();
@@ -77,30 +79,36 @@ public abstract class BuilderBase<T> implements Supplier<T> {
         return registryKey.identifier().getPath().replace('/', '.');
     }
 
+    @Override
     public BuilderBase<T> getTranslationKey(String key) {
         translationKey = key;
         return this;
     }
 
+    @Override
     public BuilderBase<T> setDisplayName(Component name) {
         displayName = name;
         return this;
     }
 
+    @Override
     public BuilderBase<T> formattedDisplayName() {
         formattedDisplayName = true;
         return this;
     }
 
+    @Override
     public BuilderBase<T> formattedDisplayName(Component name) {
         return formattedDisplayName().setDisplayName(name);
     }
 
+    @Override
     public BuilderBase<T> tag(Identifier[] tag) {
         defaultTags.addAll(Arrays.asList(tag));
         return this;
     }
 
+    @Override
     public Identifier newID(String pre, String post) {
         if (pre.isEmpty() && post.isEmpty()) {
             return id;
@@ -109,6 +117,7 @@ public abstract class BuilderBase<T> implements Supplier<T> {
         return id.withPath(pre + id.getPath() + post);
     }
 
+    @Override
     public String getBuilderTranslationKey() {
         if (translationKey.isEmpty()) {
             return Util.makeDescriptionId(getTranslationKeyGroup(), id);

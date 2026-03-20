@@ -1,8 +1,8 @@
 package io.github.luckymcdev.foundryengine.common.vpacks;
 
+import io.github.luckymcdev.foundryengine.api.builder.recipe.RecipeResult;
 import io.github.luckymcdev.foundryengine.common.Common;
 import io.github.luckymcdev.foundryengine.common.bundle.Bundle;
-import io.github.luckymcdev.foundryengine.common.registry.builder.recipe.RecipeResult;
 import io.github.luckymcdev.foundryengine.common.vpacks.json.JLang;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;

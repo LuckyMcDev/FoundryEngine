@@ -1,7 +1,9 @@
 package io.github.luckymcdev.foundryengine.common.registry.builder.block;
 
-import io.github.luckymcdev.foundryengine.common.registry.builder.BuilderBase;
-import io.github.luckymcdev.foundryengine.common.registry.builder.item.ItemBuilder;
+import io.github.luckymcdev.foundryengine.api.builder.block.BlockBuilder;
+import io.github.luckymcdev.foundryengine.api.builder.item.ItemBuilder;
+import io.github.luckymcdev.foundryengine.common.registry.builder.BuilderBaseImpl;
+import io.github.luckymcdev.foundryengine.common.registry.builder.item.ItemBuilderImpl;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -19,14 +21,14 @@ import java.util.function.UnaryOperator;
  * A Builder for registering a block in the {@link net.neoforged.neoforge.registries.RegisterEvent}
  * or anywhere else, where you can register a block easily
  */
-public class BlockBuilder extends BuilderBase<Block> {
+public class BlockBuilderImpl extends BuilderBaseImpl<Block> implements BlockBuilder {
     private final BiFunction<Block, Item.Properties, Item> itemFactory;
     private BlockBehaviour.Properties properties;
     private Function<BlockBehaviour.Properties, Block> blockFactory;
     private boolean hasItem = true;
     private UnaryOperator<Item.Properties> itemPropertyModifier = p -> p;
 
-    public BlockBuilder(Identifier id) {
+    public BlockBuilderImpl(Identifier id) {
         super(id);
         this.registryKey = Registries.BLOCK;
         this.properties = BlockBehaviour.Properties.of();
@@ -34,36 +36,31 @@ public class BlockBuilder extends BuilderBase<Block> {
         this.itemFactory = BlockItem::new;
     }
 
+    @Override
     public BlockBuilder factory(Function<BlockBehaviour.Properties, Block> factory) {
         this.blockFactory = factory;
         return this;
     }
 
+    @Override
     public BlockBuilder properties(UnaryOperator<BlockBehaviour.Properties> action) {
         this.properties = action.apply(this.properties);
         return this;
     }
 
-    /**
-     * Disables the automatic creation of a BlockItem for this block.
-     */
+    @Override
     public BlockBuilder noItem() {
         this.hasItem = false;
         return this;
     }
 
-    /**
-     * Customizes the BlockItem properties (e.g., set stack size or rarity).
-     */
+    @Override
     public BlockBuilder itemProperties(UnaryOperator<Item.Properties> action) {
         this.itemPropertyModifier = action;
         return this;
     }
 
-    /**
-     * Registers the Block into the block registry.
-     * MUST be called BEFORE {@link #registerItem(RegisterEvent.RegisterHelper)}
-     */
+    @Override
     public Block registerBlock(RegisterEvent.RegisterHelper<Block> helper) {
         Block block = build();
         helper.register(this.id, block);
@@ -71,16 +68,13 @@ public class BlockBuilder extends BuilderBase<Block> {
         return block;
     }
 
-    /**
-     * Registers the associated BlockItem into the item registry.
-     * Only works if hasItem is true and if {@link #registerBlock(RegisterEvent.RegisterHelper)} has been called.
-     */
+    @Override
     public Item registerItem(RegisterEvent.RegisterHelper<Item> helper) {
         if (!hasItem) {
             throw new IllegalStateException("Cannot register item for block " + id + " because noItem() was called.");
         }
 
-        ItemBuilder itemBuilder = new ItemBuilder(id)
+        ItemBuilder itemBuilder = new ItemBuilderImpl(id)
                 .factory(props -> itemFactory.apply(object, props))
                 .properties(itemPropertyModifier);
 

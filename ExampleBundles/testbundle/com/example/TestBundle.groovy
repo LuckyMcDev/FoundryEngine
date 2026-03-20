@@ -1,10 +1,10 @@
 package com.example
 
+import io.github.luckymcdev.foundryengine.api.builder.block.BlockBuilder
+import io.github.luckymcdev.foundryengine.api.builder.item.ItemBuilder
+import io.github.luckymcdev.foundryengine.api.builder.recipe.RecipeBuilder
 import io.github.luckymcdev.foundryengine.client.post.RegisterPostPipelineEvent
 import io.github.luckymcdev.foundryengine.common.registry.EngineRegistries
-import io.github.luckymcdev.foundryengine.common.registry.builder.ItemBuilder
-import io.github.luckymcdev.foundryengine.common.registry.builder.BlockBuilder
-import io.github.luckymcdev.foundryengine.common.registry.builder.RecipeBuilder
 import io.github.luckymcdev.foundryengine.common.script.BundleEntrypoint
 import net.minecraft.advancements.Criterion
 import net.minecraft.advancements.criterion.InventoryChangeTrigger
@@ -85,12 +85,12 @@ class TestBundle extends BundleEntrypoint {
      */
     static class BundleEvents {
         // Defining ItemBuilders as static constants
-        private static final ItemBuilder THIS_IS_A_ITEM = new ItemBuilder(id("this_is_a_item"))
+        private static final ItemBuilder THIS_IS_A_ITEM = ItemBuilder.create(id("this_is_a_item"))
                 .fireResistant()
                 .component(DataComponents.RARITY, Rarity.RARE)
                 .stacksTo(67)
 
-        private static final ItemBuilder ITEM_TWO = new ItemBuilder(id("item_two"))
+        private static final ItemBuilder ITEM_TWO = ItemBuilder.create(id("item_two"))
                 .component(DataComponents.LORE, new ItemLore(List.of(
                         Component.literal("The legendary blade,"),
                         Component.literal("forged in the deeps.")
@@ -98,7 +98,7 @@ class TestBundle extends BundleEntrypoint {
                 .component(DataComponents.RARITY, Rarity.UNCOMMON)
                 .stacksTo(3)
 
-        private static final ItemBuilder COSMIC_APPLE = new ItemBuilder(id("cosmic_apple"))
+        private static final ItemBuilder COSMIC_APPLE = ItemBuilder.create(id("cosmic_apple"))
                 .component(DataComponents.LORE, new ItemLore(List.of(
                         Component.literal("A shimmering fruit from"),
                         Component.literal("another dimension.")
@@ -112,12 +112,12 @@ class TestBundle extends BundleEntrypoint {
                 .component(DataComponents.CONSUMABLE, Consumables.defaultFood().build())
                 .stacksTo(16)
 
-        private static final BlockBuilder MY_BLOCK = new BlockBuilder(id("my_block"))
+        private static final BlockBuilder MY_BLOCK = BlockBuilder.create(id("my_block"))
                 .properties(p -> p.strength(2.0f, 3.0f))
                 .itemProperties(p -> p.rarity(Rarity.COMMON))
 
         private static final RecipeBuilder RECIPE = RecipeBuilder.shapeless(id("custom_recipe"), Items.STICK)
-                .requires(Items.DIAMOND).count(1)
+                .requires(Items.DIAMOND, 1)
                 .unlockedBy("has_log", InventoryChangeTrigger.TriggerInstance.hasItems(Items.OAK_LOG))
 
         @SubscribeEvent
@@ -133,7 +133,7 @@ class TestBundle extends BundleEntrypoint {
                 MY_BLOCK.registerItem(registry)
             })
 
-            event.register(EngineRegistries.Keys.RECIPE_BUILDERS, registry -> {
+            event.register(EngineRegistries.Keys.RECIPES, registry -> {
                 RECIPE.register(registry)
             })
         }

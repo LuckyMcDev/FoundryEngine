@@ -1,7 +1,9 @@
 package io.github.luckymcdev.foundryengine.common.registry.builder.recipe;
 
+import io.github.luckymcdev.foundryengine.api.builder.recipe.RecipeBuilder;
+import io.github.luckymcdev.foundryengine.api.builder.recipe.RecipeResult;
 import io.github.luckymcdev.foundryengine.common.registry.EngineRegistries;
-import io.github.luckymcdev.foundryengine.common.registry.builder.BuilderBase;
+import io.github.luckymcdev.foundryengine.common.registry.builder.BuilderBaseImpl;
 import io.github.luckymcdev.foundryengine.common.vpacks.json.recipe.*;
 import io.github.luckymcdev.foundryengine.common.vpacks.json.recipe.crafting.JShapedRecipe;
 import io.github.luckymcdev.foundryengine.common.vpacks.json.recipe.crafting.JShapelessRecipe;
@@ -22,7 +24,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.*;
 
-public class RecipeBuilder extends BuilderBase<RecipeResult> {
+public class RecipeBuilderImpl extends BuilderBaseImpl<RecipeResult> implements RecipeBuilder {
     private final RecipeType type;
     private final ItemLike result;
     private final List<String> pattern = new ArrayList<>();
@@ -40,74 +42,80 @@ public class RecipeBuilder extends BuilderBase<RecipeResult> {
     private int cookingTime = 200;
     private String group = "";
 
-    private RecipeBuilder(Identifier id, RecipeType type, @Nullable ItemLike result) {
+    private RecipeBuilderImpl(Identifier id, RecipeType type, @Nullable ItemLike result) {
         super(id);
         this.registryKey = EngineRegistries.Keys.RECIPES;
         this.type = type;
         this.result = result;
     }
 
-    public static RecipeBuilder shaped(Identifier id, ItemLike result) {
-        return new RecipeBuilder(id, RecipeType.SHAPED, result);
+    public static RecipeBuilderImpl shaped(Identifier id, ItemLike result) {
+        return new RecipeBuilderImpl(id, RecipeType.SHAPED, result);
     }
 
-    public static RecipeBuilder shapeless(Identifier id, ItemLike result) {
-        return new RecipeBuilder(id, RecipeType.SHAPELESS, result);
+    public static RecipeBuilderImpl shapeless(Identifier id, ItemLike result) {
+        return new RecipeBuilderImpl(id, RecipeType.SHAPELESS, result);
     }
 
-    public static RecipeBuilder smelting(Identifier id, ItemLike result) {
-        return new RecipeBuilder(id, RecipeType.SMELTING, result);
+    public static RecipeBuilderImpl smelting(Identifier id, ItemLike result) {
+        return new RecipeBuilderImpl(id, RecipeType.SMELTING, result);
     }
 
-    public static RecipeBuilder blasting(Identifier id, ItemLike result) {
-        return new RecipeBuilder(id, RecipeType.BLASTING, result);
+    public static RecipeBuilderImpl blasting(Identifier id, ItemLike result) {
+        return new RecipeBuilderImpl(id, RecipeType.BLASTING, result);
     }
 
-    public static RecipeBuilder smoking(Identifier id, ItemLike result) {
-        return new RecipeBuilder(id, RecipeType.SMOKING, result);
+    public static RecipeBuilderImpl smoking(Identifier id, ItemLike result) {
+        return new RecipeBuilderImpl(id, RecipeType.SMOKING, result);
     }
 
-    public static RecipeBuilder campfireCooking(Identifier id, ItemLike result) {
-        return new RecipeBuilder(id, RecipeType.CAMPFIRE_COOKING, result);
+    public static RecipeBuilderImpl campfireCooking(Identifier id, ItemLike result) {
+        return new RecipeBuilderImpl(id, RecipeType.CAMPFIRE_COOKING, result);
     }
 
-    public static RecipeBuilder stonecutting(Identifier id, ItemLike result) {
-        return new RecipeBuilder(id, RecipeType.STONECUTTING, result);
+    public static RecipeBuilderImpl stonecutting(Identifier id, ItemLike result) {
+        return new RecipeBuilderImpl(id, RecipeType.STONECUTTING, result);
     }
 
-    public static RecipeBuilder smithingTransform(Identifier id, ItemLike result) {
-        return new RecipeBuilder(id, RecipeType.SMITHING_TRANSFORM, result);
+    public static RecipeBuilderImpl smithingTransform(Identifier id, ItemLike result) {
+        return new RecipeBuilderImpl(id, RecipeType.SMITHING_TRANSFORM, result);
     }
 
-    public static RecipeBuilder smithingTrim(Identifier id) {
-        return new RecipeBuilder(id, RecipeType.SMITHING_TRIM, null);
+    public static RecipeBuilderImpl smithingTrim(Identifier id) {
+        return new RecipeBuilderImpl(id, RecipeType.SMITHING_TRIM, null);
     }
 
+    @Override
     public RecipeBuilder withItemGetter(HolderGetter<Item> items) {
         this.items = items;
         return this;
     }
 
+    @Override
     public RecipeBuilder count(int count) {
         this.resultCount = count;
         return this;
     }
 
+    @Override
     public RecipeBuilder category(RecipeCategory category) {
         this.category = category;
         return this;
     }
 
+    @Override
     public RecipeBuilder group(String group) {
         this.group = group;
         return this;
     }
 
+    @Override
     public RecipeBuilder unlockedBy(String name, Criterion<?> criterion) {
         this.criteria.put(name, criterion);
         return this;
     }
 
+    @Override
     public Identifier getRecipeId() {
         return id;
     }
@@ -116,14 +124,17 @@ public class RecipeBuilder extends BuilderBase<RecipeResult> {
         return type;
     }
 
+    @Override
     public ItemLike getResultItem() {
         return result;
     }
 
+    @Override
     public int getResultCount() {
         return resultCount;
     }
 
+    @Override
     public RecipeBuilder pattern(String... pattern) {
         if (type != RecipeType.SHAPED) {
             throw new IllegalStateException("Pattern can only be set for shaped recipes");
@@ -132,10 +143,12 @@ public class RecipeBuilder extends BuilderBase<RecipeResult> {
         return this;
     }
 
+    @Override
     public RecipeBuilder define(char symbol, ItemLike item) {
         return define(symbol, Ingredient.of(item));
     }
 
+    @Override
     public RecipeBuilder define(char symbol, Ingredient ingredient) {
         if (type != RecipeType.SHAPED) {
             throw new IllegalStateException("Define can only be used for shaped recipes");
@@ -144,18 +157,22 @@ public class RecipeBuilder extends BuilderBase<RecipeResult> {
         return this;
     }
 
+    @Override
     public RecipeBuilder requires(ItemLike item) {
         return requires(item, 1);
     }
 
+    @Override
     public RecipeBuilder requires(ItemLike item, int count) {
         return requires(Ingredient.of(item), count);
     }
 
+    @Override
     public RecipeBuilder requires(Ingredient ingredient) {
         return requires(ingredient, 1);
     }
 
+    @Override
     public RecipeBuilder requires(Ingredient ingredient, int count) {
         if (type != RecipeType.SHAPELESS) {
             throw new IllegalStateException("Requires can only be used for shapeless recipes");
@@ -166,10 +183,12 @@ public class RecipeBuilder extends BuilderBase<RecipeResult> {
         return this;
     }
 
+    @Override
     public RecipeBuilder ingredient(ItemLike item) {
         return ingredient(Ingredient.of(item));
     }
 
+    @Override
     public RecipeBuilder ingredient(Ingredient ingredient) {
         if (!isCookingRecipe() && type != RecipeType.STONECUTTING) {
             throw new IllegalStateException("Ingredient can only be set for cooking or stonecutting recipes");
@@ -178,10 +197,12 @@ public class RecipeBuilder extends BuilderBase<RecipeResult> {
         return this;
     }
 
+    @Override
     public RecipeBuilder base(ItemLike item) {
         return base(Ingredient.of(item));
     }
 
+    @Override
     public RecipeBuilder base(Ingredient ingredient) {
         if (!isSmithingRecipe()) {
             throw new IllegalStateException("Base can only be set for smithing recipes");
@@ -190,10 +211,12 @@ public class RecipeBuilder extends BuilderBase<RecipeResult> {
         return this;
     }
 
+    @Override
     public RecipeBuilder addition(ItemLike item) {
         return addition(Ingredient.of(item));
     }
 
+    @Override
     public RecipeBuilder addition(Ingredient ingredient) {
         if (!isSmithingRecipe()) {
             throw new IllegalStateException("Addition can only be set for smithing recipes");
@@ -202,10 +225,12 @@ public class RecipeBuilder extends BuilderBase<RecipeResult> {
         return this;
     }
 
+    @Override
     public RecipeBuilder template(ItemLike item) {
         return template(Ingredient.of(item));
     }
 
+    @Override
     public RecipeBuilder template(Ingredient ingredient) {
         if (!isSmithingRecipe()) {
             throw new IllegalStateException("Template can only be set for smithing recipes");
@@ -214,6 +239,7 @@ public class RecipeBuilder extends BuilderBase<RecipeResult> {
         return this;
     }
 
+    @Override
     public RecipeBuilder experience(float experience) {
         if (!isCookingRecipe()) {
             throw new IllegalStateException("Experience can only be set for cooking recipes");
@@ -222,6 +248,7 @@ public class RecipeBuilder extends BuilderBase<RecipeResult> {
         return this;
     }
 
+    @Override
     public RecipeBuilder cookingTime(int ticks) {
         if (!isCookingRecipe()) {
             throw new IllegalStateException("Cooking time can only be set for cooking recipes");
@@ -344,7 +371,6 @@ public class RecipeBuilder extends BuilderBase<RecipeResult> {
         if (smithingBase != null) {
             recipe.base(ingredientToJson(smithingBase));
         } else {
-            // Use the trimmable armor helper if no base is specified
             recipe.trimmableArmor();
         }
         if (smithingAddition != null) {
@@ -393,6 +419,7 @@ public class RecipeBuilder extends BuilderBase<RecipeResult> {
         return new RecipeResult(id, jsonRecipe);
     }
 
+    @Override
     public RecipeResult register(RegisterEvent.RegisterHelper<RecipeResult> helper) {
         RecipeResult result = build();
         helper.register(this.id, result);

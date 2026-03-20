@@ -1,7 +1,7 @@
 package io.github.luckymcdev.foundryengine.common.registry;
 
+import io.github.luckymcdev.foundryengine.api.builder.recipe.RecipeResult;
 import io.github.luckymcdev.foundryengine.common.Common;
-import io.github.luckymcdev.foundryengine.common.registry.builder.recipe.RecipeResult;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.neoforged.bus.api.IEventBus;
