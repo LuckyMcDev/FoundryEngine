@@ -52,6 +52,7 @@ public abstract class BuilderBaseImpl<T> implements BuilderBase<T> {
 
     @Override
     public final T get() {
+        getOrCreate();
         try {
             return object;
         } catch (Exception ex) {
