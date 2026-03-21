@@ -33,6 +33,7 @@ export default defineConfig({
             sidebar("Getting Started", '/guide/developer/getting-started'),
             sidebar("Project Structure", '/guide/developer/project-structure'),
             sidebar("Configuration", '/guide/developer/configuration'),
+            sidebar("Minecraft Code", "/guide/developer/minecraft-code")
         ]),
         sidebarGroup("User", [
             sidebar("Installation", '/guide/user/installation')
@@ -41,8 +42,11 @@ export default defineConfig({
 
       sidebarGroup('API Reference', [
           sidebar("Overview", "/api"),
-          sidebar("Item Builder", "api/item-builder"),
-          sidebar("Block Builder", "api/block-builder")
+          sidebarGroup("Builders", [
+            sidebar("Item Builder", "api/builder/item-builder"),
+            sidebar("Block Builder", "api/builder/block-builder")
+            sidebar("Recipe Builder", "api/builder/recipe-builder")
+          ])
       ]),
     ],
 
