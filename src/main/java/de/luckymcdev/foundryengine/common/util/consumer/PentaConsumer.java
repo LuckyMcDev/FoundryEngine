@@ -1,4 +1,4 @@
-package de.luckymcdev.foundryengine.common.util;
+package de.luckymcdev.foundryengine.common.util.consumer;
 
 /**
  * {@link java.util.function.BiConsumer}

@@ -1,7 +1,7 @@
 package de.luckymcdev.foundryengine.client.debug.screen;
 
 import de.luckymcdev.foundryengine.client.debug.renderer.SimpleDebugScreenRenderer;
-import de.luckymcdev.foundryengine.common.util.QuadConsumer;
+import de.luckymcdev.foundryengine.common.util.consumer.QuadConsumer;
 import net.minecraft.client.gui.components.debug.DebugEntryCategory;
 import net.minecraft.client.gui.components.debug.DebugScreenDisplayer;
 import net.minecraft.client.gui.components.debug.DebugScreenEntry;
