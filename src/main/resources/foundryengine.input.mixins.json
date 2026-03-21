@@ -1,7 +1,7 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "io.github.luckymcdev.foundryengine.mixin.input",
+  "package": "de.luckymcdev.foundryengine.mixin.input",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
   ],

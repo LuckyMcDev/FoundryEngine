@@ -1,0 +1,36 @@
+package de.luckymcdev.foundryengine.mixin.input;
+
+import de.luckymcdev.foundryengine.client.Client;
+import de.luckymcdev.foundryengine.client.imgui.ImGuiManager;
+import de.luckymcdev.foundryengine.interfaces.EngineMouseHandler;
+import net.minecraft.client.MouseHandler;
+import net.minecraft.client.input.MouseButtonInfo;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+/**
+ * See {@link ImGuiManager#shouldInterceptMouse()}
+ * Cancels Minecraft Mouse inputs if ImGui captures the Mouse.
+ */
+@Mixin(MouseHandler.class)
+public class MouseHandlerMixin implements EngineMouseHandler {
+
+    @Override
+    @Inject(method = "onButton", at = @At("HEAD"), cancellable = true)
+    public void tb$onMouseButton(long handle, MouseButtonInfo buttonInfo, int action, CallbackInfo ci) {
+        if (Client.getImGuiManager().shouldInterceptMouse()) {
+            ci.cancel();
+        }
+    }
+
+    @Override
+    @Inject(method = "onScroll", at = @At("HEAD"), cancellable = true)
+    public void tb$onMouseScroll(long handle, double horizontal, double vertical, CallbackInfo ci) {
+        if (Client.getImGuiManager().shouldInterceptMouse()) {
+            ci.cancel();
+        }
+    }
+}
+

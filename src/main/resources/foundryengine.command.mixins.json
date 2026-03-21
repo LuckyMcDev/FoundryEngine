@@ -1,13 +1,12 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "io.github.luckymcdev.foundryengine.mixin.command",
+  "package": "de.luckymcdev.foundryengine.mixin.command",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "ReloadCommandMixin"
   ],
   "client": [
-    "MinecraftMixin"
   ],
   "injectors": {
     "defaultRequire": 1

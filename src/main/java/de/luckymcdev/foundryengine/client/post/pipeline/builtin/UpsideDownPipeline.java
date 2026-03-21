@@ -1,0 +1,42 @@
+package de.luckymcdev.foundryengine.client.post.pipeline.builtin;
+
+import de.luckymcdev.foundryengine.client.opengl.shaders.ExtendedShaderType;
+import de.luckymcdev.foundryengine.client.opengl.shaders.Shader;
+import de.luckymcdev.foundryengine.client.opengl.shaders.ShaderSource;
+import de.luckymcdev.foundryengine.client.post.pipeline.PostProcessPipeline;
+import de.luckymcdev.foundryengine.client.post.pipeline.pass.PostProcessPipelinePass;
+import de.luckymcdev.foundryengine.client.post.pipeline.staged.PostProcessStage;
+import de.luckymcdev.foundryengine.common.Common;
+import net.minecraft.resources.Identifier;
+
+import java.util.List;
+
+public class UpsideDownPipeline extends PostProcessPipeline {
+
+    @Override
+    public Identifier getName() {
+        return Common.id("post_upside_down");
+    }
+
+    @Override
+    public PostProcessStage getInitialStage() {
+        return PostProcessStage.FINAL;
+    }
+
+    @Override
+    public List<PostProcessPipelinePass> getPasses() {
+        return List.of(new PostProcessPipelinePass(
+                Common.id("post_upside_down_pass"),
+                new Shader(ExtendedShaderType.VERTEX,
+                        new ShaderSource(
+                                Common.id("post_upside_down_vert"),
+                                Common.id("shaders/vert.vsh")
+                        )),
+                new Shader(ExtendedShaderType.FRAGMENT,
+                        new ShaderSource(
+                                Common.id("post_upside_down_frag"),
+                                Common.id("shaders/post/upside_down/upside_down.fsh")
+                        ))
+        ));
+    }
+}

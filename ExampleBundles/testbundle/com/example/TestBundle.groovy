@@ -1,12 +1,12 @@
 package com.example
 
-import io.github.luckymcdev.foundryengine.api.builder.block.BlockBuilder
-import io.github.luckymcdev.foundryengine.api.builder.item.ItemBuilder
-import io.github.luckymcdev.foundryengine.api.builder.recipe.RecipeBuilder
-import io.github.luckymcdev.foundryengine.api.event.RegistryEvent
-import io.github.luckymcdev.foundryengine.client.post.RegisterPostPipelineEvent
-import io.github.luckymcdev.foundryengine.common.registry.EngineRegistries
-import io.github.luckymcdev.foundryengine.common.script.BundleEntrypoint
+import de.luckymcdev.foundryengine.api.builder.block.BlockBuilder
+import de.luckymcdev.foundryengine.api.builder.item.ItemBuilder
+import de.luckymcdev.foundryengine.api.builder.recipe.RecipeBuilder
+import de.luckymcdev.foundryengine.api.event.RegistryEvent
+import de.luckymcdev.foundryengine.client.post.RegisterPostPipelineEvent
+import de.luckymcdev.foundryengine.common.registry.EngineRegistries
+import de.luckymcdev.foundryengine.common.script.BundleEntrypoint
 import net.minecraft.advancements.Criterion
 import net.minecraft.advancements.criterion.InventoryChangeTrigger
 import net.minecraft.core.component.DataComponents
