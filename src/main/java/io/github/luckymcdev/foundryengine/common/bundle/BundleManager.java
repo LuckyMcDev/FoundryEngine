@@ -109,7 +109,7 @@ public class BundleManager implements ResourceManagerReloadListener {
      * Closes the ZIP FileSystem associated with a bundle, if present.
      */
     private void closeFileSystem(Bundle bundle) {
-        FileSystem fs = bundle.zipFileSystem();
+        FileSystem fs = bundle.bundleFiles().zipFileSystem();
         if (fs != null && fs.isOpen()) {
             try {
                 fs.close();

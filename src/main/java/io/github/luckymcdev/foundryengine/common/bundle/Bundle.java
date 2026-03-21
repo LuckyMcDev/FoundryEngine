@@ -7,9 +7,7 @@ import io.github.luckymcdev.foundryengine.common.bundle.registry.BundleRegistryQ
 import io.github.luckymcdev.foundryengine.common.script.BundleEntrypoint;
 import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.IEventBus;
-import org.jspecify.annotations.Nullable;
 
-import java.nio.file.FileSystem;
 import java.util.List;
 
 /**
@@ -22,8 +20,7 @@ public record Bundle(
         BundleRegistryQuery registryQuery,
         IEventBus eventBus,
         IEventBus bundleBus,
-        List<BundleEntrypoint> entrypoints,
-        @Nullable FileSystem zipFileSystem
+        List<BundleEntrypoint> entrypoints
 ) {
     public Identifier id(String path) {
         return Identifier.fromNamespaceAndPath(this.info.id(), path);

@@ -43,7 +43,7 @@ public class BundleFactory {
      * @throws IOException if bundle construction fails
      */
     public Bundle createBundle(BundleInfo info, Path bundleDir, @Nullable FileSystem zipFs) throws IOException {
-        BundleFiles files = BundleFilesBuilder.build(bundleDir);
+        BundleFiles files = BundleFilesBuilder.build(bundleDir, zipFs);
 
         GroovyScriptEngine engine = scriptEngineFactory.create(files);
 
@@ -60,7 +60,7 @@ public class BundleFactory {
 
         BundleRegistryQuery registryQuery = new BundleRegistryQuery(info.id());
 
-        return new Bundle(info, files, engine, registryQuery, eventBus, bundleBus, entrypoints, zipFs);
+        return new Bundle(info, files, engine, registryQuery, eventBus, bundleBus, entrypoints);
     }
 
     private IEventBus createBundleBus(BundleInfo info) {

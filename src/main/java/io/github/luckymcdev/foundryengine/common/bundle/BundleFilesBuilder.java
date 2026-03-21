@@ -3,9 +3,11 @@ package io.github.luckymcdev.foundryengine.common.bundle;
 import com.mojang.logging.LogUtils;
 import io.github.luckymcdev.foundryengine.common.bundle.info.BundleFiles;
 import io.github.luckymcdev.foundryengine.common.exeptions.UtilityClassException;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.io.IOException;
+import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
@@ -22,12 +24,12 @@ public class BundleFilesBuilder {
         throw new UtilityClassException();
     }
 
-    public static BundleFiles build(Path root) {
+    public static BundleFiles build(Path root, @Nullable FileSystem zipFs) {
         Path assets = root.resolve("assets");
         Path data = root.resolve("data");
         List<Path> scripts = findScripts(root, assets, data);
 
-        return new BundleFiles(root, assets, data, scripts);
+        return new BundleFiles(root, assets, data, scripts, zipFs);
     }
 
     private static List<Path> findScripts(final Path root, final Path assets, final Path data) {
