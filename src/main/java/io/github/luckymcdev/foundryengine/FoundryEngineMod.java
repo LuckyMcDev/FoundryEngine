@@ -2,7 +2,6 @@ package io.github.luckymcdev.foundryengine;
 
 import com.mojang.logging.LogUtils;
 import io.github.luckymcdev.foundryengine.common.Common;
-import io.github.luckymcdev.foundryengine.common.bundle.Bundle;
 import io.github.luckymcdev.foundryengine.common.game.behavior.DirectWorldLoadBehavior;
 import io.github.luckymcdev.foundryengine.common.log.EngineLogAppender;
 import io.github.luckymcdev.foundryengine.common.registry.EngineRegistries;
@@ -26,7 +25,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
-import net.neoforged.neoforge.registries.RegisterEvent;
+import org.jetbrains.annotations.ApiStatus;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -38,6 +37,7 @@ import java.io.IOException;
 public class FoundryEngineMod {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final IEventBus BUS = NeoForge.EVENT_BUS;
+    private static IEventBus MODBUS;
 
     /**
      * Initializes the mod and registers events.
@@ -47,13 +47,13 @@ public class FoundryEngineMod {
      */
     public FoundryEngineMod(IEventBus modBus, ModContainer modContainer) {
         LOGGER.debug("FoundryEngineMod setup called");
+        MODBUS = modBus;
 
         registerModBus(modBus);
 
         modBus.addListener(this::commonSetup);
         modBus.addListener(this::onConstruct);
         modBus.addListener(this::onAddPackFinders);
-        modBus.addListener(this::onRegister);
 
         BUS.post(new RegisterEngineThreadEvent());
 
@@ -108,12 +108,11 @@ public class FoundryEngineMod {
         EngineLogAppender.Holder.addAppender();
     }
 
-    private void onRegister(RegisterEvent event) {
-        for (Bundle bundle : Common.getBundleManager().getBundles()) {
-            bundle.bundleBus().post(event);
-        }
+    private void commonSetup(final FMLCommonSetupEvent event) {
     }
 
-    private void commonSetup(final FMLCommonSetupEvent event) {
+    @ApiStatus.Internal
+    public static IEventBus getModBus() {
+        return MODBUS;
     }
 }

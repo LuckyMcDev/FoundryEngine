@@ -6,6 +6,7 @@ import io.github.luckymcdev.foundryengine.common.registry.GenericRegistry;
 import io.github.luckymcdev.foundryengine.common.script.BundleEntrypoint;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
+import net.neoforged.bus.api.IEventBus;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 
@@ -22,8 +23,8 @@ public class BundleManager implements ResourceManagerReloadListener {
     private final GenericRegistry<String, Bundle> bundles = new GenericRegistry<>();
     private final BundleDiscovery bundleDiscovery;
 
-    public BundleManager() {
-        BundleFactory bundleFactory = new BundleFactory();
+    public BundleManager(IEventBus modBus) {
+        BundleFactory bundleFactory = new BundleFactory(modBus);
         this.bundleDiscovery = new BundleDiscovery(bundleFactory, this::register);
     }
 

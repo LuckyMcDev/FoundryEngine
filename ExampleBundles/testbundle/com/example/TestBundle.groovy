@@ -3,6 +3,7 @@ package com.example
 import io.github.luckymcdev.foundryengine.api.builder.block.BlockBuilder
 import io.github.luckymcdev.foundryengine.api.builder.item.ItemBuilder
 import io.github.luckymcdev.foundryengine.api.builder.recipe.RecipeBuilder
+import io.github.luckymcdev.foundryengine.api.event.RegistryEvent
 import io.github.luckymcdev.foundryengine.client.post.RegisterPostPipelineEvent
 import io.github.luckymcdev.foundryengine.common.registry.EngineRegistries
 import io.github.luckymcdev.foundryengine.common.script.BundleEntrypoint
@@ -121,21 +122,10 @@ class TestBundle extends BundleEntrypoint {
                 .unlockedBy("has_log", InventoryChangeTrigger.TriggerInstance.hasItems(Items.OAK_LOG))
 
         @SubscribeEvent
-        static void onRegister(RegisterEvent event) {
-            event.register(Registries.BLOCK, registry -> {
-                MY_BLOCK.registerBlock(registry)
-            })
-
-            event.register(Registries.ITEM, registry -> {
-                THIS_IS_A_ITEM.register(registry)
-                ITEM_TWO.register(registry)
-                COSMIC_APPLE.register(registry)
-                MY_BLOCK.registerItem(registry)
-            })
-
-            event.register(EngineRegistries.Keys.RECIPES, registry -> {
-                RECIPE.register(registry)
-            })
+        static void onRegister(RegistryEvent event) {
+            event.blocks(MY_BLOCK)
+            event.items(THIS_IS_A_ITEM, ITEM_TWO, COSMIC_APPLE)
+            event.recipes(RECIPE)
         }
     }
 }

@@ -2,6 +2,7 @@ package io.github.luckymcdev.foundryengine.common.bundle;
 
 import com.mojang.logging.LogUtils;
 import groovy.util.GroovyScriptEngine;
+import io.github.luckymcdev.foundryengine.api.event.RegistryEvent;
 import io.github.luckymcdev.foundryengine.common.bundle.info.BundleFiles;
 import io.github.luckymcdev.foundryengine.common.bundle.info.BundleInfo;
 import io.github.luckymcdev.foundryengine.common.bundle.registry.BundleRegistryQuery;
@@ -11,6 +12,7 @@ import io.github.luckymcdev.foundryengine.common.script.ScriptEngineFactory;
 import net.neoforged.bus.api.BusBuilder;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.registries.RegisterEvent;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -27,10 +29,12 @@ public class BundleFactory {
 
     private final ScriptEngineFactory scriptEngineFactory;
     private final BundleScriptLoader scriptLoader;
+    private final IEventBus modBus;
 
-    public BundleFactory() {
+    public BundleFactory(IEventBus modBus) {
         this.scriptEngineFactory = new ScriptEngineFactory();
         this.scriptLoader = new BundleScriptLoader();
+        this.modBus = modBus;
     }
 
     /**
@@ -50,6 +54,8 @@ public class BundleFactory {
         IEventBus eventBus = NeoForge.EVENT_BUS;
         IEventBus bundleBus = createBundleBus(info);
 
+        registerRegistryBridge(bundleBus);
+
         List<BundleEntrypoint> entrypoints = scriptLoader.loadScripts(
                 files,
                 engine,
@@ -61,6 +67,14 @@ public class BundleFactory {
         BundleRegistryQuery registryQuery = new BundleRegistryQuery(info.id());
 
         return new Bundle(info, files, engine, registryQuery, eventBus, bundleBus, entrypoints);
+    }
+
+    /**
+     * Bridges NeoForge's RegisterEvent on the global bus into FoundryEngine's
+     * RegistryEvent on the bundle bus, so scripts can use the cleaner API.
+     */
+    private void registerRegistryBridge(IEventBus bundleBus) {
+        modBus.addListener((RegisterEvent event) -> bundleBus.post(new RegistryEvent(event)));
     }
 
     private IEventBus createBundleBus(BundleInfo info) {

@@ -55,6 +55,13 @@ public interface BlockBuilder extends BuilderBase<Block> {
     BlockBuilder noItem();
 
     /**
+     * If the automatic creation of a BlockItem for this block is enabled.
+     *
+     * @return true if it creates an item, false if not.
+     */
+    boolean hasItem();
+
+    /**
      * Customizes the properties of the automatically created BlockItem.
      * For example, to set stack size or rarity.
      *

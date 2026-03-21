@@ -24,7 +24,6 @@ public interface BuilderBase<T> extends Supplier<T> {
      * Gets the object if it has been registered, otherwise throws an exception.
      *
      * @return The registered object
-     * @throws io.github.luckymcdev.foundryengine.common.exeptions.EngineException if the object hasn't been registered
      */
     @Override
     T get();

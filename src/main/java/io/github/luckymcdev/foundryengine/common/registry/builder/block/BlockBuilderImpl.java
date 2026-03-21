@@ -55,6 +55,11 @@ public class BlockBuilderImpl extends BuilderBaseImpl<Block> implements BlockBui
     }
 
     @Override
+    public boolean hasItem() {
+        return this.hasItem;
+    }
+
+    @Override
     public BlockBuilder itemProperties(UnaryOperator<Item.Properties> action) {
         this.itemPropertyModifier = action;
         return this;

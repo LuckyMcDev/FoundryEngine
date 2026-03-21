@@ -1,6 +1,7 @@
 package io.github.luckymcdev.foundryengine.common;
 
 import com.mojang.logging.LogUtils;
+import io.github.luckymcdev.foundryengine.FoundryEngineMod;
 import io.github.luckymcdev.foundryengine.common.bundle.BundleManager;
 import io.github.luckymcdev.foundryengine.common.exeptions.UtilityClassException;
 import io.github.luckymcdev.foundryengine.common.game.behavior.GameBehaviorManager;
@@ -55,7 +56,7 @@ public abstract class Common {
 
     private static final ThreadManager THREAD_MANAGER = new ThreadManager();
 
-    private static final BundleManager BUNDLE_MANAGER = new BundleManager();
+    private static final BundleManager BUNDLE_MANAGER = new BundleManager(FoundryEngineMod.getModBus());
 
     private static final GameBehaviorManager GAME_BEHAVIOR_MANAGER = new GameBehaviorManager();
 
