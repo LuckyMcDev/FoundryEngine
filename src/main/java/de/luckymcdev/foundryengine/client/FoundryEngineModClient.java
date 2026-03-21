@@ -28,11 +28,8 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.*;
-import net.neoforged.neoforge.client.gui.ConfigurationScreen;
-import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.NeoForge;
 import org.slf4j.Logger;
 
@@ -56,8 +53,7 @@ public class FoundryEngineModClient {
         BUS.addListener(this::onClientTick);
         //BUS.addListener(this::onFrameGraphSetup);
 
-        modContainer.registerConfig(ModConfig.Type.CLIENT, Config.Client.CLIENT_SPEC);
-        modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
+        Config.registerClient(modContainer);
     }
 
     private void onClientSetup(FMLClientSetupEvent event) {

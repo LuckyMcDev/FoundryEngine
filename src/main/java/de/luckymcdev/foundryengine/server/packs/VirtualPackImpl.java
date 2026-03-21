@@ -28,7 +28,7 @@ import de.luckymcdev.foundryengine.common.vpacks.json.serializers.*;
 import de.luckymcdev.foundryengine.common.vpacks.json.state.JMultipart;
 import de.luckymcdev.foundryengine.common.vpacks.json.state.JState;
 import de.luckymcdev.foundryengine.common.vpacks.json.state.JWhen;
-import de.luckymcdev.foundryengine.config.Config;
+import de.luckymcdev.foundryengine.config.CommonConfig;
 import net.minecraft.advancements.AdvancementRewards;
 import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.DisplayInfo;
@@ -240,7 +240,7 @@ public class VirtualPackImpl implements VirtualResourcePack {
     public void close() {
         LOGGER.info("Closing Runtime Resource Pack {}", this.id);
 
-        if (Config.Common.DUMP.getAsBoolean()) {
+        if (CommonConfig.DUMP.getAsBoolean()) {
             this.lock();
             this.dump();
             this.lock.unlock();
@@ -269,7 +269,7 @@ public class VirtualPackImpl implements VirtualResourcePack {
     private void dump() {
         LOGGER.info("Dumping generated resources for \"{}\"", this.id);
 
-        Path output = Path.of(Config.Common.DUMP_DIRECTORY.get());
+        Path output = Path.of(CommonConfig.DUMP_DIRECTORY.get());
         try {
             for (Map.Entry<List<String>, Supplier<byte[]>> e : this.root.entrySet()) {
                 String pathStr = String.join("/", e.getKey());

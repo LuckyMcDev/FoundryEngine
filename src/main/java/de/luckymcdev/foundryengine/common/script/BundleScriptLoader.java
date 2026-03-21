@@ -4,7 +4,7 @@ import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.common.bundle.info.BundleFiles;
 import de.luckymcdev.foundryengine.common.exeptions.EngineException;
 import de.luckymcdev.foundryengine.common.priority.Priority;
-import de.luckymcdev.foundryengine.config.Config;
+import de.luckymcdev.foundryengine.config.StartupConfig;
 import groovy.util.GroovyScriptEngine;
 import groovy.util.ResourceException;
 import groovy.util.ScriptException;
@@ -35,7 +35,7 @@ public class BundleScriptLoader {
     public List<BundleEntrypoint> loadScripts(BundleFiles files, GroovyScriptEngine engine, IEventBus bundleBus, IEventBus eventBus, String bundleId) {
         List<BundleEntrypoint> entrypoints = new ArrayList<>();
 
-        if (!Config.Startup.SCRIPTING_ENABLED.get()) {
+        if (!StartupConfig.SCRIPTING_ENABLED.get()) {
             LOGGER.info("Script loading is disabled in config.");
             return entrypoints;
         }

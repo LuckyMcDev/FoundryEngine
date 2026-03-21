@@ -18,7 +18,6 @@ import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLConstructModEvent;
 import net.neoforged.neoforge.common.NeoForge;
@@ -72,9 +71,7 @@ public class FoundryEngineMod {
         Common.getGameStageHandler().loot().requireStages(BuiltInLootTables.END_CITY_TREASURE, "mineshaft");
         Common.getGameStageHandler().mobs().requireStages(EntityType.ZOMBIE, "zombie");
 
-        modContainer.registerConfig(ModConfig.Type.COMMON, Config.Common.COMMON_SPEC);
-        modContainer.registerConfig(ModConfig.Type.SERVER, Config.Server.SERVER_SPEC);
-        modContainer.registerConfig(ModConfig.Type.STARTUP, Config.Startup.STARTUP_SPEC);
+        Config.registerOthers(modContainer);
     }
 
     private void registerModBus(IEventBus modBus) {

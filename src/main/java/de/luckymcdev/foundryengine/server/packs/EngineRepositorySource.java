@@ -4,7 +4,7 @@ import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.bundle.Bundle;
 import de.luckymcdev.foundryengine.common.bundle.info.BundleFiles;
-import de.luckymcdev.foundryengine.config.Config;
+import de.luckymcdev.foundryengine.config.StartupConfig;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackResources;
@@ -35,7 +35,7 @@ public class EngineRepositorySource implements RepositorySource {
     public void loadPacks(@NonNull Consumer<Pack> consumer) {
         List<Path> manualPaths = new ArrayList<>();
 
-        if (!Config.Startup.RESOURCES_ENABLED.get()) {
+        if (!StartupConfig.RESOURCES_ENABLED.get()) {
             LOGGER.info("Resource loading is disabled in config.");
             return;
         }
