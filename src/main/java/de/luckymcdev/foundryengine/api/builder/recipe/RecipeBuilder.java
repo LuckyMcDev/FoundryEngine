@@ -10,6 +10,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.registries.RegisterEvent;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Builder interface for creating recipes.
@@ -345,5 +346,6 @@ public interface RecipeBuilder extends BuilderBase<RecipeResult> {
      * @param helper The register event helper
      * @return The registered RecipeResult instance
      */
+    @ApiStatus.Internal
     RecipeResult register(RegisterEvent.RegisterHelper<RecipeResult> helper);
 }

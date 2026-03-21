@@ -7,6 +7,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.neoforged.neoforge.registries.RegisterEvent;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -77,6 +78,7 @@ public interface BlockBuilder extends BuilderBase<Block> {
      * @param helper The register event helper for blocks
      * @return The registered Block instance
      */
+    @ApiStatus.Internal
     Block registerBlock(RegisterEvent.RegisterHelper<Block> helper);
 
     /**
@@ -88,5 +90,6 @@ public interface BlockBuilder extends BuilderBase<Block> {
      * @return The registered Item instance
      * @throws IllegalStateException if noItem() was called or if registerBlock() hasn't been called yet
      */
+    @ApiStatus.Internal
     Item registerItem(RegisterEvent.RegisterHelper<Item> helper);
 }

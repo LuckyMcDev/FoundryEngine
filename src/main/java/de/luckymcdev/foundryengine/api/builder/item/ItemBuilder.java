@@ -6,6 +6,7 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.registries.RegisterEvent;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -74,5 +75,6 @@ public interface ItemBuilder extends BuilderBase<Item> {
      * @param helper The register event helper
      * @return The registered Item instance
      */
+    @ApiStatus.Internal
     Item register(RegisterEvent.RegisterHelper<Item> helper);
 }
