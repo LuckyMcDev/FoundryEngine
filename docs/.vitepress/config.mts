@@ -44,7 +44,7 @@ export default defineConfig({
           sidebar("Overview", "/api"),
           sidebarGroup("Builders", [
             sidebar("Item Builder", "api/builder/item-builder"),
-            sidebar("Block Builder", "api/builder/block-builder")
+            sidebar("Block Builder", "api/builder/block-builder"),
             sidebar("Recipe Builder", "api/builder/recipe-builder")
           ])
       ]),
