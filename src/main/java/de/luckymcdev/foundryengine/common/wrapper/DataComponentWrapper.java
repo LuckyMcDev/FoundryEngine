@@ -17,7 +17,6 @@ public class DataComponentWrapper implements TypeWrapper<DataComponentType<?>> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public DataComponentType<?> wrap() {
         try {
             Field field = DataComponents.class.getField(fieldName.toUpperCase());
