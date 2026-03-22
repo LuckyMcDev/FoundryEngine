@@ -15,11 +15,14 @@ import de.luckymcdev.foundryengine.client.event.RegisterRenderingStuffEvent;
 import de.luckymcdev.foundryengine.client.ext.ModPathBroadcaster;
 import de.luckymcdev.foundryengine.client.opengl.preprocessing.IncludeGLSLPreProcessor;
 import de.luckymcdev.foundryengine.client.opengl.preprocessing.RegisterGLSLPreProcessorEvent;
+import de.luckymcdev.foundryengine.client.particle.EngineParticleProvider;
+import de.luckymcdev.foundryengine.client.particle.EngineParticles;
 import de.luckymcdev.foundryengine.client.post.RegisterPostPipelineEvent;
 import de.luckymcdev.foundryengine.client.post.pipeline.builtin.*;
 import de.luckymcdev.foundryengine.client.util.key.RegisterKeyBindingEvent;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.config.Config;
+import net.minecraft.client.particle.Particle;
 import net.minecraft.gizmos.Gizmos;
 import net.minecraft.gizmos.TextGizmo;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
@@ -38,13 +41,17 @@ public class FoundryEngineModClient {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final IEventBus BUS = NeoForge.EVENT_BUS;
 
+    private int tickCount = 0;
+
     public FoundryEngineModClient(IEventBus modBus, ModContainer modContainer) {
+        EngineParticles.PARTICLE_TYPES.register(modBus);
 
         modBus.addListener(this::onClientSetup);
         modBus.addListener(this::addClientReloadListener);
         modBus.addListener(this::onRegisterKeyMapping);
         modBus.addListener(this::onRegisterDebugEntry);
         modBus.addListener(this::onRegisterDebugRenderers);
+        modBus.addListener(this::registerParticles);
 
         BUS.addListener(this::onRegisterKeyBinding);
         BUS.addListener(this::onRegisterGLSLPreProcessors);
@@ -133,17 +140,47 @@ public class FoundryEngineModClient {
         event.register(new CRTScanlinePipeline());
     }
 
+    private void registerParticles(RegisterParticleProvidersEvent event) {
+        event.registerSpriteSet(
+                EngineParticles.ENGINE_PARTICLE.get(),
+                EngineParticleProvider::new
+        );
+    }
+
     private void addClientReloadListener(AddClientReloadListenersEvent event) {
         event.addListener(Common.id("imgui_handler"), Client.getImGuiManager());
         event.addListener(Common.id("shader_manager"), Client.getShaderManager());
-        event.addListener(Common.id("post_pipeline_init"),
-                (ResourceManagerReloadListener) resourceManager ->
+        event.addListener(Common.id("post_pipeline_init"), (ResourceManagerReloadListener) rm ->
                         BUS.post(new RegisterPostPipelineEvent(Client.getPostProcessManager()))
         );
     }
 
     private void onClientTick(ClientTickEvent.Post event) {
         Client.getEditorManager().handleTick();
+
+        double amplitude = 10.0;
+        double frequency = 0.5;
+        double length = 1000;
+
+        for (int i = 0; i < length; i++) {
+            double x = i;
+            double y = 100 + Math.sin((tickCount + i) * frequency) * amplitude;
+
+            Particle particle = Client.getMinecraft().particleEngine.createParticle(
+                    EngineParticles.ENGINE_PARTICLE.get(),
+                    x, y, 0,
+                    0, 0, 0
+            );
+
+
+            if (particle != null) {
+                particle.scale(1);
+                particle.setParticleSpeed(0, 0, 0);
+                particle.setLifetime(2);
+            }
+        }
+
+        tickCount++;
     }
 
     /*
