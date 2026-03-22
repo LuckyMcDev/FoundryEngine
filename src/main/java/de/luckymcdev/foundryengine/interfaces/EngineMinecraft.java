@@ -7,10 +7,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 /**
  * Minecraft Extension
  */
-public interface EngineMinecraft {
-    default Minecraft tb$self() {
-        return (Minecraft) this;
-    }
+public interface EngineMinecraft extends EngineInterface<Minecraft> {
 
-    void tb$init(GameConfig gameConfig, CallbackInfo ci);
+    void engine$init(GameConfig gameConfig, CallbackInfo ci);
+
+    void engine$close(CallbackInfo ci);
 }

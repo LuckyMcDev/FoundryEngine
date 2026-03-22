@@ -1,14 +1,15 @@
 package de.luckymcdev.foundryengine.interfaces;
 
 import de.luckymcdev.foundryengine.common.game.behavior.GameBehaviorCancellation;
+import net.minecraft.client.gui.screens.TitleScreen;
 
 /**
  * Title Screen Extension
  */
-public interface EngineTitleScreen {
-    GameBehaviorCancellation fe$onSingleplayerClick();
+public interface EngineTitleScreen extends EngineInterface<TitleScreen> {
+    GameBehaviorCancellation engine$onSingleplayerClick();
 
-    GameBehaviorCancellation fe$onMultiplayerClick();
+    GameBehaviorCancellation engine$onMultiplayerClick();
 
-    GameBehaviorCancellation fe$onRealmsClick();
+    GameBehaviorCancellation engine$onRealmsClick();
 }

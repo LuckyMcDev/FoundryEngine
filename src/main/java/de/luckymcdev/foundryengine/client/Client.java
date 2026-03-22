@@ -98,7 +98,7 @@ public abstract class Client {
     // Minecraft Core
 
     public static Minecraft getMinecraft() {
-        return ((EngineMinecraft) Minecraft.getInstance()).tb$self();
+        return ((EngineMinecraft) Minecraft.getInstance()).engine$self();
     }
 
     public static ResourceManager getResourceManager() {

@@ -1,5 +1,6 @@
 package de.luckymcdev.foundryengine.interfaces;
 
+import net.minecraft.client.KeyboardHandler;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -7,8 +8,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 /**
  * Keyboard Handler Extension
  */
-public interface EngineKeyboardHandler {
-    void fe$keyPress(long p_window, int action, KeyEvent event, CallbackInfo ci);
+public interface EngineKeyboardHandler extends EngineInterface<KeyboardHandler>{
 
-    void fe$charTyped(long p_window, CharacterEvent event, CallbackInfo ci);
+    void engine$keyPress(long p_window, int action, KeyEvent event, CallbackInfo ci);
+
+    void engine$charTyped(long p_window, CharacterEvent event, CallbackInfo ci);
 }

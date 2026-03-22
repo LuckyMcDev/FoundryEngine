@@ -31,14 +31,15 @@ public class MinecraftMixin implements EngineMinecraft {
 
     @Override
     @Inject(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;resizeGui()V", shift = At.Shift.BEFORE))
-    public void tb$init(GameConfig gameConfig, CallbackInfo ci) {
+    public void engine$init(GameConfig gameConfig, CallbackInfo ci) {
         TTFFile.find(resourceManager);
         Client.getImGuiManager().create(window.handle());
         Client.getMainMenu().register();
     }
 
+    @Override
     @Inject(method = "close", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/font/providers/FreeTypeUtil;destroy()V", shift = At.Shift.BEFORE))
-    public void tb$close(CallbackInfo ci) {
+    public void engine$close(CallbackInfo ci) {
         Client.getImGuiManager().free();
         Common.getThreadManager().shutdownAll();
     }

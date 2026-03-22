@@ -22,12 +22,12 @@ public class GameRendererMixin implements EngineGameRenderer {
 
     @Override
     @Inject(method = "render", at = @At("HEAD"))
-    public void tb$renderHead(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci) {
+    public void engine$renderHead(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci) {
     }
 
     @Override
     @Inject(method = "render", at = @At("RETURN"))
-    public void tb$renderReturn(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci) {
+    public void engine$renderReturn(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci) {
         Client.getImGuiManager().begin();
         if (Client.getImGuiManager().isEnabled()) {
             Client.getMainMenu().handleShortcuts();

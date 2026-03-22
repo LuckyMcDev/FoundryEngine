@@ -21,7 +21,7 @@ import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 public class KeyboardHandlerMixin implements EngineKeyboardHandler {
 
     @Inject(method = "keyPress", at = @At("HEAD"), cancellable = true)
-    public void fe$keyPress(long handle, int action, KeyEvent event, CallbackInfo ci) {
+    public void engine$keyPress(long handle, int action, KeyEvent event, CallbackInfo ci) {
         if (Client.getImGuiManager().shouldInterceptKeyboard()) {
             ci.cancel();
         }
@@ -32,7 +32,7 @@ public class KeyboardHandlerMixin implements EngineKeyboardHandler {
 
     @Override
     @Inject(method = "charTyped", at = @At("HEAD"), cancellable = true)
-    public void fe$charTyped(long handle, CharacterEvent event, CallbackInfo ci) {
+    public void engine$charTyped(long handle, CharacterEvent event, CallbackInfo ci) {
         if (Client.getImGuiManager().shouldInterceptKeyboard()) {
             ci.cancel();
         }
