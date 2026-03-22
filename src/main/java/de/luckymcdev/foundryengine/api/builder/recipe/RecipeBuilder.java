@@ -1,7 +1,7 @@
 package de.luckymcdev.foundryengine.api.builder.recipe;
 
 import de.luckymcdev.foundryengine.api.builder.BuilderBase;
-import de.luckymcdev.foundryengine.common.registry.builder.recipe.RecipeBuilderImpl;
+import de.luckymcdev.foundryengine.common.builder.recipe.RecipeBuilderImpl;
 import net.minecraft.advancements.Criterion;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.data.recipes.RecipeCategory;

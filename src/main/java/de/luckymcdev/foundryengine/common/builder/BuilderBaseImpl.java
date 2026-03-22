@@ -1,9 +1,9 @@
-package de.luckymcdev.foundryengine.common.registry.builder;
+package de.luckymcdev.foundryengine.common.builder;
 
 import de.luckymcdev.foundryengine.api.builder.BuilderBase;
+import de.luckymcdev.foundryengine.common.builder.block.BlockBuilderImpl;
+import de.luckymcdev.foundryengine.common.builder.item.ItemBuilderImpl;
 import de.luckymcdev.foundryengine.common.exeptions.EngineException;
-import de.luckymcdev.foundryengine.common.registry.builder.block.BlockBuilderImpl;
-import de.luckymcdev.foundryengine.common.registry.builder.item.ItemBuilderImpl;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;

@@ -1,9 +1,9 @@
-package de.luckymcdev.foundryengine.common.registry.builder.recipe;
+package de.luckymcdev.foundryengine.common.builder.recipe;
 
 import de.luckymcdev.foundryengine.api.builder.recipe.RecipeBuilder;
 import de.luckymcdev.foundryengine.api.builder.recipe.RecipeResult;
+import de.luckymcdev.foundryengine.common.builder.BuilderBaseImpl;
 import de.luckymcdev.foundryengine.common.registry.EngineRegistries;
-import de.luckymcdev.foundryengine.common.registry.builder.BuilderBaseImpl;
 import de.luckymcdev.foundryengine.common.vpacks.json.recipe.*;
 import de.luckymcdev.foundryengine.common.vpacks.json.recipe.crafting.JShapedRecipe;
 import de.luckymcdev.foundryengine.common.vpacks.json.recipe.crafting.JShapelessRecipe;

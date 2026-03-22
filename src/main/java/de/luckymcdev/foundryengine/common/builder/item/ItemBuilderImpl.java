@@ -1,0 +1,170 @@
+package de.luckymcdev.foundryengine.common.builder.item;
+
+import de.luckymcdev.foundryengine.api.builder.item.ItemBuilder;
+import de.luckymcdev.foundryengine.common.builder.BuilderBaseImpl;
+import de.luckymcdev.foundryengine.common.world.item.EngineItem;
+import de.luckymcdev.foundryengine.common.wrapper.DataComponentWrapper;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.Item;
+import net.neoforged.neoforge.registries.RegisterEvent;
+import org.jetbrains.annotations.ApiStatus;
+
+import java.util.EnumMap;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.function.UnaryOperator;
+
+/**
+ * An Item Builder, which allows for Item registering in a Builder format.
+ * Inspired by KubeJs
+ */
+public class ItemBuilderImpl extends BuilderBaseImpl<Item> implements ItemBuilder {
+    private final Map<EngineItem.CallbackType, Object> callbacks = new EnumMap<>(EngineItem.CallbackType.class);
+    private Item.Properties properties;
+    private Function<Item.Properties, Item> factory;
+
+    public ItemBuilderImpl(Identifier id) {
+        super(id);
+        this.registryKey = Registries.ITEM;
+        this.properties = new Item.Properties();
+        this.factory = EngineItem::new;
+    }
+
+    @Override
+    public ItemBuilder factory(Function<Item.Properties, Item> factory) {
+        this.factory = factory;
+        return this;
+    }
+
+    @Override
+    public ItemBuilder properties(UnaryOperator<Item.Properties> propertiesAction) {
+        this.properties = propertiesAction.apply(this.properties);
+        return this;
+    }
+
+    @Override
+    public ItemBuilder stacksTo(int count) {
+        this.properties = this.properties.stacksTo(count);
+        return this;
+    }
+
+    @Override
+    public ItemBuilder fireResistant() {
+        this.properties = this.properties.fireResistant();
+        return this;
+    }
+
+    private <C> void callback(EngineItem.CallbackType type, C cb) {
+        callbacks.put(type, cb);
+    }
+
+    @Override
+    public ItemBuilder onUseTick(EngineItem.OnUseTickCallback cb) {
+        callback(EngineItem.CallbackType.ON_USE_TICK, cb);
+        return this;
+    }
+
+    @Override
+    public ItemBuilder useOn(EngineItem.UseOnCallback cb) {
+        callback(EngineItem.CallbackType.USE_ON, cb);
+        return this;
+    }
+
+    @Override
+    public ItemBuilder use(EngineItem.UseCallback cb) {
+        callback(EngineItem.CallbackType.USE, cb);
+        return this;
+    }
+
+    @Override
+    public ItemBuilder finishUsingItem(EngineItem.FinishUsingItemCallback cb) {
+        callback(EngineItem.CallbackType.FINISH_USING_ITEM, cb);
+        return this;
+    }
+
+    @Override
+    public ItemBuilder hurtEnemy(EngineItem.HurtEnemyCallback cb) {
+        callback(EngineItem.CallbackType.HURT_ENEMY, cb);
+        return this;
+    }
+
+    @Override
+    public ItemBuilder postHurtEnemy(EngineItem.PostHurtEnemyCallback cb) {
+        callback(EngineItem.CallbackType.POST_HURT_ENEMY, cb);
+        return this;
+    }
+
+    @Override
+    public ItemBuilder inventoryTick(EngineItem.InventoryTickCallback cb) {
+        callback(EngineItem.CallbackType.INVENTORY_TICK, cb);
+        return this;
+    }
+
+    @Override
+    public ItemBuilder onCraftedPostProcess(EngineItem.OnCraftedPostProcessCallback cb) {
+        callback(EngineItem.CallbackType.ON_CRAFTED_POST_PROCESS, cb);
+        return this;
+    }
+
+    @Override
+    public ItemBuilder releaseUsing(EngineItem.ReleaseUsingCallback cb) {
+        callback(EngineItem.CallbackType.RELEASE_USING, cb);
+        return this;
+    }
+
+    @ApiStatus.Internal
+    public void setCallbackRaw(EngineItem.CallbackType type, Object cb) {
+        callback(type, cb);
+    }
+
+    @Override
+    public <T> ItemBuilder component(DataComponentType<T> type, T value) {
+        this.properties = this.properties.component(type, value);
+        return this;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> ItemBuilder component(String type, T value) {
+        DataComponentType<T> componentType = (DataComponentType<T>) DataComponentWrapper.resolve(type);
+        this.properties = this.properties.component(componentType, value);
+        return this;
+    }
+
+    @Override
+    public Item register(RegisterEvent.RegisterHelper<Item> helper) {
+        Item item = build();
+        helper.register(this.id, item);
+        this.object = item;
+        return item;
+    }
+
+    @Override
+    public Item build() {
+        this.properties.setId(ResourceKey.create(Registries.ITEM, id));
+
+        if (!callbacks.isEmpty()) {
+            EngineItem item = new EngineItem(this.properties);
+            callbacks.forEach((type, cb) -> {
+                switch (type) {
+                    case ON_USE_TICK -> item.onUseTick((EngineItem.OnUseTickCallback) cb);
+                    case USE_ON -> item.useOn((EngineItem.UseOnCallback) cb);
+                    case USE -> item.use((EngineItem.UseCallback) cb);
+                    case FINISH_USING_ITEM -> item.finishUsingItem((EngineItem.FinishUsingItemCallback) cb);
+                    case HURT_ENEMY -> item.hurtEnemy((EngineItem.HurtEnemyCallback) cb);
+                    case POST_HURT_ENEMY -> item.postHurtEnemy((EngineItem.PostHurtEnemyCallback) cb);
+                    case INVENTORY_TICK -> item.inventoryTick((EngineItem.InventoryTickCallback) cb);
+                    case ON_CRAFTED_POST_PROCESS ->
+                            item.onCraftedPostProcess((EngineItem.OnCraftedPostProcessCallback) cb);
+                    case RELEASE_USING -> item.releaseUsing((EngineItem.ReleaseUsingCallback) cb);
+                }
+            });
+            return item;
+        }
+
+        return factory.apply(this.properties);
+    }
+}
