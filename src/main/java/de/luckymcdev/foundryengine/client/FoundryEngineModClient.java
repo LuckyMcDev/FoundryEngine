@@ -158,29 +158,16 @@ public class FoundryEngineModClient {
     private void onClientTick(ClientTickEvent.Post event) {
         Client.getEditorManager().handleTick();
 
-        double amplitude = 10.0;
-        double frequency = 0.5;
-        double length = 1000;
+        Particle particle = Client.getMinecraft().particleEngine.createParticle(
+                EngineParticles.ENGINE_PARTICLE.get(),
+                0, 100, 0,
+                0, 0, 0
+        );
+        if(null == particle) return;
 
-        for (int i = 0; i < length; i++) {
-            double x = i;
-            double y = 100 + Math.sin((tickCount + i) * frequency) * amplitude;
+        particle.setParticleSpeed(0, 1, 0);
 
-            Particle particle = Client.getMinecraft().particleEngine.createParticle(
-                    EngineParticles.ENGINE_PARTICLE.get(),
-                    x, y, 0,
-                    0, 0, 0
-            );
-
-
-            if (particle != null) {
-                particle.scale(1);
-                particle.setParticleSpeed(0, 0, 0);
-                particle.setLifetime(2);
-            }
-        }
-
-        tickCount++;
+        Client.getMinecraft().particleEngine.add(particle);
     }
 
     /*

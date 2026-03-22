@@ -12,6 +12,8 @@ public class EngineParticle extends SingleQuadParticle {
         this.sprites = sprites;
         this.lifetime = 20;
         scale(10);
+        this.setColor(1, 0 ,0);
+        this.setAlpha(1);
     }
 
     @Override
