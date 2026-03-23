@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.common.Common;
+import de.luckymcdev.foundryengine.common.feature.EngineFeatures;
 import de.luckymcdev.foundryengine.common.game.behavior.DirectWorldLoadBehavior;
 import de.luckymcdev.foundryengine.common.log.EngineLogAppender;
 import de.luckymcdev.foundryengine.common.registry.EngineRegistries;
@@ -70,6 +71,8 @@ public class FoundryEngineMod {
         Common.getGameStageHandler().item().requireStages(Items.STICK, "stick");
         Common.getGameStageHandler().loot().requireStages(BuiltInLootTables.END_CITY_TREASURE, "mineshaft");
         Common.getGameStageHandler().mobs().requireStages(EntityType.ZOMBIE, "zombie");
+
+        Common.getFeatureManager().register(EngineFeatures.EDITOR);
 
         Config.registerOthers(modContainer);
     }

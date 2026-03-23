@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.FoundryEngineMod;
 import de.luckymcdev.foundryengine.common.bundle.BundleManager;
 import de.luckymcdev.foundryengine.common.exeptions.UtilityClassException;
+import de.luckymcdev.foundryengine.common.feature.FeatureManager;
 import de.luckymcdev.foundryengine.common.game.behavior.GameBehaviorManager;
 import de.luckymcdev.foundryengine.common.game.stage.GameStageHandler;
 import de.luckymcdev.foundryengine.common.thread.ThreadManager;
@@ -62,6 +63,8 @@ public abstract class Common {
 
     private static final GameStageHandler GAME_STAGE_HANDLER = new GameStageHandler();
 
+    private static final FeatureManager FEATURE_MANAGER = new FeatureManager();
+
     /**
      * Returns an {@link Identifier} where the namespace is {@link #MODID}
      *
@@ -91,6 +94,10 @@ public abstract class Common {
 
     public static GameStageHandler getGameStageHandler() {
         return GAME_STAGE_HANDLER;
+    }
+
+    public static FeatureManager getFeatureManager() {
+        return FEATURE_MANAGER;
     }
 
     public static String getFileContent(Path file) {
