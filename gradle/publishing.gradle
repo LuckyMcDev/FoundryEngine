@@ -7,7 +7,7 @@ javadoc {
         windowTitle = "FoundryEngine ${mod_version}"
         docTitle = "FoundryEngine ${mod_version}"
         links 'https://docs.oracle.com/en/java/javase/21/docs/api/'
-        //stylesheetFile = file("docs/javadoc-theme/custom.css")
+        //stylesheetFile = file("docs/javadoc/custom.css")
     }
 
     source = sourceSets.main.allJava
