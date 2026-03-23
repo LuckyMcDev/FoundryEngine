@@ -3,7 +3,6 @@ package de.luckymcdev.foundryengine;
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.feature.EngineFeatures;
-import de.luckymcdev.foundryengine.common.game.behavior.DirectWorldLoadBehavior;
 import de.luckymcdev.foundryengine.common.log.EngineLogAppender;
 import de.luckymcdev.foundryengine.common.registry.EngineRegistries;
 import de.luckymcdev.foundryengine.common.thread.RegisterEngineThreadEvent;
@@ -12,10 +11,6 @@ import de.luckymcdev.foundryengine.common.vpacks.event.RegisterVirtualPackEvent;
 import de.luckymcdev.foundryengine.config.Config;
 import de.luckymcdev.foundryengine.server.command.FoundryCommands;
 import de.luckymcdev.foundryengine.server.packs.EngineRepositorySource;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -63,14 +58,14 @@ public class FoundryEngineMod {
 
         BUS.addListener(this::onRegisterVirtualPacks);
 
-        Common.getGameBehaviorManager().register(Common.id("direct_world_load"),
-                new DirectWorldLoadBehavior("testWorld")
-        );
+        //Common.getGameBehaviorManager().register(Common.id("direct_world_load"),
+        //        new DirectWorldLoadBehavior("testWorld")
+        //);
 
-        Common.getGameStageHandler().dimensions().requireStages(Level.END, "end");
-        Common.getGameStageHandler().item().requireStages(Items.STICK, "stick");
-        Common.getGameStageHandler().loot().requireStages(BuiltInLootTables.END_CITY_TREASURE, "mineshaft");
-        Common.getGameStageHandler().mobs().requireStages(EntityType.ZOMBIE, "zombie");
+        //Common.getGameStageHandler().dimensions().requireStages(Level.END, "end");
+        //Common.getGameStageHandler().item().requireStages(Items.STICK, "stick");
+        //Common.getGameStageHandler().loot().requireStages(BuiltInLootTables.END_CITY_TREASURE, "mineshaft");
+        //Common.getGameStageHandler().mobs().requireStages(EntityType.ZOMBIE, "zombie");
 
         Common.getFeatureManager().register(EngineFeatures.EDITOR);
 
