@@ -1,3 +1,6 @@
+/**
+ * Post-Processing pipeline params
+ */
 @NullMarked
 package de.luckymcdev.foundryengine.client.post.pipeline.param;
 

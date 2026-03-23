@@ -1,3 +1,6 @@
+/**
+ * KeyBind Utilities
+ */
 @NullMarked
 package de.luckymcdev.foundryengine.client.util.key;
 

@@ -1,3 +1,6 @@
+/**
+ * Game Behavior
+ */
 @NullMarked
 package de.luckymcdev.foundryengine.common.game.behavior;
 

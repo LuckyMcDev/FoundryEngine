@@ -21,7 +21,7 @@ import java.util.Set;
  * Will also get a method for making it so I can easily generate scripts
  * for the Editor.
  *
- * @param <T>
+ * @param <T> the 'type' of the builder / what is built {@link de.luckymcdev.foundryengine.api.builder.item.ItemBuilder} has {@link net.minecraft.world.item.Item}
  */
 public abstract class BuilderBaseImpl<T> implements BuilderBase<T> {
     public final Identifier id;

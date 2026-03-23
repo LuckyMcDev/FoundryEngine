@@ -1,3 +1,6 @@
+/**
+ * Bult-in editor menus
+ */
 @NullMarked
 package de.luckymcdev.foundryengine.client.editor.menu.builtin;
 

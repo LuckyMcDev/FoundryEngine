@@ -23,10 +23,10 @@ jobs:
         run: chmod +x gradlew
 
       - name: Generate Javadoc
-        run: ./gradlew dokkaGeneratePublicationJavadoc
+        run: ./gradlew javadoc
 
       - name: Upload Javadoc
         uses: actions/upload-artifact@v7
         with:
           name: javadoc
-          path: docs/generated/javadoc
+          path: build/docs

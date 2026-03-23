@@ -1,3 +1,6 @@
+/**
+ * Post-Processing pipeline passes
+ */
 @NullMarked
 package de.luckymcdev.foundryengine.client.post.pipeline.pass;
 

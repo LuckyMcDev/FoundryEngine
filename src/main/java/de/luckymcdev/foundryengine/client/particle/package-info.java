@@ -1,3 +1,6 @@
+/**
+ * Particles
+ */
 @NullMarked
 package de.luckymcdev.foundryengine.client.particle;
 

@@ -161,7 +161,7 @@ public enum Priority {
      * Check if this priority is at most as high as another.
      *
      * @param other priority to compare against
-     * @return true if this <= other
+     * @return true if this is greater than 'other' priority
      */
     public boolean isAtMost(Priority other) {
         return this.value >= other.value;

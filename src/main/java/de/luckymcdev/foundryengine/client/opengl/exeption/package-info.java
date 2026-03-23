@@ -1,3 +1,6 @@
+/**
+ * OpenGl exceptions
+ */
 @NullMarked
 package de.luckymcdev.foundryengine.client.opengl.exeption;
 

@@ -1,3 +1,6 @@
+/**
+ * OpenGl Uniforms
+ */
 @NullMarked
 package de.luckymcdev.foundryengine.client.opengl.uniform;
 

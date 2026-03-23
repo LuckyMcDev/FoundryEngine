@@ -1,3 +1,6 @@
+/**
+ * OpenGl framebuffers
+ */
 @NullMarked
 package de.luckymcdev.foundryengine.client.opengl.framebuffer;
 

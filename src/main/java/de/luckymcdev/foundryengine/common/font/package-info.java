@@ -1,3 +1,6 @@
+/**
+ * TTF File
+ */
 @NullMarked
 package de.luckymcdev.foundryengine.common.font;
 

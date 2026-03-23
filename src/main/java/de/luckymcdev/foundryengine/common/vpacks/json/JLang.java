@@ -59,7 +59,7 @@ public class JLang implements Cloneable {
     }
 
     /**
-     * Adds a translation for an item, and uses {@link ItemStack#getItem()} &
+     * Adds a translation for an item, and uses {@link ItemStack#getItem()} and
      * {@link Item#getDescriptionId()}
      * for the key.
      *

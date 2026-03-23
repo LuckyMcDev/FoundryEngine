@@ -1,3 +1,6 @@
+/**
+ * OpenGl stuff
+ */
 @NullMarked
 package de.luckymcdev.foundryengine.client.opengl;
 

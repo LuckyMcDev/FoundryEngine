@@ -1,8 +1,10 @@
 package de.luckymcdev.foundryengine.common.util;
 
 /**
+ * A class which can handle a value which is freezable.
+ * Very simple.
  *
- * @param <T>
+ * @param <T> the type of value.
  */
 public class Freezable<T> {
     private boolean frozen;

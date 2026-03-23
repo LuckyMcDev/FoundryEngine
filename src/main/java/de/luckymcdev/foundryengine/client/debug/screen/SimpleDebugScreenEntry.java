@@ -1,7 +1,6 @@
 package de.luckymcdev.foundryengine.client.debug.screen;
 
 import de.luckymcdev.foundryengine.client.debug.renderer.SimpleDebugScreenRenderer;
-import de.luckymcdev.foundryengine.common.util.consumer.QuadConsumer;
 import net.minecraft.client.gui.components.debug.DebugEntryCategory;
 import net.minecraft.client.gui.components.debug.DebugScreenDisplayer;
 import net.minecraft.client.gui.components.debug.DebugScreenEntry;
@@ -16,9 +15,9 @@ import org.jspecify.annotations.Nullable;
  */
 public class SimpleDebugScreenEntry implements DebugScreenEntry {
 
-    private final QuadConsumer<DebugScreenDisplayer, Level, LevelChunk, LevelChunk> renderer;
+    private final DebugEntryRenderer renderer;
 
-    public SimpleDebugScreenEntry(QuadConsumer<DebugScreenDisplayer, Level, LevelChunk, LevelChunk> renderer) {
+    public SimpleDebugScreenEntry(DebugEntryRenderer renderer) {
         this.renderer = renderer;
     }
 
@@ -29,13 +28,23 @@ public class SimpleDebugScreenEntry implements DebugScreenEntry {
                         @Nullable LevelChunk serverChunk) {
 
         if (level != null) {
-            renderer.accept(displayer, level, clientChunk, serverChunk);
+            renderer.render(displayer, level, clientChunk, serverChunk);
         }
     }
 
     @Override
     public @NonNull DebugEntryCategory category() {
         return DebugEntryCategory.SCREEN_TEXT;
+    }
+
+    @FunctionalInterface
+    public interface DebugEntryRenderer {
+        void render(
+                @NonNull DebugScreenDisplayer displayer,
+                @Nullable Level level,
+                @Nullable LevelChunk clientChunk,
+                @Nullable LevelChunk serverChunk
+        );
     }
 }
 

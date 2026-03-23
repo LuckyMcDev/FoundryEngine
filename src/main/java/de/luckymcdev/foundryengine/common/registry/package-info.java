@@ -1,3 +1,6 @@
+/**
+ * Registry
+ */
 @NullMarked
 package de.luckymcdev.foundryengine.common.registry;
 

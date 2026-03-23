@@ -1,3 +1,6 @@
+/**
+ * Virtual Resource Packs
+ */
 @NullMarked
 package de.luckymcdev.foundryengine.common.vpacks;
 

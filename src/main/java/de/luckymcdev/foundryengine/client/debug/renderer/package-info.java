@@ -1,3 +1,6 @@
+/**
+ * Debug renderers.
+ */
 @NullMarked
 package de.luckymcdev.foundryengine.client.debug.renderer;
 

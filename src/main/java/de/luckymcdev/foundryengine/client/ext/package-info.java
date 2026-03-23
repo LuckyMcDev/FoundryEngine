@@ -1,3 +1,6 @@
+/**
+ * External compat
+ */
 @NullMarked
 package de.luckymcdev.foundryengine.client.ext;
 

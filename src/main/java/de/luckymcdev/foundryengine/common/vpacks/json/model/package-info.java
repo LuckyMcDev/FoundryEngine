@@ -1,3 +1,6 @@
+/**
+ * Virtual Resource Pack Model JSON
+ */
 @NullMarked
 package de.luckymcdev.foundryengine.common.vpacks.json.model;
 

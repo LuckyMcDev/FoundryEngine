@@ -1,3 +1,6 @@
+/**
+ * OpenGl shaders
+ */
 @NullMarked
 package de.luckymcdev.foundryengine.client.opengl.shaders;
 

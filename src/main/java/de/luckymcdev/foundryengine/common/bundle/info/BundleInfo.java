@@ -10,6 +10,10 @@ import java.util.List;
  * Similar to {@link IModInfo}
  * <br>
  * All specified in "${bundleId}.bundles.toml"
+ * @param id the id
+ * @param displayName the displayname
+ * @param authors the authors
+ * @param versionInfo the SemVer
  */
 public record BundleInfo(String id, String displayName, List<String> authors, VersionInfo versionInfo) {
     public static final Codec<BundleInfo> CODEC = RecordCodecBuilder.create(instance -> instance.group(

@@ -89,7 +89,7 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
     }
     /**
      * Creates a new ImGui context for the Window handle
-     * See Implementation {@link GameRendererMixin#tb$renderHead(DeltaTracker, boolean, CallbackInfo)}
+     * See Implementation {@link GameRendererMixin#engine$renderHead(DeltaTracker, boolean, CallbackInfo)}
      *
      * @param handle the Window handle to use. Eg: {@link com.mojang.blaze3d.platform.Window#handle()}
      */
@@ -354,7 +354,7 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
 
     /**
      * Disposes of all Implementations and the 2 Stacks.
-     * Called in {@link MinecraftMixin#tb$close(CallbackInfo)}
+     * Called in {@link MinecraftMixin#engine$close(CallbackInfo)}
      * amd {@link ImGuiManager#free()} which is from {@link NativeResource}
      */
     public void dispose() {

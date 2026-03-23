@@ -1,3 +1,6 @@
+/**
+ * ImGui backend
+ */
 @NullMarked
 package de.luckymcdev.foundryengine.client.imgui.backend;
 

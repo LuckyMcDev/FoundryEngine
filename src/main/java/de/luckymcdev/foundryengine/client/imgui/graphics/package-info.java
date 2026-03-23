@@ -1,3 +1,6 @@
+/**
+ * ImGui graphics
+ */
 @NullMarked
 package de.luckymcdev.foundryengine.client.imgui.graphics;
 

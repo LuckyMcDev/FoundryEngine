@@ -1,3 +1,6 @@
+/**
+ * The FoundryEngine Mod.
+ */
 @NullMarked
 package de.luckymcdev.foundryengine;
 

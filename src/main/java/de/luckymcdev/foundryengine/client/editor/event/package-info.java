@@ -1,3 +1,6 @@
+/**
+ * Bult-in editor events
+ */
 @NullMarked
 package de.luckymcdev.foundryengine.client.editor.event;
 

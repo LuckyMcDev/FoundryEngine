@@ -1,3 +1,6 @@
+/**
+ * Client events.
+ */
 @NullMarked
 package de.luckymcdev.foundryengine.client.event;
 

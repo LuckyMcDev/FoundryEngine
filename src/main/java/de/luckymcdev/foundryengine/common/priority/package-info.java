@@ -1,3 +1,6 @@
+/**
+ * Priority
+ */
 @NullMarked
 package de.luckymcdev.foundryengine.common.priority;
 

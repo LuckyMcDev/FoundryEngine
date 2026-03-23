@@ -1,3 +1,6 @@
+/**
+ * Editor pop ups
+ */
 @NullMarked
 package de.luckymcdev.foundryengine.client.editor.popup;
 

@@ -1,3 +1,6 @@
+/**
+ * OpenGl mesh
+ */
 @NullMarked
 package de.luckymcdev.foundryengine.client.opengl.mesh;
 

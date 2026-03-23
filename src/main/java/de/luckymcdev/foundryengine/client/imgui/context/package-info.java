@@ -1,3 +1,6 @@
+/**
+ * ImGui context
+ */
 @NullMarked
 package de.luckymcdev.foundryengine.client.imgui.context;
 

@@ -1,3 +1,6 @@
+/**
+ * Virtual Resource Pack Events
+ */
 @NullMarked
 package de.luckymcdev.foundryengine.common.vpacks.event;
 

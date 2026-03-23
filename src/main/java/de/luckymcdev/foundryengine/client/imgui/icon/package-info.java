@@ -1,3 +1,6 @@
+/**
+ * ImGui icons
+ */
 @NullMarked
 package de.luckymcdev.foundryengine.client.imgui.icon;
 

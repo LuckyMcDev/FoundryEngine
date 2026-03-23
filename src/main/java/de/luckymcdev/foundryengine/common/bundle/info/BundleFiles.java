@@ -16,6 +16,7 @@ import java.util.List;
  * @param assets    the assets path of a bundle
  * @param data      the data path of a bundle
  * @param scripts   the scripts paths of a bundle
+ * @param zipFileSystem the file system used to open a bundle if its a zip file.
  */
 public record BundleFiles(Path root, Path assets, Path data, List<Path> scripts, @Nullable FileSystem zipFileSystem) {
     private static final Codec<Path> PATH_CODEC = Codec.STRING.xmap(Paths::get, Path::toString);
