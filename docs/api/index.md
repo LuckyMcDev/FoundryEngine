@@ -6,5 +6,5 @@ please refer to the generated Javadoc or Source Code on GitHub.
 
 List of content:
 
-- [Item Builder](./item-builder.md)
-- [Block Builder](./block-builder.md)
+- [Item Builder](./builder/item-builder.md)
+- [Block Builder](./builder/block-builder.md)
