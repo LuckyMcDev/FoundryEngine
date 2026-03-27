@@ -44,6 +44,3 @@ type = "required"
 versionRange = "${minecraft_version_range}"
 ordering = "NONE"
 side = "BOTH"
-
-#[features."${mod_id}"]
-#openGLVersion="[4.2,)"
