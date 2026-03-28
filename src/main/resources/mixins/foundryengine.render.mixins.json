@@ -8,6 +8,7 @@
   "client": [
     "GameRendererMixin",
     "GpuDeviceMixin",
+    "ItemInHandRendererMixin",
     "LevelRendererMixin",
     "RenderTypeAccessor"
   ],
