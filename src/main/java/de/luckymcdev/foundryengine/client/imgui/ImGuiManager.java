@@ -181,7 +181,7 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
             io.setMousePos(-1, -1);
         }
 
-        dockId = ImGui.dockSpaceOverViewport(2087402907, ImGui.getMainViewport(), ImGuiDockNodeFlags.PassthruCentralNode);
+        dockId = ImGui.dockSpaceOverViewport(ImGui.getMainViewport(), ImGuiDockNodeFlags.PassthruCentralNode);
         imgui.internal.ImGuiDockNode centralNode = imgui.internal.ImGui.dockBuilderGetCentralNode(dockId);
 
         shouldBlockInput = centralNode.isLeafNode() && !centralNode.isEmpty();

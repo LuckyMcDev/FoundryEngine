@@ -100,7 +100,7 @@ public class EngineImGuiUtils {
             }
 
             ImGui.pushStyleVar(ImGuiStyleVar.ItemSpacing, 0, 0);
-            ImGui.setNextItemAllowOverlap();
+            ImGui.setItemAllowOverlap();
             ImGui.sameLine();
             EngineImGuiUtils.icon(ImIcons.FA.FA_CLIPBOARD);
             ImGui.sameLine();

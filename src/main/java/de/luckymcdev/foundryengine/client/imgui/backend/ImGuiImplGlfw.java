@@ -292,30 +292,6 @@ public class ImGuiImplGlfw {
                 return ImGuiKey.F11;
             case GLFW_KEY_F12:
                 return ImGuiKey.F12;
-            case GLFW_KEY_F13:
-                return ImGuiKey.F13;
-            case GLFW_KEY_F14:
-                return ImGuiKey.F14;
-            case GLFW_KEY_F15:
-                return ImGuiKey.F15;
-            case GLFW_KEY_F16:
-                return ImGuiKey.F16;
-            case GLFW_KEY_F17:
-                return ImGuiKey.F17;
-            case GLFW_KEY_F18:
-                return ImGuiKey.F18;
-            case GLFW_KEY_F19:
-                return ImGuiKey.F19;
-            case GLFW_KEY_F20:
-                return ImGuiKey.F20;
-            case GLFW_KEY_F21:
-                return ImGuiKey.F21;
-            case GLFW_KEY_F22:
-                return ImGuiKey.F22;
-            case GLFW_KEY_F23:
-                return ImGuiKey.F23;
-            case GLFW_KEY_F24:
-                return ImGuiKey.F24;
             default:
                 return ImGuiKey.None;
         }
@@ -855,7 +831,7 @@ public class ImGuiImplGlfw {
                 dpiScale = props.monitorContentScaleX[0];
             }
 
-            platformIO.pushMonitors(monitor, mainPosX, mainPosY, mainSizeX, mainSizeY, workPosX, workPosY, workSizeX, workSizeY, dpiScale);
+            platformIO.pushMonitors(mainPosX, mainPosY, mainSizeX, mainSizeY, workPosX, workPosY, workSizeX, workSizeY, dpiScale);
         }
     }
 

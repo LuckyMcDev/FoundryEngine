@@ -3,11 +3,14 @@ package de.luckymcdev.foundryengine.client.editor.builtin;
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.Panel;
+import de.luckymcdev.foundryengine.client.editor.builtin.code.CodeEditor;
 import de.luckymcdev.foundryengine.client.imgui.EngineImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
+import de.luckymcdev.foundryengine.client.util.FileEndings;
 import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
 import imgui.ImGui;
+import imgui.extension.texteditor.TextEditorLanguageDefinition;
 import imgui.flag.ImGuiKey;
 import imgui.flag.ImGuiTreeNodeFlags;
 import net.minecraft.resources.Identifier;
@@ -60,19 +63,27 @@ public class FileExplorerPanel extends EditorPanel {
         }
     }
 
-    private void renderFile(File file) {
-        int flags = ImGuiTreeNodeFlags.Leaf | ImGuiTreeNodeFlags.NoTreePushOnOpen | ImGuiTreeNodeFlags.SpanAvailWidth;
-        String fileName = file.getName();
-        String id = "##" + file.getPath();
+    private static CodeEditor getCodeEditor(File file, Identifier editorId, String content) {
+        CodeEditor newEditor = new CodeEditor(editorId, file.getName(), content);
 
-        String fileIcon = getFileIcon(fileName);
+        TextEditorLanguageDefinition lang = FileEndings.getLanguageDefinitionByFileName(file.getName());
 
-        ImGui.treeNodeEx(id, flags, fileIcon + " " + fileName);
+        newEditor.getTextEditor().setLanguageDefinition(lang);
+        newEditor.customLangOverride = true;
 
-        if (ImGui.isItemClicked()) {
-            openFileInEditor(file);
-        }
+        newEditor.setSaveCallback((source, errors) -> {
+            if (errors.isEmpty()) {
+                try {
+                    Files.writeString(file.toPath(), source);
+                } catch (IOException e) {
+                    LOGGER.error(e.getLocalizedMessage());
+                }
+            } else {
+                LOGGER.error(errors.toString());
+            }
+        });
 
+        return newEditor;
     }
 
     private void renderDirectory(File directory) {
@@ -95,43 +106,26 @@ public class FileExplorerPanel extends EditorPanel {
         }
     }
 
-    private String getFileIcon(String fileName) {
-        String name = fileName.toLowerCase();
+    private void renderFile(File file) {
+        int flags = ImGuiTreeNodeFlags.Leaf | ImGuiTreeNodeFlags.NoTreePushOnOpen | ImGuiTreeNodeFlags.SpanAvailWidth;
+        String fileName = file.getName();
+        String id = "##" + file.getPath();
 
-        if (name.endsWith(".java") || name.endsWith(".groovy") || name.endsWith(".glsl") ||
-                name.endsWith(".vert") || name.endsWith(".frag") || name.endsWith(".js")) {
-            return EngineImGuiUtils.icon(ImIcons.FA.FA_FILE_CODE);
-        }
+        String fileIcon = FileEndings.getFileIcon(fileName);
 
-        if (name.endsWith(".json") || name.endsWith(".toml") || name.endsWith(".yaml") || name.endsWith(".yml")) {
-            return EngineImGuiUtils.icon(ImIcons.FA.FA_FILE_IMPORT);
-        }
+        ImGui.treeNodeEx(id, flags, fileIcon + " " + fileName);
 
-        if (name.endsWith(".png") || name.endsWith(".jpg") || name.endsWith(".jpeg") || name.endsWith(".tga")) {
-            return EngineImGuiUtils.icon(ImIcons.FA.FA_FILE_IMAGE);
-        }
-        if (name.endsWith(".ogg") || name.endsWith(".wav") || name.endsWith(".mp3")) {
-            return EngineImGuiUtils.icon(ImIcons.FA.FA_FILE_AUDIO);
+        if (ImGui.isItemClicked()) {
+            openFileInEditor(file);
         }
 
-        if (name.endsWith(".zip") || name.endsWith(".jar") || name.endsWith(".tar") || name.endsWith(".gz")) {
-            return EngineImGuiUtils.icon(ImIcons.FA.FA_FILE_ZIPPER);
-        }
-
-        if (name.endsWith(".txt") || name.endsWith(".log")) {
-            return EngineImGuiUtils.icon(ImIcons.FA.FA_FILE_TEXT);
-        }
-        if (name.endsWith(".md")) {
-            return EngineImGuiUtils.icon(ImIcons.FA.FA_FILE_PEN);
-        }
-
-        return EngineImGuiUtils.icon(ImIcons.FA.FA_FILE_O);
     }
 
     private void openFileInEditor(File file) {
         try {
             String content = Files.readString(file.toPath());
-            Identifier editorId = Common.id("editor_" + file.getName().toLowerCase().replaceAll("[^a-z0-9]", "_"));
+            String uniquePathId = file.getAbsolutePath().toLowerCase().replaceAll("[^a-z0-9]", "_");
+            Identifier editorId = Common.id("editor_" + uniquePathId);
 
             Panel existing = Client.getEditorManager().getPanels().get(editorId);
             if (existing instanceof CodeEditor editor) {
@@ -139,14 +133,7 @@ public class FileExplorerPanel extends EditorPanel {
                 return;
             }
 
-            CodeEditor newEditor = new CodeEditor(editorId, file.getName(), content);
-            newEditor.setSaveCallback(newContent -> {
-                try {
-                    Files.writeString(file.toPath(), newContent);
-                } catch (IOException e) {
-                    LOGGER.error(e.getLocalizedMessage());
-                }
-            });
+            CodeEditor newEditor = getCodeEditor(file, editorId, content);
 
             Client.getEditorManager().register(newEditor);
             newEditor.open();
