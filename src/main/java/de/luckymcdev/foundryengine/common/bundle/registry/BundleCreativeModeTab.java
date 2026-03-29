@@ -6,12 +6,13 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+
+import java.util.function.Supplier;
 
 public class BundleCreativeModeTab {
     private final DeferredRegister<CreativeModeTab> register;
-    private final DeferredHolder<CreativeModeTab, CreativeModeTab> tab;
+    private final Supplier<CreativeModeTab> tab;
 
     public BundleCreativeModeTab(String bundleId, IEventBus modBus, BundleRegistryQuery registryQuery) {
         this.register = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, bundleId);
@@ -30,7 +31,7 @@ public class BundleCreativeModeTab {
         this.register.register(modBus);
     }
 
-    public DeferredHolder<CreativeModeTab, CreativeModeTab> getTab() {
+    public Supplier<CreativeModeTab> getTab() {
         return tab;
     }
 }
