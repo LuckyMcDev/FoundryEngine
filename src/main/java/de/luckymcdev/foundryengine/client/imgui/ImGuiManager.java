@@ -159,7 +159,12 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
      */
     @Override
     public void begin() {
-        if (!enabled.get()) return;
+        if (!enabled.get()) {
+            shouldBlockInput = false;
+            ImGui.setNextFrameWantCaptureKeyboard(false);
+            ImGui.setNextFrameWantCaptureMouse(false);
+            return;
+        }
 
         final RenderTarget framebuffer = Minecraft.getInstance().getMainRenderTarget();
         GlTexture colorTexture = Client.getGlColTexture();
