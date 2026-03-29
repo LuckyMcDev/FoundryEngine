@@ -57,7 +57,8 @@ public class ItemBuilderImpl extends BuilderBaseImpl<Item> implements ItemBuilde
         return this;
     }
 
-    private <C> void callback(EngineItem.CallbackType type, C cb) {
+    @ApiStatus.Internal
+    public <C> void callback(EngineItem.CallbackType type, C cb) {
         callbacks.put(type, cb);
     }
 
@@ -115,11 +116,6 @@ public class ItemBuilderImpl extends BuilderBaseImpl<Item> implements ItemBuilde
         return this;
     }
 
-    @ApiStatus.Internal
-    public void setCallbackRaw(EngineItem.CallbackType type, Object cb) {
-        callback(type, cb);
-    }
-
     @Override
     public <T> ItemBuilder component(DataComponentType<T> type, T value) {
         this.properties = this.properties.component(type, value);
@@ -147,24 +143,25 @@ public class ItemBuilderImpl extends BuilderBaseImpl<Item> implements ItemBuilde
         this.properties.setId(ResourceKey.create(Registries.ITEM, id));
 
         if (!callbacks.isEmpty()) {
-            EngineItem item = new EngineItem(this.properties);
+            EngineItem engineItem = new EngineItem(this.properties);
             callbacks.forEach((type, cb) -> {
                 switch (type) {
-                    case ON_USE_TICK -> item.onUseTick((EngineItem.OnUseTickCallback) cb);
-                    case USE_ON -> item.useOn((EngineItem.UseOnCallback) cb);
-                    case USE -> item.use((EngineItem.UseCallback) cb);
-                    case FINISH_USING_ITEM -> item.finishUsingItem((EngineItem.FinishUsingItemCallback) cb);
-                    case HURT_ENEMY -> item.hurtEnemy((EngineItem.HurtEnemyCallback) cb);
-                    case POST_HURT_ENEMY -> item.postHurtEnemy((EngineItem.PostHurtEnemyCallback) cb);
-                    case INVENTORY_TICK -> item.inventoryTick((EngineItem.InventoryTickCallback) cb);
+                    case ON_USE_TICK -> engineItem.onUseTick((EngineItem.OnUseTickCallback) cb);
+                    case USE_ON -> engineItem.useOn((EngineItem.UseOnCallback) cb);
+                    case USE -> engineItem.use((EngineItem.UseCallback) cb);
+                    case FINISH_USING_ITEM -> engineItem.finishUsingItem((EngineItem.FinishUsingItemCallback) cb);
+                    case HURT_ENEMY -> engineItem.hurtEnemy((EngineItem.HurtEnemyCallback) cb);
+                    case POST_HURT_ENEMY -> engineItem.postHurtEnemy((EngineItem.PostHurtEnemyCallback) cb);
+                    case INVENTORY_TICK -> engineItem.inventoryTick((EngineItem.InventoryTickCallback) cb);
                     case ON_CRAFTED_POST_PROCESS ->
-                            item.onCraftedPostProcess((EngineItem.OnCraftedPostProcessCallback) cb);
-                    case RELEASE_USING -> item.releaseUsing((EngineItem.ReleaseUsingCallback) cb);
+                            engineItem.onCraftedPostProcess((EngineItem.OnCraftedPostProcessCallback) cb);
+                    case RELEASE_USING -> engineItem.releaseUsing((EngineItem.ReleaseUsingCallback) cb);
                 }
             });
-            return item;
+            return engineItem;
         }
+        var vanillaItem = factory.apply(this.properties);
 
-        return factory.apply(this.properties);
+        return vanillaItem;
     }
 }

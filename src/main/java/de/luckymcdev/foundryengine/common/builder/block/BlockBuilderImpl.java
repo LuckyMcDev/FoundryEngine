@@ -179,7 +179,7 @@ public class BlockBuilderImpl extends BuilderBaseImpl<Block> implements BlockBui
                 .factory(props -> itemFactory.apply(object, props))
                 .properties(itemPropertyModifier);
 
-        itemCallbacks.forEach(itemBuilder::setCallbackRaw);
+        itemCallbacks.forEach(itemBuilder::callback);
 
         return itemBuilder.register(helper);
     }
