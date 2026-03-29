@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.common.bundle;
 
 import de.luckymcdev.foundryengine.common.bundle.info.BundleFiles;
 import de.luckymcdev.foundryengine.common.bundle.info.BundleInfo;
+import de.luckymcdev.foundryengine.common.bundle.registry.BundleCreativeModeTab;
 import de.luckymcdev.foundryengine.common.bundle.registry.BundleRegistryQuery;
 import de.luckymcdev.foundryengine.common.script.BundleEntrypoint;
 import groovy.util.GroovyScriptEngine;
@@ -27,7 +28,8 @@ public record Bundle(
         BundleRegistryQuery registryQuery,
         IEventBus eventBus,
         IEventBus bundleBus,
-        List<BundleEntrypoint> entrypoints
+        List<BundleEntrypoint> entrypoints,
+        BundleCreativeModeTab creativeModeTab
 ) {
     public Identifier id(String path) {
         return Identifier.fromNamespaceAndPath(this.info.id(), path);

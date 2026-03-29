@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.api.event.RegistryEvent;
 import de.luckymcdev.foundryengine.common.bundle.info.BundleFiles;
 import de.luckymcdev.foundryengine.common.bundle.info.BundleInfo;
+import de.luckymcdev.foundryengine.common.bundle.registry.BundleCreativeModeTab;
 import de.luckymcdev.foundryengine.common.bundle.registry.BundleRegistryQuery;
 import de.luckymcdev.foundryengine.common.script.BundleEntrypoint;
 import de.luckymcdev.foundryengine.common.script.BundleScriptLoader;
@@ -48,25 +49,26 @@ public class BundleFactory {
      */
     public Bundle createBundle(BundleInfo info, Path bundleDir, @Nullable FileSystem zipFs) throws IOException {
         BundleFiles files = BundleFilesBuilder.build(bundleDir, zipFs);
-
         GroovyScriptEngine engine = scriptEngineFactory.create(files);
 
         IEventBus eventBus = NeoForge.EVENT_BUS;
         IEventBus bundleBus = createBundleBus(info);
 
-        registerRegistryBridge(bundleBus);
-
-        List<BundleEntrypoint> entrypoints = scriptLoader.loadScripts(
-                files,
-                engine,
-                bundleBus,
-                eventBus,
-                info.id()
-        );
+        bridgeEvents(bundleBus);
 
         BundleRegistryQuery registryQuery = new BundleRegistryQuery(info.id());
 
-        return new Bundle(info, files, engine, registryQuery, eventBus, bundleBus, entrypoints);
+        BundleCreativeModeTab creativeTab = new BundleCreativeModeTab(info.id(), modBus, registryQuery);
+
+        List<BundleEntrypoint> entrypoints = scriptLoader.loadScripts(
+                files, engine, bundleBus, eventBus, info.id()
+        );
+
+        return new Bundle(info, files, engine, registryQuery, eventBus, bundleBus, entrypoints, creativeTab);
+    }
+
+    private void bridgeEvents(IEventBus bundleBus) {
+        registerRegistryBridge(bundleBus);
     }
 
     /**

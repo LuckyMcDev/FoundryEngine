@@ -10,6 +10,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -64,6 +65,10 @@ public class BundleRegistryQuery {
 
     public List<SoundEvent> getSoundEvents() {
         return getFromRegistry(BuiltInRegistries.SOUND_EVENT);
+    }
+
+    public List<CreativeModeTab> creativeModeTabs() {
+        return getFromRegistry(BuiltInRegistries.CREATIVE_MODE_TAB);
     }
 
     public List<ParticleType<?>> getParticleTypes() {

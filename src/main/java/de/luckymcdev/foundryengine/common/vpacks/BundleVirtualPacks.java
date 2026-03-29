@@ -15,6 +15,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.level.block.Block;
@@ -75,6 +76,13 @@ public class BundleVirtualPacks {
             lang.addAllPotionTranslations(id, name, name, name, name);
         }
 
+        for (CreativeModeTab tab : bundle.registryQuery().creativeModeTabs()) {
+            Identifier id = BuiltInRegistries.CREATIVE_MODE_TAB.getKey(tab);
+            if (id != null) {
+                lang.addItemGroupTranslation(id, formatTitleCase(bundle.info().id()));
+            }
+        }
+
         pack.addLang(bundle.id("en_us"), lang);
     }
 
@@ -128,6 +136,12 @@ public class BundleVirtualPacks {
         translationAdder.accept(object, formatTitleCase(path));
     }
 
+    /**
+     * Formats a string like "example_block_name" to "Example Block Name".
+     *
+     * @param input the string to format.
+     * @return the formatted string.
+     */
     private static String formatTitleCase(String input) {
         if (input == null || input.isEmpty()) return "";
         String[] words = input.split("_");
