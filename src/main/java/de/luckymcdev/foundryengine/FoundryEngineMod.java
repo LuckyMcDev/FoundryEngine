@@ -20,6 +20,8 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import org.jetbrains.annotations.ApiStatus;
 import org.slf4j.Logger;
 
@@ -49,6 +51,7 @@ public class FoundryEngineMod {
         modBus.addListener(this::commonSetup);
         modBus.addListener(this::onConstruct);
         modBus.addListener(this::onAddPackFinders);
+        modBus.addListener(this::onRegisterPayloadHandlers);
 
         BUS.post(new RegisterEngineThreadEvent());
 
@@ -91,6 +94,10 @@ public class FoundryEngineMod {
 
     private void onRegisterCommands(RegisterCommandsEvent event) {
         FoundryCommands.registerAll(event.getDispatcher(), event.getBuildContext());
+    }
+
+    private void onRegisterPayloadHandlers(RegisterPayloadHandlersEvent event) {
+        PayloadRegistrar registrar = event.registrar("1");
     }
 
     private void onConstruct(final FMLConstructModEvent event) {

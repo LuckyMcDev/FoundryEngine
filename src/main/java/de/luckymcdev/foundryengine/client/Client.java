@@ -24,12 +24,12 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.client.event.FrameGraphSetupEvent;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
@@ -125,7 +125,7 @@ public abstract class Client {
         return getMinecraft().getConnection();
     }
 
-    public static @Nullable Player getPlayer() {
+    public static @Nullable LocalPlayer getPlayer() {
         return getMinecraft().player;
     }
 

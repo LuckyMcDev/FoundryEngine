@@ -125,6 +125,7 @@ public class FoundryEngineModClient {
         event.register(FileExplorerPanel.INSTANCE);
         event.register(ConsolePanel.INSTANCE);
         event.register(MainEditor.INSTANCE);
+        event.register(MinecraftToolsPanel.INSTANCE);
     }
 
     private void onRegisterPostPipelines(RegisterPostPipelineEvent event) {
