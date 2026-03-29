@@ -2,7 +2,7 @@ package de.luckymcdev.foundryengine.common.font;
 
 import de.luckymcdev.foundryengine.client.imgui.ImGuiManager;
 import de.luckymcdev.foundryengine.common.Common;
-import de.luckymcdev.foundryengine.common.exeptions.EngineException;
+import de.luckymcdev.foundryengine.common.exceptions.EngineException;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;

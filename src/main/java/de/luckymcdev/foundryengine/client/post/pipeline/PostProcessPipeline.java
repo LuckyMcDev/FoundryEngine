@@ -8,7 +8,7 @@ import de.luckymcdev.foundryengine.client.post.pipeline.param.PipelineParam;
 import de.luckymcdev.foundryengine.client.post.pipeline.pass.PostProcessPipelinePass;
 import de.luckymcdev.foundryengine.client.post.pipeline.pass.TargetRef;
 import de.luckymcdev.foundryengine.client.post.pipeline.staged.PostProcessStage;
-import de.luckymcdev.foundryengine.common.exeptions.EngineException;
+import de.luckymcdev.foundryengine.common.exceptions.EngineException;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.ApiStatus;
 

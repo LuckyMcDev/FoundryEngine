@@ -3,8 +3,8 @@ package de.luckymcdev.foundryengine.common.bundle.toml;
 import com.electronwill.nightconfig.core.CommentedConfig;
 import com.electronwill.nightconfig.toml.TomlFormat;
 import de.luckymcdev.foundryengine.common.bundle.info.BundleInfo;
-import de.luckymcdev.foundryengine.common.exeptions.EngineException;
-import de.luckymcdev.foundryengine.common.exeptions.UtilityClassException;
+import de.luckymcdev.foundryengine.common.exceptions.EngineException;
+import de.luckymcdev.foundryengine.common.exceptions.UtilityClassException;
 
 import java.io.Reader;
 import java.io.StringReader;

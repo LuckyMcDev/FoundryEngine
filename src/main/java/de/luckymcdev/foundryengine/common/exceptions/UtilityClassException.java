@@ -1,4 +1,4 @@
-package de.luckymcdev.foundryengine.common.exeptions;
+package de.luckymcdev.foundryengine.common.exceptions;
 
 public class UtilityClassException extends UnsupportedOperationException {
     public UtilityClassException() {

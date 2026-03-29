@@ -1,4 +1,4 @@
-package de.luckymcdev.foundryengine.common.exeptions;
+package de.luckymcdev.foundryengine.common.exceptions;
 
 /**
  * An Exception which is thrown when a Mixin should have implemented a Method but hasn't.

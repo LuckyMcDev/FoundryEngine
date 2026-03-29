@@ -3,7 +3,7 @@ package de.luckymcdev.foundryengine.common.bundle;
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.common.bundle.info.BundleInfo;
 import de.luckymcdev.foundryengine.common.bundle.toml.BundleTomlParser;
-import de.luckymcdev.foundryengine.common.exeptions.EngineException;
+import de.luckymcdev.foundryengine.common.exceptions.EngineException;
 import org.slf4j.Logger;
 
 import java.io.IOException;

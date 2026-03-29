@@ -1,6 +1,6 @@
 package de.luckymcdev.foundryengine.common;
 
-import de.luckymcdev.foundryengine.common.exeptions.UtilityClassException;
+import de.luckymcdev.foundryengine.common.exceptions.UtilityClassException;
 
 /**
  * HEAVY WIP, May sometime be to adapt things to Foundry Engine objects.

@@ -3,7 +3,7 @@ package de.luckymcdev.foundryengine.common.script;
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.common.bundle.config.BundleConfig;
 import de.luckymcdev.foundryengine.common.bundle.info.BundleFiles;
-import de.luckymcdev.foundryengine.common.exeptions.EngineException;
+import de.luckymcdev.foundryengine.common.exceptions.EngineException;
 import de.luckymcdev.foundryengine.common.priority.Priority;
 import de.luckymcdev.foundryengine.config.StartupConfig;
 import groovy.util.GroovyScriptEngine;

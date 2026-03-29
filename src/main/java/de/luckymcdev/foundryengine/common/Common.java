@@ -3,7 +3,7 @@ package de.luckymcdev.foundryengine.common;
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.FoundryEngineMod;
 import de.luckymcdev.foundryengine.common.bundle.BundleManager;
-import de.luckymcdev.foundryengine.common.exeptions.UtilityClassException;
+import de.luckymcdev.foundryengine.common.exceptions.UtilityClassException;
 import de.luckymcdev.foundryengine.common.feature.FeatureManager;
 import de.luckymcdev.foundryengine.common.game.behavior.GameBehaviorManager;
 import de.luckymcdev.foundryengine.common.game.stage.GameStageHandler;

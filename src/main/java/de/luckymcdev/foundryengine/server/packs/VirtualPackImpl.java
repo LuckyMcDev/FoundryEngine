@@ -6,7 +6,7 @@ import com.google.gson.JsonObject;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
-import de.luckymcdev.foundryengine.common.exeptions.EngineException;
+import de.luckymcdev.foundryengine.common.exceptions.EngineException;
 import de.luckymcdev.foundryengine.common.util.CountingInputStream;
 import de.luckymcdev.foundryengine.common.util.UnsafeByteArrayOutputStream;
 import de.luckymcdev.foundryengine.common.vpacks.VirtualResourcePack;

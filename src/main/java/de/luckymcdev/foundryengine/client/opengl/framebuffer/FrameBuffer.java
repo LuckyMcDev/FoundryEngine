@@ -7,7 +7,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.opengl.GlDispatch;
 import de.luckymcdev.foundryengine.client.opengl.OpenGlObject;
-import de.luckymcdev.foundryengine.common.exeptions.EngineException;
+import de.luckymcdev.foundryengine.common.exceptions.EngineException;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL43C;

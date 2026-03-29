@@ -16,7 +16,7 @@ import de.luckymcdev.foundryengine.client.opengl.shaders.ShaderManager;
 import de.luckymcdev.foundryengine.client.post.PostProcessManager;
 import de.luckymcdev.foundryengine.client.util.key.KeyBinding;
 import de.luckymcdev.foundryengine.client.util.key.KeyBindingManager;
-import de.luckymcdev.foundryengine.common.exeptions.EngineException;
+import de.luckymcdev.foundryengine.common.exceptions.EngineException;
 import de.luckymcdev.foundryengine.interfaces.EngineGpuDevice;
 import de.luckymcdev.foundryengine.interfaces.EngineMinecraft;
 import net.minecraft.client.Camera;
