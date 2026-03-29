@@ -12,8 +12,8 @@ import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.styles.theme.ImTheme;
 import de.luckymcdev.foundryengine.client.editor.styles.theme.ImThemes;
-import de.luckymcdev.foundryengine.client.imgui.backend.EngineImGuiImplGlfw;
 import de.luckymcdev.foundryengine.client.imgui.backend.ImGuiImplGl3;
+import de.luckymcdev.foundryengine.client.imgui.backend.ImGuiImplGlfw;
 import de.luckymcdev.foundryengine.client.imgui.context.ImGuiContextStack;
 import de.luckymcdev.foundryengine.client.imgui.context.ImGuiContextTypes;
 import de.luckymcdev.foundryengine.client.imgui.graphics.ImGuiGraphicsStack;
@@ -25,7 +25,6 @@ import imgui.*;
 import imgui.flag.ImGuiConfigFlags;
 import imgui.flag.ImGuiDockNodeFlags;
 import imgui.flag.ImGuiWindowFlags;
-import imgui.glfw.ImGuiImplGlfw;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.input.InputQuirks;
@@ -51,7 +50,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public final class ImGuiManager implements EngineImGui, ResourceManagerReloadListener, NativeResource {
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    private final EngineImGuiImplGlfw imGuiImplGlfw = new EngineImGuiImplGlfw();
+    private final ImGuiImplGlfw imGuiImplGlfw = new ImGuiImplGlfw();
     private final ImGuiImplGl3 imGuiImplGl3 = new ImGuiImplGl3();
 
     private final ImGuiContextStack CONTEXT_STACK = new ImGuiContextStack();
