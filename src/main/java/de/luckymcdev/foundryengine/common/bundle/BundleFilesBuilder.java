@@ -2,7 +2,6 @@ package de.luckymcdev.foundryengine.common.bundle;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.common.bundle.info.BundleFiles;
-import de.luckymcdev.foundryengine.common.exeptions.UtilityClassException;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -20,11 +19,7 @@ import java.util.stream.Stream;
 public class BundleFilesBuilder {
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    private BundleFilesBuilder() {
-        throw new UtilityClassException();
-    }
-
-    public static BundleFiles build(Path root, @Nullable FileSystem zipFs) {
+    public BundleFiles build(Path root, @Nullable FileSystem zipFs) {
         Path assets = root.resolve("assets");
         Path data = root.resolve("data");
         List<Path> scripts = findScripts(root, assets, data);
@@ -32,7 +27,7 @@ public class BundleFilesBuilder {
         return new BundleFiles(root, assets, data, scripts, zipFs);
     }
 
-    private static List<Path> findScripts(final Path root, final Path assets, final Path data) {
+    private List<Path> findScripts(final Path root, final Path assets, final Path data) {
         try (Stream<Path> files = Files.walk(root)) {
             return files
                     .filter(Files::isRegularFile)

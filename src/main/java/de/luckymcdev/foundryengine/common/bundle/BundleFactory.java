@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.common.bundle;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.api.event.RegistryEvent;
+import de.luckymcdev.foundryengine.common.bundle.config.BundleConfig;
 import de.luckymcdev.foundryengine.common.bundle.info.BundleFiles;
 import de.luckymcdev.foundryengine.common.bundle.info.BundleInfo;
 import de.luckymcdev.foundryengine.common.bundle.registry.BundleCreativeModeTab;
@@ -31,11 +32,13 @@ public class BundleFactory {
     private final ScriptEngineFactory scriptEngineFactory;
     private final BundleScriptLoader scriptLoader;
     private final IEventBus modBus;
+    private final Path configDirectory;
 
-    public BundleFactory(IEventBus modBus) {
+    public BundleFactory(IEventBus modBus, Path configDirectory) {
         this.scriptEngineFactory = new ScriptEngineFactory();
         this.scriptLoader = new BundleScriptLoader();
         this.modBus = modBus;
+        this.configDirectory = configDirectory;
     }
 
     /**
@@ -48,23 +51,25 @@ public class BundleFactory {
      * @throws IOException if bundle construction fails
      */
     public Bundle createBundle(BundleInfo info, Path bundleDir, @Nullable FileSystem zipFs) throws IOException {
-        BundleFiles files = BundleFilesBuilder.build(bundleDir, zipFs);
-        GroovyScriptEngine engine = scriptEngineFactory.create(files);
-
         IEventBus eventBus = NeoForge.EVENT_BUS;
         IEventBus bundleBus = createBundleBus(info);
-
         bridgeEvents(bundleBus);
+
+        BundleFiles files = BundleFiles.builder().build(bundleDir, zipFs);
+
+        GroovyScriptEngine engine = scriptEngineFactory.create(files);
 
         BundleRegistryQuery registryQuery = new BundleRegistryQuery(info.id());
 
         BundleCreativeModeTab creativeTab = new BundleCreativeModeTab(info.id(), modBus, registryQuery);
 
+        BundleConfig config = new BundleConfig(info.id(), configDirectory);
+
         List<BundleEntrypoint> entrypoints = scriptLoader.loadScripts(
-                files, engine, bundleBus, eventBus, info.id()
+                files, engine, bundleBus, eventBus, config, info.id()
         );
 
-        return new Bundle(info, files, engine, registryQuery, eventBus, bundleBus, entrypoints, creativeTab);
+        return new Bundle(info, files, engine, registryQuery, eventBus, bundleBus, entrypoints, creativeTab, config);
     }
 
     private void bridgeEvents(IEventBus bundleBus) {

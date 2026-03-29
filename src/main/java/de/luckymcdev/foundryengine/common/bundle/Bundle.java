@@ -1,5 +1,6 @@
 package de.luckymcdev.foundryengine.common.bundle;
 
+import de.luckymcdev.foundryengine.common.bundle.config.BundleConfig;
 import de.luckymcdev.foundryengine.common.bundle.info.BundleFiles;
 import de.luckymcdev.foundryengine.common.bundle.info.BundleInfo;
 import de.luckymcdev.foundryengine.common.bundle.registry.BundleCreativeModeTab;
@@ -20,6 +21,7 @@ import java.util.List;
  * @param eventBus the game event bus for this bundle, just mirrors NeoForge.EVENT_BUS
  * @param bundleBus the 'mod' event bus but just for this bundle.
  * @param entrypoints a list of entrypoints this bundle contains.
+ * @param creativeModeTab the Creative Mode tab for this bundle.
  */
 public record Bundle(
         BundleInfo info,
@@ -29,7 +31,8 @@ public record Bundle(
         IEventBus eventBus,
         IEventBus bundleBus,
         List<BundleEntrypoint> entrypoints,
-        BundleCreativeModeTab creativeModeTab
+        BundleCreativeModeTab creativeModeTab,
+        BundleConfig bundleConfig
 ) {
     public Identifier id(String path) {
         return Identifier.fromNamespaceAndPath(this.info.id(), path);

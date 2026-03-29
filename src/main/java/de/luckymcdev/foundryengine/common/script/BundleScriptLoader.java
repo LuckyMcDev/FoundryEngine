@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.common.script;
 
 import com.mojang.logging.LogUtils;
+import de.luckymcdev.foundryengine.common.bundle.config.BundleConfig;
 import de.luckymcdev.foundryengine.common.bundle.info.BundleFiles;
 import de.luckymcdev.foundryengine.common.exeptions.EngineException;
 import de.luckymcdev.foundryengine.common.priority.Priority;
@@ -25,14 +26,15 @@ public class BundleScriptLoader {
     /**
      * Loads all scripts from the bundle using the GroovyScriptEngine.
      *
-     * @param files     Bundle file information
-     * @param engine    Configured GroovyScriptEngine
-     * @param bundleBus Bundle-specific event bus
-     * @param eventBus  Global event bus
-     * @param bundleId  Bundle identifier for logging
+     * @param files        Bundle file information
+     * @param engine       Configured GroovyScriptEngine
+     * @param bundleBus    Bundle-specific event bus
+     * @param eventBus     Global event bus
+     * @param bundleConfig The bundle's config instance
+     * @param bundleId     Bundle identifier for logging
      * @return List of loaded entrypoint instances (in priority order)
      */
-    public List<BundleEntrypoint> loadScripts(BundleFiles files, GroovyScriptEngine engine, IEventBus bundleBus, IEventBus eventBus, String bundleId) {
+    public List<BundleEntrypoint> loadScripts(BundleFiles files, GroovyScriptEngine engine, IEventBus bundleBus, IEventBus eventBus, BundleConfig bundleConfig, String bundleId) {
         List<BundleEntrypoint> entrypoints = new ArrayList<>();
 
         if (!StartupConfig.SCRIPTING_ENABLED.get()) {
@@ -50,11 +52,7 @@ public class BundleScriptLoader {
         for (Path scriptPath : files.scripts()) {
             try {
                 BundleEntrypoint entrypoint = loadScriptClass(
-                        scriptPath,
-                        files,
-                        engine,
-                        bundleBus,
-                        eventBus
+                        scriptPath, files, engine, bundleBus, eventBus, bundleConfig
                 );
 
                 if (entrypoint != null) {
@@ -95,14 +93,14 @@ public class BundleScriptLoader {
 
     /**
      * Loads a single script class and instantiates it as a BundleEntrypoint.
-     * Does NOT call onLoad() - that happens later in priority order.
+     * Does NOT call onLoad() — that happens later in priority order.
      */
-    private BundleEntrypoint loadScriptClass(Path scriptPath, BundleFiles files, GroovyScriptEngine engine, IEventBus bundleBus, IEventBus eventBus) throws InvocationTargetException, InstantiationException, IllegalAccessException, ResourceException, ScriptException {
+    private BundleEntrypoint loadScriptClass(Path scriptPath, BundleFiles files, GroovyScriptEngine engine, IEventBus bundleBus, IEventBus eventBus, BundleConfig bundleConfig) throws InvocationTargetException, InstantiationException, IllegalAccessException, ResourceException, ScriptException {
         String scriptName = getRelativeScriptName(files.root(), scriptPath);
 
         Class<?> scriptClass = engine.loadScriptByName(scriptName);
         if (BundleEntrypoint.class.isAssignableFrom(scriptClass)) {
-            return instantiateEntrypoint(scriptClass, bundleBus, eventBus);
+            return instantiateEntrypoint(scriptClass, bundleBus, eventBus, bundleConfig);
         }
 
         LOGGER.trace("Script '{}' is not a BundleEntrypoint, skipping", scriptName);
@@ -111,21 +109,23 @@ public class BundleScriptLoader {
 
     /**
      * Instantiates a BundleEntrypoint from a class using the expected constructor.
+     * Preferred: (IEventBus, IEventBus, BundleConfig)
+     * Fallback:  no-arg (warns, bundleConfig will be null)
      */
-    private BundleEntrypoint instantiateEntrypoint(Class<?> clazz, IEventBus bundleBus, IEventBus eventBus) throws InvocationTargetException, InstantiationException, IllegalAccessException {
+    private BundleEntrypoint instantiateEntrypoint(Class<?> clazz, IEventBus bundleBus, IEventBus eventBus, BundleConfig bundleConfig) throws InvocationTargetException, InstantiationException, IllegalAccessException {
         try {
             return (BundleEntrypoint) clazz
-                    .getConstructor(IEventBus.class, IEventBus.class)
-                    .newInstance(bundleBus, eventBus);
+                    .getConstructor(IEventBus.class, IEventBus.class, BundleConfig.class)
+                    .newInstance(bundleBus, eventBus, bundleConfig);
         } catch (NoSuchMethodException e) {
             try {
                 BundleEntrypoint instance = (BundleEntrypoint) clazz.getConstructor().newInstance();
-                LOGGER.warn("Script class {} uses no-arg constructor. Consider using (IEventBus, IEventBus) constructor.",
+                LOGGER.warn("Script class {} uses no-arg constructor. Consider using (IEventBus, IEventBus, BundleConfig) constructor.",
                         clazz.getSimpleName());
                 return instance;
             } catch (NoSuchMethodException ex) {
                 throw new EngineException(
-                        "BundleEntrypoint class must have either (IEventBus, IEventBus) or no-arg constructor: "
+                        "BundleEntrypoint class must have either (IEventBus, IEventBus, BundleConfig) or no-arg constructor: "
                                 + clazz.getName(), ex);
             }
         }
@@ -140,14 +140,12 @@ public class BundleScriptLoader {
 
     /**
      * Reloads a specific script using GroovyScriptEngine's reloading capabilities.
-     * This is useful for hot-reloading during development.
      */
-    public BundleEntrypoint reloadScript(Path scriptPath, BundleFiles files, GroovyScriptEngine engine, IEventBus bundleBus, IEventBus eventBus, String bundleId) throws Exception {
+    public BundleEntrypoint reloadScript(Path scriptPath, BundleFiles files, GroovyScriptEngine engine, IEventBus bundleBus, IEventBus eventBus, BundleConfig bundleConfig, String bundleId) throws Exception {
         String scriptName = getRelativeScriptName(files.root(), scriptPath);
 
-        // Clear cached script if it exists (forces reload)
         engine.getGroovyClassLoader().clearCache();
-        BundleEntrypoint entrypoint = loadScriptClass(scriptPath, files, engine, bundleBus, eventBus);
+        BundleEntrypoint entrypoint = loadScriptClass(scriptPath, files, engine, bundleBus, eventBus, bundleConfig);
         if (entrypoint != null) {
             LOGGER.info("Hot-reloading script '{}' for bundle '{}'", scriptName, bundleId);
             entrypoint.onLoad();

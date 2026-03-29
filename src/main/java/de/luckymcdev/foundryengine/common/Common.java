@@ -30,40 +30,44 @@ public abstract class Common {
      * Common Logger. Don't use, create your own.
      */
     public static final Logger LOGGER = LogUtils.getLogger();
-    /** Modid for FoundryEngine. */
+    /**
+     * Modid for FoundryEngine.
+     */
     public static final String MODID = "foundryengine";
-    /** Mod Name */
+    /**
+     * Mod Name
+     */
     public static final String MODNAME = "FoundryEngine";
 
     public static final Path GAMEDIR = FMLPaths.GAMEDIR.get().normalize().toAbsolutePath();
 
-    /** Base Config Dir*/
+    /**
+     * Base Config Dir
+     */
     public static final Path CONFIG = FMLPaths.CONFIGDIR.get();
-    /** FoundryEngine config dir*/
+    /**
+     * FoundryEngine config dir
+     */
     public static final Path FOUNDRY_ENGINE_CONFIG = CONFIG.resolve(MODID);
-    /** WIP database config dir.*/
+    /**
+     * WIP database config dir.
+     */
     public static final Path DATABASE_CONFIG = CONFIG.resolve("database");
     private static final boolean FIRST_RUN = FirstRun.isFor(MODID);
-
-    private Common() {
-        throw new UtilityClassException();
-    }
-
     public static final Path DIRECTORY = dir(GAMEDIR.resolve(MODNAME));
     public static final Path BUNDLES = dir(DIRECTORY.resolve("bundles"));
     public static final Path CACHE = dir(DIRECTORY.resolve(".cache"));
     public static final Path DUMPS = dir(CACHE.resolve("dumps"));
     public static final Path CONFIG_FE = dir(DIRECTORY.resolve("config"));
-
+    private static final BundleManager BUNDLE_MANAGER = new BundleManager(FoundryEngineMod.getModBus(), CONFIG_FE);
     private static final ThreadManager THREAD_MANAGER = new ThreadManager();
-
-    private static final BundleManager BUNDLE_MANAGER = new BundleManager(FoundryEngineMod.getModBus());
-
     private static final GameBehaviorManager GAME_BEHAVIOR_MANAGER = new GameBehaviorManager();
-
     private static final GameStageHandler GAME_STAGE_HANDLER = new GameStageHandler();
-
     private static final FeatureManager FEATURE_MANAGER = new FeatureManager();
+
+    private Common() {
+        throw new UtilityClassException();
+    }
 
     /**
      * Returns an {@link Identifier} where the namespace is {@link #MODID}

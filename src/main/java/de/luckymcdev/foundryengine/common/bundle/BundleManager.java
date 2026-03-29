@@ -7,7 +7,6 @@ import de.luckymcdev.foundryengine.common.script.BundleEntrypoint;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.neoforged.bus.api.IEventBus;
-import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -15,7 +14,7 @@ import java.nio.file.FileSystem;
 import java.nio.file.Path;
 
 /**
- * Bundle Manager that manages Bundle Lifecylces.
+ * Bundle Manager that manages Bundle Lifecycles.
  */
 public class BundleManager implements ResourceManagerReloadListener {
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -23,8 +22,8 @@ public class BundleManager implements ResourceManagerReloadListener {
     private final GenericRegistry<String, Bundle> bundles = new GenericRegistry<>();
     private final BundleDiscovery bundleDiscovery;
 
-    public BundleManager(IEventBus modBus) {
-        BundleFactory bundleFactory = new BundleFactory(modBus);
+    public BundleManager(IEventBus modBus, Path configDirectory) {
+        BundleFactory bundleFactory = new BundleFactory(modBus, configDirectory);
         this.bundleDiscovery = new BundleDiscovery(bundleFactory, this::register);
     }
 
@@ -41,7 +40,7 @@ public class BundleManager implements ResourceManagerReloadListener {
      */
     public void remove(Bundle bundle) {
         bundles.remove(bundle.info().id());
-        closeFileSystem(bundle);
+        unloadBundle(bundle);
     }
 
     /**
@@ -91,10 +90,14 @@ public class BundleManager implements ResourceManagerReloadListener {
     }
 
     /**
-     * Unloads a single bundle by calling onUnload on all entrypoints
-     * and closing the ZIP FileSystem if present.
+     * Unloads a single bundle: saves config, calls onUnload on all entrypoints,
+     * and closes the ZIP FileSystem if present.
      */
     private void unloadBundle(Bundle bundle) {
+        if (bundle.bundleConfig().isLoaded()) {
+            bundle.bundleConfig().save();
+        }
+
         for (BundleEntrypoint entrypoint : bundle.entrypoints()) {
             try {
                 entrypoint.onUnload();
@@ -126,7 +129,7 @@ public class BundleManager implements ResourceManagerReloadListener {
     }
 
     @Override
-    public void onResourceManagerReload(@NonNull ResourceManager resourceManager) {
+    public void onResourceManagerReload(ResourceManager resourceManager) {
         this.reload();
     }
 }
