@@ -1,3 +1,6 @@
+/**
+ * Virtual Resource Pack Banner JSON
+ */
 @NullMarked
 package de.luckymcdev.foundryengine.common.vpacks.json.recipe.banner;
 

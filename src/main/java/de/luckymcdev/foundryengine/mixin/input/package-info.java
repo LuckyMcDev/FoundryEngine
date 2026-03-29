@@ -1,3 +1,6 @@
+/**
+ * Input Mixins
+ */
 @NullMarked
 package de.luckymcdev.foundryengine.mixin.input;
 

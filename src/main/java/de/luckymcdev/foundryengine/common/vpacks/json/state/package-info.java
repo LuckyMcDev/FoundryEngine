@@ -1,3 +1,6 @@
+/**
+ * Virtual Resource Pack State JSON
+ */
 @NullMarked
 package de.luckymcdev.foundryengine.common.vpacks.json.state;
 

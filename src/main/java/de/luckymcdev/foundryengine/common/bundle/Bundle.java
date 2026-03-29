@@ -22,6 +22,7 @@ import java.util.List;
  * @param bundleBus the 'mod' event bus but just for this bundle.
  * @param entrypoints a list of entrypoints this bundle contains.
  * @param creativeModeTab the Creative Mode tab for this bundle.
+ * @param bundleConfig the config instance for this bundle.
  */
 public record Bundle(
         BundleInfo info,

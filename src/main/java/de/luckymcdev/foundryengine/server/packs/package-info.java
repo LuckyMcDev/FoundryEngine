@@ -1,3 +1,6 @@
+/**
+ * Resource and Data Packs.
+ */
 @NullMarked
 package de.luckymcdev.foundryengine.server.packs;
 

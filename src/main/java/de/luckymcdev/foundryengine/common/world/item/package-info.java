@@ -1,3 +1,6 @@
+/**
+ * Items
+ */
 @NullMarked
 package de.luckymcdev.foundryengine.common.world.item;
 
