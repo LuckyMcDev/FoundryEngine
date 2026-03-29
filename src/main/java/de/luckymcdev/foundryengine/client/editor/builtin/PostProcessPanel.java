@@ -1,4 +1,4 @@
-package de.luckymcdev.foundryengine.client.editor.builtin.post;
+package de.luckymcdev.foundryengine.client.editor.builtin;
 
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.Panel;

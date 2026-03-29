@@ -12,7 +12,7 @@ import static org.lwjgl.glfw.GLFW.*;
  * Extension to {@link ImGuiImplGlfw} which makes the Clipboard be handled by Minecraft.
  */
 @ApiStatus.Internal
-public class FeImGuiImplGlfw extends ImGuiImplGlfw {
+public class EngineImGuiImplGlfw extends ImGuiImplGlfw {
 
     @Override
     protected ImStrSupplier getClipboardTextFn() {

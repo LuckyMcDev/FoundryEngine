@@ -10,11 +10,12 @@ import com.mojang.blaze3d.opengl.GlTexture;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.client.Client;
-import de.luckymcdev.foundryengine.client.imgui.backend.FeImGuiImplGlfw;
+import de.luckymcdev.foundryengine.client.editor.styles.theme.ImTheme;
+import de.luckymcdev.foundryengine.client.editor.styles.theme.ImThemes;
+import de.luckymcdev.foundryengine.client.imgui.backend.EngineImGuiImplGlfw;
 import de.luckymcdev.foundryengine.client.imgui.backend.ImGuiImplGl3;
 import de.luckymcdev.foundryengine.client.imgui.context.ImGuiContextStack;
 import de.luckymcdev.foundryengine.client.imgui.context.ImGuiContextTypes;
-import de.luckymcdev.foundryengine.client.imgui.graphics.ImGuiGraphics;
 import de.luckymcdev.foundryengine.client.imgui.graphics.ImGuiGraphicsStack;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.common.font.TTFFile;
@@ -50,7 +51,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public final class ImGuiManager implements EngineImGui, ResourceManagerReloadListener, NativeResource {
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    private final FeImGuiImplGlfw imGuiImplGlfw = new FeImGuiImplGlfw();
+    private final EngineImGuiImplGlfw imGuiImplGlfw = new EngineImGuiImplGlfw();
     private final ImGuiImplGl3 imGuiImplGl3 = new ImGuiImplGl3();
 
     private final ImGuiContextStack CONTEXT_STACK = new ImGuiContextStack();
@@ -86,6 +87,7 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
     private int dockId;
 
     public ImGuiManager() {
+        //font = ImGui.getFont();
     }
     /**
      * Creates a new ImGui context for the Window handle
@@ -102,7 +104,7 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
         CONTEXT_STACK.addContextType(ImGuiContextTypes.NODE_EDITOR);
 
         final ImGuiIO io = ImGui.getIO();
-        io.setIniFilename("toolbox.ini");
+        io.setIniFilename("foundryengine.ini");
         io.addConfigFlags(ImGuiConfigFlags.ViewportsEnable);
         io.addConfigFlags(ImGuiConfigFlags.DockingEnable);
         io.addConfigFlags(ImGuiConfigFlags.DpiEnableScaleFonts);
@@ -117,9 +119,8 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
         var fonts = io.getFonts();
         if (!fonts.isBuilt()) fonts.build();
 
-        var style = ImGui.getStyle();
         ImGui.styleColorsDark();
-        ImGuiGraphics.setFullDefaultStyle(style);
+        setTheme(ImThemes.VIDLIB_IM_THEME);
     }
 
     @Override
@@ -146,6 +147,10 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
 
     public boolean isEnabled() {
         return enabled.get();
+    }
+
+    public void setTheme(ImTheme theme) {
+        theme.apply(ImGui.getStyle());
     }
 
     /**

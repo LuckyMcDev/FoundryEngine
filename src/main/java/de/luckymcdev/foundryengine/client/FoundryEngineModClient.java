@@ -5,11 +5,7 @@ import de.luckymcdev.foundryengine.client.debug.renderer.SimpleDebugScreenRender
 import de.luckymcdev.foundryengine.client.debug.screen.BundleDebugEntry;
 import de.luckymcdev.foundryengine.client.debug.screen.GameStagesDebugEntry;
 import de.luckymcdev.foundryengine.client.debug.screen.PostProcessDebugEntry;
-import de.luckymcdev.foundryengine.client.editor.builtin.TestPanel;
-import de.luckymcdev.foundryengine.client.editor.builtin.editor.ConsolePanel;
-import de.luckymcdev.foundryengine.client.editor.builtin.editor.FileExplorerPanel;
-import de.luckymcdev.foundryengine.client.editor.builtin.editor.MainEditor;
-import de.luckymcdev.foundryengine.client.editor.builtin.post.PostProcessPanel;
+import de.luckymcdev.foundryengine.client.editor.builtin.*;
 import de.luckymcdev.foundryengine.client.editor.event.RegisterPanelEvent;
 import de.luckymcdev.foundryengine.client.event.RegisterRenderingStuffEvent;
 import de.luckymcdev.foundryengine.client.ext.ModPathBroadcaster;
@@ -41,7 +37,7 @@ public class FoundryEngineModClient {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final IEventBus BUS = NeoForge.EVENT_BUS;
 
-    private int tickCount = 0;
+    private final int tickCount = 0;
 
     public FoundryEngineModClient(IEventBus modBus, ModContainer modContainer) {
         EngineParticles.PARTICLE_TYPES.register(modBus);

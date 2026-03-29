@@ -1,8 +1,6 @@
-package de.luckymcdev.foundryengine.client.editor.builtin.editor.code;
+package de.luckymcdev.foundryengine.client.editor.builtin;
 
 import de.luckymcdev.foundryengine.client.Client;
-import de.luckymcdev.foundryengine.client.editor.builtin.editor.EditorPanel;
-import de.luckymcdev.foundryengine.client.editor.builtin.editor.FileExplorerPanel;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import imgui.ImGui;
 import imgui.flag.ImGuiFocusedFlags;

@@ -1,4 +1,4 @@
-package de.luckymcdev.foundryengine.client.editor.builtin.editor;
+package de.luckymcdev.foundryengine.client.editor.builtin;
 
 import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
