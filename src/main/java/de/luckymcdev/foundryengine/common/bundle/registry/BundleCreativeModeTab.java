@@ -11,12 +11,10 @@ import org.jspecify.annotations.Nullable;
 import java.util.function.Supplier;
 
 public class BundleCreativeModeTab {
-    private @Nullable Supplier<CreativeModeTab> tab;
+    private final @Nullable Supplier<CreativeModeTab> tab;
 
     public BundleCreativeModeTab(String bundleId, IEventBus modBus, BundleRegistryQuery registryQuery) {
         DeferredRegister<CreativeModeTab> register = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, bundleId);
-
-        if (registryQuery.getItems().isEmpty() || registryQuery.getBlocks().isEmpty()) return;
 
         this.tab = register.register(bundleId + "_creative_tab", () ->
                 CreativeModeTab.builder()
