@@ -109,6 +109,8 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
         io.addConfigFlags(ImGuiConfigFlags.DockingEnable);
         io.addConfigFlags(ImGuiConfigFlags.DpiEnableScaleFonts);
         io.addConfigFlags(ImGuiConfigFlags.DpiEnableScaleViewports);
+        io.addConfigFlags(ImGuiConfigFlags.NavEnableKeyboard);
+        io.getFonts().setFreeTypeRenderer(true);
         io.setConfigDockingWithShift(true);
         io.setConfigWindowsMoveFromTitleBarOnly(true);
         io.setConfigMacOSXBehaviors(InputQuirks.ON_OSX);
