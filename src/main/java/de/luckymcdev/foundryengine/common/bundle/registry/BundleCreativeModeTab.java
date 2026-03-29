@@ -4,22 +4,23 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import org.jspecify.annotations.Nullable;
 
 import java.util.function.Supplier;
 
 public class BundleCreativeModeTab {
-    private final DeferredRegister<CreativeModeTab> register;
-    private final Supplier<CreativeModeTab> tab;
+    private @Nullable Supplier<CreativeModeTab> tab;
 
     public BundleCreativeModeTab(String bundleId, IEventBus modBus, BundleRegistryQuery registryQuery) {
-        this.register = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, bundleId);
+        DeferredRegister<CreativeModeTab> register = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, bundleId);
+
+        if (registryQuery.getItems().isEmpty() || registryQuery.getBlocks().isEmpty()) return;
 
         this.tab = register.register(bundleId + "_creative_tab", () ->
                 CreativeModeTab.builder()
-                        .icon(() -> new ItemStack(Items.PAPER))
+                        .icon(() -> new ItemStack(registryQuery.getItems().getFirst()))
                         .title(Component.translatable("itemGroup." + bundleId + "." + bundleId + "_creative_tab"))
                         .displayItems((params, output) -> {
                             registryQuery.getItems().forEach(output::accept);
@@ -28,10 +29,10 @@ public class BundleCreativeModeTab {
                         .build()
         );
 
-        this.register.register(modBus);
+        register.register(modBus);
     }
 
-    public Supplier<CreativeModeTab> getTab() {
+    public @Nullable Supplier<CreativeModeTab> getTab() {
         return tab;
     }
 }
