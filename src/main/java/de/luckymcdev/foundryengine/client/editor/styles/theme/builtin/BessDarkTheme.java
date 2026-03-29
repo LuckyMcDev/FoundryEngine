@@ -1,88 +1,94 @@
 package de.luckymcdev.foundryengine.client.editor.styles.theme.builtin;
 
 import de.luckymcdev.foundryengine.client.editor.styles.theme.ImTheme;
+import de.luckymcdev.foundryengine.common.util.color.Color;
 import imgui.ImGuiStyle;
 import imgui.flag.ImGuiCol;
 
 public class BessDarkTheme implements ImTheme {
 
+    private static final Color BG_DARK = new Color(0.07f, 0.07f, 0.09f, 1.00f);
+    private static final Color BG_MED = new Color(0.12f, 0.12f, 0.15f, 1.00f);
+    private static final Color BG_LIGHT = new Color(0.18f, 0.18f, 0.22f, 1.00f);
+    private static final Color TEXT = new Color(0.90f, 0.90f, 0.95f, 1.00f);
+    private static final Color TEXT_DISABLED = new Color(0.50f, 0.50f, 0.55f, 1.00f);
+    private static final Color SELECTION = new Color(0.30f, 0.30f, 0.40f, 1.00f);
+    private static final Color SELECTION_ACTIVE = new Color(0.25f, 0.25f, 0.35f, 1.00f);
+    private static final Color BUTTON = new Color(0.20f, 0.22f, 0.27f, 1.00f);
+    private static final Color BUTTON_HOVER = new Color(0.30f, 0.32f, 0.40f, 1.00f);
+    private static final Color BUTTON_ACTIVE = new Color(0.35f, 0.38f, 0.50f, 1.00f);
+    private static final Color FRAME = new Color(0.15f, 0.15f, 0.18f, 1.00f);
+    private static final Color FRAME_HOVER = new Color(0.22f, 0.22f, 0.27f, 1.00f);
+    private static final Color FRAME_ACTIVE = new Color(0.25f, 0.25f, 0.30f, 1.00f);
+    private static final Color TAB_HOVER = new Color(0.35f, 0.35f, 0.50f, 1.00f);
+    private static final Color TAB_ACTIVE = new Color(0.25f, 0.25f, 0.38f, 1.00f);
+    private static final Color TAB_UNFOCUSED = new Color(0.13f, 0.13f, 0.17f, 1.00f);
+    private static final Color TAB_UNFOCUSED_ACTIVE = new Color(0.20f, 0.20f, 0.25f, 1.00f);
+    private static final Color TITLE_ACTIVE = new Color(0.15f, 0.15f, 0.20f, 1.00f);
+    private static final Color TITLE_COLLAPSED = new Color(0.10f, 0.10f, 0.12f, 1.00f);
+    private static final Color BORDER = new Color(0.20f, 0.20f, 0.25f, 0.50f);
+    private static final Color ACCENT = new Color(0.50f, 0.70f, 1.00f, 1.00f);
+    private static final Color ACCENT_HOVER = new Color(0.60f, 0.80f, 1.00f, 1.00f);
+    private static final Color ACCENT_ACTIVE = new Color(0.70f, 0.90f, 1.00f, 1.00f);
+    private static final Color SCROLL_GRAB = new Color(0.30f, 0.30f, 0.35f, 1.00f);
+    private static final Color SCROLL_HOVER = new Color(0.40f, 0.40f, 0.50f, 1.00f);
+    private static final Color SCROLL_ACTIVE = new Color(0.45f, 0.45f, 0.55f, 1.00f);
+
     @Override
     public String getName() {
-        return "BessDark";
+        return "Bess Dark";
     }
 
-
-    /**
-     * Applies the BessDark theme to the given ImGuiStyle.
-     *
-     * @param style The ImGuiStyle to apply the theme to.
-     */
     @Override
-    public void applyTheme(ImGuiStyle style) {
-        // Primary background
-        style.setColor(ImGuiCol.WindowBg, 0.07f, 0.07f, 0.09f, 1.00f);  // #131318
-        style.setColor(ImGuiCol.MenuBarBg, 0.12f, 0.12f, 0.15f, 1.00f); // #131318
-        style.setColor(ImGuiCol.PopupBg, 0.18f, 0.18f, 0.22f, 1.00f);
+    public void applyTheme(ImGuiStyle s) {
+        col(s, ImGuiCol.WindowBg, BG_DARK);
+        col(s, ImGuiCol.MenuBarBg, BG_MED);
+        col(s, ImGuiCol.PopupBg, BG_LIGHT);
 
-        // Headers
-        style.setColor(ImGuiCol.Header, 0.18f, 0.18f, 0.22f, 1.00f);
-        style.setColor(ImGuiCol.HeaderHovered, 0.30f, 0.30f, 0.40f, 1.00f);
-        style.setColor(ImGuiCol.HeaderActive, 0.25f, 0.25f, 0.35f, 1.00f);
+        col(s, ImGuiCol.Text, TEXT);
+        col(s, ImGuiCol.TextDisabled, TEXT_DISABLED);
 
-        // Buttons
-        style.setColor(ImGuiCol.Button, 0.20f, 0.22f, 0.27f, 1.00f);
-        style.setColor(ImGuiCol.ButtonHovered, 0.30f, 0.32f, 0.40f, 1.00f);
-        style.setColor(ImGuiCol.ButtonActive, 0.35f, 0.38f, 0.50f, 1.00f);
+        col(s, ImGuiCol.Header, BG_LIGHT);
+        col(s, ImGuiCol.HeaderHovered, SELECTION);
+        col(s, ImGuiCol.HeaderActive, SELECTION_ACTIVE);
 
-        // Frame BG
-        style.setColor(ImGuiCol.FrameBg, 0.15f, 0.15f, 0.18f, 1.00f);
-        style.setColor(ImGuiCol.FrameBgHovered, 0.22f, 0.22f, 0.27f, 1.00f);
-        style.setColor(ImGuiCol.FrameBgActive, 0.25f, 0.25f, 0.30f, 1.00f);
+        col(s, ImGuiCol.Button, BUTTON);
+        col(s, ImGuiCol.ButtonHovered, BUTTON_HOVER);
+        col(s, ImGuiCol.ButtonActive, BUTTON_ACTIVE);
 
-        // Tabs
-        style.setColor(ImGuiCol.Tab, 0.18f, 0.18f, 0.22f, 1.00f);
-        style.setColor(ImGuiCol.TabHovered, 0.35f, 0.35f, 0.50f, 1.00f);
-        style.setColor(ImGuiCol.TabActive, 0.25f, 0.25f, 0.38f, 1.00f);
-        style.setColor(ImGuiCol.TabUnfocused, 0.13f, 0.13f, 0.17f, 1.00f);
-        style.setColor(ImGuiCol.TabUnfocusedActive, 0.20f, 0.20f, 0.25f, 1.00f);
+        col(s, ImGuiCol.FrameBg, FRAME);
+        col(s, ImGuiCol.FrameBgHovered, FRAME_HOVER);
+        col(s, ImGuiCol.FrameBgActive, FRAME_ACTIVE);
 
-        // Title
-        style.setColor(ImGuiCol.TitleBg, 0.12f, 0.12f, 0.15f, 1.00f);
-        style.setColor(ImGuiCol.TitleBgActive, 0.15f, 0.15f, 0.20f, 1.00f);
-        style.setColor(ImGuiCol.TitleBgCollapsed, 0.10f, 0.10f, 0.12f, 1.00f);
+        col(s, ImGuiCol.Tab, BG_LIGHT);
+        col(s, ImGuiCol.TabHovered, TAB_HOVER);
+        col(s, ImGuiCol.TabActive, TAB_ACTIVE);
+        col(s, ImGuiCol.TabUnfocused, TAB_UNFOCUSED);
+        col(s, ImGuiCol.TabUnfocusedActive, TAB_UNFOCUSED_ACTIVE);
 
-        // Borders
-        style.setColor(ImGuiCol.Border, 0.20f, 0.20f, 0.25f, 0.50f);
-        style.setColor(ImGuiCol.BorderShadow, 0.00f, 0.00f, 0.00f, 0.00f);
+        col(s, ImGuiCol.TitleBg, BG_MED);
+        col(s, ImGuiCol.TitleBgActive, TITLE_ACTIVE);
+        col(s, ImGuiCol.TitleBgCollapsed, TITLE_COLLAPSED);
 
-        // Text
-        style.setColor(ImGuiCol.Text, 0.90f, 0.90f, 0.95f, 1.00f);
-        style.setColor(ImGuiCol.TextDisabled, 0.50f, 0.50f, 0.55f, 1.00f);
+        col(s, ImGuiCol.Border, BORDER);
+        col(s, ImGuiCol.BorderShadow, 0, 0, 0, 0);
 
-        // Highlights
-        style.setColor(ImGuiCol.CheckMark, 0.50f, 0.70f, 1.00f, 1.00f);
-        style.setColor(ImGuiCol.SliderGrab, 0.50f, 0.70f, 1.00f, 1.00f);
-        style.setColor(ImGuiCol.SliderGrabActive, 0.60f, 0.80f, 1.00f, 1.00f);
-        style.setColor(ImGuiCol.ResizeGrip, 0.50f, 0.70f, 1.00f, 0.50f);
-        style.setColor(ImGuiCol.ResizeGripHovered, 0.60f, 0.80f, 1.00f, 0.75f);
-        style.setColor(ImGuiCol.ResizeGripActive, 0.70f, 0.90f, 1.00f, 1.00f);
+        col(s, ImGuiCol.CheckMark, ACCENT);
+        col(s, ImGuiCol.SliderGrab, ACCENT);
+        col(s, ImGuiCol.SliderGrabActive, ACCENT_HOVER);
+        col(s, ImGuiCol.ResizeGrip, ACCENT.r(), ACCENT.g(), ACCENT.b(), 0.50f);
+        col(s, ImGuiCol.ResizeGripHovered, ACCENT_HOVER.r(), ACCENT_HOVER.g(), ACCENT_HOVER.b(), 0.75f);
+        col(s, ImGuiCol.ResizeGripActive, ACCENT_ACTIVE);
 
-        // Scrollbar
-        style.setColor(ImGuiCol.ScrollbarBg, 0.10f, 0.10f, 0.12f, 1.00f);
-        style.setColor(ImGuiCol.ScrollbarGrab, 0.30f, 0.30f, 0.35f, 1.00f);
-        style.setColor(ImGuiCol.ScrollbarGrabHovered, 0.40f, 0.40f, 0.50f, 1.00f);
-        style.setColor(ImGuiCol.ScrollbarGrabActive, 0.45f, 0.45f, 0.55f, 1.00f);
+        col(s, ImGuiCol.ScrollbarBg, TITLE_COLLAPSED);
+        col(s, ImGuiCol.ScrollbarGrab, SCROLL_GRAB);
+        col(s, ImGuiCol.ScrollbarGrabHovered, SCROLL_HOVER);
+        col(s, ImGuiCol.ScrollbarGrabActive, SCROLL_ACTIVE);
 
-        // Style tweaks
-        style.setWindowRounding(5.0f);
-        style.setFrameRounding(5.0f);
-        style.setGrabRounding(5.0f);
-        style.setTabRounding(5.0f);
-        style.setPopupRounding(5.0f);
-        style.setScrollbarRounding(5.0f);
-        style.setWindowPadding(10, 10);
-        style.setFramePadding(6, 4);
-        style.setItemSpacing(8, 6);
-        style.setPopupBorderSize(0.0f);
+        rounding(s, 5, 5, 5, 5, 5, 5, 0);
+        borders(s, 0, 0, 0, 0, 0);
+        padding(s, 10, 10);
+        framePadding(s, 6, 4);
+        itemSpacing(s, 8, 6);
     }
 }

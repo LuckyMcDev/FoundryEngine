@@ -1,49 +1,48 @@
 package de.luckymcdev.foundryengine.client.editor.styles.theme.builtin;
 
 import de.luckymcdev.foundryengine.client.editor.styles.theme.ImTheme;
+import de.luckymcdev.foundryengine.common.util.color.Color;
 import imgui.ImGuiStyle;
 import imgui.flag.ImGuiCol;
 
 public class DarkTheme implements ImTheme {
+
+    private static final Color BG_WINDOW = new Color(0.1000f, 0.1050f, 0.1100f, 1.00f);
+    private static final Color BG_MED = new Color(0.2000f, 0.2050f, 0.2100f, 1.00f);
+    private static final Color BG_HI = new Color(0.3000f, 0.3050f, 0.3100f, 1.00f);
+    private static final Color BG_ACTIVE = new Color(0.1500f, 0.1505f, 0.1510f, 1.00f);
+    private static final Color TAB_HOVER = new Color(0.3800f, 0.3805f, 0.3810f, 1.00f);
+    private static final Color TAB_ACTIVE = new Color(0.2800f, 0.2805f, 0.2810f, 1.00f);
+
     @Override
     public String getName() {
         return "Dark";
     }
 
-    /**
-     * Applies the Dark theme to the given ImGuiStyle.
-     *
-     * @param style The ImGuiStyle to apply the theme to.
-     */
     @Override
-    public void applyTheme(ImGuiStyle style) {
-        style.setColor(ImGuiCol.WindowBg, 0.1f, 0.105f, 0.11f, 1.0f);
+    public void applyTheme(ImGuiStyle s) {
+        col(s, ImGuiCol.WindowBg, BG_WINDOW);
 
-        // Headers
-        style.setColor(ImGuiCol.Header, 0.2f, 0.205f, 0.21f, 1.0f);
-        style.setColor(ImGuiCol.HeaderHovered, 0.3f, 0.305f, 0.31f, 1.0f);
-        style.setColor(ImGuiCol.HeaderActive, 0.15f, 0.1505f, 0.151f, 1.0f);
+        col(s, ImGuiCol.Header, BG_MED);
+        col(s, ImGuiCol.HeaderHovered, BG_HI);
+        col(s, ImGuiCol.HeaderActive, BG_ACTIVE);
 
-        // Buttons
-        style.setColor(ImGuiCol.Button, 0.2f, 0.205f, 0.21f, 1.0f);
-        style.setColor(ImGuiCol.ButtonHovered, 0.3f, 0.305f, 0.31f, 1.0f);
-        style.setColor(ImGuiCol.ButtonActive, 0.15f, 0.1505f, 0.151f, 1.0f);
+        col(s, ImGuiCol.Button, BG_MED);
+        col(s, ImGuiCol.ButtonHovered, BG_HI);
+        col(s, ImGuiCol.ButtonActive, BG_ACTIVE);
 
-        // Frame BG
-        style.setColor(ImGuiCol.FrameBg, 0.2f, 0.205f, 0.21f, 1.0f);
-        style.setColor(ImGuiCol.FrameBgHovered, 0.3f, 0.305f, 0.31f, 1.0f);
-        style.setColor(ImGuiCol.FrameBgActive, 0.15f, 0.1505f, 0.151f, 1.0f);
+        col(s, ImGuiCol.FrameBg, BG_MED);
+        col(s, ImGuiCol.FrameBgHovered, BG_HI);
+        col(s, ImGuiCol.FrameBgActive, BG_ACTIVE);
 
-        // Tabs
-        style.setColor(ImGuiCol.Tab, 0.15f, 0.1505f, 0.151f, 1.0f);
-        style.setColor(ImGuiCol.TabHovered, 0.38f, 0.3805f, 0.381f, 1.0f);
-        style.setColor(ImGuiCol.TabActive, 0.28f, 0.2805f, 0.281f, 1.0f);
-        style.setColor(ImGuiCol.TabUnfocused, 0.15f, 0.1505f, 0.151f, 1.0f);
-        style.setColor(ImGuiCol.TabUnfocusedActive, 0.2f, 0.205f, 0.21f, 1.0f);
+        col(s, ImGuiCol.Tab, BG_ACTIVE);
+        col(s, ImGuiCol.TabHovered, TAB_HOVER);
+        col(s, ImGuiCol.TabActive, TAB_ACTIVE);
+        col(s, ImGuiCol.TabUnfocused, BG_ACTIVE);
+        col(s, ImGuiCol.TabUnfocusedActive, BG_MED);
 
-        // Title
-        style.setColor(ImGuiCol.TitleBg, 0.15f, 0.1505f, 0.151f, 1.0f);
-        style.setColor(ImGuiCol.TitleBgActive, 0.15f, 0.1505f, 0.151f, 1.0f);
-        style.setColor(ImGuiCol.TitleBgCollapsed, 0.15f, 0.1505f, 0.151f, 1.0f);
+        col(s, ImGuiCol.TitleBg, BG_ACTIVE);
+        col(s, ImGuiCol.TitleBgActive, BG_ACTIVE);
+        col(s, ImGuiCol.TitleBgCollapsed, BG_ACTIVE);
     }
 }

@@ -120,7 +120,7 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
         if (!fonts.isBuilt()) fonts.build();
 
         ImGui.styleColorsDark();
-        setTheme(ImThemes.VIDLIB_IM_THEME);
+        setTheme(ImThemes.BESS_DARK_IM_THEME);
     }
 
     @Override

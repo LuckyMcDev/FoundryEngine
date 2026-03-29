@@ -3,6 +3,7 @@ package de.luckymcdev.foundryengine.client.editor.styles.theme;
 import de.luckymcdev.foundryengine.client.editor.styles.theme.builtin.*;
 
 public class ImThemes {
+    //This is the default theme.
     public static final BessDarkTheme BESS_DARK_IM_THEME = new BessDarkTheme();
     public static final CatpuccinMochaTheme CATPUCCIN_MOCHA_IM_THEME = new CatpuccinMochaTheme();
     public static final ModernDarkTheme MODERN_DARK_IM_THEME = new ModernDarkTheme();

@@ -1,54 +1,50 @@
 package de.luckymcdev.foundryengine.client.editor.styles.theme.builtin;
 
 import de.luckymcdev.foundryengine.client.editor.styles.theme.ImTheme;
+import de.luckymcdev.foundryengine.common.util.color.Color;
 import imgui.ImGuiStyle;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiDir;
-import net.minecraft.util.ARGB;
 
 public class VidlibTheme implements ImTheme {
-    public static void setColor(ImGuiStyle style, int key, int color) {
-        style.setColor(key, ARGB.toABGR(color));
-    }
+
+    private static final Color BG_MAIN = new Color(0.133f, 0.133f, 0.157f, 1.000f);
+    private static final Color POPUP_BG = new Color(0.051f, 0.051f, 0.067f, 0.890f);
+    private static final Color FRAME_BG = new Color(0.082f, 0.082f, 0.110f, 1.000f);
+    private static final Color TITLE_BG = new Color(0.004f, 0.004f, 0.004f, 1.000f);
+    private static final Color TITLE_COLLAPSED = new Color(0.318f, 0.498f, 0.439f, 0.937f);
+    private static final Color BLUE_GRAB = new Color(0.267f, 0.400f, 0.573f, 1.000f);
+    private static final Color BUTTON_BLUE = new Color(0.259f, 0.588f, 0.980f, 0.400f);
 
     @Override
     public String getName() {
-        return "vidlib";
+        return "VidLib";
     }
 
     @Override
-    public void applyTheme(ImGuiStyle style) {
-        style.setWindowPadding(4F, 4F);
-        style.setFramePadding(4F, 1F);
-        style.setPopupBorderSize(0F);
-        style.setItemSpacing(6F, 4F);
-        style.setItemInnerSpacing(8F, 6F);
+    public void applyTheme(ImGuiStyle s) {
+        col(s, ImGuiCol.WindowBg, BG_MAIN);
+        col(s, ImGuiCol.PopupBg, POPUP_BG);
+        col(s, ImGuiCol.FrameBg, FRAME_BG);
+        col(s, ImGuiCol.TitleBg, TITLE_BG);
+        col(s, ImGuiCol.TitleBgActive, TITLE_BG);
+        col(s, ImGuiCol.TitleBgCollapsed, TITLE_COLLAPSED);
+        col(s, ImGuiCol.MenuBarBg, BG_MAIN);
+        col(s, ImGuiCol.SliderGrab, BLUE_GRAB);
+        col(s, ImGuiCol.Button, BUTTON_BLUE);
+        col(s, ImGuiCol.ButtonHovered, BUTTON_BLUE);
+        col(s, ImGuiCol.ButtonActive, BUTTON_BLUE);
 
-        style.setWindowMenuButtonPosition(ImGuiDir.None);
-        style.setWindowRounding(4F);
-        style.setFrameRounding(3F);
-        style.setChildRounding(3F);
-        style.setPopupRounding(3F);
-        style.setScrollbarRounding(1F);
-        style.setGrabRounding(2F);
-        style.setIndentSpacing(25F);
-        style.setScrollbarSize(13F);
-        style.setGrabMinSize(16F);
-        style.setWindowBorderSize(0F);
-        style.setSelectableTextAlign(0F, 0.5F);
-        style.setAlpha(1F);
-
-        setColor(style, ImGuiCol.WindowBg, 0xFF222228);
-        setColor(style, ImGuiCol.PopupBg, 0xE30D0D11);
-        setColor(style, ImGuiCol.FrameBg, 0xFF15151C);
-        setColor(style, ImGuiCol.TitleBg, 0xFF010101);
-        setColor(style, ImGuiCol.TitleBgActive, 0xFF010101);
-        setColor(style, ImGuiCol.MenuBarBg, 0xFF222228);
-        setColor(style, ImGuiCol.TitleBgCollapsed, 0xEF517F70);
-        setColor(style, ImGuiCol.SliderGrab, 0xFF446692);
-        setColor(style, ImGuiCol.Button, 0x664296FA);
-        setColor(style, ImGuiCol.ButtonHovered, 0x664296FA);
-        setColor(style, ImGuiCol.ButtonActive, 0x664296FA);
+        rounding(s, 4, 3, 2, 0, 3, 1, 3);
+        borders(s, 0, 0, 0, 0, 0);
+        padding(s, 4, 4);
+        framePadding(s, 4, 1);
+        itemSpacing(s, 6, 4);
+        itemInnerSpacing(s, 8, 6);
+        s.setIndentSpacing(25);
+        s.setScrollbarSize(13);
+        s.setGrabMinSize(16);
+        s.setSelectableTextAlign(0, 0.5f);
+        s.setWindowMenuButtonPosition(ImGuiDir.None);
     }
-
 }
