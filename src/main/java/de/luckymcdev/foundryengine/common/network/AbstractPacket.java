@@ -32,9 +32,6 @@ public interface AbstractPacket<T extends AbstractPacket<T>> extends CustomPacke
     default void handleServer(IPayloadContext ctx) {
     }
 
-    /**
-     * A blueprint for registration so we don't need an instance of the packet.
-     */
     record Definition<T extends AbstractPacket<T>>(
             Type<T> type,
             PacketBounds bounds,

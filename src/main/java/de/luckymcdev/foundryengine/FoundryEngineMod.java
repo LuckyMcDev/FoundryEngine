@@ -5,6 +5,8 @@ import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.feature.EngineFeatures;
 import de.luckymcdev.foundryengine.common.log.EngineLogAppender;
 import de.luckymcdev.foundryengine.common.network.TestPacket;
+import de.luckymcdev.foundryengine.common.network.packets.ServerBoundChangeWeatherPacket;
+import de.luckymcdev.foundryengine.common.network.packets.ServerBoundSetTimePacket;
 import de.luckymcdev.foundryengine.common.registry.EngineRegistries;
 import de.luckymcdev.foundryengine.common.thread.RegisterEngineThreadEvent;
 import de.luckymcdev.foundryengine.common.vpacks.BundleVirtualPacks;
@@ -78,6 +80,8 @@ public class FoundryEngineMod {
         Common.getFeatureManager().register(EngineFeatures.EDITOR);
 
         Common.getNetworkManager().register(TestPacket.DEFINITION);
+        Common.getNetworkManager().register(ServerBoundSetTimePacket.DEFINITION);
+        Common.getNetworkManager().register(ServerBoundChangeWeatherPacket.DEFINITION);
     }
 
     private void registerModBus(IEventBus modBus) {

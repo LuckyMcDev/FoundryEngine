@@ -5,6 +5,8 @@ import de.luckymcdev.foundryengine.client.editor.builtin.EditorPanel;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
+import de.luckymcdev.foundryengine.common.network.packets.ServerBoundChangeWeatherPacket;
+import de.luckymcdev.foundryengine.common.network.packets.ServerBoundSetTimePacket;
 import imgui.ImGui;
 import imgui.flag.ImGuiKey;
 import net.minecraft.network.protocol.game.ServerboundChangeGameModePacket;
@@ -81,39 +83,37 @@ public class MinecraftToolsPanel extends EditorPanel {
         ImGui.text("Time Selector");
 
         if (ImGui.button("Day")) {
-            Client.getConnection().sendCommand("time set minecraft:day");
-        }
-        ImGui.sameLine();
-        if (ImGui.button("Night")) {
-            Client.getConnection().sendCommand("time set minecraft:night");
-        }
-        ImGui.sameLine();
-        if (ImGui.button("Midnight")) {
-            Client.getConnection().sendCommand("time set minecraft:midnight");
+            Client.getConnection().send(new ServerBoundSetTimePacket(1000));
         }
         ImGui.sameLine();
         if (ImGui.button("Noon")) {
-            Client.getConnection().sendCommand("time set minecraft:noon");
+            Client.getConnection().send(new ServerBoundSetTimePacket(6000));
+        }
+        ImGui.sameLine();
+        if (ImGui.button("Night")) {
+            Client.getConnection().send(new ServerBoundSetTimePacket(13000));
+        }
+        ImGui.sameLine();
+        if (ImGui.button("Midnight")) {
+            Client.getConnection().send(new ServerBoundSetTimePacket(18000));
         }
     }
 
     private void weatherSelector() {
         if (Client.getConnection() == null) return;
-        ImGui.text("Weather Selector");
+        ImGui.text("Weather");
 
         if (ImGui.button("Clear")) {
-            Client.getConnection().sendCommand("weather clear");
+            Client.getConnection().send(new ServerBoundChangeWeatherPacket("clear"));
         }
         ImGui.sameLine();
         if (ImGui.button("Rain")) {
-            Client.getConnection().sendCommand("weather rain");
+            Client.getConnection().send(new ServerBoundChangeWeatherPacket("rain"));
         }
         ImGui.sameLine();
         if (ImGui.button("Thunder")) {
-            Client.getConnection().sendCommand("weather thunder");
+            Client.getConnection().send(new ServerBoundChangeWeatherPacket("thunder"));
         }
-        ImGui.sameLine();
-
     }
 
     private void gameModeSelector() {
