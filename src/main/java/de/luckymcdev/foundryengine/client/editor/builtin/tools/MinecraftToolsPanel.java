@@ -31,6 +31,8 @@ public class MinecraftToolsPanel extends EditorPanel {
         ImGui.separator();
         timeSelector();
         ImGui.separator();
+        weatherSelector();
+        ImGui.separator();
         metrics();
         ImGui.separator();
     }
@@ -93,6 +95,25 @@ public class MinecraftToolsPanel extends EditorPanel {
         if (ImGui.button("Noon")) {
             Client.getConnection().sendCommand("time set minecraft:noon");
         }
+    }
+
+    private void weatherSelector() {
+        if (Client.getConnection() == null) return;
+        ImGui.text("Weather Selector");
+
+        if (ImGui.button("Clear")) {
+            Client.getConnection().sendCommand("weather clear");
+        }
+        ImGui.sameLine();
+        if (ImGui.button("Rain")) {
+            Client.getConnection().sendCommand("weather rain");
+        }
+        ImGui.sameLine();
+        if (ImGui.button("Thunder")) {
+            Client.getConnection().sendCommand("weather thunder");
+        }
+        ImGui.sameLine();
+
     }
 
     private void gameModeSelector() {
