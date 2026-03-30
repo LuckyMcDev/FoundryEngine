@@ -5,12 +5,12 @@ import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.imgui.EngineImGuiUtils;
 import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
+import de.luckymcdev.foundryengine.common.network.TestPacket;
 import imgui.ImGui;
 import imgui.extension.imguiknobs.ImGuiKnobs;
-import imgui.extension.texteditor.TextEditor;
-import imgui.extension.texteditor.TextEditorLanguageDefinition;
 import imgui.flag.ImGuiKey;
 import imgui.type.ImFloat;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
 /**
  * A simple Test Panel.
@@ -40,14 +40,12 @@ public class TestPanel extends Panel {
 
         EngineImGuiUtils.resourceLocation(Common.id("imguiiscool"));
 
-        ImGuiKnobs.knob("knob", knobValue, 0.0f, 1.0f);
+        ImGuiKnobs.knob("This Will Damage you if you press that button!", knobValue, 0.0f, 10.0f);
 
-        TextEditor editor = new TextEditor();
 
-        editor.setLanguageDefinition(TextEditorLanguageDefinition.C());
-        editor.setText("TEST");
-
-        editor.render("Test Editor");
+        if (ImGui.button("Press this!")) {
+            ClientPacketDistributor.sendToServer(new TestPacket(knobValue.get()));
+        }
 
     }
 }

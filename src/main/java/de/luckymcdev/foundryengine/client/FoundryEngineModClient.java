@@ -35,6 +35,7 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.*;
+import net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlersEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import org.slf4j.Logger;
 
@@ -54,6 +55,7 @@ public class FoundryEngineModClient {
         modBus.addListener(this::onRegisterDebugEntry);
         modBus.addListener(this::onRegisterDebugRenderers);
         modBus.addListener(this::registerParticles);
+        modBus.addListener(this::onRegisterClientPayloadHandlers);
 
         BUS.addListener(this::onRegisterKeyBinding);
         BUS.addListener(this::onRegisterGLSLPreProcessors);
@@ -86,6 +88,10 @@ public class FoundryEngineModClient {
 
     private void onRegisterKeyBinding(RegisterKeyBindingEvent event) {
         event.register(Client.EDITOR_KEY);
+    }
+
+    private void onRegisterClientPayloadHandlers(RegisterClientPayloadHandlersEvent event) {
+        Common.getNetworkManager().handleClientRegistration(event);
     }
 
     private void onRegisterGLSLPreProcessors(RegisterGLSLPreProcessorEvent event) {

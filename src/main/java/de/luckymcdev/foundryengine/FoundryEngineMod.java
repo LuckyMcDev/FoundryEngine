@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.feature.EngineFeatures;
 import de.luckymcdev.foundryengine.common.log.EngineLogAppender;
+import de.luckymcdev.foundryengine.common.network.TestPacket;
 import de.luckymcdev.foundryengine.common.registry.EngineRegistries;
 import de.luckymcdev.foundryengine.common.thread.RegisterEngineThreadEvent;
 import de.luckymcdev.foundryengine.common.vpacks.BundleVirtualPacks;
@@ -21,7 +22,6 @@ import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
-import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import org.jetbrains.annotations.ApiStatus;
 import org.slf4j.Logger;
 
@@ -61,6 +61,11 @@ public class FoundryEngineMod {
 
         BUS.addListener(this::onRegisterVirtualPacks);
 
+        Config.registerOthers(modContainer);
+    }
+
+    private void commonSetup(final FMLCommonSetupEvent event) {
+
         //Common.getGameBehaviorManager().register(Common.id("direct_world_load"),
         //        new DirectWorldLoadBehavior("testWorld")
         //);
@@ -72,7 +77,7 @@ public class FoundryEngineMod {
 
         Common.getFeatureManager().register(EngineFeatures.EDITOR);
 
-        Config.registerOthers(modContainer);
+        Common.getNetworkManager().register(TestPacket.DEFINITION);
     }
 
     private void registerModBus(IEventBus modBus) {
@@ -88,16 +93,16 @@ public class FoundryEngineMod {
         event.addRepositorySource(new EngineRepositorySource(event.getPackType()));
     }
 
+    private void onRegisterPayloadHandlers(RegisterPayloadHandlersEvent event) {
+        Common.getNetworkManager().handleRegistration(event);
+    }
+
     private void onRegisterVirtualPacks(RegisterVirtualPackEvent.BeforeUser event) {
         BundleVirtualPacks.create().forEach(event::addPack);
     }
 
     private void onRegisterCommands(RegisterCommandsEvent event) {
         FoundryCommands.registerAll(event.getDispatcher(), event.getBuildContext());
-    }
-
-    private void onRegisterPayloadHandlers(RegisterPayloadHandlersEvent event) {
-        PayloadRegistrar registrar = event.registrar("1");
     }
 
     private void onConstruct(final FMLConstructModEvent event) {
@@ -108,9 +113,6 @@ public class FoundryEngineMod {
         }
 
         EngineLogAppender.Holder.addAppender();
-    }
-
-    private void commonSetup(final FMLCommonSetupEvent event) {
     }
 
     @ApiStatus.Internal
