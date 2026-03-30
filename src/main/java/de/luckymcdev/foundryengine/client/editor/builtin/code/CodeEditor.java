@@ -36,6 +36,7 @@ public class CodeEditor extends EditorPanel {
     private final ImBoolean matchCase = new ImBoolean(false);
     private final ImBoolean wholeWord = new ImBoolean(false);
     public boolean customLangOverride;
+    public boolean forceReadOnly = false;
     private String fileName;
     private String oldSource;
     private SaveCallback saveCallback;
@@ -112,12 +113,12 @@ public class CodeEditor extends EditorPanel {
 
     @Override
     public void content() {
-        if (!Client.getMinecraft().isSingleplayer()) {
-            ImGui.text("Not in singleplayer.");
+        if (!Client.getMinecraft().isSingleplayer() && !forceReadOnly && !textEditor.isReadOnly()) {
+            ImGui.text("Editing is disabled in multiplayer.");
             return;
         }
 
-        this.unsaved = isDirty();
+        this.unsaved = isDirty() && !forceReadOnly;
 
         renderMenuBar();
         handleShortcuts();
@@ -140,7 +141,7 @@ public class CodeEditor extends EditorPanel {
 
     @Override
     public void onClosed() {
-        if (isDirty()) {
+        if (isDirty() && !forceReadOnly) {
             this.open();
             ImGui.openPopup(POPUP_SAVE_CONFIRM);
         }
@@ -151,7 +152,7 @@ public class CodeEditor extends EditorPanel {
 
         // --- File ---
         if (ImGui.beginMenu("File")) {
-            if (ImGui.menuItem("Save", "Ctrl+S", false, isDirty())) save();
+            if (ImGui.menuItem("Save", "Ctrl+S", false, isDirty() && !forceReadOnly)) save();
             ImGui.separator();
             if (ImGui.menuItem("Close")) this.close();
             ImGui.endMenu();
@@ -161,7 +162,10 @@ public class CodeEditor extends EditorPanel {
         if (ImGui.beginMenu("Edit")) {
             boolean ro = textEditor.isReadOnly();
 
-            if (ImGui.menuItem("Read-only mode", "", ro)) textEditor.setReadOnly(!ro);
+            // Disable read-only toggle if forceReadOnly is true
+            if (ImGui.menuItem("Read-only mode", "", ro, !forceReadOnly)) {
+                textEditor.setReadOnly(!ro);
+            }
             if (ImGui.menuItem("Show Whitespace", "", textEditor.isShowingWhitespaces()))
                 textEditor.setShowWhitespaces(!textEditor.isShowingWhitespaces());
 
@@ -471,11 +475,14 @@ public class CodeEditor extends EditorPanel {
                 ? String.format(" | Zoom: %d%%", Math.round(fontScale * 100))
                 : "";
 
-        ImGui.text(String.format("Ln %d, Col %d | Lines: %d | %s%s",
+        String roLabel = forceReadOnly ? " | [READ-ONLY]" : "";
+
+        ImGui.text(String.format("Ln %d, Col %d | Lines: %d | %s%s%s",
                 pos.mLine + 1, pos.mColumn + 1,
                 textEditor.getTotalLines(),
                 overwrite,
-                zoomLabel));
+                zoomLabel,
+                roLabel));
 
         if (isDirty()) {
             String indicator = "Unsaved Changes*";
@@ -490,7 +497,7 @@ public class CodeEditor extends EditorPanel {
 
         boolean ctrl = ImGui.getIO().getKeyCtrl();
 
-        if (ctrl && ImGui.isKeyPressed(ImGuiKey.S) && isDirty()) save();
+        if (ctrl && ImGui.isKeyPressed(ImGuiKey.S) && isDirty() && !forceReadOnly) save();
         if (ctrl && ImGui.isKeyPressed(ImGuiKey.F)) toggleFind(false);
         if (ctrl && ImGui.isKeyPressed(ImGuiKey.H)) toggleFind(true);
         if (ctrl && ImGui.isKeyPressed(ImGuiKey.G)) openGotoLine();

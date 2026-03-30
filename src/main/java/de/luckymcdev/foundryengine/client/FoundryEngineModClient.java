@@ -6,6 +6,8 @@ import de.luckymcdev.foundryengine.client.debug.screen.BundleDebugEntry;
 import de.luckymcdev.foundryengine.client.debug.screen.GameStagesDebugEntry;
 import de.luckymcdev.foundryengine.client.debug.screen.PostProcessDebugEntry;
 import de.luckymcdev.foundryengine.client.editor.builtin.*;
+import de.luckymcdev.foundryengine.client.editor.builtin.browser.FileExplorerPanel;
+import de.luckymcdev.foundryengine.client.editor.builtin.browser.ResourceExplorerPanel;
 import de.luckymcdev.foundryengine.client.editor.event.RegisterPanelEvent;
 import de.luckymcdev.foundryengine.client.event.RegisterRenderingStuffEvent;
 import de.luckymcdev.foundryengine.client.ext.ModPathBroadcaster;
@@ -123,6 +125,7 @@ public class FoundryEngineModClient {
         event.register(PostProcessPanel.INSTANCE);
         event.register(TestPanel.INSTANCE);
         event.register(FileExplorerPanel.INSTANCE);
+        event.register(ResourceExplorerPanel.INSTANCE);
         event.register(ConsolePanel.INSTANCE);
         event.register(MainEditor.INSTANCE);
         event.register(MinecraftToolsPanel.INSTANCE);
