@@ -1,10 +1,10 @@
-package de.luckymcdev.foundryengine.client.editor.builtin.browser;
+package de.luckymcdev.foundryengine.client.editor.builtin.explorer;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.Panel;
 import de.luckymcdev.foundryengine.client.editor.builtin.EditorPanel;
-import de.luckymcdev.foundryengine.client.editor.builtin.code.CodeEditor;
+import de.luckymcdev.foundryengine.client.editor.builtin.files.CodeEditor;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.imgui.EngineImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;

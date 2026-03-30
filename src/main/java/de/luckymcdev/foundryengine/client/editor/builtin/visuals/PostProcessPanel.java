@@ -1,6 +1,7 @@
-package de.luckymcdev.foundryengine.client.editor.builtin;
+package de.luckymcdev.foundryengine.client.editor.builtin.visuals;
 
 import de.luckymcdev.foundryengine.client.Client;
+import de.luckymcdev.foundryengine.client.editor.builtin.EditorPanel;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.post.PostProcessManager;
 import de.luckymcdev.foundryengine.client.post.pipeline.PostProcessPipeline;

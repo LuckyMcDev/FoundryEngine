@@ -5,9 +5,13 @@ import de.luckymcdev.foundryengine.client.debug.renderer.SimpleDebugScreenRender
 import de.luckymcdev.foundryengine.client.debug.screen.BundleDebugEntry;
 import de.luckymcdev.foundryengine.client.debug.screen.GameStagesDebugEntry;
 import de.luckymcdev.foundryengine.client.debug.screen.PostProcessDebugEntry;
-import de.luckymcdev.foundryengine.client.editor.builtin.*;
-import de.luckymcdev.foundryengine.client.editor.builtin.browser.FileExplorerPanel;
-import de.luckymcdev.foundryengine.client.editor.builtin.browser.ResourceExplorerPanel;
+import de.luckymcdev.foundryengine.client.editor.builtin.MainEditor;
+import de.luckymcdev.foundryengine.client.editor.builtin.TestPanel;
+import de.luckymcdev.foundryengine.client.editor.builtin.console.ConsolePanel;
+import de.luckymcdev.foundryengine.client.editor.builtin.explorer.FileExplorerPanel;
+import de.luckymcdev.foundryengine.client.editor.builtin.explorer.ResourceExplorerPanel;
+import de.luckymcdev.foundryengine.client.editor.builtin.tools.MinecraftToolsPanel;
+import de.luckymcdev.foundryengine.client.editor.builtin.visuals.PostProcessPanel;
 import de.luckymcdev.foundryengine.client.editor.event.RegisterPanelEvent;
 import de.luckymcdev.foundryengine.client.event.RegisterRenderingStuffEvent;
 import de.luckymcdev.foundryengine.client.ext.ModPathBroadcaster;

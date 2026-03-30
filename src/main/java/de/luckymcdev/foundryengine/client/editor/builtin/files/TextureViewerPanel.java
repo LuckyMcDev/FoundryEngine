@@ -1,10 +1,11 @@
-package de.luckymcdev.foundryengine.client.editor.builtin;
+package de.luckymcdev.foundryengine.client.editor.builtin.files;
 
 import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.opengl.GlTexture;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.textures.GpuTextureView;
 import com.mojang.logging.LogUtils;
+import de.luckymcdev.foundryengine.client.editor.builtin.EditorPanel;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import imgui.ImGui;
 import net.minecraft.client.Minecraft;

@@ -1,6 +1,6 @@
 package de.luckymcdev.foundryengine.client.post.pipeline.param;
 
-import de.luckymcdev.foundryengine.client.editor.builtin.PostProcessPanel;
+import de.luckymcdev.foundryengine.client.editor.builtin.visuals.PostProcessPanel;
 import de.luckymcdev.foundryengine.client.opengl.program.ShaderProgram;
 import de.luckymcdev.foundryengine.client.opengl.uniform.Uniform;
 import org.joml.Vector2f;

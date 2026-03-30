@@ -1,6 +1,6 @@
 package de.luckymcdev.foundryengine.common.log;
 
-import de.luckymcdev.foundryengine.client.editor.builtin.ConsolePanel;
+import de.luckymcdev.foundryengine.client.editor.builtin.console.ConsolePanel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.Layout;
