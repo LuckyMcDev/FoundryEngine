@@ -3,12 +3,12 @@ package de.luckymcdev.foundryengine.common.network.packets;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.network.AbstractPacket;
 import de.luckymcdev.foundryengine.common.network.PacketBounds;
+import de.luckymcdev.foundryengine.common.util.PermissionChecks;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.permissions.Permissions;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record ServerBoundChangeWeatherPacket(
@@ -43,7 +43,7 @@ public record ServerBoundChangeWeatherPacket(
     @Override
     public void handleServer(IPayloadContext ctx) {
         if (ctx.player() instanceof ServerPlayer player) {
-            if (!player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER)) return;
+            if (!PermissionChecks.COMMANDS_GAMEMASTER.check(player.permissions())) return;
 
             MinecraftServer server = player.level().getServer();
             int duration = 6000;
