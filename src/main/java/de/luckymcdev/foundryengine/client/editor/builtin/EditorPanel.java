@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.client.editor.builtin;
 
 import de.luckymcdev.foundryengine.client.editor.Panel;
+import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import net.minecraft.resources.Identifier;
 
@@ -14,5 +15,6 @@ public class EditorPanel extends Panel {
     }
     protected EditorPanel(Identifier id, String label, Shortcut shortcut) {
         super(id, label, shortcut);
+        this.category = PanelCategory.EDITOR;
     }
 }

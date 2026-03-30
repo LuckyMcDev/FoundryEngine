@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.client.editor.builtin;
 
 import de.luckymcdev.foundryengine.client.editor.Panel;
+import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.imgui.EngineImGuiUtils;
 import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
@@ -21,6 +22,7 @@ public class TestPanel extends Panel {
 
     private TestPanel() {
         super(Common.id("test_panel"), "My Panel", Shortcut.ctrl(ImGuiKey.F5));
+        this.category = PanelCategory.OPEN;
     }
 
     @Override

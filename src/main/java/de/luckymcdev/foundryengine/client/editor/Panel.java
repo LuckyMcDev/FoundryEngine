@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.client.editor;
 
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.config.ImGuiWindowType;
+import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.config.PanelStyle;
 import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import imgui.ImGui;
@@ -50,6 +51,8 @@ public class Panel {
      */
     public ImGuiWindowType type;
 
+    public PanelCategory category;
+
     private boolean focused;
 
     /**
@@ -68,6 +71,7 @@ public class Panel {
         this.menuBar = false;
         this.style = PanelStyle.NORMAL;
         this.type = ImGuiWindowType.WINDOW;
+        this.category = PanelCategory.OPEN;
     }
 
     /**

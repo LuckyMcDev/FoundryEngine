@@ -1,5 +1,6 @@
 package de.luckymcdev.foundryengine.client.editor.builtin;
 
+import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
 import imgui.flag.ImGuiKey;
@@ -14,5 +15,6 @@ public class MainEditor extends EditorPanel {
 
     private MainEditor() {
         super(Common.id("main_editor"), "Main Editor", Shortcut.ctrl(ImGuiKey.F9));
+        this.category = PanelCategory.EDITOR;
     }
 }

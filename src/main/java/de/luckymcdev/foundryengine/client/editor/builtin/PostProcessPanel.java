@@ -1,7 +1,7 @@
 package de.luckymcdev.foundryengine.client.editor.builtin;
 
 import de.luckymcdev.foundryengine.client.Client;
-import de.luckymcdev.foundryengine.client.editor.Panel;
+import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.post.PostProcessManager;
 import de.luckymcdev.foundryengine.client.post.pipeline.PostProcessPipeline;
 import de.luckymcdev.foundryengine.client.post.pipeline.param.PipelineParam;
@@ -20,11 +20,12 @@ import java.util.Map;
 /**
  * A panel for managing post-processing pipelines.
  */
-public class PostProcessPanel extends Panel {
+public class PostProcessPanel extends EditorPanel {
     public static final PostProcessPanel INSTANCE = new PostProcessPanel();
 
     private PostProcessPanel() {
         super(Common.id("post_process_panel"), "Post Processing Panel", Shortcut.ctrl(ImGuiKey.F4));
+        this.category = PanelCategory.EDITOR_VISUALS;
     }
 
     @Override

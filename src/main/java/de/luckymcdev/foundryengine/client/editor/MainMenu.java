@@ -1,12 +1,10 @@
 package de.luckymcdev.foundryengine.client.editor;
 
 import de.luckymcdev.foundryengine.client.Client;
+import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.menu.MenuSection;
 import de.luckymcdev.foundryengine.client.editor.menu.ShortcutHandler;
-import de.luckymcdev.foundryengine.client.editor.menu.builtin.EditorMenuSection;
-import de.luckymcdev.foundryengine.client.editor.menu.builtin.OpenMenuSection;
-import de.luckymcdev.foundryengine.client.editor.menu.builtin.ToolsMenuSection;
-import de.luckymcdev.foundryengine.client.editor.menu.builtin.ViewMenuSection;
+import de.luckymcdev.foundryengine.client.editor.menu.builtin.CategoryMenuSection;
 import de.luckymcdev.foundryengine.client.imgui.graphics.ImGuiGraphicsStack;
 import de.luckymcdev.foundryengine.common.registry.GenericRegistry;
 import imgui.ImGui;
@@ -29,10 +27,22 @@ public class MainMenu {
         this.graphicsStack = Client.getImGuiManager().getGraphicsStack();
         this.shortcutHandler = new ShortcutHandler(editor);
 
-        this.register("open", new OpenMenuSection(editor));
-        this.register("editor", new EditorMenuSection(editor));
-        this.register("tools", new ToolsMenuSection(editor));
-        this.register("view", new ViewMenuSection());
+        for (PanelCategory category : PanelCategory.values()) {
+            // You may want to skip sub-categories if they should be nested elsewhere
+            if (isSubCategory(category)) continue;
+
+            String label = capitalize(category.name());
+            this.register(category.name().toLowerCase(),
+                    new CategoryMenuSection(editor, category, label));
+        }
+    }
+
+    private boolean isSubCategory(PanelCategory category) {
+        return category.name().contains("_");
+    }
+
+    private String capitalize(String str) {
+        return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
     }
 
     public void register(String name, MenuSection section) {

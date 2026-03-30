@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.builtin.TextureViewerPanel;
 import de.luckymcdev.foundryengine.client.editor.builtin.code.CodeEditor;
+import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.imgui.EngineImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.client.util.key.Shortcut;
@@ -52,6 +53,7 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
     public FileExplorerPanel(File rootDir) {
         super(Common.id("file_explorer"), "File Explorer", Shortcut.ctrl(ImGuiKey.F2));
         this.rootDir = rootDir;
+        this.category = PanelCategory.EDITOR_EXPLORER;
     }
 
     private static String handleSizeTooltip(File file) {

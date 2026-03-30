@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.client.editor.builtin;
 
 import de.luckymcdev.foundryengine.client.Client;
+import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
 import imgui.ImGui;
@@ -13,6 +14,7 @@ public class MinecraftToolsPanel extends EditorPanel {
 
     private MinecraftToolsPanel() {
         super(Common.id("minecraft_tools"), "Mincraft Tools", Shortcut.ctrl(ImGuiKey.F3));
+        this.category = PanelCategory.EDITOR_TOOLS;
     }
 
     @Override

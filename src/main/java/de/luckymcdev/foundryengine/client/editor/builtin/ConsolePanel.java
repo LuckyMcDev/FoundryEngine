@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.client.editor.builtin;
 
 import de.luckymcdev.foundryengine.client.Client;
+import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.log.EngineLogAppender;
@@ -34,6 +35,7 @@ public class ConsolePanel extends EditorPanel {
     private ConsolePanel() {
         super(Common.id("console"), "Console", Shortcut.ctrl(ImGuiKey.F1));
         menuBar = true;
+        this.category = PanelCategory.EDITOR_CONSOLE;
     }
 
     private List<LogEntry> getFilteredLogs() {

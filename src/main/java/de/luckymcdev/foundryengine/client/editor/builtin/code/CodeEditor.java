@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.client.editor.builtin.code;
 
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.builtin.EditorPanel;
+import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import imgui.ImGui;
 import imgui.extension.texteditor.TextEditor;
@@ -63,6 +64,8 @@ public class CodeEditor extends EditorPanel {
         this.textEditor.setShowWhitespaces(false);
         this.textEditor.setText(source);
         this.textEditor.setPalette(textEditor.getDarkPalette());
+
+        this.category = PanelCategory.EDITOR_FILES;
 
         if (!customLangOverride) {
             this.textEditor.setLanguageDefinition(TextEditorLanguageDefinition.GLSL());

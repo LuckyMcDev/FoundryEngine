@@ -5,6 +5,7 @@ import com.mojang.blaze3d.opengl.GlTexture;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.textures.GpuTextureView;
 import com.mojang.logging.LogUtils;
+import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import imgui.ImGui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.AbstractTexture;
@@ -30,12 +31,14 @@ public class TextureViewerPanel extends EditorPanel {
         super(id, title);
         this.identifier = identifier;
         loadTexture(Type.IDENTIFIER);
+        this.category = PanelCategory.EDITOR_FILES;
     }
 
     public TextureViewerPanel(Identifier id, String title, File file) {
         super(id, title);
         this.file = file;
         loadTexture(Type.FILE);
+        this.category = PanelCategory.EDITOR_FILES;
     }
 
     private void loadTexture(Type type) {

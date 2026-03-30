@@ -5,6 +5,7 @@ import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.Panel;
 import de.luckymcdev.foundryengine.client.editor.builtin.EditorPanel;
 import de.luckymcdev.foundryengine.client.editor.builtin.code.CodeEditor;
+import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.imgui.EngineImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.client.util.key.Shortcut;
@@ -26,10 +27,12 @@ public abstract class AbstractExplorerPanel extends EditorPanel {
 
     protected AbstractExplorerPanel(Identifier id, String displayName) {
         super(id, displayName);
+        this.category = PanelCategory.EDITOR_EXPLORER;
     }
 
     protected AbstractExplorerPanel(Identifier id, String displayName, Shortcut shortcut) {
         super(id, displayName, shortcut);
+        this.category = PanelCategory.EDITOR_EXPLORER;
     }
 
     /**
