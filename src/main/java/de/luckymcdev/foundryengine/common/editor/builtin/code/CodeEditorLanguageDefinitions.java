@@ -1,4 +1,4 @@
-package de.luckymcdev.foundryengine.client.editor.builtin.code;
+package de.luckymcdev.foundryengine.common.editor.builtin.code;
 
 import imgui.extension.texteditor.TextEditorLanguageDefinition;
 import imgui.extension.texteditor.flag.TextEditorPaletteIndex;

@@ -1,8 +1,8 @@
-package de.luckymcdev.foundryengine.client.util;
+package de.luckymcdev.foundryengine.common.util;
 
-import de.luckymcdev.foundryengine.client.editor.builtin.code.CodeEditorLanguageDefinitions;
 import de.luckymcdev.foundryengine.client.imgui.EngineImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
+import de.luckymcdev.foundryengine.common.editor.builtin.code.CodeEditorLanguageDefinitions;
 import imgui.extension.texteditor.TextEditorLanguageDefinition;
 
 import java.util.HashMap;
