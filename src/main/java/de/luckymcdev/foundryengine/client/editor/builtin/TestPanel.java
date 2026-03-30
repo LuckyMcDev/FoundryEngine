@@ -8,6 +8,7 @@ import imgui.ImGui;
 import imgui.extension.imguiknobs.ImGuiKnobs;
 import imgui.extension.texteditor.TextEditor;
 import imgui.extension.texteditor.TextEditorLanguageDefinition;
+import imgui.flag.ImGuiKey;
 import imgui.type.ImFloat;
 
 /**
@@ -19,7 +20,7 @@ public class TestPanel extends Panel {
     private final ImFloat knobValue = new ImFloat(0.5f);
 
     private TestPanel() {
-        super(Common.id("test_panel"), "My Panel", Shortcut.empty());
+        super(Common.id("test_panel"), "My Panel", Shortcut.ctrl(ImGuiKey.F5));
     }
 
     @Override

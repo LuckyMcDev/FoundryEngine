@@ -12,7 +12,7 @@ public class MinecraftToolsPanel extends EditorPanel {
     public static final MinecraftToolsPanel INSTANCE = new MinecraftToolsPanel();
 
     private MinecraftToolsPanel() {
-        super(Common.id("minecraft_tools"), "Mincraft Tools", Shortcut.ctrl(ImGuiKey.M));
+        super(Common.id("minecraft_tools"), "Mincraft Tools", Shortcut.ctrl(ImGuiKey.F3));
     }
 
     @Override

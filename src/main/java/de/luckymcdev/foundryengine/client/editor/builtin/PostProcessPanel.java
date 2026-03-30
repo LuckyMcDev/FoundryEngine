@@ -24,7 +24,7 @@ public class PostProcessPanel extends Panel {
     public static final PostProcessPanel INSTANCE = new PostProcessPanel();
 
     private PostProcessPanel() {
-        super(Common.id("post_process_panel"), "Post Processing Panel", Shortcut.ctrl(ImGuiKey.P));
+        super(Common.id("post_process_panel"), "Post Processing Panel", Shortcut.ctrl(ImGuiKey.F4));
     }
 
     @Override

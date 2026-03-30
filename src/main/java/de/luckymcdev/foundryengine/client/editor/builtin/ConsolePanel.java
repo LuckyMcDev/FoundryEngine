@@ -32,7 +32,7 @@ public class ConsolePanel extends EditorPanel {
     private boolean autoScroll = true;
 
     private ConsolePanel() {
-        super(Common.id("console"), "Console", Shortcut.ctrl(ImGuiKey.L));
+        super(Common.id("console"), "Console", Shortcut.ctrl(ImGuiKey.F1));
         menuBar = true;
     }
 

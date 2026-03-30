@@ -13,6 +13,6 @@ public class MainEditor extends EditorPanel {
 
 
     private MainEditor() {
-        super(Common.id("main_editor"), "Main Editor", Shortcut.ctrl(ImGuiKey.E));
+        super(Common.id("main_editor"), "Main Editor", Shortcut.ctrl(ImGuiKey.F9));
     }
 }

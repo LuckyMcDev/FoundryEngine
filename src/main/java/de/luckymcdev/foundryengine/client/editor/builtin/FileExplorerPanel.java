@@ -32,7 +32,7 @@ public class FileExplorerPanel extends EditorPanel {
     private final File rootDir = Common.DIRECTORY.toFile();
 
     public FileExplorerPanel() {
-        super(Common.id("file_explorer"), "File Explorer", Shortcut.ctrl(ImGuiKey.F));
+        super(Common.id("file_explorer"), "File Explorer", Shortcut.ctrl(ImGuiKey.F2));
     }
 
     @Override
