@@ -1,5 +1,6 @@
 package de.luckymcdev.foundryengine.client.editor.builtin;
 
+import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.opengl.GlTexture;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.textures.GpuTextureView;
@@ -9,6 +10,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.resources.Identifier;
+import org.lwjgl.opengl.GL11;
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -74,7 +76,7 @@ public class TextureViewerPanel extends EditorPanel {
         float availWidth = ImGui.getContentRegionAvailX();
         float displayHeight = (availWidth / width) * height;
 
-        ImGui.image(textureId, availWidth, displayHeight);
+        drawImage(textureId, availWidth, displayHeight);
 
         if (ImGui.isItemHovered()) {
             ImGui.beginTooltip();
@@ -82,6 +84,15 @@ public class TextureViewerPanel extends EditorPanel {
             ImGui.text("Path: " + identifier);
             ImGui.endTooltip();
         }
+    }
+
+    private void drawImage(int id, float w, float h) {
+        GlStateManager._bindTexture(id);
+
+        GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
+        GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+
+        ImGui.image(id, w, h, 0, 0, 1, 1);
     }
 
     private enum Type {
