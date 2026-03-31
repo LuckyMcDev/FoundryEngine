@@ -25,6 +25,7 @@ import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -36,7 +37,7 @@ import java.io.IOException;
 public class FoundryEngineMod {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final IEventBus BUS = NeoForge.EVENT_BUS;
-    private static IEventBus MODBUS;
+    private static @Nullable IEventBus MODBUS;
 
     /**
      * Initializes the mod and registers events.
