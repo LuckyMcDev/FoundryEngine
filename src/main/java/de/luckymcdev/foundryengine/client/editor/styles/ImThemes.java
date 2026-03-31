@@ -1,6 +1,6 @@
-package de.luckymcdev.foundryengine.client.editor.styles.theme;
+package de.luckymcdev.foundryengine.client.editor.styles;
 
-import de.luckymcdev.foundryengine.client.editor.styles.theme.builtin.*;
+import de.luckymcdev.foundryengine.client.editor.styles.builtin.*;
 
 public class ImThemes {
     //This is the default theme.

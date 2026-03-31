@@ -1,6 +1,6 @@
-package de.luckymcdev.foundryengine.client.editor.styles.theme.builtin;
+package de.luckymcdev.foundryengine.client.editor.styles.builtin;
 
-import de.luckymcdev.foundryengine.client.editor.styles.theme.ImTheme;
+import de.luckymcdev.foundryengine.client.editor.styles.ImTheme;
 import de.luckymcdev.foundryengine.common.util.color.Color;
 import imgui.ImGuiStyle;
 import imgui.flag.ImGuiCol;

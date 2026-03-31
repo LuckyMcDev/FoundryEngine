@@ -30,7 +30,7 @@ public class ExampleScreen extends EngineScreen {
                 new UIVec(0.5, 0.5, 0, 0),
                 new UIVec(0, 0, 100, 20),
                 (mouseX, mouseY, btn) -> {
-                    LOGGER.info("Button clicked! Mouse: {} {}    | Button ID: {}", mouseX, mouseY, btn);
+                    LOGGER.debug("Button clicked! Mouse: {} {} | Button ID: {}", mouseX, mouseY, btn);
                     Client.getPlayer().connection.sendChat("HELLO");
                 }
         );
