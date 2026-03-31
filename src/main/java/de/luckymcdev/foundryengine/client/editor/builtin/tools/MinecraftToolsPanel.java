@@ -3,14 +3,19 @@ package de.luckymcdev.foundryengine.client.editor.builtin.tools;
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.builtin.EditorPanel;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
+import de.luckymcdev.foundryengine.client.imgui.EngineImGuiUtils;
+import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.network.packets.ServerBoundChangeWeatherPacket;
 import de.luckymcdev.foundryengine.common.network.packets.ServerBoundSetTimePacket;
 import imgui.ImGui;
 import imgui.flag.ImGuiKey;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.protocol.game.ServerboundChangeGameModePacket;
+import net.minecraft.network.protocol.game.ServerboundSetGameRulePacket;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.gamerules.GameRules;
 
 public class MinecraftToolsPanel extends EditorPanel {
     public static final MinecraftToolsPanel INSTANCE = new MinecraftToolsPanel();
@@ -97,6 +102,14 @@ public class MinecraftToolsPanel extends EditorPanel {
         if (ImGui.button("Midnight")) {
             Client.getConnection().send(new ServerBoundSetTimePacket(18000));
         }
+        ImGui.sameLine();
+        if (ImGui.button("Lock " + EngineImGuiUtils.icon(ImIcons.FA.FA_LOCK) + "##time")) {
+            BuiltInRegistries.GAME_RULE.getResourceKey(GameRules.ADVANCE_TIME).ifPresent(key -> {
+                var entry = new ServerboundSetGameRulePacket.Entry(key, "false");
+                Client.getConnection().send(new ServerboundSetGameRulePacket(java.util.List.of(entry)));
+            });
+        }
+        if (ImGui.isItemHovered()) ImGui.setTooltip("Stops the daylight cycle");
     }
 
     private void weatherSelector() {
@@ -114,6 +127,14 @@ public class MinecraftToolsPanel extends EditorPanel {
         if (ImGui.button("Thunder")) {
             Client.getConnection().send(new ServerBoundChangeWeatherPacket("thunder"));
         }
+        ImGui.sameLine();
+        if (ImGui.button("Lock " + EngineImGuiUtils.icon(ImIcons.FA.FA_LOCK) + "##weather")) {
+            BuiltInRegistries.GAME_RULE.getResourceKey(GameRules.ADVANCE_WEATHER).ifPresent(key -> {
+                var entry = new ServerboundSetGameRulePacket.Entry(key, "false");
+                Client.getConnection().send(new ServerboundSetGameRulePacket(java.util.List.of(entry)));
+            });
+        }
+        if (ImGui.isItemHovered()) ImGui.setTooltip("Stops the weather cycle");
     }
 
     private void gameModeSelector() {
