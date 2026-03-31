@@ -10,7 +10,10 @@ import de.luckymcdev.foundryengine.client.post.pipeline.staged.PostProcessStage
 import de.luckymcdev.foundryengine.common.Common
 import net.minecraft.resources.Identifier
 
-
+/**
+ * This is an example of a custom post-processing pipeline.
+ * This is an advanced Topic. You should be familiar with shaders and the rendering pipeline to understand this.
+ */
 class TestPostProcessPipeline extends PostProcessPipeline {
 
     @Override
