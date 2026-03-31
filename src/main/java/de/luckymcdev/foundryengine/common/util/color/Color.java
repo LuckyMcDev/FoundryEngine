@@ -4,10 +4,20 @@ package de.luckymcdev.foundryengine.common.util.color;
  * Utility class for handling Colors.
  */
 public class Color {
-    public static final Color WHITE = new Color(1.0f, 1.0f, 1.0f, 1.0f);
-    public static final Color RED = new Color(1.0f, 0.0f, 0.0f, 1.0f);
-    public static final Color GREEN = new Color(0.0f, 1.0f, 0.0f, 1.0f);
-    public static final Color BLUE = new Color(0.0f, 0.0f, 1.0f, 1.0f);
+    public static final Color WHITE = new Color(255, 255, 255);
+    public static final Color LIGHT_GRAY = new Color(192, 192, 192);
+    public static final Color GRAY = new Color(128, 128, 128);
+    public static final Color DARK_GRAY = new Color(64, 64, 64);
+    public static final Color BLACK = new Color(0, 0, 0);
+    public static final Color RED = new Color(255, 0, 0);
+    public static final Color PINK = new Color(255, 175, 175);
+    public static final Color ORANGE = new Color(255, 200, 0);
+    public static final Color YELLOW = new Color(255, 255, 0);
+    public static final Color GREEN = new Color(0, 255, 0);
+    public static final Color MAGENTA = new Color(255, 0, 255);
+    public static final Color CYAN = new Color(0, 255, 255);
+    public static final Color BLUE = new Color(0, 0, 255);
+
     public final float r;
     public final float g;
     public final float b;
@@ -20,6 +30,17 @@ public class Color {
         this.a = a;
     }
 
+    public Color(int r, int g, int b) {
+        this(r, g, b, 255);
+    }
+
+    public Color(int r, int g, int b, int a) {
+        this.r = r / 255.0f;
+        this.g = g / 255.0f;
+        this.b = b / 255.0f;
+        this.a = a / 255.0f;
+    }
+
     public Color(int argb) {
         this.a = ((argb >> 24) & 0xFF) / 255.0f;
         this.r = ((argb >> 16) & 0xFF) / 255.0f;
@@ -28,15 +49,17 @@ public class Color {
     }
 
     /**
+     * Returns the color as an integer in RGB format (Alpha is forced to 255).
+     */
+    public int rgb() {
+        return (255 << 24) |
+                ((int) (r * 255) << 16) |
+                ((int) (g * 255) << 8) |
+                (int) (b * 255);
+    }
+
+    /**
      * Returns the color as an integer in ARGB format.
-     * The resulting integer has the following format:
-     * <code>0xAARRGGB</code>
-     * Where <code>A</code> is the alpha component, <code>R</code> is the red component,
-     * <code>G</code> is the green component, and <code>B</code> is the blue component.
-     * Each component is an 8-bit unsigned integer, ranging from 0 (minimum intensity)
-     * to 255 (maximum intensity).
-     *
-     * @return The color as an integer in ARGB format.
      */
     public int argb() {
         return ((int) (a * 255) << 24) |
@@ -47,15 +70,6 @@ public class Color {
 
     /**
      * Linearly interpolates between this color and another color.
-     * The resulting color is a linear interpolation between this color and the given color,
-     * with the given factor determining the position of the interpolation.
-     * A factor of 0.0 yields this color, while a factor of 1.0 yields the given color.
-     * Factors between 0.0 and 1.0 yield colors that are linearly interpolated between
-     * this color and the given color.
-     *
-     * @param factor The factor to use for linear interpolation.
-     * @param other  The color to interpolate towards.
-     * @return The interpolated color.
      */
     public Color lerp(float factor, Color other) {
         return new Color(
