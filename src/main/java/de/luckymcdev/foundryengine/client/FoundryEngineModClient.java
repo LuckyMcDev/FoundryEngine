@@ -91,7 +91,6 @@ public class FoundryEngineModClient {
     }
 
     private void onRegisterClientPayloadHandlers(RegisterClientPayloadHandlersEvent event) {
-        Common.getNetworkManager().handleClientRegistration(event);
     }
 
     private void onRegisterGLSLPreProcessors(RegisterGLSLPreProcessorEvent event) {
@@ -161,7 +160,7 @@ public class FoundryEngineModClient {
         event.addListener(Common.id("imgui_handler"), Client.getImGuiManager());
         event.addListener(Common.id("shader_manager"), Client.getShaderManager());
         event.addListener(Common.id("post_pipeline_init"), (ResourceManagerReloadListener) rm ->
-                        BUS.post(new RegisterPostPipelineEvent(Client.getPostProcessManager()))
+                BUS.post(new RegisterPostPipelineEvent(Client.getPostProcessManager()))
         );
     }
 
@@ -173,7 +172,7 @@ public class FoundryEngineModClient {
                 0, 100, 0,
                 0, 0, 0
         );
-        if(null == particle) return;
+        if (null == particle) return;
 
         particle.setParticleSpeed(0, 1, 0);
 

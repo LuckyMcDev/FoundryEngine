@@ -70,4 +70,24 @@ public abstract class ExplorerNode {
             return children.isEmpty() && resources.isEmpty();
         }
     }
+
+    /**
+     * Remote based node
+     */
+    public static class RemoteExplorerNode extends ExplorerNode {
+        public final String relativePath;
+        public final boolean isDirectory;
+        public final List<RemoteExplorerNode> files = new ArrayList<>();
+
+        public RemoteExplorerNode(String name, String relativePath, boolean isDirectory) {
+            super(name);
+            this.relativePath = relativePath;
+            this.isDirectory = isDirectory;
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return children.isEmpty() && files.isEmpty();
+        }
+    }
 }

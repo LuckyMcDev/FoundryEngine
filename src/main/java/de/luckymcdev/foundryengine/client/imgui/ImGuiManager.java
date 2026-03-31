@@ -17,20 +17,19 @@ import de.luckymcdev.foundryengine.client.imgui.backend.ImGuiImplGlfw;
 import de.luckymcdev.foundryengine.client.imgui.context.ImGuiContextStack;
 import de.luckymcdev.foundryengine.client.imgui.context.ImGuiContextTypes;
 import de.luckymcdev.foundryengine.client.imgui.graphics.ImGuiGraphicsStack;
-import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.common.font.TTFFile;
 import de.luckymcdev.foundryengine.mixin.MinecraftMixin;
 import de.luckymcdev.foundryengine.mixin.render.GameRendererMixin;
 import imgui.*;
 import imgui.flag.ImGuiConfigFlags;
 import imgui.flag.ImGuiDockNodeFlags;
-import imgui.flag.ImGuiWindowFlags;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.input.InputQuirks;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
@@ -39,7 +38,6 @@ import org.lwjgl.system.NativeResource;
 import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -54,12 +52,12 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
     private final ImGuiImplGl3 imGuiImplGl3 = new ImGuiImplGl3();
 
     private final ImGuiContextStack CONTEXT_STACK = new ImGuiContextStack();
-    private final ImGuiGraphicsStack GRAPHICS_STACK = new ImGuiGraphicsStack();
+    private final ImGuiGraphicsStack graphicsStack = new ImGuiGraphicsStack();
 
     private final AtomicBoolean enabled = new AtomicBoolean(false);
     private boolean shouldBlockInput = false;
 
-    private ImFont font;
+    private @Nullable ImFont font;
 
     /**
      * The Glyph Ranges for the {@link TTFFile#JETBRAINS_MONO_NERDFONT_REGULAR} Font.
@@ -81,8 +79,6 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
             0x2665, 0x26A1, // Extra Octicons
             0
     };
-
-    private final boolean infoBarEnabled = false;
     private int dockId;
 
     public ImGuiManager() {
@@ -190,35 +186,6 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
         imgui.internal.ImGuiDockNode centralNode = imgui.internal.ImGui.dockBuilderGetCentralNode(dockId);
 
         shouldBlockInput = centralNode.isLeafNode() && !centralNode.isEmpty();
-
-        var centralNodePos = centralNode.getPos();
-        var centralNodeSize = centralNode.getSize();
-
-        int menuBarHeight = 20;
-
-        int flags = ImGuiWindowFlags.NoSavedSettings
-                | ImGuiWindowFlags.MenuBar
-                | ImGuiWindowFlags.NoMove
-                | ImGuiWindowFlags.NoDocking
-                | ImGuiWindowFlags.NoNav
-                | ImGuiWindowFlags.NoDecoration;
-
-
-        if (!infoBarEnabled) return;
-
-        ImGui.setNextWindowViewport(ImGui.getMainViewport().getID());
-        ImGui.setNextWindowPos(centralNodePos.x, centralNodePos.y);
-        ImGui.setNextWindowSize(centralNodeSize.x, menuBarHeight);
-
-        if (ImGui.begin("###top-info-bar", flags)) {
-            ImGui.setWindowFontScale(0.9F);
-            if (ImGui.beginMenuBar()) {
-                sideInfoBar();
-                ImGui.endMenuBar();
-            }
-        }
-
-        ImGui.end();
     }
 
     /**
@@ -256,7 +223,7 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
      * @return the {@link ImGuiGraphicsStack}
      */
     public ImGuiGraphicsStack getGraphicsStack() {
-        return GRAPHICS_STACK;
+        return graphicsStack;
     }
 
     public int getDockId() {
@@ -337,33 +304,6 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
     }
 
     /**
-     * Renders a Side Info Bar, IS NOT ENABLED!
-     */
-    public void sideInfoBar() {
-        var now = new Date();
-
-        String username = Client.getMinecraft().getUser().getName();
-        ImGui.text(ImIcons.FA.FA_USER + " " + username);
-        ImGui.separator();
-
-        ImGui.text(ImIcons.FA.FA_EARTH_EUROPE + " " + now);
-        ImGui.separator();
-
-        ImGui.text(ImIcons.FA.FA_TACHOMETER + " " + Client.getMinecraft().getFps() + " FPS");
-        ImGui.separator();
-
-        long maxMemory = Runtime.getRuntime().maxMemory();
-        long usedMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
-        ImGui.text(ImIcons.FA.FA_MEMORY + " Used " + (usedMemory * 100 / maxMemory) + "% Memory");
-        ImGui.separator();
-
-        var server = Client.getMinecraft().getCurrentServer();
-        if (server != null) {
-            ImGui.text(ImIcons.FA.FA_SERVER + " " + server.ip);
-        }
-    }
-
-    /**
      * Disposes of all Implementations and the 2 Stacks.
      * Called in {@link MinecraftMixin#engine$close(CallbackInfo)}
      * amd {@link ImGuiManager#free()} which is from {@link NativeResource}
@@ -372,7 +312,7 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
         imGuiImplGl3.shutdown();
         imGuiImplGlfw.shutdown();
         CONTEXT_STACK.destroy();
-        GRAPHICS_STACK.destroy();
+        graphicsStack.destroy();
     }
 
     @Override

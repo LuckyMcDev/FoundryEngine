@@ -10,7 +10,9 @@ import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.exceptions.EngineException;
+import de.luckymcdev.foundryengine.common.network.packets.explorer.*;
 import de.luckymcdev.foundryengine.common.util.FileEndings;
+import de.luckymcdev.foundryengine.common.util.PermissionChecks;
 import imgui.ImGui;
 import imgui.ImVec4;
 import imgui.extension.texteditor.TextEditorLanguageDefinition;
@@ -19,7 +21,9 @@ import imgui.flag.ImGuiKey;
 import imgui.flag.ImGuiMouseButton;
 import imgui.flag.ImGuiTreeNodeFlags;
 import imgui.type.ImString;
+import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -33,10 +37,12 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 
 /**
- * A file-explorer panel that opens the {@link CodeEditor} for editing any file at runtime.
- * Disabled outside singleplayer.
+ * A file-explorer panel showing both local client files and remote server files
+ * when connected to a multiplayer server. Remote files are fetched on demand via
+ * packets and opened in a {@link CodeEditor} whose save callback writes back to the server.
  */
 public class FileExplorerPanel extends AbstractExplorerPanel {
     public static final FileExplorerPanel INSTANCE = new FileExplorerPanel(Common.DIRECTORY.toFile());
@@ -49,6 +55,9 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
     private @Nullable String lastError = null;
     private boolean rootReadable = true;
     private ExplorerNode.FileExplorerNode rootNode;
+    private ExplorerNode.@Nullable RemoteExplorerNode remoteRootNode = null;
+    private boolean remoteRequested = false;
+    private boolean remoteLoading = false;
 
     public FileExplorerPanel(File rootDir) {
         super(Common.id("file_explorer"), "File Explorer", Shortcut.ctrl(ImGuiKey.F2));
@@ -56,24 +65,14 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
         this.category = PanelCategory.EDITOR_EXPLORER;
     }
 
-    private static String handleSizeTooltip(File file) {
-        try {
-            var attrs = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
-            long bytes = attrs.size();
+    private static Identifier remoteFileEditorId(String relativePath) {
+        String sanitised = ("remote_" + relativePath).toLowerCase().replaceAll("[^a-z0-9]", "_");
+        return Common.id("editor_" + sanitised);
+    }
 
-            if (bytes < 1024) {
-                return bytes + " B";
-            }
-
-            if (bytes < 1024 * 1024) {
-                return String.format("%.1f KB", bytes / 1024.0);
-            } else {
-                return String.format("%.1f MB", bytes / (1024.0 * 1024));
-            }
-
-        } catch (IOException e) {
-            throw new EngineException(e);
-        }
+    private static boolean isMultiplayer() {
+        Minecraft mc = Minecraft.getInstance();
+        return mc.getCurrentServer() != null;
     }
 
     private static Identifier fileToEditorId(File file) {
@@ -94,51 +93,104 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
         return candidate;
     }
 
+    private static String handleSizeTooltip(File file) {
+        try {
+            var attrs = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+            long bytes = attrs.size();
+            if (bytes < 1024) return bytes + " B";
+            if (bytes < 1024 * 1024) return String.format("%.1f KB", bytes / 1024.0);
+            return String.format("%.1f MB", bytes / (1024.0 * 1024));
+        } catch (IOException e) {
+            throw new EngineException(e);
+        }
+    }
+
+    public void receiveRemoteFileList(String rootPath, List<ClientBoundFileListPacket.RemoteEntry> entries) {
+        ExplorerNode.RemoteExplorerNode root = new ExplorerNode.RemoteExplorerNode("Server (" + Common.MODNAME + ")", "", true);
+
+        for (ClientBoundFileListPacket.RemoteEntry entry : entries) {
+            String[] parts = entry.relativePath().split("/");
+            ExplorerNode.RemoteExplorerNode current = root;
+            for (int i = 0; i < parts.length; i++) {
+                String part = parts[i];
+                boolean isLast = (i == parts.length - 1);
+                String partialPath = String.join("/", Arrays.copyOfRange(parts, 0, i + 1));
+
+                if (isLast) {
+                    ExplorerNode.RemoteExplorerNode node = new ExplorerNode.RemoteExplorerNode(part, entry.relativePath(), entry.isDirectory());
+                    if (entry.isDirectory()) {
+                        current.children.putIfAbsent(part, node);
+                    } else {
+                        // Check we haven't already added it via directory traversal
+                        boolean alreadyPresent = current.files.stream()
+                                .anyMatch(f -> f.relativePath.equals(entry.relativePath()));
+                        if (!alreadyPresent) {
+                            current.files.add(node);
+                        }
+                    }
+                } else {
+                    current = (ExplorerNode.RemoteExplorerNode) current.children.computeIfAbsent(part,
+                            k -> new ExplorerNode.RemoteExplorerNode(k, partialPath, true));
+                }
+            }
+        }
+
+        remoteRootNode = root;
+        remoteLoading = false;
+    }
+
+    /**
+     * Called when {@link ClientBoundFileContentPacket} arrives.
+     */
+    public void receiveRemoteFileContent(String relativePath, String content) {
+        String fileName = relativePath.contains("/")
+                ? relativePath.substring(relativePath.lastIndexOf('/') + 1)
+                : relativePath;
+
+        Identifier editorId = remoteFileEditorId(relativePath);
+
+        if (getExistingEditor(editorId) != null) return;
+
+        CodeEditor editor = new CodeEditor(editorId, "[SERVER] " + fileName, content);
+
+        TextEditorLanguageDefinition lang = FileEndings.getLanguageDefinitionByFileName(fileName);
+        if (lang != null) {
+            editor.getTextEditor().setLanguageDefinition(lang);
+            editor.customLangOverride = true;
+        }
+
+        // Save callback sends content back to the server
+        editor.setSaveCallback((source, errors) ->
+                ClientPacketDistributor.sendToServer(new ServerBoundSaveFilePacket(relativePath, source))
+        );
+
+        Client.getEditorManager().register(editor);
+        editor.open();
+    }
+
     @Override
     protected void refresh() {
         rootNode = new ExplorerNode.FileExplorerNode("root", rootDir);
         buildFileTree(rootDir, rootNode);
         rootReadable = true;
         initialized = true;
-    }
 
-    /**
-     * Recursively build the file tree structure.
-     */
-    private void buildFileTree(File dir, ExplorerNode.FileExplorerNode parentNode) {
-        File[] files = dir.listFiles();
-        if (files == null) {
-            rootReadable = dir != rootDir && rootReadable;
-            return;
-        }
-
-        // Sort directories first, then files — each group alphabetically
-        Arrays.sort(files, Comparator
-                .comparing(File::isFile)
-                .thenComparing(f -> f.getName().toLowerCase()));
-
-        for (File file : files) {
-            if (file.isDirectory()) {
-                ExplorerNode.FileExplorerNode dirNode = new ExplorerNode.FileExplorerNode(file.getName(), file);
-                parentNode.addChild(file.getName(), dirNode);
-                buildFileTree(file, dirNode);
-            } else {
-                parentNode.files.add(file);
-            }
+        // Also refresh remote tree if we're on a server
+        if (isMultiplayer()) {
+            requestRemoteFileList();
         }
     }
 
     @Override
     protected void renderBrowser() {
-        if (!Client.getMinecraft().isSingleplayer()) {
+        if (!PermissionChecks.COMMANDS_OWNER.check(Client.getPlayer().permissions())) {
             ImGui.textColored(new ImVec4(1.0f, 0.5f, 0.0f, 1.0f),
-                    "File Explorer is unavailable in multiplayer to prevent unauthorized file access.");
+                    "You do not have the necessary permissions to view this.");
             return;
         }
 
         renderToolbar();
 
-        // Inline error banner
         if (lastError != null) {
             ImGui.pushStyleColor(ImGuiCol.Text, 1.0f, 0.35f, 0.35f, 1.0f);
             ImGui.textWrapped(ImIcons.FA.FA_EXCLAMATION_TRIANGLE + " " + lastError);
@@ -154,65 +206,96 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
 
         ImGui.separator();
 
-        // Keyboard shortcut: Ctrl+R → refresh
         if (ImGui.isWindowFocused() && ImGui.getIO().getKeyCtrl()
                 && ImGui.isKeyPressed(ImGuiKey.R)) {
             clearError();
         }
 
-        // Main scrollable tree
         if (ImGui.beginChild("##explorerTree", 0, 0, false)) {
             boolean filtering = !searchFilter.get().isBlank();
-            if (filtering) {
-                renderFilteredFiles(rootDir, searchFilter.get().trim().toLowerCase());
-            } else if (rootNode != null) {
-                renderFileNode(rootNode);
+
+            // ---- CLIENT section ----
+            renderSectionHeader(
+                    EngineImGuiUtils.icon(ImIcons.FA.FA_DESKTOP) + " Client",
+                    "##section_client",
+                    () -> {
+                        if (filtering) {
+                            renderFilteredFiles(rootDir, searchFilter.get().trim().toLowerCase());
+                        } else if (rootNode != null) {
+                            renderFileNode(rootNode);
+                        }
+                    }
+            );
+
+            // ---- SERVER section (multiplayer only) ----
+            if (isMultiplayer()) {
+                ImGui.spacing();
+                renderSectionHeader(
+                        EngineImGuiUtils.icon(ImIcons.FA.FA_SERVER) + " Server",
+                        "##section_server",
+                        () -> {
+                            if (remoteLoading) {
+                                ImGui.textDisabled("Loading…");
+                            } else if (remoteRootNode == null) {
+                                if (!remoteRequested) {
+                                    requestRemoteFileList();
+                                }
+                                ImGui.textDisabled("Fetching file list…");
+                            } else {
+                                if (filtering) {
+                                    renderFilteredRemoteNodes(remoteRootNode, searchFilter.get().trim().toLowerCase());
+                                } else {
+                                    renderRemoteNodeChildren(remoteRootNode);
+                                }
+                            }
+                        }
+                );
             }
         }
         ImGui.endChild();
     }
 
-    private void renderToolbar() {
-        // Project root label
-        ImGui.textDisabled(rootDir.getName() + "/");
-        ImGui.sameLine();
-
-        // Push the buttons to the right
-        float rightEdge = ImGui.getContentRegionAvailX();
-        float buttonWidth = ImGui.getFrameHeight(); // square icon buttons
-        float spacing = ImGui.getStyle().getItemSpacingX();
-
-        // Search field — takes the remaining width minus the two icon buttons
-        float searchWidth = rightEdge - (buttonWidth + spacing) * 2 - spacing;
-        ImGui.setNextItemWidth(Math.max(searchWidth, 60.0f));
-        if (ImGui.inputTextWithHint("##search", ImIcons.FA.FA_SEARCH + " Filter…", searchFilter)) {
-            // filter updates live — no action needed
+    /**
+     * Renders a collapsible top-level section with a bold-ish label.
+     */
+    private void renderSectionHeader(String label, String id, Runnable body) {
+        int flags = ImGuiTreeNodeFlags.SpanAvailWidth | ImGuiTreeNodeFlags.DefaultOpen | ImGuiTreeNodeFlags.Framed;
+        if (ImGui.treeNodeEx(id, flags, label)) {
+            body.run();
+            ImGui.treePop();
         }
-
-        // Clear search with Escape when the field is focused
-        if (ImGui.isItemFocused() && ImGui.isKeyPressed(ImGuiKey.Escape)) {
-            searchFilter.set("");
-        }
-
-        if (!searchFilter.get().isEmpty()) {
-            ImGui.sameLine();
-            if (ImGui.smallButton("×##clearSearch")) searchFilter.set("");
-        }
-
-        ImGui.sameLine();
-        if (ImGui.button(ImIcons.FA.FA_ARROW_ROTATE_RIGHT + "##refresh", buttonWidth, 0)) {
-            refresh();
-            clearError();
-        }
-        if (ImGui.isItemHovered()) ImGui.setTooltip("Refresh  (Ctrl+R)");
     }
 
-    /**
-     * Render a file browser node and its children.
-     */
+    @Override
+    protected void openResource(Identifier id) {
+        // Not used for file explorer — files are opened directly
+    }
+
+
+    private void buildFileTree(File dir, ExplorerNode.FileExplorerNode parentNode) {
+        File[] files = dir.listFiles();
+        if (files == null) {
+            rootReadable = dir != rootDir && rootReadable;
+            return;
+        }
+
+        Arrays.sort(files, Comparator
+                .comparing(File::isFile)
+                .thenComparing(f -> f.getName().toLowerCase()));
+
+        for (File file : files) {
+            if (file.isDirectory()) {
+                ExplorerNode.FileExplorerNode dirNode = new ExplorerNode.FileExplorerNode(file.getName(), file);
+                parentNode.addChild(file.getName(), dirNode);
+                buildFileTree(file, dirNode);
+            } else {
+                parentNode.files.add(file);
+            }
+        }
+    }
+
     private void renderFileNode(ExplorerNode.FileExplorerNode node) {
-        // Skip rendering the root's container, just render its children
-        if ("root" .equals(node.name)) {
+        if ("root".equals(node.name)) {
             renderFileNodeChildren(node);
             return;
         }
@@ -235,9 +318,6 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
         }
     }
 
-    /**
-     * Render children of a file node (subdirectories and files).
-     */
     private void renderFileNodeChildren(ExplorerNode.FileExplorerNode node) {
         if (node.isEmpty()) {
             ImGui.indent();
@@ -246,22 +326,17 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
             return;
         }
 
-        // Render subdirectories
         for (ExplorerNode child : node.getChildren()) {
             if (child instanceof ExplorerNode.FileExplorerNode fileNode) {
                 renderFileNode(fileNode);
             }
         }
 
-        // Render files in this directory
         for (File file : node.files) {
             renderFileItem(file);
         }
     }
 
-    /**
-     * Render a file entry with context menu and tooltip.
-     */
     private void renderFileItem(File file) {
         int flags = ImGuiTreeNodeFlags.Leaf
                 | ImGuiTreeNodeFlags.NoTreePushOnOpen
@@ -270,7 +345,6 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
         String fileName = file.getName();
         String fileIcon = FileEndings.getFileIcon(fileName);
 
-        // Highlight already-open files
         boolean isOpen = isFileOpen(file);
         if (isOpen) ImGui.pushStyleColor(ImGuiCol.Text, ImGui.getStyle().getColor(ImGuiCol.CheckMark));
 
@@ -278,15 +352,12 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
 
         if (isOpen) ImGui.popStyleColor();
 
-        // Left-click → open
         if (ImGui.isItemClicked(ImGuiMouseButton.Left)) {
             openFileInEditor(file);
         }
 
-        // Right-click → context menu
         renderFileContextMenu(file, id + "_ctx");
 
-        // Hover tooltip
         if (ImGui.isItemHovered()) {
             ImGui.beginTooltip();
             ImGui.text(fileName);
@@ -300,9 +371,7 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
         }
     }
 
-    /**
-     * Render filtered file results (search).
-     */
+
     private boolean renderFilteredFiles(File dir, String query) {
         File[] files = dir.listFiles();
         if (files == null) return false;
@@ -312,20 +381,194 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
                 .thenComparing(f -> f.getName().toLowerCase()));
 
         boolean anyMatch = false;
-
         for (File file : files) {
             if (file.isDirectory()) {
-                boolean childMatch = renderFilteredFiles(file, query);
-                anyMatch |= childMatch;
-            } else {
-                if (file.getName().toLowerCase().contains(query)) {
-                    renderFileItem(file);
-                    anyMatch = true;
-                }
+                anyMatch |= renderFilteredFiles(file, query);
+            } else if (file.getName().toLowerCase().contains(query)) {
+                renderFileItem(file);
+                anyMatch = true;
             }
         }
-
         return anyMatch;
+    }
+
+    private void renderRemoteNode(ExplorerNode.RemoteExplorerNode node) {
+        if (node.isDirectory) {
+            int flags = ImGuiTreeNodeFlags.SpanAvailWidth;
+            String id = "##rdir_" + node.relativePath;
+            boolean isOpen = ImGui.treeNodeEx(id, flags, "");
+            ImGui.sameLine();
+            String folderIcon = isOpen
+                    ? EngineImGuiUtils.icon(ImIcons.FA.FA_FOLDER_OPEN)
+                    : EngineImGuiUtils.icon(ImIcons.FA.FA_FOLDER);
+            ImGui.textUnformatted(folderIcon + " " + node.name);
+
+            if (isOpen) {
+                renderRemoteNodeChildren(node);
+                ImGui.treePop();
+            }
+        } else {
+            renderRemoteFileItem(node);
+        }
+    }
+
+    private void renderRemoteNodeChildren(ExplorerNode.RemoteExplorerNode node) {
+        if (node.isEmpty()) {
+            ImGui.indent();
+            ImGui.textDisabled("(empty)");
+            ImGui.unindent();
+            return;
+        }
+
+        for (ExplorerNode child : node.children.values()) {
+            var remoteChild = (ExplorerNode.RemoteExplorerNode) child;
+            renderRemoteNode(remoteChild);
+        }
+        for (ExplorerNode.RemoteExplorerNode file : node.files) {
+            renderRemoteFileItem(file);
+        }
+    }
+
+    private void renderRemoteFileItem(ExplorerNode.RemoteExplorerNode node) {
+        int flags = ImGuiTreeNodeFlags.Leaf
+                | ImGuiTreeNodeFlags.NoTreePushOnOpen
+                | ImGuiTreeNodeFlags.SpanAvailWidth;
+        String id = "##rfile_" + node.relativePath;
+        String fileIcon = FileEndings.getFileIcon(node.name);
+
+        boolean isOpen = isResourceOpen(remoteFileEditorId(node.relativePath));
+        if (isOpen) ImGui.pushStyleColor(ImGuiCol.Text, ImGui.getStyle().getColor(ImGuiCol.CheckMark));
+
+        ImGui.treeNodeEx(id, flags, fileIcon + " " + node.name);
+
+        if (isOpen) ImGui.popStyleColor();
+
+        if (ImGui.isItemClicked(ImGuiMouseButton.Left)) {
+            openRemoteFile(node.relativePath);
+        }
+
+        if (ImGui.isItemHovered()) {
+            ImGui.beginTooltip();
+            ImGui.text(node.name);
+            ImGui.separator();
+            ImGui.textDisabled("Remote: " + node.relativePath);
+            if (isOpen) {
+                ImGui.separator();
+                ImGui.textDisabled("Currently open in editor");
+            }
+            ImGui.endTooltip();
+        }
+    }
+
+    private boolean renderFilteredRemoteNodes(ExplorerNode.RemoteExplorerNode node, String query) {
+        boolean anyMatch = false;
+        for (ExplorerNode child : node.children.values()) {
+            var remoteChild = (ExplorerNode.RemoteExplorerNode) child;
+            anyMatch |= renderFilteredRemoteNodes(remoteChild, query);
+        }
+        for (ExplorerNode.RemoteExplorerNode file : node.files) {
+            if (file.name.toLowerCase().contains(query)) {
+                renderRemoteFileItem(file);
+                anyMatch = true;
+            }
+        }
+        return anyMatch;
+    }
+
+    private void requestRemoteFileList() {
+        remoteRequested = true;
+        remoteLoading = true;
+        ClientPacketDistributor.sendToServer(new ServerBoundRequestFileListPacket(""));
+    }
+
+    private void openRemoteFile(String relativePath) {
+        Identifier editorId = remoteFileEditorId(relativePath);
+        if (getExistingEditor(editorId) != null) return;
+        ClientPacketDistributor.sendToServer(new ServerBoundRequestFileContentPacket(relativePath));
+    }
+
+    private void openFileInEditor(File file) {
+        String fileName = file.getName().toLowerCase();
+
+        if (fileName.endsWith(".png") || fileName.endsWith(".jpg")) {
+            Identifier viewerId = Common.id("tex_viewer_" + file.getAbsolutePath().hashCode());
+            if (Client.getEditorManager().getPanels().get(viewerId) instanceof TextureViewerPanel viewer) {
+                viewer.open();
+                return;
+            }
+            TextureViewerPanel viewer = new TextureViewerPanel(viewerId, "Texture: " + file.getName(), file);
+            Client.getEditorManager().register(viewer);
+            viewer.open();
+            return;
+        }
+
+        try {
+            String content = Files.readString(file.toPath());
+            Identifier editorId = fileToEditorId(file);
+
+            CodeEditor existing = getExistingEditor(editorId);
+            if (existing != null) return;
+
+            CodeEditor newEditor = buildCodeEditor(file, editorId, content);
+            Client.getEditorManager().register(newEditor);
+            newEditor.open();
+
+        } catch (IOException e) {
+            setError("Could not open \"" + file.getName() + "\": " + e.getLocalizedMessage());
+        }
+    }
+
+    private CodeEditor buildCodeEditor(File file, Identifier editorId, String content) {
+        CodeEditor editor = new CodeEditor(editorId, "[CLIENT] " + file.getName(), content);
+
+        TextEditorLanguageDefinition lang = FileEndings.getLanguageDefinitionByFileName(file.getName());
+        if (lang != null) {
+            editor.getTextEditor().setLanguageDefinition(lang);
+            editor.customLangOverride = true;
+        }
+
+        editor.setSaveCallback((source, errors) -> {
+            try {
+                Files.writeString(file.toPath(), source);
+            } catch (IOException e) {
+                setError("Save failed for \"" + file.getName() + "\": " + e.getLocalizedMessage());
+                LOGGER.error("Failed to save {}: {}", file.getAbsolutePath(), e.getLocalizedMessage());
+            }
+        });
+
+        return editor;
+    }
+
+    private void renderToolbar() {
+        ImGui.textDisabled(rootDir.getName() + "/");
+        ImGui.sameLine();
+
+        float rightEdge = ImGui.getContentRegionAvailX();
+        float buttonWidth = ImGui.getFrameHeight();
+        float spacing = ImGui.getStyle().getItemSpacingX();
+
+        float searchWidth = rightEdge - (buttonWidth + spacing) * 2 - spacing;
+        ImGui.setNextItemWidth(Math.max(searchWidth, 60.0f));
+        ImGui.inputTextWithHint("##search", ImIcons.FA.FA_SEARCH + " Filter…", searchFilter);
+
+        if (ImGui.isItemFocused() && ImGui.isKeyPressed(ImGuiKey.Escape)) {
+            searchFilter.set("");
+        }
+
+        if (!searchFilter.get().isEmpty()) {
+            ImGui.sameLine();
+            if (ImGui.smallButton("×##clearSearch")) searchFilter.set("");
+        }
+
+        ImGui.sameLine();
+        if (ImGui.button(ImIcons.FA.FA_ARROW_ROTATE_RIGHT + "##refresh", buttonWidth, 0)) {
+            refresh();
+            clearError();
+            // Reset remote state so tree is re-fetched
+            remoteRootNode = null;
+            remoteRequested = false;
+        }
+        if (ImGui.isItemHovered()) ImGui.setTooltip("Refresh  (Ctrl+R)");
     }
 
     private void renderFileContextMenu(File file, String popupId) {
@@ -363,74 +606,11 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
         }
     }
 
-    @Override
-    protected void openResource(Identifier id) {
-        // Not used for file explorer — files are opened directly
-    }
-
-    private void openFileInEditor(File file) {
-        String fileName = file.getName().toLowerCase();
-
-        if (fileName.endsWith(".png") || fileName.endsWith(".jpg")) {
-            Identifier viewerId = Common.id("tex_viewer_" + file.getAbsolutePath().hashCode());
-
-            // Reuse existing viewer if open
-            if (Client.getEditorManager().getPanels().get(viewerId) instanceof TextureViewerPanel viewer) {
-                viewer.open();
-                return;
-            }
-
-            TextureViewerPanel viewer = new TextureViewerPanel(viewerId, "Texture: " + file.getName(), file);
-            Client.getEditorManager().register(viewer);
-            viewer.open();
-            return;
-        }
-
-        try {
-            String content = Files.readString(file.toPath());
-            Identifier editorId = fileToEditorId(file);
-
-            // Reuse existing editor if open
-            CodeEditor existing = getExistingEditor(editorId);
-            if (existing != null) {
-                return;
-            }
-
-            CodeEditor newEditor = buildCodeEditor(file, editorId, content);
-            Client.getEditorManager().register(newEditor);
-            newEditor.open();
-
-        } catch (IOException e) {
-            setError("Could not open \"" + file.getName() + "\": " + e.getLocalizedMessage());
-        }
-    }
-
-    private CodeEditor buildCodeEditor(File file, Identifier editorId, String content) {
-        CodeEditor editor = new CodeEditor(editorId, file.getName(), content);
-
-        TextEditorLanguageDefinition lang = FileEndings.getLanguageDefinitionByFileName(file.getName());
-        if (lang != null) {
-            editor.getTextEditor().setLanguageDefinition(lang);
-            editor.customLangOverride = true;
-        }
-
-        editor.setSaveCallback((source, errors) -> {
-            try {
-                Files.writeString(file.toPath(), source);
-            } catch (IOException e) {
-                setError("Save failed for \"" + file.getName() + "\": " + e.getLocalizedMessage());
-                LOGGER.error("Failed to save {}: {}", file.getAbsolutePath(), e.getLocalizedMessage());
-            }
-        });
-
-        return editor;
-    }
-
     private void createNewFileIn(File dir) {
         File newFile = uniqueFile(dir, "new_file", "txt");
         try {
             if (newFile.createNewFile()) {
-                refresh(); // Refresh tree to show new file
+                refresh();
                 openFileInEditor(newFile);
             }
         } catch (IOException e) {
@@ -443,16 +623,14 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
         if (!newDir.mkdir()) {
             setError("Could not create folder: " + newDir.getName());
         } else {
-            refresh(); // Refresh tree to show new folder
+            refresh();
         }
     }
 
     private void revealInExplorer(File dir) {
         try {
-            Desktop desktop = java.awt.Desktop.getDesktop();
-            desktop.open(dir);
+            Desktop.getDesktop().open(dir);
         } catch (Exception ignored) {
-            // If that doesn't work, just ignore it :)
         }
     }
 
