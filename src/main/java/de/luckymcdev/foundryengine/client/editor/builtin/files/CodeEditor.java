@@ -4,7 +4,9 @@ import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.builtin.EditorPanel;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
+import de.luckymcdev.foundryengine.common.util.PermissionChecks;
 import imgui.ImGui;
+import imgui.ImVec4;
 import imgui.extension.texteditor.TextEditor;
 import imgui.extension.texteditor.TextEditorCoordinates;
 import imgui.extension.texteditor.TextEditorLanguageDefinition;
@@ -116,8 +118,9 @@ public class CodeEditor extends EditorPanel {
 
     @Override
     public void content() {
-        if (!Client.getMinecraft().isSingleplayer() && !forceReadOnly && !textEditor.isReadOnly()) {
-            ImGui.text("Editing is disabled in multiplayer.");
+        if (!PermissionChecks.COMMANDS_OWNER.check(Client.getPlayer().permissions()) && !forceReadOnly && !textEditor.isReadOnly()) {
+            ImGui.textColored(new ImVec4(1.0f, 0.5f, 0.0f, 1.0f),
+                    "You do not have the necessary permissions to view this.");
             return;
         }
 

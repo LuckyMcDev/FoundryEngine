@@ -7,7 +7,9 @@ import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.log.EngineLogAppender;
 import de.luckymcdev.foundryengine.common.log.LogEntry;
+import de.luckymcdev.foundryengine.common.util.PermissionChecks;
 import imgui.ImGui;
+import imgui.ImVec4;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiInputTextFlags;
 import imgui.flag.ImGuiKey;
@@ -61,8 +63,9 @@ public class ConsolePanel extends EditorPanel {
 
     @Override
     public void content() {
-        if (!Client.getMinecraft().isSingleplayer()) {
-            ImGui.text("Not in singleplayer.");
+        if (!PermissionChecks.COMMANDS_OWNER.check(Client.getPlayer().permissions())) {
+            ImGui.textColored(new ImVec4(1.0f, 0.5f, 0.0f, 1.0f),
+                    "You do not have the necessary permissions to view this.");
             return;
         }
         renderControls();

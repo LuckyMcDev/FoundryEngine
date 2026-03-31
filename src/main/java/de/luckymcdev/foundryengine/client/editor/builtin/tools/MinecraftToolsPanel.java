@@ -9,11 +9,15 @@ import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.network.packets.ServerBoundChangeWeatherPacket;
 import de.luckymcdev.foundryengine.common.network.packets.ServerBoundSetTimePacket;
+import de.luckymcdev.foundryengine.common.util.PermissionChecks;
 import imgui.ImGui;
+import imgui.ImVec4;
 import imgui.flag.ImGuiKey;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.protocol.game.ServerboundChangeGameModePacket;
 import net.minecraft.network.protocol.game.ServerboundSetGameRulePacket;
+import net.minecraft.server.permissions.LevelBasedPermissionSet;
+import net.minecraft.server.permissions.PermissionSet;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.gamerules.GameRules;
 
@@ -31,8 +35,20 @@ public class MinecraftToolsPanel extends EditorPanel {
             ImGui.textColored(1.0f, 0.0f, 0.0f, 1.0f, "Connect to a world to use.");
             return;
         }
+        if (!PermissionChecks.COMMANDS_OWNER.check(Client.getPlayer().permissions())) {
+            ImGui.textColored(new ImVec4(1.0f, 0.5f, 0.0f, 1.0f),
+                    "You do not have the necessary permissions to view this.");
+            return;
+        }
 
         ImGui.text("A collection of Minecraft Tools");
+        ImGui.separator();
+        PermissionSet pSet = Client.getPlayer().permissions();
+        if (pSet instanceof LevelBasedPermissionSet levelSet) {
+            ImGui.text("Access Level: " + levelSet.level().name());
+        } else {
+            ImGui.text("Permissions: Custom/Unknown Set");
+        }
         ImGui.separator();
         gameModeSelector();
         ImGui.separator();
