@@ -30,11 +30,14 @@ public class GameRendererMixin implements EngineGameRenderer {
         var featureManager = Common.getFeatureManager();
 
         if (featureManager.isEnabled(EngineFeatures.EDITOR) && imguiManager.isEnabled()) {
-            imguiManager.begin();
-            mainMenu.handleShortcuts();
-            mainMenu.render();
-            editorManager.handleRender();
-            imguiManager.end();
+            try {
+                imguiManager.begin();
+                mainMenu.handleShortcuts();
+                mainMenu.render();
+                editorManager.handleRender();
+            } finally {
+                imguiManager.end();
+            }
         }
     }
 }
