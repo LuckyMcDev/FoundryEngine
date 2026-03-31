@@ -1,8 +1,10 @@
 package de.luckymcdev.foundryengine.client.editor.builtin;
 
+import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.Panel;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.imgui.EngineImGuiUtils;
+import de.luckymcdev.foundryengine.client.ui.ExampleScreen;
 import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.network.TestPacket;
@@ -45,6 +47,10 @@ public class TestPanel extends Panel {
 
         if (ImGui.button("Press this!")) {
             ClientPacketDistributor.sendToServer(new TestPacket(knobValue.get()));
+        }
+
+        if (ImGui.button("Open Screen")) {
+            Client.setScreen(new ExampleScreen());
         }
 
     }
