@@ -50,11 +50,11 @@ public static void onRegister(RegistryEvent event) {
 
     // Single registration
 
-    event.items(item);
+    event.blocks(block);
 
     // Bulk registration
 
-    event.items(item1, item2, item3);
+    event.blocks(block1, block2, block3);
 
 }
 ````
@@ -63,3 +63,11 @@ public static void onRegister(RegistryEvent event) {
 You can call event.blocks() multiple times or pass an infinite number of arguments in a single call. Choose the style
 that best fits your project's organization.
 :::
+
+## Retrieve the actual Block
+
+After registration, you can retrieve the actual `Block` instance using the `get()` method.
+
+```java{1}
+Block exampleBlock = block.get();
+```

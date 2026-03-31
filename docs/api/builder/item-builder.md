@@ -54,3 +54,11 @@ public static void onRegister(RegistryEvent event) {
 You can call event.items() multiple times or pass an infinite number of arguments in a single call. Choose the style
 that best fits your project's organization.
 :::
+
+## Retrieve the actual Item
+
+After registration, you can retrieve the actual `Item` instance using the `get()` method.
+    
+```java{1}
+Item exampleBlock = item.get();
+```

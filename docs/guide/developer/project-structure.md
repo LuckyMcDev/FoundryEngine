@@ -1,6 +1,6 @@
 # Project Structure
 
-The Project Structure of a Bundle looks like this:
+The Project Structure of a Bundle created with the template looks like this:
 
 ```
 ├── src
