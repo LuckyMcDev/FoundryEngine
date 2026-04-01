@@ -3,9 +3,12 @@ package de.luckymcdev.foundryengine.client.imgui;
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcon;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
+import de.luckymcdev.foundryengine.common.util.PermissionChecks;
 import de.luckymcdev.foundryengine.common.util.color.Color;
 import imgui.ImGui;
+import imgui.ImVec4;
 import imgui.flag.ImGuiStyleVar;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.StringSplitter;
 import net.minecraft.resources.Identifier;
 
@@ -76,6 +79,36 @@ public class EngineImGuiUtils {
     public static void textCentered(String text, float width) {
         ImGui.setCursorPosX(ImGui.getCursorPosX() + (width - ImGui.getFont().calcTextSizeAX(ImGui.getFontSize(), Float.MAX_VALUE, 0, text)) / 2);
         ImGui.text(text);
+    }
+
+    public static void textDenied(String title, String... lines) {
+        ImGui.textColored(new ImVec4(1.0f, 0.5f, 0.0f, 1.0f),
+                EngineImGuiUtils.icon(ImIcons.FA.FA_EXCLAMATION_TRIANGLE) + " " + title);
+        ImGui.spacing();
+        for (String line : lines) {
+            ImGui.textDisabled(line);
+        }
+    }
+
+    public static boolean requiresActiveSession() {
+        var mc = Minecraft.getInstance();
+        return mc.level != null && !mc.isSingleplayer();
+    }
+
+    public static boolean requirePermissions() {
+        var player = Client.getPlayer();
+        if (player == null) return false;
+        if (!PermissionChecks.COMMANDS_OWNER.check(player.permissions())) {
+            textDenied("Insufficient permissions",
+                    "You need owner-level permissions to use this panel.");
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean requireFull() {
+        if (!requiresActiveSession()) return true; // not on a server, allow
+        return requirePermissions();               // on a server, check perms
     }
 
     /**

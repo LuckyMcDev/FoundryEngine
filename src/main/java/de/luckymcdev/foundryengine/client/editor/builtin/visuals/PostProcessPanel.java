@@ -3,6 +3,7 @@ package de.luckymcdev.foundryengine.client.editor.builtin.visuals;
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.builtin.EditorPanel;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
+import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.client.post.PostProcessManager;
 import de.luckymcdev.foundryengine.client.post.pipeline.PostProcessPipeline;
 import de.luckymcdev.foundryengine.client.post.pipeline.param.PipelineParam;
@@ -25,7 +26,7 @@ public class PostProcessPanel extends EditorPanel {
     public static final PostProcessPanel INSTANCE = new PostProcessPanel();
 
     private PostProcessPanel() {
-        super(Common.id("post_process_panel"), "Post Processing Panel", Shortcut.ctrl(ImGuiKey.F4));
+        super(Common.id("post_process_panel"), "Post Processing Panel", ImIcons.FA.FA_CAMERA, Shortcut.ctrl(ImGuiKey.F4));
         this.category = PanelCategory.EDITOR_VISUALS;
     }
 

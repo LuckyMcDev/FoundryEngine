@@ -1,12 +1,11 @@
 package de.luckymcdev.foundryengine.client.editor.builtin.files;
 
-import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.builtin.EditorPanel;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
+import de.luckymcdev.foundryengine.client.imgui.EngineImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
-import de.luckymcdev.foundryengine.common.util.PermissionChecks;
+import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import imgui.ImGui;
-import imgui.ImVec4;
 import imgui.extension.texteditor.TextEditor;
 import imgui.extension.texteditor.TextEditorCoordinates;
 import imgui.extension.texteditor.TextEditorLanguageDefinition;
@@ -56,7 +55,8 @@ public class CodeEditor extends EditorPanel {
      * @param source   Initial source text to populate the editor.
      */
     public CodeEditor(Identifier id, String fileName, String source) {
-        super(id, ImIcons.FA.FA_EDIT + " Editor: " + fileName);
+        var label = " Editor: " + fileName;
+        super(id, label, ImIcons.FA.FA_EDIT, Shortcut.empty());
         this.menuBar = true;
         this.fileName = fileName;
         this.oldSource = source;
@@ -118,12 +118,8 @@ public class CodeEditor extends EditorPanel {
 
     @Override
     public void content() {
-        if (!PermissionChecks.COMMANDS_OWNER.check(Client.getPlayer().permissions()) && !forceReadOnly && !textEditor.isReadOnly()) {
-            ImGui.textColored(new ImVec4(1.0f, 0.5f, 0.0f, 1.0f),
-                    "You do not have the necessary permissions to view this.");
-            return;
-        }
-
+        //TODO: Same thing as the File Explorer.
+        if (!EngineImGuiUtils.requireFull()) return;
         this.unsaved = isDirty() && !forceReadOnly;
 
         renderMenuBar();

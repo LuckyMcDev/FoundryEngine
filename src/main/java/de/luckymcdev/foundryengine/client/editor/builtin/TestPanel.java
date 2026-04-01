@@ -4,6 +4,7 @@ import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.Panel;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.imgui.EngineImGuiUtils;
+import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.client.ui.ExampleScreen;
 import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
@@ -28,12 +29,14 @@ public class TestPanel extends Panel {
     private static final ImBoolean BOOLEAN = new ImBoolean();
 
     private TestPanel() {
-        super(Common.id("test_panel"), "My Panel", Shortcut.ctrl(ImGuiKey.F5));
+        super(Common.id("test_panel"), "My Panel", ImIcons.DEV.DEV_PYTEST, Shortcut.ctrl(ImGuiKey.F5));
         this.category = PanelCategory.OPEN;
     }
 
     @Override
     public void content() {
+        if (EngineImGuiUtils.requiresActiveSession()) return;
+
         ImGui.text("Hello, World!");
 
         ImGui.separator();

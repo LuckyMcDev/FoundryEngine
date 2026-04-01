@@ -9,9 +9,7 @@ import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.network.packets.ServerBoundChangeWeatherPacket;
 import de.luckymcdev.foundryengine.common.network.packets.ServerBoundSetTimePacket;
-import de.luckymcdev.foundryengine.common.util.PermissionChecks;
 import imgui.ImGui;
-import imgui.ImVec4;
 import imgui.flag.ImGuiKey;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.protocol.game.ServerboundChangeGameModePacket;
@@ -25,21 +23,13 @@ public class MinecraftToolsPanel extends EditorPanel {
     public static final MinecraftToolsPanel INSTANCE = new MinecraftToolsPanel();
 
     private MinecraftToolsPanel() {
-        super(Common.id("minecraft_tools"), "Mincraft Tools", Shortcut.ctrl(ImGuiKey.F3));
+        super(Common.id("minecraft_tools"), "Mincraft Tools", ImIcons.FA.FA_TOOLBOX, Shortcut.ctrl(ImGuiKey.F3));
         this.category = PanelCategory.EDITOR_TOOLS;
     }
 
     @Override
     public void content() {
-        if (Client.getPlayer() == null) {
-            ImGui.textColored(1.0f, 0.0f, 0.0f, 1.0f, "Connect to a world to use.");
-            return;
-        }
-        if (!PermissionChecks.COMMANDS_OWNER.check(Client.getPlayer().permissions())) {
-            ImGui.textColored(new ImVec4(1.0f, 0.5f, 0.0f, 1.0f),
-                    "You do not have the necessary permissions to view this.");
-            return;
-        }
+        assert Client.getPlayer() != null;
 
         ImGui.text("A collection of Minecraft Tools");
         ImGui.separator();

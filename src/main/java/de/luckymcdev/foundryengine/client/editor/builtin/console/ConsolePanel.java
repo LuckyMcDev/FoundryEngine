@@ -3,13 +3,12 @@ package de.luckymcdev.foundryengine.client.editor.builtin.console;
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.builtin.EditorPanel;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
+import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.log.EngineLogAppender;
 import de.luckymcdev.foundryengine.common.log.LogEntry;
-import de.luckymcdev.foundryengine.common.util.PermissionChecks;
 import imgui.ImGui;
-import imgui.ImVec4;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiInputTextFlags;
 import imgui.flag.ImGuiKey;
@@ -36,7 +35,7 @@ public class ConsolePanel extends EditorPanel {
     private boolean autoScroll = true;
 
     private ConsolePanel() {
-        super(Common.id("console"), "Console", Shortcut.ctrl(ImGuiKey.F1));
+        super(Common.id("console"), "Console", ImIcons.FA.FA_ENVELOPE, Shortcut.ctrl(ImGuiKey.F1));
         menuBar = true;
         this.category = PanelCategory.EDITOR_CONSOLE;
     }
@@ -63,11 +62,7 @@ public class ConsolePanel extends EditorPanel {
 
     @Override
     public void content() {
-        if (!PermissionChecks.COMMANDS_OWNER.check(Client.getPlayer().permissions())) {
-            ImGui.textColored(new ImVec4(1.0f, 0.5f, 0.0f, 1.0f),
-                    "You do not have the necessary permissions to view this.");
-            return;
-        }
+        //if(EngineImGuiUtils.requirePermissions()) return; Console doesnt require permissons? It only shows client logs anyway.
         renderControls();
         ImGui.separator();
 

@@ -12,9 +12,7 @@ import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.exceptions.EngineException;
 import de.luckymcdev.foundryengine.common.network.packets.explorer.*;
 import de.luckymcdev.foundryengine.common.util.FileEndings;
-import de.luckymcdev.foundryengine.common.util.PermissionChecks;
 import imgui.ImGui;
-import imgui.ImVec4;
 import imgui.extension.texteditor.TextEditorLanguageDefinition;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiKey;
@@ -60,7 +58,7 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
     private boolean remoteLoading = false;
 
     public FileExplorerPanel(File rootDir) {
-        super(Common.id("file_explorer"), "File Explorer", Shortcut.ctrl(ImGuiKey.F2));
+        super(Common.id("file_explorer"), "File Explorer", ImIcons.FA.FA_FILES_O, Shortcut.ctrl(ImGuiKey.F2));
         this.rootDir = rootDir;
         this.category = PanelCategory.EDITOR_EXPLORER;
     }
@@ -183,12 +181,10 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
 
     @Override
     protected void renderBrowser() {
-        if (!PermissionChecks.COMMANDS_OWNER.check(Client.getPlayer().permissions())) {
-            ImGui.textColored(new ImVec4(1.0f, 0.5f, 0.0f, 1.0f),
-                    "You do not have the necessary permissions to view this.");
-            return;
-        }
-
+        //TODO: Fix this so that we dont need a level to check permissions
+        //TODO: Or i guess do it some other way so that there isnt a check going on here at all?
+        //TODO: Maybe make it so that the permissions check is only active if youre in a server? <-- Tried to do this.
+        if (!EngineImGuiUtils.requireFull()) return;
         renderToolbar();
 
         if (lastError != null) {

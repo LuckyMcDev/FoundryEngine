@@ -7,6 +7,7 @@ import de.luckymcdev.foundryengine.client.editor.builtin.files.TextureViewerPane
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.imgui.EngineImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
+import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
 import imgui.ImGui;
 import imgui.flag.ImGuiMouseButton;
@@ -42,7 +43,7 @@ public class ResourceExplorerPanel extends AbstractExplorerPanel {
     private final Map<String, ExplorerNode.ResourceExplorerNode> namespaces = new TreeMap<>();
 
     public ResourceExplorerPanel() {
-        super(Common.id("resource_browser"), "Resource Browser");
+        super(Common.id("resource_browser"), "Resource Browser", ImIcons.FA.FA_IMAGE, Shortcut.empty());
         this.category = PanelCategory.EDITOR_EXPLORER;
     }
 

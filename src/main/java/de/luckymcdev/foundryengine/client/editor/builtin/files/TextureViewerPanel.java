@@ -7,6 +7,8 @@ import com.mojang.blaze3d.textures.GpuTextureView;
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.client.editor.builtin.EditorPanel;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
+import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
+import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import imgui.ImGui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.AbstractTexture;
@@ -29,14 +31,14 @@ public class TextureViewerPanel extends EditorPanel {
     private int height;
 
     public TextureViewerPanel(Identifier id, String title, Identifier identifier) {
-        super(id, title);
+        super(id, title, ImIcons.FA.FA_IMAGES, Shortcut.empty());
         this.identifier = identifier;
         loadTexture(Type.IDENTIFIER);
         this.category = PanelCategory.EDITOR_FILES;
     }
 
     public TextureViewerPanel(Identifier id, String title, File file) {
-        super(id, title);
+        super(id, title, ImIcons.FA.FA_IMAGES, Shortcut.empty());
         this.file = file;
         loadTexture(Type.FILE);
         this.category = PanelCategory.EDITOR_FILES;

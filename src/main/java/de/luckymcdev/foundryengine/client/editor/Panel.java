@@ -4,11 +4,14 @@ import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.config.ImGuiWindowType;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.config.PanelStyle;
+import de.luckymcdev.foundryengine.client.imgui.EngineImGuiUtils;
+import de.luckymcdev.foundryengine.client.imgui.icon.ImIcon;
 import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import imgui.ImGui;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImBoolean;
 import net.minecraft.resources.Identifier;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * An ImGui Panel.
@@ -22,6 +25,10 @@ public class Panel {
      * The Label.
      */
     public final String label;
+    /**
+     * Icon which is displayed next to the label.
+     */
+    public final @Nullable ImIcon icon;
     /**
      * The Panels opening Shortcut.
      */
@@ -58,13 +65,14 @@ public class Panel {
     /**
      * Instantiates a new Panel.
      *
-     * @param id    the id
-     * @param label the label
+     * @param id       the id
+     * @param label    the label
      * @param shortcut the Shortcut.
      */
-    protected Panel(Identifier id, String label, Shortcut shortcut) {
+    protected Panel(Identifier id, String label, ImIcon icon, Shortcut shortcut) {
         this.id = id;
         this.label = label;
+        this.icon = icon;
         this.shortcut = shortcut;
         this.open = false;
         this.temporary = false;
@@ -81,7 +89,7 @@ public class Panel {
      * @param label the label
      */
     protected Panel(Identifier id, String label) {
-        this(id, label, null);
+        this(id, label, null, Shortcut.empty());
     }
 
     /**
@@ -188,7 +196,13 @@ public class Panel {
         } else {
             ImGui.setNextWindowSizeConstraints(160F, 90F, Float.MAX_VALUE, Float.MAX_VALUE);
         }
-        var title = this.getLabel() + "###" + this.getId();
+
+        String title;
+        if (this.icon == null) {
+            title = this.getLabel() + "###" + this.getId();
+        } else {
+            title = this.getLabel() + " " + EngineImGuiUtils.icon(this.icon) + "###" + this.getId();
+        }
 
         boolean menuOpen = ImGui.begin(title, WINDOW, flags);
 
