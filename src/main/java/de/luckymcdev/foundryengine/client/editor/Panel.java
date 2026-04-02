@@ -110,6 +110,14 @@ public class Panel {
         return this.label;
     }
 
+    public String getFormattedLabel() {
+        if (this.icon == null) {
+            return this.label;
+        } else {
+            return this.label + " " + EngineImGuiUtils.icon(this.icon);
+        }
+    }
+
     private int getFlags() {
         int flags = ImGuiWindowFlags.None;
 
@@ -197,12 +205,7 @@ public class Panel {
             ImGui.setNextWindowSizeConstraints(160F, 90F, Float.MAX_VALUE, Float.MAX_VALUE);
         }
 
-        String title;
-        if (this.icon == null) {
-            title = this.getLabel() + "###" + this.getId();
-        } else {
-            title = this.getLabel() + " " + EngineImGuiUtils.icon(this.icon) + "###" + this.getId();
-        }
+        String title = this.getFormattedLabel() + "###" + this.getId();
 
         boolean menuOpen = ImGui.begin(title, WINDOW, flags);
 

@@ -15,7 +15,7 @@ public class PanelMenuItemRenderer {
         String shortcutLabel = getShortcutLabel(panel);
         boolean isOpen = editor.isOpen(panel);
 
-        if (ImGui.menuItem(panel.getLabel(), shortcutLabel, isOpen)) {
+        if (ImGui.menuItem(panel.getFormattedLabel(), shortcutLabel, isOpen)) {
             editor.togglePanel(panel);
         }
     }

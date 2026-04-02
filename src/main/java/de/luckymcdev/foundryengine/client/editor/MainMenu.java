@@ -18,17 +18,12 @@ public class MainMenu {
     private ImGuiGraphicsStack graphicsStack;
     private ShortcutHandler shortcutHandler;
 
-    public MainMenu() {
-        // Constructor is lightweight - actual initialization happens on first use
-    }
-
     public void register() {
         var editor = Client.getEditorManager();
         this.graphicsStack = Client.getImGuiManager().getGraphicsStack();
         this.shortcutHandler = new ShortcutHandler(editor);
 
         for (PanelCategory category : PanelCategory.values()) {
-            // You may want to skip sub-categories if they should be nested elsewhere
             if (isSubCategory(category)) continue;
 
             String label = capitalize(category.name());
