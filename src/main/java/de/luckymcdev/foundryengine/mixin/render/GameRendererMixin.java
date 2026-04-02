@@ -1,8 +1,6 @@
 package de.luckymcdev.foundryengine.mixin.render;
 
 import de.luckymcdev.foundryengine.client.Client;
-import de.luckymcdev.foundryengine.common.Common;
-import de.luckymcdev.foundryengine.common.feature.EngineFeatures;
 import de.luckymcdev.foundryengine.interfaces.EngineGameRenderer;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.renderer.GameRenderer;
@@ -27,13 +25,11 @@ public class GameRendererMixin implements EngineGameRenderer {
         var mainMenu = Client.getMainMenu();
         var imguiManager = Client.getImGuiManager();
         var editorManager = Client.getEditorManager();
-        var featureManager = Common.getFeatureManager();
 
-        if (featureManager.isEnabled(EngineFeatures.EDITOR) && imguiManager.isEnabled()) {
+        if (imguiManager.isEnabled()) {
             try {
                 imguiManager.begin();
-                mainMenu.handleShortcuts();
-                mainMenu.render();
+                mainMenu.handleRender();
                 editorManager.handleRender();
             } finally {
                 imguiManager.end();

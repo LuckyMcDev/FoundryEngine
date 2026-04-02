@@ -2,7 +2,6 @@ package de.luckymcdev.foundryengine;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.common.Common;
-import de.luckymcdev.foundryengine.common.feature.EngineFeatures;
 import de.luckymcdev.foundryengine.common.log.EngineLogAppender;
 import de.luckymcdev.foundryengine.common.network.TestPacket;
 import de.luckymcdev.foundryengine.common.network.packets.ServerBoundChangeWeatherPacket;
@@ -78,8 +77,6 @@ public class FoundryEngineMod {
         //Common.getGameStageHandler().item().requireStages(Items.STICK, "stick");
         //Common.getGameStageHandler().loot().requireStages(BuiltInLootTables.END_CITY_TREASURE, "mineshaft");
         //Common.getGameStageHandler().mobs().requireStages(EntityType.ZOMBIE, "zombie");
-
-        Common.getFeatureManager().register(EngineFeatures.EDITOR);
 
         Common.getNetworkManager().register(TestPacket.DEFINITION);
         Common.getNetworkManager().register(ServerBoundSetTimePacket.DEFINITION);

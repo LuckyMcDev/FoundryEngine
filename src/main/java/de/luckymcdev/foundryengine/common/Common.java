@@ -4,7 +4,6 @@ import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.FoundryEngineMod;
 import de.luckymcdev.foundryengine.common.bundle.BundleManager;
 import de.luckymcdev.foundryengine.common.exceptions.UtilityClassException;
-import de.luckymcdev.foundryengine.common.feature.FeatureManager;
 import de.luckymcdev.foundryengine.common.game.behavior.GameBehaviorManager;
 import de.luckymcdev.foundryengine.common.game.stage.GameStageHandler;
 import de.luckymcdev.foundryengine.common.network.NetworkManager;
@@ -64,7 +63,6 @@ public abstract class Common {
     private static final ThreadManager THREAD_MANAGER = new ThreadManager();
     private static final GameBehaviorManager GAME_BEHAVIOR_MANAGER = new GameBehaviorManager();
     private static final GameStageHandler GAME_STAGE_HANDLER = new GameStageHandler();
-    private static final FeatureManager FEATURE_MANAGER = new FeatureManager();
     private static final NetworkManager NETWORK_MANAGER = new NetworkManager();
 
     private Common() {
@@ -100,10 +98,6 @@ public abstract class Common {
 
     public static GameStageHandler getGameStageHandler() {
         return GAME_STAGE_HANDLER;
-    }
-
-    public static FeatureManager getFeatureManager() {
-        return FEATURE_MANAGER;
     }
 
     public static NetworkManager getNetworkManager() {

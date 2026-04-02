@@ -53,7 +53,7 @@ public class MainMenu {
         this.menuSections.remove(name);
     }
 
-    public void render() {
+    private void render() {
         if (ImGui.beginMainMenuBar()) {
             graphicsStack.push();
             menuSections.forEach(MenuSection::render);
@@ -62,7 +62,12 @@ public class MainMenu {
         }
     }
 
-    public void handleShortcuts() {
+    private void handleShortcuts() {
         shortcutHandler.handleShortcuts();
+    }
+
+    public void handleRender() {
+        handleShortcuts();
+        render();
     }
 }
