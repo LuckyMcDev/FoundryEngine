@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.client.post.pipeline.staged;
 
 import de.luckymcdev.foundryengine.client.post.pipeline.PostProcessPipeline;
 import net.neoforged.bus.api.Event;
+import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 
 /**
@@ -17,7 +18,8 @@ public enum PostProcessStage {
     AFTER_TRANSLUCENT_PARTICLES(RenderLevelStageEvent.AfterTranslucentParticles.class),
     AFTER_WEATHER(RenderLevelStageEvent.AfterWeather.class),
     AFTER_LEVEL(RenderLevelStageEvent.AfterLevel.class),
-    FINAL(RenderLevelStageEvent.AfterLevel.class);
+    FINAL(RenderLevelStageEvent.AfterLevel.class),
+    AFTER_GUI(RenderGuiEvent.Post.class);
 
     private final Class<? extends Event> eventClass;
 

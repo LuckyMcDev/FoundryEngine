@@ -21,6 +21,7 @@ import de.luckymcdev.foundryengine.common.Common;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import org.jetbrains.annotations.ApiStatus;
 import org.lwjgl.opengl.GL43C;
@@ -98,6 +99,12 @@ public class PostProcessManager {
     public static void onAfterSky(RenderLevelStageEvent.AfterLevel event) {
         runStage(PostProcessStage.AFTER_LEVEL);
         runStage(PostProcessStage.FINAL);
+    }
+
+    // This is broken idk why :D
+    @SubscribeEvent
+    public static void onAfterSky(RenderGuiEvent.Post event) {
+        runStage(PostProcessStage.AFTER_GUI);
     }
 
     /**
