@@ -1,4 +1,4 @@
-import { defineConfig } from 'vitepress'
+import {defineConfig} from 'vitepress'
 
 const nav = (text: string, link: string) => ({ text, link })
 const sidebar = (text: string, link: string) => ({ text, link })
@@ -35,7 +35,9 @@ export default defineConfig({
             sidebar("Minecraft Code", "/guide/developer/minecraft-code")
         ]),
         sidebarGroup("User", [
-            sidebar("Installation", '/guide/user/installation')
+            sidebar("Overview", '/guide/user/'),
+            sidebar("Bundle Installation", '/guide/user/bundle-installation'),
+            sidebar("Minecraft Installation", '/guide/user/mc-installation')
         ])
       ]),
 
