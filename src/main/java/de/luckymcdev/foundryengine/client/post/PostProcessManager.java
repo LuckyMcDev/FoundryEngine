@@ -21,7 +21,6 @@ import de.luckymcdev.foundryengine.common.Common;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import org.jetbrains.annotations.ApiStatus;
 import org.lwjgl.opengl.GL43C;
@@ -66,29 +65,39 @@ public class PostProcessManager {
     }
 
     @SubscribeEvent
-    public static void onAfterOpaqueBlocks(RenderLevelStageEvent.AfterOpaqueBlocks event) {
+    public static void onAfterSky(RenderLevelStageEvent.AfterOpaqueBlocks event) {
         runStage(PostProcessStage.AFTER_OPAQUE_BLOCKS);
     }
 
     @SubscribeEvent
-    public static void onAfterTranslucentBlocks(RenderLevelStageEvent.AfterTranslucentBlocks event) {
+    public static void onAfterSky(RenderLevelStageEvent.AfterOpaqueFeatures event) {
+        runStage(PostProcessStage.AFTER_OPAQUE_FEATURES);
+    }
+
+    @SubscribeEvent
+    public static void onAfterSky(RenderLevelStageEvent.AfterTranslucentFeatures event) {
+        runStage(PostProcessStage.AFTER_TRANSLUCENT_FEATURES);
+    }
+
+    @SubscribeEvent
+    public static void onAfterSky(RenderLevelStageEvent.AfterTranslucentBlocks event) {
         runStage(PostProcessStage.AFTER_TRANSLUCENT_BLOCKS);
     }
 
     @SubscribeEvent
-    public static void onAfterWeather(RenderLevelStageEvent.AfterWeather event) {
+    public static void onAfterSky(RenderLevelStageEvent.AfterTranslucentParticles event) {
+        runStage(PostProcessStage.AFTER_TRANSLUCENT_PARTICLES);
+    }
+
+    @SubscribeEvent
+    public static void onAfterSky(RenderLevelStageEvent.AfterWeather event) {
         runStage(PostProcessStage.AFTER_WEATHER);
     }
 
     @SubscribeEvent
-    public static void onAfterLevel(RenderLevelStageEvent.AfterLevel event) {
+    public static void onAfterSky(RenderLevelStageEvent.AfterLevel event) {
         runStage(PostProcessStage.AFTER_LEVEL);
         runStage(PostProcessStage.FINAL);
-    }
-
-    @SubscribeEvent
-    public static void onAfterRender(RenderGuiEvent.Post event) {
-        // Reserved for future GUI-stage pipelines.
     }
 
     /**

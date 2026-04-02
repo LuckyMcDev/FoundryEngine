@@ -11,7 +11,10 @@ import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 public enum PostProcessStage {
     AFTER_SKY(RenderLevelStageEvent.AfterSky.class),
     AFTER_OPAQUE_BLOCKS(RenderLevelStageEvent.AfterOpaqueBlocks.class),
+    AFTER_OPAQUE_FEATURES(RenderLevelStageEvent.AfterOpaqueFeatures.class),
+    AFTER_TRANSLUCENT_FEATURES(RenderLevelStageEvent.AfterTranslucentFeatures.class),
     AFTER_TRANSLUCENT_BLOCKS(RenderLevelStageEvent.AfterTranslucentBlocks.class),
+    AFTER_TRANSLUCENT_PARTICLES(RenderLevelStageEvent.AfterTranslucentParticles.class),
     AFTER_WEATHER(RenderLevelStageEvent.AfterWeather.class),
     AFTER_LEVEL(RenderLevelStageEvent.AfterLevel.class),
     FINAL(RenderLevelStageEvent.AfterLevel.class);
