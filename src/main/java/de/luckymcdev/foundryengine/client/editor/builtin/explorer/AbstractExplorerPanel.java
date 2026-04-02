@@ -6,7 +6,7 @@ import de.luckymcdev.foundryengine.client.editor.Panel;
 import de.luckymcdev.foundryengine.client.editor.builtin.EditorPanel;
 import de.luckymcdev.foundryengine.client.editor.builtin.files.CodeEditor;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
-import de.luckymcdev.foundryengine.client.imgui.EngineImGuiUtils;
+import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcon;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.client.util.key.Shortcut;
@@ -68,7 +68,7 @@ public abstract class AbstractExplorerPanel extends EditorPanel {
                 );
                 ImGui.sameLine();
                 ImGui.textUnformatted(
-                        EngineImGuiUtils.icon(open ? ImIcons.FA.FA_FOLDER_OPEN : ImIcons.FA.FA_FOLDER)
+                        ImGuiUtils.icon(open ? ImIcons.FA.FA_FOLDER_OPEN : ImIcons.FA.FA_FOLDER)
                                 + " " + subFolder.name
                 );
                 if (open) {
@@ -97,7 +97,7 @@ public abstract class AbstractExplorerPanel extends EditorPanel {
                 ""
         );
         ImGui.sameLine();
-        ImGui.textUnformatted(EngineImGuiUtils.icon(ImIcons.FA.FA_FILE_CODE) + " " + fileName);
+        ImGui.textUnformatted(ImGuiUtils.icon(ImIcons.FA.FA_FILE_CODE) + " " + fileName);
 
         if (ImGui.isItemClicked(ImGuiMouseButton.Left) && ImGui.isMouseDoubleClicked(ImGuiMouseButton.Left)) {
             openResource(id);
@@ -111,12 +111,12 @@ public abstract class AbstractExplorerPanel extends EditorPanel {
         int flags = ImGuiTreeNodeFlags.SpanAvailWidth;
         if (ImGui.treeNodeEx("##ns_" + ns.name, flags, "")) {
             ImGui.sameLine();
-            ImGui.textUnformatted(EngineImGuiUtils.icon(ImIcons.FA.FA_CUBE) + " " + ns.name);
+            ImGui.textUnformatted(ImGuiUtils.icon(ImIcons.FA.FA_CUBE) + " " + ns.name);
             renderFolder(ns);
             ImGui.treePop();
         } else {
             ImGui.sameLine();
-            ImGui.textUnformatted(EngineImGuiUtils.icon(ImIcons.FA.FA_CUBE) + " " + ns.name);
+            ImGui.textUnformatted(ImGuiUtils.icon(ImIcons.FA.FA_CUBE) + " " + ns.name);
         }
     }
 

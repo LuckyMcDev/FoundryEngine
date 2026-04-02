@@ -16,7 +16,7 @@ import net.minecraft.resources.Identifier;
  * A Class which has static methods for
  * some ImGui utils.
  */
-public class EngineImGuiUtils {
+public class ImGuiUtils {
     private static final StringSplitter IM_GUI_SPLITTER = new StringSplitter((charId, style) -> Client.getImGuiManager().getFont().getCharAdvance(charId));
 
     /**
@@ -44,6 +44,12 @@ public class EngineImGuiUtils {
      */
     public static String icon(ImIcon icon) {
         return "" + icon;
+    }
+
+    public static void displayIcon(ImIcon icon) {
+        ImGui.setWindowFontScale(2f);
+        ImGui.text(icon.iconText(""));
+        ImGui.setWindowFontScale(1f);
     }
 
     public static void h1(Runnable txt) {
@@ -83,7 +89,7 @@ public class EngineImGuiUtils {
 
     public static void textDenied(String title, String... lines) {
         ImGui.textColored(new ImVec4(1.0f, 0.5f, 0.0f, 1.0f),
-                EngineImGuiUtils.icon(ImIcons.FA.FA_EXCLAMATION_TRIANGLE) + " " + title);
+                ImGuiUtils.icon(ImIcons.FA.FA_EXCLAMATION_TRIANGLE) + " " + title);
         ImGui.spacing();
         for (String line : lines) {
             ImGui.textDisabled(line);
@@ -135,7 +141,7 @@ public class EngineImGuiUtils {
             ImGui.pushStyleVar(ImGuiStyleVar.ItemSpacing, 0, 0);
             ImGui.setItemAllowOverlap();
             ImGui.sameLine();
-            EngineImGuiUtils.icon(ImIcons.FA.FA_CLIPBOARD);
+            ImGuiUtils.icon(ImIcons.FA.FA_CLIPBOARD);
             ImGui.sameLine();
             ImGui.popStyleVar();
             ImGui.text("Copy Location");

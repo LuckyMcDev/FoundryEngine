@@ -3,7 +3,7 @@ package de.luckymcdev.foundryengine.client.editor.builtin;
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.Panel;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
-import de.luckymcdev.foundryengine.client.imgui.EngineImGuiUtils;
+import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.client.ui.ExampleScreen;
 import de.luckymcdev.foundryengine.client.util.key.Shortcut;
@@ -35,20 +35,20 @@ public class TestPanel extends Panel {
 
     @Override
     public void content() {
-        if (EngineImGuiUtils.requiresActiveSession()) return;
+        if (ImGuiUtils.requiresActiveSession()) return;
 
         ImGui.text("Hello, World!");
 
         ImGui.separator();
 
         ImGui.text("You dont know what i do? Hover it.");
-        EngineImGuiUtils.helpTooltip("BOO!");
+        ImGuiUtils.helpTooltip("BOO!");
 
-        EngineImGuiUtils.h1(() -> ImGui.text("BIG"));
+        ImGuiUtils.h1(() -> ImGui.text("BIG"));
 
-        EngineImGuiUtils.textCentered("center center", ImGui.getWindowWidth());
+        ImGuiUtils.textCentered("center center", ImGui.getWindowWidth());
 
-        EngineImGuiUtils.resourceLocation(Common.id("imguiiscool"));
+        ImGuiUtils.resourceLocation(Common.id("imguiiscool"));
 
         ImGuiKnobs.knob("This Will Damage you if you press that button!", FLOAT, 0.0f, 10.0f);
 

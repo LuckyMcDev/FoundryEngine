@@ -4,7 +4,7 @@ import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.config.ImGuiWindowType;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.config.PanelStyle;
-import de.luckymcdev.foundryengine.client.imgui.EngineImGuiUtils;
+import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcon;
 import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import imgui.ImGui;
@@ -114,7 +114,7 @@ public class Panel {
         if (this.icon == null) {
             return this.label;
         } else {
-            return this.label + " " + EngineImGuiUtils.icon(this.icon);
+            return this.label + " " + ImGuiUtils.icon(this.icon);
         }
     }
 

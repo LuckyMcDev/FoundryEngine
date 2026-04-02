@@ -26,8 +26,7 @@ public class CategoryMenuSection implements MenuSection {
 
             for (PanelCategory sub : PanelCategory.values()) {
                 if (sub.name().startsWith(this.category.name() + "_")) {
-                    String subLabel = sub.name().replace(this.category.name() + "_", "");
-                    if (ImGui.beginMenu(capitalize(subLabel))) {
+                    if (ImGui.beginMenu(sub.getMenuLabel())) {
                         renderPanelsForCategory(sub);
                         ImGui.endMenu();
                     }

@@ -35,7 +35,7 @@ public class ConsolePanel extends EditorPanel {
     private boolean autoScroll = true;
 
     private ConsolePanel() {
-        super(Common.id("console"), "Console", ImIcons.FA.FA_ENVELOPE, Shortcut.ctrl(ImGuiKey.F1));
+        super(Common.id("console"), "Console", ImIcons.FA.FA_TERMINAL, Shortcut.ctrl(ImGuiKey.F1));
         menuBar = true;
         this.category = PanelCategory.EDITOR_CONSOLE;
     }

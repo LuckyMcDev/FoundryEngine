@@ -5,7 +5,7 @@ import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.builtin.files.CodeEditor;
 import de.luckymcdev.foundryengine.client.editor.builtin.files.TextureViewerPanel;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
-import de.luckymcdev.foundryengine.client.imgui.EngineImGuiUtils;
+import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
@@ -95,7 +95,7 @@ public class ResourceExplorerPanel extends AbstractExplorerPanel {
 
     @Override
     protected void renderBrowser() {
-        if (ImGui.button(EngineImGuiUtils.icon(ImIcons.FA.FA_ARROW_ROTATE_RIGHT) + " Refresh")) {
+        if (ImGui.button(ImGuiUtils.icon(ImIcons.FA.FA_ARROW_ROTATE_RIGHT) + " Refresh")) {
             refresh();
         }
 
@@ -112,7 +112,7 @@ public class ResourceExplorerPanel extends AbstractExplorerPanel {
     @Override
     protected void renderResourceFile(Identifier id) {
         String fileName = id.getPath().substring(id.getPath().lastIndexOf('/') + 1);
-        String label = EngineImGuiUtils.icon(ImIcons.FA.FA_FILE_CODE) + " " + fileName;
+        String label = ImGuiUtils.icon(ImIcons.FA.FA_FILE_CODE) + " " + fileName;
         String fileId = "##file_" + id;
 
         // Render the node with the label included so it is clickable

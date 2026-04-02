@@ -3,7 +3,7 @@ package de.luckymcdev.foundryengine.client.editor.builtin.tools;
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.builtin.EditorPanel;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
-import de.luckymcdev.foundryengine.client.imgui.EngineImGuiUtils;
+import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
@@ -109,7 +109,7 @@ public class MinecraftToolsPanel extends EditorPanel {
             Client.getConnection().send(new ServerBoundSetTimePacket(18000));
         }
         ImGui.sameLine();
-        if (ImGui.button("Lock " + EngineImGuiUtils.icon(ImIcons.FA.FA_LOCK) + "##time")) {
+        if (ImGui.button("Lock " + ImGuiUtils.icon(ImIcons.FA.FA_LOCK) + "##time")) {
             BuiltInRegistries.GAME_RULE.getResourceKey(GameRules.ADVANCE_TIME).ifPresent(key -> {
                 var entry = new ServerboundSetGameRulePacket.Entry(key, "false");
                 Client.getConnection().send(new ServerboundSetGameRulePacket(java.util.List.of(entry)));
@@ -134,7 +134,7 @@ public class MinecraftToolsPanel extends EditorPanel {
             Client.getConnection().send(new ServerBoundChangeWeatherPacket("thunder"));
         }
         ImGui.sameLine();
-        if (ImGui.button("Lock " + EngineImGuiUtils.icon(ImIcons.FA.FA_LOCK) + "##weather")) {
+        if (ImGui.button("Lock " + ImGuiUtils.icon(ImIcons.FA.FA_LOCK) + "##weather")) {
             BuiltInRegistries.GAME_RULE.getResourceKey(GameRules.ADVANCE_WEATHER).ifPresent(key -> {
                 var entry = new ServerboundSetGameRulePacket.Entry(key, "false");
                 Client.getConnection().send(new ServerboundSetGameRulePacket(java.util.List.of(entry)));

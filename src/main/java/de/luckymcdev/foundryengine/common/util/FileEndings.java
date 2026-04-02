@@ -1,6 +1,6 @@
 package de.luckymcdev.foundryengine.common.util;
 
-import de.luckymcdev.foundryengine.client.imgui.EngineImGuiUtils;
+import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.common.editor.builtin.code.CodeEditorLanguageDefinitions;
 import imgui.extension.texteditor.TextEditorLanguageDefinition;
@@ -25,25 +25,25 @@ public class FileEndings {
         // TOML
         registerLanguage(CodeEditorLanguageDefinitions.toml(), "toml");
 
-        registerIcon(EngineImGuiUtils.icon(ImIcons.FA.FA_FILE_CODE),
+        registerIcon(ImGuiUtils.icon(ImIcons.FA.FA_FILE_CODE),
                 "java", "groovy", "glsl", "vsh", "fsh", "js");
 
-        registerIcon(EngineImGuiUtils.icon(ImIcons.FA.FA_FILE_IMPORT),
+        registerIcon(ImGuiUtils.icon(ImIcons.FA.FA_FILE_IMPORT),
                 "json", "toml", "yaml", "yml");
 
-        registerIcon(EngineImGuiUtils.icon(ImIcons.FA.FA_FILE_IMAGE),
+        registerIcon(ImGuiUtils.icon(ImIcons.FA.FA_FILE_IMAGE),
                 "png", "jpg", "jpeg", "tga");
 
-        registerIcon(EngineImGuiUtils.icon(ImIcons.FA.FA_FILE_AUDIO),
+        registerIcon(ImGuiUtils.icon(ImIcons.FA.FA_FILE_AUDIO),
                 "ogg", "wav", "mp3");
 
-        registerIcon(EngineImGuiUtils.icon(ImIcons.FA.FA_FILE_ZIPPER),
+        registerIcon(ImGuiUtils.icon(ImIcons.FA.FA_FILE_ZIPPER),
                 "zip", "jar", "tar", "gz");
 
-        registerIcon(EngineImGuiUtils.icon(ImIcons.FA.FA_FILE_TEXT),
+        registerIcon(ImGuiUtils.icon(ImIcons.FA.FA_FILE_TEXT),
                 "txt", "log");
 
-        registerIcon(EngineImGuiUtils.icon(ImIcons.FA.FA_FILE_PEN),
+        registerIcon(ImGuiUtils.icon(ImIcons.FA.FA_FILE_PEN),
                 "md");
     }
 
@@ -72,7 +72,7 @@ public class FileEndings {
      */
     public static String getFileIcon(String fileName) {
         String ext = getExtension(fileName);
-        return EXTENSION_TO_ICON.getOrDefault(ext, EngineImGuiUtils.icon(ImIcons.FA.FA_FILE_O));
+        return EXTENSION_TO_ICON.getOrDefault(ext, ImGuiUtils.icon(ImIcons.FA.FA_FILE_O));
     }
 
     private static String getExtension(String fileName) {

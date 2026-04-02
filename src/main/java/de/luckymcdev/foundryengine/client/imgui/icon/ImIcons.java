@@ -5,6 +5,26 @@ package de.luckymcdev.foundryengine.client.imgui.icon;
  * All sub Interfaces are a Type of Icon from an Icon set.
  */
 public class ImIcons {
+    public enum FAVORITES implements ImIcon {
+        ;
+        private final char icon;
+
+        FAVORITES(char icon) {
+            this.icon = icon;
+        }
+
+        @Override
+        public char getIconChar() {
+            return icon;
+        }
+
+        @Override
+        public String toString() {
+            return String.valueOf(icon);
+        }
+    }
+
+
     public enum DEV implements ImIcon {
         DEV_AARCH64('\uE700'),
         DEV_ADONISJS('\uE701'),

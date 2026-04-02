@@ -5,7 +5,7 @@ import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.builtin.files.CodeEditor;
 import de.luckymcdev.foundryengine.client.editor.builtin.files.TextureViewerPanel;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
-import de.luckymcdev.foundryengine.client.imgui.EngineImGuiUtils;
+import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
@@ -184,7 +184,7 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
         //TODO: Fix this so that we dont need a level to check permissions
         //TODO: Or i guess do it some other way so that there isnt a check going on here at all?
         //TODO: Maybe make it so that the permissions check is only active if youre in a server? <-- Tried to do this.
-        if (!EngineImGuiUtils.requireFull()) return;
+        if (!ImGuiUtils.requireFull()) return;
         renderToolbar();
 
         if (lastError != null) {
@@ -212,7 +212,7 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
 
             // ---- CLIENT section ----
             renderSectionHeader(
-                    EngineImGuiUtils.icon(ImIcons.FA.FA_DESKTOP) + " Client",
+                    ImGuiUtils.icon(ImIcons.FA.FA_DESKTOP) + " Client",
                     "##section_client",
                     () -> {
                         if (filtering) {
@@ -227,7 +227,7 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
             if (isMultiplayer()) {
                 ImGui.spacing();
                 renderSectionHeader(
-                        EngineImGuiUtils.icon(ImIcons.FA.FA_SERVER) + " Server",
+                        ImGuiUtils.icon(ImIcons.FA.FA_SERVER) + " Server",
                         "##section_server",
                         () -> {
                             if (remoteLoading) {
@@ -302,8 +302,8 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
 
         ImGui.sameLine();
         String folderIcon = isOpen
-                ? EngineImGuiUtils.icon(ImIcons.FA.FA_FOLDER_OPEN)
-                : EngineImGuiUtils.icon(ImIcons.FA.FA_FOLDER);
+                ? ImGuiUtils.icon(ImIcons.FA.FA_FOLDER_OPEN)
+                : ImGuiUtils.icon(ImIcons.FA.FA_FOLDER);
         ImGui.textUnformatted(folderIcon + " " + node.name);
 
         renderDirectoryContextMenu(node.file, id + "_ctx");
@@ -395,8 +395,8 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
             boolean isOpen = ImGui.treeNodeEx(id, flags, "");
             ImGui.sameLine();
             String folderIcon = isOpen
-                    ? EngineImGuiUtils.icon(ImIcons.FA.FA_FOLDER_OPEN)
-                    : EngineImGuiUtils.icon(ImIcons.FA.FA_FOLDER);
+                    ? ImGuiUtils.icon(ImIcons.FA.FA_FOLDER_OPEN)
+                    : ImGuiUtils.icon(ImIcons.FA.FA_FOLDER);
             ImGui.textUnformatted(folderIcon + " " + node.name);
 
             if (isOpen) {

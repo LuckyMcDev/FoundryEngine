@@ -26,7 +26,7 @@ public class MainMenu {
         for (PanelCategory category : PanelCategory.values()) {
             if (isSubCategory(category)) continue;
 
-            String label = capitalize(category.name());
+            String label = category.getMenuLabel();
             this.register(category.name().toLowerCase(),
                     new CategoryMenuSection(editor, category, label));
         }
@@ -34,10 +34,6 @@ public class MainMenu {
 
     private boolean isSubCategory(PanelCategory category) {
         return category.name().contains("_");
-    }
-
-    private String capitalize(String str) {
-        return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
     }
 
     public void register(String name, MenuSection section) {
