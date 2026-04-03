@@ -1,6 +1,10 @@
 package com.example
 
-
+import de.luckymcdev.foundryengine.api.builder.particle.ParticleBuilder
+import de.luckymcdev.foundryengine.client.particle.data.ParticleColorData
+import de.luckymcdev.foundryengine.common.Common
+import de.luckymcdev.foundryengine.common.easing.Easing
+import de.luckymcdev.foundryengine.common.util.color.Color
 import net.minecraft.advancements.criterion.InventoryChangeTrigger
 import net.minecraft.core.component.DataComponents
 import net.minecraft.network.chat.Component
@@ -61,6 +65,9 @@ class TestBundleBundleEvents {
             .requires(Items.DIAMOND, 1)
             .unlockedBy("has_log", InventoryChangeTrigger.TriggerInstance.hasItems(Items.OAK_LOG))
 
+    private static final ParticleBuilder PARTICLE = ParticleBuilder.create(id("custom_particle"))
+            .addData(new ParticleColorData(Color.BLACK, Color.WHITE, Easing.BACK_IN_OUT))
+
     /**
      * Event handler for the registration event. This is where you register blocks, items, recipes.
      * For more advanced registration see {@link RegisterEvent} provided by Neoforge.
@@ -77,6 +84,9 @@ class TestBundleBundleEvents {
         )
         event.recipes(
                 RECIPE
+        )
+        event.particles(
+                PARTICLE
         )
     }
 }

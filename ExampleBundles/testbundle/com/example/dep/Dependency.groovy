@@ -10,5 +10,7 @@ class Dependency {
     static void hello(ServerPlayer player) {
         //println("hello from dep v2")
 		//println("Hello v2 from editor!")
+		
+		// THIS SHOULD NOW JUST FUCK IT UP KINDA
     }
 }
