@@ -1,4 +1,4 @@
-package de.luckymcdev.foundryengine.client.editor.builtin.console;
+package de.luckymcdev.foundryengine.client.editor.builtin.tools;
 
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.builtin.EditorPanel;
@@ -37,7 +37,7 @@ public class ConsolePanel extends EditorPanel {
     private ConsolePanel() {
         super(Common.id("console"), "Console", ImIcons.FA.FA_TERMINAL, Shortcut.ctrl(ImGuiKey.F1));
         menuBar = true;
-        this.category = PanelCategory.EDITOR_CONSOLE;
+        this.category = PanelCategory.EDITOR_TOOLS;
     }
 
     private List<LogEntry> getFilteredLogs() {

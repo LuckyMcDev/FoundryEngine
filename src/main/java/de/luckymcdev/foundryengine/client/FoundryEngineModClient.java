@@ -7,10 +7,11 @@ import de.luckymcdev.foundryengine.client.debug.screen.GameStagesDebugEntry;
 import de.luckymcdev.foundryengine.client.debug.screen.PostProcessDebugEntry;
 import de.luckymcdev.foundryengine.client.editor.builtin.MainEditor;
 import de.luckymcdev.foundryengine.client.editor.builtin.TestPanel;
-import de.luckymcdev.foundryengine.client.editor.builtin.console.ConsolePanel;
 import de.luckymcdev.foundryengine.client.editor.builtin.explorer.FileExplorerPanel;
 import de.luckymcdev.foundryengine.client.editor.builtin.explorer.ResourceExplorerPanel;
+import de.luckymcdev.foundryengine.client.editor.builtin.tools.ConsolePanel;
 import de.luckymcdev.foundryengine.client.editor.builtin.tools.MinecraftToolsPanel;
+import de.luckymcdev.foundryengine.client.editor.builtin.tools.StopwatchPanel;
 import de.luckymcdev.foundryengine.client.editor.builtin.visuals.PostProcessPanel;
 import de.luckymcdev.foundryengine.client.editor.event.RegisterPanelEvent;
 import de.luckymcdev.foundryengine.client.event.RegisterRenderingStuffEvent;
@@ -138,6 +139,7 @@ public class FoundryEngineModClient {
         event.register(ConsolePanel.INSTANCE);
         event.register(MainEditor.INSTANCE);
         event.register(MinecraftToolsPanel.INSTANCE);
+        event.register(StopwatchPanel.INSTANCE);
     }
 
     private void onRegisterPostPipelines(RegisterPostPipelineEvent event) {

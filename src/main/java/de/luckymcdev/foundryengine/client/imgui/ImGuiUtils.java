@@ -149,6 +149,32 @@ public class ImGuiUtils {
         }
     }
 
+    public static String timer(long time) {
+        long ms = time % 1000;
+        long sec = (time / 1000) % 60;
+        long min = (time / (1000 * 60)) % 60;
+        long hrs = (time / (1000 * 60 * 60));
+
+        StringBuilder sb = new StringBuilder();
+
+        if (hrs > 0) {
+            if (hrs < 10) sb.append('0');
+            sb.append(hrs).append(':');
+        }
+
+        if (min < 10) sb.append('0');
+        sb.append(min).append(':');
+
+        if (sec < 10) sb.append('0');
+        sb.append(sec).append('.');
+
+        if (ms < 100) sb.append('0');
+        if (ms < 10) sb.append('0');
+        sb.append(ms);
+
+        return sb.toString();
+    }
+
     /**
      * Obtains the color of the modid
      *
