@@ -1,6 +1,5 @@
 package de.luckymcdev.foundryengine.client.editor.builtin.explorer;
 
-import com.google.common.collect.Lists;
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.builtin.files.CodeEditor;
@@ -19,6 +18,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.PackRepository;
+import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.level.storage.WorldData;
 import org.slf4j.Logger;
@@ -29,6 +29,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
@@ -38,12 +39,15 @@ import java.util.stream.Collectors;
  * Supports every standard resource folder (textures, models, shaders, …) plus any
  * custom mod resources.  Files always open in <em>read-only</em> mode; images are
  * shown in the {@link TextureViewerPanel}, everything else in a {@link CodeEditor}.
+ * <p>
+ * TODO: Fix "Invalid path : Invalid path ''" Error by VanillaPackResources
  */
 public class ResourceExplorerPanel extends AbstractExplorerPanel {
     public static final ResourceExplorerPanel INSTANCE = new ResourceExplorerPanel();
     private static final Logger LOGGER = LogUtils.getLogger();
     private final Map<String, ExplorerNode.ResourceExplorerNode> namespaces = new TreeMap<>();
     private final ImString searchFilter = new ImString(256);
+    private volatile boolean reloadInProgress = false;
 
     public ResourceExplorerPanel() {
         super(Common.id("resource_browser"), "Resource Browser", ImIcons.FA.FA_IMAGE, Shortcut.empty());
@@ -54,19 +58,31 @@ public class ResourceExplorerPanel extends AbstractExplorerPanel {
     protected void refresh() {
         namespaces.clear();
 
-        Client.getResourceManager().listPacks().forEach(pack -> {
-            for (String namespace : pack.getNamespaces(PackType.CLIENT_RESOURCES)) {
-                pack.listResources(PackType.CLIENT_RESOURCES, namespace, "", (id, supplier) -> {
-                    ExplorerNode.ResourceExplorerNode nsNode = namespaces.computeIfAbsent(
-                            id.getNamespace(),
-                            ExplorerNode.ResourceExplorerNode::new
-                    );
-                    addResourceToTree(nsNode, id);
-                });
-            }
-        });
+        scanPacks(Client.getResourceManager(), PackType.CLIENT_RESOURCES);
+
+        MinecraftServer server = Client.getMinecraft().getSingleplayerServer();
+        if (server != null) {
+            scanPacks(server.getResourceManager(), PackType.SERVER_DATA);
+        }
 
         initialized = true;
+    }
+
+    private void scanPacks(ResourceManager rm, PackType type) {
+        rm.listPacks().forEach(pack -> {
+            for (String namespace : pack.getNamespaces(type)) {
+                try {
+                    pack.listResources(type, namespace, "", (id, supplier) -> {
+                        ExplorerNode.ResourceExplorerNode nsNode = namespaces.computeIfAbsent(
+                                id.getNamespace(),
+                                ExplorerNode.ResourceExplorerNode::new
+                        );
+                        addResourceToTree(nsNode, id);
+                    });
+                } catch (Exception ignored) {
+                }
+            }
+        });
     }
 
     private void addResourceToTree(ExplorerNode.ResourceExplorerNode root, Identifier id) {
@@ -138,10 +154,13 @@ public class ResourceExplorerPanel extends AbstractExplorerPanel {
         MinecraftServer server = Client.getMinecraft().getSingleplayerServer();
         if (server == null) return;
 
+        if (reloadInProgress) return;
+        reloadInProgress = true;
+
         PackRepository repo = server.getPackRepository();
         WorldData worldData = server.getWorldData();
         Collection<String> current = repo.getSelectedIds();
-        Collection<String> selected = Lists.newArrayList(current);
+        Collection<String> selected = com.google.common.collect.Lists.newArrayList(current);
 
         repo.reload();
         for (String pack : repo.getAvailableIds()) {
@@ -151,8 +170,13 @@ public class ResourceExplorerPanel extends AbstractExplorerPanel {
             }
         }
 
-        server.reloadResources(selected).thenRun(this::refresh)
+        server.reloadResources(selected)
+                .thenRun(() -> {
+                    reloadInProgress = false;
+                    refresh();
+                })
                 .exceptionally(e -> {
+                    reloadInProgress = false;
                     LOGGER.error("Resource reload failed", e);
                     return null;
                 });
@@ -252,7 +276,16 @@ public class ResourceExplorerPanel extends AbstractExplorerPanel {
 
         if (getExistingEditor(editorId) != null) return;
 
-        Client.getResourceManager().getResource(id).ifPresent(res -> {
+        Optional<Resource> resource = Client.getResourceManager().getResource(id);
+
+        if (resource.isEmpty()) {
+            MinecraftServer server = Client.getMinecraft().getSingleplayerServer();
+            if (server != null) {
+                resource = server.getResourceManager().getResource(id);
+            }
+        }
+
+        resource.ifPresent(res -> {
             try (InputStream in = res.open()) {
                 String content = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))
                         .lines()
