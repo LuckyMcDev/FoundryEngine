@@ -1,6 +1,9 @@
 package de.luckymcdev.foundryengine.config;
 
 import net.neoforged.neoforge.common.ModConfigSpec;
+import org.apache.commons.lang3.SystemProperties;
+
+import java.nio.file.Path;
 
 public final class CommonConfig extends EngineConfig {
     static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
@@ -11,7 +14,7 @@ public final class CommonConfig extends EngineConfig {
 
     public static final ModConfigSpec.ConfigValue<String> DUMP_DIRECTORY = BUILDER
             .comment("Directory where resource pack dumps are written.")
-            .define("dumpDirectory", System.getProperty("java.io.tmpdir") + "/foundryengine");
+            .define("dumpDirectory", Path.of(SystemProperties.getProperty("java.io.tmpdir")).resolve("foundryengine").toString());
 
     @Override
     public ModConfigSpec spec() {
