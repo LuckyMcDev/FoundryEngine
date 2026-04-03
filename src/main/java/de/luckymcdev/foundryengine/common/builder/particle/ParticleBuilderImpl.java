@@ -10,6 +10,7 @@ import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.registries.RegisterEvent;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,8 @@ public class ParticleBuilderImpl extends BuilderBaseImpl<ParticleType<?>> implem
     private Function<Boolean, ParticleType<?>> factory;
     private int lifetime;
     private SingleQuadParticle.Layer layer;
+    private Vector3f position;
+    private Vector3f velocity;
 
     public ParticleBuilderImpl(Identifier id) {
         super(id);
@@ -33,6 +36,8 @@ public class ParticleBuilderImpl extends BuilderBaseImpl<ParticleType<?>> implem
         this.lifetime = 20;
         this.layer = SingleQuadParticle.Layer.OPAQUE;
         this.data = new ArrayList<>();
+        this.position = new Vector3f(0, 0, 0);
+        this.velocity = new Vector3f(0, 0, 0);
     }
 
     @Override
@@ -64,6 +69,30 @@ public class ParticleBuilderImpl extends BuilderBaseImpl<ParticleType<?>> implem
     @Override
     public ParticleBuilder lifetime(int lifetime) {
         this.lifetime = lifetime;
+        return this;
+    }
+
+    @Override
+    public ParticleBuilder position(Vector3f position) {
+        this.position = position;
+        return this;
+    }
+
+    @Override
+    public ParticleBuilder position(float x, float y, float z) {
+        this.position = new Vector3f(x, y, z);
+        return this;
+    }
+
+    @Override
+    public ParticleBuilder velocity(Vector3f velocity) {
+        this.velocity = velocity;
+        return this;
+    }
+
+    @Override
+    public ParticleBuilder velocity(float x, float y, float z) {
+        this.velocity = new Vector3f(x, y, z);
         return this;
     }
 
@@ -102,6 +131,14 @@ public class ParticleBuilderImpl extends BuilderBaseImpl<ParticleType<?>> implem
     @Override
     public ParticleType<?> build() {
         return factory.apply(alwaysShow);
+    }
+
+    public Vector3f getPosition() {
+        return position;
+    }
+
+    public Vector3f getVelocity() {
+        return velocity;
     }
 
     public EngineParticleSpec getSpec() {

@@ -13,6 +13,7 @@ import de.luckymcdev.foundryengine.client.imgui.ImGuiManager;
 import de.luckymcdev.foundryengine.client.opengl.OpenGlStack;
 import de.luckymcdev.foundryengine.client.opengl.framebuffer.FrameBufferManager;
 import de.luckymcdev.foundryengine.client.opengl.shaders.ShaderManager;
+import de.luckymcdev.foundryengine.client.particle.ParticleManager;
 import de.luckymcdev.foundryengine.client.post.PostProcessManager;
 import de.luckymcdev.foundryengine.client.util.key.KeyBinding;
 import de.luckymcdev.foundryengine.client.util.key.KeyBindingManager;
@@ -90,6 +91,7 @@ public abstract class Client {
     private static final MainMenu MAIN_MENU = new MainMenu();
     private static final EditorManager EDITOR_MANAGER = new EditorManager();
     private static final KeyBindingManager KEY_BINDING_MANAGER = new KeyBindingManager();
+    private static final ParticleManager PARTICLE_MANAGER = new ParticleManager();
 
     private Client() {
         throw new EngineException();
@@ -199,6 +201,10 @@ public abstract class Client {
 
     public static KeyBindingManager getKeyBindingManager() {
         return KEY_BINDING_MANAGER;
+    }
+
+    public static ParticleManager getParticleManager() {
+        return PARTICLE_MANAGER;
     }
 
     /**

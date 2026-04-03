@@ -9,6 +9,7 @@ import net.minecraft.core.particles.ParticleType;
 import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import org.jetbrains.annotations.ApiStatus;
+import org.joml.Vector3f;
 
 import java.util.List;
 import java.util.function.Function;
@@ -67,6 +68,42 @@ public interface ParticleBuilder extends BuilderBase<ParticleType<?>> {
      * @return This builder for chaining
      */
     ParticleBuilder lifetime(int lifetime);
+
+    /**
+     * Sets the particle position.
+     *
+     * @param position The particle position
+     * @return This builder for chaining
+     */
+    ParticleBuilder position(Vector3f position);
+
+    /**
+     * Sets the particle position.
+     *
+     * @param x The X coordinate
+     * @param y The Y coordinate
+     * @param z The Z coordinate
+     * @return This builder for chaining
+     */
+    ParticleBuilder position(float x, float y, float z);
+
+    /**
+     * Sets the particle velocity.
+     *
+     * @param position The particle velocity
+     * @return This builder for chaining
+     */
+    ParticleBuilder velocity(Vector3f position);
+
+    /**
+     * Sets the particle velocity.
+     *
+     * @param x The X coordinate
+     * @param y The Y coordinate
+     * @param z The Z coordinate
+     * @return This builder for chaining
+     */
+    ParticleBuilder velocity(float x, float y, float z);
 
     /**
      * Sets the particle render layer.
