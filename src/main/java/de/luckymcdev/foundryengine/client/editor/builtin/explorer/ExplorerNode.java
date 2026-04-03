@@ -7,7 +7,14 @@ import java.io.File;
 import java.util.*;
 
 /**
- * Unified node structure for browser trees, supporting both filesystem and Minecraft resources.
+ * Unified node structure for explorer trees.
+ * <p>
+ * Three concrete subtypes exist:
+ * <ul>
+ *   <li>{@link FileExplorerNode}   – local filesystem entries</li>
+ *   <li>{@link ResourceExplorerNode} – Minecraft resource-manager entries</li>
+ *   <li>{@link RemoteExplorerNode}  – remote server entries fetched over the network</li>
+ * </ul>
  */
 public abstract class ExplorerNode {
     public final String name;
@@ -34,7 +41,7 @@ public abstract class ExplorerNode {
     }
 
     /**
-     * File-system based node
+     * A node backed by a real {@link File} on the local filesystem.
      */
     public static class FileExplorerNode extends ExplorerNode {
         public final File file;
@@ -56,7 +63,7 @@ public abstract class ExplorerNode {
     }
 
     /**
-     * Minecraft resource based node
+     * A node backed by Minecraft's {@link net.minecraft.server.packs.resources.ResourceManager}.
      */
     public static class ResourceExplorerNode extends ExplorerNode {
         public final List<Identifier> resources = new ArrayList<>();
@@ -72,7 +79,7 @@ public abstract class ExplorerNode {
     }
 
     /**
-     * Remote based node
+     * A node representing a file or directory on a remote (multiplayer) server.
      */
     public static class RemoteExplorerNode extends ExplorerNode {
         public final String relativePath;

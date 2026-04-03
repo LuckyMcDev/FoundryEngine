@@ -50,7 +50,7 @@ public record ClientBoundFileListPacket(
 
     @Override
     public void handleClient(IPayloadContext ctx) {
-        ctx.enqueueWork(() -> FileExplorerPanel.INSTANCE.receiveRemoteFileList(rootPath, entries));
+        ctx.enqueueWork(() -> FileExplorerPanel.INSTANCE.receiveRemoteFileList(entries));
     }
 
     public record RemoteEntry(String relativePath, boolean isDirectory) {

@@ -55,49 +55,80 @@ public abstract class AbstractExplorerPanel extends EditorPanel {
     }
 
     /**
-     * Render a resource folder (for Minecraft resources).
+     * Renders a collapsible section with a bold framed header.
+     * The {@code body} runnable is called only when the section is open.
+     *
+     * @param label display label (may include an icon prefix)
+     * @param id    unique ImGui ID string (prefix with {@code ##})
+     * @param body  content to render inside the section
      */
-    protected void renderFolder(ExplorerNode.ResourceExplorerNode folder) {
-        // Render subfolders
+    protected void renderSection(String label, String id, Runnable body) {
+        int flags = ImGuiTreeNodeFlags.SpanAvailWidth
+                | ImGuiTreeNodeFlags.DefaultOpen
+                | ImGuiTreeNodeFlags.Framed;
+        if (ImGui.treeNodeEx(id, flags, label)) {
+            body.run();
+            ImGui.treePop();
+        }
+    }
+
+    /**
+     * Renders a namespace/root resource node and recurses into its children.
+     * The node is shown with a cube icon and the namespace name.
+     */
+    protected void renderNamespaceNode(ExplorerNode.ResourceExplorerNode ns) {
+        String label = ImGuiUtils.icon(ImIcons.FA.FA_CUBE) + " " + ns.name;
+        boolean open = ImGui.treeNodeEx("##ns_" + ns.name, ImGuiTreeNodeFlags.SpanAvailWidth, label);
+        if (open) {
+            renderResourceFolder(ns);
+            ImGui.treePop();
+        }
+    }
+
+    /**
+     * Renders the contents of a resource folder: sub-folders first, then leaf files.
+     */
+    protected void renderResourceFolder(ExplorerNode.ResourceExplorerNode folder) {
         for (ExplorerNode child : folder.getChildren()) {
-            if (child instanceof ExplorerNode.ResourceExplorerNode subFolder) {
-                boolean open = ImGui.treeNodeEx(
-                        "##f_" + subFolder.name,
-                        ImGuiTreeNodeFlags.SpanAvailWidth,
-                        ""
-                );
-                ImGui.sameLine();
-                ImGui.textUnformatted(
-                        ImGuiUtils.icon(open ? ImIcons.FA.FA_FOLDER_OPEN : ImIcons.FA.FA_FOLDER)
-                                + " " + subFolder.name
-                );
-                if (open) {
-                    renderFolder(subFolder);
-                    ImGui.treePop();
-                }
+            if (child instanceof ExplorerNode.ResourceExplorerNode sub) {
+                renderResourceSubFolder(sub);
             }
         }
-
-        // Render resource files
         for (Identifier id : folder.resources) {
             renderResourceFile(id);
         }
     }
 
     /**
-     * Render a single resource file entry.
+     * Renders a single collapsible sub-folder within a resource tree.
+     */
+    private void renderResourceSubFolder(ExplorerNode.ResourceExplorerNode folder) {
+        String openIcon = ImGuiUtils.icon(ImIcons.FA.FA_FOLDER_OPEN);
+        String closedIcon = ImGuiUtils.icon(ImIcons.FA.FA_FOLDER);
+
+        boolean open = ImGui.treeNodeEx("##f_" + folder.name, ImGuiTreeNodeFlags.SpanAvailWidth, "");
+        ImGui.sameLine();
+        ImGui.textUnformatted((open ? openIcon : closedIcon) + " " + folder.name);
+
+        if (open) {
+            renderResourceFolder(folder);
+            ImGui.treePop();
+        }
+    }
+
+    /**
+     * Renders a single resource file leaf node.
+     * Double-clicking opens the resource; subclasses may override for custom behaviour.
      */
     protected void renderResourceFile(Identifier id) {
         String fileName = id.getPath().substring(id.getPath().lastIndexOf('/') + 1);
+        String label = ImGuiUtils.icon(ImIcons.FA.FA_FILE_CODE) + " " + fileName;
+
         ImGui.treeNodeEx(
                 "##file_" + id,
-                ImGuiTreeNodeFlags.Leaf
-                        | ImGuiTreeNodeFlags.NoTreePushOnOpen
-                        | ImGuiTreeNodeFlags.SpanAvailWidth,
-                ""
+                ImGuiTreeNodeFlags.Leaf | ImGuiTreeNodeFlags.NoTreePushOnOpen | ImGuiTreeNodeFlags.SpanAvailWidth,
+                label
         );
-        ImGui.sameLine();
-        ImGui.textUnformatted(ImGuiUtils.icon(ImIcons.FA.FA_FILE_CODE) + " " + fileName);
 
         if (ImGui.isItemClicked(ImGuiMouseButton.Left) && ImGui.isMouseDoubleClicked(ImGuiMouseButton.Left)) {
             openResource(id);
@@ -105,23 +136,11 @@ public abstract class AbstractExplorerPanel extends EditorPanel {
     }
 
     /**
-     * Render a namespace/root node with children.
-     */
-    protected void renderNamespaceNode(ExplorerNode.ResourceExplorerNode ns) {
-        int flags = ImGuiTreeNodeFlags.SpanAvailWidth;
-        if (ImGui.treeNodeEx("##ns_" + ns.name, flags, "")) {
-            ImGui.sameLine();
-            ImGui.textUnformatted(ImGuiUtils.icon(ImIcons.FA.FA_CUBE) + " " + ns.name);
-            renderFolder(ns);
-            ImGui.treePop();
-        } else {
-            ImGui.sameLine();
-            ImGui.textUnformatted(ImGuiUtils.icon(ImIcons.FA.FA_CUBE) + " " + ns.name);
-        }
-    }
-
-    /**
-     * Generate a unique editor ID for a resource.
+     * Builds a stable, filesystem-safe {@link Identifier} for an editor tab
+     * from an arbitrary resource path string.
+     *
+     * @param prefix       short type hint, e.g. {@code "res"} or {@code "res_tex"}
+     * @param resourcePath raw resource path (colons, slashes, etc. are sanitised)
      */
     protected Identifier generateEditorId(String prefix, String resourcePath) {
         String sanitized = resourcePath.toLowerCase().replaceAll("[^a-z0-9]", "_");
@@ -129,14 +148,15 @@ public abstract class AbstractExplorerPanel extends EditorPanel {
     }
 
     /**
-     * Check if a file/resource is already open in the editor.
+     * Returns {@code true} if an editor for the given ID is already registered and open.
      */
     protected boolean isResourceOpen(Identifier editorId) {
         return Client.getEditorManager().getPanels().get(editorId) instanceof CodeEditor;
     }
 
     /**
-     * Get or reuse an existing CodeEditor.
+     * If a {@link CodeEditor} for {@code editorId} already exists, focuses it and returns it.
+     * Returns {@code null} if no such editor exists yet.
      */
     protected @Nullable CodeEditor getExistingEditor(Identifier editorId) {
         Panel panel = Client.getEditorManager().getPanels().get(editorId);
