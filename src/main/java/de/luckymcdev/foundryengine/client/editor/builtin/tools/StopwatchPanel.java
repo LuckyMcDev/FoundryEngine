@@ -10,13 +10,13 @@ import imgui.ImGui;
 import net.minecraft.world.Stopwatch;
 
 public class StopwatchPanel extends EditorPanel {
-    public static final StopwatchPanel INSTANCE = new StopwatchPanel("");
+    public static final StopwatchPanel INSTANCE = new StopwatchPanel("Temporary Stopwatch");
     private final String displayThing;
     private Stopwatch stopwatch;
     private boolean running = false;
 
     public StopwatchPanel(String id) {
-        super(Common.id("stopwatch-" + id), "Stopwatch", ImIcons.FA.FA_STOPWATCH, Shortcut.empty());
+        super(Common.id("stopwatch-" + id.toLowerCase().replace(" ", "_")), "Stopwatch", ImIcons.FA.FA_STOPWATCH, Shortcut.empty());
         this.displayThing = id;
         this.temporary = true;
         this.style = PanelStyle.MINIMAL;
