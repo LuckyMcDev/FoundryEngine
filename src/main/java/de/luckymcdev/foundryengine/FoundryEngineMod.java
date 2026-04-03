@@ -24,6 +24,7 @@ import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
@@ -37,17 +38,18 @@ import java.io.IOException;
 public class FoundryEngineMod {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final IEventBus BUS = NeoForge.EVENT_BUS;
-    private static @Nullable IEventBus MODBUS;
+    public static ArtifactVersion modVersion;
+    private static @Nullable IEventBus modBus;
 
     /**
      * Initializes the mod and registers events.
      *
-     * @param modBus  the mod event bus
+     * @param modBus       the mod event bus
      * @param modContainer the mod container
      */
     public FoundryEngineMod(IEventBus modBus, ModContainer modContainer) {
-        LOGGER.debug("FoundryEngineMod setup called");
-        MODBUS = modBus;
+        FoundryEngineMod.modBus = modBus;
+        FoundryEngineMod.modVersion = modContainer.getModInfo().getVersion();
 
         registerModBus(modBus);
 
@@ -65,6 +67,12 @@ public class FoundryEngineMod {
         BUS.addListener(this::onRegisterVirtualPacks);
 
         Config.registerOthers(modContainer);
+        LOGGER.debug("Foundry Engine version {} initialized", modContainer.getModInfo().getVersion());
+    }
+
+    @ApiStatus.Internal
+    public static IEventBus getModBus() {
+        return modBus;
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
@@ -121,10 +129,5 @@ public class FoundryEngineMod {
         }
 
         EngineLogAppender.Holder.addAppender();
-    }
-
-    @ApiStatus.Internal
-    public static IEventBus getModBus() {
-        return MODBUS;
     }
 }

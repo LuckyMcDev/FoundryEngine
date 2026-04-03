@@ -12,6 +12,7 @@ import de.luckymcdev.foundryengine.client.editor.builtin.explorer.ResourceExplor
 import de.luckymcdev.foundryengine.client.editor.builtin.tools.ConsolePanel;
 import de.luckymcdev.foundryengine.client.editor.builtin.tools.MinecraftToolsPanel;
 import de.luckymcdev.foundryengine.client.editor.builtin.tools.StopwatchPanel;
+import de.luckymcdev.foundryengine.client.editor.builtin.view.InfoPanel;
 import de.luckymcdev.foundryengine.client.editor.builtin.visuals.PostProcessPanel;
 import de.luckymcdev.foundryengine.client.editor.event.RegisterPanelEvent;
 import de.luckymcdev.foundryengine.client.event.RegisterRenderingStuffEvent;
@@ -140,6 +141,7 @@ public class FoundryEngineModClient {
         event.register(MainEditor.INSTANCE);
         event.register(MinecraftToolsPanel.INSTANCE);
         event.register(StopwatchPanel.INSTANCE);
+        event.register(InfoPanel.INSTANCE);
     }
 
     private void onRegisterPostPipelines(RegisterPostPipelineEvent event) {
