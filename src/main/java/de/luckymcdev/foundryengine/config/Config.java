@@ -17,9 +17,15 @@ public final class Config {
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
     }
 
-    public static void registerOthers(ModContainer container) {
-        container.registerConfig(COMMON.type(), COMMON.spec());
+    public static void registerServer(ModContainer container) {
         container.registerConfig(SERVER.type(), SERVER.spec());
+    }
+
+    public static void registerCommon(ModContainer container) {
+        container.registerConfig(COMMON.type(), COMMON.spec());
+    }
+
+    public static void registerStartup(ModContainer container) {
         container.registerConfig(STARTUP.type(), STARTUP.spec());
     }
 

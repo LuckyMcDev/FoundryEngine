@@ -66,8 +66,10 @@ public class FoundryEngineMod {
 
         BUS.addListener(this::onRegisterVirtualPacks);
 
-        Config.registerOthers(modContainer);
-        LOGGER.debug("Foundry Engine version {} initialized", modContainer.getModInfo().getVersion());
+        Config.registerCommon(modContainer);
+        Config.registerServer(modContainer);
+        Config.registerStartup(modContainer);
+        LOGGER.debug("Foundry Engine version {} initialized", modVersion);
     }
 
     @ApiStatus.Internal
