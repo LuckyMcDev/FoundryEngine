@@ -41,6 +41,9 @@ import net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlers
 import net.neoforged.neoforge.common.NeoForge;
 import org.slf4j.Logger;
 
+/**
+ * Dedicated Client Mod Entrypoint for FoundryEngine.
+ */
 @Mod(value = Common.MODID, dist = Dist.CLIENT)
 public class FoundryEngineModClient {
     private static final Logger LOGGER = LogUtils.getLogger();

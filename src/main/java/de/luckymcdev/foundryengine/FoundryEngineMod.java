@@ -12,7 +12,6 @@ import de.luckymcdev.foundryengine.common.thread.RegisterEngineThreadEvent;
 import de.luckymcdev.foundryengine.common.vpacks.BundleVirtualPacks;
 import de.luckymcdev.foundryengine.common.vpacks.event.RegisterVirtualPackEvent;
 import de.luckymcdev.foundryengine.config.Config;
-import de.luckymcdev.foundryengine.server.command.FoundryCommands;
 import de.luckymcdev.foundryengine.server.packs.EngineRepositorySource;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -21,8 +20,6 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLConstructModEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
-import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
-import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.jetbrains.annotations.ApiStatus;
@@ -60,14 +57,9 @@ public class FoundryEngineMod {
 
         BUS.post(new RegisterEngineThreadEvent());
 
-        BUS.addListener(this::onAddReloadListeners);
-        BUS.addListener(this::onRegisterCommands);
-        BUS.addListener(Common.getGameStageHandler()::onPlayerTick);
-
         BUS.addListener(this::onRegisterVirtualPacks);
 
         Config.registerCommon(modContainer);
-        Config.registerServer(modContainer);
         Config.registerStartup(modContainer);
         LOGGER.debug("Foundry Engine version {} initialized", modVersion);
     }
@@ -103,10 +95,6 @@ public class FoundryEngineMod {
         EngineRegistries.register(modBus);
     }
 
-    private void onAddReloadListeners(AddServerReloadListenersEvent event) {
-        event.addListener(Common.id("bundle_manager"), Common.getBundleManager());
-    }
-
     private void onAddPackFinders(AddPackFindersEvent event) {
         event.addRepositorySource(new EngineRepositorySource(event.getPackType()));
     }
@@ -117,10 +105,6 @@ public class FoundryEngineMod {
 
     private void onRegisterVirtualPacks(RegisterVirtualPackEvent.BeforeUser event) {
         BundleVirtualPacks.create().forEach(event::addPack);
-    }
-
-    private void onRegisterCommands(RegisterCommandsEvent event) {
-        FoundryCommands.registerAll(event.getDispatcher(), event.getBuildContext());
     }
 
     private void onConstruct(final FMLConstructModEvent event) {
