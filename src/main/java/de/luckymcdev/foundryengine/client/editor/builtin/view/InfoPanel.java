@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.GpuDevice;
 import com.mojang.blaze3d.systems.RenderSystem;
 import de.luckymcdev.foundryengine.FoundryEngineMod;
 import de.luckymcdev.foundryengine.client.editor.builtin.EditorPanel;
+import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
@@ -14,6 +15,7 @@ public class InfoPanel extends EditorPanel {
 
     protected InfoPanel() {
         super(Common.id("info"), "Info", ImIcons.FA.FA_INFO, Shortcut.empty());
+        this.category = PanelCategory.VIEW;
     }
 
     @Override
