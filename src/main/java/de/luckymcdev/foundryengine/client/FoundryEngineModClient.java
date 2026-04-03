@@ -49,8 +49,6 @@ public class FoundryEngineModClient {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final IEventBus BUS = NeoForge.EVENT_BUS;
 
-    private final int tickCount = 0;
-
     public FoundryEngineModClient(IEventBus modBus, ModContainer modContainer) {
         EngineParticles.PARTICLE_TYPES.register(modBus);
 
