@@ -1,6 +1,10 @@
 package de.luckymcdev.foundryengine.client.particle;
 
+import de.luckymcdev.foundryengine.client.particle.data.ParticleColorData;
+import de.luckymcdev.foundryengine.client.particle.data.ParticleScaleData;
 import de.luckymcdev.foundryengine.common.Common;
+import de.luckymcdev.foundryengine.common.easing.Easing;
+import de.luckymcdev.foundryengine.common.util.color.Color;
 import net.minecraft.client.particle.SingleQuadParticle;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
@@ -21,10 +25,9 @@ public class EngineParticles {
             "engine_particle",
             EngineParticleSpec.builder()
                     .lifetime(20)
-                    .scale(10.0f)
-                    .color(1.0f, 0.0f, 0.0f)
-                    .alpha(1.0f)
                     .layer(SingleQuadParticle.Layer.OPAQUE)
+                    .addData(new ParticleScaleData(10.0f, 10.0f, Easing.LINEAR))
+                    .addData(new ParticleColorData(new Color(255, 0, 0), new Color(255, 0, 0), Easing.LINEAR))
                     .build()
     );
 
