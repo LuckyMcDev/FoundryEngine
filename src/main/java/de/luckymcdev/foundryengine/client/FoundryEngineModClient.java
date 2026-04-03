@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.client;
 
 import com.mojang.logging.LogUtils;
+import de.luckymcdev.foundryengine.api.event.RegistryEvent;
 import de.luckymcdev.foundryengine.client.debug.renderer.SimpleDebugScreenRenderer;
 import de.luckymcdev.foundryengine.client.debug.screen.BundleDebugEntry;
 import de.luckymcdev.foundryengine.client.debug.screen.GameStagesDebugEntry;
@@ -19,14 +20,12 @@ import de.luckymcdev.foundryengine.client.event.RegisterRenderingStuffEvent;
 import de.luckymcdev.foundryengine.client.ext.ModPathBroadcaster;
 import de.luckymcdev.foundryengine.client.opengl.preprocessing.IncludeGLSLPreProcessor;
 import de.luckymcdev.foundryengine.client.opengl.preprocessing.RegisterGLSLPreProcessorEvent;
-import de.luckymcdev.foundryengine.client.particle.EngineParticle;
 import de.luckymcdev.foundryengine.client.particle.EngineParticles;
 import de.luckymcdev.foundryengine.client.post.RegisterPostPipelineEvent;
 import de.luckymcdev.foundryengine.client.post.pipeline.builtin.*;
 import de.luckymcdev.foundryengine.client.util.key.RegisterKeyBindingEvent;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.config.Config;
-import net.minecraft.client.particle.Particle;
 import net.minecraft.gizmos.Gizmos;
 import net.minecraft.gizmos.TextGizmo;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
@@ -50,24 +49,25 @@ public class FoundryEngineModClient {
     private static final IEventBus BUS = NeoForge.EVENT_BUS;
 
     public FoundryEngineModClient(IEventBus modBus, ModContainer modContainer) {
-        EngineParticles.PARTICLE_TYPES.register(modBus);
-
         modBus.addListener(this::onClientSetup);
         modBus.addListener(this::addClientReloadListener);
         modBus.addListener(this::onRegisterKeyMapping);
         modBus.addListener(this::onRegisterDebugEntry);
         modBus.addListener(this::onRegisterDebugRenderers);
-        modBus.addListener(this::registerParticles);
         modBus.addListener(this::onRegisterClientPayloadHandlers);
+        modBus.addListener(this::onRegistry);
 
         BUS.addListener(this::onRegisterKeyBinding);
         BUS.addListener(this::onRegisterGLSLPreProcessors);
         BUS.addListener(this::onRegisterPanels);
         BUS.addListener(this::onRegisterPostPipelines);
         BUS.addListener(this::onClientTick);
-        //BUS.addListener(this::onFrameGraphSetup);
 
         Config.registerClient(modContainer);
+    }
+
+    private void onRegistry(RegistryEvent event) {
+        EngineParticles.register(event);
     }
 
     private void onClientSetup(FMLClientSetupEvent event) {
@@ -107,19 +107,6 @@ public class FoundryEngineModClient {
     }
 
     private void onRegisterDebugRenderers(RegisterDebugRenderersEvent event) {
-//        event.register(minecraft -> new SimpleDebugScreenRenderer(
-//                minecraft,
-//                (mc, camPos, debug, frustum, partialTick) -> {
-//                    Vector3d forward = camPos.add(
-//                            mc.player.getViewVector(partialTick).x * 2,
-//                            mc.player.getViewVector(partialTick).y * 2,
-//                            mc.player.getViewVector(partialTick).z * 2,
-//                            new Vector3d()
-//                    );
-//                    Gizmos.point(new Vec3(forward.x, forward.y, forward.z), 0xFF00FF00, 10F);
-//                }
-//        ));
-
         event.register(minecraft -> new SimpleDebugScreenRenderer(
                 minecraft,
                 (mc, camPos, debugValueAccess, frustum, partialTick) -> {
@@ -130,7 +117,6 @@ public class FoundryEngineModClient {
                             TextGizmo.Style.forColorAndCentered(0xFF00FF).withScale(2F));
                 }
         ));
-
     }
 
     private void onRegisterPanels(RegisterPanelEvent event) {
@@ -154,15 +140,6 @@ public class FoundryEngineModClient {
         event.register(new CRTScanlinePipeline());
     }
 
-    private void registerParticles(RegisterParticleProvidersEvent event) {
-        for (EngineParticles.ParticleRegistration registration : EngineParticles.simpleParticles()) {
-            event.registerSpriteSet(
-                    registration.type().get(),
-                    sprites -> (type, level, x, y, z, xd, yd, zd, random) ->
-                            new EngineParticle(level, x, y, z, sprites, registration.spec())
-            );
-        }
-    }
 
     private void addClientReloadListener(AddClientReloadListenersEvent event) {
         event.addListener(Common.id("imgui_handler"), Client.getImGuiManager());
@@ -174,24 +151,6 @@ public class FoundryEngineModClient {
 
     private void onClientTick(ClientTickEvent.Post event) {
         Client.getEditorManager().handleTick();
-
-        Particle particle = Client.getMinecraft().particleEngine.createParticle(
-                EngineParticles.ENGINE_PARTICLE.get(),
-                0, 100, 0,
-                0, 0, 0
-        );
-        if (null == particle) return;
-
-        particle.setParticleSpeed(0, 1, 0);
-
-        Client.getMinecraft().particleEngine.add(particle);
+        EngineParticles.tick();
     }
-
-    /*
-    Soo, we dont have the getProjectionMatrix() anymore.
-    TODO: fix this
-    private void onFrameGraphSetup(FrameGraphSetupEvent event) {
-        Client.updateMain(event.getModelViewMatrix(), event.getProjectionMatrix());
-    }
-     */
 }

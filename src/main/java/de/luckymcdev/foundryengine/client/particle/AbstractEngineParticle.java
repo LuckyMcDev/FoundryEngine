@@ -5,14 +5,17 @@ import de.luckymcdev.foundryengine.common.util.color.Color;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.SingleQuadParticle;
 import net.minecraft.client.particle.SpriteSet;
+import net.minecraft.resources.Identifier;
 
 public abstract class AbstractEngineParticle extends SingleQuadParticle {
+    private final Identifier id;
     private final SpriteSet sprites;
     private final EngineParticleSpec spec;
     private final float baseQuadSize;
 
-    protected AbstractEngineParticle(ClientLevel level, double x, double y, double z, SpriteSet sprites, EngineParticleSpec spec) {
+    protected AbstractEngineParticle(Identifier id, ClientLevel level, double x, double y, double z, SpriteSet sprites, EngineParticleSpec spec) {
         super(level, x, y, z, sprites.first());
+        this.id = id;
         this.sprites = sprites;
         this.spec = spec;
         this.baseQuadSize = this.quadSize;

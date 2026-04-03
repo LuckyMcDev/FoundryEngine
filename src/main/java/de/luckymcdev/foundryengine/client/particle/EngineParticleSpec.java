@@ -3,58 +3,17 @@ package de.luckymcdev.foundryengine.client.particle;
 import de.luckymcdev.foundryengine.client.particle.data.GenericParticleData;
 import net.minecraft.client.particle.SingleQuadParticle;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-public final class EngineParticleSpec {
-    private final int lifetime;
-    private final SingleQuadParticle.Layer layer;
-    private final List<GenericParticleData> data;
-
-    private EngineParticleSpec(Builder builder) {
-        this.lifetime = builder.lifetime;
-        this.layer = builder.layer;
-        this.data = List.copyOf(builder.data);
+public record EngineParticleSpec(int lifetime, SingleQuadParticle.Layer layer, List<GenericParticleData> data) {
+    public EngineParticleSpec(List<GenericParticleData> data) {
+        this(20, SingleQuadParticle.Layer.OPAQUE, data);
     }
 
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    public int lifetime() {
-        return lifetime;
-    }
-
-    public SingleQuadParticle.Layer layer() {
-        return layer;
-    }
-
-    public List<GenericParticleData> data() {
-        return data;
-    }
-
-    public static final class Builder {
-        private int lifetime = 20;
-        private SingleQuadParticle.Layer layer = SingleQuadParticle.Layer.OPAQUE;
-        private final List<GenericParticleData> data = new ArrayList<>();
-
-        public Builder lifetime(int lifetime) {
-            this.lifetime = lifetime;
-            return this;
-        }
-
-        public Builder layer(SingleQuadParticle.Layer layer) {
-            this.layer = layer;
-            return this;
-        }
-
-        public Builder addData(GenericParticleData data) {
-            this.data.add(data);
-            return this;
-        }
-
-        public EngineParticleSpec build() {
-            return new EngineParticleSpec(this);
-        }
+    public EngineParticleSpec(int lifetime, SingleQuadParticle.Layer layer, List<GenericParticleData> data) {
+        this.lifetime = lifetime;
+        this.layer = Objects.requireNonNull(layer, "layer");
+        this.data = List.copyOf(Objects.requireNonNull(data, "data"));
     }
 }

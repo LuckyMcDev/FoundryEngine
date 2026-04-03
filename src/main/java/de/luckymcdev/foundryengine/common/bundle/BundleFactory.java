@@ -81,7 +81,7 @@ public class BundleFactory {
      * RegistryEvent on the bundle bus, so scripts can use the cleaner API.
      */
     private void registerRegistryBridge(IEventBus bundleBus) {
-        modBus.addListener((RegisterEvent event) -> bundleBus.post(new RegistryEvent(event)));
+        modBus.addListener((RegisterEvent event) -> bundleBus.post(new RegistryEvent(event, modBus)));
     }
 
     private IEventBus createBundleBus(BundleInfo info) {
