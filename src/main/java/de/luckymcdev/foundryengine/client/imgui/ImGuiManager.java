@@ -14,15 +14,18 @@ import de.luckymcdev.foundryengine.client.editor.styles.ImTheme;
 import de.luckymcdev.foundryengine.client.editor.styles.ImThemes;
 import de.luckymcdev.foundryengine.client.imgui.backend.ImGuiImplGl3;
 import de.luckymcdev.foundryengine.client.imgui.backend.ImGuiImplGlfw;
-import de.luckymcdev.foundryengine.client.imgui.context.ImGuiContextStack;
-import de.luckymcdev.foundryengine.client.imgui.context.ImGuiContextTypes;
 import de.luckymcdev.foundryengine.client.imgui.graphics.ImGuiGraphicsStack;
 import de.luckymcdev.foundryengine.common.font.TTFFile;
 import de.luckymcdev.foundryengine.mixin.MinecraftMixin;
 import de.luckymcdev.foundryengine.mixin.render.GameRendererMixin;
 import imgui.*;
+import imgui.extension.imnodes.ImNodes;
+import imgui.extension.imnodes.ImNodesContext;
+import imgui.extension.implot.ImPlot;
+import imgui.extension.implot.ImPlotContext;
 import imgui.flag.ImGuiConfigFlags;
 import imgui.flag.ImGuiDockNodeFlags;
+import imgui.internal.ImGuiContext;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.input.InputQuirks;
@@ -47,12 +50,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public final class ImGuiManager implements EngineImGui, ResourceManagerReloadListener, NativeResource {
     private static final Logger LOGGER = LogUtils.getLogger();
-
     private final ImGuiImplGlfw imGuiImplGlfw = new ImGuiImplGlfw();
     private final ImGuiImplGl3 imGuiImplGl3 = new ImGuiImplGl3();
-
-    private final ImGuiContextStack CONTEXT_STACK = new ImGuiContextStack();
     private final ImGuiGraphicsStack graphicsStack = new ImGuiGraphicsStack();
+    private @Nullable ImGuiContext imGuiContext;
+    private @Nullable ImPlotContext imPlotContext;
+    private @Nullable ImNodesContext imNodesContext;
 
     private final AtomicBoolean enabled = new AtomicBoolean(false);
     private boolean shouldBlockInput = false;
@@ -92,11 +95,13 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
      */
     @Override
     public void create(final long handle) {
+        imGuiContext = ImGui.createContext();
+        imPlotContext = ImPlot.createContext();
+        imNodesContext = ImNodes.createContext();
+        ImGui.setCurrentContext(imGuiContext);
+        ImPlot.setCurrentContext(imPlotContext);
+        ImNodes.setCurrentContext(imNodesContext);
 
-        CONTEXT_STACK.addContextType(ImGuiContextTypes.IMGUI);
-        CONTEXT_STACK.addContextType(ImGuiContextTypes.IMPLOT);
-        CONTEXT_STACK.addContextType(ImGuiContextTypes.IMNODES);
-        CONTEXT_STACK.addContextType(ImGuiContextTypes.NODE_EDITOR);
 
         final ImGuiIO io = ImGui.getIO();
         io.setIniFilename("foundryengine.ini");
@@ -155,10 +160,11 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
      */
     @Override
     public void begin() {
+        final ImGuiIO io = ImGui.getIO();
+
         if (!enabled.get()) {
-            shouldBlockInput = false;
-            ImGui.setNextFrameWantCaptureKeyboard(false);
-            ImGui.setNextFrameWantCaptureMouse(false);
+            io.setWantCaptureKeyboard(false);
+            io.setWantCaptureMouse(false);
             return;
         }
 
@@ -175,7 +181,6 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
         imGuiImplGlfw.newFrame();
         ImGui.newFrame();
 
-        final ImGuiIO io = ImGui.getIO();
         Minecraft mc = Client.getMinecraft();
 
         if (mc.mouseHandler.isMouseGrabbed()) {
@@ -207,14 +212,6 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
 
             GLFW.glfwMakeContextCurrent(pointer);
         }
-    }
-
-    /**
-     * Returns the main {@link ImGuiContextStack}
-     * @return the {@link ImGuiContextStack}
-     */
-    public ImGuiContextStack getMainContextStack() {
-        return CONTEXT_STACK;
     }
 
     /**
@@ -311,7 +308,9 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
     public void dispose() {
         imGuiImplGl3.shutdown();
         imGuiImplGlfw.shutdown();
-        CONTEXT_STACK.destroy();
+        ImGui.destroyContext(imGuiContext);
+        ImPlot.destroyContext(imPlotContext);
+        ImNodes.destroyContext(imNodesContext);
         graphicsStack.destroy();
     }
 
