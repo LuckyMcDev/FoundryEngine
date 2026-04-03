@@ -19,7 +19,7 @@ import de.luckymcdev.foundryengine.client.event.RegisterRenderingStuffEvent;
 import de.luckymcdev.foundryengine.client.ext.ModPathBroadcaster;
 import de.luckymcdev.foundryengine.client.opengl.preprocessing.IncludeGLSLPreProcessor;
 import de.luckymcdev.foundryengine.client.opengl.preprocessing.RegisterGLSLPreProcessorEvent;
-import de.luckymcdev.foundryengine.client.particle.EngineParticleProvider;
+import de.luckymcdev.foundryengine.client.particle.EngineParticle;
 import de.luckymcdev.foundryengine.client.particle.EngineParticles;
 import de.luckymcdev.foundryengine.client.post.RegisterPostPipelineEvent;
 import de.luckymcdev.foundryengine.client.post.pipeline.builtin.*;
@@ -155,10 +155,13 @@ public class FoundryEngineModClient {
     }
 
     private void registerParticles(RegisterParticleProvidersEvent event) {
-        event.registerSpriteSet(
-                EngineParticles.ENGINE_PARTICLE.get(),
-                EngineParticleProvider::new
-        );
+        for (EngineParticles.ParticleRegistration registration : EngineParticles.simpleParticles()) {
+            event.registerSpriteSet(
+                    registration.type().get(),
+                    sprites -> (type, level, x, y, z, xd, yd, zd, random) ->
+                            new EngineParticle(level, x, y, z, sprites, registration.spec())
+            );
+        }
     }
 
     private void addClientReloadListener(AddClientReloadListenersEvent event) {
