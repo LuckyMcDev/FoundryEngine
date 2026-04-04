@@ -5,14 +5,8 @@ import de.luckymcdev.foundryengine.common.builder.block.BlockBuilderImpl;
 import de.luckymcdev.foundryengine.common.builder.item.ItemBuilderImpl;
 import de.luckymcdev.foundryengine.common.exceptions.EngineException;
 import net.minecraft.core.Registry;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.util.Util;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * A Generic Builder class for building objects to be registered in the {@link net.neoforged.neoforge.registries.RegisterEvent}.
@@ -26,21 +20,13 @@ import java.util.Set;
 public abstract class BuilderBaseImpl<T> implements BuilderBase<T> {
     public final Identifier id;
     public ResourceKey<Registry<T>> registryKey;
-    public String translationKey;
-    public Component displayName;
     private final boolean dummyBuilder;
-    public Set<Identifier> defaultTags;
-    private boolean formattedDisplayName;
     protected T object;
 
     protected BuilderBaseImpl(Identifier id) {
         this.id = id;
         this.object = null;
-        this.translationKey = "";
-        this.displayName = null;
-        this.formattedDisplayName = false;
         this.dummyBuilder = false;
-        this.defaultTags = new HashSet<>();
     }
 
     @Override
@@ -81,50 +67,12 @@ public abstract class BuilderBaseImpl<T> implements BuilderBase<T> {
     }
 
     @Override
-    public BuilderBase<T> getTranslationKey(String key) {
-        translationKey = key;
-        return this;
-    }
-
-    @Override
-    public BuilderBase<T> setDisplayName(Component name) {
-        displayName = name;
-        return this;
-    }
-
-    @Override
-    public BuilderBase<T> formattedDisplayName() {
-        formattedDisplayName = true;
-        return this;
-    }
-
-    @Override
-    public BuilderBase<T> formattedDisplayName(Component name) {
-        return formattedDisplayName().setDisplayName(name);
-    }
-
-    @Override
-    public BuilderBase<T> tag(Identifier[] tag) {
-        defaultTags.addAll(Arrays.asList(tag));
-        return this;
-    }
-
-    @Override
     public Identifier newID(String pre, String post) {
         if (pre.isEmpty() && post.isEmpty()) {
             return id;
         }
 
         return id.withPath(pre + id.getPath() + post);
-    }
-
-    @Override
-    public String getBuilderTranslationKey() {
-        if (translationKey.isEmpty()) {
-            return Util.makeDescriptionId(getTranslationKeyGroup(), id);
-        }
-
-        return translationKey;
     }
 
     public T createTransformedObject() {

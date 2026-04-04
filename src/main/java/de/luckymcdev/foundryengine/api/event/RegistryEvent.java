@@ -38,6 +38,21 @@ public class RegistryEvent extends Event implements IModBusEvent {
         this.modBus = modBus;
     }
 
+    private static void registerParticleProviders(RegisterParticleProvidersEvent event) {
+        for (ParticleBuilderImpl builder : List.copyOf(PARTICLE_BUILDERS.values())) {
+            ParticleType<?> type = builder.get();
+            if (type instanceof SimpleParticleType simpleType) {
+                event.registerSpriteSet(simpleType, (SpriteSet sprites) ->
+                        new EngineParticle.Provider(builder.id, builder.getLifetime(), builder.getLayer(), builder.mergedData(), sprites)
+                );
+            } else {
+                LOGGER.warn("Skipping particle provider registration for {} because type {} is not SimpleParticleType.",
+                        builder.id,
+                        type.getClass().getName());
+            }
+        }
+    }
+
     public void items(ItemBuilder... builders) {
         inner.register(BuiltInRegistries.ITEM.key(), registry -> {
             for (ItemBuilder builder : builders) builder.register(registry);
@@ -59,21 +74,6 @@ public class RegistryEvent extends Event implements IModBusEvent {
         inner.register(EngineRegistries.RECIPES.key(), registry -> {
             for (RecipeBuilder builder : builders) builder.register(registry);
         });
-    }
-
-    private static void registerParticleProviders(RegisterParticleProvidersEvent event) {
-        for (ParticleBuilderImpl builder : List.copyOf(PARTICLE_BUILDERS.values())) {
-            ParticleType<?> type = builder.get();
-            if (type instanceof SimpleParticleType simpleType) {
-                event.registerSpriteSet(simpleType, (SpriteSet sprites) ->
-                        new EngineParticle.Provider(builder.id, builder.getSpec(), sprites)
-                );
-            } else {
-                LOGGER.warn("Skipping particle provider registration for {} because type {} is not SimpleParticleType.",
-                        builder.id,
-                        type.getClass().getName());
-            }
-        }
     }
 
     public void particles(ParticleBuilder... builders) {

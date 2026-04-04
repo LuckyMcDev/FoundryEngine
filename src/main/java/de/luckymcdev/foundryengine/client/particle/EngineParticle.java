@@ -11,19 +11,23 @@ import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
 
+import java.util.List;
+
 public class EngineParticle extends SingleQuadParticle {
     private final Identifier id;
     private final SpriteSet sprites;
-    private final EngineParticleSpec spec;
+    private final List<GenericParticleData> data;
     private final float baseQuadSize;
+    private final Layer layer;
 
-    public EngineParticle(Identifier id, ClientLevel level, double x, double y, double z, SpriteSet sprites, EngineParticleSpec spec) {
+    public EngineParticle(Identifier id, ClientLevel level, double x, double y, double z, SpriteSet sprites, int lifetime, SingleQuadParticle.Layer layer, List<GenericParticleData> data) {
         super(level, x, y, z, sprites.first());
         this.id = id;
         this.sprites = sprites;
-        this.spec = spec;
+        this.data = data;
         this.baseQuadSize = this.quadSize;
-        this.lifetime = spec.lifetime();
+        this.lifetime = lifetime;
+        this.layer = layer;
         applyData(0);
     }
 
@@ -39,7 +43,7 @@ public class EngineParticle extends SingleQuadParticle {
 
     @Override
     protected Layer getLayer() {
-        return spec.layer();
+        return layer;
     }
 
     public void applyColor(Color color) {
@@ -53,25 +57,29 @@ public class EngineParticle extends SingleQuadParticle {
     }
 
     private void applyData(int age) {
-        for (GenericParticleData data : spec.data()) {
-            data.apply(this, age, this.lifetime);
+        for (GenericParticleData d : data) {
+            d.apply(this, age, this.lifetime);
         }
     }
 
     public static final class Provider implements ParticleProvider<SimpleParticleType> {
         private final Identifier id;
-        private final EngineParticleSpec spec;
+        private final int lifetime;
+        private final SingleQuadParticle.Layer layer;
+        private final List<GenericParticleData> data;
         private final SpriteSet sprites;
 
-        public Provider(Identifier id, EngineParticleSpec spec, SpriteSet sprites) {
+        public Provider(Identifier id, int lifetime, SingleQuadParticle.Layer layer, List<GenericParticleData> data, SpriteSet sprites) {
             this.id = id;
-            this.spec = spec;
+            this.lifetime = lifetime;
+            this.layer = layer;
+            this.data = data;
             this.sprites = sprites;
         }
 
         @Override
-        public Particle createParticle(SimpleParticleType simpleParticleType, ClientLevel clientLevel, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, RandomSource randomSource) {
-            EngineParticle particle = new EngineParticle(this.id, clientLevel, x, y, z, this.sprites, this.spec);
+        public Particle createParticle(SimpleParticleType type, ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, RandomSource random) {
+            EngineParticle particle = new EngineParticle(id, level, x, y, z, sprites, lifetime, layer, data);
             particle.setParticleSpeed(xSpeed, ySpeed, zSpeed);
             return particle;
         }

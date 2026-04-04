@@ -6,6 +6,10 @@ import org.joml.Vector3d;
 
 public final class ParticlePositionData extends EasedGenericParticleData<Vector3d> {
 
+    public ParticlePositionData(Vector3d position) {
+        this(position, position);
+    }
+
     public ParticlePositionData(Vector3d startPos, Vector3d endPos) {
         this(startPos, endPos, Easing.LINEAR);
     }

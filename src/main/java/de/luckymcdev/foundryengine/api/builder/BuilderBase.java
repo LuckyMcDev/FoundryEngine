@@ -1,6 +1,5 @@
 package de.luckymcdev.foundryengine.api.builder;
 
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 
 import java.util.function.Supplier;
@@ -34,52 +33,6 @@ public interface BuilderBase<T> extends Supplier<T> {
      * @return The object (either registered or newly created)
      */
     T getOrCreate();
-
-    /**
-     * Sets a custom translation key for this object.
-     *
-     * @param key The translation key
-     * @return This builder for chaining
-     */
-    BuilderBase<T> getTranslationKey(String key);
-
-    /**
-     * Sets the display name component for this object.
-     *
-     * @param name The display name
-     * @return This builder for chaining
-     */
-    BuilderBase<T> setDisplayName(Component name);
-
-    /**
-     * Marks the display name as formatted (preserves formatting).
-     *
-     * @return This builder for chaining
-     */
-    BuilderBase<T> formattedDisplayName();
-
-    /**
-     * Sets a formatted display name.
-     *
-     * @param name The formatted display name
-     * @return This builder for chaining
-     */
-    BuilderBase<T> formattedDisplayName(Component name);
-
-    /**
-     * Adds default tags to this object.
-     *
-     * @param tag Array of tag identifiers
-     * @return This builder for chaining
-     */
-    BuilderBase<T> tag(Identifier[] tag);
-
-    /**
-     * Gets the translation key for this builder.
-     *
-     * @return The translation key
-     */
-    String getBuilderTranslationKey();
 
     /**
      * Creates a new identifier with the given prefix and suffix.

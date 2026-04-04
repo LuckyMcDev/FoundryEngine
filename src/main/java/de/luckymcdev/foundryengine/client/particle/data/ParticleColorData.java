@@ -6,6 +6,10 @@ import de.luckymcdev.foundryengine.common.util.color.Color;
 
 public final class ParticleColorData extends EasedGenericParticleData<Color> {
 
+    public ParticleColorData(Color color) {
+        this(color, color);
+    }
+
     public ParticleColorData(Color startColor, Color endColor) {
         this(startColor, endColor, Easing.LINEAR);
     }

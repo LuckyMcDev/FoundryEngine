@@ -6,6 +6,10 @@ import org.joml.Vector3d;
 
 public final class ParticleSpeedData extends EasedGenericParticleData<Vector3d> {
 
+    public ParticleSpeedData(Vector3d speed) {
+        this(speed, speed);
+    }
+
     public ParticleSpeedData(Vector3d startSpeed, Vector3d endSpeed) {
         this(startSpeed, endSpeed, Easing.LINEAR);
     }

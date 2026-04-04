@@ -5,6 +5,10 @@ import de.luckymcdev.foundryengine.common.easing.Easing;
 
 public final class ParticleScaleData extends EasedGenericParticleData<Float> {
 
+    public ParticleScaleData(float scale) {
+        this(scale, scale);
+    }
+
     public ParticleScaleData(float startScale, float endScale) {
         this(startScale, endScale, Easing.LINEAR);
     }

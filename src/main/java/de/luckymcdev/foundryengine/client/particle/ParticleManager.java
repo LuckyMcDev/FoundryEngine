@@ -10,6 +10,16 @@ import org.joml.Vector3d;
 public class ParticleManager {
 
     /**
+     * Spawns a particle at the position provided by the first position data's start.
+     * <p>
+     * NOTE: To use this, you must have set a position and velocity before.
+     */
+    public void spawn(ParticleBuilder builder) {
+        ParticleBuilderImpl impl = (ParticleBuilderImpl) builder;
+        spawn(builder, impl.getPositionData().getFirst().getStart(), impl.getVelocityData().getFirst().getStart());
+    }
+
+    /**
      * Spawns a particle at the given position with no initial velocity.
      * Any velocity over the particle's lifetime should be configured via
      * {@link de.luckymcdev.foundryengine.client.particle.data.ParticleVelocityData} on the builder.

@@ -46,9 +46,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 public abstract class Client {
-    // Core Systems
-    private static final OpenGlStack OPEN_GL_STACK = new OpenGlStack();
-
     /**
      * The Model View Matrix
      */
@@ -83,6 +80,8 @@ public abstract class Client {
             () -> {
             }
     );
+    // Core Systems
+    private static final OpenGlStack OPEN_GL_STACK = new OpenGlStack();
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final ShaderManager SHADER_MANAGER = new ShaderManager();
     private static final FrameBufferManager FRAME_BUFFER_MANAGER = new FrameBufferManager();

@@ -1,7 +1,6 @@
 package de.luckymcdev.foundryengine.api.builder.particle;
 
 import de.luckymcdev.foundryengine.api.builder.BuilderBase;
-import de.luckymcdev.foundryengine.client.particle.EngineParticleSpec;
 import de.luckymcdev.foundryengine.client.particle.data.*;
 import de.luckymcdev.foundryengine.common.builder.particle.ParticleBuilderImpl;
 import de.luckymcdev.foundryengine.common.easing.Easing;
@@ -13,7 +12,6 @@ import net.neoforged.neoforge.registries.RegisterEvent;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Vector3d;
 
-import java.util.List;
 import java.util.function.Function;
 
 /**
@@ -48,11 +46,6 @@ public interface ParticleBuilder extends BuilderBase<ParticleType<?>> {
     ParticleBuilder alwaysShow(boolean alwaysShow);
 
     /**
-     * Sets the full particle spec directly, replacing any existing lifetime, layer and data.
-     */
-    ParticleBuilder spec(EngineParticleSpec spec);
-
-    /**
      * Sets the particle lifetime in ticks.
      */
     ParticleBuilder lifetime(int lifetime);
@@ -73,14 +66,16 @@ public interface ParticleBuilder extends BuilderBase<ParticleType<?>> {
     ParticleBuilder data(GenericParticleData... data);
 
     /**
-     * Appends a list of generic data modifiers.
-     */
-    ParticleBuilder data(List<GenericParticleData> data);
-
-    /**
      * Appends a {@link ParticleColorData} entry.
      */
     ParticleBuilder addColorData(ParticleColorData colorData);
+
+    /**
+     * Convenience: constant color over the particle's lifetime.
+     */
+    default ParticleBuilder color(Color color) {
+        return addColorData(new ParticleColorData(color));
+    }
 
     /**
      * Convenience: interpolates from {@code start} to {@code end} using {@link Easing#LINEAR}.
@@ -100,6 +95,14 @@ public interface ParticleBuilder extends BuilderBase<ParticleType<?>> {
      * Appends a {@link ParticleScaleData} entry.
      */
     ParticleBuilder addScaleData(ParticleScaleData scaleData);
+
+    /**
+     * Convenience: constant scale over the particle's lifetime.
+     */
+    default ParticleBuilder scale(float scale) {
+        return addScaleData(new ParticleScaleData(scale));
+    }
+
 
     /**
      * Convenience: interpolates from {@code start} to {@code end} using {@link Easing#LINEAR}.
@@ -147,16 +150,23 @@ public interface ParticleBuilder extends BuilderBase<ParticleType<?>> {
     ParticleBuilder addPositionData(ParticlePositionData positionData);
 
     /**
+     * constant position over the particle's lifetime.
+     */
+    default ParticleBuilder position(Vector3d position) {
+        return addPositionData(new ParticlePositionData(position));
+    }
+
+    /**
      * Convenience: interpolates from {@code start} to {@code end} using {@link Easing#LINEAR}.
      */
-    default ParticleBuilder positionData(Vector3d start, Vector3d end) {
+    default ParticleBuilder position(Vector3d start, Vector3d end) {
         return addPositionData(new ParticlePositionData(start, end));
     }
 
     /**
      * Convenience: interpolates from {@code start} to {@code end} using the given easing.
      */
-    default ParticleBuilder positionData(Vector3d start, Vector3d end, Easing easing) {
+    default ParticleBuilder position(Vector3d start, Vector3d end, Easing easing) {
         return addPositionData(new ParticlePositionData(start, end, easing));
     }
 

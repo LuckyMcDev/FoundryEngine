@@ -1,7 +1,6 @@
 package de.luckymcdev.foundryengine.common.builder.particle;
 
 import de.luckymcdev.foundryengine.api.builder.particle.ParticleBuilder;
-import de.luckymcdev.foundryengine.client.particle.EngineParticleSpec;
 import de.luckymcdev.foundryengine.client.particle.data.*;
 import de.luckymcdev.foundryengine.common.builder.BuilderBaseImpl;
 import net.minecraft.client.particle.SingleQuadParticle;
@@ -20,8 +19,8 @@ import java.util.function.Function;
  *
  * <p>Data modifiers are stored in four typed lists (color, scale, velocity, position)
  * plus a generic catch-all list for custom {@link GenericParticleData} implementations.
- * All five lists are merged when {@link #getSpec()} is called so that
- * {@link de.luckymcdev.foundryengine.client.particle.EngineParticle} sees a
+ * All five lists are merged when {@link #mergedData()} is called so that
+ * {@link de.luckymcdev.foundryengine.client.particle.EngineParticle} receives a
  * single flat list, preserving insertion order within each category.</p>
  */
 public class ParticleBuilderImpl extends BuilderBaseImpl<ParticleType<?>> implements ParticleBuilder {
@@ -59,15 +58,6 @@ public class ParticleBuilderImpl extends BuilderBaseImpl<ParticleType<?>> implem
     @Override
     public ParticleBuilder alwaysShow(boolean alwaysShow) {
         this.alwaysShow = alwaysShow;
-        return this;
-    }
-
-    @Override
-    public ParticleBuilder spec(EngineParticleSpec spec) {
-        this.lifetime = spec.lifetime();
-        this.layer = spec.layer();
-        clearAllData();
-        spec.data().forEach(this::addData);
         return this;
     }
 
@@ -114,7 +104,7 @@ public class ParticleBuilderImpl extends BuilderBaseImpl<ParticleType<?>> implem
             case ParticleScaleData d -> scaleData.add(d);
             case ParticleVelocityData d -> velocityData.add(d);
             case ParticlePositionData d -> positionData.add(d);
-            case null, default -> genericData.add(data);
+            default -> genericData.add(data);
         }
         return this;
     }
@@ -122,12 +112,6 @@ public class ParticleBuilderImpl extends BuilderBaseImpl<ParticleType<?>> implem
     @Override
     public ParticleBuilder data(GenericParticleData... data) {
         for (GenericParticleData d : data) addData(d);
-        return this;
-    }
-
-    @Override
-    public ParticleBuilder data(List<GenericParticleData> data) {
-        data.forEach(this::addData);
         return this;
     }
 
@@ -144,18 +128,26 @@ public class ParticleBuilderImpl extends BuilderBaseImpl<ParticleType<?>> implem
         return factory.apply(alwaysShow);
     }
 
+    public int getLifetime() {
+        return lifetime;
+    }
+
+    public SingleQuadParticle.Layer getLayer() {
+        return layer;
+    }
+
     /**
-     * Returns a merged spec containing all typed and generic data in order:
+     * Returns a merged flat list of all data in order:
      * color → scale → velocity → position → generic.
      */
-    public EngineParticleSpec getSpec() {
+    public List<GenericParticleData> mergedData() {
         List<GenericParticleData> merged = new ArrayList<>();
         merged.addAll(colorData);
         merged.addAll(scaleData);
         merged.addAll(velocityData);
         merged.addAll(positionData);
         merged.addAll(genericData);
-        return new EngineParticleSpec(lifetime, layer, merged);
+        return merged;
     }
 
     /**
