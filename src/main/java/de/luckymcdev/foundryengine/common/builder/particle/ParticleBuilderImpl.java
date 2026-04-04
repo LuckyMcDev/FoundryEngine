@@ -110,12 +110,6 @@ public class ParticleBuilderImpl extends BuilderBaseImpl<ParticleType<?>> implem
     }
 
     @Override
-    public ParticleBuilder data(GenericParticleData... data) {
-        for (GenericParticleData d : data) addData(d);
-        return this;
-    }
-
-    @Override
     public ParticleType<?> register(RegisterEvent.RegisterHelper<ParticleType<?>> helper) {
         ParticleType<?> type = build();
         helper.register(this.id, type);

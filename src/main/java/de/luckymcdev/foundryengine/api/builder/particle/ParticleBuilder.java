@@ -61,11 +61,6 @@ public interface ParticleBuilder extends BuilderBase<ParticleType<?>> {
     ParticleBuilder addData(GenericParticleData data);
 
     /**
-     * Appends multiple generic data modifiers.
-     */
-    ParticleBuilder data(GenericParticleData... data);
-
-    /**
      * Appends a {@link ParticleColorData} entry.
      */
     ParticleBuilder addColorData(ParticleColorData colorData);
