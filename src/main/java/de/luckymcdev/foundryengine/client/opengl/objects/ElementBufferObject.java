@@ -47,6 +47,7 @@ public class ElementBufferObject extends OpenGlObject {
 
     /**
      * Uploads IntBuffer data to the buffer.
+     *
      * @param data  the buffer of indices to upload
      * @param usage the expected usage pattern
      */

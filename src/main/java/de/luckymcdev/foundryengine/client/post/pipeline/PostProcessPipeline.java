@@ -54,6 +54,7 @@ public abstract class PostProcessPipeline {
 
     /**
      * Add a new {@link TargetRef} to this Pipeline.
+     *
      * @param target the Target to add.
      * @return the Target which got Added.
      */
@@ -64,6 +65,7 @@ public abstract class PostProcessPipeline {
 
     /**
      * Same as {@link #addTarget(TargetRef)} except with a String param instead of a Full {@link TargetRef}
+     *
      * @param name the name of the Target to add.
      * @return the Target which got added.
      */
@@ -73,6 +75,7 @@ public abstract class PostProcessPipeline {
 
     /**
      * Returns a View of the Targets available in this Pipeline.
+     *
      * @return the view of the Targets available.
      */
     public Map<String, TargetRef> getTargets() {
@@ -82,10 +85,11 @@ public abstract class PostProcessPipeline {
     /**
      * Registers a {@link PipelineParam} and returns it so the subclass can keep
      * a typed reference for programmatic access.
-     *  <br>
+     * <br>
      * Call this in the subclass constructor, after {@code super(...)}.
-     * @param <T> the Type T
-     * @param <P> the Param P
+     *
+     * @param <T>   the Type T
+     * @param <P>   the Param P
      * @param param the param
      * @return the param.
      */
@@ -96,6 +100,7 @@ public abstract class PostProcessPipeline {
 
     /**
      * Returns all registered params in declaration order (used by the panel).
+     *
      * @return a Map of all params.
      */
     public Map<String, PipelineParam<?>> getParams() {
@@ -108,6 +113,7 @@ public abstract class PostProcessPipeline {
 
     /**
      * Convenience for single-pass pipelines.
+     *
      * @return the first {@link ShaderProgram} out of the List.
      */
     public ShaderProgram getProgram() {
@@ -121,10 +127,11 @@ public abstract class PostProcessPipeline {
     /**
      * Sets a collection of default Uniforms.
      * Includes:
-     *  - screenTexture
-     *  - depthTexture
+     * - screenTexture
+     * - depthTexture
      * <br>
      * You don't need to call this, it's done automatically.
+     *
      * @param program the Program for which to set these Uniforms.
      */
     public final void setupDefaultUniforms(ShaderProgram program) {

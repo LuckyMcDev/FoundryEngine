@@ -46,6 +46,7 @@ public class ShaderProgram extends OpenGlObject {
 
     /**
      * Attaches All Shaders to this Program.
+     *
      * @throws ShaderException throws a {@link ShaderException} from {@link ShaderCompiler#getOrCompile(Shader)} if anything goes wrong.
      */
     public void attach() throws ShaderException {
@@ -58,6 +59,7 @@ public class ShaderProgram extends OpenGlObject {
 
     /**
      * Links this Program.
+     *
      * @throws ShaderException throws this if something goes wrong.
      */
     public void link() throws ShaderException {
@@ -113,7 +115,8 @@ public class ShaderProgram extends OpenGlObject {
 
     /**
      * Binds a Uniform Block.
-     * @param blockName the name
+     *
+     * @param blockName    the name
      * @param bindingPoint the point at which to bind.
      */
     public void bindUniformBlock(String blockName, int bindingPoint) {

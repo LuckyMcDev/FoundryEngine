@@ -36,6 +36,7 @@ public class UniformBufferObject extends OpenGlObject {
     /**
      * Binds this buffer to a specific binding point.
      * Shaders will look for data at this index.
+     *
      * @param bindingPoint the index of the binding point
      */
     public void bindBase(int bindingPoint) {
@@ -51,6 +52,7 @@ public class UniformBufferObject extends OpenGlObject {
 
     /**
      * Uploads float data to the uniform buffer using GL_DYNAMIC_DRAW.
+     *
      * @param data the float array to upload
      */
     public void uploadData(float[] data) {

@@ -7,9 +7,10 @@ import net.minecraft.resources.Identifier;
  * A Record representing a Single Pipeline Pass.
  * A pipeline Pass is when you have an input, shaders and an output.
  * The shaders run on the input and put their result into the output.
- * @param name the name of this Pass.
- * @param input the {@link TargetRef} input.
- * @param output the {@link TargetRef} output.
+ *
+ * @param name    the name of this Pass.
+ * @param input   the {@link TargetRef} input.
+ * @param output  the {@link TargetRef} output.
  * @param shaders n ammount of Shaders.
  */
 public record PostProcessPipelinePass(Identifier name, TargetRef input, TargetRef output, Shader... shaders) {

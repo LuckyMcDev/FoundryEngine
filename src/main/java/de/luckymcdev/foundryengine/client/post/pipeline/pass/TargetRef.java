@@ -31,6 +31,7 @@ public final class TargetRef {
     /**
      * Returns a temporary target ref for the given name.
      * <br> must NOT be {@link #MAIN_NAME}
+     *
      * @param name the name of the target ref.
      * @return the created Target Ref.
      */

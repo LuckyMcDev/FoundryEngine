@@ -1,4 +1,3 @@
-
 package de.luckymcdev.foundryengine.common.vpacks.event;
 
 import net.minecraft.server.packs.PackResources;

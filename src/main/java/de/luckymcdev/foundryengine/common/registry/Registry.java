@@ -86,6 +86,7 @@ public interface Registry<K, V> {
 
     /**
      * Register a callback to run when the registry is frozen.
+     *
      * @return true if callback was added, false if already frozen (callback ran immediately)
      */
     boolean onFreeze(Runnable callback);

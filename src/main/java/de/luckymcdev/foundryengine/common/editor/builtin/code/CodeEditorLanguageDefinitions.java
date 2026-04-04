@@ -62,6 +62,7 @@ public class CodeEditorLanguageDefinitions {
                 .comments("", "", "")
                 .build();
     }
+
     private static TextEditorLanguageDefinition createToml() {
         // LinkedHashMap preserves insertion order — critical for correct priority
         Map<String, Integer> regexes = new LinkedHashMap<>();

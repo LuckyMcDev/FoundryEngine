@@ -37,7 +37,9 @@ public abstract class Easing {
      * Map of all Easings.
      */
     public static final HashMap<String, Easing> EASINGS = new HashMap<>();
-    /** Codec For {@link Easing} */
+    /**
+     * Codec For {@link Easing}
+     */
     public static final Codec<Easing> CODEC = Codec.STRING.xmap(Easing::valueOf, e -> e.name);
 
     /**
@@ -291,11 +293,14 @@ public abstract class Easing {
         }
     };
 
-    /** Unique name of the Easing instance. */
+    /**
+     * Unique name of the Easing instance.
+     */
     public final String name;
 
     /**
      * Create a new Easing from a Name.
+     *
      * @param name the name of the Easing.
      */
     public Easing(String name) {
@@ -305,6 +310,7 @@ public abstract class Easing {
 
     /**
      * Retrieves an Easing instance by its unique name.
+     *
      * @param name the name of the easing to retrieve.
      * @return the matching Easing instance, or null if not found.
      */
@@ -432,6 +438,7 @@ public abstract class Easing {
 
         /**
          * Creates a new Elastic easing with default settings (-1f, 0f).
+         *
          * @param name the name of this easing
          */
         public Elastic(String name) {
@@ -481,8 +488,9 @@ public abstract class Easing {
     public static class ElasticIn extends Elastic {
         /**
          * Creates an ElasticIn with custom settings.
+         *
          * @param amplitude the amplitude
-         * @param period the period
+         * @param period    the period
          */
         public ElasticIn(float amplitude, float period) {
             super("elasticIn", amplitude, period);
@@ -516,8 +524,9 @@ public abstract class Easing {
     public static class ElasticOut extends Elastic {
         /**
          * Creates an ElasticOut with custom settings.
+         *
          * @param amplitude the amplitude
-         * @param period the period
+         * @param period    the period
          */
         public ElasticOut(float amplitude, float period) {
             super("elasticOut", amplitude, period);
@@ -551,8 +560,9 @@ public abstract class Easing {
     public static class ElasticInOut extends Elastic {
         /**
          * Creates an ElasticInOut with custom settings.
+         *
          * @param amplitude the amplitude
-         * @param period the period
+         * @param period    the period
          */
         public ElasticInOut(float amplitude, float period) {
             super("elasticInOut", amplitude, period);
@@ -595,6 +605,7 @@ public abstract class Easing {
 
         /**
          * Creates a new Back instance with the default overshoot (1.70158).
+         *
          * @param name the name of the easing.
          */
         public Back(String name) {
@@ -606,8 +617,8 @@ public abstract class Easing {
          *
          * @param name      the name of the easing.
          * @param overshoot the amount to overshoot by -- higher number
-         * means more overshoot and an overshoot of 0 results in
-         * cubic easing with no overshoot
+         *                  means more overshoot and an overshoot of 0 results in
+         *                  cubic easing with no overshoot
          */
         public Back(String name, float overshoot) {
             super(name);
@@ -637,12 +648,16 @@ public abstract class Easing {
      * Back easing in - backtracking slightly, then reversing direction and moving to target.
      */
     public static class BackIn extends Back {
-        /** Default constructor for BackIn. */
+        /**
+         * Default constructor for BackIn.
+         */
         public BackIn() {
             super("backIn");
         }
 
-        /** * Constructor for BackIn with custom overshoot.
+        /**
+         * Constructor for BackIn with custom overshoot.
+         *
          * @param overshoot the overshoot value.
          */
         public BackIn(float overshoot) {
@@ -659,12 +674,16 @@ public abstract class Easing {
      * Back easing out - moving towards target, overshooting it slightly, then reversing and coming back to target.
      */
     public static class BackOut extends Back {
-        /** Default constructor for BackOut. */
+        /**
+         * Default constructor for BackOut.
+         */
         public BackOut() {
             super("backOut");
         }
 
-        /** * Constructor for BackOut with custom overshoot.
+        /**
+         * Constructor for BackOut with custom overshoot.
+         *
          * @param overshoot the overshoot value.
          */
         public BackOut(float overshoot) {
@@ -682,12 +701,16 @@ public abstract class Easing {
      * then overshooting target, reversing, and finally coming back to target.
      */
     public static class BackInOut extends Back {
-        /** Default constructor for BackInOut. */
+        /**
+         * Default constructor for BackInOut.
+         */
         public BackInOut() {
             super("backInOut");
         }
 
-        /** * Constructor for BackInOut with custom overshoot.
+        /**
+         * Constructor for BackInOut with custom overshoot.
+         *
          * @param overshoot the overshoot value.
          */
         public BackInOut(float overshoot) {

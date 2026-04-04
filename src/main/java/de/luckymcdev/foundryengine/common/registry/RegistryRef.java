@@ -75,6 +75,7 @@ public class RegistryRef<K, V> {
 
     /**
      * Get the key this reference points to.
+     *
      * @return the registry key
      */
     public K getKey() {
@@ -83,6 +84,7 @@ public class RegistryRef<K, V> {
 
     /**
      * Check if this entry exists in the registry.
+     *
      * @return true if the key is registered
      */
     public boolean exists() {
@@ -100,6 +102,7 @@ public class RegistryRef<K, V> {
 
     /**
      * Execute an action if the value exists.
+     *
      * @param action action to execute with the value
      */
     public void ifPresent(Consumer<V> action) {

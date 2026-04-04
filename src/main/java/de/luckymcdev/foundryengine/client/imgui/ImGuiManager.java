@@ -53,15 +53,7 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
     private final ImGuiImplGlfw imGuiImplGlfw = new ImGuiImplGlfw();
     private final ImGuiImplGl3 imGuiImplGl3 = new ImGuiImplGl3();
     private final ImGuiGraphicsStack graphicsStack = new ImGuiGraphicsStack();
-    private @Nullable ImGuiContext imGuiContext;
-    private @Nullable ImPlotContext imPlotContext;
-    private @Nullable ImNodesContext imNodesContext;
-
     private final AtomicBoolean enabled = new AtomicBoolean(false);
-    private boolean shouldBlockInput = false;
-
-    private @Nullable ImFont font;
-
     /**
      * The Glyph Ranges for the {@link TTFFile#JETBRAINS_MONO_NERDFONT_REGULAR} Font.
      */
@@ -82,11 +74,17 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
             0x2665, 0x26A1, // Extra Octicons
             0
     };
+    private @Nullable ImGuiContext imGuiContext;
+    private @Nullable ImPlotContext imPlotContext;
+    private @Nullable ImNodesContext imNodesContext;
+    private boolean shouldBlockInput = false;
+    private @Nullable ImFont font;
     private int dockId;
 
     public ImGuiManager() {
         //font = ImGui.getFont();
     }
+
     /**
      * Creates a new ImGui context for the Window handle
      * See Implementation {@link GameRendererMixin#engine$renderHead(DeltaTracker, boolean, CallbackInfo)}
@@ -217,6 +215,7 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
     /**
      * Returns the Main {@link ImGuiGraphicsStack} although you should be able to create a new one using
      * {@link ImGuiGraphicsStack} constructor.
+     *
      * @return the {@link ImGuiGraphicsStack}
      */
     public ImGuiGraphicsStack getGraphicsStack() {
@@ -229,8 +228,9 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
 
     /**
      * Loads the {@link TTFFile#JETBRAINS_MONO_NERDFONT_REGULAR} font with a resource Manager.
+     *
      * @param resourceManager the {@link ResourceManager} with which to access the resources.
-     * Handles a null Font / an error during Font Loading and goes back to {@link ImFontAtlas#addFontDefault()}
+     *                        Handles a null Font / an error during Font Loading and goes back to {@link ImFontAtlas#addFontDefault()}
      */
     public void loadFonts(ResourceManager resourceManager) {
         var fonts = ImGui.getIO().getFonts();
@@ -282,6 +282,7 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
 
     /**
      * Weather ImGui should intercept Mouse movement.
+     *
      * @return if ImGui wants to capture the Mouse and the Mouse is not grabbed by Minecraft.
      */
     public boolean shouldInterceptMouse() {
@@ -290,6 +291,7 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
 
     /**
      * Weather ImGui should intercept Mouse movement
+     *
      * @return if ImGui wants to capture keyboard.
      */
     public boolean shouldInterceptKeyboard() {
@@ -321,6 +323,7 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
 
     /**
      * Reloads the Font if the Client Resources are Reloaded.
+     *
      * @param resourceManager passed by {@link ResourceManagerReloadListener}
      */
     @Override

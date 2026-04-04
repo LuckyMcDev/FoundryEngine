@@ -8,6 +8,7 @@ import org.joml.Vector3f;
 
 /**
  * A Parameter / {@link Uniform} for a PostProcess Pipeline, which automatically gets added to the {@link PostProcessPanel}
+ *
  * @param <T> The Type for the Value.
  */
 public class PipelineParam<T> {

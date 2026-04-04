@@ -34,6 +34,7 @@ public class EditorManager {
 
     /**
      * Removes a Panel
+     *
      * @param panel the Panel to remove
      */
     public void remove(Panel panel) {
@@ -43,6 +44,7 @@ public class EditorManager {
 
     /**
      * Opens a Panel
+     *
      * @param panel the Panel to open
      */
     public void openPanel(Panel panel) {
@@ -53,6 +55,7 @@ public class EditorManager {
 
     /**
      * Closes a Panel
+     *
      * @param panel the Panel to close
      */
     public void closePanel(Panel panel) {
@@ -63,6 +66,7 @@ public class EditorManager {
 
     /**
      * Toggles a Panel between Open and Close depending on current State.
+     *
      * @param panel the Panel to Toggle.
      */
     public void togglePanel(Panel panel) {
@@ -73,6 +77,7 @@ public class EditorManager {
     /**
      * Returns if a Panel is currently Open.
      * INFO: Panel open State is managed by the Panel itself. {@link Panel#open}
+     *
      * @param panel the Panel to check
      * @return the current openState.
      */
@@ -117,6 +122,7 @@ public class EditorManager {
 
     /**
      * Returns the {@link GenericRegistry} which contains all Panels
+     *
      * @return the Panel Registry.
      */
     public GenericRegistry<Identifier, Panel> getPanels() {

@@ -51,8 +51,10 @@ public class PostProcessManager {
 
     public PostProcessManager() {
     }
+
     /**
      * Initializes the GpuMesh quad.
+     *
      * @param event
      */
     @SubscribeEvent
@@ -109,6 +111,7 @@ public class PostProcessManager {
 
     /**
      * Runs all Pipelines for this {@link PostProcessStage}
+     *
      * @param stage the Stage to Run.
      */
     private static void runStage(PostProcessStage stage) {
@@ -134,8 +137,9 @@ public class PostProcessManager {
 
     /**
      * Runs a Batch of Pipelines for a Post Processing Stage.
+     *
      * @param pipelines the List of Pipelines to run.
-     * @param stage the stage we are at.
+     * @param stage     the stage we are at.
      */
     private static void runPipelineBatch(List<? extends PostProcessPipeline> pipelines, PostProcessStage stage) {
         RenderSystem.assertOnRenderThread();

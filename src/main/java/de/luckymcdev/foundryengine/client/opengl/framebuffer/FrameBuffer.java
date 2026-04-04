@@ -22,11 +22,11 @@ public class FrameBuffer extends OpenGlObject {
     private final boolean hasStencil;
     private final int clearMask;
     private final float[] clearColor = new float[]{0.0f, 0.0f, 0.0f, 0.0f};
+    private final int filterMode = GL43C.GL_LINEAR;
     private int width;
     private int height;
     private int colorTexture;
     private int depthTexture;
-    private final int filterMode = GL43C.GL_LINEAR;
 
     /**
      * Instantiates a new Frame buffer.

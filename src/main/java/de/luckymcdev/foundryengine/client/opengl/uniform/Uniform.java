@@ -4,9 +4,10 @@ import java.util.function.Supplier;
 
 /**
  * A Record to keep Track of a Uniform.
+ *
  * @param name          uniform name in the shader
  * @param type          the explicit {@link SupportedUniformTypes}
- * @param <V> the type of the value
+ * @param <V>           the type of the value
  * @param valueSupplier the logic to fetch the current value
  */
 public record Uniform<V>(String name, SupportedUniformTypes type, Supplier<V> valueSupplier) {

@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 /**
  * Keyboard Handler Extension
  */
-public interface EngineKeyboardHandler extends EngineInterface<KeyboardHandler>{
+public interface EngineKeyboardHandler extends EngineInterface<KeyboardHandler> {
 
     void engine$keyPress(long p_window, int action, KeyEvent event, CallbackInfo ci);
 

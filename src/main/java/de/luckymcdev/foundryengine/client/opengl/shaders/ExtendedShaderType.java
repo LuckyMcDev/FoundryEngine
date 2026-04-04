@@ -53,6 +53,7 @@ public enum ExtendedShaderType {
 
     /**
      * Gl Type
+     *
      * @return the OpenGl Shader Type
      */
     public int glType() {

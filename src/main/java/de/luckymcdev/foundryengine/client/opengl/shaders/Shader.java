@@ -36,6 +36,7 @@ public class Shader extends OpenGlObject {
     /**
      * Reloads the shader source from the file system and recompiles.
      * Only recompiles if the source code has actually changed.
+     *
      * @throws ShaderException if the new source fails to compile.
      */
     public void reload() throws ShaderException {
@@ -52,6 +53,7 @@ public class Shader extends OpenGlObject {
     /**
      * Loads and Processes a Shader Source Code.
      * Uses cached source from ShaderManager to avoid repeated file I/O.
+     *
      * @return the processed source code.
      */
     private String loadSource() {
@@ -70,6 +72,7 @@ public class Shader extends OpenGlObject {
      * Compiles the Shader.
      * <br>
      * {@link ShaderCompiler}
+     *
      * @throws ShaderException exception to throw if something is wrong.
      */
     public void compile() throws ShaderException {
@@ -84,6 +87,7 @@ public class Shader extends OpenGlObject {
 
     /**
      * Returns the Shader type
+     *
      * @return Shader Type
      */
     public ExtendedShaderType getType() {
@@ -92,6 +96,7 @@ public class Shader extends OpenGlObject {
 
     /**
      * Returns the Shaders Identifier.
+     *
      * @return the Shaders Identifier
      */
     public Identifier getId() {
@@ -100,6 +105,7 @@ public class Shader extends OpenGlObject {
 
     /**
      * The Shaders Source Code.
+     *
      * @return the Source Code.
      */
     public String getSource() {
@@ -108,6 +114,7 @@ public class Shader extends OpenGlObject {
 
     /**
      * The File System Location via {@link Identifier}
+     *
      * @return the location
      */
     public Identifier getLocation() {
@@ -116,6 +123,7 @@ public class Shader extends OpenGlObject {
 
     /**
      * Sets a Debug Label to the Shader.
+     *
      * @param label the label to set.
      */
     private void setDebugLabel(String label) {

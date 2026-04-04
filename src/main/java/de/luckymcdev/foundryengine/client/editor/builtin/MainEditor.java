@@ -12,6 +12,7 @@ import imgui.flag.ImGuiKey;
  */
 public class MainEditor extends EditorPanel {
     public static final MainEditor INSTANCE = new MainEditor();
+
     private MainEditor() {
         super(Common.id("main_editor"), "Main Editor", ImIcons.FA.FA_EDIT, Shortcut.ctrl(ImGuiKey.F9));
         this.category = PanelCategory.EDITOR;

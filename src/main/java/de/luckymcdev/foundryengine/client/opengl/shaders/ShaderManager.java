@@ -31,6 +31,7 @@ public class ShaderManager implements ResourceManagerReloadListener {
 
     public ShaderManager() {
     }
+
     /**
      * Registers a Shader
      *
@@ -42,6 +43,7 @@ public class ShaderManager implements ResourceManagerReloadListener {
 
     /**
      * Removes a Shader
+     *
      * @param shader to remove
      */
     public void remove(Shader shader) {
@@ -50,6 +52,7 @@ public class ShaderManager implements ResourceManagerReloadListener {
 
     /**
      * Registers a ShaderProgram
+     *
      * @param program registrar
      */
     public void register(ShaderProgram program) {
@@ -58,6 +61,7 @@ public class ShaderManager implements ResourceManagerReloadListener {
 
     /**
      * Removes a Shader Program
+     *
      * @param program to remove.
      */
     public void remove(ShaderProgram program) {
@@ -67,6 +71,7 @@ public class ShaderManager implements ResourceManagerReloadListener {
     /**
      * Reloads All Shaders and Programs.
      * Shaders first, then Programs to avoid wrong ordering.
+     *
      * @throws ShaderException exception if something goes wrong when reloading.
      */
     public void reload() throws ShaderException {
@@ -86,6 +91,7 @@ public class ShaderManager implements ResourceManagerReloadListener {
 
     /**
      * Returns the Main Shader Compiler
+     *
      * @return the Shader Compiler
      */
     public ShaderCompiler getCompiler() {
@@ -94,6 +100,7 @@ public class ShaderManager implements ResourceManagerReloadListener {
 
     /**
      * Returns the Glsl Pre Processor Manager.
+     *
      * @return the glsl pre processor manager.
      */
     public GLSLPreProcessorManager getPreProcessorManager() {

@@ -40,6 +40,7 @@ public class ThreadManager {
 
     /**
      * Returns a {@link EngineThread} by its Identifier
+     *
      * @param id the Identifier of the Thread.
      * @return the {@link EngineThread}
      */
@@ -88,6 +89,7 @@ public class ThreadManager {
 
     /**
      * Executes an Action ({@link Runnable}) on a {@link EngineThread}.
+     *
      * @param thread the Thread to execute the Action on.
      * @param action the Action to execute.
      */
@@ -98,10 +100,11 @@ public class ThreadManager {
 
     /**
      * Submits an Async action with return to run on a {@link EngineThread}
+     *
      * @param thread the Thread to execute the Action on.
      * @param action the Action to execute.
+     * @param <T>    the Type
      * @return the computed Value.
-     * @param <T> the Type
      */
     public <T> CompletableFuture<T> submit(EngineThread thread, Supplier<T> action) {
         Objects.requireNonNull(thread, "thread");
@@ -110,6 +113,7 @@ public class ThreadManager {
 
     /**
      * Shuts down a {@link EngineThread} by Identifier
+     *
      * @param id the Identifier of the {@link EngineThread} to shut down
      */
     public void shutdown(Identifier id) {

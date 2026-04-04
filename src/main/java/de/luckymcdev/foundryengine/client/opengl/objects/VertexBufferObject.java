@@ -46,6 +46,7 @@ public class VertexBufferObject extends OpenGlObject {
 
     /**
      * Uploads FloatBuffer data to the buffer.
+     *
      * @param data  the buffer containing vertex data
      * @param usage the expected usage pattern
      */
