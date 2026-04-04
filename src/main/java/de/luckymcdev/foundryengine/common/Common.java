@@ -7,6 +7,7 @@ import de.luckymcdev.foundryengine.common.exceptions.UtilityClassException;
 import de.luckymcdev.foundryengine.common.game.behavior.GameBehaviorManager;
 import de.luckymcdev.foundryengine.common.game.stage.GameStageHandler;
 import de.luckymcdev.foundryengine.common.network.NetworkManager;
+import de.luckymcdev.foundryengine.common.scene.SceneManager;
 import de.luckymcdev.foundryengine.common.thread.ThreadManager;
 import de.luckymcdev.foundryengine.common.util.FirstRun;
 import net.minecraft.resources.Identifier;
@@ -64,6 +65,7 @@ public abstract class Common {
     private static final GameBehaviorManager GAME_BEHAVIOR_MANAGER = new GameBehaviorManager();
     private static final GameStageHandler GAME_STAGE_HANDLER = new GameStageHandler();
     private static final NetworkManager NETWORK_MANAGER = new NetworkManager();
+    private static final SceneManager SCENE_MANAGER = new SceneManager();
 
     private Common() {
         throw new UtilityClassException();
@@ -102,6 +104,10 @@ public abstract class Common {
 
     public static NetworkManager getNetworkManager() {
         return NETWORK_MANAGER;
+    }
+
+    public static SceneManager getSceneManager() {
+        return SCENE_MANAGER;
     }
 
     public static String getFileContent(Path file) {

@@ -10,6 +10,7 @@ import de.luckymcdev.foundryengine.client.editor.builtin.MainEditor;
 import de.luckymcdev.foundryengine.client.editor.builtin.TestPanel;
 import de.luckymcdev.foundryengine.client.editor.builtin.explorer.FileExplorerPanel;
 import de.luckymcdev.foundryengine.client.editor.builtin.explorer.ResourceExplorerPanel;
+import de.luckymcdev.foundryengine.client.editor.builtin.scene.ScenePanel;
 import de.luckymcdev.foundryengine.client.editor.builtin.tools.ConsolePanel;
 import de.luckymcdev.foundryengine.client.editor.builtin.tools.MinecraftToolsPanel;
 import de.luckymcdev.foundryengine.client.editor.builtin.tools.StopwatchPanel;
@@ -129,6 +130,7 @@ public class FoundryEngineModClient {
         event.register(MinecraftToolsPanel.INSTANCE);
         event.register(StopwatchPanel.INSTANCE);
         event.register(InfoPanel.INSTANCE);
+        event.register(ScenePanel.INSTANCE);
     }
 
     private void onRegisterPostPipelines(RegisterPostPipelineEvent event) {

@@ -7,6 +7,7 @@ import de.luckymcdev.foundryengine.common.log.EngineLogAppender;
 import de.luckymcdev.foundryengine.common.network.TestPacket;
 import de.luckymcdev.foundryengine.common.network.packets.ServerBoundChangeWeatherPacket;
 import de.luckymcdev.foundryengine.common.network.packets.ServerBoundSetTimePacket;
+import de.luckymcdev.foundryengine.common.network.packets.ServerBoundTeleportPacket;
 import de.luckymcdev.foundryengine.common.network.packets.explorer.*;
 import de.luckymcdev.foundryengine.common.registry.EngineRegistries;
 import de.luckymcdev.foundryengine.common.thread.RegisterEngineThreadEvent;
@@ -60,6 +61,8 @@ public class FoundryEngineMod {
         BUS.post(new RegisterEngineThreadEvent());
 
         BUS.addListener(this::onRegisterVirtualPacks);
+        BUS.addListener(Common.getSceneManager()::entityJoinLevel);
+        BUS.addListener(Common.getSceneManager()::entityLeaveLevel);
 
         Config.registerCommon(modContainer);
         Config.registerStartup(modContainer);
@@ -90,6 +93,7 @@ public class FoundryEngineMod {
         Common.getNetworkManager().register(ServerBoundRequestFileListPacket.DEFINITION);
         Common.getNetworkManager().register(ServerBoundRequestFileContentPacket.DEFINITION);
         Common.getNetworkManager().register(ServerBoundSaveFilePacket.DEFINITION);
+        Common.getNetworkManager().register(ServerBoundTeleportPacket.DEFINITION);
     }
 
     private void registerModBus(IEventBus modBus) {
