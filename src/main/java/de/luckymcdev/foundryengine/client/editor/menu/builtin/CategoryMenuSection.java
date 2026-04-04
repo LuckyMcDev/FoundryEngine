@@ -25,7 +25,7 @@ public class CategoryMenuSection implements MenuSection {
             renderPanelsForCategory(this.category);
 
             for (PanelCategory sub : PanelCategory.values()) {
-                if (sub.name().startsWith(this.category.name() + "_")) {
+                if (sub.isChildOf(this.category)) {
                     if (ImGui.beginMenu(sub.getMenuLabel())) {
                         renderPanelsForCategory(sub);
                         ImGui.endMenu();
@@ -40,9 +40,5 @@ public class CategoryMenuSection implements MenuSection {
         editor.getPanels().stream()
                 .filter(p -> p.category == cat)
                 .forEach(menuItemRenderer::render);
-    }
-
-    private String capitalize(String str) {
-        return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
     }
 }
