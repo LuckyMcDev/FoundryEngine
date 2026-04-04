@@ -1,7 +1,9 @@
 package de.luckymcdev.foundryengine.client.editor.builtin;
 
+import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.Panel;
+import de.luckymcdev.foundryengine.client.editor.builtin.tools.CataloguePanel;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
@@ -17,12 +19,14 @@ import imgui.flag.ImGuiKey;
 import imgui.type.ImBoolean;
 import imgui.type.ImFloat;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+import org.slf4j.Logger;
 
 /**
  * A simple Test Panel.
  * Shows some weird test stuff I guess.
  */
 public class TestPanel extends Panel {
+    private static final Logger LOGGER = LogUtils.getLogger();
     public static final TestPanel INSTANCE = new TestPanel();
     private static final ImFloat FLOAT = new ImFloat();
     private static final ImFloat FLOAT2 = new ImFloat();
@@ -69,6 +73,20 @@ public class TestPanel extends Panel {
         if (ImGui.colorButton("Color Button?", Color.ORANGE.r(), Color.ORANGE.g(), Color.ORANGE.b(), Color.ORANGE.a())) {
             ImGui.text("COLOR BUTTON");
         }
+
+        ImGui.button("Drop Zone", -1, 50);
+        CataloguePanel.acceptDrop(data -> {
+            if (data.type().equals("blocks")) {
+                LOGGER.info("It's a block: " + data.id());
+            } else {
+                LOGGER.info("It's an item: " + data.id());
+            }
+
+            if (data.tags().contains("foundry")) {
+                LOGGER.info("This has the foundry tag!");
+            }
+        });
+
 
         ImGui.colorPicker3("Pick a color", FLOAT2.getData(), ImGuiColorEditFlags.PickerHueWheel);
 
