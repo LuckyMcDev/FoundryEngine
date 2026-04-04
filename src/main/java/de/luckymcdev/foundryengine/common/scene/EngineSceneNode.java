@@ -1,9 +1,14 @@
 package de.luckymcdev.foundryengine.common.scene;
 
+import net.minecraft.world.entity.Entity;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 public interface EngineSceneNode {
+    default Entity self() {
+        return (Entity) this;
+    }
+
     String getUUID();
 
     /**
@@ -25,6 +30,7 @@ public interface EngineSceneNode {
      * Pitch (x) and Yaw (y) in degrees
      */
     Vector2f getRotation();
+
 
     void remove();
 }

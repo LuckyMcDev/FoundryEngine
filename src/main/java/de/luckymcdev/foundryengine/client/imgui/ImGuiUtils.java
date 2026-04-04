@@ -7,6 +7,7 @@ import de.luckymcdev.foundryengine.common.util.PermissionChecks;
 import de.luckymcdev.foundryengine.common.util.color.Color;
 import imgui.ImGui;
 import imgui.ImVec4;
+import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiStyleVar;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.StringSplitter;
@@ -35,6 +36,23 @@ public class ImGuiUtils {
             ImGui.popTextWrapPos();
             ImGui.endTooltip();
         }
+    }
+
+    /**
+     * Pushes a red style for buttons to indicate a dangerous or error-related action.
+     * Must be paired with {@link #popErrorButtonStyle()}.
+     */
+    public static void pushErrorButtonStyle() {
+        ImGui.pushStyleColor(ImGuiCol.Button, 0.6f, 0.1f, 0.1f, 1.0f);
+        ImGui.pushStyleColor(ImGuiCol.ButtonHovered, 0.8f, 0.2f, 0.2f, 1.0f);
+        ImGui.pushStyleColor(ImGuiCol.ButtonActive, 0.4f, 0.05f, 0.05f, 1.0f);
+    }
+
+    /**
+     * Pops the 3 style colors pushed by {@link #pushErrorButtonStyle()}.
+     */
+    public static void popErrorButtonStyle() {
+        ImGui.popStyleColor(3);
     }
 
     /**
