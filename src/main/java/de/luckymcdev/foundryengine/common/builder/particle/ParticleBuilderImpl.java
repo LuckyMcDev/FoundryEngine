@@ -2,7 +2,7 @@ package de.luckymcdev.foundryengine.common.builder.particle;
 
 import de.luckymcdev.foundryengine.api.builder.particle.ParticleBuilder;
 import de.luckymcdev.foundryengine.client.particle.EngineParticleSpec;
-import de.luckymcdev.foundryengine.client.particle.data.GenericParticleData;
+import de.luckymcdev.foundryengine.client.particle.data.*;
 import de.luckymcdev.foundryengine.common.builder.BuilderBaseImpl;
 import net.minecraft.client.particle.SingleQuadParticle;
 import net.minecraft.core.particles.ParticleType;
@@ -10,7 +10,6 @@ import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.registries.RegisterEvent;
-import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,15 +17,24 @@ import java.util.function.Function;
 
 /**
  * Particle builder implementation for registering ParticleTypes.
+ *
+ * <p>Data modifiers are stored in four typed lists (color, scale, velocity, position)
+ * plus a generic catch-all list for custom {@link GenericParticleData} implementations.
+ * All five lists are merged when {@link #getSpec()} is called so that
+ * {@link de.luckymcdev.foundryengine.client.particle.EngineParticle} sees a
+ * single flat list, preserving insertion order within each category.</p>
  */
 public class ParticleBuilderImpl extends BuilderBaseImpl<ParticleType<?>> implements ParticleBuilder {
-    private final List<GenericParticleData> data;
+    private final List<ParticleColorData> colorData = new ArrayList<>();
+    private final List<ParticleScaleData> scaleData = new ArrayList<>();
+    private final List<ParticleVelocityData> velocityData = new ArrayList<>();
+    private final List<ParticlePositionData> positionData = new ArrayList<>();
+    private final List<GenericParticleData> genericData = new ArrayList<>();
+
     private boolean alwaysShow;
     private Function<Boolean, ParticleType<?>> factory;
     private int lifetime;
     private SingleQuadParticle.Layer layer;
-    private Vector3f position;
-    private Vector3f velocity;
 
     public ParticleBuilderImpl(Identifier id) {
         super(id);
@@ -35,9 +43,6 @@ public class ParticleBuilderImpl extends BuilderBaseImpl<ParticleType<?>> implem
         this.factory = SimpleParticleType::new;
         this.lifetime = 20;
         this.layer = SingleQuadParticle.Layer.OPAQUE;
-        this.data = new ArrayList<>();
-        this.position = new Vector3f(0, 0, 0);
-        this.velocity = new Vector3f(0, 0, 0);
     }
 
     @Override
@@ -61,8 +66,8 @@ public class ParticleBuilderImpl extends BuilderBaseImpl<ParticleType<?>> implem
     public ParticleBuilder spec(EngineParticleSpec spec) {
         this.lifetime = spec.lifetime();
         this.layer = spec.layer();
-        this.data.clear();
-        this.data.addAll(spec.data());
+        clearAllData();
+        spec.data().forEach(this::addData);
         return this;
     }
 
@@ -73,50 +78,56 @@ public class ParticleBuilderImpl extends BuilderBaseImpl<ParticleType<?>> implem
     }
 
     @Override
-    public ParticleBuilder position(Vector3f position) {
-        this.position = position;
-        return this;
-    }
-
-    @Override
-    public ParticleBuilder position(float x, float y, float z) {
-        this.position = new Vector3f(x, y, z);
-        return this;
-    }
-
-    @Override
-    public ParticleBuilder velocity(Vector3f velocity) {
-        this.velocity = velocity;
-        return this;
-    }
-
-    @Override
-    public ParticleBuilder velocity(float x, float y, float z) {
-        this.velocity = new Vector3f(x, y, z);
-        return this;
-    }
-
-    @Override
     public ParticleBuilder layer(SingleQuadParticle.Layer layer) {
         this.layer = layer;
         return this;
     }
 
     @Override
+    public ParticleBuilder addColorData(ParticleColorData data) {
+        colorData.add(data);
+        return this;
+    }
+
+    @Override
+    public ParticleBuilder addScaleData(ParticleScaleData data) {
+        scaleData.add(data);
+        return this;
+    }
+
+    @Override
+    public ParticleBuilder addVelocityData(ParticleVelocityData data) {
+        velocityData.add(data);
+        return this;
+    }
+
+    @Override
+    public ParticleBuilder addPositionData(ParticlePositionData data) {
+        positionData.add(data);
+        return this;
+    }
+
+    @Override
     public ParticleBuilder addData(GenericParticleData data) {
-        this.data.add(data);
+        switch (data) {
+            case ParticleColorData d -> colorData.add(d);
+            case ParticleScaleData d -> scaleData.add(d);
+            case ParticleVelocityData d -> velocityData.add(d);
+            case ParticlePositionData d -> positionData.add(d);
+            case null, default -> genericData.add(data);
+        }
         return this;
     }
 
     @Override
     public ParticleBuilder data(GenericParticleData... data) {
-        this.data.addAll(List.of(data));
+        for (GenericParticleData d : data) addData(d);
         return this;
     }
 
     @Override
     public ParticleBuilder data(List<GenericParticleData> data) {
-        this.data.addAll(data);
+        data.forEach(this::addData);
         return this;
     }
 
@@ -133,15 +144,48 @@ public class ParticleBuilderImpl extends BuilderBaseImpl<ParticleType<?>> implem
         return factory.apply(alwaysShow);
     }
 
-    public Vector3f getPosition() {
-        return position;
-    }
-
-    public Vector3f getVelocity() {
-        return velocity;
-    }
-
+    /**
+     * Returns a merged spec containing all typed and generic data in order:
+     * color → scale → velocity → position → generic.
+     */
     public EngineParticleSpec getSpec() {
-        return new EngineParticleSpec(lifetime, layer, data);
+        List<GenericParticleData> merged = new ArrayList<>();
+        merged.addAll(colorData);
+        merged.addAll(scaleData);
+        merged.addAll(velocityData);
+        merged.addAll(positionData);
+        merged.addAll(genericData);
+        return new EngineParticleSpec(lifetime, layer, merged);
+    }
+
+    /**
+     * Read-only views of each typed list (useful for tooling / serialization).
+     */
+    public List<ParticleColorData> getColorData() {
+        return List.copyOf(colorData);
+    }
+
+    public List<ParticleScaleData> getScaleData() {
+        return List.copyOf(scaleData);
+    }
+
+    public List<ParticleVelocityData> getVelocityData() {
+        return List.copyOf(velocityData);
+    }
+
+    public List<ParticlePositionData> getPositionData() {
+        return List.copyOf(positionData);
+    }
+
+    public List<GenericParticleData> getGenericData() {
+        return List.copyOf(genericData);
+    }
+
+    private void clearAllData() {
+        colorData.clear();
+        scaleData.clear();
+        velocityData.clear();
+        positionData.clear();
+        genericData.clear();
     }
 }

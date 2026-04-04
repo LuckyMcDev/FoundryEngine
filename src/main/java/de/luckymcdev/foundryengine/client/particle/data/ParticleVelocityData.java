@@ -4,14 +4,18 @@ import de.luckymcdev.foundryengine.client.particle.EngineParticle;
 import de.luckymcdev.foundryengine.common.easing.Easing;
 import org.joml.Vector3d;
 
-public final class ParticleSpeedData extends EasedGenericParticleData<Vector3d> {
+public final class ParticleVelocityData extends EasedGenericParticleData<Vector3d> {
 
-    public ParticleSpeedData(Vector3d startSpeed, Vector3d endSpeed) {
-        this(startSpeed, endSpeed, Easing.LINEAR);
+    public ParticleVelocityData(Vector3d velocity) {
+        this(velocity, velocity, Easing.LINEAR);
     }
 
-    public ParticleSpeedData(Vector3d startSpeed, Vector3d endSpeed, Easing easing) {
-        super(startSpeed, endSpeed, easing);
+    public ParticleVelocityData(Vector3d startVelocity, Vector3d endVelocity) {
+        this(startVelocity, endVelocity, Easing.LINEAR);
+    }
+
+    public ParticleVelocityData(Vector3d startVelocity, Vector3d endVelocity, Easing easing) {
+        super(startVelocity, endVelocity, easing);
     }
 
     @Override

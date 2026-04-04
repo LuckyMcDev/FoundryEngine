@@ -1,7 +1,7 @@
 package de.luckymcdev.foundryengine.client.particle.data;
 
-import de.luckymcdev.foundryengine.client.particle.AbstractEngineParticle;
+import de.luckymcdev.foundryengine.client.particle.EngineParticle;
 
 public interface GenericParticleData {
-    void apply(AbstractEngineParticle particle, int age, int lifetime);
+    void apply(EngineParticle particle, int age, int lifetime);
 }
