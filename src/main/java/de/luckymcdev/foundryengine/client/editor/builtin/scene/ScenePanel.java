@@ -19,6 +19,9 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ScenePanel extends EditorPanel {
     public static final ScenePanel INSTANCE = new ScenePanel();
@@ -103,17 +106,31 @@ public class ScenePanel extends EditorPanel {
             return;
         }
 
-        for (EngineSceneNode node : nodes) {
-            if (isFiltered(node, filter)) continue;
-            renderNodeEntry(node);
-        }
-    }
+        Map<String, List<EngineSceneNode>> groupedNodes = nodes.stream()
+                .filter(node -> !isFiltered(node, filter))
+                .collect(Collectors.groupingBy(EngineSceneNode::getTypeName));
 
-    private boolean isFiltered(EngineSceneNode node, String filter) {
-        if (filter.isEmpty()) return false;
-        String name = node.getDisplayName().toLowerCase();
-        String type = node.getTypeName().toLowerCase();
-        return !name.contains(filter) && !type.contains(filter);
+        if (groupedNodes.isEmpty()) {
+            ImGui.textDisabled("  No matching entities.");
+            return;
+        }
+
+        for (Map.Entry<String, List<EngineSceneNode>> entry : groupedNodes.entrySet()) {
+            String typeName = entry.getKey();
+            List<EngineSceneNode> typeNodes = entry.getValue();
+
+            String categoryLabel = iconForType(typeName) + "  " + typeName + " (" + typeNodes.size() + ")";
+
+            int categoryFlags = ImGuiTreeNodeFlags.SpanAvailWidth;
+            if (!filter.isEmpty()) categoryFlags |= ImGuiTreeNodeFlags.DefaultOpen;
+
+            if (ImGui.treeNodeEx("##cat_" + typeName, categoryFlags, categoryLabel)) {
+                for (EngineSceneNode node : typeNodes) {
+                    renderNodeEntry(node);
+                }
+                ImGui.treePop();
+            }
+        }
     }
 
     private void renderNodeEntry(EngineSceneNode node) {
@@ -122,17 +139,29 @@ public class ScenePanel extends EditorPanel {
 
         if (isSelected) ImGui.pushStyleColor(ImGuiCol.Header, 0.26f, 0.59f, 0.98f, 0.31f);
 
-        int flags = ImGuiTreeNodeFlags.Leaf | ImGuiTreeNodeFlags.NoTreePushOnOpen | ImGuiTreeNodeFlags.SpanAvailWidth;
+        int flags = ImGuiTreeNodeFlags.Leaf | ImGuiTreeNodeFlags.SpanAvailWidth;
         if (isSelected) flags |= ImGuiTreeNodeFlags.Selected;
 
-        ImGui.treeNodeEx("##node_" + uuid, flags, iconForType(node.getTypeName()) + "  " + node.getDisplayName());
+        boolean open = ImGui.treeNodeEx("##node_" + uuid, flags, ImIcons.FA.FA_CIRCLE + "  " + node.getDisplayName());
 
         if (isSelected) ImGui.popStyleColor();
 
-        if (ImGui.isItemClicked()) selectedUUID = isSelected ? null : uuid;
+        if (ImGui.isItemClicked()) {
+            selectedUUID = isSelected ? null : uuid;
+        }
 
         renderNodeContextMenu(node, isSelected);
-        renderRightAlignedTypeText(node.getTypeName());
+
+        if (open) {
+            ImGui.treePop();
+        }
+    }
+
+    private boolean isFiltered(EngineSceneNode node, String filter) {
+        if (filter.isEmpty()) return false;
+        String name = node.getDisplayName().toLowerCase();
+        String type = node.getTypeName().toLowerCase();
+        return !name.contains(filter) && !type.contains(filter);
     }
 
     private void renderNodeContextMenu(EngineSceneNode node, boolean isSelected) {
