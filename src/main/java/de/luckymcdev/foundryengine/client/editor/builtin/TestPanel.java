@@ -77,9 +77,9 @@ public class TestPanel extends Panel {
         ImGui.button("Drop Zone", -1, 50);
         CataloguePanel.acceptDrop(data -> {
             if (data.type().equals("blocks")) {
-                LOGGER.info("It's a block: " + data.id());
+                LOGGER.info("It's a block: {}", data.id());
             } else {
-                LOGGER.info("It's an item: " + data.id());
+                LOGGER.info("It's an item: {}", data.id());
             }
 
             if (data.tags().contains("foundry")) {
