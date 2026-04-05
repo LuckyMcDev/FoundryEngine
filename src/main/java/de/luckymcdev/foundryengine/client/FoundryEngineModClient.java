@@ -52,6 +52,7 @@ import org.slf4j.Logger;
 public class FoundryEngineModClient {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final IEventBus BUS = NeoForge.EVENT_BUS;
+    private boolean hasIconAutoExported = false;
 
     public FoundryEngineModClient(IEventBus modBus, ModContainer modContainer) {
         modBus.addListener(this::onClientSetup);
@@ -67,7 +68,6 @@ public class FoundryEngineModClient {
         BUS.addListener(this::onRegisterPanels);
         BUS.addListener(this::onRegisterPostPipelines);
         BUS.addListener(this::onClientTick);
-        BUS.addListener(this::onClientLogin);
 
         Config.registerClient(modContainer);
     }
@@ -159,23 +159,26 @@ public class FoundryEngineModClient {
     private void onClientTick(ClientTickEvent.Post event) {
         Client.getEditorManager().handleTick();
         EngineParticles.tick();
-    }
 
-    private void onClientLogin(ClientPlayerNetworkEvent.LoggingIn event) {
-        if (!ClientConfig.AUTO_EXPORT.get()) return;
-        LOGGER.debug("Auto-export: checking for missing icons");
-        double guiScale = Minecraft.getInstance().getWindow().getGuiScale();
-        ScreenIconExporter screen = new ScreenIconExporter(
-                event.getPlayer().registryAccess(),
-                guiScale,
-                null,
-                true
-        );
-        if (screen.hasWork()) {
-            Minecraft.getInstance().submitAsync(() -> Minecraft.getInstance().setScreen(screen));
-        } else {
-            LOGGER.debug("Auto-export: All icons are up to date.");
-            screen.onClose();
+        if (ClientConfig.AUTO_EXPORT.get() && !hasIconAutoExported && Minecraft.getInstance().level != null) {
+            if (Minecraft.getInstance().screen != null) return;
+
+            hasIconAutoExported = true;
+
+            LOGGER.info("Auto-export: Initializing icon generation...");
+            double guiScale = Minecraft.getInstance().getWindow().getGuiScale();
+            ScreenIconExporter screen = new ScreenIconExporter(
+                    Minecraft.getInstance().level.registryAccess(),
+                    guiScale,
+                    null,
+                    false
+            );
+
+            if (screen.hasWork()) {
+                Minecraft.getInstance().setScreen(screen);
+            } else {
+                LOGGER.info("Auto-export: All icons are up to date.");
+            }
         }
     }
 }

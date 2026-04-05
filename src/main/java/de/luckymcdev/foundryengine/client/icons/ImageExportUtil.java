@@ -7,9 +7,7 @@ import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.resources.Identifier;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.material.Fluid;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
@@ -21,7 +19,6 @@ import java.io.IOException;
 import java.util.List;
 
 public class ImageExportUtil {
-
     private static final Logger LOGGER = LogManager.getLogger();
 
     public static String escapeKey(String key) {
@@ -29,10 +26,6 @@ public class ImageExportUtil {
                 .replace(":", "__")
                 .replace("\"", "'")
                 .replace("/", "___");
-    }
-
-    public static String baseFilenameFromFluid(ResourceKey<Fluid> fluid) {
-        return escapeKey("fluid__" + fluid.identifier());
     }
 
     public static String baseFilenameFromItem(HolderLookup.Provider lookupProvider, ItemStack itemStack) {
@@ -68,7 +61,6 @@ public class ImageExportUtil {
                 int physicalY = row * imageSize;
 
                 try (NativeImage cropped = cropSubImage(fullImage, physicalX, physicalY, imageSize, imageSize)) {
-                    // Background removal
                     for (int cx = 0; cx < imageSize; cx++) {
                         for (int cy = 0; cy < imageSize; cy++) {
                             if (cropped.getPixel(cx, cy) == backgroundColor) {
@@ -84,7 +76,6 @@ public class ImageExportUtil {
                 }
             }
         } finally {
-            // IMPORTANT: The background thread must close the main screenshot to free native memory
             fullImage.close();
         }
     }
@@ -108,7 +99,6 @@ public class ImageExportUtil {
         return input.replaceAll("[^a-zA-Z0-9-_]", "_");
     }
 
-    // Record to hold the data we pass to the background threads
     public record ItemExportData(ItemStack stack, File namespaceDir, String filename) {
     }
 }

@@ -30,18 +30,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ScreenIconExporter extends Screen {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final int BACKGROUND_COLOR = -65537;
-
     private final HolderLookup.Provider lookupProvider;
     private final int imageSize;
     private final double guiScale;
-    @Nullable
-    private final String modIdFilter;
+    private final @Nullable String modIdFilter;
     private final boolean modIdRegex;
-
     private final List<ImageExportUtil.ItemExportData> pendingItems;
     private final int totalItems;
-    // Multithreading setup: use available processors minus 1 (keep one for the game loop)
-    private final ExecutorService executor = Executors.newFixedThreadPool(Math.max(1, Runtime.getRuntime().availableProcessors() - 1));
+    private final ExecutorService executor = Executors.newFixedThreadPool(Math.max(1, Runtime.getRuntime().availableProcessors() - 5));
     private final AtomicInteger activeIOJobs = new AtomicInteger(0);
     private int processedItems = 0;
 
@@ -80,7 +76,6 @@ public class ScreenIconExporter extends Screen {
     public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
         super.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
 
-        // Check if we are done rendering AND if background threads finished saving
         if (pendingItems.isEmpty()) {
             if (activeIOJobs.get() == 0) {
                 executor.shutdown();
@@ -97,13 +92,11 @@ public class ScreenIconExporter extends Screen {
 
         if (batchSize <= 0) return;
 
-        // Grab the next batch of items
         List<ImageExportUtil.ItemExportData> currentBatch = new ArrayList<>();
         for (int i = 0; i < batchSize && !pendingItems.isEmpty(); i++) {
             currentBatch.add(pendingItems.remove(0));
         }
 
-        // Render icons in a grid pattern
         guiGraphics.fill(0, 0, guiGraphics.guiWidth(), guiGraphics.guiHeight(), BACKGROUND_COLOR);
         for (int i = 0; i < currentBatch.size(); i++) {
             ImageExportUtil.ItemExportData data = currentBatch.get(i);
@@ -111,14 +104,13 @@ public class ScreenIconExporter extends Screen {
             float y = (float) ((i / columns) * logicalIconSize);
 
             renderItem(guiGraphics, data.stack(), x, y, (float) logicalIconSize);
-            exportNbtIfNeeded(data); // Saves the .txt file with full component info
+            exportNbtIfNeeded(data);
         }
 
         flushRender();
         processedItems += currentBatch.size();
         reportProgress(processedItems, totalItems);
 
-        // Capture the screen and pass the work to the ExecutorService
         activeIOJobs.incrementAndGet();
         Screenshot.takeScreenshot(Minecraft.getInstance().getMainRenderTarget(), (imageFull) -> {
             executor.submit(() -> {
@@ -133,7 +125,6 @@ public class ScreenIconExporter extends Screen {
 
     @Override
     protected void extractBlurredBackground(GuiGraphicsExtractor guiGraphics) {
-        // intentionally blank
     }
 
     private boolean shouldExport(Identifier location) {
@@ -147,7 +138,6 @@ public class ScreenIconExporter extends Screen {
         File outputDir = Common.CACHE.resolve("icons").resolve(String.valueOf(imageSize)).toFile();
         List<ImageExportUtil.ItemExportData> list = new ArrayList<>();
 
-        // Rebuild tabs to ensure we have all current item variants
         CreativeModeTabs.tryRebuildTabContents(
                 Minecraft.getInstance().player.connection.enabledFeatures(),
                 Minecraft.getInstance().options.operatorItemsTab().get(),
@@ -161,18 +151,14 @@ public class ScreenIconExporter extends Screen {
 
                 File namespaceDir = new File(outputDir, id.getNamespace());
 
-                // Generate the deterministic filename based on the item and its components
                 String filename = ImageExportUtil.baseFilenameFromItem(lookupProvider, stack);
                 filename = ImageExportUtil.sanitizeFilename(filename);
 
-                // --- CACHE CHECK ---
-                // Only add to the task list if the icon file doesn't exist yet
                 File iconFile = new File(namespaceDir, filename + ".png");
                 if (iconFile.exists()) {
                     continue;
                 }
 
-                // Create the directory only if we actually have something to save in it
                 if (!namespaceDir.exists()) namespaceDir.mkdirs();
 
                 list.add(new ImageExportUtil.ItemExportData(stack, namespaceDir, filename));
