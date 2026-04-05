@@ -1,8 +1,12 @@
 package de.luckymcdev.foundryengine.client.imgui;
 
+import com.mojang.blaze3d.opengl.GlTexture;
+import com.mojang.blaze3d.platform.NativeImage;
+import com.mojang.blaze3d.textures.GpuTextureView;
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcon;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
+import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.util.PermissionChecks;
 import de.luckymcdev.foundryengine.common.util.color.Color;
 import imgui.ImGui;
@@ -11,7 +15,14 @@ import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiStyleVar;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.StringSplitter;
+import net.minecraft.client.renderer.texture.AbstractTexture;
+import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.resources.Identifier;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * A Class which has static methods for
@@ -212,5 +223,49 @@ public class ImGuiUtils {
      */
     public static StringSplitter getStringSplitter() {
         return IM_GUI_SPLITTER;
+    }
+
+
+    public static Image getTexture(Identifier texture) {
+        return loadTexture("identifier", texture);
+    }
+
+    public static Image getTexture(File imageFile) {
+        return loadTexture("file", imageFile);
+    }
+
+    private static <T> Image loadTexture(String type, T idOrFile) {
+        int textureId = -1;
+        int width = -1;
+        int height = -1;
+        if (type.equals("identifier")) {
+            AbstractTexture texture = Minecraft.getInstance().getTextureManager().getTexture((Identifier) idOrFile);
+            GpuTextureView textureView = texture.getTextureView();
+            if (texture != null) {
+                GlTexture glTexture = (GlTexture) texture.getTexture();
+                textureId = glTexture.glId();
+                width = textureView.getWidth(textureView.baseMipLevel());
+                height = textureView.getHeight(textureView.baseMipLevel());
+            }
+        } else {
+            File file = (File) idOrFile;
+            try (InputStream is = new FileInputStream(file)) {
+                NativeImage image = NativeImage.read(is);
+                DynamicTexture texture = new DynamicTexture(() -> "EditorView_" + file.getName(), image);
+                GpuTextureView textureView = texture.getTextureView();
+                if (texture != null) {
+                    GlTexture glTexture = (GlTexture) texture.getTexture();
+                    textureId = glTexture.glId();
+                    width = textureView.getWidth(textureView.baseMipLevel());
+                    height = textureView.getHeight(textureView.baseMipLevel());
+                }
+            } catch (IOException e) {
+                Common.LOGGER.error("Failed to load texture for viewer: {}", file.getAbsolutePath(), e);
+            }
+        }
+        return new Image(textureId, width, height);
+    }
+
+    public record Image(int glId, int width, int height) {
     }
 }

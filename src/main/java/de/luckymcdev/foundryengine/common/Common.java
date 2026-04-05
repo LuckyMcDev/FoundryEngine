@@ -67,6 +67,7 @@ public abstract class Common {
     private static final NetworkManager NETWORK_MANAGER = new NetworkManager();
     private static final SceneManager SCENE_MANAGER = new SceneManager();
 
+    public static final int ICON_SIZE = 32;
     private Common() {
         throw new UtilityClassException();
     }

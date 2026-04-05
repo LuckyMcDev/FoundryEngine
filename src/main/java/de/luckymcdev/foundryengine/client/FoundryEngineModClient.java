@@ -20,6 +20,7 @@ import de.luckymcdev.foundryengine.client.editor.builtin.visuals.PostProcessPane
 import de.luckymcdev.foundryengine.client.editor.event.RegisterPanelEvent;
 import de.luckymcdev.foundryengine.client.event.RegisterRenderingStuffEvent;
 import de.luckymcdev.foundryengine.client.ext.ModPathBroadcaster;
+import de.luckymcdev.foundryengine.client.icons.ScreenIconExporter;
 import de.luckymcdev.foundryengine.client.opengl.preprocessing.IncludeGLSLPreProcessor;
 import de.luckymcdev.foundryengine.client.opengl.preprocessing.RegisterGLSLPreProcessorEvent;
 import de.luckymcdev.foundryengine.client.particle.EngineParticles;
@@ -27,7 +28,9 @@ import de.luckymcdev.foundryengine.client.post.RegisterPostPipelineEvent;
 import de.luckymcdev.foundryengine.client.post.pipeline.builtin.*;
 import de.luckymcdev.foundryengine.client.util.key.RegisterKeyBindingEvent;
 import de.luckymcdev.foundryengine.common.Common;
+import de.luckymcdev.foundryengine.config.ClientConfig;
 import de.luckymcdev.foundryengine.config.Config;
+import net.minecraft.client.Minecraft;
 import net.minecraft.gizmos.Gizmos;
 import net.minecraft.gizmos.TextGizmo;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
@@ -64,6 +67,7 @@ public class FoundryEngineModClient {
         BUS.addListener(this::onRegisterPanels);
         BUS.addListener(this::onRegisterPostPipelines);
         BUS.addListener(this::onClientTick);
+        BUS.addListener(this::onClientLogin);
 
         Config.registerClient(modContainer);
     }
@@ -144,7 +148,6 @@ public class FoundryEngineModClient {
         event.register(new CRTScanlinePipeline());
     }
 
-
     private void addClientReloadListener(AddClientReloadListenersEvent event) {
         event.addListener(Common.id("imgui_handler"), Client.getImGuiManager());
         event.addListener(Common.id("shader_manager"), Client.getShaderManager());
@@ -156,5 +159,23 @@ public class FoundryEngineModClient {
     private void onClientTick(ClientTickEvent.Post event) {
         Client.getEditorManager().handleTick();
         EngineParticles.tick();
+    }
+
+    private void onClientLogin(ClientPlayerNetworkEvent.LoggingIn event) {
+        if (!ClientConfig.AUTO_EXPORT.get()) return;
+        LOGGER.debug("Auto-export: checking for missing icons");
+        double guiScale = Minecraft.getInstance().getWindow().getGuiScale();
+        ScreenIconExporter screen = new ScreenIconExporter(
+                event.getPlayer().registryAccess(),
+                guiScale,
+                null,
+                true
+        );
+        if (screen.hasWork()) {
+            Minecraft.getInstance().submitAsync(() -> Minecraft.getInstance().setScreen(screen));
+        } else {
+            LOGGER.debug("Auto-export: All icons are up to date.");
+            screen.onClose();
+        }
     }
 }

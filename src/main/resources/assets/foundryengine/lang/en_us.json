@@ -1,3 +1,7 @@
 {
-  "key.foundryengine.editor": "Toggle Editor"
+  "key.foundryengine.editor": "Toggle Editor",
+  "gui.foundryengine.icons.finished": "Finished exporting",
+  "gui.foundryengine.icons.error": "Error while exporting",
+  "gui.foundryengine.icons.status": "Rendering %s / %s",
+  "gui.foundryengine.icons.metadata.success": "Exported metadata file to %s"
 }

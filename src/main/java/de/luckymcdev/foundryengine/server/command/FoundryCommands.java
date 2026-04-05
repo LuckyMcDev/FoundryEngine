@@ -19,7 +19,8 @@ public class FoundryCommands {
             new ReloadCommand(),
             new StageCommand(),
             new TestCommand(),
-            new EvalCommand()
+            new EvalCommand(),
+            new GenerateIconsCommand()
     );
 
     public static void registerAll(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext context) {

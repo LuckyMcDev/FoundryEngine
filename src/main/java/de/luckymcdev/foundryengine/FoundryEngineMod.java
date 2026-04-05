@@ -14,6 +14,7 @@ import de.luckymcdev.foundryengine.common.thread.RegisterEngineThreadEvent;
 import de.luckymcdev.foundryengine.common.vpacks.BundleVirtualPacks;
 import de.luckymcdev.foundryengine.common.vpacks.event.RegisterVirtualPackEvent;
 import de.luckymcdev.foundryengine.config.Config;
+import de.luckymcdev.foundryengine.server.command.FoundryCommands;
 import de.luckymcdev.foundryengine.server.packs.EngineRepositorySource;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -22,6 +23,7 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLConstructModEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
@@ -57,6 +59,7 @@ public class FoundryEngineMod {
         modBus.addListener(this::onConstruct);
         modBus.addListener(this::onAddPackFinders);
         modBus.addListener(this::onRegisterPayloadHandlers);
+        BUS.addListener(this::onRegisterCommands);
 
         BUS.post(new RegisterEngineThreadEvent());
 
@@ -107,6 +110,10 @@ public class FoundryEngineMod {
 
     private void onRegisterPayloadHandlers(RegisterPayloadHandlersEvent event) {
         Common.getNetworkManager().handleRegistration(event);
+    }
+
+    private void onRegisterCommands(RegisterCommandsEvent event) {
+        FoundryCommands.registerAll(event.getDispatcher(), event.getBuildContext());
     }
 
     private void onRegisterVirtualPacks(RegisterVirtualPackEvent.BeforeUser event) {
