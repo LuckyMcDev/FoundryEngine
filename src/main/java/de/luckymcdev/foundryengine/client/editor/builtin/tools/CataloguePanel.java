@@ -11,8 +11,10 @@ import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.config.ClientConfig;
 import imgui.ImGui;
+import imgui.flag.ImGuiMouseButton;
 import imgui.flag.ImGuiStyleVar;
 import imgui.type.ImString;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
@@ -62,7 +64,10 @@ public class CataloguePanel extends EditorPanel {
             if (ImGui.beginTabItem(ImIcons.FA.FA_BOX + " Items")) {
                 var list = BuiltInRegistries.ITEM.keySet().stream()
                         .sorted(Comparator.comparing(Identifier::getPath)).toList();
-                renderRegistryGrid("items", list, id -> id, false);
+                renderRegistryGrid("items", list, id -> id, false, id -> {
+                    if (Minecraft.getInstance().level == null) return;
+                    Minecraft.getInstance().player.connection.sendCommand("give @s " + id.toString());
+                });
                 ImGui.endTabItem();
             }
 
@@ -71,7 +76,8 @@ public class CataloguePanel extends EditorPanel {
                         .map(block -> BuiltInRegistries.ITEM.getKey(block.asItem()))
                         .distinct()
                         .sorted(Comparator.comparing(Identifier::getPath)).toList();
-                renderRegistryGrid("blocks", blockItems, id -> id, false);
+                renderRegistryGrid("blocks", blockItems, id -> id, false, id -> {
+                });
                 ImGui.endTabItem();
             }
 
@@ -83,37 +89,36 @@ public class CataloguePanel extends EditorPanel {
                         SpawnEggItem.byId(BuiltInRegistries.ENTITY_TYPE.get(entityId).get().value())
                                 .map(Holder::value)
                                 .map(BuiltInRegistries.ITEM::getKey)
-                                .orElse(SPAWNER_ID), false);
+                                .orElse(SPAWNER_ID), false, id -> {
+                    if (Minecraft.getInstance().level == null) return;
+                    var pos = Minecraft.getInstance().player.position();
+                    Minecraft.getInstance().player.connection.sendCommand(
+                            String.format("summon %s %.2f %.2f %.2f", id, pos.x, pos.y, pos.z).replace(",", ".")
+                    );
+                });
                 ImGui.endTabItem();
             }
 
             if (ImGui.beginTabItem(ImIcons.FA.FA_DROPLET + " Fluids")) {
                 var list = BuiltInRegistries.FLUID.keySet().stream()
                         .sorted(Comparator.comparing(Identifier::getPath)).toList();
-                renderRegistryGrid("fluids", list, id -> BUCKET_ID, false);
+                renderRegistryGrid("fluids", list, id -> BUCKET_ID, false, id -> {
+                });
                 ImGui.endTabItem();
             }
 
             if (ImGui.beginTabItem(ImIcons.FA.FA_TAG + " Tags")) {
-                BuiltInRegistries.REGISTRY.entrySet().stream()
-                        .sorted(Comparator.comparing(e -> e.getKey().identifier().getPath()))
-                        .forEach(entry -> {
-                            var registry = entry.getValue();
-                            var tags = registry.getTags().toList();
-
-                            if (tags.isEmpty()) return;
-
-                            String registryName = entry.getKey().identifier().getPath().toUpperCase();
-
-                            List<Identifier> tagIds = tags.stream()
-                                    .map(t -> t.key().location())
-                                    .sorted(Comparator.comparing(Identifier::getPath))
-                                    .toList();
-
-                            renderRegistryGrid("tags_" + registryName, tagIds, id -> NAMETAG_ID, true);
-
-                            ImGui.spacing();
-                        });
+                List<Identifier> allTagIds = BuiltInRegistries.REGISTRY.entrySet().stream()
+                        .flatMap(entry -> {
+                            var tags = entry.getValue().getTags().toList();
+                            if (tags.isEmpty()) return java.util.stream.Stream.empty();
+                            return tags.stream().map(t -> t.key().location());
+                        })
+                        .sorted(Comparator.comparing(Identifier::getPath))
+                        .distinct()
+                        .toList();
+                renderRegistryGrid("tags", allTagIds, id -> NAMETAG_ID, true, id -> {
+                });
                 ImGui.endTabItem();
             }
 
@@ -129,7 +134,7 @@ public class CataloguePanel extends EditorPanel {
         ImGui.separator();
     }
 
-    private void renderRegistryGrid(String typeId, List<Identifier> entries, UnaryOperator<Identifier> iconProvider, boolean textOnIcon) {
+    private void renderRegistryGrid(String typeId, List<Identifier> entries, UnaryOperator<Identifier> iconProvider, boolean textOnIcon, Consumer<Identifier> onRightClick) {
         String filter = searchBuffer.get().toLowerCase();
 
         ImGui.beginChild("##grid_" + typeId, 0, 0, false);
@@ -152,6 +157,10 @@ public class CataloguePanel extends EditorPanel {
                 if (textOnIcon) drawLetterOverlay(location);
             } else {
                 drawFallback(iconToLoad);
+            }
+
+            if (ImGui.isItemClicked(ImGuiMouseButton.Right)) {
+                onRightClick.accept(location);
             }
 
             CataloguePayload payload = new CataloguePayload(name, typeId, List.of("foundry", "editor"));
