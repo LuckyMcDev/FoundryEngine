@@ -11,10 +11,8 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.common.CreativeModeTabRegistry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -138,31 +136,25 @@ public class ScreenIconExporter extends Screen {
         File outputDir = Common.CACHE.resolve("icons").resolve(String.valueOf(imageSize)).toFile();
         List<ImageExportUtil.ItemExportData> list = new ArrayList<>();
 
-        CreativeModeTabs.tryRebuildTabContents(
-                Minecraft.getInstance().player.connection.enabledFeatures(),
-                Minecraft.getInstance().options.operatorItemsTab().get(),
-                Minecraft.getInstance().level.registryAccess()
-        );
+        for (Item item : BuiltInRegistries.ITEM.stream().toList()) {
+            Identifier id = BuiltInRegistries.ITEM.getKey(item);
+            ItemStack stack = new ItemStack(item);
 
-        for (CreativeModeTab tab : CreativeModeTabRegistry.getSortedCreativeModeTabs()) {
-            for (ItemStack stack : tab.getDisplayItems()) {
-                Identifier id = BuiltInRegistries.ITEM.getKey(stack.getItem());
-                if (!shouldExport(id)) continue;
+            if (!shouldExport(id)) continue;
 
-                File namespaceDir = new File(outputDir, id.getNamespace());
+            File namespaceDir = new File(outputDir, id.getNamespace());
 
-                String filename = ImageExportUtil.baseFilenameFromItem(lookupProvider, stack);
-                filename = ImageExportUtil.sanitizeFilename(filename);
+            String filename = ImageExportUtil.baseFilenameFromItem(lookupProvider, stack);
+            filename = ImageExportUtil.sanitizeFilename(filename);
 
-                File iconFile = new File(namespaceDir, filename + ".png");
-                if (iconFile.exists()) {
-                    continue;
-                }
-
-                if (!namespaceDir.exists()) namespaceDir.mkdirs();
-
-                list.add(new ImageExportUtil.ItemExportData(stack, namespaceDir, filename));
+            File iconFile = new File(namespaceDir, filename + ".png");
+            if (iconFile.exists()) {
+                continue;
             }
+
+            if (!namespaceDir.exists()) namespaceDir.mkdirs();
+
+            list.add(new ImageExportUtil.ItemExportData(stack, namespaceDir, filename));
         }
 
         LOGGER.info("Export Cache: Found {} missing icons to generate.", list.size());
