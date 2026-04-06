@@ -31,7 +31,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.input.InputQuirks;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.util.Util;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
@@ -321,13 +321,10 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
         dispose();
     }
 
-    /**
-     * Reloads the Font if the Client Resources are Reloaded.
-     *
-     * @param resourceManager passed by {@link ResourceManagerReloadListener}
-     */
     @Override
-    public void onResourceManagerReload(@NotNull ResourceManager resourceManager) {
-        loadFonts(resourceManager);
+    public void onResourceManagerReload(ResourceManager resourceManager) {
+        if (Util.getPlatform() != Util.OS.LINUX) {
+            loadFonts(resourceManager);
+        }
     }
 }
