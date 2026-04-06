@@ -3,8 +3,10 @@ package de.luckymcdev.foundryengine.mixin.entity;
 import de.luckymcdev.foundryengine.common.scene.EngineSceneNode;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector2f;
@@ -31,6 +33,15 @@ public abstract class EntityMixin implements EngineSceneNode {
 
     @Shadow
     public abstract EntityType<?> getType();
+
+    @Shadow
+    private Level level;
+
+    @Shadow
+    public abstract void kill(ServerLevel level);
+
+    @Shadow
+    public abstract Level level();
 
     @Override
     public String getUUID() {
@@ -65,6 +76,8 @@ public abstract class EntityMixin implements EngineSceneNode {
 
     @Override
     public void remove() {
-        this.discard();
+        if (this.level instanceof ServerLevel sLevel) {
+            this.kill(sLevel);
+        }
     }
 }
