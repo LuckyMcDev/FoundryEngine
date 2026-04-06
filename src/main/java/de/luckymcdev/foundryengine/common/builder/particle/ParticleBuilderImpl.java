@@ -1,9 +1,9 @@
 package de.luckymcdev.foundryengine.common.builder.particle;
 
 import de.luckymcdev.foundryengine.api.builder.particle.ParticleBuilder;
+import de.luckymcdev.foundryengine.api.builder.particle.ParticleLayer;
 import de.luckymcdev.foundryengine.client.particle.data.*;
 import de.luckymcdev.foundryengine.common.builder.BuilderBaseImpl;
-import net.minecraft.client.particle.SingleQuadParticle;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.Registries;
@@ -17,11 +17,8 @@ import java.util.function.Function;
 /**
  * Particle builder implementation for registering ParticleTypes.
  *
- * <p>Data modifiers are stored in four typed lists (color, scale, velocity, position)
- * plus a generic catch-all list for custom {@link GenericParticleData} implementations.
- * All five lists are merged when {@link #mergedData()} is called so that
- * {@link de.luckymcdev.foundryengine.client.particle.EngineParticle} receives a
- * single flat list, preserving insertion order within each category.</p>
+ * <p>Uses {@link ParticleLayer} instead of the client-only
+ * {@code SingleQuadParticle.Layer} so this class is safe to load on the dedicated server.</p>
  */
 public class ParticleBuilderImpl extends BuilderBaseImpl<ParticleType<?>> implements ParticleBuilder {
     private final List<ParticleColorData> colorData = new ArrayList<>();
@@ -33,7 +30,7 @@ public class ParticleBuilderImpl extends BuilderBaseImpl<ParticleType<?>> implem
     private boolean alwaysShow;
     private Function<Boolean, ParticleType<?>> factory;
     private int lifetime;
-    private SingleQuadParticle.Layer layer;
+    private ParticleLayer layer;
 
     public ParticleBuilderImpl(Identifier id) {
         super(id);
@@ -41,7 +38,7 @@ public class ParticleBuilderImpl extends BuilderBaseImpl<ParticleType<?>> implem
         this.alwaysShow = false;
         this.factory = SimpleParticleType::new;
         this.lifetime = 20;
-        this.layer = SingleQuadParticle.Layer.OPAQUE;
+        this.layer = ParticleLayer.OPAQUE;
     }
 
     @Override
@@ -68,7 +65,7 @@ public class ParticleBuilderImpl extends BuilderBaseImpl<ParticleType<?>> implem
     }
 
     @Override
-    public ParticleBuilder layer(SingleQuadParticle.Layer layer) {
+    public ParticleBuilder layer(ParticleLayer layer) {
         this.layer = layer;
         return this;
     }
@@ -126,7 +123,10 @@ public class ParticleBuilderImpl extends BuilderBaseImpl<ParticleType<?>> implem
         return lifetime;
     }
 
-    public SingleQuadParticle.Layer getLayer() {
+    /**
+     * Returns the server-safe layer enum. Use {@link ParticleLayer#toMinecraft()} on the client.
+     */
+    public ParticleLayer getLayer() {
         return layer;
     }
 
@@ -144,9 +144,6 @@ public class ParticleBuilderImpl extends BuilderBaseImpl<ParticleType<?>> implem
         return merged;
     }
 
-    /**
-     * Read-only views of each typed list (useful for tooling / serialization).
-     */
     public List<ParticleColorData> getColorData() {
         return List.copyOf(colorData);
     }
@@ -164,14 +161,5 @@ public class ParticleBuilderImpl extends BuilderBaseImpl<ParticleType<?>> implem
     }
 
     public List<GenericParticleData> getGenericData() {
-        return List.copyOf(genericData);
-    }
-
-    private void clearAllData() {
-        colorData.clear();
-        scaleData.clear();
-        velocityData.clear();
-        positionData.clear();
-        genericData.clear();
-    }
+        return List.copyOf(genericData); }
 }

@@ -1,7 +1,12 @@
 package de.luckymcdev.foundryengine.client.particle.data;
 
-import de.luckymcdev.foundryengine.client.particle.EngineParticle;
-
+/**
+ * Server-safe particle data interface.
+ *
+ * <p>Uses {@link ParticleContext} instead of {@code EngineParticle} so that
+ * implementations and this interface itself can be safely loaded on the dedicated server.
+ * No {@code net.minecraft.client.*} imports anywhere in this hierarchy.</p>
+ */
 public interface GenericParticleData {
-    void apply(EngineParticle particle, int age, int lifetime);
+    void apply(ParticleContext particle, int age, int lifetime);
 }

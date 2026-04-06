@@ -1,6 +1,5 @@
 package de.luckymcdev.foundryengine.client.particle.data;
 
-import de.luckymcdev.foundryengine.client.particle.EngineParticle;
 import de.luckymcdev.foundryengine.common.easing.Easing;
 import org.joml.Vector3d;
 
@@ -28,7 +27,7 @@ public final class ParticleVelocityData extends EasedGenericParticleData<Vector3
     }
 
     @Override
-    protected void applyValue(EngineParticle particle, Vector3d value) {
+    protected void applyValue(ParticleContext particle, Vector3d value) {
         particle.setParticleSpeed(value.x, value.y, value.z);
     }
 }

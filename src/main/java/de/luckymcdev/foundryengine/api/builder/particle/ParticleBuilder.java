@@ -5,7 +5,6 @@ import de.luckymcdev.foundryengine.client.particle.data.*;
 import de.luckymcdev.foundryengine.common.builder.particle.ParticleBuilderImpl;
 import de.luckymcdev.foundryengine.common.easing.Easing;
 import de.luckymcdev.foundryengine.common.util.color.Color;
-import net.minecraft.client.particle.SingleQuadParticle;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.registries.RegisterEvent;
@@ -53,7 +52,7 @@ public interface ParticleBuilder extends BuilderBase<ParticleType<?>> {
     /**
      * Sets the particle render layer.
      */
-    ParticleBuilder layer(SingleQuadParticle.Layer layer);
+    ParticleBuilder layer(ParticleLayer layer);
 
     /**
      * Appends a single generic data modifier.

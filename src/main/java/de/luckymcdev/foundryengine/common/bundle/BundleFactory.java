@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Factory responsible for constructing Bundle instances with all their dependencies.
@@ -41,28 +42,15 @@ public class BundleFactory {
         this.configDirectory = configDirectory;
     }
 
-    /**
-     * Creates a complete Bundle from the given info and directory.
-     *
-     * @param info      Bundle metadata
-     * @param bundleDir Root directory of the bundle
-     * @param zipFs     Optional ZIP FileSystem (null for folder bundles)
-     * @return A fully initialized Bundle
-     * @throws IOException if bundle construction fails
-     */
     public Bundle createBundle(BundleInfo info, Path bundleDir, @Nullable FileSystem zipFs) throws IOException {
         IEventBus eventBus = NeoForge.EVENT_BUS;
         IEventBus bundleBus = createBundleBus(info);
-        bridgeEvents(bundleBus);
+        bridgeEvents(info, bundleBus);
 
         BundleFiles files = BundleFiles.builder().build(bundleDir, zipFs);
-
         GroovyScriptEngine engine = scriptEngineFactory.create(files);
-
         BundleRegistryQuery registryQuery = new BundleRegistryQuery(info.id());
-
         BundleCreativeModeTab creativeTab = new BundleCreativeModeTab(info.id(), modBus, registryQuery);
-
         BundleConfig config = new BundleConfig(info.id(), configDirectory);
 
         List<BundleEntrypoint> entrypoints = scriptLoader.loadScripts(
@@ -72,26 +60,35 @@ public class BundleFactory {
         return new Bundle(info, files, engine, registryQuery, eventBus, bundleBus, entrypoints, creativeTab, config);
     }
 
-    private void bridgeEvents(IEventBus bundleBus) {
-        registerRegistryBridge(bundleBus);
+    private void bridgeEvents(BundleInfo info, IEventBus bundleBus) {
+        registerRegistryBridge(info, bundleBus);
     }
 
-    /**
-     * Bridges NeoForge's RegisterEvent on the global bus into FoundryEngine's
-     * RegistryEvent on the bundle bus, so scripts can use the cleaner API.
-     */
-    private void registerRegistryBridge(IEventBus bundleBus) {
-        modBus.addListener((RegisterEvent event) -> bundleBus.post(new RegistryEvent(event, modBus)));
+    private void registerRegistryBridge(BundleInfo info, IEventBus bundleBus) {
+        AtomicBoolean faulted = new AtomicBoolean(false);
+
+        modBus.addListener((RegisterEvent event) -> {
+            if (faulted.get()) return;
+            try {
+                bundleBus.post(new RegistryEvent(event, modBus));
+            } catch (Throwable t) {
+                if (faulted.compareAndSet(false, true)) {
+                    LOGGER.error("Bundle '{}' faulted during RegistryEvent and will be skipped for remaining registries.",
+                            info.id(), t);
+                }
+            }
+        });
     }
 
     private IEventBus createBundleBus(BundleInfo info) {
         return BusBuilder.builder()
                 .allowPerPhasePost()
-                .setExceptionHandler((bus, event, listeners, index, throwable) ->
-                        LOGGER.error("Bundle '{}' faulted during event {}: {}",
-                                info.id(),
-                                event.getClass().getSimpleName(),
-                                throwable.getMessage()))
+                .setExceptionHandler((bus, event, listeners, index, throwable) -> {
+                    // The bridge listener above handles logging and fault tracking.
+                    // Re-throw so the try/catch in registerRegistryBridge can catch it.
+                    if (throwable instanceof RuntimeException re) throw re;
+                    throw new RuntimeException(throwable);
+                })
                 .build();
     }
 

@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.client;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.api.event.RegistryEvent;
+import de.luckymcdev.foundryengine.client.command.FoundryCommandsClient;
 import de.luckymcdev.foundryengine.client.debug.renderer.SimpleDebugScreenRenderer;
 import de.luckymcdev.foundryengine.client.debug.screen.BundleDebugEntry;
 import de.luckymcdev.foundryengine.client.debug.screen.GameStagesDebugEntry;
@@ -59,6 +60,7 @@ public class FoundryEngineModClient {
         BUS.addListener(this::onRegisterKeyBinding);
         BUS.addListener(this::onRegisterPanels);
         BUS.addListener(this::onClientTick);
+        BUS.addListener(FoundryCommandsClient::onRegisterClientCommands);
 
         Config.registerClient(modContainer);
     }

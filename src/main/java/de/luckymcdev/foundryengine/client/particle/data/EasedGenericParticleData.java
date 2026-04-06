@@ -1,6 +1,5 @@
 package de.luckymcdev.foundryengine.client.particle.data;
 
-import de.luckymcdev.foundryengine.client.particle.EngineParticle;
 import de.luckymcdev.foundryengine.common.easing.Easing;
 
 /**
@@ -39,14 +38,14 @@ public abstract class EasedGenericParticleData<T> implements GenericParticleData
     }
 
     @Override
-    public final void apply(EngineParticle particle, int age, int lifetime) {
+    public final void apply(ParticleContext particle, int age, int lifetime) {
         applyValue(particle, valueForAge(age, lifetime));
     }
 
     /**
      * Applies the interpolated value to the particle.
      */
-    protected abstract void applyValue(EngineParticle particle, T value);
+    protected abstract void applyValue(ParticleContext particle, T value);
 
     public T getStart() {
         return start;

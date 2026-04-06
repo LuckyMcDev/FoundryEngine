@@ -1,6 +1,5 @@
 package de.luckymcdev.foundryengine.client.particle.data;
 
-import de.luckymcdev.foundryengine.client.particle.EngineParticle;
 import de.luckymcdev.foundryengine.common.easing.Easing;
 
 public final class ParticleScaleData extends EasedGenericParticleData<Float> {
@@ -23,7 +22,7 @@ public final class ParticleScaleData extends EasedGenericParticleData<Float> {
     }
 
     @Override
-    protected void applyValue(EngineParticle particle, Float value) {
+    protected void applyValue(ParticleContext particle, Float value) {
         particle.applyScale(value);
     }
 }

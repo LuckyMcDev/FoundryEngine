@@ -1,6 +1,5 @@
 package de.luckymcdev.foundryengine.client.particle.data;
 
-import de.luckymcdev.foundryengine.client.particle.EngineParticle;
 import de.luckymcdev.foundryengine.common.easing.Easing;
 import de.luckymcdev.foundryengine.common.util.color.Color;
 
@@ -24,7 +23,7 @@ public final class ParticleColorData extends EasedGenericParticleData<Color> {
     }
 
     @Override
-    protected void applyValue(EngineParticle particle, Color value) {
+    protected void applyValue(ParticleContext particle, Color value) {
         particle.applyColor(value);
     }
 }
