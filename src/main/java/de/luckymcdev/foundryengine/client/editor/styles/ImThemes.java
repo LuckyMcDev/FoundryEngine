@@ -17,4 +17,22 @@ public class ImThemes {
     public static final List<ImTheme> ALL = List.of(
             BESS_DARK_IM_THEME, CATPUCCIN_MOCHA_IM_THEME, MODERN_DARK_IM_THEME, DARK_IM_THEME, CHERRY_IM_THEME, VIDLIB_IM_THEME, VEIL_IM_THEME
     );
+
+    public static String getAvailableThemeNames() {
+        StringBuilder names = new StringBuilder();
+        for (ImTheme theme : ImThemes.ALL) {
+            if (!names.isEmpty()) names.append(", ");
+            names.append(theme.getName());
+        }
+        return names.toString();
+    }
+
+    public static ImTheme getThemeByName(String themeName) {
+        for (ImTheme theme : ImThemes.ALL) {
+            if (theme.getName().equalsIgnoreCase(themeName)) {
+                return theme;
+            }
+        }
+        return ImThemes.BESS_DARK_IM_THEME;
+    }
 }

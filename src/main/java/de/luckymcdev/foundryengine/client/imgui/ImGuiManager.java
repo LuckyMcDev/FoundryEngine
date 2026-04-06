@@ -16,6 +16,7 @@ import de.luckymcdev.foundryengine.client.imgui.backend.ImGuiImplGl3;
 import de.luckymcdev.foundryengine.client.imgui.backend.ImGuiImplGlfw;
 import de.luckymcdev.foundryengine.client.imgui.graphics.ImGuiGraphicsStack;
 import de.luckymcdev.foundryengine.common.font.TTFFile;
+import de.luckymcdev.foundryengine.config.ClientConfig;
 import de.luckymcdev.foundryengine.mixin.MinecraftMixin;
 import de.luckymcdev.foundryengine.mixin.render.GameRendererMixin;
 import imgui.*;
@@ -54,6 +55,8 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
     private final ImGuiImplGl3 imGuiImplGl3 = new ImGuiImplGl3();
     private final ImGuiGraphicsStack graphicsStack = new ImGuiGraphicsStack();
     private final AtomicBoolean enabled = new AtomicBoolean(false);
+    private String imguiCache;
+
     /**
      * The Glyph Ranges for the {@link TTFFile#JETBRAINS_MONO_NERDFONT_REGULAR} Font.
      */
@@ -121,7 +124,8 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
         if (!fonts.isBuilt()) fonts.build();
 
         ImGui.styleColorsDark();
-        setTheme(ImThemes.BESS_DARK_IM_THEME);
+
+        loadThemeFromConfig();
     }
 
     @Override
@@ -150,9 +154,28 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
         return enabled.get();
     }
 
+    private void loadThemeFromConfig() {
+        String themeName = ClientConfig.SELECTED_THEME.get();
+        ImTheme theme = ImThemes.getThemeByName(themeName);
+        setTheme(theme);
+    }
+
+    public void saveThemeToConfig(ImTheme theme) {
+        ClientConfig.SELECTED_THEME.set(theme.getName());
+        ClientConfig.SELECTED_THEME.save();
+    }
+
     public void setTheme(ImTheme theme) {
+        setTheme(theme, true);
+    }
+
+    public void setTheme(ImTheme theme, boolean saveToConfig) {
         theme.apply(ImGui.getStyle());
         this.currentTheme = theme;
+        if (saveToConfig) {
+            saveThemeToConfig(theme);
+        }
+        LOGGER.info("Applied theme '{}'", theme.getName());
     }
 
     public ImTheme getCurrentTheme() {

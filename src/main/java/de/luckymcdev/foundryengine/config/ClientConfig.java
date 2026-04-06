@@ -1,5 +1,6 @@
 package de.luckymcdev.foundryengine.config;
 
+import de.luckymcdev.foundryengine.client.editor.styles.ImThemes;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
@@ -18,7 +19,9 @@ public final class ClientConfig extends EngineConfig {
             BUILDER.comment("How Large the icon should be, default is 64")
                     .defineInRange("iconSize", 64, 16, 256);
 
-
+    public static final ModConfigSpec.ConfigValue<String> SELECTED_THEME =
+            BUILDER.comment("The currently selected ImGui theme. Available themes: " + ImThemes.getAvailableThemeNames())
+                    .define("selectedTheme", ImThemes.BESS_DARK_IM_THEME.getName());
 
     @Override
     public ModConfigSpec spec() {
