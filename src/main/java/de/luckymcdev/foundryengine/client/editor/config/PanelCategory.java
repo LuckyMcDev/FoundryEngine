@@ -11,7 +11,6 @@ public enum PanelCategory {
     TOOLS("Tools", ImIcons.FAE.FAE_TOOLS),
     VIEW("View", ImIcons.FA.FA_EYE),
 
-    EDITOR_VISUALS("Visuals", ImIcons.FA.FA_CAMERA, EDITOR),
     EDITOR_EXPLORER("Explorer", ImIcons.FA.FA_FOLDER, EDITOR),
     EDITOR_FILES("Files", ImIcons.FA.FA_FILE, EDITOR),
     EDITOR_TOOLS("Tools", ImIcons.FA.FA_TOOLBOX, EDITOR),

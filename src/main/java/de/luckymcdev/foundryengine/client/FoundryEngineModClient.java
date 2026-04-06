@@ -5,7 +5,6 @@ import de.luckymcdev.foundryengine.api.event.RegistryEvent;
 import de.luckymcdev.foundryengine.client.debug.renderer.SimpleDebugScreenRenderer;
 import de.luckymcdev.foundryengine.client.debug.screen.BundleDebugEntry;
 import de.luckymcdev.foundryengine.client.debug.screen.GameStagesDebugEntry;
-import de.luckymcdev.foundryengine.client.debug.screen.PostProcessDebugEntry;
 import de.luckymcdev.foundryengine.client.editor.builtin.MainEditor;
 import de.luckymcdev.foundryengine.client.editor.builtin.TestPanel;
 import de.luckymcdev.foundryengine.client.editor.builtin.explorer.FileExplorerPanel;
@@ -16,16 +15,11 @@ import de.luckymcdev.foundryengine.client.editor.builtin.tools.ConsolePanel;
 import de.luckymcdev.foundryengine.client.editor.builtin.tools.MinecraftToolsPanel;
 import de.luckymcdev.foundryengine.client.editor.builtin.tools.StopwatchPanel;
 import de.luckymcdev.foundryengine.client.editor.builtin.view.InfoPanel;
-import de.luckymcdev.foundryengine.client.editor.builtin.visuals.PostProcessPanel;
 import de.luckymcdev.foundryengine.client.editor.event.RegisterPanelEvent;
 import de.luckymcdev.foundryengine.client.event.RegisterRenderingStuffEvent;
 import de.luckymcdev.foundryengine.client.ext.ModPathBroadcaster;
 import de.luckymcdev.foundryengine.client.icons.ScreenIconExporter;
-import de.luckymcdev.foundryengine.client.opengl.preprocessing.IncludeGLSLPreProcessor;
-import de.luckymcdev.foundryengine.client.opengl.preprocessing.RegisterGLSLPreProcessorEvent;
 import de.luckymcdev.foundryengine.client.particle.EngineParticles;
-import de.luckymcdev.foundryengine.client.post.RegisterPostPipelineEvent;
-import de.luckymcdev.foundryengine.client.post.pipeline.builtin.*;
 import de.luckymcdev.foundryengine.client.util.key.RegisterKeyBindingEvent;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.config.ClientConfig;
@@ -33,7 +27,6 @@ import de.luckymcdev.foundryengine.config.Config;
 import net.minecraft.client.Minecraft;
 import net.minecraft.gizmos.Gizmos;
 import net.minecraft.gizmos.TextGizmo;
-import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -64,9 +57,7 @@ public class FoundryEngineModClient {
         modBus.addListener(this::onRegistry);
 
         BUS.addListener(this::onRegisterKeyBinding);
-        BUS.addListener(this::onRegisterGLSLPreProcessors);
         BUS.addListener(this::onRegisterPanels);
-        BUS.addListener(this::onRegisterPostPipelines);
         BUS.addListener(this::onClientTick);
 
         Config.registerClient(modContainer);
@@ -83,7 +74,6 @@ public class FoundryEngineModClient {
 
         event.enqueueWork(() -> {
             BUS.post(new RegisterRenderingStuffEvent(Client.getResourceManager()));
-            BUS.post(new RegisterGLSLPreProcessorEvent());
             BUS.post(new RegisterPanelEvent());
         });
     }
@@ -102,13 +92,8 @@ public class FoundryEngineModClient {
     private void onRegisterClientPayloadHandlers(RegisterClientPayloadHandlersEvent event) {
     }
 
-    private void onRegisterGLSLPreProcessors(RegisterGLSLPreProcessorEvent event) {
-        event.register(new IncludeGLSLPreProcessor());
-    }
-
     private void onRegisterDebugEntry(RegisterDebugEntriesEvent event) {
         event.register(Common.id("bundles_info"), new BundleDebugEntry(Common.getBundleManager()));
-        event.register(Common.id("post_info"), new PostProcessDebugEntry(Client.getPostProcessManager()));
         event.register(Common.id("gamestages_info"), new GameStagesDebugEntry());
     }
 
@@ -126,7 +111,6 @@ public class FoundryEngineModClient {
     }
 
     private void onRegisterPanels(RegisterPanelEvent event) {
-        event.register(PostProcessPanel.INSTANCE);
         event.register(TestPanel.INSTANCE);
         event.register(FileExplorerPanel.INSTANCE);
         event.register(ResourceExplorerPanel.INSTANCE);
@@ -139,21 +123,8 @@ public class FoundryEngineModClient {
         event.register(CataloguePanel.INSTANCE);
     }
 
-    private void onRegisterPostPipelines(RegisterPostPipelineEvent event) {
-        event.register(new GrayscalePipeline());
-        event.register(new DepthVisualizePipeline());
-        event.register(new AsciiPostProcessPipeline());
-        event.register(new UpsideDownPipeline());
-        event.register(new InvertedColorsPipeline());
-        event.register(new CRTScanlinePipeline());
-    }
-
     private void addClientReloadListener(AddClientReloadListenersEvent event) {
         event.addListener(Common.id("imgui_handler"), Client.getImGuiManager());
-        event.addListener(Common.id("shader_manager"), Client.getShaderManager());
-        event.addListener(Common.id("post_pipeline_init"), (ResourceManagerReloadListener) rm ->
-                BUS.post(new RegisterPostPipelineEvent(Client.getPostProcessManager()))
-        );
     }
 
     private void onClientTick(ClientTickEvent.Post event) {

@@ -10,11 +10,7 @@ import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.client.editor.EditorManager;
 import de.luckymcdev.foundryengine.client.editor.MainMenu;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiManager;
-import de.luckymcdev.foundryengine.client.opengl.OpenGlStack;
-import de.luckymcdev.foundryengine.client.opengl.framebuffer.FrameBufferManager;
-import de.luckymcdev.foundryengine.client.opengl.shaders.ShaderManager;
 import de.luckymcdev.foundryengine.client.particle.ParticleManager;
-import de.luckymcdev.foundryengine.client.post.PostProcessManager;
 import de.luckymcdev.foundryengine.client.util.key.KeyBinding;
 import de.luckymcdev.foundryengine.client.util.key.KeyBindingManager;
 import de.luckymcdev.foundryengine.common.exceptions.EngineException;
@@ -81,11 +77,7 @@ public abstract class Client {
             }
     );
     // Core Systems
-    private static final OpenGlStack OPEN_GL_STACK = new OpenGlStack();
     private static final Logger LOGGER = LogUtils.getLogger();
-    private static final ShaderManager SHADER_MANAGER = new ShaderManager();
-    private static final FrameBufferManager FRAME_BUFFER_MANAGER = new FrameBufferManager();
-    private static final PostProcessManager POST_PROCESS_MANAGER = new PostProcessManager();
     private static final ImGuiManager IMGUI_MANAGER = new ImGuiManager();
     private static final MainMenu MAIN_MENU = new MainMenu();
     private static final EditorManager EDITOR_MANAGER = new EditorManager();
@@ -180,22 +172,6 @@ public abstract class Client {
 
     public static EditorManager getEditorManager() {
         return EDITOR_MANAGER;
-    }
-
-    public static OpenGlStack getOpenGlStack() {
-        return OPEN_GL_STACK;
-    }
-
-    public static PostProcessManager getPostProcessManager() {
-        return POST_PROCESS_MANAGER;
-    }
-
-    public static FrameBufferManager getFrameBufferManager() {
-        return FRAME_BUFFER_MANAGER;
-    }
-
-    public static ShaderManager getShaderManager() {
-        return SHADER_MANAGER;
     }
 
     public static KeyBindingManager getKeyBindingManager() {
