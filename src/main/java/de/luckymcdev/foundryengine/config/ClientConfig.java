@@ -14,6 +14,12 @@ public final class ClientConfig extends EngineConfig {
             BUILDER.comment("Automatically run the icon exporter on login when the registry has changed or no export exists yet.")
                     .define("autoExport", true);
 
+    public static final ModConfigSpec.IntValue ICON_SIZE =
+            BUILDER.comment("How Large the icon should be, default is 64")
+                    .defineInRange("iconSize", 64, 16, 256);
+
+
+
     @Override
     public ModConfigSpec spec() {
         return BUILDER.build();

@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.client.icons;
 
 import de.luckymcdev.foundryengine.common.Common;
+import de.luckymcdev.foundryengine.config.ClientConfig;
 import de.luckymcdev.foundryengine.config.CommonConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
@@ -43,7 +44,7 @@ public class ScreenIconExporter extends Screen {
                               @Nullable String modIdFilter, boolean modIdRegex) {
         super(Component.literal("export_screen"));
         this.lookupProvider = lookupProvider;
-        this.imageSize = Common.ICON_SIZE;
+        this.imageSize = ClientConfig.ICON_SIZE.get();
         this.guiScale = guiScale;
         this.modIdFilter = modIdFilter;
         this.modIdRegex = modIdRegex;

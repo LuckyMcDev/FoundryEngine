@@ -9,6 +9,7 @@ import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
+import de.luckymcdev.foundryengine.config.ClientConfig;
 import imgui.ImGui;
 import imgui.flag.ImGuiStyleVar;
 import imgui.type.ImString;
@@ -223,7 +224,7 @@ public class CataloguePanel extends EditorPanel {
 
     private int loadTextureNow(Identifier location) {
         File outputDir = Common.CACHE.resolve("icons")
-                .resolve(String.valueOf(Common.ICON_SIZE))
+                .resolve(String.valueOf(ClientConfig.ICON_SIZE.get()))
                 .toFile();
 
         File namespaceDir = new File(outputDir, location.getNamespace());
