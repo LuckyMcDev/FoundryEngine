@@ -12,18 +12,24 @@ import de.luckymcdev.foundryengine.common.Common;
 import imgui.ImGui;
 import imgui.flag.ImGuiStyleVar;
 import imgui.type.ImString;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.SpawnEggItem;
 import org.lwjgl.opengl.GL11;
 
 import java.io.File;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 
 public class CataloguePanel extends EditorPanel {
     public static final CataloguePanel INSTANCE = new CataloguePanel();
     private static final int MAX_LOADS_PER_FRAME = 25;
     private static final float ITEM_SIZE = 64f;
+    private static final Identifier NAMETAG_ID = Identifier.parse("minecraft:name_tag");
+    private static final Identifier BUCKET_ID = Identifier.parse("minecraft:water_bucket");
+    private static final Identifier SPAWNER_ID = Identifier.parse("minecraft:spawner");
     private final Map<Identifier, Integer> textureCache = new HashMap<>();
     private final Set<Identifier> failedLoads = new HashSet<>();
     private final Queue<Identifier> loadQueue = new ArrayDeque<>();
@@ -48,17 +54,14 @@ public class CataloguePanel extends EditorPanel {
     @Override
     public void content() {
         processTextureQueue();
-
         renderSearchHeader();
 
         if (ImGui.beginTabBar("CatalogueTabs")) {
 
             if (ImGui.beginTabItem(ImIcons.FA.FA_BOX + " Items")) {
                 var list = BuiltInRegistries.ITEM.keySet().stream()
-                        .sorted(Comparator.comparing(Identifier::getPath))
-                        .toList();
-
-                renderRegistryGrid("items", list);
+                        .sorted(Comparator.comparing(Identifier::getPath)).toList();
+                renderRegistryGrid("items", list, id -> id);
                 ImGui.endTabItem();
             }
 
@@ -66,17 +69,47 @@ public class CataloguePanel extends EditorPanel {
                 List<Identifier> blockItems = BuiltInRegistries.BLOCK.stream()
                         .map(block -> BuiltInRegistries.ITEM.getKey(block.asItem()))
                         .distinct()
-                        .sorted(Comparator.comparing(Identifier::getPath))
-                        .toList();
+                        .sorted(Comparator.comparing(Identifier::getPath)).toList();
+                renderRegistryGrid("blocks", blockItems, id -> id);
+                ImGui.endTabItem();
+            }
 
-                renderRegistryGrid("blocks", blockItems);
+            if (ImGui.beginTabItem(ImIcons.FA.FA_PAW + " Entities")) {
+                var list = BuiltInRegistries.ENTITY_TYPE.keySet().stream()
+                        .sorted(Comparator.comparing(Identifier::getPath)).toList();
+
+                renderRegistryGrid("entities", list, entityId ->
+                        SpawnEggItem.byId(BuiltInRegistries.ENTITY_TYPE.get(entityId).get().value())
+                                .map(Holder::value)
+                                .map(BuiltInRegistries.ITEM::getKey)
+                                .orElse(SPAWNER_ID));
+                ImGui.endTabItem();
+            }
+
+            if (ImGui.beginTabItem(ImIcons.FA.FA_DROPLET + " Fluids")) {
+                var list = BuiltInRegistries.FLUID.keySet().stream()
+                        .sorted(Comparator.comparing(Identifier::getPath)).toList();
+                renderRegistryGrid("fluids", list, id -> BUCKET_ID);
+                ImGui.endTabItem();
+            }
+
+            if (ImGui.beginTabItem(ImIcons.FA.FA_TAG + " Tags")) {
+                Set<Identifier> allTags = new HashSet<>();
+                // Idk if there are any more tags i should get here, but these are fine for now.
+                BuiltInRegistries.ITEM.getTags().forEach(t -> allTags.add(t.key().location()));
+                BuiltInRegistries.BLOCK.getTags().forEach(t -> allTags.add(t.key().location()));
+                BuiltInRegistries.ENTITY_TYPE.getTags().forEach(t -> allTags.add(t.key().location()));
+
+                var sortedTags = allTags.stream()
+                        .sorted(Comparator.comparing(Identifier::getPath)).toList();
+
+                renderRegistryGrid("tags", sortedTags, id -> NAMETAG_ID);
                 ImGui.endTabItem();
             }
 
             ImGui.endTabBar();
         }
     }
-
 
     private void renderSearchHeader() {
         ImGui.setNextItemWidth(-1);
@@ -86,10 +119,10 @@ public class CataloguePanel extends EditorPanel {
         ImGui.separator();
     }
 
-    private void renderRegistryGrid(String id, List<Identifier> entries) {
+    private void renderRegistryGrid(String typeId, List<Identifier> entries, UnaryOperator<Identifier> iconProvider) {
         String filter = searchBuffer.get().toLowerCase();
 
-        ImGui.beginChild("##grid_" + id, 0, 0, false);
+        ImGui.beginChild("##grid_" + typeId, 0, 0, false);
         ImGui.pushStyleVar(ImGuiStyleVar.ItemSpacing, 4, 4);
 
         float windowVisibleX2 = ImGui.getWindowPos().x + ImGui.getWindowContentRegionMax().x;
@@ -101,19 +134,20 @@ public class CataloguePanel extends EditorPanel {
 
             ImGui.pushID(name);
 
-            int textureId = getOrLoadIcon(location);
+            Identifier iconToLoad = iconProvider.apply(location);
+            int textureId = getOrLoadIcon(iconToLoad);
 
             if (textureId != -1) {
                 drawImage(textureId, ITEM_SIZE, ITEM_SIZE);
             } else {
-                drawFallback(location);
+                drawFallback(iconToLoad);
             }
 
-            CataloguePayload payload = new CataloguePayload(name, id, List.of("foundry", "editor"));
+            CataloguePayload payload = new CataloguePayload(name, typeId, List.of("foundry", "editor"));
 
             if (ImGui.beginDragDropSource()) {
                 ImGui.setDragDropPayload("CATALOGUE_ENTRY", payload);
-                ImGui.text("Placing " + id + ": " + name);
+                ImGui.text("Placing " + typeId + ": " + name);
                 if (textureId != -1) drawImage(textureId, 32, 32);
                 ImGui.endDragDropSource();
             }
