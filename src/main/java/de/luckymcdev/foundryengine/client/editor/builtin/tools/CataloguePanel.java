@@ -1,33 +1,40 @@
 package de.luckymcdev.foundryengine.client.editor.builtin.tools;
 
+import com.mojang.blaze3d.opengl.GlStateManager;
+import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.builtin.EditorPanel;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
+import de.luckymcdev.foundryengine.client.icons.ImageExportUtil;
+import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
 import imgui.ImGui;
-import imgui.flag.ImGuiDragDropFlags;
+import imgui.flag.ImGuiStyleVar;
 import imgui.type.ImString;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
+import org.lwjgl.opengl.GL11;
 
-import java.util.List;
+import java.io.File;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class CataloguePanel extends EditorPanel {
     public static final CataloguePanel INSTANCE = new CataloguePanel();
+    private static final int MAX_LOADS_PER_FRAME = 25;
+    private static final float ITEM_SIZE = 64f;
+    private final Map<Identifier, Integer> textureCache = new HashMap<>();
+    private final Set<Identifier> failedLoads = new HashSet<>();
+    private final Queue<Identifier> loadQueue = new ArrayDeque<>();
+    private final Set<Identifier> queued = new HashSet<>();
     private final ImString searchBuffer = new ImString(256);
-    private final float itemSize = 64f;
 
     public CataloguePanel() {
         super(Common.id("catalogue"), "Catalogue", ImIcons.FA.FA_LIST, Shortcut.empty());
         this.category = PanelCategory.EDITOR_TOOLS;
     }
 
-    /**
-     * Helper to accept a drop from the Catalogue.
-     *
-     */
     public static void acceptDrop(Consumer<CataloguePayload> callback) {
         if (ImGui.beginDragDropTarget()) {
             Object payload = ImGui.acceptDragDropPayload("CATALOGUE_ENTRY");
@@ -40,16 +47,29 @@ public class CataloguePanel extends EditorPanel {
 
     @Override
     public void content() {
+        processTextureQueue();
+
         renderSearchHeader();
 
         if (ImGui.beginTabBar("CatalogueTabs")) {
+
             if (ImGui.beginTabItem(ImIcons.FA.FA_BOX + " Items")) {
-                renderRegistryGrid("items", BuiltInRegistries.ITEM.keySet().stream().toList());
+                var list = BuiltInRegistries.ITEM.keySet().stream()
+                        .sorted(Comparator.comparing(Identifier::getPath))
+                        .toList();
+
+                renderRegistryGrid("items", list);
                 ImGui.endTabItem();
             }
 
             if (ImGui.beginTabItem(ImIcons.FA.FA_CUBE + " Blocks")) {
-                renderRegistryGrid("blocks", BuiltInRegistries.BLOCK.keySet().stream().toList());
+                List<Identifier> blockItems = BuiltInRegistries.BLOCK.stream()
+                        .map(block -> BuiltInRegistries.ITEM.getKey(block.asItem()))
+                        .distinct()
+                        .sorted(Comparator.comparing(Identifier::getPath))
+                        .toList();
+
+                renderRegistryGrid("blocks", blockItems);
                 ImGui.endTabItem();
             }
 
@@ -57,9 +77,12 @@ public class CataloguePanel extends EditorPanel {
         }
     }
 
+
     private void renderSearchHeader() {
         ImGui.setNextItemWidth(-1);
-        ImGui.inputTextWithHint("##catalogue_search", ImIcons.FA.FA_MAGNIFYING_GLASS + " Search registries...", searchBuffer);
+        ImGui.inputTextWithHint("##catalogue_search",
+                ImIcons.FA.FA_MAGNIFYING_GLASS + " Search registries...",
+                searchBuffer);
         ImGui.separator();
     }
 
@@ -67,6 +90,7 @@ public class CataloguePanel extends EditorPanel {
         String filter = searchBuffer.get().toLowerCase();
 
         ImGui.beginChild("##grid_" + id, 0, 0, false);
+        ImGui.pushStyleVar(ImGuiStyleVar.ItemSpacing, 4, 4);
 
         float windowVisibleX2 = ImGui.getWindowPos().x + ImGui.getWindowContentRegionMax().x;
         float styleSpacingX = ImGui.getStyle().getItemSpacingX();
@@ -77,17 +101,20 @@ public class CataloguePanel extends EditorPanel {
 
             ImGui.pushID(name);
 
-            ImGui.button(location.getPath(), itemSize, itemSize);
+            int textureId = getOrLoadIcon(location);
 
-            CataloguePayload payload = new CataloguePayload(
-                    location.toString(),
-                    id,
-                    List.of("foundry", "editor")
-            );
+            if (textureId != -1) {
+                drawImage(textureId, ITEM_SIZE, ITEM_SIZE);
+            } else {
+                drawFallback(location);
+            }
 
-            if (ImGui.beginDragDropSource(ImGuiDragDropFlags.None)) {
+            CataloguePayload payload = new CataloguePayload(name, id, List.of("foundry", "editor"));
+
+            if (ImGui.beginDragDropSource()) {
                 ImGui.setDragDropPayload("CATALOGUE_ENTRY", payload);
                 ImGui.text("Placing " + id + ": " + name);
+                if (textureId != -1) drawImage(textureId, 32, 32);
                 ImGui.endDragDropSource();
             }
 
@@ -96,8 +123,7 @@ public class CataloguePanel extends EditorPanel {
             }
 
             float lastButtonX2 = ImGui.getItemRectMax().x;
-            float nextButtonX2 = lastButtonX2 + styleSpacingX + itemSize;
-
+            float nextButtonX2 = lastButtonX2 + styleSpacingX + ITEM_SIZE;
             if (nextButtonX2 < windowVisibleX2) {
                 ImGui.sameLine();
             }
@@ -105,7 +131,99 @@ public class CataloguePanel extends EditorPanel {
             ImGui.popID();
         }
 
+        ImGui.popStyleVar();
         ImGui.endChild();
+    }
+
+    private void drawFallback(Identifier location) {
+        ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, 0, 0);
+
+        ImGui.button("##fallback", ITEM_SIZE, ITEM_SIZE);
+
+        String letter = location.getPath().substring(0, 1).toUpperCase();
+        float textWidth = ImGui.calcTextSize(letter).x;
+        float textHeight = ImGui.calcTextSize(letter).y;
+
+        float minX = ImGui.getItemRectMin().x;
+        float minY = ImGui.getItemRectMin().y;
+
+        ImGui.getWindowDrawList().addText(
+                minX + (ITEM_SIZE - textWidth) * 0.5f,
+                minY + (ITEM_SIZE - textHeight) * 0.5f,
+                0xFFFFFFFF,
+                letter
+        );
+
+        ImGui.popStyleVar();
+    }
+
+    private int getOrLoadIcon(Identifier location) {
+        if (textureCache.containsKey(location)) return textureCache.get(location);
+        if (failedLoads.contains(location)) return -1;
+
+        if (!queued.contains(location)) {
+            loadQueue.add(location);
+            queued.add(location);
+        }
+
+        return -1;
+    }
+
+    private void processTextureQueue() {
+        int loads = 0;
+
+        while (!loadQueue.isEmpty() && loads < MAX_LOADS_PER_FRAME) {
+            Identifier location = loadQueue.poll();
+            queued.remove(location);
+
+            int texture = loadTextureNow(location);
+            if (texture != -1) {
+                textureCache.put(location, texture);
+            } else {
+                failedLoads.add(location);
+            }
+
+            loads++;
+        }
+    }
+
+    private int loadTextureNow(Identifier location) {
+        File outputDir = Common.CACHE.resolve("icons")
+                .resolve(String.valueOf(Common.ICON_SIZE))
+                .toFile();
+
+        File namespaceDir = new File(outputDir, location.getNamespace());
+
+        if (namespaceDir.exists()) {
+            String prefix = ImageExportUtil.sanitizeFilename(location.getPath());
+
+            File[] matches = namespaceDir.listFiles((dir, fileName) ->
+                    fileName.startsWith(prefix) && fileName.endsWith(".png"));
+
+            if (matches != null && matches.length > 0) {
+                ImGuiUtils.Image img = ImGuiUtils.getTexture(matches[0]);
+                if (img.glId() > 0) {
+                    return img.glId();
+                }
+            }
+        }
+
+        return -1;
+    }
+
+    private void drawImage(int id, float w, float h) {
+        GlStateManager._bindTexture(id);
+
+        GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
+        GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+
+        var stack = Client.getImGuiManager().getGraphicsStack();
+        stack.push();
+        stack.pushStyleVar(ImGuiStyleVar.FramePadding, 0, 0);
+
+        ImGui.imageButton(id, w, h, 0, 0, 1, 1);
+
+        stack.pop();
     }
 
     public record CataloguePayload(String id, String type, List<String> tags) {
