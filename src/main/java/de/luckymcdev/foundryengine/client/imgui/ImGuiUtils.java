@@ -116,6 +116,19 @@ public class ImGuiUtils {
         ImGui.text(text);
     }
 
+    /**
+     * Helper to draw something centered
+     *
+     * @param runnable   What to draw
+     * @param itemWidth  The known width of the item(s) you are drawing
+     * @param totalWidth The width of the area to center within (usually ImGui.getContentRegionAvailX())
+     */
+    public static void centered(Runnable runnable, float itemWidth, float totalWidth) {
+        float posX = ImGui.getCursorPosX() + (totalWidth - itemWidth) / 2f;
+        ImGui.setCursorPosX(posX);
+        runnable.run();
+    }
+
     public static void textDenied(String title, String... lines) {
         ImGui.textColored(new ImVec4(1.0f, 0.5f, 0.0f, 1.0f),
                 ImGuiUtils.icon(ImIcons.FA.FA_EXCLAMATION_TRIANGLE) + " " + title);
