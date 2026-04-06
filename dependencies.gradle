@@ -16,6 +16,7 @@ dependencies {
     // Groovy
     bundle "org.apache.groovy:groovy:${groovy_version}"
 
+    bundle "fr.mrqsdf:BbModelReader:${bbmodelreader_version}"
     // ImGui dependencies
     bundle "io.github.spair:imgui-java-binding:${imgui_version}"
     jarJar(api(implementation("io.github.spair:imgui-java-lwjgl3:${imgui_version}"))) {
