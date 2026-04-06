@@ -13,10 +13,6 @@ dependencies {
     bundle "org.commonmark:commonmark-ext-gfm-strikethrough:${commonmark_version}"
     bundle "org.commonmark:commonmark-ext-autolink:${commonmark_version}"
 
-    // SQLite and ORMLite
-    jarJar(implementation("org.xerial:sqlite-jdbc:${sqlite_version}"))
-    jarJar(implementation("com.j256:ormlite:${ormlite_version}"))
-
     // Groovy
     bundle "org.apache.groovy:groovy:${groovy_version}"
 
