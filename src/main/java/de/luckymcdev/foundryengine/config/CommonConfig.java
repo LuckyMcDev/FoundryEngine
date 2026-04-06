@@ -8,17 +8,19 @@ import java.nio.file.Path;
 public final class CommonConfig extends EngineConfig {
     static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
-    public static final ModConfigSpec.BooleanValue DUMP =
+    public static final ModConfigSpec.BooleanValue DUMP_PACKS =
             BUILDER.comment("Whether to dump generated resource packs to the dump directory (debug).")
-                    .define("dump", false);
+                    .define("DUMP_PACKS", false);
 
-    public static final ModConfigSpec.ConfigValue<String> DUMP_DIRECTORY =
-            BUILDER.comment("Directory where resource pack dumps are written.")
-                    .define("dumpDirectory", Path.of(SystemProperties.getProperty("java.io.tmpdir")).resolve("foundryengine").toString());
+    public static final ModConfigSpec.ConfigValue<String> PACK_DUMP_DIRECTORY =
+            BUILDER.comment("This is a config option for developers.",
+                            "If you want to see the virtual resources of each bundle, they will be dumped here.",
+                            "Only if DUMP is set to true")
+                    .define("PACK_DUMP_DUMP_DIRECTORY", Path.of(SystemProperties.getProperty("java.io.tmpdir")).resolve("foundryengine").toString());
 
     public static final ModConfigSpec.BooleanValue FILE_NAME_HASH_COMPONENTS =
-            BUILDER.comment("If components should be MD5-hashed in file names (and an auxiliary .txt file written with the full components string).")
-                    .define("fileNameHashComponents", false);
+            BUILDER.comment("For the Icon Exporter, If components should be MD5-hashed in file names (and an auxiliary .txt file written with the full components string).")
+                    .define("FILENAME_HASH_COMPONENTS", false);
 
     @Override
     public ModConfigSpec spec() {

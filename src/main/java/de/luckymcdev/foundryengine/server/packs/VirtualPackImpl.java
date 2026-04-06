@@ -240,7 +240,7 @@ public class VirtualPackImpl implements VirtualResourcePack {
     public void close() {
         LOGGER.info("Closing Runtime Resource Pack {}", this.id);
 
-        if (CommonConfig.DUMP.getAsBoolean()) {
+        if (CommonConfig.DUMP_PACKS.getAsBoolean()) {
             this.lock();
             this.dump();
             this.lock.unlock();
@@ -269,7 +269,7 @@ public class VirtualPackImpl implements VirtualResourcePack {
     private void dump() {
         LOGGER.info("Dumping generated resources for \"{}\"", this.id);
 
-        Path output = Path.of(CommonConfig.DUMP_DIRECTORY.get());
+        Path output = Path.of(CommonConfig.PACK_DUMP_DIRECTORY.get());
         try {
             for (Map.Entry<List<String>, Supplier<byte[]>> e : this.root.entrySet()) {
                 String pathStr = String.join("/", e.getKey());

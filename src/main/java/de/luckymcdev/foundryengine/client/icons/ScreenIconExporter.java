@@ -158,7 +158,7 @@ public class ScreenIconExporter extends Screen {
             list.add(new ImageExportUtil.ItemExportData(stack, namespaceDir, filename));
         }
 
-        LOGGER.info("Export Cache: Found {} missing icons to generate.", list.size());
+        LOGGER.debug("Export Cache: Found {} missing icons to generate.", list.size());
         return list;
     }
 

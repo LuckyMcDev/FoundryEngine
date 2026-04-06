@@ -1,6 +1,5 @@
 package de.luckymcdev.foundryengine.mixin.data;
 
-import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.vpacks.event.RegisterVirtualPackEvent;
 import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackResources;
@@ -29,7 +28,6 @@ public class FolderRepositorySourceMixin {
 
     @Inject(at = @At("HEAD"), method = "loadPacks")
     private void engine$loadPacks(Consumer<Pack> pOnLoad, CallbackInfo ci) {
-        Common.LOGGER.info("Getting 'BeforeUser' packs");
         List<PackResources> packs = NeoForge.EVENT_BUS.post(new RegisterVirtualPackEvent.BeforeUser()).getPacks();
         for (PackResources pack : packs) {
             pOnLoad.accept(Objects.requireNonNull(Pack.readMetaAndCreate(pack.location(), new Pack.ResourcesSupplier() {
