@@ -41,17 +41,27 @@ public class EngineParticle extends SingleQuadParticle implements ParticleContex
 
     @Override
     public void tick() {
-        super.tick();
-        if (this.removed) return;
-        setSpriteFromAge(sprites);
-        applyData(this.age);
+        this.xo = this.x;
+        this.yo = this.y;
+        this.zo = this.z;
+
+        if (this.age++ >= this.lifetime) {
+            this.remove();
+        } else {
+            this.setSpriteFromAge(this.sprites);
+            this.applyData(this.age);
+            this.move(this.xd, this.yd, this.zd);
+            if (this.onGround) {
+                this.xd *= 0.7;
+                this.zd *= 0.7;
+            }
+        }
     }
 
     @Override
     protected Layer getLayer() {
         return layer;
     }
-
 
     @Override
     public void applyColor(Color color) {
@@ -63,6 +73,12 @@ public class EngineParticle extends SingleQuadParticle implements ParticleContex
     public void applyScale(float scale) {
         this.quadSize = this.baseQuadSize * scale;
         this.setSize(0.2F * scale, 0.2F * scale);
+    }
+
+    @Override
+    public void applyRotation(float radians) {
+        this.roll = radians;
+        this.oRoll = radians;
     }
 
     @Override

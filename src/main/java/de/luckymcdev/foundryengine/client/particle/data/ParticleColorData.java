@@ -1,25 +1,15 @@
 package de.luckymcdev.foundryengine.client.particle.data;
 
-import de.luckymcdev.foundryengine.common.easing.Easing;
 import de.luckymcdev.foundryengine.common.util.color.Color;
 
-public final class ParticleColorData extends EasedGenericParticleData<Color> {
-
-    public ParticleColorData(Color color) {
-        this(color, color);
-    }
-
-    public ParticleColorData(Color startColor, Color endColor) {
-        this(startColor, endColor, Easing.LINEAR);
-    }
-
-    public ParticleColorData(Color startColor, Color endColor, Easing easing) {
-        super(startColor, endColor, easing);
+public final class ParticleColorData extends KeyframedParticleData<Color> {
+    public ParticleColorData(KeyframeSequence<Color> sequence) {
+        super(sequence);
     }
 
     @Override
-    protected Color interpolate(float progress) {
-        return start.lerp(progress, end);
+    protected Color interpolate(Color start, Color end, float easedProgress) {
+        return start.lerp(easedProgress, end);
     }
 
     @Override

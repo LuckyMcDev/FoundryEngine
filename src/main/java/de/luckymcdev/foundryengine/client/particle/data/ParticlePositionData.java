@@ -1,28 +1,18 @@
 package de.luckymcdev.foundryengine.client.particle.data;
 
-import de.luckymcdev.foundryengine.common.easing.Easing;
 import org.joml.Vector3d;
 
-public final class ParticlePositionData extends EasedGenericParticleData<Vector3d> {
-
-    public ParticlePositionData(Vector3d position) {
-        this(position, position);
-    }
-
-    public ParticlePositionData(Vector3d startPos, Vector3d endPos) {
-        this(startPos, endPos, Easing.LINEAR);
-    }
-
-    public ParticlePositionData(Vector3d startPos, Vector3d endPos, Easing easing) {
-        super(startPos, endPos, easing);
+public class ParticlePositionData extends KeyframedParticleData<Vector3d> {
+    public ParticlePositionData(KeyframeSequence<Vector3d> sequence) {
+        super(sequence);
     }
 
     @Override
-    protected Vector3d interpolate(float progress) {
+    protected Vector3d interpolate(Vector3d start, Vector3d end, float easedProgress) {
         return new Vector3d(
-                start.x + (end.x - start.x) * progress,
-                start.y + (end.y - start.y) * progress,
-                start.z + (end.z - start.z) * progress
+                start.x + (end.x - start.x) * easedProgress,
+                start.y + (end.y - start.y) * easedProgress,
+                start.z + (end.z - start.z) * easedProgress
         );
     }
 

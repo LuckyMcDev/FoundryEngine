@@ -10,51 +10,43 @@ import org.joml.Vector3d;
 public class ParticleManager {
 
     /**
-     * Spawns a particle at the position provided by the first position data's start.
-     * <p>
-     * NOTE: To use this, you must have set a position and velocity before.
+     * Spawns a particle at the position provided by the first keyframe of the position data.
      */
     public void spawn(ParticleBuilder builder) {
         ParticleBuilderImpl impl = (ParticleBuilderImpl) builder;
-        spawn(builder, impl.getPositionData().getFirst().getStart(), impl.getVelocityData().getFirst().getStart());
+
+        Vector3d startPos = impl.getPositionData().getSequence().getFirstValue();
+        Vector3d startVel = impl.getVelocityData().getSequence().getFirstValue();
+
+        if (startPos == null) startPos = new Vector3d(0, 0, 0);
+        if (startVel == null) startVel = new Vector3d(0, 0, 0);
+
+        spawn(builder, startPos, startVel);
     }
 
-    /**
-     * Spawns a particle at the given position with no initial velocity.
-     * Any velocity over the particle's lifetime should be configured via
-     * {@link de.luckymcdev.foundryengine.client.particle.data.ParticleVelocityData} on the builder.
-     */
     public void spawn(ParticleBuilder builder, double x, double y, double z) {
         spawn(builder, x, y, z, 0, 0, 0);
     }
 
-    /**
-     * Spawns a particle at the given position with an explicit initial velocity.
-     * Note: if the builder also has {@link de.luckymcdev.foundryengine.client.particle.data.ParticleVelocityData},
-     * that will override this velocity each tick via {@link EngineParticle#tick()}.
-     */
     public void spawn(ParticleBuilder builder, double x, double y, double z, double vx, double vy, double vz) {
         ParticleBuilderImpl impl = (ParticleBuilderImpl) builder;
+
+        // Use the Minecraft particle engine to create the instance
         Particle particle = Client.getMinecraft().particleEngine.createParticle(
                 (SimpleParticleType) impl.get(),
                 x, y, z,
                 vx, vy, vz
         );
+
         if (particle != null) {
             Client.getMinecraft().particleEngine.add(particle);
         }
     }
 
-    /**
-     * Convenience overload accepting {@link Vector3d} for position.
-     */
     public void spawn(ParticleBuilder builder, Vector3d position) {
         spawn(builder, position.x, position.y, position.z);
     }
 
-    /**
-     * Convenience overload accepting {@link Vector3d} for both position and initial velocity.
-     */
     public void spawn(ParticleBuilder builder, Vector3d position, Vector3d initialVelocity) {
         spawn(builder, position.x, position.y, position.z, initialVelocity.x, initialVelocity.y, initialVelocity.z);
     }

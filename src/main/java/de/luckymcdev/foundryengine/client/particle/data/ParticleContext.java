@@ -10,4 +10,6 @@ public interface ParticleContext {
     void setParticleSpeed(double x, double y, double z);
 
     void setPos(double x, double y, double z);
+
+    void applyRotation(float radians);
 }

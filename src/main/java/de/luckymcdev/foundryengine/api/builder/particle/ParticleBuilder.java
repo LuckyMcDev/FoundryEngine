@@ -2,7 +2,6 @@ package de.luckymcdev.foundryengine.api.builder.particle;
 
 import de.luckymcdev.foundryengine.api.builder.BuilderBase;
 import de.luckymcdev.foundryengine.client.particle.data.*;
-import de.luckymcdev.foundryengine.common.builder.particle.ParticleBuilderImpl;
 import de.luckymcdev.foundryengine.common.easing.Easing;
 import de.luckymcdev.foundryengine.common.util.color.Color;
 import net.minecraft.core.particles.ParticleType;
@@ -14,8 +13,9 @@ import org.joml.Vector3d;
 import java.util.function.Function;
 
 /**
- * Builder interface for creating and customizing Particles.
- * Provides a fluent API for particle registration with NeoForge.
+ * A fluent builder for creating and configuring particle types and their behavior.
+ * This builder uses a single-data model where only one sequence per data type
+ * (Color, Scale, etc.) is permitted.
  */
 public interface ParticleBuilder extends BuilderBase<ParticleType<?>> {
 
@@ -26,142 +26,109 @@ public interface ParticleBuilder extends BuilderBase<ParticleType<?>> {
      * @return A new ParticleBuilder
      */
     static ParticleBuilder create(Identifier id) {
-        return new ParticleBuilderImpl(id);
+        return new de.luckymcdev.foundryengine.common.builder.particle.ParticleBuilderImpl(id);
     }
 
     /**
      * Sets a custom factory for creating the particle type.
+     * Useful for creating custom particle types beyond the standard SimpleParticleType.
      */
     ParticleBuilder factory(Function<Boolean, ParticleType<?>> factory);
 
     /**
-     * Marks this particle type to always render, even when the particle limit is reached.
+     * Marks this particle type to always render, even when the particle limit is reached
+     * or at a distance.
      */
     ParticleBuilder alwaysShow();
 
     /**
-     * Sets whether this particle type should always render.
-     */
-    ParticleBuilder alwaysShow(boolean alwaysShow);
-
-    /**
-     * Sets the particle lifetime in ticks.
+     * Sets the default lifetime of particles created with this builder.
+     *
+     * @param lifetime Lifetime in ticks
      */
     ParticleBuilder lifetime(int lifetime);
 
     /**
-     * Sets the particle render layer.
+     * Sets the rendering layer for the particle (e.g., OPAQUE or TRANSLUCENT).
      */
     ParticleBuilder layer(ParticleLayer layer);
 
     /**
-     * Appends a single generic data modifier.
+     * Sets the color behavior using a complete data object.
      */
-    ParticleBuilder addData(GenericParticleData data);
+    ParticleBuilder colorData(ParticleColorData data);
 
     /**
-     * Appends a {@link ParticleColorData} entry.
-     */
-    ParticleBuilder addColorData(ParticleColorData colorData);
-
-    /**
-     * Convenience: constant color over the particle's lifetime.
+     * Sets a constant color for the particle's entire lifetime.
      */
     default ParticleBuilder color(Color color) {
-        return addColorData(new ParticleColorData(color));
+        return colorData(new ParticleColorData(new KeyframeSequence<Color>().add(color, 0, Easing.LINEAR)));
     }
 
     /**
-     * Convenience: interpolates from {@code start} to {@code end} using {@link Easing#LINEAR}.
-     */
-    default ParticleBuilder color(Color start, Color end) {
-        return addColorData(new ParticleColorData(start, end));
-    }
-
-    /**
-     * Convenience: interpolates from {@code start} to {@code end} using the given easing.
+     * Sets a color interpolation from a start color to an end color.
      */
     default ParticleBuilder color(Color start, Color end, Easing easing) {
-        return addColorData(new ParticleColorData(start, end, easing));
+        return colorData(new ParticleColorData(new KeyframeSequence<Color>()
+                .add(start, 0, Easing.LINEAR)
+                .add(end, 1, easing)));
     }
 
     /**
-     * Appends a {@link ParticleScaleData} entry.
+     * Sets the scale behavior using a complete data object.
      */
-    ParticleBuilder addScaleData(ParticleScaleData scaleData);
+    ParticleBuilder scaleData(ParticleScaleData data);
 
     /**
-     * Convenience: constant scale over the particle's lifetime.
+     * Sets a constant scale for the particle's entire lifetime.
      */
     default ParticleBuilder scale(float scale) {
-        return addScaleData(new ParticleScaleData(scale));
-    }
-
-
-    /**
-     * Convenience: interpolates from {@code start} to {@code end} using {@link Easing#LINEAR}.
-     */
-    default ParticleBuilder scale(float start, float end) {
-        return addScaleData(new ParticleScaleData(start, end));
+        return scaleData(new ParticleScaleData(new KeyframeSequence<Float>().add(scale, 0, Easing.LINEAR)));
     }
 
     /**
-     * Convenience: interpolates from {@code start} to {@code end} using the given easing.
+     * Sets the velocity behavior using a complete data object.
      */
-    default ParticleBuilder scale(float start, float end, Easing easing) {
-        return addScaleData(new ParticleScaleData(start, end, easing));
+    ParticleBuilder velocityData(ParticleVelocityData data);
+
+    /**
+     * Sets a constant velocity/speed for the particle's entire lifetime.
+     */
+    default ParticleBuilder velocity(Vector3d vel) {
+        return velocityData(new ParticleVelocityData(new KeyframeSequence<Vector3d>().add(vel, 0, Easing.LINEAR)));
     }
 
     /**
-     * Appends a {@link ParticleVelocityData} entry.
+     * Sets the position behavior using a complete data object.
      */
-    ParticleBuilder addVelocityData(ParticleVelocityData velocityData);
+    ParticleBuilder positionData(ParticlePositionData data);
 
     /**
-     * Convenience: constant velocity over the particle's lifetime.
+     * Sets a constant position offset for the particle's entire lifetime.
      */
-    default ParticleBuilder velocity(Vector3d velocity) {
-        return addVelocityData(new ParticleVelocityData(velocity));
+    default ParticleBuilder position(Vector3d pos) {
+        return positionData(new ParticlePositionData(new KeyframeSequence<Vector3d>().add(pos, 0, Easing.LINEAR)));
     }
 
     /**
-     * Convenience: interpolates velocity from {@code start} to {@code end} using {@link Easing#LINEAR}.
+     * Sets the rotation behavior using a complete data object.
      */
-    default ParticleBuilder velocity(Vector3d start, Vector3d end) {
-        return addVelocityData(new ParticleVelocityData(start, end));
+    ParticleBuilder rotationData(ParticleRotationData data);
+
+    /**
+     * Sets a constant rotation (in radians) for the particle's entire lifetime.
+     */
+    default ParticleBuilder rotation(float radians) {
+        return rotationData(new ParticleRotationData(new KeyframeSequence<Float>().add(radians, 0, Easing.LINEAR)));
     }
 
     /**
-     * Convenience: interpolates velocity from {@code start} to {@code end} using the given easing.
+     * Sets a rotation animation from start to end (in radians).
      */
-    default ParticleBuilder velocity(Vector3d start, Vector3d end, Easing easing) {
-        return addVelocityData(new ParticleVelocityData(start, end, easing));
-    }
-
-    /**
-     * Appends a {@link ParticlePositionData} entry.
-     */
-    ParticleBuilder addPositionData(ParticlePositionData positionData);
-
-    /**
-     * constant position over the particle's lifetime.
-     */
-    default ParticleBuilder position(Vector3d position) {
-        return addPositionData(new ParticlePositionData(position));
-    }
-
-    /**
-     * Convenience: interpolates from {@code start} to {@code end} using {@link Easing#LINEAR}.
-     */
-    default ParticleBuilder position(Vector3d start, Vector3d end) {
-        return addPositionData(new ParticlePositionData(start, end));
-    }
-
-    /**
-     * Convenience: interpolates from {@code start} to {@code end} using the given easing.
-     */
-    default ParticleBuilder position(Vector3d start, Vector3d end, Easing easing) {
-        return addPositionData(new ParticlePositionData(start, end, easing));
+    default ParticleBuilder rotation(float start, float end, Easing easing) {
+        return rotationData(new ParticleRotationData(new KeyframeSequence<Float>()
+                .add(start, 0, Easing.LINEAR)
+                .add(end, 1, easing)));
     }
 
     @ApiStatus.Internal

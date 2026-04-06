@@ -1,7 +1,7 @@
 package de.luckymcdev.foundryengine.client.particle.data;
 
-public final class ParticleScaleData extends KeyframedParticleData<Float> {
-    public ParticleScaleData(KeyframeSequence<Float> sequence) {
+public final class ParticleRotationData extends KeyframedParticleData<Float> {
+    public ParticleRotationData(KeyframeSequence<Float> sequence) {
         super(sequence);
     }
 
@@ -12,6 +12,6 @@ public final class ParticleScaleData extends KeyframedParticleData<Float> {
 
     @Override
     protected void applyValue(ParticleContext particle, Float value) {
-        particle.applyScale(value);
+        particle.applyRotation(value);
     }
 }
