@@ -2,6 +2,8 @@ package de.luckymcdev.foundryengine.client.editor.styles;
 
 import de.luckymcdev.foundryengine.client.editor.styles.builtin.*;
 
+import java.util.List;
+
 public class ImThemes {
     //This is the default theme.
     public static final BessDarkTheme BESS_DARK_IM_THEME = new BessDarkTheme();
@@ -11,4 +13,8 @@ public class ImThemes {
     public static final CherryTheme CHERRY_IM_THEME = new CherryTheme();
     public static final VidlibTheme VIDLIB_IM_THEME = new VidlibTheme();
     public static final VeilTheme VEIL_IM_THEME = new VeilTheme();
+
+    public static final List<ImTheme> ALL = List.of(
+            BESS_DARK_IM_THEME, CATPUCCIN_MOCHA_IM_THEME, MODERN_DARK_IM_THEME, DARK_IM_THEME, CHERRY_IM_THEME, VIDLIB_IM_THEME, VEIL_IM_THEME
+    );
 }

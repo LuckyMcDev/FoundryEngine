@@ -80,6 +80,7 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
     private boolean shouldBlockInput = false;
     private @Nullable ImFont font;
     private int dockId;
+    private ImTheme currentTheme;
 
     public ImGuiManager() {
         //font = ImGui.getFont();
@@ -151,6 +152,11 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
 
     public void setTheme(ImTheme theme) {
         theme.apply(ImGui.getStyle());
+        this.currentTheme = theme;
+    }
+
+    public ImTheme getCurrentTheme() {
+        return currentTheme;
     }
 
     /**

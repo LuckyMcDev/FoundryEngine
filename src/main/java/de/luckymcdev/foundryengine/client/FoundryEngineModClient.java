@@ -16,6 +16,7 @@ import de.luckymcdev.foundryengine.client.editor.builtin.tools.ConsolePanel;
 import de.luckymcdev.foundryengine.client.editor.builtin.tools.MinecraftToolsPanel;
 import de.luckymcdev.foundryengine.client.editor.builtin.tools.StopwatchPanel;
 import de.luckymcdev.foundryengine.client.editor.builtin.view.InfoPanel;
+import de.luckymcdev.foundryengine.client.editor.builtin.view.ThemeSelectorPanel;
 import de.luckymcdev.foundryengine.client.editor.event.RegisterPanelEvent;
 import de.luckymcdev.foundryengine.client.event.RegisterRenderingStuffEvent;
 import de.luckymcdev.foundryengine.client.ext.ModPathBroadcaster;
@@ -123,6 +124,7 @@ public class FoundryEngineModClient {
         event.register(InfoPanel.INSTANCE);
         event.register(ScenePanel.INSTANCE);
         event.register(CataloguePanel.INSTANCE);
+        event.register(ThemeSelectorPanel.INSTANCE);
     }
 
     private void addClientReloadListener(AddClientReloadListenersEvent event) {
