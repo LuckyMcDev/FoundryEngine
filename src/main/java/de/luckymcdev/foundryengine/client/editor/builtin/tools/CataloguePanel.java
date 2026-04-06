@@ -62,7 +62,7 @@ public class CataloguePanel extends EditorPanel {
             if (ImGui.beginTabItem(ImIcons.FA.FA_BOX + " Items")) {
                 var list = BuiltInRegistries.ITEM.keySet().stream()
                         .sorted(Comparator.comparing(Identifier::getPath)).toList();
-                renderRegistryGrid("items", list, id -> id);
+                renderRegistryGrid("items", list, id -> id, false);
                 ImGui.endTabItem();
             }
 
@@ -71,7 +71,7 @@ public class CataloguePanel extends EditorPanel {
                         .map(block -> BuiltInRegistries.ITEM.getKey(block.asItem()))
                         .distinct()
                         .sorted(Comparator.comparing(Identifier::getPath)).toList();
-                renderRegistryGrid("blocks", blockItems, id -> id);
+                renderRegistryGrid("blocks", blockItems, id -> id, false);
                 ImGui.endTabItem();
             }
 
@@ -83,28 +83,37 @@ public class CataloguePanel extends EditorPanel {
                         SpawnEggItem.byId(BuiltInRegistries.ENTITY_TYPE.get(entityId).get().value())
                                 .map(Holder::value)
                                 .map(BuiltInRegistries.ITEM::getKey)
-                                .orElse(SPAWNER_ID));
+                                .orElse(SPAWNER_ID), false);
                 ImGui.endTabItem();
             }
 
             if (ImGui.beginTabItem(ImIcons.FA.FA_DROPLET + " Fluids")) {
                 var list = BuiltInRegistries.FLUID.keySet().stream()
                         .sorted(Comparator.comparing(Identifier::getPath)).toList();
-                renderRegistryGrid("fluids", list, id -> BUCKET_ID);
+                renderRegistryGrid("fluids", list, id -> BUCKET_ID, false);
                 ImGui.endTabItem();
             }
 
             if (ImGui.beginTabItem(ImIcons.FA.FA_TAG + " Tags")) {
-                Set<Identifier> allTags = new HashSet<>();
-                // Idk if there are any more tags i should get here, but these are fine for now.
-                BuiltInRegistries.ITEM.getTags().forEach(t -> allTags.add(t.key().location()));
-                BuiltInRegistries.BLOCK.getTags().forEach(t -> allTags.add(t.key().location()));
-                BuiltInRegistries.ENTITY_TYPE.getTags().forEach(t -> allTags.add(t.key().location()));
+                BuiltInRegistries.REGISTRY.entrySet().stream()
+                        .sorted(Comparator.comparing(e -> e.getKey().identifier().getPath()))
+                        .forEach(entry -> {
+                            var registry = entry.getValue();
+                            var tags = registry.getTags().toList();
 
-                var sortedTags = allTags.stream()
-                        .sorted(Comparator.comparing(Identifier::getPath)).toList();
+                            if (tags.isEmpty()) return;
 
-                renderRegistryGrid("tags", sortedTags, id -> NAMETAG_ID);
+                            String registryName = entry.getKey().identifier().getPath().toUpperCase();
+
+                            List<Identifier> tagIds = tags.stream()
+                                    .map(t -> t.key().location())
+                                    .sorted(Comparator.comparing(Identifier::getPath))
+                                    .toList();
+
+                            renderRegistryGrid("tags_" + registryName, tagIds, id -> NAMETAG_ID, true);
+
+                            ImGui.spacing();
+                        });
                 ImGui.endTabItem();
             }
 
@@ -120,7 +129,7 @@ public class CataloguePanel extends EditorPanel {
         ImGui.separator();
     }
 
-    private void renderRegistryGrid(String typeId, List<Identifier> entries, UnaryOperator<Identifier> iconProvider) {
+    private void renderRegistryGrid(String typeId, List<Identifier> entries, UnaryOperator<Identifier> iconProvider, boolean textOnIcon) {
         String filter = searchBuffer.get().toLowerCase();
 
         ImGui.beginChild("##grid_" + typeId, 0, 0, false);
@@ -140,6 +149,7 @@ public class CataloguePanel extends EditorPanel {
 
             if (textureId != -1) {
                 drawImage(textureId, ITEM_SIZE, ITEM_SIZE);
+                if (textOnIcon) drawLetterOverlay(location);
             } else {
                 drawFallback(iconToLoad);
             }
@@ -168,6 +178,22 @@ public class CataloguePanel extends EditorPanel {
 
         ImGui.popStyleVar();
         ImGui.endChild();
+    }
+
+    private void drawLetterOverlay(Identifier location) {
+        String letter = location.getNamespace().substring(0, 1).toUpperCase();
+
+        float textWidth = ImGui.calcTextSize(letter).x;
+        float textHeight = ImGui.calcTextSize(letter).y;
+
+        float minX = ImGui.getItemRectMin().x;
+        float minY = ImGui.getItemRectMin().y;
+
+        float xOffset = minX + (ITEM_SIZE - textWidth) * 0.85f;
+        float yOffset = minY + (ITEM_SIZE - textHeight) * 0.80f;
+
+        ImGui.getWindowDrawList().addText(xOffset + 1, yOffset + 1, 0xFF000000, letter);
+        ImGui.getWindowDrawList().addText(xOffset, yOffset, 0xFFFFFFFF, letter);
     }
 
     private void drawFallback(Identifier location) {
@@ -257,7 +283,6 @@ public class CataloguePanel extends EditorPanel {
         stack.pushStyleVar(ImGuiStyleVar.FramePadding, 0, 0);
 
         ImGui.imageButton(id, w, h, 0, 0, 1, 1);
-
         stack.pop();
     }
 
