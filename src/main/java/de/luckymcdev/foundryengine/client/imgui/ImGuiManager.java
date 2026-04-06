@@ -329,8 +329,10 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
 
     @Override
     public void onResourceManagerReload(ResourceManager resourceManager) {
-        if (Util.getPlatform() != Util.OS.LINUX) {
+        if (Util.getPlatform() == Util.OS.WINDOWS) {
             loadFonts(resourceManager);
+        } else {
+            LOGGER.info("Hey, You're not on Windows, which means you'll sadly see a lot of ? in the editor, as the icons im using dont really support anything else.");
         }
     }
 }
