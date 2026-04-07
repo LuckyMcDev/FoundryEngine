@@ -36,7 +36,6 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.*;
-import net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlersEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import org.slf4j.Logger;
 
@@ -55,13 +54,12 @@ public class FoundryEngineModClient {
         modBus.addListener(this::onRegisterKeyMapping);
         modBus.addListener(this::onRegisterDebugEntry);
         modBus.addListener(this::onRegisterDebugRenderers);
-        modBus.addListener(this::onRegisterClientPayloadHandlers);
         modBus.addListener(this::onRegistry);
 
         BUS.addListener(this::onRegisterKeyBinding);
         BUS.addListener(this::onRegisterPanels);
         BUS.addListener(this::onClientTick);
-        BUS.addListener(FoundryCommandsClient::onRegisterClientCommands);
+        BUS.addListener(this::onRegisterCommands);
 
         Config.registerClient(modContainer);
     }
@@ -92,7 +90,8 @@ public class FoundryEngineModClient {
         event.register(Client.EDITOR_KEY);
     }
 
-    private void onRegisterClientPayloadHandlers(RegisterClientPayloadHandlersEvent event) {
+    private void onRegisterCommands(RegisterClientCommandsEvent event) {
+        FoundryCommandsClient.registerAll(event.getDispatcher(), event.getBuildContext());
     }
 
     private void onRegisterDebugEntry(RegisterDebugEntriesEvent event) {
