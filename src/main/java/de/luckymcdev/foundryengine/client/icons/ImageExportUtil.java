@@ -21,13 +21,6 @@ import java.util.List;
 public class ImageExportUtil {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public static String escapeKey(String key) {
-        return key
-                .replace(":", "__")
-                .replace("\"", "'")
-                .replace("/", "___");
-    }
-
     public static String baseFilenameFromItem(HolderLookup.Provider lookupProvider, ItemStack itemStack) {
         Identifier id = BuiltInRegistries.ITEM.getKey(itemStack.getItem());
         String path = id.getPath();

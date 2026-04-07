@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.client.icons;
 
 import de.luckymcdev.foundryengine.common.Common;
+import de.luckymcdev.foundryengine.common.util.color.Color;
 import de.luckymcdev.foundryengine.config.ClientConfig;
 import de.luckymcdev.foundryengine.config.CommonConfig;
 import net.minecraft.client.Minecraft;
@@ -28,7 +29,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class ScreenIconExporter extends Screen {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final int BACKGROUND_COLOR = -65537;
+    private static final int BACKGROUND_COLOR = new Color(230, 230, 230, 255).argb();
     private final HolderLookup.Provider lookupProvider;
     private final int imageSize;
     private final double guiScale;
@@ -52,6 +53,18 @@ public class ScreenIconExporter extends Screen {
         this.totalItems = pendingItems.size();
     }
 
+    public ScreenIconExporter(HolderLookup.Provider lookupProvider, double guiScale,
+                              @Nullable List<ItemStack> manualQueue) {
+        super(Component.literal("export_screen"));
+        this.lookupProvider = lookupProvider;
+        this.imageSize = ClientConfig.ICON_SIZE.get();
+        this.guiScale = guiScale;
+        this.modIdFilter = null;
+        this.modIdRegex = false;
+        this.pendingItems = (manualQueue != null) ? buildManualTasks(manualQueue) : buildTasks();
+        this.totalItems = pendingItems.size();
+    }
+
     private static void renderItem(GuiGraphicsExtractor gui, ItemStack stack, float x, float y, float logicalSize) {
         gui.pose().pushMatrix();
         gui.pose().translate(x, y);
@@ -71,10 +84,24 @@ public class ScreenIconExporter extends Screen {
                 Component.translatable("gui.foundryengine.icons.status", done, total));
     }
 
+    public static void exportCustomItems(List<ItemStack> customStacks) {
+        Minecraft mc = Minecraft.getInstance();
+
+        ScreenIconExporter exporter = new ScreenIconExporter(
+                mc.level.registryAccess(),
+                mc.getWindow().getGuiScale(),
+                customStacks
+        );
+
+        if (exporter.hasWork()) {
+            mc.setScreen(exporter);
+        } else {
+            mc.player.sendOverlayMessage(Component.literal("Items already exported!"));
+        }
+    }
+
     @Override
     public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        super.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
-
         if (pendingItems.isEmpty()) {
             if (activeIOJobs.get() == 0) {
                 executor.shutdown();
@@ -93,10 +120,11 @@ public class ScreenIconExporter extends Screen {
 
         List<ImageExportUtil.ItemExportData> currentBatch = new ArrayList<>();
         for (int i = 0; i < batchSize && !pendingItems.isEmpty(); i++) {
-            currentBatch.add(pendingItems.remove(0));
+            currentBatch.add(pendingItems.removeFirst());
         }
 
         guiGraphics.fill(0, 0, guiGraphics.guiWidth(), guiGraphics.guiHeight(), BACKGROUND_COLOR);
+
         for (int i = 0; i < currentBatch.size(); i++) {
             ImageExportUtil.ItemExportData data = currentBatch.get(i);
             float x = (float) ((i % columns) * logicalIconSize);
@@ -111,10 +139,19 @@ public class ScreenIconExporter extends Screen {
         reportProgress(processedItems, totalItems);
 
         activeIOJobs.incrementAndGet();
-        Screenshot.takeScreenshot(Minecraft.getInstance().getMainRenderTarget(), (imageFull) -> {
+        Screenshot.takeScreenshot(Minecraft.getInstance().getMainRenderTarget(), (nativeImage) -> {
+            File debugFolder = Common.CACHE.resolve("icons").resolve("screens").toFile();
+            if (!debugFolder.exists()) debugFolder.mkdir();
+
             executor.submit(() -> {
                 try {
-                    ImageExportUtil.processBatchAsync(imageFull, currentBatch, columns, imageSize, BACKGROUND_COLOR);
+                    File fullImg = new File(debugFolder, "screen_" + System.currentTimeMillis() + ".png");
+                    nativeImage.writeToFile(fullImg);
+
+                    ImageExportUtil.processBatchAsync(nativeImage, currentBatch, columns, imageSize, BACKGROUND_COLOR);
+                } catch (IOException e) {
+                    LOGGER.error("Failed to save debug screenshot", e);
+                    nativeImage.close();
                 } finally {
                     activeIOJobs.decrementAndGet();
                 }
@@ -124,6 +161,11 @@ public class ScreenIconExporter extends Screen {
 
     @Override
     protected void extractBlurredBackground(GuiGraphicsExtractor guiGraphics) {
+    }
+
+    @Override
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+
     }
 
     private boolean shouldExport(Identifier location) {
@@ -159,6 +201,24 @@ public class ScreenIconExporter extends Screen {
         }
 
         LOGGER.debug("Export Cache: Found {} missing icons to generate.", list.size());
+        return list;
+    }
+
+    private List<ImageExportUtil.ItemExportData> buildManualTasks(List<ItemStack> stacks) {
+        File outputDir = Common.CACHE.resolve("icons").resolve(String.valueOf(imageSize)).toFile();
+        List<ImageExportUtil.ItemExportData> list = new ArrayList<>();
+
+        for (ItemStack stack : stacks) {
+            Identifier id = BuiltInRegistries.ITEM.getKey(stack.getItem());
+            File namespaceDir = new File(outputDir, id.getNamespace());
+
+            String filename = ImageExportUtil.baseFilenameFromItem(lookupProvider, stack);
+            filename = ImageExportUtil.sanitizeFilename(filename);
+
+            if (!namespaceDir.exists()) namespaceDir.mkdirs();
+
+            list.add(new ImageExportUtil.ItemExportData(stack, namespaceDir, filename));
+        }
         return list;
     }
 
