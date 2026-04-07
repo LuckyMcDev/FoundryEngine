@@ -11,6 +11,7 @@ import de.luckymcdev.foundryengine.client.editor.EditorManager;
 import de.luckymcdev.foundryengine.client.editor.MainMenu;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiManager;
 import de.luckymcdev.foundryengine.client.particle.ParticleManager;
+import de.luckymcdev.foundryengine.client.post.EffectManager;
 import de.luckymcdev.foundryengine.client.util.key.KeyBinding;
 import de.luckymcdev.foundryengine.client.util.key.KeyBindingManager;
 import de.luckymcdev.foundryengine.common.exceptions.EngineException;
@@ -83,6 +84,7 @@ public abstract class Client {
     private static final EditorManager EDITOR_MANAGER = new EditorManager();
     private static final KeyBindingManager KEY_BINDING_MANAGER = new KeyBindingManager();
     private static final ParticleManager PARTICLE_MANAGER = new ParticleManager();
+    private static final EffectManager EFFECT_MANAGER = new EffectManager();
 
     private Client() {
         throw new EngineException();
@@ -180,6 +182,10 @@ public abstract class Client {
 
     public static ParticleManager getParticleManager() {
         return PARTICLE_MANAGER;
+    }
+
+    public static EffectManager getEffectManager() {
+        return EFFECT_MANAGER;
     }
 
     /**

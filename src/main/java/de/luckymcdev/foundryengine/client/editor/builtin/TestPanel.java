@@ -7,7 +7,6 @@ import de.luckymcdev.foundryengine.client.editor.builtin.tools.CataloguePanel;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
-import de.luckymcdev.foundryengine.client.post.EffectManager;
 import de.luckymcdev.foundryengine.client.ui.ExampleScreen;
 import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
@@ -102,7 +101,7 @@ public class TestPanel extends Panel {
         renderEffectToggle("Transparency", Identifier.withDefaultNamespace("transparency"), -1);
 
         if (ImGui.button("Reset All Effects")) {
-            EffectManager.clearAllEffects();
+            Client.getEffectManager().clearAllEffects();
         }
         ImGui.separator();
 
@@ -114,10 +113,10 @@ public class TestPanel extends Panel {
      * Helper to render a checkbox that communicates with the EffectManager
      */
     private void renderEffectToggle(String label, Identifier id, int priority) {
-        boolean active = EffectManager.getActiveEffects().contains(id);
+        boolean active = Client.getEffectManager().getActiveEffects().contains(id);
         ImBoolean check = new ImBoolean(active);
         if (ImGui.checkbox(label + " (Pri: " + priority + ")", check)) {
-            EffectManager.setEffectActive(id, priority, check.get()); //
+            Client.getEffectManager().setEffectActive(id, priority, check.get());
         }
     }
 }
