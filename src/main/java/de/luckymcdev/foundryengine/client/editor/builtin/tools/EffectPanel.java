@@ -4,14 +4,17 @@ import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.builtin.EditorPanel;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
+import de.luckymcdev.foundryengine.client.post.PrioritizedEffect;
 import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
 import imgui.ImGui;
 import imgui.type.ImBoolean;
 import net.minecraft.resources.Identifier;
 
+import java.util.Locale;
+
 /**
- * TODO: dynamic renering of all effects.
+ * Panel to display all effects from {@link de.luckymcdev.foundryengine.client.post.EffectManager}
  */
 public class EffectPanel extends EditorPanel {
     public static final EffectPanel INSTANCE = new EffectPanel();
@@ -25,11 +28,9 @@ public class EffectPanel extends EditorPanel {
     public void content() {
         ImGui.text("Post Processing Effects");
 
-        renderEffectToggle("Blur", Identifier.withDefaultNamespace("blur"), 100);
-        renderEffectToggle("Invert", Identifier.withDefaultNamespace("invert"), 50);
-        renderEffectToggle("Creeper", Identifier.withDefaultNamespace("creeper"), 10);
-        renderEffectToggle("Spider", Identifier.withDefaultNamespace("spider"), 10);
-        renderEffectToggle("Greyscale Test", Common.id("grayscale"), 100);
+        for (PrioritizedEffect effect : Client.getEffectManager().getEffects()) {
+            renderEffectToggle(effect.id().getPath().toUpperCase(Locale.ROOT), effect.id(), effect.priority());
+        }
 
         if (ImGui.button("Reset All Effects")) {
             Client.getEffectManager().clearAllEffects();
