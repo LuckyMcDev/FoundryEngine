@@ -18,7 +18,6 @@ import imgui.flag.ImGuiColorEditFlags;
 import imgui.flag.ImGuiKey;
 import imgui.type.ImBoolean;
 import imgui.type.ImFloat;
-import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import org.slf4j.Logger;
 
@@ -27,8 +26,8 @@ import org.slf4j.Logger;
  * Shows some weird test stuff I guess.
  */
 public class TestPanel extends Panel {
-    private static final Logger LOGGER = LogUtils.getLogger();
     public static final TestPanel INSTANCE = new TestPanel();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final ImFloat FLOAT = new ImFloat();
     private static final ImFloat FLOAT2 = new ImFloat();
     private static final ImBoolean BOOLEAN = new ImBoolean();
@@ -88,35 +87,6 @@ public class TestPanel extends Panel {
             }
         });
 
-        ImGui.separator();
-        ImGui.text("Post Processing Effects");
-
-        renderEffectToggle("Blur", Identifier.withDefaultNamespace("blur"), 100);
-        renderEffectToggle("Invert", Identifier.withDefaultNamespace("invert"), 50);
-        renderEffectToggle("Creeper", Identifier.withDefaultNamespace("creeper"), 10);
-        renderEffectToggle("Spider", Identifier.withDefaultNamespace("spider"), 10);
-        renderEffectToggle("Greyscale Test", Common.id("grayscale"), 100);
-        ImGui.text("these next ones require some special targets so idk when they work :D");
-        renderEffectToggle("Entity Outline", Identifier.withDefaultNamespace("entity_outline"), 80);
-        renderEffectToggle("Transparency", Identifier.withDefaultNamespace("transparency"), -1);
-
-        if (ImGui.button("Reset All Effects")) {
-            Client.getEffectManager().clearAllEffects();
-        }
-        ImGui.separator();
-
         ImGui.colorPicker3("Pick a color", FLOAT2.getData(), ImGuiColorEditFlags.PickerHueWheel);
-
-    }
-
-    /**
-     * Helper to render a checkbox that communicates with the EffectManager
-     */
-    private void renderEffectToggle(String label, Identifier id, int priority) {
-        boolean active = Client.getEffectManager().getActiveEffects().contains(id);
-        ImBoolean check = new ImBoolean(active);
-        if (ImGui.checkbox(label + " (Pri: " + priority + ")", check)) {
-            Client.getEffectManager().setEffectActive(id, priority, check.get());
-        }
     }
 }
