@@ -20,7 +20,7 @@ public final class CommonConfig extends EngineConfig {
 
     public static final ModConfigSpec.BooleanValue FILE_NAME_HASH_COMPONENTS =
             BUILDER.comment("For the Icon Exporter, If components should be MD5-hashed in file names (and an auxiliary .txt file written with the full components string).")
-                    .define("FILENAME_HASH_COMPONENTS", false);
+                    .define("FILENAME_HASH_COMPONENTS", true);
 
     @Override
     public ModConfigSpec spec() {

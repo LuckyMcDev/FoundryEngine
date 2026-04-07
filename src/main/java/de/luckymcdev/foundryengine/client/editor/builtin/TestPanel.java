@@ -7,6 +7,7 @@ import de.luckymcdev.foundryengine.client.editor.builtin.tools.CataloguePanel;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
+import de.luckymcdev.foundryengine.client.post.EffectManager;
 import de.luckymcdev.foundryengine.client.ui.ExampleScreen;
 import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
@@ -18,6 +19,7 @@ import imgui.flag.ImGuiColorEditFlags;
 import imgui.flag.ImGuiKey;
 import imgui.type.ImBoolean;
 import imgui.type.ImFloat;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import org.slf4j.Logger;
 
@@ -87,8 +89,35 @@ public class TestPanel extends Panel {
             }
         });
 
+        ImGui.separator();
+        ImGui.text("Post Processing Effects");
+
+        renderEffectToggle("Blur", Identifier.withDefaultNamespace("blur"), 100);
+        renderEffectToggle("Invert", Identifier.withDefaultNamespace("invert"), 50);
+        renderEffectToggle("Creeper", Identifier.withDefaultNamespace("creeper"), 10);
+        renderEffectToggle("Spider", Identifier.withDefaultNamespace("spider"), 10);
+        renderEffectToggle("Greyscale Test", Common.id("grayscale"), 100);
+        ImGui.text("these next ones require some special targets so idk when they work :D");
+        renderEffectToggle("Entity Outline", Identifier.withDefaultNamespace("entity_outline"), 80);
+        renderEffectToggle("Transparency", Identifier.withDefaultNamespace("transparency"), -1);
+
+        if (ImGui.button("Reset All Effects")) {
+            EffectManager.clearAllEffects();
+        }
+        ImGui.separator();
 
         ImGui.colorPicker3("Pick a color", FLOAT2.getData(), ImGuiColorEditFlags.PickerHueWheel);
 
+    }
+
+    /**
+     * Helper to render a checkbox that communicates with the EffectManager
+     */
+    private void renderEffectToggle(String label, Identifier id, int priority) {
+        boolean active = EffectManager.getActiveEffects().contains(id);
+        ImBoolean check = new ImBoolean(active);
+        if (ImGui.checkbox(label + " (Pri: " + priority + ")", check)) {
+            EffectManager.setEffectActive(id, priority, check.get()); //
+        }
     }
 }
