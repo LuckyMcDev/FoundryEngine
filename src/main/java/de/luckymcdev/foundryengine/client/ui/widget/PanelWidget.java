@@ -7,8 +7,8 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 
 public class PanelWidget extends WidgetBase {
-    int backgroundColor = 0xFFFFFFFF;
-    int borderColor = 0xFF000000;
+    int backgroundColor = Color.BLACK.rgb();
+    int borderColor = Color.WHITE.rgb();
     int borderThickness = 0;
 
     public PanelWidget(UIVec position, UIVec size) {

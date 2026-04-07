@@ -23,8 +23,8 @@ public class ExampleScreen extends EngineScreen {
                 new UIVec(0.5, 0.5, 0, 0)
         );
 
-        panel.setBackgroundColor(0x80000000);
-        panel.setBorder(0xFFFFFFFF, 2);
+        panel.setBackgroundColor(Color.LIGHT_GRAY);
+        panel.setBorder(Color.RED, 2);
 
         ButtonWidget button = new ButtonWidget(
                 new UIVec(0.5, 0.5, 0, 0),

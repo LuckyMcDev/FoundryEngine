@@ -8,8 +8,7 @@ import net.minecraft.client.renderer.RenderPipelines;
 
 public class ButtonWidget extends PanelWidget {
     private final ClickEvent clickEvent;
-
-    private int hoverColor = -1;
+    private int hoverColor = Color.GRAY.rgb();
 
     public ButtonWidget(UIVec position, UIVec size, ClickEvent clickEvent) {
         super(position, size);
@@ -33,7 +32,7 @@ public class ButtonWidget extends PanelWidget {
     @Override
     void renderBackground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float tickDelta, boolean debug) {
         UIArea drawArea = this.getRenderArea(tickDelta);
-        int drawColor = hoverColor != -1 && this.contains(mouseX, mouseY) ? hoverColor : backgroundColor;
+        int drawColor = this.contains(mouseX, mouseY) ? hoverColor : backgroundColor;
         if (borderThickness > 0) {
             guiGraphics.fill(RenderPipelines.GUI, drawArea.x, drawArea.y, drawArea.x + drawArea.width, drawArea.y + drawArea.height, borderColor);
             UIArea inner = drawArea.shrink(borderThickness);
