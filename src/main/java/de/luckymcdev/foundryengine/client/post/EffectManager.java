@@ -7,13 +7,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class EffectManager {
     private final GenericRegistry<Identifier, PrioritizedEffect> registry = new GenericRegistry<>();
-    private final Set<Identifier> activeEffects = ConcurrentHashMap.newKeySet();
 
     public EffectManager() {
         register(new PrioritizedEffect(Identifier.withDefaultNamespace("creeper"), 10));
@@ -24,12 +20,16 @@ public class EffectManager {
         register(new PrioritizedEffect(Common.id("grayscale"), 55));
     }
 
+    private EngineGameRenderer renderer() {
+        return (EngineGameRenderer) Minecraft.getInstance().gameRenderer;
+    }
+
     public void register(PrioritizedEffect effect) {
         registry.register(effect.id(), effect);
     }
 
     public void unregister(Identifier id) {
-        setEffectActive(id, false);
+        renderer().engine$removeEffect(id);
         registry.remove(id);
     }
 
@@ -47,22 +47,15 @@ public class EffectManager {
     }
 
     public void setEffectActive(Identifier id, int priority, boolean active) {
-        EngineGameRenderer renderer = (EngineGameRenderer) Minecraft.getInstance().gameRenderer;
         if (active) {
-            if (activeEffects.add(id)) {
-                renderer.engine$addEffect(id, priority);
-            }
+            renderer().engine$addEffect(id, priority);
         } else {
-            if (activeEffects.remove(id)) {
-                renderer.engine$removeEffect(id);
-            }
+            renderer().engine$removeEffect(id);
         }
     }
 
     public void clearAllEffects() {
-        EngineGameRenderer renderer = (EngineGameRenderer) Minecraft.getInstance().gameRenderer;
-        activeEffects.forEach(renderer::engine$removeEffect);
-        activeEffects.clear();
+        renderer().engine$clearEffects();
     }
 
     public Collection<PrioritizedEffect> getEffects() {
@@ -70,6 +63,6 @@ public class EffectManager {
     }
 
     public Collection<Identifier> getActiveEffects() {
-        return Collections.unmodifiableSet(activeEffects);
+        return renderer().engine$getActiveEffects();
     }
 }

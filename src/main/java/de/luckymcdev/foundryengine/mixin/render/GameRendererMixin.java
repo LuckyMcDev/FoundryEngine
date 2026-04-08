@@ -92,6 +92,18 @@ public class GameRendererMixin implements EngineGameRenderer {
     }
 
     @Override
+    public Collection<Identifier> engine$getActiveEffects() {
+        return engine$activeEffects.stream()
+                .map(PrioritizedEffect::id)
+                .toList();
+    }
+
+    @Override
+    public void engine$clearEffects() {
+        engine$activeEffects.clear();
+    }
+
+    @Override
     public void engine$addEffect(Identifier id, int priority) {
         engine$activeEffects.add(new PrioritizedEffect(id, priority));
     }
@@ -102,13 +114,13 @@ public class GameRendererMixin implements EngineGameRenderer {
     }
 
     @Inject(method = "setPostEffect", at = @At("HEAD"), cancellable = true)
-    private void foundry$interceptVanillaSetEffect(Identifier id, CallbackInfo ci) {
+    private void engine$interceptVanillaSetEffect(Identifier id, CallbackInfo ci) {
         engine$addEffect(id, 0);
         ci.cancel();
     }
 
     @Inject(method = "clearPostEffect", at = @At("HEAD"), cancellable = true)
-    private void foundry$interceptVanillaClearEffect(CallbackInfo ci) {
+    private void engine$interceptVanillaClearEffect(CallbackInfo ci) {
         engine$activeEffects.removeIf(e -> e.priority() == 0);
         ci.cancel();
     }
