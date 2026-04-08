@@ -18,6 +18,8 @@ public class EffectManager {
         register(new PrioritizedEffect(Identifier.withDefaultNamespace("blur"), 100));
 
         register(new PrioritizedEffect(Common.id("grayscale"), 55));
+        register(new PrioritizedEffect(Common.id("depth_vis"), 40));
+        register(new PrioritizedEffect(Common.id("bloom"), 10));
     }
 
     private EngineGameRenderer renderer() {
