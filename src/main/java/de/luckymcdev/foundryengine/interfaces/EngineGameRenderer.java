@@ -22,4 +22,6 @@ public interface EngineGameRenderer extends EngineInterface<GameRenderer> {
     Collection<Identifier> engine$getActiveEffects();
 
     void engine$clearEffects();
+
+    void engine$invalidate(Identifier id);
 }

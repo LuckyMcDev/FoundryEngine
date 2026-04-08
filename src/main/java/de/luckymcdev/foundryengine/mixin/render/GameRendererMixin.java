@@ -113,6 +113,12 @@ public class GameRendererMixin implements EngineGameRenderer {
         engine$activeEffects.removeIf(e -> e.id().equals(id));
     }
 
+    @Override
+    public void engine$invalidate(Identifier id) {
+        Optional<PostChain> old = minecraft.getShaderManager().compilationCache.postChains.remove(id);
+        old.ifPresent(PostChain::close);
+    }
+
     @Inject(method = "setPostEffect", at = @At("HEAD"), cancellable = true)
     private void engine$interceptVanillaSetEffect(Identifier id, CallbackInfo ci) {
         engine$addEffect(id, 0);

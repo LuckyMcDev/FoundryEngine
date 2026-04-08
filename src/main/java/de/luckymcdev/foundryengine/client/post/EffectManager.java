@@ -60,6 +60,16 @@ public class EffectManager {
         renderer().engine$clearEffects();
     }
 
+    public void reload(Identifier id) {
+        renderer().engine$invalidate(id);
+    }
+
+    public void reload() {
+        for (PrioritizedEffect effect : registry.values()) {
+            reload(effect.id());
+        }
+    }
+
     public Collection<PrioritizedEffect> getEffects() {
         return this.registry.values();
     }

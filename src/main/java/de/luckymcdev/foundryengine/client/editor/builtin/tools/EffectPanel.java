@@ -28,6 +28,10 @@ public class EffectPanel extends EditorPanel {
     public void content() {
         ImGui.text("Post Processing Effects");
 
+        if (ImGui.button(ImIcons.FA.FA_ARROW_ROTATE_RIGHT + " Relaod")) {
+            Client.getEffectManager().reload();
+        }
+
         for (PrioritizedEffect effect : Client.getEffectManager().getEffects()) {
             renderEffectToggle(effect.id().getPath().toUpperCase(Locale.ROOT), effect.id(), effect.priority());
         }
