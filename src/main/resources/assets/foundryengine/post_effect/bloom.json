@@ -21,7 +21,7 @@
           {
             "name": "Threshold",
             "type": "float",
-            "value": 0.85
+            "value": 0.7
           },
           {
             "name": "Knee",
