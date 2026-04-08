@@ -28,6 +28,8 @@ config = "mixins/${mod_id}.render.mixins.json"
 config = "mixins/${mod_id}.screen.mixins.json"
 [[mixins]]
 config = "mixins/${mod_id}.entity.mixins.json"
+[[mixins]]
+config = "mixins/${mod_id}.command.mixins.json"
 
 #[[accessTransformers]]
 #"META-INF/accesstransformer.cfg"
