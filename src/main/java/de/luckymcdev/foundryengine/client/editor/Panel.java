@@ -209,25 +209,28 @@ public class Panel {
 
         boolean menuOpen = ImGui.begin(title, WINDOW, flags);
 
-        if (menuOpen) {
-            boolean shouldClose = !WINDOW.get();
-            this.focused = ImGui.isWindowFocused();
+        try {
+            if (menuOpen) {
+                boolean shouldClose = !WINDOW.get();
+                this.focused = ImGui.isWindowFocused();
 
-            this.content();
+                this.content();
 
-            if (shouldClose) {
-                this.close();
+                if (shouldClose) {
+                    this.close();
+                }
+
+                if (!open) {
+                    onClosed();
+                }
+            } else {
+                this.focused = false;
             }
 
-            if (!open) {
-                onClosed();
-            }
-        } else {
-            this.focused = false;
+            type = ImGuiWindowType.get(Client.getWindow().handle());
+        } finally {
+            ImGui.end();
         }
-
-        type = ImGuiWindowType.get(Client.getWindow().handle());
-        ImGui.end();
 
         return open;
     }
