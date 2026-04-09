@@ -17,7 +17,7 @@ import java.util.function.Function;
  * Particle Builder using composition instead of inheritance.
  */
 public class ParticleBuilderImpl implements ParticleBuilder {
-    private final BuilderState<ParticleType<?>> state;
+    public final BuilderState<ParticleType<?>> state;
     private ParticleColorData colorData;
     private ParticleScaleData scaleData;
     private ParticleVelocityData velocityData;

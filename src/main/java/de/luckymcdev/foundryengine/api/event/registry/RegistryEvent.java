@@ -59,7 +59,7 @@ public class RegistryEvent extends Event implements IModBusEvent {
             for (ParticleBuilder builder : builders) {
                 builder.register(registry);
                 if (builder instanceof ParticleBuilderImpl impl) {
-                    PARTICLE_BUILDERS.put(impl.id, impl);
+                    PARTICLE_BUILDERS.put(impl.state.id, impl);
                 }
             }
         });

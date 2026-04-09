@@ -31,7 +31,7 @@ public class RegistryEventClient {
             if (type instanceof SimpleParticleType simpleType) {
                 event.registerSpriteSet(simpleType, (SpriteSet sprites) ->
                         new EngineParticle.Provider(
-                                builder.id,
+                                builder.state.id,
                                 builder.getLifetime(),
                                 builder.getLayer(),
                                 builder.mergedData(),
@@ -40,7 +40,7 @@ public class RegistryEventClient {
                 );
             } else {
                 LOGGER.warn("Skipping particle provider registration for {} because type {} is not SimpleParticleType.",
-                        builder.id,
+                        builder.state.id,
                         type.getClass().getName());
             }
         }
