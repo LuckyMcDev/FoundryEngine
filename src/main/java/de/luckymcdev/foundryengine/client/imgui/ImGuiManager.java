@@ -55,8 +55,6 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
     private final ImGuiImplGl3 imGuiImplGl3 = new ImGuiImplGl3();
     private final ImGuiGraphicsStack graphicsStack = new ImGuiGraphicsStack();
     private final AtomicBoolean enabled = new AtomicBoolean(false);
-    private String imguiCache;
-
     /**
      * The Glyph Ranges for the {@link TTFFile#JETBRAINS_MONO_NERDFONT_REGULAR} Font.
      */

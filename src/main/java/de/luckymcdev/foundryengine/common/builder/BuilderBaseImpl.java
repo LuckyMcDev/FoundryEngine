@@ -19,8 +19,8 @@ import net.minecraft.resources.ResourceKey;
  */
 public abstract class BuilderBaseImpl<T> implements BuilderBase<T> {
     public final Identifier id;
-    public ResourceKey<Registry<T>> registryKey;
     private final boolean dummyBuilder;
+    public ResourceKey<Registry<T>> registryKey;
     protected T object;
 
     protected BuilderBaseImpl(Identifier id) {
@@ -56,14 +56,6 @@ public abstract class BuilderBaseImpl<T> implements BuilderBase<T> {
             createTransformedObject();
         }
         return object;
-    }
-
-    public String getTranslationKeyGroup() {
-        if (registryKey == null) {
-            return "unknown_registry";
-        }
-
-        return registryKey.identifier().getPath().replace('/', '.');
     }
 
     @Override

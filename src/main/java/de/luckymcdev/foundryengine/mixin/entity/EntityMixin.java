@@ -21,6 +21,8 @@ public abstract class EntityMixin implements EngineSceneNode {
     protected String stringUUID;
     @Shadow
     private Vec3 position;
+    @Shadow
+    private Level level;
 
     @Shadow
     public abstract Vec2 getRotationVector();
@@ -33,9 +35,6 @@ public abstract class EntityMixin implements EngineSceneNode {
 
     @Shadow
     public abstract EntityType<?> getType();
-
-    @Shadow
-    private Level level;
 
     @Shadow
     public abstract void kill(ServerLevel level);
