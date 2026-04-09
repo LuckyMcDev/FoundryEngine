@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.interfaces;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.main.GameConfig;
+import net.minecraft.gizmos.SimpleGizmoCollector;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
@@ -12,4 +13,6 @@ public interface EngineMinecraft extends EngineInterface<Minecraft> {
     void engine$init(GameConfig gameConfig, CallbackInfo ci);
 
     void engine$close(CallbackInfo ci);
+
+    SimpleGizmoCollector engine$perTickGizmos();
 }

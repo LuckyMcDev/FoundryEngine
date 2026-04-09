@@ -7,6 +7,7 @@ import de.luckymcdev.foundryengine.common.font.TTFFile;
 import de.luckymcdev.foundryengine.interfaces.EngineMinecraft;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.main.GameConfig;
+import net.minecraft.gizmos.SimpleGizmoCollector;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -29,6 +30,10 @@ public class MinecraftMixin implements EngineMinecraft {
     @Final
     private Window window;
 
+    @Shadow
+    @Final
+    private SimpleGizmoCollector perTickGizmos;
+
     @Override
     @Inject(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;resizeGui()V", shift = At.Shift.BEFORE))
     public void engine$init(GameConfig gameConfig, CallbackInfo ci) {
@@ -42,5 +47,10 @@ public class MinecraftMixin implements EngineMinecraft {
     public void engine$close(CallbackInfo ci) {
         Client.getImGuiManager().free();
         Common.getThreadManager().shutdownAll();
+    }
+
+    @Override
+    public SimpleGizmoCollector engine$perTickGizmos() {
+        return perTickGizmos;
     }
 }
