@@ -1,7 +1,8 @@
 package de.luckymcdev.foundryengine;
 
 import com.mojang.logging.LogUtils;
-import de.luckymcdev.foundryengine.api.event.RegistryEvent;
+import de.luckymcdev.foundryengine.api.event.BundleEvents;
+import de.luckymcdev.foundryengine.api.event.registry.RegistryEvent;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.log.EngineLogAppender;
 import de.luckymcdev.foundryengine.common.network.TestPacket;
@@ -124,6 +125,7 @@ public class FoundryEngineMod {
         try {
             Common.getBundleManager().discover(Common.BUNDLES);
             modBus.addListener((RegisterEvent e) -> modBus.post(new RegistryEvent(e, modBus)));
+            modBus.addListener((RegisterEvent ev) -> BundleEvents._postRegistry(new RegistryEvent(ev, modBus)));
         } catch (IOException e) {
             LOGGER.error("Error while Loading Bundles: {}", e.getLocalizedMessage());
         }

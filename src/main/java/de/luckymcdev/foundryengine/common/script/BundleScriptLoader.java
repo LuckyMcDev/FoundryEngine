@@ -10,6 +10,7 @@ import groovy.util.GroovyScriptEngine;
 import groovy.util.ResourceException;
 import groovy.util.ScriptException;
 import net.neoforged.bus.api.IEventBus;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.lang.reflect.InvocationTargetException;
@@ -51,9 +52,7 @@ public class BundleScriptLoader {
 
         for (Path scriptPath : files.scripts()) {
             try {
-                BundleEntrypoint entrypoint = loadScriptClass(
-                        scriptPath, files, engine, bundleBus, eventBus, bundleConfig
-                );
+                BundleEntrypoint entrypoint = loadScriptClass(scriptPath, files, engine, eventBus, bundleConfig);
 
                 if (entrypoint != null) {
                     entrypoints.add(entrypoint);
@@ -95,12 +94,12 @@ public class BundleScriptLoader {
      * Loads a single script class and instantiates it as a BundleEntrypoint.
      * Does NOT call onLoad() — that happens later in priority order.
      */
-    private BundleEntrypoint loadScriptClass(Path scriptPath, BundleFiles files, GroovyScriptEngine engine, IEventBus bundleBus, IEventBus eventBus, BundleConfig bundleConfig) throws InvocationTargetException, InstantiationException, IllegalAccessException, ResourceException, ScriptException {
+    private @Nullable BundleEntrypoint loadScriptClass(Path scriptPath, BundleFiles files, GroovyScriptEngine engine, IEventBus eventBus, BundleConfig bundleConfig) throws InvocationTargetException, InstantiationException, IllegalAccessException, ResourceException, ScriptException {
         String scriptName = getRelativeScriptName(files.root(), scriptPath);
 
         Class<?> scriptClass = engine.loadScriptByName(scriptName);
         if (BundleEntrypoint.class.isAssignableFrom(scriptClass)) {
-            return instantiateEntrypoint(scriptClass, bundleBus, eventBus, bundleConfig);
+            return instantiateEntrypoint(scriptClass, eventBus, bundleConfig);
         }
 
         LOGGER.trace("Script '{}' is not a BundleEntrypoint, skipping", scriptName);
@@ -112,11 +111,11 @@ public class BundleScriptLoader {
      * Preferred: (IEventBus, IEventBus, BundleConfig)
      * Fallback:  no-arg (warns, bundleConfig will be null)
      */
-    private BundleEntrypoint instantiateEntrypoint(Class<?> clazz, IEventBus bundleBus, IEventBus eventBus, BundleConfig bundleConfig) throws InvocationTargetException, InstantiationException, IllegalAccessException {
+    private BundleEntrypoint instantiateEntrypoint(Class<?> clazz, IEventBus eventBus, BundleConfig bundleConfig) throws InvocationTargetException, InstantiationException, IllegalAccessException {
         try {
             return (BundleEntrypoint) clazz
-                    .getConstructor(IEventBus.class, IEventBus.class, BundleConfig.class)
-                    .newInstance(bundleBus, eventBus, bundleConfig);
+                    .getConstructor(IEventBus.class, BundleConfig.class)
+                    .newInstance(eventBus, bundleConfig);
         } catch (NoSuchMethodException e) {
             try {
                 BundleEntrypoint instance = (BundleEntrypoint) clazz.getConstructor().newInstance();
@@ -136,20 +135,5 @@ public class BundleScriptLoader {
      */
     private String getRelativeScriptName(Path root, Path scriptPath) {
         return root.relativize(scriptPath).toString().replace('\\', '/');
-    }
-
-    /**
-     * Reloads a specific script using GroovyScriptEngine's reloading capabilities.
-     */
-    public BundleEntrypoint reloadScript(Path scriptPath, BundleFiles files, GroovyScriptEngine engine, IEventBus bundleBus, IEventBus eventBus, BundleConfig bundleConfig, String bundleId) throws Exception {
-        String scriptName = getRelativeScriptName(files.root(), scriptPath);
-
-        engine.getGroovyClassLoader().clearCache();
-        BundleEntrypoint entrypoint = loadScriptClass(scriptPath, files, engine, bundleBus, eventBus, bundleConfig);
-        if (entrypoint != null) {
-            LOGGER.info("Hot-reloading script '{}' for bundle '{}'", scriptName, bundleId);
-            entrypoint.onLoad();
-        }
-        return entrypoint;
     }
 }

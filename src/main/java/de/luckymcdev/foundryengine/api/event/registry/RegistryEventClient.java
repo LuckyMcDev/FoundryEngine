@@ -1,4 +1,4 @@
-package de.luckymcdev.foundryengine.api.event;
+package de.luckymcdev.foundryengine.api.event.registry;
 
 import de.luckymcdev.foundryengine.client.particle.EngineParticle;
 import de.luckymcdev.foundryengine.common.builder.particle.ParticleBuilderImpl;

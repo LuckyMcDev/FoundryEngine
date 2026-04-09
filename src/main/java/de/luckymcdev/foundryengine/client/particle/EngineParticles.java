@@ -1,7 +1,7 @@
 package de.luckymcdev.foundryengine.client.particle;
 
 import de.luckymcdev.foundryengine.api.builder.particle.ParticleBuilder;
-import de.luckymcdev.foundryengine.api.event.RegistryEvent;
+import de.luckymcdev.foundryengine.api.event.registry.RegistryEvent;
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.particle.data.KeyframeSequence;
 import de.luckymcdev.foundryengine.client.particle.data.ParticleColorData;

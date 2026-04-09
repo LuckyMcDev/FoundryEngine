@@ -20,7 +20,6 @@ import java.util.List;
  * @param scriptEngine    the script engine for this bundle.
  * @param registryQuery   the registry query for this bundle.
  * @param eventBus        the game event bus for this bundle, just mirrors NeoForge.EVENT_BUS
- * @param bundleBus       the 'mod' event bus but just for this bundle.
  * @param entrypoints     a list of entrypoints this bundle contains.
  * @param creativeModeTab the Creative Mode tab for this bundle.
  * @param bundleConfig    the config instance for this bundle.
@@ -31,7 +30,6 @@ public record Bundle(
         GroovyScriptEngine scriptEngine,
         BundleRegistryQuery registryQuery,
         IEventBus eventBus,
-        IEventBus bundleBus,
         List<BundleEntrypoint> entrypoints,
         BundleCreativeModeTab creativeModeTab,
         BundleConfig bundleConfig

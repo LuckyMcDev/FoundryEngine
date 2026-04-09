@@ -1,4 +1,4 @@
-package de.luckymcdev.foundryengine.api.event;
+package de.luckymcdev.foundryengine.api.event.registry;
 
 /**
  * Server-only companion to {@link RegistryEvent}.

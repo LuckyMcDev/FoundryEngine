@@ -95,7 +95,6 @@ public class BundleConfig {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private void applyFromFile(CommentedConfig fileConfig) {
         for (ConfigValue<?> value : values.values()) {
             Object raw = fileConfig.get(value.getKey());

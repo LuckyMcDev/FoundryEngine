@@ -1,4 +1,4 @@
-package de.luckymcdev.foundryengine.api.event;
+package de.luckymcdev.foundryengine.api.event.registry;
 
 import de.luckymcdev.foundryengine.api.builder.block.BlockBuilder;
 import de.luckymcdev.foundryengine.api.builder.item.ItemBuilder;
