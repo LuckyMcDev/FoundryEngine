@@ -10,3 +10,5 @@ Imgui does double the monitors refresh rate of fps?
 
 UI scale is broken when using any sort of scaling?
 Fix?: scale imgui with mc gui scale
+
+So font is somehow sometimes broken on Windows aswell (my machine)
