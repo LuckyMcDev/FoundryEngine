@@ -169,6 +169,14 @@ public class ScenePanel extends EditorPanel {
             ImGui.textDisabled(node.getTypeName());
             ImGui.separator();
 
+            if (ImGui.menuItem(ImIcons.FA.FA_CAMERA + "  Set as Camera")) {
+                var mc = Client.getMinecraft();
+                if (mc.getCameraEntity() == node.self()) {
+                    mc.setCameraEntity(null);
+                } else {
+                    mc.setCameraEntity(node.self());
+                }
+            }
             if (ImGui.menuItem(ImIcons.FA.FA_LOCATION_CROSSHAIRS + "  Teleport to")) {
                 teleportTo(node.getPosition());
             }
@@ -177,17 +185,6 @@ public class ScenePanel extends EditorPanel {
                 if (isSelected) selectedUUID = null;
             }
             ImGui.endPopup();
-        }
-    }
-
-    private void renderRightAlignedTypeText(String typeName) {
-        ImGui.sameLine();
-        float textWidth = ImGui.calcTextSize(typeName).x;
-        float posX = ImGui.getWindowWidth() - textWidth - ImGui.getStyle().getScrollbarSize() - 15f;
-
-        if (posX > ImGui.getCursorPosX()) {
-            ImGui.setCursorPosX(posX);
-            ImGui.textDisabled(typeName);
         }
     }
 
