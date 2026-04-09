@@ -6,7 +6,8 @@ import java.util.function.Supplier;
 
 /**
  * Base interface for all builders in the Foundry Engine API.
- * Provides common methods for translation keys, display names, and tags.
+ * Provides common methods for state management.
+ * Use composition (delegate to BuilderState) instead of inheritance.
  *
  * @param <T> The type of object this builder creates
  */

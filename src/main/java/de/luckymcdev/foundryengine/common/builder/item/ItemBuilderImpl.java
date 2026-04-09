@@ -1,7 +1,7 @@
 package de.luckymcdev.foundryengine.common.builder.item;
 
 import de.luckymcdev.foundryengine.api.builder.item.ItemBuilder;
-import de.luckymcdev.foundryengine.common.builder.BuilderBaseImpl;
+import de.luckymcdev.foundryengine.common.builder.BuilderState;
 import de.luckymcdev.foundryengine.common.world.item.EngineItem;
 import de.luckymcdev.foundryengine.common.wrapper.DataComponentWrapper;
 import net.minecraft.core.component.DataComponentType;
@@ -21,14 +21,15 @@ import java.util.function.UnaryOperator;
  * An Item Builder, which allows for Item registering in a Builder format.
  * Inspired by KubeJs
  */
-public class ItemBuilderImpl extends BuilderBaseImpl<Item> implements ItemBuilder {
+public class ItemBuilderImpl implements ItemBuilder {
+    private final BuilderState<Item> state;
     private final Map<EngineItem.CallbackType, Object> callbacks = new EnumMap<>(EngineItem.CallbackType.class);
     private Item.Properties properties;
     private Function<Item.Properties, Item> factory;
 
     public ItemBuilderImpl(Identifier id) {
-        super(id);
-        this.registryKey = Registries.ITEM;
+        this.state = new BuilderState<>(id);
+        this.state.registryKey = Registries.ITEM;
         this.properties = new Item.Properties();
         this.factory = EngineItem::new;
     }
@@ -64,55 +65,55 @@ public class ItemBuilderImpl extends BuilderBaseImpl<Item> implements ItemBuilde
 
     @Override
     public ItemBuilder onUseTick(EngineItem.OnUseTickCallback cb) {
-        callback(EngineItem.CallbackType.ON_USE_TICK, cb);
+        callbacks.put(EngineItem.CallbackType.ON_USE_TICK, cb);
         return this;
     }
 
     @Override
     public ItemBuilder useOn(EngineItem.UseOnCallback cb) {
-        callback(EngineItem.CallbackType.USE_ON, cb);
+        callbacks.put(EngineItem.CallbackType.USE_ON, cb);
         return this;
     }
 
     @Override
     public ItemBuilder use(EngineItem.UseCallback cb) {
-        callback(EngineItem.CallbackType.USE, cb);
+        callbacks.put(EngineItem.CallbackType.USE, cb);
         return this;
     }
 
     @Override
     public ItemBuilder finishUsingItem(EngineItem.FinishUsingItemCallback cb) {
-        callback(EngineItem.CallbackType.FINISH_USING_ITEM, cb);
+        callbacks.put(EngineItem.CallbackType.FINISH_USING_ITEM, cb);
         return this;
     }
 
     @Override
     public ItemBuilder hurtEnemy(EngineItem.HurtEnemyCallback cb) {
-        callback(EngineItem.CallbackType.HURT_ENEMY, cb);
+        callbacks.put(EngineItem.CallbackType.HURT_ENEMY, cb);
         return this;
     }
 
     @Override
     public ItemBuilder postHurtEnemy(EngineItem.PostHurtEnemyCallback cb) {
-        callback(EngineItem.CallbackType.POST_HURT_ENEMY, cb);
+        callbacks.put(EngineItem.CallbackType.POST_HURT_ENEMY, cb);
         return this;
     }
 
     @Override
     public ItemBuilder inventoryTick(EngineItem.InventoryTickCallback cb) {
-        callback(EngineItem.CallbackType.INVENTORY_TICK, cb);
+        callbacks.put(EngineItem.CallbackType.INVENTORY_TICK, cb);
         return this;
     }
 
     @Override
     public ItemBuilder onCraftedPostProcess(EngineItem.OnCraftedPostProcessCallback cb) {
-        callback(EngineItem.CallbackType.ON_CRAFTED_POST_PROCESS, cb);
+        callbacks.put(EngineItem.CallbackType.ON_CRAFTED_POST_PROCESS, cb);
         return this;
     }
 
     @Override
     public ItemBuilder releaseUsing(EngineItem.ReleaseUsingCallback cb) {
-        callback(EngineItem.CallbackType.RELEASE_USING, cb);
+        callbacks.put(EngineItem.CallbackType.RELEASE_USING, cb);
         return this;
     }
 
@@ -133,14 +134,14 @@ public class ItemBuilderImpl extends BuilderBaseImpl<Item> implements ItemBuilde
     @Override
     public Item register(RegisterEvent.RegisterHelper<Item> helper) {
         Item item = build();
-        helper.register(this.id, item);
-        this.object = item;
+        helper.register(state.id, item);
+        state.setObject(item);
         return item;
     }
 
     @Override
     public Item build() {
-        this.properties.setId(ResourceKey.create(Registries.ITEM, id));
+        this.properties.setId(ResourceKey.create(Registries.ITEM, state.id));
 
         if (!callbacks.isEmpty()) {
             EngineItem engineItem = new EngineItem(this.properties);
@@ -160,8 +161,22 @@ public class ItemBuilderImpl extends BuilderBaseImpl<Item> implements ItemBuilde
             });
             return engineItem;
         }
-        var vanillaItem = factory.apply(this.properties);
 
-        return vanillaItem;
+        return factory.apply(this.properties);
+    }
+
+    @Override
+    public Item get() {
+        return state.get();
+    }
+
+    @Override
+    public Item getOrCreate() {
+        return state.getOrCreate();
+    }
+
+    @Override
+    public Identifier newID(String pre, String post) {
+        return state.newID(pre, post);
     }
 }

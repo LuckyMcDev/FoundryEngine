@@ -3,7 +3,7 @@ package de.luckymcdev.foundryengine.common.builder.particle;
 import de.luckymcdev.foundryengine.api.builder.particle.ParticleBuilder;
 import de.luckymcdev.foundryengine.api.builder.particle.ParticleLayer;
 import de.luckymcdev.foundryengine.client.particle.data.*;
-import de.luckymcdev.foundryengine.common.builder.BuilderBaseImpl;
+import de.luckymcdev.foundryengine.common.builder.BuilderState;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.resources.Identifier;
@@ -13,7 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-public class ParticleBuilderImpl extends BuilderBaseImpl<ParticleType<?>> implements ParticleBuilder {
+/**
+ * Particle Builder using composition instead of inheritance.
+ */
+public class ParticleBuilderImpl implements ParticleBuilder {
+    private final BuilderState<ParticleType<?>> state;
     private ParticleColorData colorData;
     private ParticleScaleData scaleData;
     private ParticleVelocityData velocityData;
@@ -25,7 +29,7 @@ public class ParticleBuilderImpl extends BuilderBaseImpl<ParticleType<?>> implem
     private ParticleLayer layer = ParticleLayer.OPAQUE;
 
     public ParticleBuilderImpl(Identifier id) {
-        super(id);
+        this.state = new BuilderState<>(id);
     }
 
     @Override
@@ -126,13 +130,28 @@ public class ParticleBuilderImpl extends BuilderBaseImpl<ParticleType<?>> implem
     @Override
     public ParticleType<?> register(RegisterEvent.RegisterHelper<ParticleType<?>> helper) {
         ParticleType<?> type = build();
-        helper.register(this.id, type);
-        this.object = type;
+        helper.register(state.id, type);
+        state.setObject(type);
         return type;
     }
 
     @Override
     public ParticleType<?> build() {
         return factory.apply(alwaysShow);
+    }
+
+    @Override
+    public ParticleType<?> get() {
+        return state.get();
+    }
+
+    @Override
+    public ParticleType<?> getOrCreate() {
+        return state.getOrCreate();
+    }
+
+    @Override
+    public Identifier newID(String pre, String post) {
+        return state.newID(pre, post);
     }
 }

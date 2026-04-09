@@ -2,7 +2,7 @@ package de.luckymcdev.foundryengine.common.builder.recipe;
 
 import de.luckymcdev.foundryengine.api.builder.recipe.RecipeBuilder;
 import de.luckymcdev.foundryengine.api.builder.recipe.RecipeResult;
-import de.luckymcdev.foundryengine.common.builder.BuilderBaseImpl;
+import de.luckymcdev.foundryengine.common.builder.BuilderState;
 import de.luckymcdev.foundryengine.common.registry.EngineRegistries;
 import de.luckymcdev.foundryengine.common.vpacks.json.recipe.*;
 import de.luckymcdev.foundryengine.common.vpacks.json.recipe.crafting.JShapedRecipe;
@@ -24,7 +24,12 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.*;
 
-public class RecipeBuilderImpl extends BuilderBaseImpl<RecipeResult> implements RecipeBuilder {
+/**
+ * Recipe Builder using composition instead of inheritance.
+ * Simpler and more flexible than extending BuilderBaseImpl.
+ */
+public class RecipeBuilderImpl implements RecipeBuilder {
+    private final BuilderState<RecipeResult> state;
     private final RecipeType type;
     private final ItemLike result;
     private final List<String> pattern = new ArrayList<>();
@@ -43,8 +48,8 @@ public class RecipeBuilderImpl extends BuilderBaseImpl<RecipeResult> implements 
     private String group = "";
 
     private RecipeBuilderImpl(Identifier id, RecipeType type, @Nullable ItemLike result) {
-        super(id);
-        this.registryKey = EngineRegistries.Keys.RECIPES;
+        this.state = new BuilderState<>(id);
+        this.state.registryKey = EngineRegistries.Keys.RECIPES;
         this.type = type;
         this.result = result;
     }
@@ -117,7 +122,7 @@ public class RecipeBuilderImpl extends BuilderBaseImpl<RecipeResult> implements 
 
     @Override
     public Identifier getRecipeId() {
-        return id;
+        return state.id;
     }
 
     public RecipeType getRecipeType() {
@@ -268,11 +273,8 @@ public class RecipeBuilderImpl extends BuilderBaseImpl<RecipeResult> implements 
         return type == RecipeType.SMITHING_TRANSFORM || type == RecipeType.SMITHING_TRIM;
     }
 
-    /**
-     * Converts this RecipeBuilder to a JSON get object
-     */
     public AbstractJRecipe toJson() {
-        ensureValidForJson(id);
+        ensureValidForJson(state.id);
 
         return switch (type) {
             case SHAPED -> buildShapedJson();
@@ -289,37 +291,28 @@ public class RecipeBuilderImpl extends BuilderBaseImpl<RecipeResult> implements 
 
     private JShapedRecipe buildShapedJson() {
         JShapedRecipe recipe = new JShapedRecipe();
-
         for (int i = 0; i < pattern.size() && i < 3; i++) {
             recipe.row(i, pattern.get(i));
         }
-
         for (Map.Entry<Character, Ingredient> entry : keys.entrySet()) {
             recipe.key(String.valueOf(entry.getKey()), ingredientToJson(entry.getValue()));
         }
-
         recipe.result(createResult());
-
         if (!group.isEmpty()) {
             recipe.group(group);
         }
-
         return recipe;
     }
 
     private JShapelessRecipe buildShapelessJson() {
         JShapelessRecipe recipe = new JShapelessRecipe();
-
         for (Ingredient ingredient : ingredients) {
             recipe.ingredient(ingredientToJson(ingredient));
         }
-
         recipe.result(createResult());
-
         if (!group.isEmpty()) {
             recipe.group(group);
         }
-
         return recipe;
     }
 
@@ -330,11 +323,9 @@ public class RecipeBuilderImpl extends BuilderBaseImpl<RecipeResult> implements 
         recipe.experience((int) experience);
         recipe.cookingTime(cookingTime);
         recipe.category(categoryToString(category));
-
         if (!group.isEmpty()) {
             recipe.group(group);
         }
-
         return recipe;
     }
 
@@ -347,7 +338,6 @@ public class RecipeBuilderImpl extends BuilderBaseImpl<RecipeResult> implements 
 
     private JSmithingTransformRecipe buildSmithingTransformJson() {
         JSmithingTransformRecipe recipe = new JSmithingTransformRecipe();
-
         if (smithingTemplate != null) {
             recipe.template(ingredientToJson(smithingTemplate));
         }
@@ -357,14 +347,12 @@ public class RecipeBuilderImpl extends BuilderBaseImpl<RecipeResult> implements 
         if (smithingAddition != null) {
             recipe.addition(ingredientToJson(smithingAddition));
         }
-
         recipe.result(createResult());
         return recipe;
     }
 
     private JSmithingTrimRecipe buildSmithingTrimJson() {
         JSmithingTrimRecipe recipe = new JSmithingTrimRecipe();
-
         if (smithingTemplate != null) {
             recipe.template(ingredientToJson(smithingTemplate));
         }
@@ -376,7 +364,6 @@ public class RecipeBuilderImpl extends BuilderBaseImpl<RecipeResult> implements 
         if (smithingAddition != null) {
             recipe.addition(ingredientToJson(smithingAddition));
         }
-
         return recipe;
     }
 
@@ -390,9 +377,7 @@ public class RecipeBuilderImpl extends BuilderBaseImpl<RecipeResult> implements 
 
     private JIngredient ingredientToJson(Ingredient ingredient) {
         JIngredient jIngredient = new JIngredient();
-
         var values = ingredient.getValues();
-
         for (var value : values) {
             value.unwrap().ifLeft(resourceKeyItem -> {
                 jIngredient.entry(resourceKeyItem.identifier().toString());
@@ -401,7 +386,6 @@ public class RecipeBuilderImpl extends BuilderBaseImpl<RecipeResult> implements 
                 jIngredient.entry(itemId.toString());
             });
         }
-
         return jIngredient;
     }
 
@@ -416,38 +400,53 @@ public class RecipeBuilderImpl extends BuilderBaseImpl<RecipeResult> implements 
     @Override
     public RecipeResult build() {
         AbstractJRecipe jsonRecipe = toJson();
-        return new RecipeResult(id, jsonRecipe);
+        return new RecipeResult(state.id, jsonRecipe);
     }
 
     @Override
     public RecipeResult register(RegisterEvent.RegisterHelper<RecipeResult> helper) {
         RecipeResult result = build();
-        helper.register(this.id, result);
-        this.object = result;
+        helper.register(state.id, result);
+        state.setObject(result);
         return result;
     }
 
     private void ensureValidForJson(Identifier recipeId) {
         if (type == RecipeType.SHAPED) {
             if (pattern.isEmpty()) {
-                throw new IllegalStateException("Shaped get " + recipeId + " must have a pattern");
+                throw new IllegalStateException("Shaped recipe " + recipeId + " must have a pattern");
             }
             if (keys.isEmpty()) {
-                throw new IllegalStateException("Shaped get " + recipeId + " must define ingredients");
+                throw new IllegalStateException("Shaped recipe " + recipeId + " must define ingredients");
             }
         } else if (type == RecipeType.SHAPELESS) {
             if (ingredients.isEmpty()) {
-                throw new IllegalStateException("Shapeless get " + recipeId + " must have ingredients");
+                throw new IllegalStateException("Shapeless recipe " + recipeId + " must have ingredients");
             }
         } else if (isCookingRecipe() || type == RecipeType.STONECUTTING) {
             if (cookingIngredient == null) {
-                throw new IllegalStateException(type + " get " + recipeId + " must have an ingredient");
+                throw new IllegalStateException(type + " recipe " + recipeId + " must have an ingredient");
             }
         } else if (isSmithingRecipe()) {
             if (smithingTemplate == null && smithingBase == null && smithingAddition == null) {
-                throw new IllegalStateException("Smithing get " + recipeId + " must have template, base, and/or addition");
+                throw new IllegalStateException("Smithing recipe " + recipeId + " must have template, base, and/or addition");
             }
         }
+    }
+
+    @Override
+    public RecipeResult get() {
+        return state.get();
+    }
+
+    @Override
+    public RecipeResult getOrCreate() {
+        return state.getOrCreate();
+    }
+
+    @Override
+    public Identifier newID(String pre, String post) {
+        return state.newID(pre, post);
     }
 
     public enum RecipeType {

@@ -1,7 +1,7 @@
 package de.luckymcdev.foundryengine.common.builder.block;
 
 import de.luckymcdev.foundryengine.api.builder.block.BlockBuilder;
-import de.luckymcdev.foundryengine.common.builder.BuilderBaseImpl;
+import de.luckymcdev.foundryengine.common.builder.BuilderState;
 import de.luckymcdev.foundryengine.common.builder.item.ItemBuilderImpl;
 import de.luckymcdev.foundryengine.common.world.block.EngineBlock;
 import de.luckymcdev.foundryengine.common.world.item.EngineItem;
@@ -20,7 +20,12 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
-public class BlockBuilderImpl extends BuilderBaseImpl<Block> implements BlockBuilder {
+/**
+ * Block Builder using composition instead of inheritance.
+ * Much cleaner and allows for better code organization.
+ */
+public class BlockBuilderImpl implements BlockBuilder {
+    private final BuilderState<Block> state;
     private final BiFunction<Block, Item.Properties, Item> itemFactory;
     private final Map<EngineBlock.CallbackType, Object> blockCallbacks = new EnumMap<>(EngineBlock.CallbackType.class);
     private final Map<EngineItem.CallbackType, Object> itemCallbacks = new EnumMap<>(EngineItem.CallbackType.class);
@@ -30,106 +35,11 @@ public class BlockBuilderImpl extends BuilderBaseImpl<Block> implements BlockBui
     private UnaryOperator<Item.Properties> itemPropertyModifier = p -> p;
 
     public BlockBuilderImpl(Identifier id) {
-        super(id);
-        this.registryKey = Registries.BLOCK;
+        this.state = new BuilderState<>(id);
+        this.state.registryKey = Registries.BLOCK;
         this.properties = BlockBehaviour.Properties.of();
         this.blockFactory = EngineBlock::new;
         this.itemFactory = BlockItem::new;
-    }
-
-    private <C> BlockBuilder blockCallback(EngineBlock.CallbackType type, C cb) {
-        blockCallbacks.put(type, cb);
-        return this;
-    }
-
-    private <C> BlockBuilder itemCallback(EngineItem.CallbackType type, C cb) {
-        itemCallbacks.put(type, cb);
-        return this;
-    }
-
-    @Override
-    public BlockBuilder animateTick(EngineBlock.AnimateTickCallback cb) {
-        return blockCallback(EngineBlock.CallbackType.ANIMATE_TICK, cb);
-    }
-
-    @Override
-    public BlockBuilder destroy(EngineBlock.DestroyCallback cb) {
-        return blockCallback(EngineBlock.CallbackType.DESTROY, cb);
-    }
-
-    @Override
-    public BlockBuilder wasExploded(EngineBlock.WasExplodedCallback cb) {
-        return blockCallback(EngineBlock.CallbackType.WAS_EXPLODED, cb);
-    }
-
-    @Override
-    public BlockBuilder stepOn(EngineBlock.StepOnCallback cb) {
-        return blockCallback(EngineBlock.CallbackType.STEP_ON, cb);
-    }
-
-    @Override
-    public BlockBuilder setPlacedBy(EngineBlock.SetPlacedByCallback cb) {
-        return blockCallback(EngineBlock.CallbackType.SET_PLACED_BY, cb);
-    }
-
-    @Override
-    public BlockBuilder fallOn(EngineBlock.FallOnCallback cb) {
-        return blockCallback(EngineBlock.CallbackType.FALL_ON, cb);
-    }
-
-    @Override
-    public BlockBuilder playerWillDestroy(EngineBlock.PlayerWillDestroyCallback cb) {
-        return blockCallback(EngineBlock.CallbackType.PLAYER_WILL_DESTROY, cb);
-    }
-
-    @Override
-    public BlockBuilder playerDestroy(EngineBlock.PlayerDestroyCallback cb) {
-        return blockCallback(EngineBlock.CallbackType.PLAYER_DESTROY, cb);
-    }
-
-    @Override
-    public BlockBuilder handlePrecipitation(EngineBlock.HandlePrecipitationCallback cb) {
-        return blockCallback(EngineBlock.CallbackType.HANDLE_PRECIPITATION, cb);
-    }
-
-    @Override
-    public BlockBuilder itemInventoryTick(EngineItem.InventoryTickCallback cb) {
-        return itemCallback(EngineItem.CallbackType.INVENTORY_TICK, cb);
-    }
-
-    @Override
-    public BlockBuilder itemUse(EngineItem.UseCallback cb) {
-        return itemCallback(EngineItem.CallbackType.USE, cb);
-    }
-
-    @Override
-    public BlockBuilder itemUseOn(EngineItem.UseOnCallback cb) {
-        return itemCallback(EngineItem.CallbackType.USE_ON, cb);
-    }
-
-    @Override
-    public BlockBuilder itemFinishUsing(EngineItem.FinishUsingItemCallback cb) {
-        return itemCallback(EngineItem.CallbackType.FINISH_USING_ITEM, cb);
-    }
-
-    @Override
-    public BlockBuilder itemHurtEnemy(EngineItem.HurtEnemyCallback cb) {
-        return itemCallback(EngineItem.CallbackType.HURT_ENEMY, cb);
-    }
-
-    @Override
-    public BlockBuilder itemPostHurtEnemy(EngineItem.PostHurtEnemyCallback cb) {
-        return itemCallback(EngineItem.CallbackType.POST_HURT_ENEMY, cb);
-    }
-
-    @Override
-    public BlockBuilder itemReleaseUsing(EngineItem.ReleaseUsingCallback cb) {
-        return itemCallback(EngineItem.CallbackType.RELEASE_USING, cb);
-    }
-
-    @Override
-    public BlockBuilder itemOnCraftedPostProcess(EngineItem.OnCraftedPostProcessCallback cb) {
-        return itemCallback(EngineItem.CallbackType.ON_CRAFTED_POST_PROCESS, cb);
     }
 
     @Override
@@ -162,21 +72,123 @@ public class BlockBuilderImpl extends BuilderBaseImpl<Block> implements BlockBui
     }
 
     @Override
+    public BlockBuilder animateTick(EngineBlock.AnimateTickCallback cb) {
+        blockCallbacks.put(EngineBlock.CallbackType.ANIMATE_TICK, cb);
+        return this;
+    }
+
+    @Override
+    public BlockBuilder destroy(EngineBlock.DestroyCallback cb) {
+        blockCallbacks.put(EngineBlock.CallbackType.DESTROY, cb);
+        return this;
+    }
+
+    @Override
+    public BlockBuilder wasExploded(EngineBlock.WasExplodedCallback cb) {
+        blockCallbacks.put(EngineBlock.CallbackType.WAS_EXPLODED, cb);
+        return this;
+    }
+
+    @Override
+    public BlockBuilder stepOn(EngineBlock.StepOnCallback cb) {
+        blockCallbacks.put(EngineBlock.CallbackType.STEP_ON, cb);
+        return this;
+    }
+
+    @Override
+    public BlockBuilder setPlacedBy(EngineBlock.SetPlacedByCallback cb) {
+        blockCallbacks.put(EngineBlock.CallbackType.SET_PLACED_BY, cb);
+        return this;
+    }
+
+    @Override
+    public BlockBuilder fallOn(EngineBlock.FallOnCallback cb) {
+        blockCallbacks.put(EngineBlock.CallbackType.FALL_ON, cb);
+        return this;
+    }
+
+    @Override
+    public BlockBuilder playerWillDestroy(EngineBlock.PlayerWillDestroyCallback cb) {
+        blockCallbacks.put(EngineBlock.CallbackType.PLAYER_WILL_DESTROY, cb);
+        return this;
+    }
+
+    @Override
+    public BlockBuilder playerDestroy(EngineBlock.PlayerDestroyCallback cb) {
+        blockCallbacks.put(EngineBlock.CallbackType.PLAYER_DESTROY, cb);
+        return this;
+    }
+
+    @Override
+    public BlockBuilder handlePrecipitation(EngineBlock.HandlePrecipitationCallback cb) {
+        blockCallbacks.put(EngineBlock.CallbackType.HANDLE_PRECIPITATION, cb);
+        return this;
+    }
+
+    @Override
+    public BlockBuilder itemInventoryTick(EngineItem.InventoryTickCallback cb) {
+        itemCallbacks.put(EngineItem.CallbackType.INVENTORY_TICK, cb);
+        return this;
+    }
+
+    @Override
+    public BlockBuilder itemUse(EngineItem.UseCallback cb) {
+        itemCallbacks.put(EngineItem.CallbackType.USE, cb);
+        return this;
+    }
+
+    @Override
+    public BlockBuilder itemUseOn(EngineItem.UseOnCallback cb) {
+        itemCallbacks.put(EngineItem.CallbackType.USE_ON, cb);
+        return this;
+    }
+
+    @Override
+    public BlockBuilder itemFinishUsing(EngineItem.FinishUsingItemCallback cb) {
+        itemCallbacks.put(EngineItem.CallbackType.FINISH_USING_ITEM, cb);
+        return this;
+    }
+
+    @Override
+    public BlockBuilder itemHurtEnemy(EngineItem.HurtEnemyCallback cb) {
+        itemCallbacks.put(EngineItem.CallbackType.HURT_ENEMY, cb);
+        return this;
+    }
+
+    @Override
+    public BlockBuilder itemPostHurtEnemy(EngineItem.PostHurtEnemyCallback cb) {
+        itemCallbacks.put(EngineItem.CallbackType.POST_HURT_ENEMY, cb);
+        return this;
+    }
+
+    @Override
+    public BlockBuilder itemReleaseUsing(EngineItem.ReleaseUsingCallback cb) {
+        itemCallbacks.put(EngineItem.CallbackType.RELEASE_USING, cb);
+        return this;
+    }
+
+    @Override
+    public BlockBuilder itemOnCraftedPostProcess(EngineItem.OnCraftedPostProcessCallback cb) {
+        itemCallbacks.put(EngineItem.CallbackType.ON_CRAFTED_POST_PROCESS, cb);
+        return this;
+    }
+
+    @Override
     public Block registerBlock(RegisterEvent.RegisterHelper<Block> helper) {
         Block block = build();
-        helper.register(this.id, block);
-        this.object = block;
+        helper.register(state.id, block);
+        state.setObject(block);
         return block;
     }
 
     @Override
     public Item registerItem(RegisterEvent.RegisterHelper<Item> helper) {
         if (!hasItem) {
-            throw new IllegalStateException("Cannot register item for block " + id + " because noItem() was called.");
+            throw new IllegalStateException("Cannot register item for block " + state.id + " because noItem() was called.");
         }
 
-        ItemBuilderImpl itemBuilder = (ItemBuilderImpl) new ItemBuilderImpl(id)
-                .factory(props -> itemFactory.apply(object, props))
+        ItemBuilderImpl itemBuilder = (ItemBuilderImpl) new ItemBuilderImpl(state.id)
+                .factory(props -> itemFactory.apply(state.object, props))
                 .properties(itemPropertyModifier);
 
         itemCallbacks.forEach(itemBuilder::callback);
@@ -186,7 +198,7 @@ public class BlockBuilderImpl extends BuilderBaseImpl<Block> implements BlockBui
 
     @Override
     public Block build() {
-        this.properties.setId(ResourceKey.create(Registries.BLOCK, id));
+        this.properties.setId(ResourceKey.create(Registries.BLOCK, state.id));
 
         if (!blockCallbacks.isEmpty()) {
             EngineBlock block = new EngineBlock(this.properties);
@@ -208,5 +220,28 @@ public class BlockBuilderImpl extends BuilderBaseImpl<Block> implements BlockBui
         }
 
         return blockFactory.apply(this.properties);
+    }
+
+    @Override
+    public Block get() {
+        return state.get();
+    }
+
+    @Override
+    public Block getOrCreate() {
+        return state.getOrCreate();
+    }
+
+    @Override
+    public Identifier newID(String pre, String post) {
+        return state.newID(pre, post);
+    }
+
+    /**
+     * Internal method for ItemBuilderImpl to register callbacks
+     */
+    <C> BlockBuilder callback(EngineItem.CallbackType type, C cb) {
+        itemCallbacks.put(type, cb);
+        return this;
     }
 }
