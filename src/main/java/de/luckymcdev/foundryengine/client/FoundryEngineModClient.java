@@ -19,7 +19,6 @@ import de.luckymcdev.foundryengine.client.editor.event.RegisterPanelEvent;
 import de.luckymcdev.foundryengine.client.event.RegisterRenderingStuffEvent;
 import de.luckymcdev.foundryengine.client.ext.ModPathBroadcaster;
 import de.luckymcdev.foundryengine.client.icons.ScreenIconExporter;
-import de.luckymcdev.foundryengine.client.particle.EngineParticles;
 import de.luckymcdev.foundryengine.client.util.key.RegisterKeyBindingEvent;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.config.ClientConfig;
@@ -67,7 +66,6 @@ public class FoundryEngineModClient {
     }
 
     private void onRegistry(RegistryEvent event) {
-        EngineParticles.register(event);
     }
 
     private void onClientSetup(FMLClientSetupEvent event) {
@@ -135,7 +133,6 @@ public class FoundryEngineModClient {
 
     private void onClientTick(ClientTickEvent.Post event) {
         Client.getEditorManager().handleTick();
-        EngineParticles.tick();
 
         if (ClientConfig.AUTO_EXPORT.get() && !hasIconAutoExported && Minecraft.getInstance().level != null) {
             if (Minecraft.getInstance().screen != null) return;

@@ -19,6 +19,7 @@ import de.luckymcdev.foundryengine.server.command.FoundryCommands;
 import de.luckymcdev.foundryengine.server.packs.EngineRepositorySource;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLConstructModEvent;
@@ -124,7 +125,7 @@ public class FoundryEngineMod {
     private void onConstruct(final FMLConstructModEvent event) {
         try {
             Common.getBundleManager().discover(Common.BUNDLES);
-            modBus.addListener((RegisterEvent e) -> modBus.post(new RegistryEvent(e, modBus)));
+            modBus.addListener((RegisterEvent ev) -> ModLoader.postEvent(new RegistryEvent(ev, modBus)));
             modBus.addListener((RegisterEvent ev) -> BundleEvents._postRegistry(new RegistryEvent(ev, modBus)));
         } catch (IOException e) {
             LOGGER.error("Error while Loading Bundles: {}", e.getLocalizedMessage());
