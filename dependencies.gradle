@@ -18,6 +18,10 @@ dependencies {
 
     //bundle "fr.mrqsdf:BbModelReader:${bbmodelreader_version}"
 
+    // RenderDoc Support
+    bundle "dev.latvian.mods:renderdoc-support:${renderdoc_support_version}"
+
+    implementation "dev.latvian.mods:renderdoc-support:1.0.1-build.2"
     // ImGui dependencies
     bundle "io.github.spair:imgui-java-binding:${imgui_version}"
     jarJar(api(implementation("io.github.spair:imgui-java-lwjgl3:${imgui_version}"))) {

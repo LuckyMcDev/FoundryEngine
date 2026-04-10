@@ -13,7 +13,14 @@ repositories {
     mavenLocal()
     gradlePluginPortal()
     mavenCentral()
-    maven { url "https://maven.neoforged.net/releases" }
+    maven {
+        name "Neoforge"
+        url "https://maven.neoforged.net/releases"
+    }
+    maven {
+        name "Latvian"
+        url "https://maven.latvian.dev/releases"
+    }
 }
 
 base {
