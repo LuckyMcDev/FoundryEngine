@@ -62,7 +62,6 @@ public class FoundryEngineModClient {
         BUS.addListener(ClientEvents::_postStopped);
         BUS.addListener(ClientEvents::_postStopping);
         BUS.addListener(ClientEvents::_postChat);
-        BUS.addListener(ClientEvents::_postCustomizeGuiOverlay);
         BUS.addListener(ClientEvents::_postRenderGui);
         BUS.addListener(ClientEvents::_postRenderGuiLayer);
         BUS.addListener(ClientEvents::_postRenderHand);

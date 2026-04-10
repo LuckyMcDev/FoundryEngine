@@ -4,8 +4,11 @@
   "package": "de.luckymcdev.foundryengine.mixin.screen",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "AbstractSelectionListAccessor"
   ],
   "client": [
+    "ModListScreenMixin",
+    "ModListWidgetMixin",
     "TitleScreenMixin"
   ],
   "injectors": {

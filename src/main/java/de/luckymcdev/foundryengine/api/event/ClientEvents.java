@@ -9,7 +9,6 @@ public class ClientEvents {
     private static final EventGroup<ClientStoppedEvent> STOPPED = new EventGroup<>();
     private static final EventGroup<ClientStoppingEvent> STOPPING = new EventGroup<>();
     private static final EventGroup<ClientChatEvent> CHAT = new EventGroup<>();
-    private static final EventGroup<CustomizeGuiOverlayEvent> CUSTOMIZE_GUI_OVERLAY = new EventGroup<>();
     private static final EventGroup<RegisterKeyMappingsEvent> KEY_MAPPINGS = new EventGroup<>();
     private static final EventGroup<RenderGuiEvent.Post> RENDER_GUI = new EventGroup<>();
     private static final EventGroup<RenderGuiLayerEvent.Post> RENDER_GUI_LAYER = new EventGroup<>();
@@ -30,10 +29,6 @@ public class ClientEvents {
 
     public static void chat(EventCallback<ClientChatEvent> callback) {
         CHAT.add(callback);
-    }
-
-    public static void customizeGuiOverlay(EventCallback<CustomizeGuiOverlayEvent> callback) {
-        CUSTOMIZE_GUI_OVERLAY.add(callback);
     }
 
     public static void keyMappings(EventCallback<RegisterKeyMappingsEvent> callback) {
@@ -70,10 +65,6 @@ public class ClientEvents {
 
     public static void _postChat(ClientChatEvent event) {
         CHAT.post(event);
-    }
-
-    public static void _postCustomizeGuiOverlay(CustomizeGuiOverlayEvent event) {
-        CUSTOMIZE_GUI_OVERLAY.post(event);
     }
 
     public static void _postKeyMappings(RegisterKeyMappingsEvent event) {
