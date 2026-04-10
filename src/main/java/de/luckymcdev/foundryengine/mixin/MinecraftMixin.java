@@ -2,7 +2,6 @@ package de.luckymcdev.foundryengine.mixin;
 
 import com.mojang.blaze3d.platform.Window;
 import de.luckymcdev.foundryengine.client.Client;
-import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.font.TTFFile;
 import de.luckymcdev.foundryengine.interfaces.EngineMinecraft;
 import net.minecraft.client.Minecraft;
@@ -46,7 +45,6 @@ public class MinecraftMixin implements EngineMinecraft {
     @Inject(method = "close", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/font/providers/FreeTypeUtil;destroy()V", shift = At.Shift.BEFORE))
     public void engine$close(CallbackInfo ci) {
         Client.getImGuiManager().free();
-        Common.getThreadManager().shutdownAll();
     }
 
     @Override

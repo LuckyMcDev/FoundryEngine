@@ -8,7 +8,6 @@ import de.luckymcdev.foundryengine.common.game.behavior.GameBehaviorManager;
 import de.luckymcdev.foundryengine.common.game.stage.GameStageHandler;
 import de.luckymcdev.foundryengine.common.network.NetworkManager;
 import de.luckymcdev.foundryengine.common.scene.SceneManager;
-import de.luckymcdev.foundryengine.common.thread.ThreadManager;
 import de.luckymcdev.foundryengine.common.util.FirstRun;
 import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.Event;
@@ -46,14 +45,6 @@ public abstract class Common {
      * Base Config Dir
      */
     public static final Path CONFIG = FMLPaths.CONFIGDIR.get();
-    /**
-     * FoundryEngine config dir
-     */
-    public static final Path FOUNDRY_ENGINE_CONFIG = CONFIG.resolve(MODID);
-    /**
-     * WIP database config dir.
-     */
-    public static final Path DATABASE_CONFIG = CONFIG.resolve("database");
     private static final boolean FIRST_RUN = FirstRun.isFor(MODID);
     public static final Path DIRECTORY = dir(GAMEDIR.resolve(MODNAME));
     public static final Path BUNDLES = dir(DIRECTORY.resolve("bundles"));
@@ -61,7 +52,6 @@ public abstract class Common {
     public static final Path DUMPS = dir(CACHE.resolve("dumps"));
     public static final Path CONFIG_FE = dir(DIRECTORY.resolve("config"));
     private static final BundleManager BUNDLE_MANAGER = new BundleManager(FoundryEngineMod.getModBus(), CONFIG_FE);
-    private static final ThreadManager THREAD_MANAGER = new ThreadManager();
     private static final GameBehaviorManager GAME_BEHAVIOR_MANAGER = new GameBehaviorManager();
     private static final GameStageHandler GAME_STAGE_HANDLER = new GameStageHandler();
     private static final NetworkManager NETWORK_MANAGER = new NetworkManager();
@@ -83,11 +73,6 @@ public abstract class Common {
 
     public static <V> Supplier<V> supOf(V value) {
         return () -> value;
-    }
-
-
-    public static ThreadManager getThreadManager() {
-        return THREAD_MANAGER;
     }
 
     public static BundleManager getBundleManager() {

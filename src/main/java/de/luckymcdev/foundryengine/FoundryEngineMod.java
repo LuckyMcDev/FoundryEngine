@@ -11,7 +11,6 @@ import de.luckymcdev.foundryengine.common.network.packets.ServerBoundSetTimePack
 import de.luckymcdev.foundryengine.common.network.packets.ServerBoundTeleportPacket;
 import de.luckymcdev.foundryengine.common.network.packets.explorer.*;
 import de.luckymcdev.foundryengine.common.registry.EngineRegistries;
-import de.luckymcdev.foundryengine.common.thread.RegisterEngineThreadEvent;
 import de.luckymcdev.foundryengine.common.vpacks.BundleVirtualPacks;
 import de.luckymcdev.foundryengine.common.vpacks.event.RegisterVirtualPackEvent;
 import de.luckymcdev.foundryengine.config.Config;
@@ -63,7 +62,7 @@ public class FoundryEngineMod {
         modBus.addListener(this::onRegisterPayloadHandlers);
         BUS.addListener(this::onRegisterCommands);
 
-        BUS.post(new RegisterEngineThreadEvent());
+        BUS.addListener(BundleEvents::_postVanillaGame);
 
         BUS.addListener(this::onRegisterVirtualPacks);
         BUS.addListener(Common.getSceneManager()::entityJoinLevel);
@@ -125,8 +124,12 @@ public class FoundryEngineMod {
     private void onConstruct(final FMLConstructModEvent event) {
         try {
             Common.getBundleManager().discover(Common.BUNDLES);
-            modBus.addListener((RegisterEvent ev) -> ModLoader.postEvent(new RegistryEvent(ev, modBus)));
-            modBus.addListener((RegisterEvent ev) -> BundleEvents._postRegistry(new RegistryEvent(ev, modBus)));
+            if (modBus == null) return;
+            modBus.addListener((RegisterEvent ev) -> {
+                RegistryEvent registryEvent = new RegistryEvent(ev, modBus);
+                ModLoader.postEvent(registryEvent);
+                BundleEvents._postRegistry(registryEvent);
+            });
         } catch (IOException e) {
             LOGGER.error("Error while Loading Bundles: {}", e.getLocalizedMessage());
         }
