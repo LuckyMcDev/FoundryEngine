@@ -1,40 +1,38 @@
 package de.luckymcdev.foundryengine.mixin.screen;
 
+import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.common.bundle.Bundle;
 import de.luckymcdev.foundryengine.common.bundle.compat.BundleSelectable;
 import de.luckymcdev.foundryengine.common.bundle.info.BundleInfo;
 import de.luckymcdev.foundryengine.common.exceptions.EngineException;
 import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.client.gui.ModListScreen;
+import net.neoforged.neoforge.client.gui.widget.ModListWidget;
 import net.neoforged.neoforge.common.util.Size2i;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Mixin(ModListScreen.class)
 public abstract class ModListScreenMixin implements BundleSelectable {
 
+    @Shadow(remap = false)
+    private ModListWidget.ModEntry selected;
+    @Shadow(remap = false)
+    private ModListWidget modList;
+
     @Override
     public void engine$setSelectedBundle(Bundle bundle) {
+        selected = null;
+        modList.setSelected(null);
+
         try {
-            ModListScreen self = (ModListScreen) (Object) this;
-
-            Field selectedField = ModListScreen.class.getDeclaredField("selected");
-            selectedField.setAccessible(true);
-            selectedField.set(self, null);
-
-            Field modListField = ModListScreen.class.getDeclaredField("modList");
-            modListField.setAccessible(true);
-            Object modList = modListField.get(self);
-            Method setSelected = Arrays.stream(modList.getClass().getMethods())
-                    .filter(m -> m.getName().equals("setSelected") && m.getParameterCount() == 1)
-                    .findFirst()
-                    .orElseThrow();
-            setSelected.invoke(modList, (Object) null);
+            Field modInfoField = ModListScreen.class.getDeclaredField("modInfo");
+            modInfoField.setAccessible(true);
+            Object modInfo = modInfoField.get(this);
 
             BundleInfo info = bundle.info();
             List<String> lines = new ArrayList<>();
@@ -48,16 +46,13 @@ public abstract class ModListScreenMixin implements BundleSelectable {
             lines.add(null);
             lines.add("Script count: " + bundle.bundleFiles().scriptCount());
 
-            Field modInfoField = ModListScreen.class.getDeclaredField("modInfo");
-            modInfoField.setAccessible(true);
-            Object modInfo = modInfoField.get(self);
 
-            Method setInfo = modInfo.getClass().getDeclaredMethod("setInfo", List.class, Identifier.class, Size2i.class);
-            setInfo.setAccessible(true);
-            setInfo.invoke(modInfo, lines, null, new Size2i(0, 0));
-
+            Identifier textId = bundle.id(bundle.info().id() + ".png");
+            var textureView = Client.getMinecraft().getTextureManager().getTexture(textId).getTextureView();
+            Size2i txSize = new Size2i(textureView.getWidth(0), textureView.getHeight(0));
+            ((InfoPanelAccessor) modInfo).invokeSetInfo(lines, textId, txSize);
         } catch (Exception e) {
-            throw new EngineException("foundry$setSelectedBundle failed", e);
+            throw new EngineException("Failed to access modInfo panel", e);
         }
     }
 }
