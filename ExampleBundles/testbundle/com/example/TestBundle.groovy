@@ -28,6 +28,7 @@ import net.minecraft.world.item.Rarity
 import net.minecraft.world.item.component.Consumables
 import net.minecraft.world.item.component.ItemLore
 import net.neoforged.bus.api.SubscribeEvent
+import com.example.dep.Dependency
 
 /**
  * This is the main entrypoint of the bundle.
