@@ -14,6 +14,7 @@ import de.luckymcdev.foundryengine.client.particle.ParticleManager;
 import de.luckymcdev.foundryengine.client.post.EffectManager;
 import de.luckymcdev.foundryengine.client.util.key.KeyBinding;
 import de.luckymcdev.foundryengine.client.util.key.KeyBindingManager;
+import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.exceptions.EngineException;
 import de.luckymcdev.foundryengine.interfaces.EngineGpuDevice;
 import de.luckymcdev.foundryengine.interfaces.EngineMinecraft;
@@ -67,16 +68,18 @@ public abstract class Client {
      * The Frustum Matrix
      */
     public static final Matrix4f FRUSTUM = new Matrix4f();
+    public static final KeyMapping.Category EDITOR_CATEGORY = new KeyMapping.Category(Common.id("editor"));
     public static final KeyBinding EDITOR_KEY = new KeyBinding(
             new KeyMapping(
                     Component.translatable("key.foundryengine.editor").getString(),
                     InputConstants.Type.KEYSYM,
                     InputConstants.KEY_F7,
-                    KeyMapping.Category.DEBUG
+                    EDITOR_CATEGORY
             ),
             () -> {
             }
     );
+
     // Core Systems
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final ImGuiManager IMGUI_MANAGER = new ImGuiManager();

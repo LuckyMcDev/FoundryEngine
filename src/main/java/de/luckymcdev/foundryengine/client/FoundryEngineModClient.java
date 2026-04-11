@@ -90,6 +90,7 @@ public class FoundryEngineModClient {
         Client.getKeyBindingManager().getKeyBindings().forEach(keyBinding ->
                 event.register(keyBinding.mapping())
         );
+        event.registerCategory(Client.EDITOR_CATEGORY);
     }
 
     private void onRegisterKeyBinding(RegisterKeyBindingEvent event) {

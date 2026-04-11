@@ -1,9 +1,11 @@
 package de.luckymcdev.foundryengine.mixin.input;
 
 import de.luckymcdev.foundryengine.client.Client;
+import de.luckymcdev.foundryengine.client.editor.EditorScreen;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiManager;
 import de.luckymcdev.foundryengine.interfaces.EngineKeyboardHandler;
 import net.minecraft.client.KeyboardHandler;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import org.spongepowered.asm.mixin.Mixin;
@@ -24,9 +26,15 @@ public class KeyboardHandlerMixin implements EngineKeyboardHandler {
     public void engine$keyPress(long handle, int action, KeyEvent event, CallbackInfo ci) {
         if (Client.getImGuiManager().shouldInterceptKeyboard()) {
             ci.cancel();
+            return;
         }
         if (handle == Client.getWindow().handle() && action == GLFW_PRESS && Client.EDITOR_KEY.mapping().matches(event)) {
-            Client.getImGuiManager().toggle();
+            if (event.hasControlDown()) {
+                Client.getImGuiManager().enable();
+                Minecraft.getInstance().setScreen(new EditorScreen(true));
+            } else {
+                Client.getImGuiManager().toggle();
+            }
         }
     }
 

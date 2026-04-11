@@ -4,5 +4,6 @@
   "gui.foundryengine.icons.error": "Error while exporting",
   "gui.foundryengine.icons.status": "Rendering %s / %s",
   "gui.foundryengine.icons.metadata.success": "Exported metadata file to %s",
-  "fondryengine.commands.reload.success": "Done!"
+  "fondryengine.commands.reload.success": "Done!",
+  "gui.foundryengine.screen.editor": "EditorScreen"
 }
