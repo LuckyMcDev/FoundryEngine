@@ -4,15 +4,19 @@ layout: home
 
 hero:
   name: "Foundry Engine"
-  text: ""
   tagline: Turning Minecraft into a Game Engine
   actions:
-
+    - theme: brand
+      text: "In-Game Development Editor"
+    - theme: brand
+      text: "Post-Processing System"
+    - theme: brand
+      text: "Groovy based Scripting Engine"
+    - theme: brand
+      text: "Hytale inspired Data- & Resource-Pack Editor"
+    - theme: brand
+      text: "Groovy based Scripting Engine"
 features:
-  - title: "In-Game Development Editor"
-  - title: "Post-Processing System"
-  - title: "Full Scripting Engine"
-
   - title: "Guide"
     details: "Learn how to install Foundry Engine"
     link: "/guide.md"

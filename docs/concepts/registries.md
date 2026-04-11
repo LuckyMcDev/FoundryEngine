@@ -13,8 +13,7 @@ So something Like this:
 
 ```groovy
 
-ItemBuilder builder = ItemBuilder.create
-...
+ItemBuilder builder = ItemBuilder.create(...)
 
 BundleEvents.registry {
     it.items(builder)
