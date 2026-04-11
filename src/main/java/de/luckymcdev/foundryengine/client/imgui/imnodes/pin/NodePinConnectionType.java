@@ -5,9 +5,9 @@ public enum NodePinConnectionType {
     REQUIRED_INPUT("required_input"),
     OPTIONAL_INPUT("optional_input");
 
-    public final String name;
+    public final String connectionName;
 
-    NodePinConnectionType(String name) {
-        this.name = name;
+    NodePinConnectionType(String connectionName) {
+        this.connectionName = connectionName;
     }
 }
