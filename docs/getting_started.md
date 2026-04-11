@@ -35,8 +35,27 @@ displayName = "Template Bundle"
 displayURL = "change to your website URL"
 authors = "YourName"
 description = '''This is a Template Bundle'''
+dependencies = [
+   "mod:neoforge@26.1.0.1-beta"
+]
 ````
 
 Most of the data is just for the "Mods" menu to be displayed visually.
 
+But the dependencies block is not only visual, it also stops the bundle from loading, if the specified
+dependency is not present at load times. That means, you can depend on a library you created which is also a bundle, and
+of that, a specific version.
+
 ## Building and Testing Your Bundle
+
+Depending on your choice in [Workspace](concepts/workspaces.md), you either just run the game with the bundle in the
+`.minecraft/FoundryEnine/bundles` folder,
+
+Or you run the Gradle task `gradlew deployBundle` and afterward `gradlew runClient` / the Client task.
+
+## Distributing your Bundle
+
+To distribute, you either just copy the folder in the `.minecraft/FoundryEnine/bundles` folder
+And distribute that,
+
+Or you run the Gradle task `gradlew deployBundle` and copy the folder inside `build/bundles`.
