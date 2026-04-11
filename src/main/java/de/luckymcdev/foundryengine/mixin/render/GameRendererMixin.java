@@ -39,11 +39,6 @@ public class GameRendererMixin implements EngineGameRenderer {
     @Final
     private Minecraft minecraft;
 
-    @Override
-    @Inject(method = "render", at = @At("HEAD"))
-    public void engine$renderHead(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci) {
-    }
-
     @Redirect(
             method = "render",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/ShaderManager;getPostChain(Lnet/minecraft/resources/Identifier;Ljava/util/Set;)Lnet/minecraft/client/renderer/PostChain;")
@@ -132,8 +127,13 @@ public class GameRendererMixin implements EngineGameRenderer {
     }
 
     @Override
+    @Inject(method = "render", at = @At("HEAD"))
+    public void engine$renderHead(DeltaTracker deltaTracker, boolean advanceGameTime, CallbackInfo ci) {
+    }
+
+    @Override
     @Inject(method = "render", at = @At("RETURN"))
-    public void engine$renderReturn(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci) {
+    public void engine$renderReturn(DeltaTracker deltaTracker, boolean advanceGameTime, CallbackInfo ci) {
         var mainMenu = Client.getMainMenu();
         var imguiManager = Client.getImGuiManager();
         var editorManager = Client.getEditorManager();
