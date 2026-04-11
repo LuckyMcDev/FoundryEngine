@@ -11,6 +11,7 @@ import de.luckymcdev.foundryengine.client.imgui.imnodes.blueprint.BlueprintSeria
 import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
 import imgui.ImGui;
+import imgui.flag.ImGuiTreeNodeFlags;
 import imgui.type.ImBoolean;
 import org.slf4j.Logger;
 
@@ -204,7 +205,7 @@ public class BlueprintsPanel extends EditorPanel {
 
         for (var entry : grouped.entrySet()) {
             String cat = entry.getKey();
-            if (ImGui.treeNodeEx(cat, imgui.flag.ImGuiTreeNodeFlags.DefaultOpen)) {
+            if (ImGui.treeNodeEx(cat, ImGuiTreeNodeFlags.DefaultOpen)) {
                 for (var template : entry.getValue()) {
                     if (ImGui.menuItem(template.name() + "##" + cat)) {
                         editor.addNode(template);
