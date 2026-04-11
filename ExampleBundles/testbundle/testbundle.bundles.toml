@@ -5,3 +5,7 @@ displayName = "Test Bundle"
 displayURL = "https://github.com/Example"
 authors = "Example"
 description = '''This is a Description'''
+dependencies = [
+    "mod:neoforge@26.1.0.1-beta",
+    "bundle:minimal@0.0.1"
+]

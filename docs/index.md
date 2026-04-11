@@ -7,27 +7,31 @@ hero:
   tagline: Turning Minecraft into a Game Engine
   actions:
     - theme: brand
-      text: "In-Game Development Editor"
+      text: "Guide"
+      link: "/guide.md"
     - theme: brand
-      text: "Post-Processing System"
+      text: "Documentation"
+      link: "/getting_started.md"
     - theme: brand
-      text: "Groovy based Scripting Engine"
+      text: "Concepts"
+      link: "/concepts/index.md"
     - theme: brand
-      text: "Hytale inspired Data- & Resource-Pack Editor"
-    - theme: brand
-      text: "Groovy based Scripting Engine"
+      text: "Examples"
+      link: "/examples.md"
+
 features:
-  - title: "Guide"
-    details: "Learn how to install Foundry Engine"
-    link: "/guide.md"
-  - title: "Foundry Engine Documentation"
-    details: "Learn how to use Foundry Engine."
-    link: "/getting_started.md"
-  - title: "Examples"
-    details: "Some Example Creations made with Foundry Engine"
-    link: "/examples.md"
-
+  - title: "In-Game Development Editor"
+    details: "Built-in tools for real-time engine manipulation."
+  - title: "Post-Processing System"
+    details: "Advanced visual effects and shader management."
+  - title: "Groovy based Scripting Engine"
+    details: "Powerful logic implementation using Groovy."
+  - title: "Hytale inspired Data- & Resource-Pack Editor <b style='color: dodgerblue;'>[WIP]</b>"
+    details: "Streamlined asset and data management."
+  - title: "Cutscene API <b style='color: orange;'>[Planned]</b>"
+    details: "A Cutscene editor and display api."
+  - title: "Upcoming Feature <b style='color: orange;'>[Planned]</b>"
+    details: "Description of another great feature in the works."
 ---
-
 
 **Welcome to the Foundry Engine Wiki!**

@@ -6,13 +6,10 @@ import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
-import de.luckymcdev.foundryengine.common.bundle.info.BundleInfo;
-import de.luckymcdev.foundryengine.common.editor.builtin.EditorContext;
 import imgui.ImGui;
 import imgui.flag.ImGuiKey;
 import imgui.type.ImInt;
 import imgui.type.ImString;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.util.List;
@@ -26,7 +23,6 @@ public class MainEditor extends EditorPanel {
     private final ImInt inputMajorVersion = new ImInt();
     private final ImInt inputMinorVersion = new ImInt();
     private final ImInt inputPatchVersion = new ImInt();
-    private @Nullable EditorContext active = null;
     private boolean wantsNew = false;
 
     private MainEditor() {
@@ -39,12 +35,6 @@ public class MainEditor extends EditorPanel {
     public void content() {
         renderMenuBar();
         renderCreateMenu();
-
-        if (active != null) {
-            ImGui.text("Editing: ");
-            ImGui.sameLine();
-            ImGui.text(active.getBundleInfo().displayName());
-        }
     }
 
     private void renderMenuBar() {
@@ -77,13 +67,6 @@ public class MainEditor extends EditorPanel {
                                 .map(String::trim)
                                 .filter(s -> !s.isEmpty())
                                 .toList();
-
-                        this.active = new EditorContext(
-                                inputId.get(),
-                                inputName.get(),
-                                authorsList,
-                                new BundleInfo.VersionInfo(inputMajorVersion.get(), inputMinorVersion.get(), inputPatchVersion.get())
-                        );
 
                         wantsNew = false;
                     }

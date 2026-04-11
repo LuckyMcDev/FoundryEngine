@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.common.bundle.toml;
 
 import com.electronwill.nightconfig.core.CommentedConfig;
 import com.electronwill.nightconfig.toml.TomlFormat;
+import de.luckymcdev.foundryengine.common.bundle.info.BundleDependency;
 import de.luckymcdev.foundryengine.common.bundle.info.BundleInfo;
 import de.luckymcdev.foundryengine.common.exceptions.EngineException;
 import de.luckymcdev.foundryengine.common.exceptions.UtilityClassException;
@@ -40,14 +41,18 @@ public class BundleTomlParser {
         String id = requireString(entry, "bundleId");
         String displayName = requireString(entry, "displayName");
         String version = requireString(entry, "version");
-        String authorsRaw = entry.getOrElse("authors", "");
 
-        List<String> authors = Arrays.stream(authorsRaw.split(","))
+        List<String> depStrings = entry.getOrElse("dependencies", List.of());
+        List<BundleDependency> dependencies = depStrings.stream()
+                .map(BundleDependency::parse)
+                .toList();
+
+        List<String> authors = Arrays.stream((entry.getOrElse("authors", "")).split(","))
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
                 .toList();
 
-        return new BundleInfo(id, displayName, authors, BundleInfo.VersionInfo.parse(version));
+        return new BundleInfo(id, displayName, authors, BundleInfo.VersionInfo.parse(version), dependencies);
     }
 
     private static String requireString(CommentedConfig entry, String key) {

@@ -41,11 +41,17 @@ public abstract class ModListScreenMixin implements BundleSelectable {
             lines.add(info.displayName());
             lines.add("Version: " + info.versionInfo());
             lines.add("ID: " + info.id());
-            if (!info.authors().isEmpty())
+            if (!info.authors().isEmpty()) {
                 lines.add("Authors: " + String.join(", ", info.authors()));
+            }
+            if (!info.dependencies().isEmpty()) {
+                lines.add("Dependencies:");
+                for (var dep : info.dependencies()) {
+                    lines.add(" - " + dep.type().name().toLowerCase() + ": " + dep.id() + " (" + dep.version() + ")");
+                }
+            }
             lines.add(null);
             lines.add("Script count: " + bundle.bundleFiles().scriptCount());
-
 
             Identifier textId = bundle.id(bundle.info().id() + ".png");
             var textureView = Client.getMinecraft().getTextureManager().getTexture(textId).getTextureView();
