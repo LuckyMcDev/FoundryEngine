@@ -13,6 +13,7 @@ import de.luckymcdev.foundryengine.common.Common;
 import imgui.ImGui;
 import imgui.flag.ImGuiTreeNodeFlags;
 import imgui.type.ImBoolean;
+import imgui.type.ImString;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -31,14 +32,13 @@ public class BlueprintsPanel extends EditorPanel {
     private final BlueprintEngine engine;
     private final NodeEditorInstance<Void> editor;
     private final BlueprintSerializer serializer;
-    private final imgui.type.ImString searchFilter = new imgui.type.ImString(128);
-    private final imgui.type.ImString fileNameInput = new imgui.type.ImString(256);
+    private final ImString searchFilter = new ImString(128);
+    private final ImString fileNameInput = new ImString(256);
     private final Path blueprintsDirectory;
 
     protected BlueprintsPanel() {
         super(Common.id("blueprints"), "Blueprints", ImIcons.FA.FA_MAP, Shortcut.empty());
         this.category = PanelCategory.EDITOR_BLUEPRINTS;
-
         this.engine = new BlueprintEngine();
         this.editor = new NodeEditorInstance<>(engine.execType, engine);
         this.serializer = new BlueprintSerializer(engine);
@@ -183,6 +183,10 @@ public class BlueprintsPanel extends EditorPanel {
     }
 
     private void renderNodePalette() {
+        if (ImGui.isWindowAppearing()) {
+            ImGui.setKeyboardFocusHere();
+        }
+
         ImGui.setNextItemWidth(200f);
         ImGui.inputTextWithHint("##bp-search", "Search nodes...", searchFilter);
         ImGui.separator();
