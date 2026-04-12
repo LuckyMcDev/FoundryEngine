@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.server.packs;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.DataResult;
@@ -12,6 +13,7 @@ import de.luckymcdev.foundryengine.common.util.UnsafeByteArrayOutputStream;
 import de.luckymcdev.foundryengine.common.vpacks.VirtualResourcePack;
 import de.luckymcdev.foundryengine.common.vpacks.json.JCondition;
 import de.luckymcdev.foundryengine.common.vpacks.json.JLang;
+import de.luckymcdev.foundryengine.common.vpacks.json.JSounds;
 import de.luckymcdev.foundryengine.common.vpacks.json.JTag;
 import de.luckymcdev.foundryengine.common.vpacks.json.advancement.JAdvancement;
 import de.luckymcdev.foundryengine.common.vpacks.json.animation.JAnimation;
@@ -354,6 +356,46 @@ public class VirtualPackImpl implements VirtualResourcePack {
             language.getLang().putAll(lang.getLang());
             return language;
         });
+    }
+
+    @Override
+    public byte[] addSounds(String namespace, JSounds sounds) {
+        JsonObject root = new JsonObject();
+
+        for (Map.Entry<String, JSounds.SoundEventEntry> entry : sounds.getSounds().entrySet()) {
+            JSounds.SoundEventEntry eventEntry = entry.getValue();
+            JsonObject eventObj = new JsonObject();
+
+            if (eventEntry.replace) {
+                eventObj.addProperty("replace", true);
+            }
+            if (eventEntry.subtitle != null) {
+                eventObj.addProperty("subtitle", eventEntry.subtitle);
+            }
+
+            JsonArray soundsArray = new JsonArray();
+            for (JSounds.SoundEntry soundEntry : eventEntry.sounds) {
+                JsonObject soundObj = new JsonObject();
+                soundObj.addProperty("name", soundEntry.name());
+                if (soundEntry.stream()) {
+                    soundObj.addProperty("stream", true);
+                }
+                if (soundEntry.volume() != 1.0f) {
+                    soundObj.addProperty("volume", soundEntry.volume());
+                }
+                if (soundEntry.pitch() != 1.0f) {
+                    soundObj.addProperty("pitch", soundEntry.pitch());
+                }
+                soundsArray.add(soundObj);
+            }
+
+            eventObj.add("sounds", soundsArray);
+            root.add(entry.getKey(), eventObj);
+        }
+
+        Identifier path = Identifier.fromNamespaceAndPath(namespace, "sounds.json");
+        byte[] bytes = GSON.toJson(root).getBytes(StandardCharsets.UTF_8);
+        return this.addAsset(path, bytes);
     }
 
     @Override

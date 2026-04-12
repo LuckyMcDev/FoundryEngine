@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.common.vpacks;
 
 import de.luckymcdev.foundryengine.common.vpacks.json.JLang;
+import de.luckymcdev.foundryengine.common.vpacks.json.JSounds;
 import de.luckymcdev.foundryengine.common.vpacks.json.JTag;
 import de.luckymcdev.foundryengine.common.vpacks.json.advancement.JAdvancement;
 import de.luckymcdev.foundryengine.common.vpacks.json.animation.JAnimation;
@@ -66,6 +67,21 @@ public interface VirtualResourcePack extends PackResources {
      * @param lang             The translation information.
      */
     void mergeLang(Identifier resourceLocation, JLang lang);
+
+    /**
+     * Adds a sounds.json file for the given namespace.
+     * <br />
+     * The sounds.json is placed at assets/{namespace}/sounds.json as per
+     * Minecraft's resource pack specification.
+     * <br />
+     * Calling this method multiple times for the same namespace will override
+     * previous calls.
+     *
+     * @param namespace The namespace to register sounds under
+     * @param sounds    The sounds' data.
+     * @return The serialized sounds.json bytes.
+     */
+    byte[] addSounds(String namespace, JSounds sounds);
 
     /**
      * Adds a loot table.

@@ -1,5 +1,6 @@
 package com.example
 
+import de.luckymcdev.foundryengine.api.builder.sound.SoundBuilder
 import de.luckymcdev.foundryengine.api.event.BundleEvents
 import de.luckymcdev.foundryengine.api.event.ClientEvents
 import de.luckymcdev.foundryengine.common.bundle.config.BundleConfig
@@ -81,6 +82,7 @@ class TestBundle extends BundleEntrypoint {
             .requires(Items.DIAMOND, 1)
             .unlockedBy("has_log", InventoryChangeTrigger.TriggerInstance.hasItems(Items.OAK_LOG))
 
+    private static final SoundBuilder MY_SOUND = SoundBuilder.create(id("test"))
 
     /**
      * Constructor for the bundle entrypoint. You can do basic setup here, but you should avoid doing anything too complex until onLoad.
@@ -106,6 +108,7 @@ class TestBundle extends BundleEntrypoint {
             it.items(THIS_IS_A_ITEM, ITEM_TWO, COSMIC_APPLE)
             it.blocks(MY_BLOCK)
             it.recipes(RECIPE)
+            it.sounds(MY_SOUND)
         }
 
         ClientEvents.tick {

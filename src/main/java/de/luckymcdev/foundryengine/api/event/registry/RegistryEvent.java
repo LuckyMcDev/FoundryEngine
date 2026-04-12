@@ -4,6 +4,7 @@ import de.luckymcdev.foundryengine.api.builder.block.BlockBuilder;
 import de.luckymcdev.foundryengine.api.builder.item.ItemBuilder;
 import de.luckymcdev.foundryengine.api.builder.particle.ParticleBuilder;
 import de.luckymcdev.foundryengine.api.builder.recipe.RecipeBuilder;
+import de.luckymcdev.foundryengine.api.builder.sound.SoundBuilder;
 import de.luckymcdev.foundryengine.common.builder.particle.ParticleBuilderImpl;
 import de.luckymcdev.foundryengine.common.registry.EngineRegistries;
 import net.minecraft.core.Registry;
@@ -65,6 +66,12 @@ public class RegistryEvent extends Event implements IModBusEvent {
         });
 
         registerParticleProvidersListener();
+    }
+
+    public void sounds(SoundBuilder... builders) {
+        inner.register(BuiltInRegistries.SOUND_EVENT.key(), registry -> {
+            for (SoundBuilder builder : builders) builder.register(registry);
+        });
     }
 
     private void registerParticleProvidersListener() {

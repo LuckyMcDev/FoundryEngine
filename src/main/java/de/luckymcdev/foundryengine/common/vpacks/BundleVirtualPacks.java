@@ -4,6 +4,7 @@ import de.luckymcdev.foundryengine.api.builder.recipe.RecipeResult;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.bundle.Bundle;
 import de.luckymcdev.foundryengine.common.vpacks.json.JLang;
+import de.luckymcdev.foundryengine.common.vpacks.json.JSounds;
 import de.luckymcdev.foundryengine.common.vpacks.json.model.JModel;
 import de.luckymcdev.foundryengine.common.vpacks.json.model.JTextures;
 import de.luckymcdev.foundryengine.common.vpacks.json.state.JBlockModel;
@@ -21,10 +22,7 @@ import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 
@@ -42,6 +40,7 @@ public class BundleVirtualPacks {
     private static VirtualResourcePack createPack(Bundle bundle, int count) {
         VirtualResourcePack pack = VirtualResourcePack.create(bundle.id("virtual_pack_" + count));
         lang(pack, bundle);
+        sounds(pack, bundle);
         models(pack, bundle);
         recipes(pack, bundle);
         return pack;
@@ -84,6 +83,22 @@ public class BundleVirtualPacks {
         }
 
         pack.addLang(bundle.id("en_us"), lang);
+    }
+
+    private static void sounds(VirtualResourcePack pack, Bundle bundle) {
+        List<SoundEvent> soundEvents = bundle.registryQuery().getSoundEvents();
+        if (soundEvents.isEmpty()) return;
+
+        Map<String, JSounds> byNamespace = new LinkedHashMap<>();
+
+        for (SoundEvent sound : soundEvents) {
+            Identifier id = sound.location();
+            JSounds jSounds = byNamespace.computeIfAbsent(id.getNamespace(), k -> JSounds.sounds());
+
+            jSounds.add(sound, id);
+        }
+
+        byNamespace.forEach(pack::addSounds);
     }
 
     private static void models(VirtualResourcePack pack, Bundle bundle) {
