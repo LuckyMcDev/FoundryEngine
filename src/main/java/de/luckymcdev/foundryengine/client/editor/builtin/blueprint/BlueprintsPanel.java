@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.client.editor.builtin.blueprint;
 
 import com.mojang.logging.LogUtils;
+import de.luckymcdev.foundryengine.api.event.ClientEvents;
 import de.luckymcdev.foundryengine.client.editor.builtin.EditorPanel;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
@@ -53,16 +54,9 @@ public class BlueprintsPanel extends EditorPanel {
             LOGGER.error("Failed to create blueprints directory", e);
         }
 
-        // engine.node("My Mod", "Spawn Entity")
-        //     .in(engine.execType,  "In")
-        //     .in(engine.stringType,"Entity ID").defaultValue("Entity ID", "minecraft:zombie")
-        //     .in(engine.vectorType,"Location")
-        //     .out(engine.execType, "Out")
-        //     .behavior((n, e, ed, ctx) -> {
-        //         String id = ctx.resolvePinAs(n.inputPin("Entity ID"), String.class, "");
-        //         LOGGER.info("Spawning entity: {}", id);
-        //     })
-        //     .register();
+        ClientEvents.tick(event -> {
+            engine.executeEvent("Event Tick", this.editor);
+        });
     }
 
     @Override

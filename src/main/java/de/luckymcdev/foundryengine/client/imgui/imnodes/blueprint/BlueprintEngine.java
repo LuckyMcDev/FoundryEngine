@@ -99,6 +99,15 @@ public class BlueprintEngine {
         executeNext(startNode, editor, ctx);
     }
 
+    public void executeEvent(String eventName, NodeEditorInstance<?> editor) {
+        for (Node node : editor.nodes.values()) {
+            if (node.name.equals(eventName)) {
+                BlueprintContext ctx = new BlueprintContext(editor);
+                executeNext(node, editor, ctx);
+            }
+        }
+    }
+
     void executeNext(Node node, NodeEditorInstance<?> editor, BlueprintContext ctx) {
         NodeBehavior behavior = behaviors.get(node.name);
         if (behavior != null) {
