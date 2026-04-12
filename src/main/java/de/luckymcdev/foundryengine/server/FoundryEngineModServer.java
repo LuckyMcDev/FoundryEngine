@@ -1,7 +1,6 @@
 package de.luckymcdev.foundryengine.server;
 
 import com.mojang.logging.LogUtils;
-import de.luckymcdev.foundryengine.api.event.ServerEvents;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.config.Config;
 import net.neoforged.api.distmarker.Dist;
@@ -26,13 +25,6 @@ public class FoundryEngineModServer {
 
         BUS.addListener(this::onAddReloadListeners);
         BUS.addListener(Common.getGameStageHandler()::onPlayerTick);
-
-        BUS.addListener(ServerEvents::_postAboutToStart);
-        BUS.addListener(ServerEvents::_postStarting);
-        BUS.addListener(ServerEvents::_postStarted);
-        BUS.addListener(ServerEvents::_postStopping);
-        BUS.addListener(ServerEvents::_postStopped);
-        BUS.addListener(ServerEvents::_postTick);
 
         Config.registerServer(modContainer);
 

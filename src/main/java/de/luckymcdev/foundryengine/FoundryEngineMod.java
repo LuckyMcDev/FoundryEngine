@@ -2,6 +2,8 @@ package de.luckymcdev.foundryengine;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.api.event.BundleEvents;
+import de.luckymcdev.foundryengine.api.event.ClientEvents;
+import de.luckymcdev.foundryengine.api.event.ServerEvents;
 import de.luckymcdev.foundryengine.api.event.registry.RegistryEvent;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.log.EngineLogAppender;
@@ -62,11 +64,28 @@ public class FoundryEngineMod {
         modBus.addListener(this::onRegisterPayloadHandlers);
         BUS.addListener(this::onRegisterCommands);
 
-        BUS.addListener(BundleEvents::_postVanillaGame);
-
         BUS.addListener(this::onRegisterVirtualPacks);
         BUS.addListener(Common.getSceneManager()::entityJoinLevel);
         BUS.addListener(Common.getSceneManager()::entityLeaveLevel);
+
+        BUS.addListener(BundleEvents::_postVanillaGame);
+
+        BUS.addListener(ServerEvents::_postAboutToStart);
+        BUS.addListener(ServerEvents::_postStarting);
+        BUS.addListener(ServerEvents::_postStarted);
+        BUS.addListener(ServerEvents::_postStopping);
+        BUS.addListener(ServerEvents::_postStopped);
+        BUS.addListener(ServerEvents::_postTick);
+
+        BUS.addListener(ClientEvents::_postTick);
+        BUS.addListener(ClientEvents::_postStopped);
+        BUS.addListener(ClientEvents::_postStopping);
+        BUS.addListener(ClientEvents::_postChat);
+        BUS.addListener(ClientEvents::_postRenderGui);
+        BUS.addListener(ClientEvents::_postRenderGuiLayer);
+        BUS.addListener(ClientEvents::_postRenderHand);
+        BUS.addListener(ClientEvents::_postRenderAfterLevel);
+        modBus.addListener(ClientEvents::_postKeyMappings);
 
         Config.registerCommon(modContainer);
         Config.registerStartup(modContainer);

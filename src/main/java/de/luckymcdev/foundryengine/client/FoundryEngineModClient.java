@@ -1,7 +1,6 @@
 package de.luckymcdev.foundryengine.client;
 
 import com.mojang.logging.LogUtils;
-import de.luckymcdev.foundryengine.api.event.ClientEvents;
 import de.luckymcdev.foundryengine.api.event.registry.RegistryEvent;
 import de.luckymcdev.foundryengine.client.command.FoundryCommandsClient;
 import de.luckymcdev.foundryengine.client.debug.renderer.SimpleDebugScreenRenderer;
@@ -58,16 +57,6 @@ public class FoundryEngineModClient {
         BUS.addListener(this::onRegisterPanels);
         BUS.addListener(this::onClientTick);
         BUS.addListener(this::onRegisterCommands);
-
-        BUS.addListener(ClientEvents::_postTick);
-        BUS.addListener(ClientEvents::_postStopped);
-        BUS.addListener(ClientEvents::_postStopping);
-        BUS.addListener(ClientEvents::_postChat);
-        BUS.addListener(ClientEvents::_postRenderGui);
-        BUS.addListener(ClientEvents::_postRenderGuiLayer);
-        BUS.addListener(ClientEvents::_postRenderHand);
-        BUS.addListener(ClientEvents::_postRenderAfterLevel);
-        modBus.addListener(ClientEvents::_postKeyMappings);
 
         Config.registerClient(modContainer);
     }

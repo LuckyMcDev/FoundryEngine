@@ -15,4 +15,8 @@ public class EventGroup<T> {
             listener.execute(event);
         }
     }
+
+    public void clear() {
+        this.listeners.clear();
+    }
 }
