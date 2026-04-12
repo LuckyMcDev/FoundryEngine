@@ -665,7 +665,6 @@ public class BlueprintEngine {
                 .behavior((n, e, ed, ctx) -> {
                     String text = ctx.resolvePinAs(n.inputPin("String"), String.class, "");
                     LOGGER.info("[Blueprint Print] {}", text);
-                    System.out.println("[Blueprint Print] " + text);
                 }).register();
 
         node("String", "Append String")
