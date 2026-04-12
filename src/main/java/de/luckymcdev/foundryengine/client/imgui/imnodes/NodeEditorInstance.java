@@ -124,13 +124,13 @@ public class NodeEditorInstance<T> {
         }
         //}
 
-        Node removedNode = null;
+        Node xButtonRemovedNode = null;
 
         for (var node : nodes.values()) {
             ImNodes.beginNode(node.id);
 
             ImNodes.beginNodeTitleBar();
-            if (ImGui.button("X##del-" + node.id)) removedNode = node;
+            if (ImGui.button("X##del-" + node.id)) xButtonRemovedNode = node;
             ImGui.sameLine();
             ImGui.text(node.name);
             ImNodes.endNodeTitleBar();
@@ -220,24 +220,9 @@ public class NodeEditorInstance<T> {
         for (var node : nodes.values()) node.selected = ImNodes.isNodeSelected(node.id);
         for (var pin : pins.values()) pin.inputLinkSelected = pin.inputLink != null && ImNodes.isLinkSelected(pin.id);
 
-        if (ImGui.isKeyPressed(GLFW.GLFW_KEY_DELETE)) {
+        if (xButtonRemovedNode != null) {
             for (var pin : pins.values()) {
-                if (pin.inputLinkSelected) {
-                    pin.inputLinkSelected = false;
-                    pin.inputLink = null;
-                }
-            }
-            for (var node : nodes.values()) {
-                if (node.selected) {
-                    removedNode = node;
-                    break;
-                }
-            }
-        }
-
-        if (removedNode != null) {
-            for (var pin : pins.values()) {
-                for (var oPin : removedNode.outputPins) {
+                for (var oPin : xButtonRemovedNode.outputPins) {
                     if (pin.inputLink == oPin) {
                         pin.inputLink = null;
                         pin.inputLinkSelected = false;
@@ -245,9 +230,38 @@ public class NodeEditorInstance<T> {
                     }
                 }
             }
-            nodes.remove(removedNode.id);
-            for (var pin : removedNode.inputPins) pins.remove(pin.id);
-            for (var pin : removedNode.outputPins) pins.remove(pin.id);
+            nodes.remove(xButtonRemovedNode.id);
+            for (var pin : xButtonRemovedNode.inputPins) pins.remove(pin.id);
+            for (var pin : xButtonRemovedNode.outputPins) pins.remove(pin.id);
+        }
+
+        if (ImGui.isKeyPressed(GLFW.GLFW_KEY_DELETE)) {
+            for (var pin : pins.values()) {
+                if (pin.inputLinkSelected) {
+                    pin.inputLinkSelected = false;
+                    pin.inputLink = null;
+                }
+            }
+
+            var nodesToRemove = new java.util.ArrayList<Node>();
+            for (var node : nodes.values()) {
+                if (node.selected) nodesToRemove.add(node);
+            }
+
+            for (var node : nodesToRemove) {
+                for (var pin : pins.values()) {
+                    for (var oPin : node.outputPins) {
+                        if (pin.inputLink == oPin) {
+                            pin.inputLink = null;
+                            pin.inputLinkSelected = false;
+                            break;
+                        }
+                    }
+                }
+                nodes.remove(node.id);
+                for (var pin : node.inputPins) pins.remove(pin.id);
+                for (var pin : node.outputPins) pins.remove(pin.id);
+            }
         }
     }
 
