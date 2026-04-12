@@ -30,7 +30,7 @@ public class NodeEditorInstance<T> {
     private final ImInt tempSrc = new ImInt();
     private final ImInt tempDst = new ImInt();
     public @Nullable BlueprintEngine engine;
-    public float miniMap = 0.1f;
+    public float miniMap = 0.2f;
     public int lastId = 0;
     private @Nullable NodePinInfo lastDroppedPin;
     private float spawnX, spawnY;
