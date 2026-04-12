@@ -2,15 +2,21 @@ package de.luckymcdev.foundryengine.common.builder.sound;
 
 import de.luckymcdev.foundryengine.api.builder.sound.SoundBuilder;
 import de.luckymcdev.foundryengine.common.builder.BuilderState;
+import de.luckymcdev.foundryengine.common.vpacks.json.JSounds;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
-import org.jetbrains.annotations.ApiStatus;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SoundBuilderImpl implements SoundBuilder {
     public final BuilderState<SoundEvent> state;
+    private final List<JSounds.SoundEntry> soundFiles = new ArrayList<>();
     private float fixedRange = -1f;
+    private String subtitle = null;
+    private boolean replace = false;
 
     public SoundBuilderImpl(Identifier id) {
         this.state = new BuilderState<>(id);
@@ -24,20 +30,46 @@ public class SoundBuilderImpl implements SoundBuilder {
     }
 
     @Override
-    @ApiStatus.Internal
-    public SoundEvent register(RegisterEvent.RegisterHelper<SoundEvent> helper) {
-        SoundEvent event = build();
-        helper.register(state.id, event);
-        state.setObject(event);
-        return event;
+    public SoundBuilder subtitle(String key) {
+        this.subtitle = key;
+        return this;
+    }
+
+    @Override
+    public SoundBuilder replace(boolean replace) {
+        this.replace = replace;
+        return this;
+    }
+
+    @Override
+    public SoundBuilder addSound(Identifier loc, float vol, float pitch, int weight, boolean stream, int attn, boolean preload) {
+        JSounds.SoundEntry entry = new JSounds.SoundEntry(loc.toString());
+        entry.volume = vol;
+        entry.pitch = pitch;
+        entry.weight = weight;
+        entry.stream = stream;
+        entry.attenuation_distance = attn;
+        entry.preload = preload;
+        this.soundFiles.add(entry);
+        return this;
+    }
+
+    public List<JSounds.SoundEntry> getSoundFiles() {
+        return soundFiles;
+    }
+
+    public String getSubtitle() {
+        return subtitle;
+    }
+
+    public boolean isReplace() {
+        return replace;
     }
 
     @Override
     public SoundEvent build() {
-        if (fixedRange > 0f) {
-            return SoundEvent.createFixedRangeEvent(state.id, fixedRange);
-        }
-        return SoundEvent.createVariableRangeEvent(state.id);
+        return fixedRange > 0f ? SoundEvent.createFixedRangeEvent(state.id, fixedRange)
+                : SoundEvent.createVariableRangeEvent(state.id);
     }
 
     @Override
@@ -53,5 +85,13 @@ public class SoundBuilderImpl implements SoundBuilder {
     @Override
     public Identifier newID(String pre, String post) {
         return state.newID(pre, post);
+    }
+
+    @Override
+    public SoundEvent register(RegisterEvent.RegisterHelper<SoundEvent> h) {
+        SoundEvent e = build();
+        h.register(state.id, e);
+        state.setObject(e);
+        return e;
     }
 }

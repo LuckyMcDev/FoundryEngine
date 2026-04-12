@@ -6,6 +6,7 @@ import de.luckymcdev.foundryengine.api.builder.particle.ParticleBuilder;
 import de.luckymcdev.foundryengine.api.builder.recipe.RecipeBuilder;
 import de.luckymcdev.foundryengine.api.builder.sound.SoundBuilder;
 import de.luckymcdev.foundryengine.common.builder.particle.ParticleBuilderImpl;
+import de.luckymcdev.foundryengine.common.builder.sound.SoundBuilderImpl;
 import de.luckymcdev.foundryengine.common.registry.EngineRegistries;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -16,12 +17,15 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.registries.RegisterEvent;
+import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.Consumer;
 
 public class RegistryEvent extends Event implements IModBusEvent {
     static final Map<Identifier, ParticleBuilderImpl> PARTICLE_BUILDERS = new LinkedHashMap<>();
+    static final Map<Identifier, SoundBuilderImpl> SOUND_BUILDERS = new LinkedHashMap<>(); // Added for sound metadata tracking
     private static final Set<IEventBus> PROVIDER_LISTENERS = Collections.newSetFromMap(new IdentityHashMap<>());
 
     private final RegisterEvent inner;
@@ -30,6 +34,12 @@ public class RegistryEvent extends Event implements IModBusEvent {
     public RegistryEvent(RegisterEvent inner, IEventBus modBus) {
         this.inner = inner;
         this.modBus = modBus;
+    }
+
+    @Nullable
+    @ApiStatus.Internal
+    public static SoundBuilderImpl getSoundBuilder(Identifier id) {
+        return SOUND_BUILDERS.get(id);
     }
 
     public void items(ItemBuilder... builders) {
@@ -70,7 +80,11 @@ public class RegistryEvent extends Event implements IModBusEvent {
 
     public void sounds(SoundBuilder... builders) {
         inner.register(BuiltInRegistries.SOUND_EVENT.key(), registry -> {
-            for (SoundBuilder builder : builders) builder.register(registry);
+            for (SoundBuilder builder : builders) {
+                builder.register(registry);
+                var impl = (SoundBuilderImpl) builder;
+                SOUND_BUILDERS.put(impl.state.id, impl);
+            }
         });
     }
 

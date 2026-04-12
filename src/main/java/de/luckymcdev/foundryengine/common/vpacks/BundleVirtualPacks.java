@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.common.vpacks;
 
 import de.luckymcdev.foundryengine.api.builder.recipe.RecipeResult;
+import de.luckymcdev.foundryengine.api.event.registry.RegistryEvent;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.bundle.Bundle;
 import de.luckymcdev.foundryengine.common.vpacks.json.JLang;
@@ -86,19 +87,27 @@ public class BundleVirtualPacks {
     }
 
     private static void sounds(VirtualResourcePack pack, Bundle bundle) {
-        List<SoundEvent> soundEvents = bundle.registryQuery().getSoundEvents();
-        if (soundEvents.isEmpty()) return;
+        Map<String, JSounds> byNamespace = new HashMap<>();
 
-        Map<String, JSounds> byNamespace = new LinkedHashMap<>();
+        for (SoundEvent sound : bundle.registryQuery().getSoundEvents()) {
+            String namespace = sound.location().getNamespace();
+            JSounds jSounds = byNamespace.computeIfAbsent(namespace, k -> JSounds.sounds());
+            var builder = RegistryEvent.getSoundBuilder(sound.location());
+            JSounds.SoundEventEntry eventEntry = new JSounds.SoundEventEntry();
 
-        for (SoundEvent sound : soundEvents) {
-            Identifier id = sound.location();
-            JSounds jSounds = byNamespace.computeIfAbsent(id.getNamespace(), k -> JSounds.sounds());
+            eventEntry.subtitle = builder.getSubtitle();
+            eventEntry.replace = builder.isReplace();
 
-            jSounds.add(sound, id);
+            if (builder.getSoundFiles().isEmpty()) {
+                eventEntry.sounds.add(new JSounds.SoundEntry(sound.location().toString()));
+            } else {
+                eventEntry.sounds.addAll(builder.getSoundFiles());
+            }
+
+            jSounds.addComplex(sound, eventEntry);
         }
 
-        byNamespace.forEach(pack::addSounds);
+        byNamespace.forEach((ns, jsons) -> pack.addSounds(Identifier.fromNamespaceAndPath(ns, "sounds"), jsons));
     }
 
     private static void models(VirtualResourcePack pack, Bundle bundle) {

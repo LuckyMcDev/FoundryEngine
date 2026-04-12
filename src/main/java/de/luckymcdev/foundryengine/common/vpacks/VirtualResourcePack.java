@@ -69,19 +69,12 @@ public interface VirtualResourcePack extends PackResources {
     void mergeLang(Identifier resourceLocation, JLang lang);
 
     /**
-     * Adds a sounds.json file for the given namespace.
-     * <br />
-     * The sounds.json is placed at assets/{namespace}/sounds.json as per
-     * Minecraft's resource pack specification.
-     * <br />
-     * Calling this method multiple times for the same namespace will override
-     * previous calls.
-     *
-     * @param namespace The namespace to register sounds under
-     * @param sounds    The sounds' data.
-     * @return The serialized sounds.json bytes.
+     * Adds a sound definition file (sounds.json) to the resource pack.
+     * * @param path   The identifier (e.g., "modid:sounds") - ".json" is added automatically.
+     * @param sounds The JSounds object containing the sound event definitions.
+     * @return the byte array of the generated JSON.
      */
-    byte[] addSounds(String namespace, JSounds sounds);
+    byte[] addSounds(Identifier path, JSounds sounds);
 
     /**
      * Adds a loot table.

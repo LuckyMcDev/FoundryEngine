@@ -359,43 +359,35 @@ public class VirtualPackImpl implements VirtualResourcePack {
     }
 
     @Override
-    public byte[] addSounds(String namespace, JSounds sounds) {
-        JsonObject root = new JsonObject();
+    public byte[] addSounds(Identifier path, JSounds sounds) {
+        JsonObject jsonObject = new JsonObject();
 
-        for (Map.Entry<String, JSounds.SoundEventEntry> entry : sounds.getSounds().entrySet()) {
-            JSounds.SoundEventEntry eventEntry = entry.getValue();
-            JsonObject eventObj = new JsonObject();
+        sounds.getSounds().forEach((eventPath, entry) -> {
+            JsonObject eventJson = new JsonObject();
+            eventJson.addProperty("replace", entry.replace);
+            eventJson.addProperty("subtitle", entry.subtitle);
 
-            if (eventEntry.replace) {
-                eventObj.addProperty("replace", true);
+            JsonArray soundList = new JsonArray();
+            for (JSounds.SoundEntry s : entry.sounds) {
+                JsonObject sObj = new JsonObject();
+                sObj.addProperty("name", s.name);
+                sObj.addProperty("volume", s.volume);
+                sObj.addProperty("pitch", s.pitch);
+                sObj.addProperty("weight", s.weight);
+                sObj.addProperty("stream", s.stream);
+                sObj.addProperty("attenuation_distance", s.attenuation_distance);
+                sObj.addProperty("preload", s.preload);
+                sObj.addProperty("type", s.type);
+                soundList.add(sObj);
             }
-            if (eventEntry.subtitle != null) {
-                eventObj.addProperty("subtitle", eventEntry.subtitle);
-            }
+            eventJson.add("sounds", soundList);
+            jsonObject.add(eventPath, eventJson);
+        });
 
-            JsonArray soundsArray = new JsonArray();
-            for (JSounds.SoundEntry soundEntry : eventEntry.sounds) {
-                JsonObject soundObj = new JsonObject();
-                soundObj.addProperty("name", soundEntry.name());
-                if (soundEntry.stream()) {
-                    soundObj.addProperty("stream", true);
-                }
-                if (soundEntry.volume() != 1.0f) {
-                    soundObj.addProperty("volume", soundEntry.volume());
-                }
-                if (soundEntry.pitch() != 1.0f) {
-                    soundObj.addProperty("pitch", soundEntry.pitch());
-                }
-                soundsArray.add(soundObj);
-            }
-
-            eventObj.add("sounds", soundsArray);
-            root.add(entry.getKey(), eventObj);
-        }
-
-        Identifier path = Identifier.fromNamespaceAndPath(namespace, "sounds.json");
-        byte[] bytes = GSON.toJson(root).getBytes(StandardCharsets.UTF_8);
-        return this.addAsset(path, bytes);
+        return this.addAsset(
+                Identifier.fromNamespaceAndPath(path.getNamespace(), path.getPath() + ".json"),
+                GSON.toJson(jsonObject).getBytes(StandardCharsets.UTF_8)
+        );
     }
 
     @Override

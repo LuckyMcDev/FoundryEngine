@@ -9,35 +9,48 @@ import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Builder interface for creating and registering SoundEvents.
- * Provides a fluent API for sound registration with NeoForge.
  */
 public interface SoundBuilder extends BuilderBase<SoundEvent> {
 
-    /**
-     * Creates a new SoundBuilder instance.
-     *
-     * @param id The identifier for this sound event
-     * @return A new SoundBuilder
-     */
     static SoundBuilder create(Identifier id) {
         return new SoundBuilderImpl(id);
     }
 
     /**
-     * Sets a fixed attenuation distance for this sound.
-     * Defaults to variable range if not set.
-     *
-     * @param distance The fixed range in blocks
-     * @return This builder for chaining
+     * Sets the default attenuation distance for the SoundEvent in-game.
      */
     SoundBuilder range(float distance);
 
     /**
-     * Registers this sound event using the provided helper.
-     *
-     * @param helper The register event helper
-     * @return The registered SoundEvent instance
+     * Sets the translation key for the sound's subtitle (Closed Captions).
      */
+    SoundBuilder subtitle(String translationKey);
+
+    /**
+     * If true, this definition replaces the vanilla definition instead of merging.
+     */
+    SoundBuilder replace(boolean replace);
+
+    /**
+     * Adds a sound file to this event.
+     * * @param location The path to the .ogg (without /sounds/)
+     *
+     * @param volume      The volume (0.0 - 1.0+)
+     * @param pitch       The pitch (0.0 - 2.0)
+     * @param weight      The probability weight (integer)
+     * @param stream      True if the file should be streamed from disk (for long tracks)
+     * @param attenuation The block distance for volume reduction
+     * @param preload     True to load during resource pack loading instead of first play
+     */
+    SoundBuilder addSound(Identifier location, float volume, float pitch, int weight, boolean stream, int attenuation, boolean preload);
+
+    /**
+     * Adds a sound file using default vanilla values.
+     */
+    default SoundBuilder addSound(Identifier location) {
+        return addSound(location, 1.0f, 1.0f, 1, false, 16, false);
+    }
+
     @ApiStatus.Internal
     SoundEvent register(RegisterEvent.RegisterHelper<SoundEvent> helper);
 }
