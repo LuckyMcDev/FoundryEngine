@@ -3,12 +3,14 @@ package com.example
 import de.luckymcdev.foundryengine.api.builder.sound.SoundBuilder
 import de.luckymcdev.foundryengine.api.event.BundleEvents
 import de.luckymcdev.foundryengine.api.event.ClientEvents
+import de.luckymcdev.foundryengine.api.event.ServerEvents
 import de.luckymcdev.foundryengine.common.bundle.config.BundleConfig
 import de.luckymcdev.foundryengine.common.bundle.config.BundleConfigSpec
 import de.luckymcdev.foundryengine.common.bundle.config.ConfigValue
 import de.luckymcdev.foundryengine.common.script.BundleEntrypoint
 import net.minecraft.client.Minecraft
 import net.minecraft.resources.Identifier
+import net.minecraft.world.item.ItemStack
 import net.neoforged.bus.api.IEventBus
 import de.luckymcdev.foundryengine.api.builder.particle.ParticleBuilder
 import de.luckymcdev.foundryengine.client.particle.data.ParticleColorData
@@ -30,6 +32,10 @@ import net.minecraft.world.item.component.Consumables
 import net.minecraft.world.item.component.ItemLore
 import net.neoforged.bus.api.SubscribeEvent
 import com.example.dep.Dependency
+import net.neoforged.neoforge.server.ServerLifecycleHooks
+
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
 /**
  * This is the main entrypoint of the bundle.
@@ -112,9 +118,23 @@ class TestBundle extends BundleEntrypoint {
         }
 
         ClientEvents.tick {
-            if(Minecraft.getInstance().player != null) {
-                Minecraft.getInstance().player.sendOverlayMessage(Component.literal("HELLO"))
+            var player = Minecraft.getInstance().player
+            if (player != null) {
+                if (player.tickCount % 20 == 0) {
+                    player.sendSystemMessage(Component.literal("Test + " + player.tickCount))
+                }
             }
+        }
+
+
+        ServerEvents.tick {
+            if (it.server.tickCount % 20 == 0) {
+                it.server.sendSystemMessage(Component.literal("Test "+ it.server.tickCount))
+            }
+        }
+
+        ClientEvents.renderGui {
+            it.guiGraphics.fakeItem(new ItemStack(THIS_IS_A_ITEM.get()), 100, 200)
         }
 
         /*
@@ -134,5 +154,6 @@ class TestBundle extends BundleEntrypoint {
     }
 
 }
+
 
 
