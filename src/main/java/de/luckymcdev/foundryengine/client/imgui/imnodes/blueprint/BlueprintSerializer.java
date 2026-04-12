@@ -178,6 +178,8 @@ public class BlueprintSerializer {
                 );
             }
 
+            editor.resetLastId();
+
         } catch (JsonSyntaxException e) {
             throw new EngineException("Failed to deserialize blueprint: " + e.getMessage(), e);
         }

@@ -1,4 +1,4 @@
-package de.luckymcdev.foundryengine.client.editor.builtin.tools;
+package de.luckymcdev.foundryengine.client.editor.builtin.blueprint;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.client.editor.builtin.EditorPanel;
@@ -36,8 +36,8 @@ public class BlueprintsPanel extends EditorPanel {
     private final Path blueprintsDirectory;
 
     protected BlueprintsPanel() {
-        super(Common.id("blueprints"), "Blueprints", ImIcons.FA.FA_BLUETOOTH, Shortcut.empty());
-        this.category = PanelCategory.EDITOR_TOOLS;
+        super(Common.id("blueprints"), "Blueprints", ImIcons.FA.FA_MAP, Shortcut.empty());
+        this.category = PanelCategory.EDITOR_BLUEPRINTS;
 
         this.engine = new BlueprintEngine();
         this.editor = new NodeEditorInstance<>(engine.execType, engine);

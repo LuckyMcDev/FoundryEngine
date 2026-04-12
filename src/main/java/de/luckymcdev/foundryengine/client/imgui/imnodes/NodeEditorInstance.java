@@ -287,6 +287,13 @@ public class NodeEditorInstance<T> {
         ImNodes.popColorStyle();
     }
 
+    public void resetLastId() {
+        int max = 0;
+        for (int id : nodes.keySet()) if (id > max) max = id;
+        for (int id : pins.keySet()) if (id > max) max = id;
+        lastId = max;
+    }
+
     private void renderInlineDefault(NodePinInfo pin) {
         String id = "##dv_" + pin.id;
         Object v = pin.defaultValue;

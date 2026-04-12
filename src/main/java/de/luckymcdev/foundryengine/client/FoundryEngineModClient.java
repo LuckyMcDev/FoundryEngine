@@ -9,6 +9,7 @@ import de.luckymcdev.foundryengine.client.debug.screen.BundleDebugEntry;
 import de.luckymcdev.foundryengine.client.debug.screen.GameStagesDebugEntry;
 import de.luckymcdev.foundryengine.client.editor.builtin.MainEditor;
 import de.luckymcdev.foundryengine.client.editor.builtin.TestPanel;
+import de.luckymcdev.foundryengine.client.editor.builtin.blueprint.BlueprintsPanel;
 import de.luckymcdev.foundryengine.client.editor.builtin.explorer.FileExplorerPanel;
 import de.luckymcdev.foundryengine.client.editor.builtin.explorer.ResourceExplorerPanel;
 import de.luckymcdev.foundryengine.client.editor.builtin.scene.ScenePanel;
