@@ -209,7 +209,8 @@ public class BlueprintsPanel extends EditorPanel {
 
         for (var entry : grouped.entrySet()) {
             String cat = entry.getKey();
-            if (ImGui.treeNodeEx(cat, ImGuiTreeNodeFlags.DefaultOpen)) {
+            int flags = filter.isEmpty() ? ImGuiTreeNodeFlags.None : ImGuiTreeNodeFlags.DefaultOpen;
+            if (ImGui.treeNodeEx(cat, flags)) {
                 for (var template : entry.getValue()) {
                     if (ImGui.menuItem(template.name() + "##" + cat)) {
                         editor.addNode(template);
