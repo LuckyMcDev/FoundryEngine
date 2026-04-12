@@ -8,6 +8,7 @@ import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.client.imgui.imnodes.NodeEditorInstance;
 import de.luckymcdev.foundryengine.client.imgui.imnodes.blueprint.BlueprintEngine;
 import de.luckymcdev.foundryengine.client.imgui.imnodes.blueprint.BlueprintEngine.NodeTemplate;
+import de.luckymcdev.foundryengine.client.imgui.imnodes.blueprint.BlueprintEventBridge;
 import de.luckymcdev.foundryengine.client.imgui.imnodes.blueprint.BlueprintSerializer;
 import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
@@ -45,6 +46,7 @@ public class BlueprintsPanel extends EditorPanel {
         this.serializer = new BlueprintSerializer(engine);
 
         engine.registerBuiltins();
+        reload();
 
         this.blueprintsDirectory = Common.CACHE.resolve("blueprints");
 
@@ -219,5 +221,9 @@ public class BlueprintsPanel extends EditorPanel {
         if (ImGui.menuItem("Clear All")) {
             editor.clear();
         }
+    }
+
+    public void reload() {
+        BlueprintEventBridge.subscribe(engine, editor);
     }
 }

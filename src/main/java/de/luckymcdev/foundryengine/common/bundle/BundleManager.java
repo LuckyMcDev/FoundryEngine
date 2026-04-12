@@ -1,6 +1,8 @@
 package de.luckymcdev.foundryengine.common.bundle;
 
 import com.mojang.logging.LogUtils;
+import de.luckymcdev.foundryengine.api.event.ClientEvents;
+import de.luckymcdev.foundryengine.api.event.ServerEvents;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.registry.GenericRegistry;
 import de.luckymcdev.foundryengine.common.script.BundleEntrypoint;
@@ -69,6 +71,10 @@ public class BundleManager implements ResourceManagerReloadListener {
      */
     public void reload() {
         LOGGER.info("Reloading FoundryEngine Bundles...");
+
+        ClientEvents._clear();
+        ServerEvents._clear();
+        //BundleEvents._clear(); // I Guess this doesnt have to be cleared? bc it is registry
 
         unloadAllBundles();
         bundles.clear();

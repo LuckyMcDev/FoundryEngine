@@ -34,11 +34,6 @@ public final class BlueprintTypes {
     public static final NodePinType<String> STRING =
             new NodePinType<>("String", NodePinShape.FILLED_CIRCLE, 0xFF_D85BC9, null);
     /**
-     * Yellow circle – 3-component vector.
-     */
-    public static final NodePinType<float[]> VECTOR =
-            new NodePinType<>("Vector", NodePinShape.FILLED_CIRCLE, 0xFF_E8C04F, null);
-    /**
      * Blue square – arbitrary object / reference.
      */
     public static final NodePinType<Object> OBJECT =

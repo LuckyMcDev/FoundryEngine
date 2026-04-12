@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.server.command.builtin;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import de.luckymcdev.foundryengine.client.editor.builtin.blueprint.BlueprintsPanel;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.server.command.EngineCommand;
 import net.minecraft.commands.CommandBuildContext;
@@ -21,6 +22,8 @@ public class ReloadCommand implements EngineCommand {
                     CommandSourceStack source = context.getSource();
                     try {
                         Common.getBundleManager().reload();
+                        //TODO: fix this :D
+                        BlueprintsPanel.INSTANCE.reload();
                         source.sendSuccess(() -> Component.literal("Scripts reloaded successfully!"), true);
                         return 1;
                     } catch (Exception e) {

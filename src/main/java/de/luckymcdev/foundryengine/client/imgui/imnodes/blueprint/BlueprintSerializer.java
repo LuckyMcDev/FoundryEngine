@@ -195,7 +195,6 @@ public class BlueprintSerializer {
             case "Int" -> engine.intType;
             case "Float" -> engine.floatType;
             case "String" -> engine.stringType;
-            case "Vector" -> engine.vectorType;
             case "Object" -> engine.objectType;
             case "Any" -> engine.anyType;
             default -> null;

@@ -22,4 +22,9 @@ public class BundleEvents {
     public static void _postVanillaGame(VanillaGameEvent event) {
         VANILLA_GAME.post(event);
     }
+
+    public static void _clear() {
+        LOAD.clear();
+        VANILLA_GAME.clear();
+    }
 }

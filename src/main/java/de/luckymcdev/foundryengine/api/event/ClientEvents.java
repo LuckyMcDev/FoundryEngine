@@ -86,4 +86,16 @@ public class ClientEvents {
     public static void _postRenderAfterLevel(RenderLevelStageEvent.AfterLevel event) {
         RENDER_AFTER_LEVEL.post(event);
     }
+
+    public static void _clear() {
+        TICK.clear();
+        STOPPED.clear();
+        STOPPING.clear();
+        CHAT.clear();
+        KEY_MAPPINGS.clear();
+        RENDER_GUI.clear();
+        RENDER_GUI_LAYER.clear();
+        RENDER_HAND.clear();
+        RENDER_AFTER_LEVEL.clear();
+    }
 }

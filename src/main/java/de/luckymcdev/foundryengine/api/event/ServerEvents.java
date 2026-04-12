@@ -58,4 +58,13 @@ public class ServerEvents {
     public static void _postTick(ServerTickEvent.Post event) {
         TICK.post(event);
     }
+
+    public static void _clear() {
+        ABOUT_TO_START.clear();
+        STARTED.clear();
+        STARTING.clear();
+        STOPPED.clear();
+        STOPPING.clear();
+        TICK.clear();
+    }
 }
