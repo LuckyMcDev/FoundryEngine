@@ -5,7 +5,6 @@ import de.luckymcdev.foundryengine.api.event.ClientEvents;
 import de.luckymcdev.foundryengine.api.event.ServerEvents;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.registry.GenericRegistry;
-import de.luckymcdev.foundryengine.common.script.BundleEntrypoint;
 import de.luckymcdev.foundryengine.common.script.BundleScriptLoader;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
@@ -134,13 +133,7 @@ public class BundleManager implements ResourceManagerReloadListener {
             bundle.bundleConfig().save();
         }
 
-        for (BundleEntrypoint entrypoint : bundle.entrypoints()) {
-            try {
-                entrypoint.onUnload();
-            } catch (Exception e) {
-                LOGGER.error("Error unloading script in bundle {}", bundle.info().id(), e);
-            }
-        }
+        bundle.unload();
 
         closeFileSystem(bundle);
     }
