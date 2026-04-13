@@ -100,6 +100,11 @@ public class Bundle {
         return registryQuery;
     }
 
+    public BundleCreativeModeTab creativeModeTab() {
+        return creativeModeTab;
+    }
+
+
     public Identifier id(String path) {
         return Identifier.fromNamespaceAndPath(info.id(), path);
     }
