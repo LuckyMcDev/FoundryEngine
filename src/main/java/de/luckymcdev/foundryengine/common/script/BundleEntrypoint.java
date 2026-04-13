@@ -1,40 +1,27 @@
 package de.luckymcdev.foundryengine.common.script;
 
-import de.luckymcdev.foundryengine.common.bundle.config.BundleConfig;
-import de.luckymcdev.foundryengine.common.bundle.config.BundleConfigSpec;
 import de.luckymcdev.foundryengine.common.priority.Priority;
-import net.neoforged.bus.api.IEventBus;
 
 /**
- * An Entrypoint to a Bundle. Each Bundle can contain multiple of these.
- * It is encouraged to follow the standard of either subclasses / same classes which are listeners of a respective event bus.
+ * An Entrypoint to a Bundle.
  */
-public abstract class BundleEntrypoint {
-    protected final IEventBus eventBus;
-    protected final BundleConfig bundleConfig;
-
-    protected BundleEntrypoint(IEventBus eventBus, BundleConfig bundleConfig) {
-        this.eventBus = eventBus;
-        this.bundleConfig = bundleConfig;
-    }
+public interface BundleEntrypoint {
 
     /**
      * Returns the Priority of this Entrypoint.
-     *
      * @return the priority, NORMAL by default
      */
-    public Priority getPriority() {
+    default Priority getPriority() {
         return Priority.NORMAL;
     }
 
     /**
-     * Called when the bundle is loaded. Override to register listeners, run setup logic, etc.
-     * This is also where you should define your config values via {@link BundleConfigSpec}.
+     * Called when the bundle is loaded.
      */
-    public abstract void onLoad();
+    void onLoad();
 
     /**
      * Called when the bundle is reloaded or removed.
      */
-    public abstract void onUnload();
+    void onUnload();
 }

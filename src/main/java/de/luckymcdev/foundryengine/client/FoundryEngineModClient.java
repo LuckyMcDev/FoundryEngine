@@ -69,6 +69,8 @@ public class FoundryEngineModClient {
 
         ModPathBroadcaster.onClientSetup();
 
+        Common.getBundleManager().loadClientScripts();
+
         event.enqueueWork(() -> {
             BUS.post(new RegisterRenderingStuffEvent(Client.getResourceManager()));
             BUS.post(new RegisterPanelEvent());

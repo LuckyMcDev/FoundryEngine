@@ -6,7 +6,6 @@ import de.luckymcdev.foundryengine.common.bundle.info.BundleFiles;
 import de.luckymcdev.foundryengine.common.bundle.info.BundleInfo;
 import de.luckymcdev.foundryengine.common.bundle.registry.BundleCreativeModeTab;
 import de.luckymcdev.foundryengine.common.bundle.registry.BundleRegistryQuery;
-import de.luckymcdev.foundryengine.common.script.BundleEntrypoint;
 import de.luckymcdev.foundryengine.common.script.BundleScriptLoader;
 import de.luckymcdev.foundryengine.common.script.ScriptEngineFactory;
 import groovy.util.GroovyScriptEngine;
@@ -18,7 +17,6 @@ import org.slf4j.Logger;
 import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
-import java.util.List;
 
 /**
  * Factory responsible for constructing Bundle instances with all their dependencies.
@@ -48,14 +46,14 @@ public class BundleFactory {
         BundleCreativeModeTab creativeTab = new BundleCreativeModeTab(info.id(), modBus, registryQuery);
         BundleConfig config = new BundleConfig(info.id(), configDirectory);
 
-        List<BundleEntrypoint> entrypoints = scriptLoader.loadScripts(
-                files, engine, modBus, eventBus, config, info.id()
-        );
-
-        return new Bundle(info, files, engine, registryQuery, eventBus, entrypoints, creativeTab, config);
+        return new Bundle(info, files, engine, registryQuery, eventBus, creativeTab, config);
     }
 
     public ScriptEngineFactory getScriptEngineFactory() {
         return scriptEngineFactory;
+    }
+
+    public BundleScriptLoader getScriptLoader() {
+        return scriptLoader;
     }
 }

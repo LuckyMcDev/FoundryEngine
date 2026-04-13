@@ -1,139 +1,70 @@
 package de.luckymcdev.foundryengine.common.script;
 
 import com.mojang.logging.LogUtils;
-import de.luckymcdev.foundryengine.common.bundle.config.BundleConfig;
 import de.luckymcdev.foundryengine.common.bundle.info.BundleFiles;
-import de.luckymcdev.foundryengine.common.exceptions.EngineException;
 import de.luckymcdev.foundryengine.common.priority.Priority;
 import de.luckymcdev.foundryengine.config.StartupConfig;
 import groovy.util.GroovyScriptEngine;
-import groovy.util.ResourceException;
-import groovy.util.ScriptException;
-import net.neoforged.bus.api.IEventBus;
-import org.jspecify.annotations.Nullable;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
-import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
-/**
- * Script Loader for a Bundle.
- */
 public class BundleScriptLoader {
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    /**
-     * Loads all scripts from the bundle using the GroovyScriptEngine.
-     *
-     * @param files        Bundle file information
-     * @param engine       Configured GroovyScriptEngine
-     * @param bundleBus    Bundle-specific event bus
-     * @param eventBus     Global event bus
-     * @param bundleConfig The bundle's config instance
-     * @param bundleId     Bundle identifier for logging
-     * @return List of loaded entrypoint instances (in priority order)
-     */
-    public List<BundleEntrypoint> loadScripts(BundleFiles files, GroovyScriptEngine engine, IEventBus bundleBus, IEventBus eventBus, BundleConfig bundleConfig, String bundleId) {
+    public List<BundleEntrypoint> loadCommon(BundleFiles files, GroovyScriptEngine engine) {
+        return load(files, engine, BundleFiles.ScriptFiles::common, "common");
+    }
+
+    public List<BundleEntrypoint> loadClient(BundleFiles files, GroovyScriptEngine engine) {
+        return load(files, engine, BundleFiles.ScriptFiles::client, "client");
+    }
+
+    public List<BundleEntrypoint> loadServer(BundleFiles files, GroovyScriptEngine engine) {
+        return load(files, engine, BundleFiles.ScriptFiles::server, "server");
+    }
+
+    private List<BundleEntrypoint> load(BundleFiles files, GroovyScriptEngine engine, Function<BundleFiles.ScriptFiles, Path> pathGetter, String envName) {
         List<BundleEntrypoint> entrypoints = new ArrayList<>();
 
         if (!StartupConfig.SCRIPTING_ENABLED.get()) {
-            LOGGER.info("Script loading is disabled in config.");
             return entrypoints;
         }
 
-        if (files.scripts().isEmpty()) {
-            LOGGER.debug("Bundle '{}' has no scripts", bundleId);
-            return entrypoints;
-        }
+        Path envPath = pathGetter.apply(files.scripts());
 
-        LOGGER.debug("Loading {} script(s) for bundle '{}'", files.scripts().size(), bundleId);
+        List<Path> scriptPaths = files.scripts().collection().stream()
+                .filter(p -> p.startsWith(envPath))
+                .toList();
 
-        for (Path scriptPath : files.scripts()) {
+        for (Path scriptPath : scriptPaths) {
             try {
-                BundleEntrypoint entrypoint = loadScriptClass(scriptPath, files, engine, eventBus, bundleConfig);
-
+                BundleEntrypoint entrypoint = loadScriptClass(scriptPath, files, engine);
                 if (entrypoint != null) {
                     entrypoints.add(entrypoint);
-                    LOGGER.debug("Loaded entrypoint from '{}' with priority {}",
-                            scriptPath.getFileName(), entrypoint.getPriority());
+                    entrypoint.onLoad();
                 }
             } catch (Exception e) {
-                LOGGER.error("Failed to load script '{}' for bundle '{}'",
-                        scriptPath.getFileName(), bundleId, e);
+                LOGGER.error("Failed to load {} script '{}'", envName, scriptPath.getFileName(), e);
             }
-        }
-
-        if (entrypoints.isEmpty()) {
-            LOGGER.debug("Bundle '{}' has no entrypoints (scripts may not implement BundleEntrypoint)", bundleId);
-            return entrypoints;
         }
 
         entrypoints.sort(Priority.comparing(BundleEntrypoint::getPriority));
-
-        LOGGER.debug("Sorted {} entrypoint(s) by priority for bundle '{}'", entrypoints.size(), bundleId);
-
-        for (int i = 0; i < entrypoints.size(); i++) {
-            BundleEntrypoint ep = entrypoints.get(i);
-            try {
-                LOGGER.debug("Initializing entrypoint {}/{} ({}) for bundle '{}'",
-                        i + 1, entrypoints.size(), ep.getPriority(), bundleId);
-                ep.onLoad();
-            } catch (Exception e) {
-                LOGGER.error("Failed to initialize entrypoint {} (priority: {}) for bundle '{}'",
-                        ep.getClass().getSimpleName(), ep.getPriority(), bundleId, e);
-            }
-        }
-
-        LOGGER.info("Loaded and initialized {} entrypoint(s) for bundle '{}'", entrypoints.size(), bundleId);
         return entrypoints;
     }
 
-    /**
-     * Loads a single script class and instantiates it as a BundleEntrypoint.
-     * Does NOT call onLoad() — that happens later in priority order.
-     */
-    private @Nullable BundleEntrypoint loadScriptClass(Path scriptPath, BundleFiles files, GroovyScriptEngine engine, IEventBus eventBus, BundleConfig bundleConfig) throws InvocationTargetException, InstantiationException, IllegalAccessException, ResourceException, ScriptException {
-        String scriptName = getRelativeScriptName(files.root(), scriptPath);
-
+    private @Nullable BundleEntrypoint loadScriptClass(Path scriptPath, BundleFiles files, GroovyScriptEngine engine) throws Exception {
+        String scriptName = files.scripts().root().relativize(scriptPath).toString().replace('\\', '/');
         Class<?> scriptClass = engine.loadScriptByName(scriptName);
+
         if (BundleEntrypoint.class.isAssignableFrom(scriptClass)) {
-            return instantiateEntrypoint(scriptClass, eventBus, bundleConfig);
+            return (BundleEntrypoint) scriptClass.getDeclaredConstructor().newInstance();
         }
 
-        LOGGER.trace("Script '{}' is not a BundleEntrypoint, skipping", scriptName);
         return null;
-    }
-
-    /**
-     * Instantiates a BundleEntrypoint from a class using the expected constructor.
-     * Preferred: (IEventBus, IEventBus, BundleConfig)
-     * Fallback:  no-arg (warns, bundleConfig will be null)
-     */
-    private BundleEntrypoint instantiateEntrypoint(Class<?> clazz, IEventBus eventBus, BundleConfig bundleConfig) throws InvocationTargetException, InstantiationException, IllegalAccessException {
-        try {
-            return (BundleEntrypoint) clazz
-                    .getConstructor(IEventBus.class, BundleConfig.class)
-                    .newInstance(eventBus, bundleConfig);
-        } catch (NoSuchMethodException e) {
-            try {
-                BundleEntrypoint instance = (BundleEntrypoint) clazz.getConstructor().newInstance();
-                LOGGER.warn("Script class {} uses no-arg constructor. Consider using (IEventBus, IEventBus, BundleConfig) constructor.",
-                        clazz.getSimpleName());
-                return instance;
-            } catch (NoSuchMethodException ex) {
-                throw new EngineException(
-                        "BundleEntrypoint class must have either (IEventBus, IEventBus, BundleConfig) or no-arg constructor: "
-                                + clazz.getName(), ex);
-            }
-        }
-    }
-
-    /**
-     * Converts an absolute script path to a relative path for GroovyScriptEngine.
-     */
-    private String getRelativeScriptName(Path root, Path scriptPath) {
-        return root.relativize(scriptPath).toString().replace('\\', '/');
     }
 }

@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
@@ -22,20 +23,40 @@ public class BundleFilesBuilder {
     public BundleFiles build(Path root, @Nullable FileSystem zipFs) {
         Path assets = root.resolve("assets");
         Path data = root.resolve("data");
-        List<Path> scripts = findScripts(root, assets, data);
 
-        return new BundleFiles(root, assets, data, scripts, zipFs);
+        Path scriptsRoot = root.resolve("scripts");
+        Path clientScripts = scriptsRoot.resolve("client");
+        Path commonScripts = scriptsRoot.resolve("common");
+        Path serverScripts = scriptsRoot.resolve("server");
+
+        List<Path> scriptCollection = new ArrayList<>();
+        scriptCollection.addAll(findScripts(clientScripts));
+        scriptCollection.addAll(findScripts(commonScripts));
+        scriptCollection.addAll(findScripts(serverScripts));
+
+        BundleFiles.ScriptFiles scriptFiles = new BundleFiles.ScriptFiles(
+                scriptsRoot,
+                clientScripts,
+                commonScripts,
+                serverScripts,
+                List.copyOf(scriptCollection)
+        );
+
+        return new BundleFiles(root, assets, data, scriptFiles, zipFs);
     }
 
-    private List<Path> findScripts(final Path root, final Path assets, final Path data) {
-        try (Stream<Path> files = Files.walk(root)) {
+    private List<Path> findScripts(final Path directory) {
+        if (!Files.exists(directory) || !Files.isDirectory(directory)) {
+            return Collections.emptyList();
+        }
+
+        try (Stream<Path> files = Files.walk(directory)) {
             return files
                     .filter(Files::isRegularFile)
                     .filter(f -> f.toString().endsWith(".groovy"))
-                    .filter(f -> !f.startsWith(assets) && !f.startsWith(data))
                     .toList();
         } catch (IOException e) {
-            LOGGER.error("Failed to find scripts in: {}", root, e);
+            LOGGER.error("Failed to find scripts in: {}", directory, e);
             return Collections.emptyList();
         }
     }

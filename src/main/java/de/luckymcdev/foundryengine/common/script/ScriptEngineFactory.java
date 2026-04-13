@@ -11,7 +11,9 @@ import org.codehaus.groovy.control.customizers.SecureASTCustomizer;
 import org.slf4j.Logger;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.List;
 
 /**
@@ -35,7 +37,14 @@ public class ScriptEngineFactory {
     }
 
     private URL[] buildRoots(BundleFiles files) throws IOException {
-        return new URL[]{files.root().toUri().toURL()};
+        var scripts = files.scripts();
+        return new URL[]{
+                toUrl(scripts.root())
+        };
+    }
+
+    private URL toUrl(Path path) throws MalformedURLException {
+        return path.toUri().toURL();
     }
 
     public CompilerConfiguration createCompilerConfiguration() {

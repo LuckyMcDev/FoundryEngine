@@ -16,17 +16,16 @@ import java.util.List;
  * @param root          the root path of a bundle
  * @param assets        the assets path of a bundle
  * @param data          the data path of a bundle
- * @param scripts       the scripts paths of a bundle
+ * @param scripts       the ScriptFiles data of a bundle
  * @param zipFileSystem the file system used to open a bundle if its a zip file.
  */
-public record BundleFiles(Path root, Path assets, Path data, List<Path> scripts, @Nullable FileSystem zipFileSystem) {
+public record BundleFiles(Path root, Path assets, Path data, ScriptFiles scripts, @Nullable FileSystem zipFileSystem) {
     private static final Codec<Path> PATH_CODEC = Codec.STRING.xmap(Paths::get, Path::toString);
-
     public static final Codec<BundleFiles> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             PATH_CODEC.fieldOf("root").forGetter(BundleFiles::root),
             PATH_CODEC.fieldOf("assets").forGetter(BundleFiles::assets),
             PATH_CODEC.fieldOf("data").forGetter(BundleFiles::data),
-            PATH_CODEC.listOf().fieldOf("scripts").forGetter(BundleFiles::scripts)
+            ScriptFiles.CODEC.fieldOf("scripts").forGetter(BundleFiles::scripts)
     ).apply(instance, (root, assets, data, scripts) -> new BundleFiles(root, assets, data, scripts, null)));
 
     public static BundleFilesBuilder builder() {
@@ -38,6 +37,16 @@ public record BundleFiles(Path root, Path assets, Path data, List<Path> scripts,
     }
 
     public int scriptCount() {
-        return scripts.size();
+        return scripts.collection().size();
+    }
+
+    public record ScriptFiles(Path root, Path client, Path common, Path server, List<Path> collection) {
+        public static final Codec<ScriptFiles> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                PATH_CODEC.fieldOf("root").forGetter(ScriptFiles::root),
+                PATH_CODEC.fieldOf("client").forGetter(ScriptFiles::client),
+                PATH_CODEC.fieldOf("common").forGetter(ScriptFiles::common),
+                PATH_CODEC.fieldOf("server").forGetter(ScriptFiles::server),
+                PATH_CODEC.listOf().fieldOf("collection").forGetter(ScriptFiles::collection)
+        ).apply(instance, ScriptFiles::new));
     }
 }

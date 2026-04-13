@@ -27,6 +27,7 @@ import net.neoforged.fml.event.lifecycle.FMLConstructModEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
@@ -63,6 +64,7 @@ public class FoundryEngineMod {
         modBus.addListener(this::onAddPackFinders);
         modBus.addListener(this::onRegisterPayloadHandlers);
         BUS.addListener(this::onRegisterCommands);
+        BUS.addListener(this::onServerAboutToStart);
 
         BUS.addListener(this::onRegisterVirtualPacks);
         BUS.addListener(Common.getSceneManager()::entityJoinLevel);
@@ -138,6 +140,10 @@ public class FoundryEngineMod {
 
     private void onRegisterVirtualPacks(RegisterVirtualPackEvent.BeforeUser event) {
         BundleVirtualPacks.create().forEach(event::addPack);
+    }
+
+    private void onServerAboutToStart(ServerAboutToStartEvent event) {
+        Common.getBundleManager().loadServerScripts();
     }
 
     private void onConstruct(final FMLConstructModEvent event) {

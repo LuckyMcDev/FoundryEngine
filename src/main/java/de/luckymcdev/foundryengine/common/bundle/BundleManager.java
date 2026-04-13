@@ -6,6 +6,7 @@ import de.luckymcdev.foundryengine.api.event.ServerEvents;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.registry.GenericRegistry;
 import de.luckymcdev.foundryengine.common.script.BundleEntrypoint;
+import de.luckymcdev.foundryengine.common.script.BundleScriptLoader;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.neoforged.bus.api.IEventBus;
@@ -17,24 +18,54 @@ import java.nio.file.Path;
 
 /**
  * Bundle Manager that manages Bundle Lifecycles.
+ *
+ * <p>Script loading is sided:
+ * <ul>
+ *   <li>{@link #register(Bundle)} always loads <em>common</em> scripts.</li>
+ *   <li>{@link #loadClientScripts()} must be called from the client dist entrypoint.</li>
+ *   <li>{@link #loadServerScripts()} must be called from the server dist entrypoint.</li>
+ * </ul>
  */
 public class BundleManager implements ResourceManagerReloadListener {
     private static final Logger LOGGER = LogUtils.getLogger();
 
     private final GenericRegistry<String, Bundle> bundles = new GenericRegistry<>();
     private final BundleDiscovery bundleDiscovery;
+    private final BundleScriptLoader scriptLoader;
 
     public BundleManager(IEventBus modBus, Path configDirectory) {
         BundleFactory bundleFactory = new BundleFactory(modBus, configDirectory);
+        this.scriptLoader = bundleFactory.getScriptLoader();
         this.bundleDiscovery = new BundleDiscovery(bundleFactory, this::register);
     }
 
     /**
-     * Registers a bundle in the registry.
+     * Registers a bundle and immediately loads its common-side scripts.
      */
     public void register(Bundle bundle) {
         bundles.register(bundle.info().id(), bundle);
+        bundle.loadCommon(scriptLoader);
         LOGGER.debug("Registered Bundle: {} with Info: {}", bundle.info().id(), bundle.info());
+    }
+
+    /**
+     * Loads client-side scripts for all registered bundles.
+     * Call this from {@code FoundryEngineModClient} during client setup.
+     */
+    public void loadClientScripts() {
+        for (Bundle bundle : bundles.values()) {
+            bundle.loadClient(scriptLoader);
+        }
+    }
+
+    /**
+     * Loads server-side scripts for all registered bundles.
+     * Call this from {@code FoundryEngineModServer} during server setup.
+     */
+    public void loadServerScripts() {
+        for (Bundle bundle : bundles.values()) {
+            bundle.loadServer(scriptLoader);
+        }
     }
 
     /**
@@ -68,13 +99,15 @@ public class BundleManager implements ResourceManagerReloadListener {
 
     /**
      * Reloads all bundles by unloading current bundles and rediscovering them.
+     * Common scripts are reloaded here; dist-specific scripts will be reloaded
+     * when the respective dist reload listeners fire.
      */
     public void reload() {
         LOGGER.info("Reloading FoundryEngine Bundles...");
 
         ClientEvents._clear();
         ServerEvents._clear();
-        //BundleEvents._clear(); // I Guess this doesnt have to be cleared? bc it is registry
+        //BundleEvents._clear(); // I Guess this doesnt have to be cleared? bc its a registry
 
         unloadAllBundles();
         bundles.clear();
@@ -86,9 +119,6 @@ public class BundleManager implements ResourceManagerReloadListener {
         }
     }
 
-    /**
-     * Unloads all bundles, calling their onUnload methods and closing resources.
-     */
     private void unloadAllBundles() {
         for (Bundle bundle : bundles.values()) {
             unloadBundle(bundle);
@@ -115,9 +145,6 @@ public class BundleManager implements ResourceManagerReloadListener {
         closeFileSystem(bundle);
     }
 
-    /**
-     * Closes the ZIP FileSystem associated with a bundle, if present.
-     */
     private void closeFileSystem(Bundle bundle) {
         FileSystem fs = bundle.bundleFiles().zipFileSystem();
         if (fs != null && fs.isOpen()) {
