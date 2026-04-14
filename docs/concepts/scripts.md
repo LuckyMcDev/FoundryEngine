@@ -1,14 +1,14 @@
 # Concepts: Scripts
 
 A Script is a file inside either the
-`src/main/groovy/` or `bundleid/`
+`src/main/groovy/` or `bundleid/scripts/side`([sides](sides.md))
 folder, with the `.groovy` file ending.
 
-A Script can be of 2 typs.
+A Script can be of 2 types.
 
 ## Entrypoint Scripts
 
-An Entrypoint script is a script, simlar to this:
+An Entrypoint script is a script, similar to this:
 
 ```groovy
 package example
@@ -17,11 +17,7 @@ import de.luckymcdev.foundryengine.common.bundle.config.BundleConfig
 import de.luckymcdev.foundryengine.common.script.BundleEntrypoint
 import net.neoforged.bus.api.IEventBus
 
-class Entrypoint extends BundleEntrypoint {
-
-    Entrypoint(IEventBus eventBus, BundleConfig bundleConfig) {
-        super(eventBus, bundleConfig)
-    }
+class Entrypoint implements BundleEntrypoint {
 
     @Override
     void onLoad() {
@@ -55,12 +51,8 @@ import de.luckymcdev.foundryengine.common.bundle.config.BundleConfig
 import de.luckymcdev.foundryengine.common.script.BundleEntrypoint
 import net.neoforged.bus.api.IEventBus
 
-class Entrypoint extends BundleEntrypoint {
-
-    Entrypoint(IEventBus eventBus, BundleConfig bundleConfig) {
-        super(eventBus, bundleConfig)
-    }
-
+class Entrypoint implements BundleEntrypoint {
+    
     @Override
     void onLoad() {
     }
@@ -94,11 +86,7 @@ import de.luckymcdev.foundryengine.common.script.BundleEntrypoint
 import net.neoforged.bus.api.IEventBus
 import example.Test
 
-class Entrypoint extends BundleEntrypoint {
-
-    Entrypoint(IEventBus eventBus, BundleConfig bundleConfig) {
-        super(eventBus, bundleConfig)
-    }
+class Entrypoint implements BundleEntrypoint {
 
     @Override
     void onLoad() {
