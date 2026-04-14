@@ -2,12 +2,12 @@ package de.luckymcdev.foundryengine.client.editor.builtin.scene;
 
 import de.luckymcdev.foundryengine.client.editor.builtin.EditorPanel;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
+import de.luckymcdev.foundryengine.client.scene.SelectionManager;
 import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.scene.EngineSceneNode;
 import de.luckymcdev.foundryengine.common.scene.EntitySceneNode;
 import de.luckymcdev.foundryengine.common.scene.PointNode;
-import de.luckymcdev.foundryengine.common.scene.SelectionManager;
 import imgui.ImGui;
 import imgui.type.ImBoolean;
 import imgui.type.ImFloat;
