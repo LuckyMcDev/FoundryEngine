@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.client.editor.builtin.scene;
 
 import de.luckymcdev.foundryengine.client.editor.builtin.EditorPanel;
+import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.client.scene.SelectionManager;
 import de.luckymcdev.foundryengine.client.util.key.Shortcut;
@@ -26,6 +27,7 @@ public class PropertiesPanel extends EditorPanel {
 
     public PropertiesPanel() {
         super(Common.id("properties"), "Properties", ImIcons.FA.FA_SLIDERS, Shortcut.empty());
+        this.category = PanelCategory.EDITOR_SCENE;
     }
 
     @Override
