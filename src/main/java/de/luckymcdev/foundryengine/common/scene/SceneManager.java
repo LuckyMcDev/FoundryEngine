@@ -1,23 +1,85 @@
 package de.luckymcdev.foundryengine.common.scene;
 
 import de.luckymcdev.foundryengine.client.Client;
-import de.luckymcdev.foundryengine.common.registry.GenericRegistry;
+import net.minecraft.world.level.ChunkPos;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
+import org.jspecify.annotations.Nullable;
 
-import java.util.Collection;
+import java.util.*;
 
 public class SceneManager {
-    private final GenericRegistry<String, EngineSceneNode> nodes = new GenericRegistry<>();
+    private final Map<String, EngineSceneNode> nodes = new HashMap<>();
+    private final List<EngineSceneNode> rootNodes = new ArrayList<>();
+
     private SceneZone activeZone;
     private boolean followPlayer = false;
 
     public void register(EngineSceneNode node) {
-        this.nodes.register(node.getUUID(), node);
+        nodes.put(node.getUUID(), node);
+        if (node.getParent() == null) {
+            rootNodes.add(node);
+        }
     }
 
     public void remove(EngineSceneNode node) {
-        this.nodes.remove(node.getUUID());
+        nodes.remove(node.getUUID());
+        rootNodes.remove(node);
+    }
+
+    @Nullable
+    public EngineSceneNode getNode(String uuid) {
+        return nodes.get(uuid);
+    }
+
+    public Collection<EngineSceneNode> getRootNodes() {
+        return Collections.unmodifiableList(rootNodes);
+    }
+
+    public Collection<EngineSceneNode> getAllNodes() {
+        return Collections.unmodifiableCollection(nodes.values());
+    }
+
+    public Collection<EngineSceneNode> getFilteredRoots() {
+        List<EngineSceneNode> filtered = new ArrayList<>(rootNodes);
+        if (followPlayer) {
+            var player = Client.getPlayer();
+            if (player != null) {
+                ChunkPos chunk = player.chunkPosition();
+                filtered.removeIf(node -> !isInChunk(node, chunk));
+            }
+        } else if (activeZone != null) {
+            filtered.removeIf(node -> !activeZone.contains(node.getPosition().x, node.getPosition().z));
+        }
+        return filtered;
+    }
+
+    private boolean isInChunk(EngineSceneNode node, ChunkPos chunk) {
+        float x = node.getPosition().x;
+        float z = node.getPosition().z;
+        return x >= chunk.getMinBlockX() && x <= chunk.getMaxBlockX()
+                && z >= chunk.getMinBlockZ() && z <= chunk.getMaxBlockZ();
+    }
+
+    public void renderGizmos(@Nullable EngineSceneNode selectedNode) {
+        if (selectedNode != null) {
+            selectedNode.drawGizmos();
+        }
+    }
+
+    public void entityJoinLevel(EntityJoinLevelEvent event) {
+        String uuid = event.getEntity().getStringUUID();
+        if (nodes.containsKey(uuid)) return;
+        EntitySceneNode node = new EntitySceneNode(event.getEntity());
+        register(node);
+    }
+
+    public void entityLeaveLevel(EntityLeaveLevelEvent event) {
+        String uuid = event.getEntity().getStringUUID();
+        EngineSceneNode node = nodes.get(uuid);
+        if (node != null) {
+            remove(node);
+        }
     }
 
     public SceneZone getActiveZone() {
@@ -36,46 +98,5 @@ public class SceneManager {
 
     public boolean isFollowingPlayer() {
         return followPlayer;
-    }
-
-    public EngineSceneNode getNode(String uuid) {
-        return this.nodes.get(uuid);
-    }
-
-    public Collection<EngineSceneNode> getNodes() {
-        return this.nodes.values();
-    }
-
-    public Collection<EngineSceneNode> getFilteredNodes() {
-        if (followPlayer) {
-            var player = Client.getPlayer();
-            if (player != null) {
-                var chunk = player.chunkPosition();
-                return getNodes().stream()
-                        .filter(node -> {
-                            float x = node.getPosition().x;
-                            float z = node.getPosition().z;
-                            return x >= chunk.getMinBlockX() && x <= chunk.getMaxBlockX()
-                                    && z >= chunk.getMinBlockZ() && z <= chunk.getMaxBlockZ();
-                        }).toList();
-            }
-        }
-
-        if (activeZone == null) return getNodes();
-        return getNodes().stream()
-                .filter(node -> activeZone.contains(node.getPosition().x, node.getPosition().z))
-                .toList();
-    }
-
-    public void entityJoinLevel(EntityJoinLevelEvent event) {
-        if (event.getEntity() instanceof EngineSceneNode node) {
-            this.nodes.register(node.getUUID(), node);
-        }
-    }
-
-    public void entityLeaveLevel(EntityLeaveLevelEvent event) {
-        if (event.getEntity() instanceof EngineSceneNode node) {
-            this.nodes.remove(node.getUUID());
-        }
     }
 }

@@ -4,7 +4,6 @@
   "package": "de.luckymcdev.foundryengine.mixin.entity",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "EntityMixin"
   ],
   "client": [
   ],

@@ -11,6 +11,7 @@ import de.luckymcdev.foundryengine.client.editor.builtin.TestPanel;
 import de.luckymcdev.foundryengine.client.editor.builtin.blueprint.BlueprintsPanel;
 import de.luckymcdev.foundryengine.client.editor.builtin.explorer.FileExplorerPanel;
 import de.luckymcdev.foundryengine.client.editor.builtin.explorer.ResourceExplorerPanel;
+import de.luckymcdev.foundryengine.client.editor.builtin.scene.PropertiesPanel;
 import de.luckymcdev.foundryengine.client.editor.builtin.scene.ScenePanel;
 import de.luckymcdev.foundryengine.client.editor.builtin.tools.*;
 import de.luckymcdev.foundryengine.client.editor.builtin.view.InfoPanel;
@@ -24,9 +25,6 @@ import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.config.ClientConfig;
 import de.luckymcdev.foundryengine.config.Config;
 import net.minecraft.client.Minecraft;
-import net.minecraft.gizmos.Gizmos;
-import net.minecraft.gizmos.TextGizmo;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -36,9 +34,6 @@ import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.common.NeoForge;
 import org.slf4j.Logger;
 
-/**
- * Dedicated Client Mod Entrypoint for FoundryEngine.
- */
 @Mod(value = Common.MODID, dist = Dist.CLIENT)
 public class FoundryEngineModClient {
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -99,16 +94,10 @@ public class FoundryEngineModClient {
     }
 
     private void onRegisterDebugRenderers(RegisterDebugRenderersEvent event) {
-        event.register(minecraft -> new SimpleDebugScreenRenderer(
-                minecraft,
-                (mc, camPos, debugValueAccess, frustum, partialTick) -> {
-                    camPos.add(0, 2, 0);
-                    Gizmos.billboardText(
-                            "TEST",
-                            new Vec3(camPos.x(), camPos.y(), camPos.z()),
-                            TextGizmo.Style.forColorAndCentered(0xFF00FF).withScale(2F));
-                }
-        ));
+        event.register(minecraft -> new SimpleDebugScreenRenderer(minecraft, (mc, camPos, debugValueAccess, frustum, partialTick) -> {
+            var selected = Common.getSceneManager().getNode(ScenePanel.INSTANCE.getSelectedUUID());
+            Common.getSceneManager().renderGizmos(selected);
+        }));
     }
 
     private void onRegisterPanels(RegisterPanelEvent event) {
@@ -121,6 +110,7 @@ public class FoundryEngineModClient {
         event.register(StopwatchPanel.INSTANCE);
         event.register(InfoPanel.INSTANCE);
         event.register(ScenePanel.INSTANCE);
+        event.register(PropertiesPanel.INSTANCE);
         event.register(CataloguePanel.INSTANCE);
         event.register(ThemeSelectorPanel.INSTANCE);
         event.register(EffectPanel.INSTANCE);

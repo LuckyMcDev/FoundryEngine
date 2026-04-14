@@ -5,28 +5,25 @@ import de.luckymcdev.foundryengine.client.editor.builtin.EditorPanel;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
+import de.luckymcdev.foundryengine.client.selection.SelectionManager;
 import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.network.packets.ServerBoundTeleportPacket;
 import de.luckymcdev.foundryengine.common.scene.EngineSceneNode;
 import de.luckymcdev.foundryengine.common.scene.SceneZone;
 import imgui.ImGui;
-import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiTreeNodeFlags;
 import imgui.type.ImString;
 import net.minecraft.client.Minecraft;
-import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public class ScenePanel extends EditorPanel {
     public static final ScenePanel INSTANCE = new ScenePanel();
 
     private final ImString searchBuffer = new ImString(256);
+    public boolean showGizmos = true;
     private String selectedUUID = null;
 
     public ScenePanel() {
@@ -37,8 +34,7 @@ public class ScenePanel extends EditorPanel {
     @Override
     public void content() {
         if (Minecraft.getInstance().level == null) {
-            ImGuiUtils.textDenied("Non existing Level",
-                    "You need to join a World for this Panel to work.");
+            ImGuiUtils.textDenied("Non existing Level", "You need to join a World for this Panel to work.");
             return;
         }
         EngineSceneNode selectedNode = (selectedUUID != null) ? Common.getSceneManager().getNode(selectedUUID) : null;
@@ -52,14 +48,7 @@ public class ScenePanel extends EditorPanel {
 
         if (ImGui.collapsingHeader("Entities", ImGuiTreeNodeFlags.DefaultOpen)) {
             ImGui.beginChild("##scene_tree", 0, treeHeight, false);
-            renderTree(Common.getSceneManager().getFilteredNodes(), searchBuffer.get().toLowerCase());
-            ImGui.endChild();
-        }
-
-        if (selectedNode != null) {
-            ImGui.separator();
-            ImGui.beginChild("##inspector", 0, 0, false);
-            renderInspector(selectedNode);
+            renderTree(Common.getSceneManager().getFilteredRoots(), searchBuffer.get().toLowerCase());
             ImGui.endChild();
         }
     }
@@ -82,79 +71,75 @@ public class ScenePanel extends EditorPanel {
                 Common.getSceneManager().setFollowPlayer(false);
                 Common.getSceneManager().setActiveZone(null);
             }
-
             if (ImGui.selectable("Current Chunk (Follow)", Common.getSceneManager().isFollowingPlayer())) {
                 Common.getSceneManager().setFollowPlayer(true);
             }
-
             if (ImGui.selectable("Snapshot Current Area", false)) {
                 if (Client.getPlayer() == null) return;
                 var chunkPos = Client.getPlayer().chunkPosition();
                 SceneZone snapshot = new SceneZone("Snapshot", chunkPos.getMinBlockX(), chunkPos.getMinBlockZ(), chunkPos.getMaxBlockX(), chunkPos.getMaxBlockZ());
                 Common.getSceneManager().setActiveZone(snapshot);
             }
-
             ImGui.endCombo();
         }
 
         ImGui.separator();
     }
 
-    private void renderTree(Collection<EngineSceneNode> nodes, String filter) {
-        if (nodes.isEmpty()) {
+    private void renderTree(Collection<EngineSceneNode> roots, String filter) {
+        if (roots.isEmpty()) {
             ImGui.textDisabled("  No entities in scene.");
             return;
         }
 
-        Map<String, List<EngineSceneNode>> groupedNodes = nodes.stream()
-                .filter(node -> !isFiltered(node, filter))
-                .collect(Collectors.groupingBy(EngineSceneNode::getTypeName));
-
-        if (groupedNodes.isEmpty()) {
-            ImGui.textDisabled("  No matching entities.");
-            return;
+        boolean anyVisible = false;
+        for (EngineSceneNode root : roots) {
+            anyVisible |= renderNodeRecursive(root, filter);
         }
 
-        for (Map.Entry<String, List<EngineSceneNode>> entry : groupedNodes.entrySet()) {
-            String typeName = entry.getKey();
-            List<EngineSceneNode> typeNodes = entry.getValue();
-
-            String categoryLabel = iconForType(typeName) + "  " + typeName + " (" + typeNodes.size() + ")";
-
-            int categoryFlags = ImGuiTreeNodeFlags.SpanAvailWidth;
-            if (!filter.isEmpty()) categoryFlags |= ImGuiTreeNodeFlags.DefaultOpen;
-
-            if (ImGui.treeNodeEx("##cat_" + typeName, categoryFlags, categoryLabel)) {
-                for (EngineSceneNode node : typeNodes) {
-                    renderNodeEntry(node);
-                }
-                ImGui.treePop();
-            }
+        if (!anyVisible) {
+            ImGui.textDisabled("  No matching entities.");
         }
     }
 
-    private void renderNodeEntry(EngineSceneNode node) {
-        String uuid = node.getUUID();
-        boolean isSelected = uuid.equals(selectedUUID);
+    private boolean renderNodeRecursive(EngineSceneNode node, String filter) {
+        boolean matchesFilter = !isFiltered(node, filter);
+        boolean childMatches = false;
 
-        if (isSelected) ImGui.pushStyleColor(ImGuiCol.Header, 0.26f, 0.59f, 0.98f, 0.31f);
+        for (EngineSceneNode child : node.getChildren()) {
+            if (renderNodeRecursive(child, filter)) {
+                childMatches = true;
+            }
+        }
 
-        int flags = ImGuiTreeNodeFlags.Leaf | ImGuiTreeNodeFlags.SpanAvailWidth;
-        if (isSelected) flags |= ImGuiTreeNodeFlags.Selected;
+        if (!matchesFilter && !childMatches) {
+            return false;
+        }
 
-        boolean open = ImGui.treeNodeEx("##node_" + uuid, flags, ImIcons.FA.FA_CIRCLE + "  " + node.getDisplayName());
+        boolean hasChildren = !node.getChildren().isEmpty();
+        int flags = ImGuiTreeNodeFlags.SpanAvailWidth;
+        if (!hasChildren) flags |= ImGuiTreeNodeFlags.Leaf;
+        if (node.getUUID().equals(selectedUUID)) flags |= ImGuiTreeNodeFlags.Selected;
+        if (!filter.isEmpty() && (matchesFilter || childMatches)) flags |= ImGuiTreeNodeFlags.DefaultOpen;
 
-        if (isSelected) ImGui.popStyleColor();
+        boolean open = ImGui.treeNodeEx("##node_" + node.getUUID(), flags,
+                iconForType(node.getTypeName()) + "  " + node.getDisplayName());
 
         if (ImGui.isItemClicked()) {
-            selectedUUID = isSelected ? null : uuid;
+            selectedUUID = node.getUUID();
+            SelectionManager.setSelected(node);
         }
 
-        renderNodeContextMenu(node, isSelected);
+        renderNodeContextMenu(node, node.getUUID().equals(selectedUUID));
 
         if (open) {
+            for (EngineSceneNode child : node.getChildren()) {
+                renderNodeRecursive(child, filter);
+            }
             ImGui.treePop();
         }
+
+        return true;
     }
 
     private boolean isFiltered(EngineSceneNode node, String filter) {
@@ -171,10 +156,10 @@ public class ScenePanel extends EditorPanel {
 
             if (ImGui.menuItem(ImIcons.FA.FA_CAMERA + "  Set as Camera")) {
                 var mc = Client.getMinecraft();
-                if (mc.getCameraEntity() == node.self()) {
+                if (mc.getCameraEntity() == node.asEntity()) {
                     mc.setCameraEntity(null);
                 } else {
-                    mc.setCameraEntity(node.self());
+                    mc.setCameraEntity(node.asEntity());
                 }
             }
             if (ImGui.menuItem(ImIcons.FA.FA_LOCATION_CROSSHAIRS + "  Teleport to")) {
@@ -182,73 +167,13 @@ public class ScenePanel extends EditorPanel {
             }
             if (ImGui.menuItem(ImIcons.FA.FA_TRASH + "  Remove")) {
                 node.remove();
-                if (isSelected) selectedUUID = null;
+                if (isSelected) {
+                    selectedUUID = null;
+                    SelectionManager.setSelected(null);
+                }
             }
             ImGui.endPopup();
         }
-    }
-
-    private void renderInspector(EngineSceneNode node) {
-        renderInspectorHeader();
-
-        if (ImGui.beginTable("##inspector_table", 2)) {
-            renderProperty("Type", node.getTypeName());
-            renderProperty("UUID", node.getUUID());
-            renderProperty("Display", node.getDisplayName());
-
-            Vector3f p = node.getPosition();
-            renderProperty("Position", String.format("%.2f, %.2f, %.2f", p.x, p.y, p.z));
-
-            Vector2f r = node.getRotation();
-            renderProperty("Rotation", String.format("P: %.1f°, Y: %.1f°", r.x, r.y));
-            ImGui.endTable();
-        }
-
-        renderInspectorActions(node);
-    }
-
-    private void renderInspectorHeader() {
-        ImGui.text(ImIcons.FA.FA_CIRCLE_INFO + "  Properties");
-        ImGui.sameLine();
-
-        float btnSize = 20f;
-        float posX = ImGui.getWindowWidth() - btnSize - ImGui.getStyle().getScrollbarSize() - ImGui.getStyle().getWindowPaddingX();
-
-        if (posX > ImGui.getCursorPosX()) ImGui.setCursorPosX(posX);
-        if (ImGui.smallButton(ImIcons.FA.FA_CIRCLE_XMARK.toString())) selectedUUID = null;
-
-        ImGui.spacing();
-        ImGui.separator();
-        ImGui.spacing();
-    }
-
-    private void renderInspectorActions(EngineSceneNode node) {
-        ImGui.spacing();
-        ImGui.separator();
-        ImGui.spacing();
-
-        float availX = ImGui.getContentRegionAvail().x;
-        float btnWidth = (availX - ImGui.getStyle().getItemSpacingY()) * 0.5f;
-
-        if (ImGui.button(ImIcons.FA.FA_LOCATION_CROSSHAIRS + "  Teleport", btnWidth, 0)) {
-            teleportTo(node.getPosition());
-        }
-
-        ImGui.sameLine();
-
-        ImGuiUtils.pushErrorButtonStyle();
-        if (ImGui.button(ImIcons.FA.FA_TRASH + "  Remove", btnWidth, 0)) {
-            node.remove();
-            selectedUUID = null;
-        }
-        ImGuiUtils.popErrorButtonStyle();
-    }
-
-    private void renderProperty(String label, String value) {
-        ImGui.tableNextColumn();
-        ImGui.textDisabled(label);
-        ImGui.tableNextColumn();
-        ImGui.text(value);
     }
 
     private void teleportTo(Vector3f pos) {
@@ -262,28 +187,17 @@ public class ScenePanel extends EditorPanel {
         String t = typeName.toLowerCase();
 
         if (t.contains("player")) return ImIcons.FA.FA_PERSON.toString();
-        if (isMob(t)) return ImIcons.FA.FA_SKULL.toString();
-        if (isAnimal(t)) return ImIcons.FA.FA_PAW.toString();
+        if (t.matches(".*(zombie|skeleton|creeper|spider|enderman|witch|phantom|blaze|wither).*"))
+            return ImIcons.FA.FA_SKULL.toString();
+        if (t.matches(".*(cow|pig|sheep|chicken|horse|wolf|cat|dog|fox|bee).*")) return ImIcons.FA.FA_PAW.toString();
         if (t.contains("item")) return ImIcons.FA.FA_BOX.toString();
-        if (isProjectile(t)) return ImIcons.FA.FA_CROSSHAIRS.toString();
-        if (isVehicle(t)) return ImIcons.FA.FA_TRAIN.toString();
+        if (t.matches(".*(arrow|projectile|fireball).*")) return ImIcons.FA.FA_CROSSHAIRS.toString();
+        if (t.matches(".*(boat|minecart).*")) return ImIcons.FA.FA_TRAIN.toString();
 
         return ImIcons.FA.FA_CUBE.toString();
     }
 
-    private boolean isMob(String t) {
-        return t.matches(".*(zombie|skeleton|creeper|spider|enderman|witch|phantom|blaze|wither).*");
-    }
-
-    private boolean isAnimal(String t) {
-        return t.matches(".*(cow|pig|sheep|chicken|horse|wolf|cat|dog|fox|bee).*");
-    }
-
-    private boolean isProjectile(String t) {
-        return t.matches(".*(arrow|projectile|fireball).*");
-    }
-
-    private boolean isVehicle(String t) {
-        return t.matches(".*(boat|minecart).*");
+    public String getSelectedUUID() {
+        return selectedUUID;
     }
 }
