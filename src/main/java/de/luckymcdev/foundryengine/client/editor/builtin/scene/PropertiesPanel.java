@@ -7,6 +7,7 @@ import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.scene.EngineSceneNode;
 import de.luckymcdev.foundryengine.common.scene.EntitySceneNode;
 import de.luckymcdev.foundryengine.common.scene.PointNode;
+import de.luckymcdev.foundryengine.common.scene.SelectionManager;
 import imgui.ImGui;
 import imgui.type.ImBoolean;
 import imgui.type.ImFloat;
@@ -29,6 +30,7 @@ public class PropertiesPanel extends EditorPanel {
 
     @Override
     public void content() {
+        currentTarget = SelectionManager.getSelected();
         if (currentTarget == null) {
             ImGui.textDisabled("No object selected.");
             return;

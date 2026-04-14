@@ -1,6 +1,5 @@
-package de.luckymcdev.foundryengine.client.selection;
+package de.luckymcdev.foundryengine.common.scene;
 
-import de.luckymcdev.foundryengine.common.scene.EngineSceneNode;
 import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.common.NeoForge;
 
