@@ -412,20 +412,20 @@ public class ScenePanel extends EditorPanel {
         return Character.toUpperCase(raw.charAt(0)) + raw.substring(1).replace('_', ' ');
     }
 
-    private String iconForType(String typeName) {
-        if (typeName == null) return ImIcons.FA.FA_CUBE.toString();
+    private ImIcon iconForType(String typeName) {
+        if (typeName == null) return ImIcons.FA.FA_CUBE;
         String t = typeName.toLowerCase();
 
-        if (t.contains("player")) return ImIcons.FA.FA_PERSON.toString();
+        if (t.contains("player")) return ImIcons.FA.FA_PERSON;
         if (t.matches(".*(zombie|skeleton|creeper|spider|enderman|witch|phantom|blaze|wither).*"))
-            return ImIcons.FA.FA_SKULL.toString();
-        if (t.matches(".*(cow|pig|sheep|chicken|horse|wolf|cat|dog|fox|bee).*")) return ImIcons.FA.FA_PAW.toString();
-        if (t.contains("item")) return ImIcons.FA.FA_BOX.toString();
-        if (t.matches(".*(arrow|projectile|fireball).*")) return ImIcons.FA.FA_CROSSHAIRS.toString();
-        if (t.matches(".*(boat|minecart).*")) return ImIcons.FA.FA_TRAIN.toString();
-        if (t.contains("point")) return ImIcons.FA.FA_LOCATION_DOT.toString();
+            return ImIcons.FA.FA_SKULL;
+        if (t.matches(".*(cow|pig|sheep|chicken|horse|wolf|cat|dog|fox|bee).*")) return ImIcons.FA.FA_PAW;
+        if (t.contains("item")) return ImIcons.FA.FA_BOX;
+        if (t.matches(".*(arrow|projectile|fireball).*")) return ImIcons.FA.FA_CROSSHAIRS;
+        if (t.matches(".*(boat|minecart).*")) return ImIcons.FA.FA_TRAIN;
+        if (t.contains("point")) return ImIcons.FA.FA_LOCATION_DOT;
 
-        return ImIcons.FA.FA_CUBE.toString();
+        return ImIcons.FA.FA_CUBE;
     }
 
     public String getSelectedUUID() {
