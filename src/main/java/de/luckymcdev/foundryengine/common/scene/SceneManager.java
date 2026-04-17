@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.common.scene;
 
 import de.luckymcdev.foundryengine.client.Client;
+import de.luckymcdev.foundryengine.client.editor.builtin.scene.ScenePanel;
 import net.minecraft.world.level.ChunkPos;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
@@ -62,9 +63,9 @@ public class SceneManager {
     }
 
     public void renderGizmos(@Nullable EngineSceneNode selectedNode) {
-        if (selectedNode != null) {
-            selectedNode.drawGizmos();
-        }
+        if (!ScenePanel.INSTANCE.showGizmos) return;
+        if (selectedNode == null) return;
+        selectedNode.drawGizmos();
     }
 
     public void entityJoinLevel(EntityJoinLevelEvent event) {

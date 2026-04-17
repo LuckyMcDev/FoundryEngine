@@ -11,7 +11,6 @@ import de.luckymcdev.foundryengine.client.editor.builtin.TestPanel;
 import de.luckymcdev.foundryengine.client.editor.builtin.blueprint.BlueprintsPanel;
 import de.luckymcdev.foundryengine.client.editor.builtin.explorer.FileExplorerPanel;
 import de.luckymcdev.foundryengine.client.editor.builtin.explorer.ResourceExplorerPanel;
-import de.luckymcdev.foundryengine.client.editor.builtin.scene.PropertiesPanel;
 import de.luckymcdev.foundryengine.client.editor.builtin.scene.ScenePanel;
 import de.luckymcdev.foundryengine.client.editor.builtin.tools.*;
 import de.luckymcdev.foundryengine.client.editor.builtin.view.InfoPanel;
@@ -110,7 +109,6 @@ public class FoundryEngineModClient {
         event.register(StopwatchPanel.INSTANCE);
         event.register(InfoPanel.INSTANCE);
         event.register(ScenePanel.INSTANCE);
-        event.register(PropertiesPanel.INSTANCE);
         event.register(CataloguePanel.INSTANCE);
         event.register(ThemeSelectorPanel.INSTANCE);
         event.register(EffectPanel.INSTANCE);
