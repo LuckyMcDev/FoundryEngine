@@ -19,6 +19,7 @@ import de.luckymcdev.foundryengine.client.editor.event.RegisterPanelEvent;
 import de.luckymcdev.foundryengine.client.event.RegisterRenderingStuffEvent;
 import de.luckymcdev.foundryengine.client.ext.ModPathBroadcaster;
 import de.luckymcdev.foundryengine.client.icons.ScreenIconExporter;
+import de.luckymcdev.foundryengine.client.render.entity.EngineEntityRenderers;
 import de.luckymcdev.foundryengine.client.util.key.RegisterKeyBindingEvent;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.config.ClientConfig;
@@ -46,6 +47,7 @@ public class FoundryEngineModClient {
         modBus.addListener(this::onRegisterDebugEntry);
         modBus.addListener(this::onRegisterDebugRenderers);
         modBus.addListener(this::onRegistry);
+        modBus.addListener(EngineEntityRenderers::onRegisterRenderers);
 
         BUS.addListener(this::onRegisterKeyBinding);
         BUS.addListener(this::onRegisterPanels);

@@ -10,11 +10,13 @@ import de.luckymcdev.foundryengine.common.log.EngineLogAppender;
 import de.luckymcdev.foundryengine.common.network.TestPacket;
 import de.luckymcdev.foundryengine.common.network.packets.ServerBoundChangeWeatherPacket;
 import de.luckymcdev.foundryengine.common.network.packets.ServerBoundSetTimePacket;
+import de.luckymcdev.foundryengine.common.network.packets.ServerBoundSpawnEntityPacket;
 import de.luckymcdev.foundryengine.common.network.packets.ServerBoundTeleportPacket;
 import de.luckymcdev.foundryengine.common.network.packets.explorer.*;
 import de.luckymcdev.foundryengine.common.registry.EngineRegistries;
 import de.luckymcdev.foundryengine.common.vpacks.BundleVirtualPacks;
 import de.luckymcdev.foundryengine.common.vpacks.event.RegisterVirtualPackEvent;
+import de.luckymcdev.foundryengine.common.world.entity.EngineEntities;
 import de.luckymcdev.foundryengine.config.Config;
 import de.luckymcdev.foundryengine.server.command.FoundryCommands;
 import de.luckymcdev.foundryengine.server.packs.EngineRepositorySource;
@@ -119,11 +121,13 @@ public class FoundryEngineMod {
         Common.getNetworkManager().register(ServerBoundRequestFileContentPacket.DEFINITION);
         Common.getNetworkManager().register(ServerBoundSaveFilePacket.DEFINITION);
         Common.getNetworkManager().register(ServerBoundTeleportPacket.DEFINITION);
+        Common.getNetworkManager().register(ServerBoundSpawnEntityPacket.DEFINITION);
     }
 
     private void registerModBus(IEventBus modBus) {
         Common.getGameStageHandler().register(modBus);
         EngineRegistries.register(modBus);
+        EngineEntities.register(modBus);
     }
 
     private void onAddPackFinders(AddPackFindersEvent event) {
