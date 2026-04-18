@@ -206,7 +206,7 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
         imGuiImplGlfw.newFrame();
         ImGui.newFrame();
 
-        Minecraft mc = Client.getMinecraft();
+        Minecraft mc = Client.getMc();
 
         if (mc.mouseHandler.isMouseGrabbed()) {
             io.setMousePos(-1, -1);
@@ -313,7 +313,7 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
      * @return if ImGui wants to capture the Mouse and the Mouse is not grabbed by Minecraft.
      */
     public boolean shouldInterceptMouse() {
-        return shouldBlockInput || (ImGui.getIO().getWantCaptureMouse() && !Client.getMinecraft().mouseHandler.isMouseGrabbed());
+        return shouldBlockInput || (ImGui.getIO().getWantCaptureMouse() && !Client.getMc().mouseHandler.isMouseGrabbed());
     }
 
     /**

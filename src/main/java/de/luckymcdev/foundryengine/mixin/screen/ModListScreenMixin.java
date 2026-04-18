@@ -54,7 +54,7 @@ public abstract class ModListScreenMixin implements BundleSelectable {
             lines.add("Script count: " + bundle.bundleFiles().scriptCount());
 
             Identifier textId = bundle.id(bundle.info().id() + ".png");
-            var textureView = Client.getMinecraft().getTextureManager().getTexture(textId).getTextureView();
+            var textureView = Client.getMc().getTextureManager().getTexture(textId).getTextureView();
             Size2i txSize = new Size2i(textureView.getWidth(0), textureView.getHeight(0));
             ((InfoPanelAccessor) modInfo).invokeSetInfo(lines, textId, txSize);
         } catch (Exception e) {

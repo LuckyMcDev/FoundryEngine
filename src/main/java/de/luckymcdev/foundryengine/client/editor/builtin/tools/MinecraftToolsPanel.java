@@ -65,7 +65,7 @@ public class MinecraftToolsPanel extends EditorPanel {
         long maxMemory = runtime.maxMemory();
         long usedMemory = totalMemory - freeMemory;
 
-        ImGui.text("FPS: " + Client.getMinecraft().getFps());
+        ImGui.text("FPS: " + Client.getMc().getFps());
         ImGui.separator();
 
         ImGui.text(String.format("Used Memory: %dMB (%d%%)",
@@ -81,7 +81,7 @@ public class MinecraftToolsPanel extends EditorPanel {
 
     private void particles() {
         ImGui.text("Particles");
-        ImGui.text("Count: " + Client.getMinecraft().particleEngine.countParticles());
+        ImGui.text("Count: " + Client.getMc().particleEngine.countParticles());
     }
 
     private long toMB(long bytes) {

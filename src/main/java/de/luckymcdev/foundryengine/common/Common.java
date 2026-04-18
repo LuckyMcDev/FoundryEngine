@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.common;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.FoundryEngineMod;
+import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.common.bundle.BundleManager;
 import de.luckymcdev.foundryengine.common.exceptions.UtilityClassException;
 import de.luckymcdev.foundryengine.common.game.behavior.GameBehaviorManager;
@@ -9,12 +10,16 @@ import de.luckymcdev.foundryengine.common.game.stage.GameStageHandler;
 import de.luckymcdev.foundryengine.common.network.NetworkManager;
 import de.luckymcdev.foundryengine.common.scene.SceneManager;
 import de.luckymcdev.foundryengine.common.util.FirstRun;
+import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.crafting.RecipeManager;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.io.InputStream;
@@ -93,6 +98,15 @@ public abstract class Common {
 
     public static SceneManager getSceneManager() {
         return SCENE_MANAGER;
+    }
+
+    public static @Nullable RecipeManager getRecipeManager() {
+        Minecraft mc = Client.getMc();
+        if (mc.getSingleplayerServer() != null) {
+            return mc.getSingleplayerServer().getRecipeManager();
+        }
+        var server = ServerLifecycleHooks.getCurrentServer();
+        return server != null ? server.getRecipeManager() : null;
     }
 
     public static String getFileContent(Path file) {

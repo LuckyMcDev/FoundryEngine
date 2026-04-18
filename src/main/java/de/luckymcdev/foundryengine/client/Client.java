@@ -95,24 +95,24 @@ public abstract class Client {
 
     // Minecraft Core
 
-    public static Minecraft getMinecraft() {
+    public static Minecraft getMc() {
         return ((EngineMinecraft) Minecraft.getInstance()).engine$self();
     }
 
     public static ResourceManager getResourceManager() {
-        return getMinecraft().getResourceManager();
+        return getMc().getResourceManager();
     }
 
     public static Window getWindow() {
-        return getMinecraft().getWindow();
+        return getMc().getWindow();
     }
 
     public static GameRenderer getGameRenderer() {
-        return getMinecraft().gameRenderer;
+        return getMc().gameRenderer;
     }
 
     public static RenderTarget getMainRenderTarget() {
-        return getMinecraft().getMainRenderTarget();
+        return getMc().getMainRenderTarget();
     }
 
     public static Camera getMainCamera() {
@@ -120,15 +120,15 @@ public abstract class Client {
     }
 
     public static @Nullable ClientPacketListener getConnection() {
-        return getMinecraft().getConnection();
+        return getMc().getConnection();
     }
 
     public static @Nullable LocalPlayer getPlayer() {
-        return getMinecraft().player;
+        return getMc().player;
     }
 
     public static void setScreen(Screen screen) {
-        getMinecraft().setScreen(screen);
+        getMc().setScreen(screen);
     }
 
     public static void sendCommand(String command) {

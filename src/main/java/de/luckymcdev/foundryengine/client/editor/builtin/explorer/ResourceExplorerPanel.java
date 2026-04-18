@@ -60,7 +60,7 @@ public class ResourceExplorerPanel extends AbstractExplorerPanel {
 
         scanPacks(Client.getResourceManager(), PackType.CLIENT_RESOURCES);
 
-        MinecraftServer server = Client.getMinecraft().getSingleplayerServer();
+        MinecraftServer server = Client.getMc().getSingleplayerServer();
         if (server != null) {
             scanPacks(server.getResourceManager(), PackType.SERVER_DATA);
         }
@@ -151,7 +151,7 @@ public class ResourceExplorerPanel extends AbstractExplorerPanel {
     }
 
     private void reloadResources() {
-        MinecraftServer server = Client.getMinecraft().getSingleplayerServer();
+        MinecraftServer server = Client.getMc().getSingleplayerServer();
         if (server == null) return;
 
         if (reloadInProgress) return;
@@ -279,7 +279,7 @@ public class ResourceExplorerPanel extends AbstractExplorerPanel {
         Optional<Resource> resource = Client.getResourceManager().getResource(id);
 
         if (resource.isEmpty()) {
-            MinecraftServer server = Client.getMinecraft().getSingleplayerServer();
+            MinecraftServer server = Client.getMc().getSingleplayerServer();
             if (server != null) {
                 resource = server.getResourceManager().getResource(id);
             }

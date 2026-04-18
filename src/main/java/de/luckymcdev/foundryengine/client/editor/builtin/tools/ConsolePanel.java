@@ -141,7 +141,7 @@ public class ConsolePanel extends EditorPanel {
             trimmedCommand = trimmedCommand.substring(1);
         }
 
-        if (Client.getMinecraft().getConnection() != null) {
+        if (Client.getMc().getConnection() != null) {
             Client.sendCommand(trimmedCommand);
         }
     }

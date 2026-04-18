@@ -32,14 +32,14 @@ public class ParticleManager {
         ParticleBuilderImpl impl = (ParticleBuilderImpl) builder;
 
         // Use the Minecraft particle engine to create the instance
-        Particle particle = Client.getMinecraft().particleEngine.createParticle(
+        Particle particle = Client.getMc().particleEngine.createParticle(
                 (SimpleParticleType) impl.get(),
                 x, y, z,
                 vx, vy, vz
         );
 
         if (particle != null) {
-            Client.getMinecraft().particleEngine.add(particle);
+            Client.getMc().particleEngine.add(particle);
         }
     }
 

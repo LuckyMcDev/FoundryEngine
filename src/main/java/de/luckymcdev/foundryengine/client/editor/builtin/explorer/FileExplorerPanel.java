@@ -66,7 +66,7 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
     }
 
     private static boolean isMultiplayer() {
-        return Client.getMinecraft().getCurrentServer() != null;
+        return Client.getMc().getCurrentServer() != null;
     }
 
     private static Identifier fileToEditorId(File file) {

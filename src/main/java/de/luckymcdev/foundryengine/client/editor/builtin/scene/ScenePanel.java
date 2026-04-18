@@ -216,7 +216,7 @@ public class ScenePanel extends EditorPanel {
             ImGui.separator();
 
             if (ImGui.menuItem(ImIcons.FA.FA_CAMERA + "  Set as Camera")) {
-                var mc = Client.getMinecraft();
+                var mc = Client.getMc();
                 if (mc.getCameraEntity() == node.asEntity()) {
                     mc.setCameraEntity(null);
                 } else {

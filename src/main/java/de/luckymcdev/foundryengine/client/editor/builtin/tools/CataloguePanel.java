@@ -17,8 +17,11 @@ import imgui.type.ImString;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.SpawnEggItem;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeManager;
 import org.lwjgl.opengl.GL11;
 
 import java.io.File;
@@ -33,6 +36,7 @@ public class CataloguePanel extends EditorPanel {
     private static final Identifier NAMETAG_ID = Identifier.parse("minecraft:name_tag");
     private static final Identifier BUCKET_ID = Identifier.parse("minecraft:water_bucket");
     private static final Identifier SPAWNER_ID = Identifier.parse("minecraft:spawner");
+    private static final Identifier CRAFTING_TABLE_ID = Identifier.parse("minecraft:crafting_table"); // Added missing constant
     private final Map<Identifier, Integer> textureCache = new HashMap<>();
     private final Set<Identifier> failedLoads = new HashSet<>();
     private final Queue<Identifier> loadQueue = new ArrayDeque<>();
@@ -119,6 +123,32 @@ public class CataloguePanel extends EditorPanel {
                         .toList();
                 renderRegistryGrid("tags", allTagIds, id -> NAMETAG_ID, true, id -> {
                 });
+                ImGui.endTabItem();
+            }
+
+            if (ImGui.beginTabItem(ImIcons.FA.FA_BOOK + " Recipes")) {
+                RecipeManager recipeManager = Common.getRecipeManager();
+                if (recipeManager == null) {
+                    ImGui.textDisabled("No recipe manager available (join a world)");
+                } else {
+                    List<Identifier> recipeIds = new ArrayList<>();
+                    for (RecipeHolder<?> holder : recipeManager.getRecipes()) {
+                        recipeIds.add(holder.id().identifier());
+                    }
+                    recipeIds.sort(Comparator.comparing(Identifier::getPath));
+
+                    renderRegistryGrid("recipes", recipeIds,
+                            recipeId -> CRAFTING_TABLE_ID,
+                            false,
+                            recipeId -> {
+                                if (Client.getPlayer() != null) {
+                                    Client.getPlayer().sendSystemMessage(
+                                            Component.literal("Recipe: " + recipeId)
+                                    );
+                                }
+                            }
+                    );
+                }
                 ImGui.endTabItem();
             }
 
