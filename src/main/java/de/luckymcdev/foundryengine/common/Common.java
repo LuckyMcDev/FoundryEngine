@@ -9,6 +9,7 @@ import de.luckymcdev.foundryengine.common.game.behavior.GameBehaviorManager;
 import de.luckymcdev.foundryengine.common.game.stage.GameStageHandler;
 import de.luckymcdev.foundryengine.common.network.NetworkManager;
 import de.luckymcdev.foundryengine.common.scene.SceneManager;
+import de.luckymcdev.foundryengine.common.script.BundleScriptEngineRegistry;
 import de.luckymcdev.foundryengine.common.util.FirstRun;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
@@ -61,6 +62,7 @@ public abstract class Common {
     private static final GameStageHandler GAME_STAGE_HANDLER = new GameStageHandler();
     private static final NetworkManager NETWORK_MANAGER = new NetworkManager();
     private static final SceneManager SCENE_MANAGER = new SceneManager();
+    private static final BundleScriptEngineRegistry BUNDLE_SCRIPT_ENGINE_REGISTRY = new BundleScriptEngineRegistry();
 
     private Common() {
         throw new UtilityClassException();
@@ -98,6 +100,10 @@ public abstract class Common {
 
     public static SceneManager getSceneManager() {
         return SCENE_MANAGER;
+    }
+
+    public static BundleScriptEngineRegistry getBundleScriptEngineRegistry() {
+        return BUNDLE_SCRIPT_ENGINE_REGISTRY;
     }
 
     public static @Nullable RecipeManager getRecipeManager() {

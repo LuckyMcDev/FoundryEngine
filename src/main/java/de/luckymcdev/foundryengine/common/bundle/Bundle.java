@@ -9,7 +9,6 @@ import de.luckymcdev.foundryengine.common.script.BundleEntrypoint;
 import de.luckymcdev.foundryengine.common.script.BundleScriptEngineRegistry;
 import de.luckymcdev.foundryengine.common.script.BundleScriptLoader;
 import net.minecraft.resources.Identifier;
-import net.neoforged.bus.api.IEventBus;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,8 +27,7 @@ public class Bundle {
     private final List<BundleEntrypoint> serverEntrypoints = new ArrayList<>();
 
     public Bundle(BundleInfo info, BundleFiles bundleFiles, BundleScriptEngineRegistry scriptEngineRegistry,
-                  BundleRegistryQuery registryQuery, IEventBus eventBus,
-                  BundleCreativeModeTab creativeModeTab, BundleConfig bundleConfig) {
+                  BundleRegistryQuery registryQuery, BundleCreativeModeTab creativeModeTab, BundleConfig bundleConfig) {
         this.info = info;
         this.bundleFiles = bundleFiles;
         this.scriptEngineRegistry = scriptEngineRegistry;
