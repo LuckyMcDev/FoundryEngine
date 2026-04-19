@@ -6,8 +6,8 @@ import de.luckymcdev.foundryengine.common.bundle.info.BundleInfo;
 import de.luckymcdev.foundryengine.common.bundle.registry.BundleCreativeModeTab;
 import de.luckymcdev.foundryengine.common.bundle.registry.BundleRegistryQuery;
 import de.luckymcdev.foundryengine.common.script.BundleEntrypoint;
+import de.luckymcdev.foundryengine.common.script.BundleScriptEngineRegistry;
 import de.luckymcdev.foundryengine.common.script.BundleScriptLoader;
-import groovy.util.GroovyScriptEngine;
 import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.IEventBus;
 
@@ -19,7 +19,7 @@ import java.util.stream.Stream;
 public class Bundle {
     private final BundleInfo info;
     private final BundleFiles bundleFiles;
-    private final GroovyScriptEngine scriptEngine;
+    private final BundleScriptEngineRegistry scriptEngineRegistry;
     private final BundleRegistryQuery registryQuery;
     private final BundleCreativeModeTab creativeModeTab;
     private final BundleConfig bundleConfig;
@@ -27,33 +27,29 @@ public class Bundle {
     private final List<BundleEntrypoint> clientEntrypoints = new ArrayList<>();
     private final List<BundleEntrypoint> serverEntrypoints = new ArrayList<>();
 
-    public Bundle(BundleInfo info, BundleFiles bundleFiles, GroovyScriptEngine scriptEngine,
+    public Bundle(BundleInfo info, BundleFiles bundleFiles, BundleScriptEngineRegistry scriptEngineRegistry,
                   BundleRegistryQuery registryQuery, IEventBus eventBus,
                   BundleCreativeModeTab creativeModeTab, BundleConfig bundleConfig) {
         this.info = info;
         this.bundleFiles = bundleFiles;
-        this.scriptEngine = scriptEngine;
+        this.scriptEngineRegistry = scriptEngineRegistry;
         this.registryQuery = registryQuery;
         this.creativeModeTab = creativeModeTab;
         this.bundleConfig = bundleConfig;
     }
 
     public void loadCommon(BundleScriptLoader loader) {
-        commonEntrypoints.addAll(loader.loadCommon(bundleFiles, scriptEngine));
+        commonEntrypoints.addAll(loader.loadCommon(bundleFiles, scriptEngineRegistry));
     }
 
     public void loadClient(BundleScriptLoader loader) {
-        clientEntrypoints.addAll(loader.loadClient(bundleFiles, scriptEngine));
+        clientEntrypoints.addAll(loader.loadClient(bundleFiles, scriptEngineRegistry));
     }
 
     public void loadServer(BundleScriptLoader loader) {
-        serverEntrypoints.addAll(loader.loadServer(bundleFiles, scriptEngine));
+        serverEntrypoints.addAll(loader.loadServer(bundleFiles, scriptEngineRegistry));
     }
 
-    /**
-     * Returns all loaded entrypoints across all environments.
-     * Used by BundleManager during unload.
-     */
     public List<BundleEntrypoint> entrypoints() {
         return Stream.of(commonEntrypoints, clientEntrypoints, serverEntrypoints)
                 .flatMap(List::stream)
@@ -74,11 +70,11 @@ public class Bundle {
 
     public void unload() {
         entrypoints().forEach(BundleEntrypoint::onUnload);
+        scriptEngineRegistry.closeAll();
         commonEntrypoints.clear();
         clientEntrypoints.clear();
         serverEntrypoints.clear();
     }
-
 
     public BundleInfo info() {
         return info;
@@ -92,8 +88,8 @@ public class Bundle {
         return bundleConfig;
     }
 
-    public GroovyScriptEngine scriptEngine() {
-        return scriptEngine;
+    public BundleScriptEngineRegistry scriptEngineRegistry() {
+        return scriptEngineRegistry;
     }
 
     public BundleRegistryQuery registryQuery() {
@@ -103,7 +99,6 @@ public class Bundle {
     public BundleCreativeModeTab creativeModeTab() {
         return creativeModeTab;
     }
-
 
     public Identifier id(String path) {
         return Identifier.fromNamespaceAndPath(info.id(), path);

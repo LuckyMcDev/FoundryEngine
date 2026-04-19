@@ -3,14 +3,12 @@ package de.luckymcdev.foundryengine.server.command.builtin;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.logging.LogUtils;
-import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.config.StartupConfig;
 import de.luckymcdev.foundryengine.server.command.EngineCommand;
 import groovy.lang.GroovyShell;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import org.codehaus.groovy.control.CompilerConfiguration;
 import org.slf4j.Logger;
 
 import java.io.ByteArrayOutputStream;
@@ -37,8 +35,9 @@ public class EvalCommand implements EngineCommand {
                             PrintStream oldOut = System.out;
                             System.setOut(printStream);
 
-                            CompilerConfiguration config = Common.getBundleManager().getBundleDiscovery().getBundleFactory().getScriptEngineFactory().createCompilerConfiguration();
-                            GroovyShell shell = new GroovyShell(config);
+                            //CompilerConfiguration config = Common.getBundleManager().getBundleDiscovery().getBundleFactory().getScriptEngineFactory().createCompilerConfiguration();
+                            //GroovyShell shell = new GroovyShell(config);
+                            GroovyShell shell = new GroovyShell();
 
                             try {
                                 Object result = shell.evaluate(code);

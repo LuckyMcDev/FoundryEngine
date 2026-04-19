@@ -53,7 +53,7 @@ public class BundleFilesBuilder {
         try (Stream<Path> files = Files.walk(directory)) {
             return files
                     .filter(Files::isRegularFile)
-                    .filter(f -> f.toString().endsWith(".groovy"))
+                    .filter(f -> !Files.isDirectory(f))
                     .toList();
         } catch (IOException e) {
             LOGGER.error("Failed to find scripts in: {}", directory, e);
