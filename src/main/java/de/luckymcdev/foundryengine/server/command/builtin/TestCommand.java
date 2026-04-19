@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.server.command.builtin;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.math.Transformation;
+import de.luckymcdev.foundryengine.common.util.color.Color;
 import de.luckymcdev.foundryengine.common.world.entity.*;
 import de.luckymcdev.foundryengine.server.command.EngineCommand;
 import net.minecraft.commands.CommandBuildContext;
@@ -11,6 +12,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
@@ -43,7 +45,7 @@ public class TestCommand implements EngineCommand {
                     killExisting(level);
 
                     EntitySpawner.spawnServer(level, EngineEntities.BLOCK_DISPLAY.get(),
-                            new Vec3(-3, 100, 0), display -> {
+                            new Vec3(-5, 100, 0), display -> {
 
                                 display.setDisplayBlockState(Blocks.STONE.defaultBlockState());
 
@@ -72,7 +74,9 @@ public class TestCommand implements EngineCommand {
 
                     EntitySpawner.spawnServer(level, EngineEntities.ITEM_DISPLAY.get(),
                             new Vec3(0, 100, 0), display -> {
-
+                                display.setPickable(true);
+                                display.setDisplayGlowColorOverride(Color.ORANGE.argb());
+                                
                                 display.setDisplayItemStack(Items.DIAMOND_SWORD.getDefaultInstance());
 
                                 display.setDisplayTransformation(new Transformation(
@@ -102,6 +106,8 @@ public class TestCommand implements EngineCommand {
                             new Vec3(3, 100, 0), display -> {
 
                                 display.setDisplayText(Component.literal("Hello World!"));
+
+                                display.setDisplayAlignment(Display.TextDisplay.Align.CENTER);
 
                                 display.setDisplayTransformation(new Transformation(
                                         new Vector3f(0f, 0.5f, 0f),

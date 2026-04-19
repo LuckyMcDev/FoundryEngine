@@ -16,15 +16,20 @@ import org.joml.Quaternionfc;
 import org.joml.Vector3fc;
 import org.jspecify.annotations.Nullable;
 
-public class EngineBlockDisplay extends Display.BlockDisplay {
+public class EngineBlockDisplay extends Display.BlockDisplay implements Attackable, Targeting {
 
     @Nullable
     private InteractionConsumer interactionConsumer;
     @Nullable
     private AttackConsumer attackConsumer;
+    @Nullable
+    private LivingEntity lastAttacker;
+    @Nullable
+    private LivingEntity target;
 
     private DisplayHitboxUtil.HitboxBounds hitboxBounds =
             new DisplayHitboxUtil.HitboxBounds(0f, 0f, 0f, 1f, 1f, 1f);
+    private boolean pickable = true;
 
     public EngineBlockDisplay(EntityType<?> type, Level level) {
         super(type, level);
@@ -50,7 +55,11 @@ public class EngineBlockDisplay extends Display.BlockDisplay {
 
     @Override
     public boolean isPickable() {
-        return true;
+        return pickable;
+    }
+
+    public void setPickable(boolean pickable) {
+        this.pickable = pickable;
     }
 
     @Override
@@ -118,10 +127,25 @@ public class EngineBlockDisplay extends Display.BlockDisplay {
     @Override
     public boolean skipAttackInteraction(Entity attacker) {
         if (attacker instanceof Player player && attackConsumer != null) {
+            this.lastAttacker = player;
             attackConsumer.onAttack(this, player);
             return true;
         }
         return false;
+    }
+
+    @Override
+    public @Nullable LivingEntity getLastAttacker() {
+        return lastAttacker;
+    }
+
+    @Override
+    public @Nullable LivingEntity getTarget() {
+        return target;
+    }
+
+    public void setTarget(@Nullable LivingEntity target) {
+        this.target = target;
     }
 
     public void setDisplayBlockState(BlockState state) {
