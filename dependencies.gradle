@@ -1,6 +1,7 @@
 dependencies {
     def bundle = { String gav -> jarJar(api(implementation(gav))) }
 
+    runtimeOnly "maven.modrinth:spark:${spark_version}"
 
     // Testing dependencies
     testImplementation "org.junit.jupiter:junit-jupiter:${junit_version}"

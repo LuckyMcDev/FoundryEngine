@@ -21,6 +21,10 @@ repositories {
         name "Latvian"
         url "https://maven.latvian.dev/releases"
     }
+    maven {
+        name = "Modrinth"
+        url = "https://api.modrinth.com/maven"
+    }
 }
 
 base {
