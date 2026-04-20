@@ -1,12 +1,12 @@
 package de.luckymcdev.foundryengine.common.bundle;
 
 import com.mojang.logging.LogUtils;
-import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.bundle.config.BundleConfig;
 import de.luckymcdev.foundryengine.common.bundle.info.BundleFiles;
 import de.luckymcdev.foundryengine.common.bundle.info.BundleInfo;
 import de.luckymcdev.foundryengine.common.bundle.registry.BundleCreativeModeTab;
 import de.luckymcdev.foundryengine.common.bundle.registry.BundleRegistryQuery;
+import de.luckymcdev.foundryengine.common.script.BundleScriptEngineRegistry;
 import de.luckymcdev.foundryengine.common.script.BundleScriptLoader;
 import net.neoforged.bus.api.IEventBus;
 import org.jspecify.annotations.Nullable;
@@ -32,13 +32,14 @@ public class BundleFactory {
     public Bundle createBundle(BundleInfo info, Path bundleDir, @Nullable FileSystem zipFs) throws IOException {
         BundleFiles files = BundleFiles.builder().build(bundleDir, zipFs);
 
-        Common.getBundleScriptEngineRegistry().initializeAll(files);
+        BundleScriptEngineRegistry registry = new BundleScriptEngineRegistry();
+        registry.initializeAll(files);
 
         BundleRegistryQuery registryQuery = new BundleRegistryQuery(info.id());
         BundleCreativeModeTab creativeTab = new BundleCreativeModeTab(info.id(), modBus, registryQuery);
         BundleConfig config = new BundleConfig(info.id(), configDirectory);
 
-        return new Bundle(info, files, Common.getBundleScriptEngineRegistry(), registryQuery, creativeTab, config);
+        return new Bundle(info, files, registry, registryQuery, creativeTab, config);
     }
 
     public BundleScriptLoader getScriptLoader() {
