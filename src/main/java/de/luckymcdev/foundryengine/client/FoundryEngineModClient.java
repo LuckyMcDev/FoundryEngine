@@ -3,6 +3,10 @@ package de.luckymcdev.foundryengine.client;
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.api.event.registry.RegistryEvent;
 import de.luckymcdev.foundryengine.client.command.FoundryCommandsClient;
+import de.luckymcdev.foundryengine.client.cutscene.ClientCutsceneManager;
+import de.luckymcdev.foundryengine.client.cutscene.ClientScreenEffectManager;
+import de.luckymcdev.foundryengine.client.cutscene.CutsceneEditor;
+import de.luckymcdev.foundryengine.client.cutscene.CutsceneRenderer;
 import de.luckymcdev.foundryengine.client.debug.renderer.SimpleDebugScreenRenderer;
 import de.luckymcdev.foundryengine.client.debug.screen.BundleDebugEntry;
 import de.luckymcdev.foundryengine.client.debug.screen.GameStagesDebugEntry;
@@ -52,6 +56,7 @@ public class FoundryEngineModClient {
         BUS.addListener(this::onRegisterKeyBinding);
         BUS.addListener(this::onRegisterPanels);
         BUS.addListener(this::onClientTick);
+        BUS.addListener(this::onRenderLevel);
         BUS.addListener(this::onRegisterCommands);
 
         Config.registerClient(modContainer);
@@ -115,14 +120,25 @@ public class FoundryEngineModClient {
         event.register(ThemeSelectorPanel.INSTANCE);
         event.register(EffectPanel.INSTANCE);
         event.register(BlueprintsPanel.INSTANCE);
+        event.register(CutscenePanel.INSTANCE);
     }
 
     private void addClientReloadListener(AddClientReloadListenersEvent event) {
         event.addListener(Common.id("imgui_handler"), Client.getImGuiManager());
     }
 
+    private void onRenderLevel(RenderLevelStageEvent.AfterLevel event) {
+        ClientCutsceneManager.renderTick();
+        ClientScreenEffectManager.renderTick();
+        CutsceneRenderer.render();
+    }
+
     private void onClientTick(ClientTickEvent.Post event) {
         Client.getEditorManager().handleTick();
+
+        ClientCutsceneManager.clientTick();
+        ClientScreenEffectManager.clientTick();
+        CutsceneEditor.clientTick();
 
         if (ClientConfig.AUTO_EXPORT.get() && !hasIconAutoExported && Minecraft.getInstance().level != null) {
             if (Minecraft.getInstance().screen != null) return;

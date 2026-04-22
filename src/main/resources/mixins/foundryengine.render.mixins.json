@@ -7,11 +7,13 @@
   ],
   "client": [
     "BlockEntityRendererMixin",
+    "CutsceneCameraMixin",
     "GameRendererMixin",
     "GpuDeviceMixin",
     "ItemInHandRendererMixin",
     "LevelRendererMixin",
     "PostChainMixin",
+    "PostPassProgressMixin",
     "RenderTypeAccessor"
   ],
   "injectors": {

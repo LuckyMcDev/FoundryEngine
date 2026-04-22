@@ -1,6 +1,5 @@
 package de.luckymcdev.foundryengine.common.easing;
 
-import net.minecraft.gizmos.Gizmos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 
@@ -102,15 +101,6 @@ public class BezierSpline {
         }
         points = List.of(v1, v1_tangent, v2_tangent, v2);
         updateCoeffs();
-    }
-
-    public void render() {
-        double delta = 0.01;
-        for (double d = 0.00; d < 1; d += delta) {
-            Vec3 pos1 = lerp(d);
-            Vec3 pos2 = lerp(d + delta);
-            Gizmos.line(pos1, pos2, 0xFFB3FFFF, 5);
-        }
     }
 
     public boolean isSinglePoint() {

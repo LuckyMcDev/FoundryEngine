@@ -6,6 +6,11 @@ import de.luckymcdev.foundryengine.api.event.ClientEvents;
 import de.luckymcdev.foundryengine.api.event.ServerEvents;
 import de.luckymcdev.foundryengine.api.event.registry.RegistryEvent;
 import de.luckymcdev.foundryengine.common.Common;
+import de.luckymcdev.foundryengine.common.cutscene.CutsceneItems;
+import de.luckymcdev.foundryengine.common.cutscene.network.CutscenePacket;
+import de.luckymcdev.foundryengine.common.cutscene.network.ScreenEffectPacket;
+import de.luckymcdev.foundryengine.common.cutscene.util.ServerCutsceneManager;
+import de.luckymcdev.foundryengine.common.cutscene.util.ServerScreenEffectManager;
 import de.luckymcdev.foundryengine.common.log.EngineLogAppender;
 import de.luckymcdev.foundryengine.common.network.TestPacket;
 import de.luckymcdev.foundryengine.common.network.packets.ServerBoundChangeWeatherPacket;
@@ -65,6 +70,7 @@ public class FoundryEngineMod {
         modBus.addListener(this::onConstruct);
         modBus.addListener(this::onAddPackFinders);
         modBus.addListener(this::onRegisterPayloadHandlers);
+        modBus.addListener(CutsceneItems::onRegister);
         BUS.addListener(this::onRegisterCommands);
         BUS.addListener(this::onServerAboutToStart);
 
@@ -80,6 +86,12 @@ public class FoundryEngineMod {
         BUS.addListener(ServerEvents::_postStopping);
         BUS.addListener(ServerEvents::_postStopped);
         BUS.addListener(ServerEvents::_postTick);
+
+        // Cutscenes (server-side tick logic)
+        ServerEvents.tick(ev -> {
+            ServerCutsceneManager.tick(ev.getServer());
+            ServerScreenEffectManager.tick(ev.getServer());
+        });
 
         BUS.addListener(ClientEvents::_postTick);
         BUS.addListener(ClientEvents::_postStopped);
@@ -122,6 +134,10 @@ public class FoundryEngineMod {
         Common.getNetworkManager().register(ServerBoundSaveFilePacket.DEFINITION);
         Common.getNetworkManager().register(ServerBoundTeleportPacket.DEFINITION);
         Common.getNetworkManager().register(ServerBoundSpawnEntityPacket.DEFINITION);
+
+        // Cutscenes networking
+        Common.getNetworkManager().register(CutscenePacket.DEFINITION);
+        Common.getNetworkManager().register(ScreenEffectPacket.DEFINITION);
     }
 
     private void registerModBus(IEventBus modBus) {

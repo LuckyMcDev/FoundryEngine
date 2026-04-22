@@ -23,7 +23,9 @@ public class FoundryCommands {
             new ReloadCommand(),
             new StageCommand(),
             new TestCommand(),
-            new EvalCommand()
+            new EvalCommand(),
+            new CutsceneCommand(),
+            new ScreenEffectCommand()
     );
 
     public static void registerAll(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext context) {

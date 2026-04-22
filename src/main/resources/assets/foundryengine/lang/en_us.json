@@ -1,5 +1,6 @@
 {
   "key.foundryengine.editor": "Toggle Editor",
+  "item.foundryengine.editor": "Cutscene Editor",
   "gui.foundryengine.icons.finished": "Finished exporting",
   "gui.foundryengine.icons.error": "Error while exporting",
   "gui.foundryengine.icons.status": "Rendering %s / %s",

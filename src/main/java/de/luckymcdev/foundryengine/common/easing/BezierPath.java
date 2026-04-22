@@ -67,15 +67,6 @@ public class BezierPath {
         return newPath;
     }
 
-    public void render() {
-        for (BezierSpline spline : splines) {
-            spline.render();
-        }
-        for (BezierPoint point : getPoints()) {
-            point.render();
-        }
-    }
-
     /**
      * Converts a distance parameter (0-1) to a time parameter using the LUT.
      * This enables constant-speed motion along the path.

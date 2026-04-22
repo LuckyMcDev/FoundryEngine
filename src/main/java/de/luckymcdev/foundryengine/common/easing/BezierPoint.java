@@ -1,18 +1,13 @@
 package de.luckymcdev.foundryengine.common.easing;
 
-import de.luckymcdev.foundryengine.client.Client;
-import net.minecraft.gizmos.GizmoStyle;
-import net.minecraft.gizmos.Gizmos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class BezierPoint {
-    private static final double size = 0.05;
     private final BezierPath path;
     private Vec3 pos;
     private final boolean isTangent;
@@ -84,21 +79,6 @@ public class BezierPoint {
         return this.path;
     }
 
-    public void render() {
-        if (this.path == null)
-            return;
-        if (Client.getPlayer().getEyePosition().distanceTo(this.pos) < 0.1)
-            return;
-        int color = this.getColor();
-        if (this.isHovered(Client.getPlayer()))
-            color = 0xFFFFFFFF;
-        else if (this.path.isSinglePoint())
-            color = 0xFFFF00FF;
-        if (this.isTangent())
-            Gizmos.line(this.pos, this.getRoot().pos, scaleAlpha(this.getColor(), 0.5f), 5);
-        Gizmos.cuboid(new AABB(this.pos.add(new Vec3(size, size, size)), this.pos.subtract(new Vec3(size, size, size))), GizmoStyle.stroke(color), true);
-    }
-
     private int getColor() {
         int red = 0xFFFFFF00;
         int blue = 0xFF0000FF;
@@ -168,13 +148,5 @@ public class BezierPoint {
 
     public boolean canBeModified() {
         return !this.isTangent;
-    }
-
-    private int scaleAlpha(int color, float alpha) {
-        int a = (int) ((color >> 24 & 0xFF) * alpha);
-        int r = (color >> 16) & 0xFF;
-        int g = (color >> 8) & 0xFF;
-        int b = color & 0xFF;
-        return (a << 24) | (r << 16) | (g << 8) | b;
     }
 }
