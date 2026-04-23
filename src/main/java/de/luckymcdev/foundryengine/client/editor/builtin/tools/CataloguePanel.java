@@ -1,6 +1,5 @@
 package de.luckymcdev.foundryengine.client.editor.builtin.tools;
 
-import com.mojang.blaze3d.opengl.GlStateManager;
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.builtin.EditorPanel;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
@@ -15,14 +14,12 @@ import imgui.flag.ImGuiMouseButton;
 import imgui.flag.ImGuiStyleVar;
 import imgui.type.ImString;
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
-import org.lwjgl.opengl.GL11;
 
 import java.io.File;
 import java.util.*;
@@ -36,7 +33,7 @@ public class CataloguePanel extends EditorPanel {
     private static final Identifier NAMETAG_ID = Identifier.parse("minecraft:name_tag");
     private static final Identifier BUCKET_ID = Identifier.parse("minecraft:water_bucket");
     private static final Identifier SPAWNER_ID = Identifier.parse("minecraft:spawner");
-    private static final Identifier CRAFTING_TABLE_ID = Identifier.parse("minecraft:crafting_table"); // Added missing constant
+    private static final Identifier CRAFTING_TABLE_ID = Identifier.parse("minecraft:crafting_table");
     private final Map<Identifier, Integer> textureCache = new HashMap<>();
     private final Set<Identifier> failedLoads = new HashSet<>();
     private final Queue<Identifier> loadQueue = new ArrayDeque<>();
@@ -89,25 +86,52 @@ public class CataloguePanel extends EditorPanel {
                 var list = BuiltInRegistries.ENTITY_TYPE.keySet().stream()
                         .sorted(Comparator.comparing(Identifier::getPath)).toList();
 
-                renderRegistryGrid("entities", list, entityId ->
-                        SpawnEggItem.byId(BuiltInRegistries.ENTITY_TYPE.get(entityId).get().value())
-                                .map(Holder::value)
-                                .map(BuiltInRegistries.ITEM::getKey)
-                                .orElse(SPAWNER_ID), false, id -> {
-                    if (Minecraft.getInstance().level == null) return;
-                    var pos = Minecraft.getInstance().player.position();
-                    Minecraft.getInstance().player.connection.sendCommand(
-                            String.format("summon %s %.2f %.2f %.2f", id, pos.x, pos.y, pos.z).replace(",", ".")
-                    );
-                });
+                renderRegistryGrid("entities", list,
+                        entityId -> {
+                            var optType = BuiltInRegistries.ENTITY_TYPE.getOptional(entityId);
+                            if (optType.isEmpty()) return SPAWNER_ID;
+                            var eggHolder = SpawnEggItem.byId(optType.get());
+                            return eggHolder.map(itemHolder -> BuiltInRegistries.ITEM.getKey(itemHolder.value())).orElse(SPAWNER_ID);
+                        },
+                        false,
+                        id -> {
+                            if (Minecraft.getInstance().level == null) return;
+                            var pos = Minecraft.getInstance().player.position();
+                            Minecraft.getInstance().player.connection.sendCommand(
+                                    String.format("summon %s %.2f %.2f %.2f", id, pos.x, pos.y, pos.z).replace(",", ".")
+                            );
+                        });
                 ImGui.endTabItem();
             }
 
             if (ImGui.beginTabItem(ImIcons.FA.FA_DROPLET + " Fluids")) {
                 var list = BuiltInRegistries.FLUID.keySet().stream()
                         .sorted(Comparator.comparing(Identifier::getPath)).toList();
-                renderRegistryGrid("fluids", list, id -> BUCKET_ID, false, id -> {
-                });
+
+                renderRegistryGrid("fluids", list,
+                        fluidId -> {
+                            String path = fluidId.getPath();
+                            String namespace = fluidId.getNamespace();
+
+                            if (fluidId.equals(Identifier.parse("minecraft:empty"))) {
+                                return Identifier.withDefaultNamespace("bucket");
+                            }
+
+                            if (path.contains("flowing")) {
+                                return fluidId;
+                            }
+
+                            Identifier bucketId = Identifier.fromNamespaceAndPath(namespace, path + "_bucket");
+                            if (BuiltInRegistries.ITEM.containsKey(bucketId)) {
+                                return bucketId;
+                            }
+
+                            return BUCKET_ID;
+                        },
+                        false,
+                        id -> {
+                        }
+                );
                 ImGui.endTabItem();
             }
 
@@ -169,54 +193,63 @@ public class CataloguePanel extends EditorPanel {
 
         ImGui.beginChild("##grid_" + typeId, 0, 0, false);
         ImGui.pushStyleVar(ImGuiStyleVar.ItemSpacing, 4, 4);
+        try {
 
-        float windowVisibleX2 = ImGui.getWindowPos().x + ImGui.getWindowContentRegionMax().x;
-        float styleSpacingX = ImGui.getStyle().getItemSpacingX();
+            float windowVisibleX2 = ImGui.getWindowPos().x + ImGui.getWindowContentRegionMax().x;
+            float styleSpacingX = ImGui.getStyle().getItemSpacingX();
 
-        for (Identifier location : entries) {
-            String name = location.toString();
-            if (!filter.isEmpty() && !name.contains(filter)) continue;
+            for (Identifier location : entries) {
+                String name = location.toString();
+                if (!filter.isEmpty() && !name.contains(filter)) continue;
 
-            ImGui.pushID(name);
+                ImGui.pushID(name);
 
-            Identifier iconToLoad = iconProvider.apply(location);
-            int textureId = getOrLoadIcon(iconToLoad);
+                Identifier iconToLoad = iconProvider.apply(location);
+                int textureId = getOrLoadIcon(iconToLoad);
 
-            if (textureId != -1) {
-                drawImage(textureId, ITEM_SIZE, ITEM_SIZE);
-                if (textOnIcon) drawLetterOverlay(location);
-            } else {
-                drawFallback(iconToLoad);
+                if (textureId != -1) {
+                    ImGuiUtils.drawImageButton(textureId, ITEM_SIZE, ITEM_SIZE);
+                    if (textOnIcon) drawLetterOverlay(location);
+                } else {
+                    drawFallback(iconToLoad);
+                }
+
+                if (ImGui.isItemClicked(ImGuiMouseButton.Right)) {
+                    onRightClick.accept(location);
+                }
+
+                CataloguePayload payload = new CataloguePayload(
+                        location,
+                        typeId,
+                        List.of(location.getNamespace()),
+                        iconToLoad,
+                        textureId,
+                        location.toString()
+                );
+
+                if (ImGui.beginDragDropSource()) {
+                    ImGui.setDragDropPayload("CATALOGUE_ENTRY", payload);
+                    ImGui.text("Placing " + typeId + ": " + name);
+                    if (textureId != -1) ImGuiUtils.drawImageButton(textureId, 32, 32);
+                    ImGui.endDragDropSource();
+                }
+
+                if (ImGui.isItemHovered()) {
+                    ImGui.setTooltip(name);
+                }
+
+                float lastButtonX2 = ImGui.getItemRectMax().x;
+                float nextButtonX2 = lastButtonX2 + styleSpacingX + ITEM_SIZE;
+                if (nextButtonX2 < windowVisibleX2) {
+                    ImGui.sameLine();
+                }
+
+                ImGui.popID();
             }
-
-            if (ImGui.isItemClicked(ImGuiMouseButton.Right)) {
-                onRightClick.accept(location);
-            }
-
-            CataloguePayload payload = new CataloguePayload(name, typeId, List.of("foundry", "editor"));
-
-            if (ImGui.beginDragDropSource()) {
-                ImGui.setDragDropPayload("CATALOGUE_ENTRY", payload);
-                ImGui.text("Placing " + typeId + ": " + name);
-                if (textureId != -1) drawImage(textureId, 32, 32);
-                ImGui.endDragDropSource();
-            }
-
-            if (ImGui.isItemHovered()) {
-                ImGui.setTooltip(name);
-            }
-
-            float lastButtonX2 = ImGui.getItemRectMax().x;
-            float nextButtonX2 = lastButtonX2 + styleSpacingX + ITEM_SIZE;
-            if (nextButtonX2 < windowVisibleX2) {
-                ImGui.sameLine();
-            }
-
-            ImGui.popID();
+        } finally {
+            ImGui.popStyleVar();
+            ImGui.endChild();
         }
-
-        ImGui.popStyleVar();
-        ImGui.endChild();
     }
 
     private void drawLetterOverlay(Identifier location) {
@@ -311,20 +344,16 @@ public class CataloguePanel extends EditorPanel {
         return -1;
     }
 
-    private void drawImage(int id, float w, float h) {
-        GlStateManager._bindTexture(id);
-
-        GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
-        GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
-
-        var stack = Client.getImGuiManager().getGraphicsStack();
-        stack.push();
-        stack.pushStyleVar(ImGuiStyleVar.FramePadding, 0, 0);
-
-        ImGui.imageButton(id, w, h, 0, 0, 1, 1);
-        stack.pop();
-    }
-
-    public record CataloguePayload(String id, String type, List<String> tags) {
+    public record CataloguePayload(
+            Identifier id,
+            String type,
+            List<String> tags,
+            Identifier iconLocation,
+            int textureId,
+            String displayName
+    ) {
+        public boolean hasTexture() {
+            return textureId > 0;
+        }
     }
 }

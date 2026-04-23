@@ -21,16 +21,13 @@ import imgui.type.ImFloat;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import org.slf4j.Logger;
 
-/**
- * A simple Test Panel.
- * Shows some weird test stuff I guess.
- */
 public class TestPanel extends Panel {
     public static final TestPanel INSTANCE = new TestPanel();
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final ImFloat FLOAT = new ImFloat();
     private static final ImFloat FLOAT2 = new ImFloat();
     private static final ImBoolean BOOLEAN = new ImBoolean();
+    private CataloguePanel.CataloguePayload cataloguePayload;
 
     private TestPanel() {
         super(Common.id("test_panel"), "My Panel", ImIcons.DEV.DEV_PYTEST, Shortcut.ctrl(ImGuiKey.F5));
@@ -42,20 +39,16 @@ public class TestPanel extends Panel {
         if (ImGuiUtils.requiresActiveSession()) return;
 
         ImGui.text("Hello, World!");
-
         ImGui.separator();
 
         ImGui.text("You dont know what i do? Hover it.");
         ImGuiUtils.helpTooltip("BOO!");
 
         ImGuiUtils.h1(() -> ImGui.text("BIG"));
-
         ImGuiUtils.textCentered("center center", ImGui.getWindowWidth());
-
         ImGuiUtils.resourceLocation(Common.id("imguiiscool"));
 
         ImGuiKnobs.knob("This Will Damage you if you press that button!", FLOAT, 0.0f, 10.0f);
-
         ImGui.progressBar(FLOAT.get() / 10, ImGui.getContentRegionAvailX(), 0, "Progress");
 
         if (ImGui.button("Press this!")) {
@@ -76,16 +69,17 @@ public class TestPanel extends Panel {
 
         ImGui.button("Drop Zone", -1, 50);
         CataloguePanel.acceptDrop(data -> {
-            if (data.type().equals("blocks")) {
-                LOGGER.info("It's a block: {}", data.id());
-            } else {
-                LOGGER.info("It's an item: {}", data.id());
-            }
-
-            if (data.tags().contains("foundry")) {
-                LOGGER.info("This has the foundry tag!");
-            }
+            this.cataloguePayload = data;
+            LOGGER.info("Dropped catalogue item: {}", data.displayName());
         });
+
+        if (cataloguePayload != null) {
+            ImGui.text("Dropped: " + cataloguePayload.type() + " - " + cataloguePayload.id());
+            float wh = 64;
+            ImGuiUtils.drawImage(cataloguePayload.textureId(), wh, wh);
+        } else {
+            ImGui.text("Drop something from the Catalogue panel!");
+        }
 
         ImGui.colorPicker3("Pick a color", FLOAT2.getData(), ImGuiColorEditFlags.PickerHueWheel);
     }

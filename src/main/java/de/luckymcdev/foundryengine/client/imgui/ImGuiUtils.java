@@ -1,5 +1,6 @@
 package de.luckymcdev.foundryengine.client.imgui;
 
+import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.opengl.GlTexture;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.textures.GpuTextureView;
@@ -18,6 +19,7 @@ import net.minecraft.client.StringSplitter;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.resources.Identifier;
+import org.lwjgl.opengl.GL11;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -238,6 +240,47 @@ public class ImGuiUtils {
         return IM_GUI_SPLITTER;
     }
 
+    public static void drawImage(Image image) {
+        GlStateManager._bindTexture(image.glId());
+
+        GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
+        GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+
+        var stack = Client.getImGuiManager().getGraphicsStack();
+        stack.push();
+        stack.pushStyleVar(ImGuiStyleVar.FramePadding, 0, 0);
+
+        ImGui.image(image.glId(), image.width(), image.height(), 0, 0, 1, 1);
+        stack.pop();
+    }
+
+    public static void drawImage(int id, float w, float h) {
+        GlStateManager._bindTexture(id);
+
+        GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
+        GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+
+        var stack = Client.getImGuiManager().getGraphicsStack();
+        stack.push();
+        stack.pushStyleVar(ImGuiStyleVar.FramePadding, 0, 0);
+
+        ImGui.image(id, w, h, 0, 0, 1, 1);
+        stack.pop();
+    }
+
+    public static void drawImageButton(int id, float w, float h) {
+        GlStateManager._bindTexture(id);
+
+        GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
+        GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+
+        var stack = Client.getImGuiManager().getGraphicsStack();
+        stack.push();
+        stack.pushStyleVar(ImGuiStyleVar.FramePadding, 0, 0);
+
+        ImGui.imageButton(id, w, h, 0, 0, 1, 1);
+        stack.pop();
+    }
 
     public static Image getTexture(Identifier texture) {
         return loadTexture("identifier", texture);
