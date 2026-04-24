@@ -223,7 +223,7 @@ public class CataloguePanel extends EditorPanel {
                         typeId,
                         List.of(location.getNamespace()),
                         iconToLoad,
-                        textureId,
+                        new ImGuiUtils.Image(textureId, ClientConfig.ICON_SIZE.get(), ClientConfig.ICON_SIZE.get()),
                         location.toString()
                 );
 
@@ -349,11 +349,11 @@ public class CataloguePanel extends EditorPanel {
             String type,
             List<String> tags,
             Identifier iconLocation,
-            int textureId,
+            ImGuiUtils.Image texture,
             String displayName
     ) {
         public boolean hasTexture() {
-            return textureId > 0;
+            return texture.glId() != -1;
         }
     }
 }

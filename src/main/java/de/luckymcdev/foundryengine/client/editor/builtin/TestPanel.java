@@ -76,7 +76,7 @@ public class TestPanel extends Panel {
         if (cataloguePayload != null) {
             ImGui.text("Dropped: " + cataloguePayload.type() + " - " + cataloguePayload.id());
             float wh = 64;
-            ImGuiUtils.drawImage(cataloguePayload.textureId(), wh, wh);
+            ImGuiUtils.drawImage(cataloguePayload.texture().glId(), wh, wh);
         } else {
             ImGui.text("Drop something from the Catalogue panel!");
         }
