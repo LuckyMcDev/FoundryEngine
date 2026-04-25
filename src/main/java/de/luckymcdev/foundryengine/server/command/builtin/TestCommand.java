@@ -56,8 +56,9 @@ public class TestCommand implements EngineCommand {
                                         new Vector3f(2f, 2f, 2f),
                                         new Quaternionf().rotateX((float) Math.toRadians(45))
                                 ));
-
-                                display.setInteractionCommand("say [BlockDisplay] Mainhand clicked!");
+                                display.setInteractionCommand(
+                                        "engine eval tellPlayer(\"Hello!\")"
+                                );
                                 display.setOffhandInteractionCommand("say [BlockDisplay] Offhand clicked!");
                                 display.setAttackCommand("say [BlockDisplay] attacked!");
                             });
