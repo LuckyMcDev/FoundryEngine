@@ -1,4 +1,4 @@
-package de.luckymcdev.foundryengine.common.world.entity;
+package de.luckymcdev.foundryengine.common.world.entity.display;
 
 import com.mojang.math.Transformation;
 import org.joml.Matrix4fc;

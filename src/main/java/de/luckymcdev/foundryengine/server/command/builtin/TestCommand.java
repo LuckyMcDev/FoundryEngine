@@ -3,15 +3,17 @@ package de.luckymcdev.foundryengine.server.command.builtin;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.math.Transformation;
 import de.luckymcdev.foundryengine.common.util.color.Color;
-import de.luckymcdev.foundryengine.common.world.entity.*;
+import de.luckymcdev.foundryengine.common.world.entity.EngineEntities;
+import de.luckymcdev.foundryengine.common.world.entity.EntitySpawner;
+import de.luckymcdev.foundryengine.common.world.entity.display.EngineBlockDisplay;
+import de.luckymcdev.foundryengine.common.world.entity.display.EngineItemDisplay;
+import de.luckymcdev.foundryengine.common.world.entity.display.EngineTextDisplay;
 import de.luckymcdev.foundryengine.server.command.EngineCommand;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Items;
@@ -47,89 +49,51 @@ public class TestCommand implements EngineCommand {
                     EntitySpawner.spawnServer(level, EngineEntities.BLOCK_DISPLAY.get(),
                             new Vec3(-5, 100, 0), display -> {
 
-                                display.setDisplayBlockState(Blocks.STONE.defaultBlockState());
-
-                                display.setDisplayTransformation(new Transformation(
+                                display.setBlockState(Blocks.STONE.defaultBlockState());
+                                display.setTransformation(new Transformation(
                                         new Vector3f(0f, 0.5f, 0f),
                                         new Quaternionf().rotateY((float) Math.toRadians(45)),
                                         new Vector3f(2f, 2f, 2f),
-                                        new Quaternionf()
+                                        new Quaternionf().rotateX((float) Math.toRadians(45))
                                 ));
 
-                                display.setInteractionConsumer((d, player, hand, location) -> {
-                                    if (hand == InteractionHand.MAIN_HAND) {
-                                        player.sendSystemMessage(Component.literal("[BlockDisplay] MainHand!"));
-                                        return InteractionResult.SUCCESS;
-                                    }
-                                    if (hand == InteractionHand.OFF_HAND) {
-                                        player.sendSystemMessage(Component.literal("[BlockDisplay] OffHand!"));
-                                        return InteractionResult.SUCCESS;
-                                    }
-                                    return InteractionResult.PASS;
-                                });
-
-                                display.setAttackConsumer((d, player) ->
-                                        player.sendSystemMessage(Component.literal("[BlockDisplay] Attack!")));
+                                display.setInteractionCommand("say [BlockDisplay] Mainhand clicked!");
+                                display.setOffhandInteractionCommand("say [BlockDisplay] Offhand clicked!");
+                                display.setAttackCommand("say [BlockDisplay] attacked!");
                             });
 
                     EntitySpawner.spawnServer(level, EngineEntities.ITEM_DISPLAY.get(),
                             new Vec3(0, 100, 0), display -> {
                                 display.setPickable(true);
-                                display.setDisplayGlowColorOverride(Color.ORANGE.argb());
-                                
-                                display.setDisplayItemStack(Items.DIAMOND_SWORD.getDefaultInstance());
-
-                                display.setDisplayTransformation(new Transformation(
+                                display.setGlowColorOverride(Color.ORANGE.argb());
+                                display.setItemStack(Items.DIAMOND_SWORD.getDefaultInstance());
+                                display.setTransformation(new Transformation(
                                         new Vector3f(0f, 0.5f, 0f),
                                         new Quaternionf().rotateY((float) Math.toRadians(45)),
                                         new Vector3f(2f, 2f, 2f),
                                         new Quaternionf()
                                 ));
 
-                                display.setInteractionConsumer((d, player, hand, location) -> {
-                                    if (hand == InteractionHand.MAIN_HAND) {
-                                        player.sendSystemMessage(Component.literal("[ItemDisplay] MainHand!"));
-                                        return InteractionResult.SUCCESS;
-                                    }
-                                    if (hand == InteractionHand.OFF_HAND) {
-                                        player.sendSystemMessage(Component.literal("[ItemDisplay] OffHand!"));
-                                        return InteractionResult.SUCCESS;
-                                    }
-                                    return InteractionResult.PASS;
-                                });
-
-                                display.setAttackConsumer((d, player) ->
-                                        player.sendSystemMessage(Component.literal("[ItemDisplay] Attack!")));
+                                display.setInteractionCommand("say [ItemDisplay] Mainhand clicked!");
+                                display.setOffhandInteractionCommand("say [ItemDisplay] Offhand clicked!");
+                                display.setAttackCommand("say [ItemDisplay] attacked!");
                             });
 
                     EntitySpawner.spawnServer(level, EngineEntities.TEXT_DISPLAY.get(),
                             new Vec3(3, 100, 0), display -> {
 
-                                display.setDisplayText(Component.literal("Hello World!"));
-
-                                display.setDisplayAlignment(Display.TextDisplay.Align.CENTER);
-
-                                display.setDisplayTransformation(new Transformation(
+                                display.setText(Component.literal("Hello World!"));
+                                display.setAlignment(Display.TextDisplay.Align.CENTER);
+                                display.setTransformation(new Transformation(
                                         new Vector3f(0f, 0.5f, 0f),
                                         new Quaternionf().rotateY((float) Math.toRadians(45)),
                                         new Vector3f(2f, 2f, 2f),
                                         new Quaternionf()
                                 ));
 
-                                display.setInteractionConsumer((d, player, hand, location) -> {
-                                    if (hand == InteractionHand.MAIN_HAND) {
-                                        player.sendSystemMessage(Component.literal("[TextDisplay] MainHand!"));
-                                        return InteractionResult.SUCCESS;
-                                    }
-                                    if (hand == InteractionHand.OFF_HAND) {
-                                        player.sendSystemMessage(Component.literal("[TextDisplay] OffHand!"));
-                                        return InteractionResult.SUCCESS;
-                                    }
-                                    return InteractionResult.PASS;
-                                });
-
-                                display.setAttackConsumer((d, player) ->
-                                        player.sendSystemMessage(Component.literal("[TextDisplay] Attack!")));
+                                display.setInteractionCommand("say [TextDisplay] Mainhand clicked!");
+                                display.setOffhandInteractionCommand("say [TextDisplay] Offhand clicked!");
+                                display.setAttackCommand("say [TextDisplay] attacked!");
                             });
 
                     context.getSource().sendSuccess(

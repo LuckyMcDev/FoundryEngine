@@ -1,6 +1,9 @@
 package de.luckymcdev.foundryengine.common.world.entity;
 
 import de.luckymcdev.foundryengine.common.Common;
+import de.luckymcdev.foundryengine.common.world.entity.display.EngineBlockDisplay;
+import de.luckymcdev.foundryengine.common.world.entity.display.EngineItemDisplay;
+import de.luckymcdev.foundryengine.common.world.entity.display.EngineTextDisplay;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
