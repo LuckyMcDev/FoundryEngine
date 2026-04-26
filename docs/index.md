@@ -35,3 +35,7 @@ features:
 ---
 
 **Welcome to the Foundry Engine Wiki!**
+
+<!--
+This should be public now!
+-->
