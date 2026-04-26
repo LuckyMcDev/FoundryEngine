@@ -11,6 +11,7 @@ import de.luckymcdev.foundryengine.common.cutscene.network.CutscenePacket;
 import de.luckymcdev.foundryengine.common.cutscene.network.ScreenEffectPacket;
 import de.luckymcdev.foundryengine.common.cutscene.util.ServerCutsceneManager;
 import de.luckymcdev.foundryengine.common.cutscene.util.ServerScreenEffectManager;
+import de.luckymcdev.foundryengine.common.data.BundleDataGenerator;
 import de.luckymcdev.foundryengine.common.log.EngineLogAppender;
 import de.luckymcdev.foundryengine.common.network.TestPacket;
 import de.luckymcdev.foundryengine.common.network.packets.ServerBoundChangeWeatherPacket;
@@ -24,7 +25,8 @@ import de.luckymcdev.foundryengine.common.vpacks.event.RegisterVirtualPackEvent;
 import de.luckymcdev.foundryengine.common.world.entity.EngineEntities;
 import de.luckymcdev.foundryengine.config.Config;
 import de.luckymcdev.foundryengine.server.command.FoundryCommands;
-import de.luckymcdev.foundryengine.server.packs.EngineRepositorySource;
+import de.luckymcdev.foundryengine.server.packs.DynamicPackRepository;
+import net.minecraft.server.packs.PackType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModLoader;
@@ -43,6 +45,7 @@ import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.io.IOException;
+import java.nio.file.Files;
 
 /**
  * Main Mod Entrypoint for FoundryEngine.
@@ -147,7 +150,18 @@ public class FoundryEngineMod {
     }
 
     private void onAddPackFinders(AddPackFindersEvent event) {
-        event.addRepositorySource(new EngineRepositorySource(event.getPackType()));
+        PackType type = event.getPackType();
+        event.addRepositorySource(new DynamicPackRepository(
+                type,
+                "foundry/bundles",
+                "FoundryEngine: Bundles",
+                () -> Common.getBundleManager().getBundles().stream()
+                        .map(b -> type == PackType.CLIENT_RESOURCES
+                                ? b.bundleFiles().assets()
+                                : b.bundleFiles().data())
+                        .filter(Files::exists)
+                        .toList()
+        ));
     }
 
     private void onRegisterPayloadHandlers(RegisterPayloadHandlersEvent event) {
@@ -175,6 +189,9 @@ public class FoundryEngineMod {
                 ModLoader.postEvent(registryEvent);
                 BundleEvents._postRegistry(registryEvent);
             });
+
+            BundleDataGenerator.runAll();
+
         } catch (IOException e) {
             LOGGER.error("Error while Loading Bundles: {}", e.getLocalizedMessage());
         }
