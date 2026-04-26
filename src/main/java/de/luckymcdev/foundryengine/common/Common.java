@@ -18,6 +18,7 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
+import org.apache.commons.lang3.SystemProperties;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -50,6 +51,8 @@ public abstract class Common {
      * Base Config Dir
      */
     public static final Path CONFIG = FMLPaths.CONFIGDIR.get();
+    public static final String tmpdir = SystemProperties.getProperty("java.io.tmpdir");
+    public static final Path TEMP_DIR = Path.of(tmpdir).resolve(MODID);
     private static final boolean FIRST_RUN = FirstRun.isFor(MODID);
     public static final Path DIRECTORY = dir(GAMEDIR.resolve(MODNAME));
     public static final Path BUNDLES = dir(DIRECTORY.resolve("bundles"));
