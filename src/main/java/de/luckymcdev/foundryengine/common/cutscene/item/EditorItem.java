@@ -31,9 +31,7 @@ public class EditorItem extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> consumer, TooltipFlag flag) {
-        consumer.accept(Component.literal("Hold right click to edit cutscenes."));
-        consumer.accept(Component.literal("Hover nodes to select, scroll to push/pull."));
-        consumer.accept(Component.literal("Quick click on an endpoint to add a node; crouch+click to delete."));
-        consumer.accept(Component.literal("Use /cutscene to manage and play cutscenes."));
+        consumer.accept(Component.literal("Use in Combination with the Cutscene Panel to manage them"));
+        consumer.accept(Component.literal("Right click and drag points to change them."));
     }
 }
