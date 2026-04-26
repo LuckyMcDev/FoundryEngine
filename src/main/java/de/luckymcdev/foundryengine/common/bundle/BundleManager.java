@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
+import java.util.Collection;
 
 /**
  * Bundle Manager that manages Bundle Lifecycles.
@@ -85,7 +86,7 @@ public class BundleManager implements ResourceManagerReloadListener {
     /**
      * Returns all currently loaded bundles.
      */
-    public Iterable<Bundle> getBundles() {
+    public Collection<Bundle> getBundles() {
         return bundles.values();
     }
 
