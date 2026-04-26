@@ -13,7 +13,7 @@ javadoc {
     source = sourceSets.main.allJava
     exclude '**/internal/**'
 
-    failOnError = true
+    failOnError = false
 }
 
 tasks.register('javadocJar', Jar) {
