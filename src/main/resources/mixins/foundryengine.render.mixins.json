@@ -9,7 +9,6 @@
     "BlockEntityRendererMixin",
     "CutsceneCameraMixin",
     "GameRendererMixin",
-    "GpuDeviceMixin",
     "ItemInHandRendererMixin",
     "LevelRendererMixin",
     "PostChainMixin",
