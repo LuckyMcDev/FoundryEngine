@@ -11,7 +11,6 @@ import de.luckymcdev.foundryengine.common.cutscene.network.CutscenePacket;
 import de.luckymcdev.foundryengine.common.cutscene.network.ScreenEffectPacket;
 import de.luckymcdev.foundryengine.common.cutscene.util.ServerCutsceneManager;
 import de.luckymcdev.foundryengine.common.cutscene.util.ServerScreenEffectManager;
-import de.luckymcdev.foundryengine.common.data.BundleDataGenerator;
 import de.luckymcdev.foundryengine.common.log.EngineLogAppender;
 import de.luckymcdev.foundryengine.common.network.TestPacket;
 import de.luckymcdev.foundryengine.common.network.packets.ServerBoundChangeWeatherPacket;
@@ -190,7 +189,7 @@ public class FoundryEngineMod {
                 BundleEvents._postRegistry(registryEvent);
             });
 
-            BundleDataGenerator.runAll();
+            //BundleDataGenerator.runAll();
 
         } catch (IOException e) {
             LOGGER.error("Error while Loading Bundles: {}", e.getLocalizedMessage());
