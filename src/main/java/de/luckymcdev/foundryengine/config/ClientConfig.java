@@ -32,6 +32,8 @@ public final class ClientConfig extends EngineConfig {
                             "vanilla -> Uses the vanilla 64 blocks")
                     .define("BLOCK_ENTITY_RENDER_DISTANCE", "literal");
 
+    public static int COMPUTED_BLOCK_ENTITY_RENDER_DISTANCE = 8;
+
     @Override
     public ModConfigSpec spec() {
         return BUILDER.build();
