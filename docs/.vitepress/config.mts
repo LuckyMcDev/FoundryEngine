@@ -25,7 +25,6 @@ export default defineConfig({
 //        nav('Javadoc', '/javadoc/index.html')
             nav("Guide", "guide.md"),
             nav("Getting Started", "getting_started.md"),
-            nav("Javadoc", "javadoc.md"),
         ],
 
         sidebar: [
