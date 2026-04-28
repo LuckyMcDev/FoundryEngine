@@ -77,7 +77,7 @@ public abstract class Client {
     );
 
     // Core Systems
-    private static final Logger LOGGER = LogUtils.getLogger();
+    public static final Logger LOGGER = LogUtils.getLogger();
     private static final ImGuiManager IMGUI_MANAGER = new ImGuiManager();
     private static final MainMenu MAIN_MENU = new MainMenu();
     private static final EditorManager EDITOR_MANAGER = new EditorManager();
