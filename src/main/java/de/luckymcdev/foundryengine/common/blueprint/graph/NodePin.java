@@ -1,4 +1,4 @@
-package de.luckymcdev.foundryengine.client.imgui.imnodes.pin;
+package de.luckymcdev.foundryengine.common.blueprint.graph;
 
 public record NodePin(NodePinType<?> type, String label, NodePinConnectionType connectionType, NodePinShape shape) {
 }

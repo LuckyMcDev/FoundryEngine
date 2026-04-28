@@ -2,8 +2,10 @@ package de.luckymcdev.foundryengine.client.cutscene;
 
 import de.luckymcdev.foundryengine.common.cutscene.network.ScreenEffectPacket;
 import net.minecraft.client.Minecraft;
+import org.jetbrains.annotations.Nullable;
 
 public class ClientScreenEffectManager {
+    @Nullable
     public static ScreenEffectInstance screenEffect;
 
     public static void handlePacket(ScreenEffectPacket packet) {

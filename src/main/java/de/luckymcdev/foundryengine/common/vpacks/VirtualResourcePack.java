@@ -71,6 +71,7 @@ public interface VirtualResourcePack extends PackResources {
     /**
      * Adds a sound definition file (sounds.json) to the resource pack.
      * * @param path   The identifier (e.g., "modid:sounds") - ".json" is added automatically.
+     *
      * @param sounds The JSounds object containing the sound event definitions.
      * @return the byte array of the generated JSON.
      */

@@ -1,9 +1,7 @@
-package de.luckymcdev.foundryengine.client.imgui.imnodes;
+package de.luckymcdev.foundryengine.common.blueprint.engine;
 
-
-import de.luckymcdev.foundryengine.client.imgui.imnodes.blueprint.BlueprintEngine;
-import de.luckymcdev.foundryengine.client.imgui.imnodes.pin.NodePin;
-import de.luckymcdev.foundryengine.client.imgui.imnodes.pin.NodePinType;
+import de.luckymcdev.foundryengine.common.blueprint.graph.NodePin;
+import de.luckymcdev.foundryengine.common.blueprint.graph.NodePinType;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;

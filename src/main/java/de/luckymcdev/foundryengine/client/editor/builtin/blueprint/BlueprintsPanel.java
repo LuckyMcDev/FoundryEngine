@@ -2,16 +2,15 @@ package de.luckymcdev.foundryengine.client.editor.builtin.blueprint;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.api.event.ClientEvents;
+import de.luckymcdev.foundryengine.client.blueprint.editor.NodeEditorInstance;
 import de.luckymcdev.foundryengine.client.editor.builtin.EditorPanel;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
-import de.luckymcdev.foundryengine.client.imgui.imnodes.NodeEditorInstance;
-import de.luckymcdev.foundryengine.client.imgui.imnodes.blueprint.BlueprintEngine;
-import de.luckymcdev.foundryengine.client.imgui.imnodes.blueprint.BlueprintEngine.NodeTemplate;
-import de.luckymcdev.foundryengine.client.imgui.imnodes.blueprint.BlueprintEventBridge;
-import de.luckymcdev.foundryengine.client.imgui.imnodes.blueprint.BlueprintSerializer;
 import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
+import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintEngine;
+import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintEventBridge;
+import de.luckymcdev.foundryengine.common.blueprint.serial.BlueprintSerializer;
 import imgui.ImGui;
 import imgui.flag.ImGuiTreeNodeFlags;
 import imgui.type.ImBoolean;
@@ -32,7 +31,7 @@ public class BlueprintsPanel extends EditorPanel {
     public static final BlueprintsPanel INSTANCE = new BlueprintsPanel();
     private static final Logger LOGGER = LogUtils.getLogger();
     private final BlueprintEngine engine;
-    private final NodeEditorInstance<Void> editor;
+    private final NodeEditorInstance editor;
     private final BlueprintSerializer serializer;
     private final ImString searchFilter = new ImString(128);
     private final ImString fileNameInput = new ImString(256);
@@ -42,7 +41,7 @@ public class BlueprintsPanel extends EditorPanel {
         super(Common.id("blueprints"), "Blueprints", ImIcons.FA.FA_MAP, Shortcut.empty());
         this.category = PanelCategory.EDITOR_BLUEPRINTS;
         this.engine = new BlueprintEngine();
-        this.editor = new NodeEditorInstance<>(engine.execType, engine);
+        this.editor = new NodeEditorInstance(engine);
         this.serializer = new BlueprintSerializer(engine);
 
         engine.registerBuiltins();
@@ -126,8 +125,7 @@ public class BlueprintsPanel extends EditorPanel {
 
             try {
                 var blueprintFiles = Files.list(blueprintsDirectory)
-                        .filter(p -> p.toString().endsWith(".json"))
-                        .toList();
+                        .filter(p -> p.toString().endsWith(BlueprintSerializer.EXTENSION)).toList();
 
                 if (blueprintFiles.isEmpty()) {
                     ImGui.textDisabled("No blueprints found");
@@ -154,27 +152,24 @@ public class BlueprintsPanel extends EditorPanel {
     }
 
     private void saveBlueprint(String fileName) {
-        try {
-            if (!fileName.endsWith(".json")) {
-                fileName += ".json";
-            }
+        if (!fileName.endsWith(BlueprintSerializer.EXTENSION)) {
+            fileName += BlueprintSerializer.EXTENSION;
+        }
 
-            Path filePath = blueprintsDirectory.resolve(fileName);
-            String json = serializer.serialize(editor);
-            Files.writeString(filePath, json);
-            LOGGER.info("Blueprint saved to {}", filePath);
+        Path filePath = blueprintsDirectory.resolve(fileName);
+        try {
+            serializer.saveToFile(editor, editor::getNodeGridPos, filePath);
         } catch (IOException e) {
-            LOGGER.error("Failed to save blueprint", e);
+            LOGGER.error("Failed to save blueprint to {}", filePath, e);
         }
     }
 
     private void loadBlueprint(Path filePath) {
         try {
-            String json = Files.readString(filePath);
-            serializer.deserialize(json, editor);
-            LOGGER.info("Blueprint loaded from {}", filePath);
+            Map<Integer, float[]> positions = serializer.loadFromFile(filePath, editor);
+            positions.forEach((nodeId, pos) -> editor.setNodeGridPos(nodeId, pos[0], pos[1]));
         } catch (IOException e) {
-            LOGGER.error("Failed to load blueprint", e);
+            LOGGER.error("Failed to load blueprint from {}", filePath, e);
         }
     }
 
@@ -189,7 +184,7 @@ public class BlueprintsPanel extends EditorPanel {
 
         String filter = searchFilter.get().toLowerCase().trim();
 
-        Map<String, List<NodeTemplate>> grouped = new LinkedHashMap<>();
+        Map<String, List<BlueprintEngine.NodeTemplate>> grouped = new LinkedHashMap<>();
         for (var template : engine.getRegistry()) {
             if (!filter.isEmpty() && !template.name().toLowerCase().contains(filter)
                     && !template.category().toLowerCase().contains(filter)) {

@@ -33,16 +33,16 @@ import java.util.function.Supplier;
 public class GameRendererMixin implements EngineGameRenderer {
     @Unique
     private final SortedSet<PrioritizedEffect> engine$activeEffects = new TreeSet<>();
+    @Unique
+    private final Map<Identifier, RenderTarget> engine$frameTargets = HashMap.newHashMap(10);
+    @Unique
+    private final List<Map.Entry<Identifier, Supplier<@Nullable RenderTarget>>> engine$targetResolvers = new ArrayList<>();
     @Shadow
     @Final
     public CrossFrameResourcePool resourcePool;
     @Shadow
     @Final
     private Minecraft minecraft;
-    @Unique
-    private final Map<Identifier, RenderTarget> engine$frameTargets = HashMap.newHashMap(10);
-    @Unique
-    private final List<Map.Entry<Identifier, Supplier<@Nullable RenderTarget>>> engine$targetResolvers = new ArrayList<>();
 
     @Redirect(
             method = "render",

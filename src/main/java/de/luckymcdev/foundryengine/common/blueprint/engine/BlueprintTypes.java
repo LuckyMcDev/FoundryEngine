@@ -1,7 +1,7 @@
-package de.luckymcdev.foundryengine.client.imgui.imnodes.blueprint;
+package de.luckymcdev.foundryengine.common.blueprint.engine;
 
-import de.luckymcdev.foundryengine.client.imgui.imnodes.pin.NodePinShape;
-import de.luckymcdev.foundryengine.client.imgui.imnodes.pin.NodePinType;
+import de.luckymcdev.foundryengine.common.blueprint.graph.NodePinShape;
+import de.luckymcdev.foundryengine.common.blueprint.graph.NodePinType;
 
 /**
  * Central catalogue of built-in {@link NodePinType} instances that mirror

@@ -1,8 +1,5 @@
-package de.luckymcdev.foundryengine.client.imgui.imnodes;
+package de.luckymcdev.foundryengine.common.blueprint.graph;
 
-import de.luckymcdev.foundryengine.client.imgui.imnodes.pin.NodePin;
-import de.luckymcdev.foundryengine.client.imgui.imnodes.pin.NodePinConnectionType;
-import de.luckymcdev.foundryengine.client.imgui.imnodes.pin.NodePinInfo;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -13,16 +10,19 @@ import java.util.Map;
 /**
  * A single node in the blueprint graph.
  */
-public class Node {
+public class BlueprintNode {
     public final List<NodePinInfo> inputPins;
     public final List<NodePinInfo> outputPins;
     public final Map<String, Object> outputValues = new HashMap<>();
     public int id;
     public String name;
     public @Nullable String category;
+    /**
+     * Only meaningful in the client editor; ignored server/common side.
+     */
     public boolean selected;
 
-    public Node(String name, @Nullable String category, List<NodePin> pins) {
+    public BlueprintNode(String name, @Nullable String category, List<NodePin> pins) {
         this.name = name;
         this.category = category;
         this.inputPins = new ArrayList<>();
@@ -38,11 +38,11 @@ public class Node {
         }
     }
 
-    public Node(String name, List<NodePin> pins) {
+    public BlueprintNode(String name, List<NodePin> pins) {
         this(name, null, pins);
     }
 
-    public Node(List<NodePin> pins) {
+    public BlueprintNode(List<NodePin> pins) {
         this("Node", null, pins);
     }
 

@@ -9,6 +9,7 @@ public interface BundleEntrypoint {
 
     /**
      * Returns the Priority of this Entrypoint.
+     *
      * @return the priority, NORMAL by default
      */
     default Priority getPriority() {

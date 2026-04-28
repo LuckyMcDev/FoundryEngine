@@ -1,130 +1,88 @@
-package de.luckymcdev.foundryengine.client.imgui.imnodes;
+package de.luckymcdev.foundryengine.client.blueprint.editor;
 
-import de.luckymcdev.foundryengine.client.imgui.imnodes.blueprint.BlueprintEngine;
-import de.luckymcdev.foundryengine.client.imgui.imnodes.pin.NodePinConnectionType;
-import de.luckymcdev.foundryengine.client.imgui.imnodes.pin.NodePinInfo;
-import de.luckymcdev.foundryengine.client.imgui.imnodes.pin.NodePinType;
+import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintContext;
+import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintEngine;
+import de.luckymcdev.foundryengine.common.blueprint.graph.*;
 import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.extension.imnodes.ImNodes;
 import imgui.extension.imnodes.flag.ImNodesCol;
 import imgui.extension.imnodes.flag.ImNodesMiniMapLocation;
+import imgui.extension.imnodes.flag.ImNodesPinShape;
 import imgui.type.ImBoolean;
 import imgui.type.ImFloat;
 import imgui.type.ImInt;
 import imgui.type.ImString;
-import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.ArrayList;
 import java.util.function.Consumer;
 
 /**
- * Manages a single node editor canvas.
+ * Client-only node editor canvas backed by ImGui-Node-Editor.
  */
-public class NodeEditorInstance<T> {
-    public final NodePinType<T> type;
-    public final Int2ObjectMap<Node> nodes;
-    public final Int2ObjectMap<NodePinInfo> pins;
+public class NodeEditorInstance extends BlueprintGraph implements BlueprintContext.EngineAwareGraph {
+
+    private final BlueprintEngine engine;
     private final ImInt tempSrc = new ImInt();
     private final ImInt tempDst = new ImInt();
-    public @Nullable BlueprintEngine engine;
     public float miniMap = 0.2f;
-    public int lastId = 0;
     private @Nullable NodePinInfo lastDroppedPin;
     private float spawnX, spawnY;
     private int pendingSpawnId = -1;
 
-    public NodeEditorInstance(NodePinType<T> type, @Nullable BlueprintEngine engine) {
-        this.type = type;
+    public NodeEditorInstance(BlueprintEngine engine) {
         this.engine = engine;
-        this.nodes = new Int2ObjectLinkedOpenHashMap<>();
-        this.pins = new Int2ObjectLinkedOpenHashMap<>();
     }
 
-    public NodeEditorInstance(NodePinType<T> type) {
-        this(type, null);
+    private static int toImNodesShape(NodePinShape shape) {
+        return switch (shape) {
+            case CIRCLE -> ImNodesPinShape.Circle;
+            case FILLED_CIRCLE -> ImNodesPinShape.CircleFilled;
+            case TRIANGLE -> ImNodesPinShape.Triangle;
+            case FILLED_TRIANGLE -> ImNodesPinShape.TriangleFilled;
+            case SQUARE -> ImNodesPinShape.Quad;
+            case FILLED_SQUARE -> ImNodesPinShape.QuadFilled;
+        };
     }
 
-    public int nextId() {
-        return ++lastId;
+    @Override
+    public BlueprintEngine getEngine() {
+        return engine;
     }
 
-    public void addNode(Node node) {
+    public void addNode(BlueprintEngine.NodeTemplate template) {
+        BlueprintNode node = engine.createNode(template);
         addNode(node, true);
     }
 
-    public void addNode(Node node, boolean positionAtCursor) {
-        if (node.id == 0) node.id = nextId();
-        nodes.put(node.id, node);
-
-        for (var pin : node.inputPins) {
-            if (pin.id == 0) pin.id = nextId();
-            pins.put(pin.id, pin);
-        }
-        for (var pin : node.outputPins) {
-            if (pin.id == 0) pin.id = nextId();
-            pins.put(pin.id, pin);
-        }
-
-        if (positionAtCursor) {
-            pendingSpawnId = node.id;
-        }
+    @Override
+    public void addNode(BlueprintNode node, boolean positionAtCursor) {
+        super.addNode(node, positionAtCursor);
+        if (positionAtCursor) pendingSpawnId = node.id;
     }
 
-    public Node addNode(BlueprintEngine.NodeTemplate template) {
-        if (engine == null) throw new IllegalStateException("Engine reference required for templates");
-        Node node = engine.createNode(template);
-        addNode(node, true);
-        return node;
+    public void render(Consumer<BlueprintNode> onContextMenu) {
+        render(onContextMenu, null);
     }
 
-    public @Nullable NodePinInfo getConnectedInputPin(NodePinInfo outputPin) {
-        for (var pin : pins.values()) {
-            if (pin.inputLink == outputPin) return pin;
-        }
-        return null;
-    }
-
-    public void clear() {
-        nodes.clear();
-        pins.clear();
-    }
-
-    private boolean canConnect(NodePinInfo a, NodePinInfo b) {
-        if (engine != null) return engine.canConnect(a, b);
-        return a.pin.type().isCompatibleWith(b.pin.type());
-    }
-
-    public void render(Consumer<Node> onNodeContextMenu) {
-        render(onNodeContextMenu, null);
-    }
-
-    public void render(Consumer<Node> onContextMenu, @Nullable Consumer<Node> onNodeBody) {
+    public void render(Consumer<BlueprintNode> onContextMenu,
+                       @Nullable Consumer<BlueprintNode> onNodeBody) {
 
         boolean mouseRight = ImGui.isMouseClicked(1);
 
         ImNodes.beginNodeEditor();
         boolean editorHovered = ImNodes.isEditorHovered();
 
-        //if (editorHovered) {
         float scroll = ImGui.getIO().getMouseWheelH();
         if (scroll != 0f) {
-            ImVec2 currentPan = ImNodes.editorContextGetPanning();
-            ImGui.getIO().getConfigWindowsMoveFromTitleBarOnly();
-            ImVec2 mousePos = ImGui.getMousePos();
-
+            ImVec2 pan = ImNodes.editorContextGetPanning();
             float zoomFactor = 1f + (scroll * 0.1f);
-            ImVec2 newPan = new ImVec2(
-                    currentPan.x * zoomFactor,
-                    currentPan.y * zoomFactor
-            );
-            ImNodes.editorContextResetPanning(newPan);
+            ImNodes.editorContextResetPanning(new ImVec2(pan.x * zoomFactor, pan.y * zoomFactor));
         }
-        //}
 
-        Node xButtonRemovedNode = null;
+        BlueprintNode xButtonRemovedNode = null;
 
         for (var node : nodes.values()) {
             ImNodes.beginNode(node.id);
@@ -136,12 +94,11 @@ public class NodeEditorInstance<T> {
             ImNodes.endNodeTitleBar();
 
             ImGui.pushItemWidth(130f);
-
             if (onNodeBody != null) onNodeBody.accept(node);
 
             for (var pin : node.inputPins) {
                 pushPinColor(pin.pin.type());
-                ImNodes.beginInputAttribute(pin.id, pin.pin.shape().id);
+                ImNodes.beginInputAttribute(pin.id, toImNodesShape(pin.pin.shape()));
                 popPinColor();
 
                 if (!pin.isConnected() && pin.defaultValue != null) {
@@ -149,13 +106,12 @@ public class NodeEditorInstance<T> {
                 } else {
                     ImGui.textUnformatted(pin.pin.label());
                 }
-
                 ImNodes.endInputAttribute();
             }
 
             for (var pin : node.outputPins) {
                 pushPinColor(pin.pin.type());
-                ImNodes.beginOutputAttribute(pin.id, pin.pin.shape().id);
+                ImNodes.beginOutputAttribute(pin.id, toImNodesShape(pin.pin.shape()));
                 ImGui.textUnformatted(pin.pin.label());
                 ImNodes.endOutputAttribute();
                 popPinColor();
@@ -182,27 +138,62 @@ public class NodeEditorInstance<T> {
             pendingSpawnId = -1;
         }
 
+        handleLinkCreation();
+        handleLinkDeletion();
+        handleLinkDrop(onContextMenu);
+        handleContextMenu(onContextMenu, editorHovered, mouseRight);
+        handleNodeAndLinkSelection();
+        handleXButtonRemoval(xButtonRemovedNode);
+        handleDeleteKey();
+    }
+
+    public float[] getNodeGridPos(int nodeId) {
+        ImVec2 pos = ImNodes.getNodeGridSpacePos(nodeId);
+        return new float[]{pos.x, pos.y};
+    }
+
+    public void setNodeGridPos(int nodeId, float x, float y) {
+        ImNodes.setNodeGridSpacePos(nodeId, new ImVec2(x, y));
+    }
+
+    public void setPanning(float x, float y) {
+        ImNodes.editorContextResetPanning(new ImVec2(x, y));
+    }
+
+    public float[] getPanning() {
+        ImVec2 pan = ImNodes.editorContextGetPanning();
+        return new float[]{pan.x, pan.y};
+    }
+
+    private void handleLinkCreation() {
         if (ImNodes.isLinkCreated(tempSrc, tempDst)) {
             var src = pins.get(tempSrc.get());
             var dst = pins.get(tempDst.get());
             if (src != null && dst != null) {
                 var in = src.pin.connectionType() == NodePinConnectionType.OUTPUT ? dst : src;
                 var out = src.pin.connectionType() == NodePinConnectionType.OUTPUT ? src : dst;
-                if (canConnect(out, in)) in.inputLink = out;
+                if (engine.canConnect(out, in)) in.inputLink = out;
             }
         }
+    }
 
+    private void handleLinkDeletion() {
         if (ImNodes.isLinkDestroyed(tempSrc)) {
             var pin = pins.get(tempSrc.get());
             if (pin != null) pin.inputLink = null;
         }
+    }
 
+    private void handleLinkDrop(Consumer<BlueprintNode> onContextMenu) {
         if (ImNodes.isLinkDropped(tempSrc, false)) {
             lastDroppedPin = pins.get(tempSrc.get());
             captureSpawnPos();
             ImGui.openPopup("###context-menu");
         }
+    }
 
+    private void handleContextMenu(Consumer<BlueprintNode> onContextMenu,
+                                   boolean editorHovered, boolean mouseRight) {
         if (editorHovered && mouseRight && !ImGui.isAnyItemHovered()) {
             captureSpawnPos();
             ImGui.openPopup("###context-menu");
@@ -216,53 +207,31 @@ public class NodeEditorInstance<T> {
         if (lastDroppedPin != null && !ImGui.isPopupOpen("###context-menu")) {
             lastDroppedPin = null;
         }
+    }
 
+    private void handleNodeAndLinkSelection() {
         for (var node : nodes.values()) node.selected = ImNodes.isNodeSelected(node.id);
-        for (var pin : pins.values()) pin.inputLinkSelected = pin.inputLink != null && ImNodes.isLinkSelected(pin.id);
+        for (var pin : pins.values())
+            pin.inputLinkSelected = pin.inputLink != null && ImNodes.isLinkSelected(pin.id);
+    }
 
-        if (xButtonRemovedNode != null) {
-            for (var pin : pins.values()) {
-                for (var oPin : xButtonRemovedNode.outputPins) {
-                    if (pin.inputLink == oPin) {
-                        pin.inputLink = null;
-                        pin.inputLinkSelected = false;
-                        break;
-                    }
-                }
-            }
-            nodes.remove(xButtonRemovedNode.id);
-            for (var pin : xButtonRemovedNode.inputPins) pins.remove(pin.id);
-            for (var pin : xButtonRemovedNode.outputPins) pins.remove(pin.id);
-        }
+    private void handleXButtonRemoval(@Nullable BlueprintNode node) {
+        if (node != null) removeNode(node);
+    }
 
-        if (ImGui.isKeyPressed(GLFW.GLFW_KEY_DELETE)) {
-            for (var pin : pins.values()) {
-                if (pin.inputLinkSelected) {
-                    pin.inputLinkSelected = false;
-                    pin.inputLink = null;
-                }
-            }
+    private void handleDeleteKey() {
+        if (!ImGui.isKeyPressed(GLFW.GLFW_KEY_DELETE)) return;
 
-            var nodesToRemove = new java.util.ArrayList<Node>();
-            for (var node : nodes.values()) {
-                if (node.selected) nodesToRemove.add(node);
-            }
-
-            for (var node : nodesToRemove) {
-                for (var pin : pins.values()) {
-                    for (var oPin : node.outputPins) {
-                        if (pin.inputLink == oPin) {
-                            pin.inputLink = null;
-                            pin.inputLinkSelected = false;
-                            break;
-                        }
-                    }
-                }
-                nodes.remove(node.id);
-                for (var pin : node.inputPins) pins.remove(pin.id);
-                for (var pin : node.outputPins) pins.remove(pin.id);
+        for (var pin : pins.values()) {
+            if (pin.inputLinkSelected) {
+                pin.inputLinkSelected = false;
+                pin.inputLink = null;
             }
         }
+
+        var toRemove = new ArrayList<BlueprintNode>();
+        for (var node : nodes.values()) if (node.selected) toRemove.add(node);
+        toRemove.forEach(this::removeNode);
     }
 
     private void captureSpawnPos() {
@@ -301,13 +270,6 @@ public class NodeEditorInstance<T> {
         ImNodes.popColorStyle();
     }
 
-    public void resetLastId() {
-        int max = 0;
-        for (int id : nodes.keySet()) if (id > max) max = id;
-        for (int id : pins.keySet()) if (id > max) max = id;
-        lastId = max;
-    }
-
     private void renderInlineDefault(NodePinInfo pin) {
         String id = "##dv_" + pin.id;
         Object v = pin.defaultValue;
@@ -334,9 +296,7 @@ public class NodeEditorInstance<T> {
                 ImGui.textUnformatted(pin.pin.label());
                 if (ImGui.inputText(id, ref)) pin.defaultValue = ref.get();
             }
-            default -> {
-                ImGui.textUnformatted(pin.pin.label() + ": " + v);
-            }
+            default -> ImGui.textUnformatted(pin.pin.label() + ": " + v);
         }
     }
 }

@@ -17,22 +17,22 @@ public class EngineEntities {
     public static final DeferredRegister.Entities ENTITY_TYPES = DeferredRegister.createEntities(Common.MODID);
 
     public static final Supplier<EntityType<EngineBlockDisplay>> BLOCK_DISPLAY = create(
-                    "block_display",
-                    EngineBlockDisplay::new,
+            "block_display",
+            EngineBlockDisplay::new,
             MobCategory.MISC
-            );
+    );
 
     public static final Supplier<EntityType<EngineItemDisplay>> ITEM_DISPLAY = create(
-                    "item_display",
-                    EngineItemDisplay::new,
+            "item_display",
+            EngineItemDisplay::new,
             MobCategory.MISC
-            );
+    );
 
     public static final Supplier<EntityType<EngineTextDisplay>> TEXT_DISPLAY = create(
-                    "text_display",
-                    EngineTextDisplay::new,
+            "text_display",
+            EngineTextDisplay::new,
             MobCategory.MISC
-            );
+    );
 
     private static <E extends Entity> Supplier<EntityType<E>> create(String name, EntityType.EntityFactory<E> factory, MobCategory category) {
         return ENTITY_TYPES.registerEntityType(

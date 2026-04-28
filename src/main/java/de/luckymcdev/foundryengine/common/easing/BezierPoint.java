@@ -9,8 +9,8 @@ import java.util.List;
 
 public class BezierPoint {
     private final BezierPath path;
-    private Vec3 pos;
     private final boolean isTangent;
+    private Vec3 pos;
 
     public BezierPoint(BezierSpline spline, Vec3 pos, boolean isTangent) {
         this.pos = pos;

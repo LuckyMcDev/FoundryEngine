@@ -1,22 +1,21 @@
-package de.luckymcdev.foundryengine.client.imgui.imnodes.pin;
+package de.luckymcdev.foundryengine.common.blueprint.graph;
 
-import de.luckymcdev.foundryengine.client.imgui.imnodes.Node;
 import org.jetbrains.annotations.Nullable;
 
 public class NodePinInfo {
-    public final Node node;
+    public final BlueprintNode node;
     public final NodePin pin;
     public int id;
     public @Nullable NodePinInfo inputLink;
+    /**
+     * Only relevant on the client editor; always {@code false} common/server-side.
+     */
     public boolean inputLinkSelected;
     public @Nullable Object defaultValue;
 
-    public NodePinInfo(Node node, NodePin pin) {
+    public NodePinInfo(BlueprintNode node, NodePin pin) {
         this.node = node;
         this.pin = pin;
-        this.id = 0;
-        this.inputLink = null;
-        this.defaultValue = null;
     }
 
     public boolean isConnected() {

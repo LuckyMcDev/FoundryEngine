@@ -12,6 +12,7 @@ import de.luckymcdev.foundryengine.client.cutscene.ClientScreenEffectManager;
 import de.luckymcdev.foundryengine.common.cutscene.util.ScreenEffectType;
 import net.minecraft.client.renderer.PostPass;
 import net.minecraft.resources.Identifier;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -34,39 +35,51 @@ public abstract class PostPassProgressMixin {
     private String name;
 
     @Unique
-    private GpuBuffer progressBuffer;
+    @Nullable
+    private GpuBuffer engine$progressBuffer;
+
+    @Unique
+    private boolean engine$isScreenEffect;
+
+    @Unique
+    private boolean engine$checkedName;
 
     @Inject(method = "addToFrame", at = @At("HEAD"))
     private void engine$updateProgress(FrameGraphBuilder frame, Map<Identifier, ResourceHandle<RenderTarget>> targets, GpuBufferSlice shaderOrthoMatrix, CallbackInfo ci) {
-        boolean isScreenEffect = false;
-        for (ScreenEffectType type : ScreenEffectType.values()) {
-            if (name != null && name.contains(type.name())) {
-                isScreenEffect = true;
-                break;
+        if (!engine$checkedName) {
+            for (ScreenEffectType type : ScreenEffectType.values()) {
+                if (name.contains(type.name())) {
+                    engine$isScreenEffect = true;
+                    break;
+                }
             }
+            engine$checkedName = true;
         }
-        if (!isScreenEffect) return;
 
-        if (progressBuffer == null) {
-            progressBuffer = RenderSystem.getDevice().createBuffer(
-                    () -> "CutsceneProgress",
+        if (!engine$isScreenEffect) return;
+
+        if (engine$progressBuffer == null) {
+            engine$progressBuffer = RenderSystem.getDevice().createBuffer(
+                    this::engine$getProgressBufferName,
                     GpuBuffer.USAGE_UNIFORM | GpuBuffer.USAGE_MAP_WRITE | GpuBuffer.USAGE_COPY_DST,
                     16
             );
+            customUniforms.put("ProgressBuffer", engine$progressBuffer);
         }
 
-        customUniforms.put("ProgressBuffer", progressBuffer);
-
-        float progress = 0f;
-        if (ClientScreenEffectManager.screenEffect != null) {
-            progress = ClientScreenEffectManager.screenEffect.getProgress();
-        }
+        float progress = ClientScreenEffectManager.screenEffect != null
+                ? ClientScreenEffectManager.screenEffect.getProgress()
+                : 0f;
 
         CommandEncoder encoder = RenderSystem.getDevice().createCommandEncoder();
-        try (GpuBuffer.MappedView view = encoder.mapBuffer(progressBuffer, false, true)) {
-            Std140Builder std140 = Std140Builder.intoBuffer(view.data());
-            std140.putFloat(progress);
+        try (GpuBuffer.MappedView view = encoder.mapBuffer(engine$progressBuffer, false, true)) {
+            Std140Builder.intoBuffer(view.data()).putFloat(progress);
         }
+    }
+
+    @Unique
+    private String engine$getProgressBufferName() {
+        return "CutsceneProgress";
     }
 }
 

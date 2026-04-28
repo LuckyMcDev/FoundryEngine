@@ -1,9 +1,9 @@
-package de.luckymcdev.foundryengine.client.imgui.imnodes.blueprint;
+package de.luckymcdev.foundryengine.common.blueprint.engine;
 
 import com.mojang.logging.LogUtils;
-import de.luckymcdev.foundryengine.client.imgui.imnodes.Node;
-import de.luckymcdev.foundryengine.client.imgui.imnodes.NodeEditorInstance;
-import de.luckymcdev.foundryengine.client.imgui.imnodes.pin.NodePinInfo;
+import de.luckymcdev.foundryengine.common.blueprint.graph.BlueprintGraph;
+import de.luckymcdev.foundryengine.common.blueprint.graph.BlueprintNode;
+import de.luckymcdev.foundryengine.common.blueprint.graph.NodePinInfo;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -18,12 +18,12 @@ public class BlueprintContext {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final int MAX_DEPTH = 512;
 
-    private final NodeEditorInstance<?> editor;
+    private final BlueprintGraph graph;
     private final Map<String, Object> variables = new HashMap<>();
     private int depth = 0;
 
-    public BlueprintContext(NodeEditorInstance<?> editor) {
-        this.editor = editor;
+    public BlueprintContext(BlueprintGraph graph) {
+        this.graph = graph;
     }
 
     public void setVar(String name, @Nullable Object value) {
@@ -59,12 +59,12 @@ public class BlueprintContext {
                 return null;
             }
 
-            Node source = pin.inputLink.node;
-            BlueprintEngine eng = editor.engine;
+            BlueprintNode source = pin.inputLink.node;
+            BlueprintEngine eng = graph instanceof EngineAwareGraph eag ? eag.getEngine() : null;
             if (eng != null) {
                 BlueprintEngine.NodeBehavior behavior = eng.getBehavior(source.name);
                 if (behavior != null) {
-                    behavior.execute(source, eng, editor, this);
+                    behavior.execute(source, eng, graph, this);
                 }
             }
 
@@ -97,5 +97,13 @@ public class BlueprintContext {
         if (type == String.class) return (V) v.toString();
 
         return fallback;
+    }
+
+    /**
+     * Marker interface so {@link BlueprintContext} can reach back to the engine
+     * without a hard dependency on the editor or any specific graph subclass.
+     */
+    public interface EngineAwareGraph {
+        BlueprintEngine getEngine();
     }
 }

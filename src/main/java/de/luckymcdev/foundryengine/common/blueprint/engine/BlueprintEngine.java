@@ -1,12 +1,7 @@
-package de.luckymcdev.foundryengine.client.imgui.imnodes.blueprint;
+package de.luckymcdev.foundryengine.common.blueprint.engine;
 
 import com.mojang.logging.LogUtils;
-import de.luckymcdev.foundryengine.client.imgui.imnodes.Node;
-import de.luckymcdev.foundryengine.client.imgui.imnodes.NodeBuilder;
-import de.luckymcdev.foundryengine.client.imgui.imnodes.NodeEditorInstance;
-import de.luckymcdev.foundryengine.client.imgui.imnodes.pin.NodePin;
-import de.luckymcdev.foundryengine.client.imgui.imnodes.pin.NodePinInfo;
-import de.luckymcdev.foundryengine.client.imgui.imnodes.pin.NodePinType;
+import de.luckymcdev.foundryengine.common.blueprint.graph.*;
 import net.minecraft.network.chat.Component;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.Nullable;
@@ -20,11 +15,6 @@ import java.util.function.Supplier;
  */
 public class BlueprintEngine {
     private static final Logger LOGGER = LogUtils.getLogger();
-
-    public void executeGraph(NodeEditorInstance<?> editor) {
-        executeEvent("BeginPlay", editor);
-    }
-
     public final NodePinType<Void> execType = BlueprintTypes.EXEC;
     public final NodePinType<Boolean> boolType = BlueprintTypes.BOOL;
     public final NodePinType<Integer> intType = BlueprintTypes.INT;
@@ -54,9 +44,9 @@ public class BlueprintEngine {
         return behaviors.get(nodeName);
     }
 
-    public Node createNode(NodeTemplate template) {
+    public BlueprintNode createNode(NodeTemplate template) {
         List<NodePin> pins = template.pins().get();
-        Node node = new Node(template.name(), template.category(), pins);
+        BlueprintNode node = new BlueprintNode(template.name(), template.category(), pins);
         for (var pin : node.inputPins) {
             Object def = template.pinDefaults().get(pin.pin.label());
             if (def != null) pin.defaultValue = def;
@@ -68,31 +58,35 @@ public class BlueprintEngine {
         return src.pin.type().isCompatibleWith(dst.pin.type());
     }
 
-    public void executeEvent(String eventName, NodeEditorInstance<?> editor) {
-        executeEvent(eventName, editor, Collections.emptyMap());
+    public void executeGraph(BlueprintGraph graph) {
+        executeEvent("BeginPlay", graph);
     }
 
-    public void executeEvent(String eventName, NodeEditorInstance<?> editor, Map<String, Object> payload) {
-        for (Node node : editor.nodes.values()) {
+    public void executeEvent(String eventName, BlueprintGraph graph) {
+        executeEvent(eventName, graph, Collections.emptyMap());
+    }
+
+    public void executeEvent(String eventName, BlueprintGraph graph, Map<String, Object> payload) {
+        for (BlueprintNode node : graph.nodes.values()) {
             if (node.name.equals(eventName)) {
-                BlueprintContext ctx = new BlueprintContext(editor);
+                BlueprintContext ctx = new BlueprintContext(graph);
                 payload.forEach(ctx::setVar);
-                executeNext(node, editor, ctx);
+                executeNext(node, graph, ctx);
             }
         }
     }
 
-    public void executeNext(Node node, NodeEditorInstance<?> editor, BlueprintContext ctx) {
+    public void executeNext(BlueprintNode node, BlueprintGraph graph, BlueprintContext ctx) {
         NodeBehavior behavior = behaviors.get(node.name);
         if (behavior != null) {
-            behavior.execute(node, this, editor, ctx);
+            behavior.execute(node, this, graph, ctx);
         }
 
         for (var pin : node.outputPins) {
             if (pin.pin.type() == execType) {
-                var connectedInput = editor.getConnectedInputPin(pin);
+                var connectedInput = graph.getConnectedInputPin(pin);
                 if (connectedInput != null) {
-                    executeNext(connectedInput.node, editor, ctx);
+                    executeNext(connectedInput.node, graph, ctx);
                     return;
                 }
             }
@@ -109,8 +103,7 @@ public class BlueprintEngine {
     private void registerEvents() {
         node(Categories.EVENTS, "BeginPlay")
                 .out(execType, "Out")
-                .behavior((n, e, ed, ctx) -> {
-                    //LOGGER.debug(">>> BeginPlay")
+                .behavior((n, e, g, ctx) -> {
                 })
                 .register();
 
@@ -127,7 +120,7 @@ public class BlueprintEngine {
                 .in(stringType, "Name").defaultValue("Name", "myVar")
                 .in(anyType, "Value")
                 .out(execType, "Out")
-                .behavior((n, e, ed, ctx) -> {
+                .behavior((n, e, g, ctx) -> {
                     String name = ctx.resolvePinAs(n.inputPin("Name"), String.class, "unnamed");
                     Object value = ctx.resolvePin(n.inputPin("Value"));
                     ctx.setVar(name, value);
@@ -136,7 +129,7 @@ public class BlueprintEngine {
         node(Categories.VARIABLES, "Get Variable")
                 .in(stringType, "Name").defaultValue("Name", "myVar")
                 .out(anyType, "Value")
-                .behavior((n, e, ed, ctx) -> {
+                .behavior((n, e, g, ctx) -> {
                     String name = ctx.resolvePinAs(n.inputPin("Name"), String.class, "");
                     n.setOutput("Value", ctx.getVar(name, Object.class));
                 }).register();
@@ -146,25 +139,25 @@ public class BlueprintEngine {
         node(Categories.INPUTS, "String")
                 .in(stringType, "Value").defaultValue("Value", "")
                 .out(stringType, "Out")
-                .behavior((n, e, ed, ctx) -> n.setOutput("Out", ctx.resolvePin(n.inputPin("Value"))))
+                .behavior((n, e, g, ctx) -> n.setOutput("Out", ctx.resolvePin(n.inputPin("Value"))))
                 .register();
 
         node(Categories.INPUTS, "Integer")
                 .in(intType, "Value").defaultValue("Value", 0)
                 .out(intType, "Out")
-                .behavior((n, e, ed, ctx) -> n.setOutput("Out", ctx.resolvePin(n.inputPin("Value"))))
+                .behavior((n, e, g, ctx) -> n.setOutput("Out", ctx.resolvePin(n.inputPin("Value"))))
                 .register();
 
         node(Categories.INPUTS, "Float")
                 .in(floatType, "Value").defaultValue("Value", 0.0f)
                 .out(floatType, "Out")
-                .behavior((n, e, ed, ctx) -> n.setOutput("Out", ctx.resolvePin(n.inputPin("Value"))))
+                .behavior((n, e, g, ctx) -> n.setOutput("Out", ctx.resolvePin(n.inputPin("Value"))))
                 .register();
 
         node(Categories.INPUTS, "Boolean")
                 .in(boolType, "Value").defaultValue("Value", false)
                 .out(boolType, "Out")
-                .behavior((n, e, ed, ctx) -> n.setOutput("Out", ctx.resolvePin(n.inputPin("Value"))))
+                .behavior((n, e, g, ctx) -> n.setOutput("Out", ctx.resolvePin(n.inputPin("Value"))))
                 .register();
     }
 
@@ -173,7 +166,7 @@ public class BlueprintEngine {
                 .in(execType, "In")
                 .in(stringType, "String").defaultValue("String", "Hello")
                 .out(execType, "Out")
-                .behavior((n, e, ed, ctx) -> {
+                .behavior((n, e, g, ctx) -> {
                     String text = ctx.resolvePinAs(n.inputPin("String"), String.class, "");
                     LOGGER.info("[Blueprint] {}", text);
                 }).register();
@@ -183,7 +176,7 @@ public class BlueprintEngine {
                 .in(stringType, "Target").defaultValue("Target", "Player")
                 .in(stringType, "Message").defaultValue("Message", "Notification")
                 .out(execType, "Out")
-                .behavior((n, e, ed, ctx) -> {
+                .behavior((n, e, g, ctx) -> {
                     String target = ctx.resolvePinAs(n.inputPin("Target"), String.class, "Unknown");
                     String msg = ctx.resolvePinAs(n.inputPin("Message"), String.class, "");
                     var server = ServerLifecycleHooks.getCurrentServer();
@@ -194,19 +187,26 @@ public class BlueprintEngine {
                 }).register();
     }
 
+    @FunctionalInterface
+    public interface NodeBehavior {
+        void execute(BlueprintNode node, BlueprintEngine engine, BlueprintGraph graph, BlueprintContext ctx);
+    }
+
     public static final class Categories {
         public static final String EVENTS = "Events";
         public static final String VARIABLES = "Variables";
         public static final String UTILS = "Utilities";
-        public static final String INPUTS = "Inputs"; // Added category for literal values
+        public static final String INPUTS = "Inputs";
+
+        private Categories() {
+        }
     }
 
-    @FunctionalInterface
-    public interface NodeBehavior {
-        void execute(Node node, BlueprintEngine engine, NodeEditorInstance<?> editor, BlueprintContext ctx);
-    }
-
-    public record NodeTemplate(String category, String name, Supplier<List<NodePin>> pins,
-                               Map<String, Object> pinDefaults) {
+    public record NodeTemplate(
+            String category,
+            String name,
+            Supplier<List<NodePin>> pins,
+            Map<String, Object> pinDefaults
+    ) {
     }
 }
