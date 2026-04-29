@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.api.event;
 
 import de.luckymcdev.foundryengine.api.event.registry.RegistryEvent;
+import de.luckymcdev.foundryengine.common.Common;
 import net.neoforged.neoforge.event.VanillaGameEvent;
 
 public class BundleEvents {
@@ -16,11 +17,14 @@ public class BundleEvents {
     }
 
     public static void _postRegistry(RegistryEvent event) {
+        // Fire script-side listeners first, then blueprint equivalents.
         LOAD.post(event);
+        Common.getBlueprintManager().executeCommonEvent("Registry");
     }
 
     public static void _postVanillaGame(VanillaGameEvent event) {
         VANILLA_GAME.post(event);
+        Common.getBlueprintManager().executeCommonEvent("Vanilla Game");
     }
 
     public static void _clear() {

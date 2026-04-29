@@ -1,5 +1,6 @@
 package de.luckymcdev.foundryengine.api.event;
 
+import de.luckymcdev.foundryengine.common.Common;
 import net.neoforged.neoforge.event.server.*;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
@@ -37,26 +38,32 @@ public class ServerEvents {
 
     public static void _postAboutToStart(ServerAboutToStartEvent event) {
         ABOUT_TO_START.post(event);
+        Common.getBlueprintManager().executeCommonEvent("Server About To Start");
     }
 
     public static void _postStarted(ServerStartedEvent event) {
         STARTED.post(event);
+        Common.getBlueprintManager().executeCommonEvent("Server Started");
     }
 
     public static void _postStarting(ServerStartingEvent event) {
         STARTING.post(event);
+        Common.getBlueprintManager().executeCommonEvent("Server Starting");
     }
 
     public static void _postStopped(ServerStoppedEvent event) {
         STOPPED.post(event);
+        Common.getBlueprintManager().executeCommonEvent("Server Stopped");
     }
 
     public static void _postStopping(ServerStoppingEvent event) {
         STOPPING.post(event);
+        Common.getBlueprintManager().executeCommonEvent("Server Stopping");
     }
 
     public static void _postTick(ServerTickEvent.Post event) {
         TICK.post(event);
+        Common.getBlueprintManager().executeCommonEvent("Server Tick");
     }
 
     public static void _clear() {

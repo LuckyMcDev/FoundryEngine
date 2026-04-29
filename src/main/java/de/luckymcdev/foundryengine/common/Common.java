@@ -3,6 +3,7 @@ package de.luckymcdev.foundryengine.common;
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.FoundryEngineMod;
 import de.luckymcdev.foundryengine.client.Client;
+import de.luckymcdev.foundryengine.common.blueprint.BlueprintManager;
 import de.luckymcdev.foundryengine.common.bundle.BundleManager;
 import de.luckymcdev.foundryengine.common.exceptions.UtilityClassException;
 import de.luckymcdev.foundryengine.common.game.behavior.GameBehaviorManager;
@@ -64,6 +65,7 @@ public abstract class Common {
     private static final GameStageHandler GAME_STAGE_HANDLER = new GameStageHandler();
     private static final NetworkManager NETWORK_MANAGER = new NetworkManager();
     private static final SceneManager SCENE_MANAGER = new SceneManager();
+    private static final BlueprintManager BLUEPRINT_MANAGER = new BlueprintManager();
 
     private Common() {
         throw new UtilityClassException();
@@ -101,6 +103,10 @@ public abstract class Common {
 
     public static SceneManager getSceneManager() {
         return SCENE_MANAGER;
+    }
+
+    public static BlueprintManager getBlueprintManager() {
+        return BLUEPRINT_MANAGER;
     }
 
     public static @Nullable RecipeManager getRecipeManager() {

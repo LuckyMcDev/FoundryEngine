@@ -45,6 +45,7 @@ public class BundleManager implements ResourceManagerReloadListener {
     public void register(Bundle bundle) {
         bundles.register(bundle.info().id(), bundle);
         bundle.loadCommon(scriptLoader);
+        Common.getBlueprintManager().loadBlueprintsForBundle(bundle);
         LOGGER.debug("Registered Bundle: {} with Info: {}", bundle.info().id(), bundle.info());
     }
 
@@ -74,6 +75,7 @@ public class BundleManager implements ResourceManagerReloadListener {
     public void remove(Bundle bundle) {
         bundles.remove(bundle.info().id());
         unloadBundle(bundle);
+        Common.getBlueprintManager().unloadBlueprintsForBundle(bundle);
     }
 
     /**

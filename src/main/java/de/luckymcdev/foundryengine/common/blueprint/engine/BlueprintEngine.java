@@ -15,6 +15,8 @@ import java.util.function.Supplier;
  */
 public class BlueprintEngine {
     private static final Logger LOGGER = LogUtils.getLogger();
+
+    // Type Definitions
     public final NodePinType<Void> execType = BlueprintTypes.EXEC;
     public final NodePinType<Boolean> boolType = BlueprintTypes.BOOL;
     public final NodePinType<Integer> intType = BlueprintTypes.INT;
@@ -80,15 +82,23 @@ public class BlueprintEngine {
         NodeBehavior behavior = behaviors.get(node.name);
         if (behavior != null) {
             behavior.execute(node, this, graph, ctx);
+            if (node.category.equals(Categories.LOGIC)) return;
         }
 
         for (var pin : node.outputPins) {
             if (pin.pin.type() == execType) {
-                var connectedInput = graph.getConnectedInputPin(pin);
-                if (connectedInput != null) {
-                    executeNext(connectedInput.node, graph, ctx);
-                    return;
-                }
+                executePin(node, pin.pin.label(), graph, ctx);
+                return;
+            }
+        }
+    }
+
+    public void executePin(BlueprintNode node, String pinLabel, BlueprintGraph graph, BlueprintContext ctx) {
+        var pin = node.outputPin(pinLabel);
+        if (pin != null) {
+            var connectedInput = graph.getConnectedInputPin(pin);
+            if (connectedInput != null) {
+                executeNext(connectedInput.node, graph, ctx);
             }
         }
     }
@@ -97,21 +107,72 @@ public class BlueprintEngine {
         registerEvents();
         registerVariableNodes();
         registerInputNodes();
+        registerLogicNodes();
+        registerMathNodes();
         registerUtilityNodes();
     }
 
     private void registerEvents() {
-        node(Categories.EVENTS, "BeginPlay")
-                .out(execType, "Out")
-                .behavior((n, e, g, ctx) -> {
-                })
-                .register();
+        // Core and Bundle Events
+        node(Categories.EVENTS, "BeginPlay").out(execType, "Out").register();
+        node(Categories.EVENTS, "Registry").out(execType, "Out").register();
+        node(Categories.EVENTS, "Vanilla Game").out(execType, "Out").register();
 
+        // Client Events
         node(Categories.EVENTS, "Client Tick").out(execType, "Out").register();
-        node(Categories.EVENTS, "Render GUI").out(execType, "Out").register();
+        node(Categories.EVENTS, "Client Stopped").out(execType, "Out").register();
+        node(Categories.EVENTS, "Client Stopping").out(execType, "Out").register();
         node(Categories.EVENTS, "Chat Message").out(execType, "Out").register();
-        node(Categories.EVENTS, "Server Started").out(execType, "Out").register();
+        node(Categories.EVENTS, "Render GUI").out(execType, "Out").register();
+
+        // Server Events
         node(Categories.EVENTS, "Server Tick").out(execType, "Out").register();
+        node(Categories.EVENTS, "Server About To Start").out(execType, "Out").register();
+        node(Categories.EVENTS, "Server Started").out(execType, "Out").register();
+        node(Categories.EVENTS, "Server Starting").out(execType, "Out").register();
+        node(Categories.EVENTS, "Server Stopped").out(execType, "Out").register();
+        node(Categories.EVENTS, "Server Stopping").out(execType, "Out").register();
+    }
+
+    private void registerLogicNodes() {
+        node(Categories.LOGIC, "Branch")
+                .in(execType, "In")
+                .in(boolType, "Condition")
+                .out(execType, "True")
+                .out(execType, "False")
+                .behavior((n, e, g, ctx) -> {
+                    boolean cond = ctx.resolvePinAs(n.inputPin("Condition"), Boolean.class, false);
+                    e.executePin(n, cond ? "True" : "False", g, ctx);
+                }).register();
+
+        node(Categories.LOGIC, "Sequence")
+                .in(execType, "In")
+                .out(execType, "Then 0")
+                .out(execType, "Then 1")
+                .behavior((n, e, g, ctx) -> {
+                    e.executePin(n, "Then 0", g, ctx);
+                    e.executePin(n, "Then 1", g, ctx);
+                }).register();
+    }
+
+    private void registerMathNodes() {
+        node(Categories.MATH, "Int Add")
+                .in(intType, "A").in(intType, "B")
+                .out(intType, "Result")
+                .behavior((n, e, g, ctx) -> {
+                    int a = ctx.resolvePinAs(n.inputPin("A"), Integer.class, 0);
+                    int b = ctx.resolvePinAs(n.inputPin("B"), Integer.class, 0);
+                    n.setOutput("Result", a + b);
+                }).register();
+
+        node(Categories.MATH, "Int Equals")
+                .in(intType, "A").in(intType, "B")
+                .out(boolType, "Result")
+                .behavior((n, e, g, ctx) -> {
+                    int a = ctx.resolvePinAs(n.inputPin("A"), Integer.class, 0);
+                    int b = ctx.resolvePinAs(n.inputPin("B"), Integer.class, 0);
+                    n.setOutput("Result", a == b);
+                }).register();
     }
 
     private void registerVariableNodes() {
@@ -147,18 +208,6 @@ public class BlueprintEngine {
                 .out(intType, "Out")
                 .behavior((n, e, g, ctx) -> n.setOutput("Out", ctx.resolvePin(n.inputPin("Value"))))
                 .register();
-
-        node(Categories.INPUTS, "Float")
-                .in(floatType, "Value").defaultValue("Value", 0.0f)
-                .out(floatType, "Out")
-                .behavior((n, e, g, ctx) -> n.setOutput("Out", ctx.resolvePin(n.inputPin("Value"))))
-                .register();
-
-        node(Categories.INPUTS, "Boolean")
-                .in(boolType, "Value").defaultValue("Value", false)
-                .out(boolType, "Out")
-                .behavior((n, e, g, ctx) -> n.setOutput("Out", ctx.resolvePin(n.inputPin("Value"))))
-                .register();
     }
 
     private void registerUtilityNodes() {
@@ -182,8 +231,7 @@ public class BlueprintEngine {
                     var server = ServerLifecycleHooks.getCurrentServer();
                     if (server == null) return;
                     var player = server.getPlayerList().getPlayer(target);
-                    if (player == null) return;
-                    player.sendSystemMessage(Component.literal(msg));
+                    if (player != null) player.sendSystemMessage(Component.literal(msg));
                 }).register();
     }
 
@@ -197,6 +245,8 @@ public class BlueprintEngine {
         public static final String VARIABLES = "Variables";
         public static final String UTILS = "Utilities";
         public static final String INPUTS = "Inputs";
+        public static final String LOGIC = "Logic";
+        public static final String MATH = "Math";
 
         private Categories() {
         }

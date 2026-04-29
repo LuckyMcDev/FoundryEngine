@@ -19,14 +19,16 @@ import java.util.List;
  * @param scripts       the ScriptFiles data of a bundle
  * @param zipFileSystem the file system used to open a bundle if its a zip file.
  */
-public record BundleFiles(Path root, Path assets, Path data, ScriptFiles scripts, @Nullable FileSystem zipFileSystem) {
+public record BundleFiles(Path root, Path assets, Path data, ScriptFiles scripts, Path blueprints,
+                          @Nullable FileSystem zipFileSystem) {
     private static final Codec<Path> PATH_CODEC = Codec.STRING.xmap(Paths::get, Path::toString);
     public static final Codec<BundleFiles> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             PATH_CODEC.fieldOf("root").forGetter(BundleFiles::root),
             PATH_CODEC.fieldOf("assets").forGetter(BundleFiles::assets),
             PATH_CODEC.fieldOf("data").forGetter(BundleFiles::data),
-            ScriptFiles.CODEC.fieldOf("scripts").forGetter(BundleFiles::scripts)
-    ).apply(instance, (root, assets, data, scripts) -> new BundleFiles(root, assets, data, scripts, null)));
+            ScriptFiles.CODEC.fieldOf("scripts").forGetter(BundleFiles::scripts),
+            PATH_CODEC.fieldOf("blueprints").forGetter(BundleFiles::blueprints)
+    ).apply(instance, (root, assets, data, scripts, blueprints) -> new BundleFiles(root, assets, data, scripts, blueprints, null)));
 
     public static BundleFilesBuilder builder() {
         return new BundleFilesBuilder();

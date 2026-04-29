@@ -1,5 +1,6 @@
 package de.luckymcdev.foundryengine.api.event;
 
+import de.luckymcdev.foundryengine.common.Common;
 import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.client.event.lifecycle.ClientStoppedEvent;
 import net.neoforged.neoforge.client.event.lifecycle.ClientStoppingEvent;
@@ -53,18 +54,22 @@ public class ClientEvents {
 
     public static void _postTick(ClientTickEvent.Post event) {
         TICK.post(event);
+        Common.getBlueprintManager().executeCommonEvent("Client Tick");
     }
 
     public static void _postStopped(ClientStoppedEvent event) {
         STOPPED.post(event);
+        Common.getBlueprintManager().executeCommonEvent("Client Stopped");
     }
 
     public static void _postStopping(ClientStoppingEvent event) {
         STOPPING.post(event);
+        Common.getBlueprintManager().executeCommonEvent("Client Stopping");
     }
 
     public static void _postChat(ClientChatEvent event) {
         CHAT.post(event);
+        Common.getBlueprintManager().executeCommonEvent("Chat Message");
     }
 
     public static void _postKeyMappings(RegisterKeyMappingsEvent event) {
@@ -73,6 +78,7 @@ public class ClientEvents {
 
     public static void _postRenderGui(RenderGuiEvent.Post event) {
         RENDER_GUI.post(event);
+        Common.getBlueprintManager().executeCommonEvent("Render GUI");
     }
 
     public static void _postRenderGuiLayer(RenderGuiLayerEvent.Post event) {
