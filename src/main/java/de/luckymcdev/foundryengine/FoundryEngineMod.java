@@ -12,6 +12,7 @@ import de.luckymcdev.foundryengine.common.cutscene.network.ScreenEffectPacket;
 import de.luckymcdev.foundryengine.common.cutscene.util.ServerCutsceneManager;
 import de.luckymcdev.foundryengine.common.cutscene.util.ServerScreenEffectManager;
 import de.luckymcdev.foundryengine.common.log.EngineLogAppender;
+import de.luckymcdev.foundryengine.common.network.BundleHashPacket;
 import de.luckymcdev.foundryengine.common.network.TestPacket;
 import de.luckymcdev.foundryengine.common.network.packets.ServerBoundChangeWeatherPacket;
 import de.luckymcdev.foundryengine.common.network.packets.ServerBoundSetTimePacket;
@@ -136,8 +137,7 @@ public class FoundryEngineMod {
         Common.getNetworkManager().register(ServerBoundSaveFilePacket.DEFINITION);
         Common.getNetworkManager().register(ServerBoundTeleportPacket.DEFINITION);
         Common.getNetworkManager().register(ServerBoundSpawnEntityPacket.DEFINITION);
-
-        // Cutscenes networking
+        Common.getNetworkManager().register(BundleHashPacket.DEFINITION);
         Common.getNetworkManager().register(CutscenePacket.DEFINITION);
         Common.getNetworkManager().register(ScreenEffectPacket.DEFINITION);
     }

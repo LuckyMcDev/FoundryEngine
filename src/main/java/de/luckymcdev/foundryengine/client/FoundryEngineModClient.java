@@ -26,6 +26,8 @@ import de.luckymcdev.foundryengine.client.icons.ScreenIconExporter;
 import de.luckymcdev.foundryengine.client.render.entity.EngineEntityRenderers;
 import de.luckymcdev.foundryengine.client.util.key.RegisterKeyBindingEvent;
 import de.luckymcdev.foundryengine.common.Common;
+import de.luckymcdev.foundryengine.common.network.BundleHashPacket;
+import de.luckymcdev.foundryengine.common.util.FolderHash;
 import de.luckymcdev.foundryengine.config.ClientConfig;
 import de.luckymcdev.foundryengine.config.Config;
 import net.minecraft.client.Minecraft;
@@ -35,6 +37,7 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.*;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.common.NeoForge;
 import org.slf4j.Logger;
 
@@ -58,6 +61,7 @@ public class FoundryEngineModClient {
         BUS.addListener(this::onClientTick);
         BUS.addListener(this::onRenderLevel);
         BUS.addListener(this::onRegisterCommands);
+        BUS.addListener(this::onLoggingIn);
 
         Config.registerClient(modContainer);
     }
@@ -76,6 +80,15 @@ public class FoundryEngineModClient {
             BUS.post(new RegisterRenderingStuffEvent(Client.getResourceManager()));
             BUS.post(new RegisterPanelEvent());
         });
+    }
+
+    private void onLoggingIn(ClientPlayerNetworkEvent.LoggingIn event) {
+        try {
+            String hashcode = FolderHash.hashFolder(Common.BUNDLES);
+            ClientPacketDistributor.sendToServer(new BundleHashPacket(hashcode));
+        } catch (Exception e) {
+            LOGGER.error("Failed to hash bundles folder", e);
+        }
     }
 
     private void onRegisterKeyMapping(RegisterKeyMappingsEvent event) {
