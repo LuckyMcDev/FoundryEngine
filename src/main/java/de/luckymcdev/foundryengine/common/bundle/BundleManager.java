@@ -107,8 +107,8 @@ public class BundleManager implements ResourceManagerReloadListener {
     public void reload() {
         LOGGER.info("Reloading FoundryEngine Bundles...");
 
-        ClientEvents._clear();
-        ServerEvents._clear();
+        ClientEvents.Internal.clear();
+        ServerEvents.Internal.clear();
         //BundleEvents._clear(); // I Guess this doesnt have to be cleared? bc its a registry
 
         unloadAllBundles();

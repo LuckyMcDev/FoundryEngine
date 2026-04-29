@@ -81,30 +81,30 @@ public class FoundryEngineMod {
         BUS.addListener(Common.getSceneManager()::entityJoinLevel);
         BUS.addListener(Common.getSceneManager()::entityLeaveLevel);
 
-        BUS.addListener(BundleEvents::_postVanillaGame);
+        BUS.addListener(BundleEvents.Internal::postVanillaGame);
 
-        BUS.addListener(ServerEvents::_postAboutToStart);
-        BUS.addListener(ServerEvents::_postStarting);
-        BUS.addListener(ServerEvents::_postStarted);
-        BUS.addListener(ServerEvents::_postStopping);
-        BUS.addListener(ServerEvents::_postStopped);
-        BUS.addListener(ServerEvents::_postTick);
+        BUS.addListener(ServerEvents.Internal::postAboutToStart);
+        BUS.addListener(ServerEvents.Internal::postStarting);
+        BUS.addListener(ServerEvents.Internal::postStarted);
+        BUS.addListener(ServerEvents.Internal::postStopping);
+        BUS.addListener(ServerEvents.Internal::postStopped);
+        BUS.addListener(ServerEvents.Internal::postTick);
 
-        // Cutscenes (server-side tick logic)
+        BUS.addListener(ClientEvents.Internal::postTick);
+        BUS.addListener(ClientEvents.Internal::postStopped);
+        BUS.addListener(ClientEvents.Internal::postStopping);
+        BUS.addListener(ClientEvents.Internal::postChat);
+        BUS.addListener(ClientEvents.Internal::postRenderGui);
+        BUS.addListener(ClientEvents.Internal::postRenderGuiLayer);
+        BUS.addListener(ClientEvents.Internal::postRenderHand);
+        BUS.addListener(ClientEvents.Internal::postRenderAfterLevel);
+        modBus.addListener(ClientEvents.Internal::postKeyMappings);
+
+
         ServerEvents.tick(ev -> {
             ServerCutsceneManager.tick(ev.getServer());
             ServerScreenEffectManager.tick(ev.getServer());
         });
-
-        BUS.addListener(ClientEvents::_postTick);
-        BUS.addListener(ClientEvents::_postStopped);
-        BUS.addListener(ClientEvents::_postStopping);
-        BUS.addListener(ClientEvents::_postChat);
-        BUS.addListener(ClientEvents::_postRenderGui);
-        BUS.addListener(ClientEvents::_postRenderGuiLayer);
-        BUS.addListener(ClientEvents::_postRenderHand);
-        BUS.addListener(ClientEvents::_postRenderAfterLevel);
-        modBus.addListener(ClientEvents::_postKeyMappings);
 
         Config.registerCommon(modContainer);
         Config.registerStartup(modContainer);
@@ -186,7 +186,7 @@ public class FoundryEngineMod {
             modBus.addListener((RegisterEvent ev) -> {
                 RegistryEvent registryEvent = new RegistryEvent(ev, modBus);
                 ModLoader.postEvent(registryEvent);
-                BundleEvents._postRegistry(registryEvent);
+                BundleEvents.Internal.postRegistry(registryEvent);
             });
 
             //BundleDataGenerator.runAll();

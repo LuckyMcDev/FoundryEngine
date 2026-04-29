@@ -3,6 +3,7 @@ package de.luckymcdev.foundryengine.api.event;
 import de.luckymcdev.foundryengine.api.event.registry.RegistryEvent;
 import de.luckymcdev.foundryengine.common.Common;
 import net.neoforged.neoforge.event.VanillaGameEvent;
+import org.jetbrains.annotations.ApiStatus;
 
 public class BundleEvents {
     private static final EventGroup<RegistryEvent> LOAD = new EventGroup<>();
@@ -16,19 +17,21 @@ public class BundleEvents {
         VANILLA_GAME.add(callback);
     }
 
-    public static void _postRegistry(RegistryEvent event) {
-        // Fire script-side listeners first, then blueprint equivalents.
-        LOAD.post(event);
-        Common.getBlueprintManager().executeCommonEvent("Registry");
-    }
+    @ApiStatus.Internal
+    public static class Internal {
+        public static void postRegistry(RegistryEvent event) {
+            LOAD.post(event);
+            Common.getBlueprintManager().executeCommonEvent("Registry");
+        }
 
-    public static void _postVanillaGame(VanillaGameEvent event) {
-        VANILLA_GAME.post(event);
-        Common.getBlueprintManager().executeCommonEvent("Vanilla Game");
-    }
+        public static void postVanillaGame(VanillaGameEvent event) {
+            VANILLA_GAME.post(event);
+            Common.getBlueprintManager().executeCommonEvent("Vanilla Game");
+        }
 
-    public static void _clear() {
-        LOAD.clear();
-        VANILLA_GAME.clear();
+        public static void clear() {
+            LOAD.clear();
+            VANILLA_GAME.clear();
+        }
     }
 }

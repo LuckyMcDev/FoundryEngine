@@ -4,6 +4,7 @@ import de.luckymcdev.foundryengine.common.Common;
 import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.client.event.lifecycle.ClientStoppedEvent;
 import net.neoforged.neoforge.client.event.lifecycle.ClientStoppingEvent;
+import org.jetbrains.annotations.ApiStatus;
 
 public class ClientEvents {
     private static final EventGroup<ClientTickEvent.Post> TICK = new EventGroup<>();
@@ -52,56 +53,59 @@ public class ClientEvents {
         RENDER_AFTER_LEVEL.add(callback);
     }
 
-    public static void _postTick(ClientTickEvent.Post event) {
-        TICK.post(event);
-        Common.getBlueprintManager().executeCommonEvent("Client Tick");
-    }
+    @ApiStatus.Internal
+    public static class Internal {
+        public static void postTick(ClientTickEvent.Post event) {
+            TICK.post(event);
+            Common.getBlueprintManager().executeCommonEvent("Client Tick");
+        }
 
-    public static void _postStopped(ClientStoppedEvent event) {
-        STOPPED.post(event);
-        Common.getBlueprintManager().executeCommonEvent("Client Stopped");
-    }
+        public static void postStopped(ClientStoppedEvent event) {
+            STOPPED.post(event);
+            Common.getBlueprintManager().executeCommonEvent("Client Stopped");
+        }
 
-    public static void _postStopping(ClientStoppingEvent event) {
-        STOPPING.post(event);
-        Common.getBlueprintManager().executeCommonEvent("Client Stopping");
-    }
+        public static void postStopping(ClientStoppingEvent event) {
+            STOPPING.post(event);
+            Common.getBlueprintManager().executeCommonEvent("Client Stopping");
+        }
 
-    public static void _postChat(ClientChatEvent event) {
-        CHAT.post(event);
-        Common.getBlueprintManager().executeCommonEvent("Chat Message");
-    }
+        public static void postChat(ClientChatEvent event) {
+            CHAT.post(event);
+            Common.getBlueprintManager().executeCommonEvent("Chat Message");
+        }
 
-    public static void _postKeyMappings(RegisterKeyMappingsEvent event) {
-        KEY_MAPPINGS.post(event);
-    }
+        public static void postKeyMappings(RegisterKeyMappingsEvent event) {
+            KEY_MAPPINGS.post(event);
+        }
 
-    public static void _postRenderGui(RenderGuiEvent.Post event) {
-        RENDER_GUI.post(event);
-        Common.getBlueprintManager().executeCommonEvent("Render GUI");
-    }
+        public static void postRenderGui(RenderGuiEvent.Post event) {
+            RENDER_GUI.post(event);
+            Common.getBlueprintManager().executeCommonEvent("Render GUI");
+        }
 
-    public static void _postRenderGuiLayer(RenderGuiLayerEvent.Post event) {
-        RENDER_GUI_LAYER.post(event);
-    }
+        public static void postRenderGuiLayer(RenderGuiLayerEvent.Post event) {
+            RENDER_GUI_LAYER.post(event);
+        }
 
-    public static void _postRenderHand(RenderHandEvent event) {
-        RENDER_HAND.post(event);
-    }
+        public static void postRenderHand(RenderHandEvent event) {
+            RENDER_HAND.post(event);
+        }
 
-    public static void _postRenderAfterLevel(RenderLevelStageEvent.AfterLevel event) {
-        RENDER_AFTER_LEVEL.post(event);
-    }
+        public static void postRenderAfterLevel(RenderLevelStageEvent.AfterLevel event) {
+            RENDER_AFTER_LEVEL.post(event);
+        }
 
-    public static void _clear() {
-        TICK.clear();
-        STOPPED.clear();
-        STOPPING.clear();
-        CHAT.clear();
-        KEY_MAPPINGS.clear();
-        RENDER_GUI.clear();
-        RENDER_GUI_LAYER.clear();
-        RENDER_HAND.clear();
-        RENDER_AFTER_LEVEL.clear();
+        public static void clear() {
+            TICK.clear();
+            STOPPED.clear();
+            STOPPING.clear();
+            CHAT.clear();
+            KEY_MAPPINGS.clear();
+            RENDER_GUI.clear();
+            RENDER_GUI_LAYER.clear();
+            RENDER_HAND.clear();
+            RENDER_AFTER_LEVEL.clear();
+        }
     }
 }
