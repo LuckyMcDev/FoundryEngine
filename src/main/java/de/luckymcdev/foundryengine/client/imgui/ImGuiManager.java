@@ -109,10 +109,10 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
         io.addConfigFlags(ImGuiConfigFlags.DockingEnable);
         io.addConfigFlags(ImGuiConfigFlags.DpiEnableScaleFonts);
         io.addConfigFlags(ImGuiConfigFlags.DpiEnableScaleViewports);
-        io.addConfigFlags(ImGuiConfigFlags.NavEnableKeyboard);
+        //io.addConfigFlags(ImGuiConfigFlags.NavEnableKeyboard); // this sometimes causes issues. So for now its disabled.
         io.getFonts().setFreeTypeRenderer(true);
         io.setConfigDockingWithShift(true);
-        io.setConfigWindowsMoveFromTitleBarOnly(true);
+        io.setConfigWindowsMoveFromTitleBarOnly(false);
         io.setConfigMacOSXBehaviors(InputQuirks.ON_OSX);
 
         imGuiImplGl3.init("#version 410 core");
