@@ -13,6 +13,8 @@ import de.luckymcdev.foundryengine.client.debug.screen.GameStagesDebugEntry;
 import de.luckymcdev.foundryengine.client.editor.builtin.MainEditor;
 import de.luckymcdev.foundryengine.client.editor.builtin.TestPanel;
 import de.luckymcdev.foundryengine.client.editor.builtin.blueprint.BlueprintsPanel;
+import de.luckymcdev.foundryengine.client.editor.builtin.cutscene.CutscenePanel;
+import de.luckymcdev.foundryengine.client.editor.builtin.cutscene.CutsceneTimelinePanel;
 import de.luckymcdev.foundryengine.client.editor.builtin.explorer.FileExplorerPanel;
 import de.luckymcdev.foundryengine.client.editor.builtin.explorer.ResourceExplorerPanel;
 import de.luckymcdev.foundryengine.client.editor.builtin.scene.ScenePanel;
@@ -134,6 +136,7 @@ public class FoundryEngineModClient {
         event.register(EffectPanel.INSTANCE);
         event.register(BlueprintsPanel.INSTANCE);
         event.register(CutscenePanel.INSTANCE);
+        event.register(CutsceneTimelinePanel.INSTANCE);
     }
 
     private void addClientReloadListener(AddClientReloadListenersEvent event) {
@@ -150,7 +153,6 @@ public class FoundryEngineModClient {
         Client.getEditorManager().handleTick();
 
         ClientCutsceneManager.clientTick();
-        ClientScreenEffectManager.clientTick();
         CutsceneEditor.clientTick();
 
         if (ClientConfig.AUTO_EXPORT.get() && !hasIconAutoExported && Minecraft.getInstance().level != null) {

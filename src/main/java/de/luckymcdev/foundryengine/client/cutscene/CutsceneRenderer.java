@@ -27,6 +27,9 @@ public class CutsceneRenderer {
             new Vec3(ENDPOINT_DIST, -ENDPOINT_H, -ENDPOINT_W),
             new Vec3(ENDPOINT_DIST, -ENDPOINT_H, ENDPOINT_W)
     );
+    private static final List<Vec3> NODE_RELATIVE_POINTS = ENDPOINT_RELATIVE_POINTS.stream()
+            .map(v -> v.scale(0.55))
+            .toList();
     private static final double POINT_SIZE = 0.05;
     public static BezierPoint storedPoint;
     public static double storedDistance;
@@ -82,8 +85,7 @@ public class CutsceneRenderer {
                 for (Cutscene cutscene : cutscenes) {
                     if (cutscene.path == storedPoint.getPath()) {
                         Vec2 playerRot = new Vec2(mc.player.getXRot(), mc.player.getYRot());
-                        if (storedPoint.isFirst()) cutscene.setInitRot(playerRot);
-                        if (storedPoint.isLast()) cutscene.setFinalRot(playerRot);
+                        cutscene.setRotationForAnchorPoint(storedPoint, playerRot);
                         break;
                     }
                 }
@@ -92,23 +94,36 @@ public class CutsceneRenderer {
     }
 
     private static void renderCutscene(Cutscene cutscene) {
-        Vec3 root = cutscene.path.getPoints().getFirst().getPos();
-        Vec3 tail = cutscene.path.getPoints().getLast().getPos();
-        int color = 0x80FF8080;
+        // Draw orientation frames at every anchor (node) so per-node rotations are visible in-editor.
+        var anchors = cutscene.path.getAnchorPoints();
+        var rots = cutscene.getAnchorRotations();
+        int count = Math.min(anchors.size(), rots.size());
 
-        renderPointsRelative(root, ENDPOINT_RELATIVE_POINTS, cutscene.getInitialRot(), color);
-        renderPointsRelative(tail, ENDPOINT_RELATIVE_POINTS, cutscene.getFinalRot(), color);
+        for (int i = 0; i < count; i++) {
+            Vec3 pos = anchors.get(i).getPos();
+            Vec2 rot = rots.get(i);
+
+            boolean endpoint = (i == 0 || i == count - 1);
+            int base = cutscene.getColorArgb();
+            int color;
+            if (i == 0) color = (0xA0000000) | (base & 0x00FFFFFF);
+            else if (i == count - 1) color = (0xA0000000) | (base & 0x00FFFFFF);
+            else color = (0x70000000) | (base & 0x00FFFFFF);
+
+            renderPointsRelative(pos, endpoint ? ENDPOINT_RELATIVE_POINTS : NODE_RELATIVE_POINTS, rot, color);
+        }
 
         renderBezierPath(cutscene);
     }
 
     private static void renderBezierPath(Cutscene cutscene) {
+        int lineColor = cutscene.getColorArgb();
         for (BezierSpline spline : cutscene.path.splines) {
             double delta = 0.01;
             for (double d = 0.00; d < 1; d += delta) {
                 Vec3 pos1 = spline.lerp(d);
                 Vec3 pos2 = spline.lerp(d + delta);
-                Gizmos.line(pos1, pos2, 0xFFB3FFFF, 5);
+                Gizmos.line(pos1, pos2, lineColor, 5);
             }
         }
 

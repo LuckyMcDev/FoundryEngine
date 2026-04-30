@@ -10,6 +10,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
@@ -87,6 +88,9 @@ public class CutsceneEditor {
         path.splines.addLast(newSpline);
         path.updateLUT();
 
+        // New node gets the player's current rotation by default.
+        cutscene.insertAnchorRotationAtEnd(new Vec2(mc.player.getXRot(), mc.player.getYRot()));
+
         ClientPacketDistributor.sendToServer(new CutscenePacket(toNbt()));
     }
 
@@ -102,6 +106,9 @@ public class CutsceneEditor {
         path.splines.addFirst(newSpline);
         path.updateLUT();
 
+        // New node gets the player's current rotation by default.
+        cutscene.insertAnchorRotationAtStart(new Vec2(mc.player.getXRot(), mc.player.getYRot()));
+
         ClientPacketDistributor.sendToServer(new CutscenePacket(toNbt()));
     }
 
@@ -114,6 +121,7 @@ public class CutsceneEditor {
         }
         BezierPoint lastPoint = path.getPoints().getLast();
         path.removePoint(lastPoint);
+        cutscene.removeAnchorRotationAtEnd();
         ClientPacketDistributor.sendToServer(new CutscenePacket(toNbt()));
         return false;
     }
@@ -127,6 +135,7 @@ public class CutsceneEditor {
         }
         BezierPoint firstPoint = path.getPoints().getFirst();
         path.removePoint(firstPoint);
+        cutscene.removeAnchorRotationAtStart();
         ClientPacketDistributor.sendToServer(new CutscenePacket(toNbt()));
         return false;
     }

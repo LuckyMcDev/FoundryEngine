@@ -122,6 +122,36 @@ public class BezierPath {
     }
 
     /**
+     * Returns the approximate arc-length distance (in blocks) along the path at the given time parameter (0..1)
+     * of {@link #lerp(double)}. This is derived from the same LUT used for constant-speed motion.
+     */
+    public double getDistanceAtTime(double time) {
+        if (!lutValid) updateLUT();
+
+        if (time <= 0.0) return 0.0;
+        if (time >= 1.0) return lutDistances[LUT_RESOLUTION - 1];
+
+        double pos = time * (LUT_RESOLUTION - 1);
+        int idx = (int) Math.floor(pos);
+        double frac = pos - idx;
+
+        if (idx >= LUT_RESOLUTION - 1) return lutDistances[LUT_RESOLUTION - 1];
+        double a = lutDistances[idx];
+        double b = lutDistances[idx + 1];
+        return a + (b - a) * frac;
+    }
+
+    /**
+     * Returns the normalized arc-length distance (0..1) along the path at the given time parameter (0..1)
+     * of {@link #lerp(double)}.
+     */
+    public double getNormalizedDistanceAtTime(double time) {
+        double total = getTotalLength();
+        if (total < DISTANCE_EPSILON) return time;
+        return getDistanceAtTime(time) / total;
+    }
+
+    /**
      * Linear interpolation across all splines using time parameter t (0-1).
      */
     private Vec3 lerp(double t) {
@@ -162,6 +192,36 @@ public class BezierPath {
             }
         }
         return send;
+    }
+
+    /**
+     * Returns all non-tangent ("node") points in order from start to end.
+     */
+    public ArrayList<BezierPoint> getAnchorPoints() {
+        ArrayList<BezierPoint> anchors = new ArrayList<>();
+
+        if (this.splines.isEmpty()) return anchors;
+
+        BezierSpline first = this.splines.getFirst();
+        anchors.add(first.v1);
+
+        if (!first.isSinglePoint()) {
+            for (BezierSpline spline : this.splines) {
+                anchors.add(spline.v2);
+            }
+        }
+
+        return anchors;
+    }
+
+    /**
+     * Returns the number of non-tangent ("node") points in this path.
+     */
+    public int getAnchorPointCount() {
+        if (this.splines.isEmpty()) return 0;
+        BezierSpline first = this.splines.getFirst();
+        if (first.isSinglePoint()) return 1;
+        return this.splines.size() + 1;
     }
 
     /**

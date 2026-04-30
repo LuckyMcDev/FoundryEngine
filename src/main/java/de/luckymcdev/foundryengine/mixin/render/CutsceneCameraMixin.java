@@ -27,7 +27,7 @@ public abstract class CutsceneCameraMixin {
 
     @Inject(method = "isDetached", at = @At("HEAD"), cancellable = true)
     private void engine$detachCameraDuringCutscene(CallbackInfoReturnable<Boolean> cir) {
-        if (!ClientCutsceneManager.inCutscene()) return;
+        if (ClientCutsceneManager.isCameraOverrideDisabled()) return;
         var player = Minecraft.getInstance().player;
         if (player == null) return;
 
@@ -39,7 +39,7 @@ public abstract class CutsceneCameraMixin {
 
     @Inject(method = "setPosition(Lnet/minecraft/world/phys/Vec3;)V", at = @At("TAIL"))
     private void engine$overridePosition(Vec3 ignored, CallbackInfo ci) {
-        if (!ClientCutsceneManager.inCutscene()) return;
+        if (ClientCutsceneManager.isCameraOverrideDisabled()) return;
 
         Vec3 newPos = ClientCutsceneManager.pos;
         var newRot = ClientCutsceneManager.rot;
@@ -49,4 +49,3 @@ public abstract class CutsceneCameraMixin {
         this.setRotation(newRot.y, newRot.x);
     }
 }
-

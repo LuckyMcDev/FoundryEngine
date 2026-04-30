@@ -10,8 +10,6 @@ import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.cutscene.CutsceneItems;
 import de.luckymcdev.foundryengine.common.cutscene.network.CutscenePacket;
 import de.luckymcdev.foundryengine.common.cutscene.network.ScreenEffectPacket;
-import de.luckymcdev.foundryengine.common.cutscene.util.ServerCutsceneManager;
-import de.luckymcdev.foundryengine.common.cutscene.util.ServerScreenEffectManager;
 import de.luckymcdev.foundryengine.common.log.EngineLogAppender;
 import de.luckymcdev.foundryengine.common.network.BundleHashPacket;
 import de.luckymcdev.foundryengine.common.network.TestPacket;
@@ -106,8 +104,6 @@ public class FoundryEngineMod {
 
 
         ServerEvents.tick(ev -> {
-            ServerCutsceneManager.tick(ev.getServer());
-            ServerScreenEffectManager.tick(ev.getServer());
         });
 
         Config.registerCommon(modContainer);

@@ -28,6 +28,9 @@ public class ClientCutsceneManager {
     public static Vec3 pos = Vec3.ZERO;
     public static Vec2 rot = new Vec2(0, 0);
     private static boolean requestedSync = false;
+    private static boolean previewActive = false;
+    private static Cutscene previewCutscene = null;
+    private static float previewT = 0f;
 
     public static void clientTick() {
         Minecraft mc = Minecraft.getInstance();
@@ -36,6 +39,7 @@ public class ClientCutsceneManager {
             requestedSync = false;
             currentCutscene = null;
             cutsceneQueue.clear();
+            clearPreview();
             return;
         }
 
@@ -47,9 +51,32 @@ public class ClientCutsceneManager {
         }
     }
 
+    public static void setPreview(Cutscene cutscene, float t) {
+        if (inCutscene()) return;
+        previewActive = cutscene != null;
+        previewCutscene = cutscene;
+        previewT = net.minecraft.util.Mth.clamp(t, 0f, 1f);
+    }
+
+    public static void clearPreview() {
+        previewActive = false;
+        previewCutscene = null;
+        previewT = 0f;
+    }
+
+    public static boolean isCameraOverrideDisabled() {
+        return !inCutscene() && !previewActive;
+    }
+
     public static void renderTick() {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null || mc.player == null) return;
+
+        if (!inCutscene() && previewActive && previewCutscene != null) {
+            pos = previewCutscene.getPosAt(previewT);
+            rot = previewCutscene.getRotAt(previewT);
+            return;
+        }
 
         boolean anyQueued = currentCutscene != null || !cutsceneQueue.isEmpty();
         if (!anyQueued) return;
@@ -88,6 +115,7 @@ public class ClientCutsceneManager {
         float partial = mc.getDeltaTracker().getGameTimeDeltaPartialTick(true);
         pos = currentCutscene.getPosAt(eased, partial);
         rot = currentCutscene.getRotAt(eased);
+        currentCutscene.tickScreenEffects(t);
     }
 
     public static void handlePacket(CutscenePacket packet) {
@@ -164,11 +192,20 @@ public class ClientCutsceneManager {
                                  float holdEnd) {
     }
 
-    public record PlayingCutscene(
-            Cutscene cutscene,
-            UUID startPlayerUuid,
-            UUID endPlayerUuid
-    ) {
+    public static final class PlayingCutscene {
+        public final Cutscene cutscene;
+        public final UUID startPlayerUuid;
+        public final UUID endPlayerUuid;
+
+        private float lastEffectT = -1f;
+        private boolean[] firedEffects = null;
+
+        public PlayingCutscene(Cutscene cutscene, UUID startPlayerUuid, UUID endPlayerUuid) {
+            this.cutscene = cutscene;
+            this.startPlayerUuid = startPlayerUuid;
+            this.endPlayerUuid = endPlayerUuid;
+        }
+
         public Vec3 getPosAt(float t, float partialTick) {
             var level = Minecraft.getInstance().level;
             if (level != null) {
@@ -176,6 +213,7 @@ public class ClientCutsceneManager {
                     var p = level.getPlayerByUUID(startPlayerUuid);
                     if (p != null) {
                         cutscene.path.getPoints().getFirst().setPos(p.getEyePosition(partialTick));
+                        cutscene.setInitRot(new Vec2(p.getXRot(), p.getYRot()));
                     }
                 }
                 if (endPlayerUuid != null) {
@@ -191,6 +229,28 @@ public class ClientCutsceneManager {
 
         public Vec2 getRotAt(float t) {
             return cutscene.getRotAt(t);
+        }
+
+        public void tickScreenEffects(float rawT) {
+            var effects = cutscene.getScreenEffects();
+            if (effects.isEmpty()) return;
+
+            if (firedEffects == null || firedEffects.length != effects.size()) {
+                firedEffects = new boolean[effects.size()];
+            }
+
+            if (rawT + 1e-6f < lastEffectT) {
+                for (int i = 0; i < firedEffects.length; i++) firedEffects[i] = false;
+            }
+            lastEffectT = rawT;
+
+            for (int i = 0; i < effects.size(); i++) {
+                if (firedEffects[i]) continue;
+                Cutscene.ScreenEffectEvent ev = effects.get(i);
+                if (rawT + 1e-6f < ev.at) continue;
+                firedEffects[i] = true;
+                ClientScreenEffectManager.startEffect(ev.name, ev.introTicks, ev.holdTicks, ev.outroTicks, ev.lerpType, ev.command);
+            }
         }
     }
 }

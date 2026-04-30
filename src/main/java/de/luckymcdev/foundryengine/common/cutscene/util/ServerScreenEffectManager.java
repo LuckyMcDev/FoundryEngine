@@ -1,6 +1,5 @@
 package de.luckymcdev.foundryengine.common.cutscene.util;
 
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.GameType;
 
@@ -12,7 +11,7 @@ import java.util.Map;
 public class ServerScreenEffectManager {
     private static final HashMap<ServerPlayer, ArrayList<Integer>> playerTracker = new HashMap<>();
 
-    public static void tick(MinecraftServer server) {
+    public static void tick() {
         Iterator<Map.Entry<ServerPlayer, ArrayList<Integer>>> it = playerTracker.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<ServerPlayer, ArrayList<Integer>> entry = it.next();
