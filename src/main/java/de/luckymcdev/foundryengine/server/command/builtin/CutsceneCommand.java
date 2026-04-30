@@ -99,11 +99,12 @@ public class CutsceneCommand implements EngineCommand {
                 .then(Commands.argument("player", EntityArgument.player())
                         .executes(this::cancelCutscene)));
 
-        // play <player> <name> <length> [easing] [holdStart] [holdEnd]
+        // play <player> <name> <length> [easing] [holdStart] [holdEnd] or play <player> <name>
         var play = Commands.literal("play")
                 .then(Commands.argument("player", EntityArgument.player())
                         .then(Commands.argument("name", IdentifierArgument.id())
                                 .suggests(CUTSCENE_SUGGESTIONS)
+                                .executes(ctx -> play(ctx, false))
                                 .then(Commands.argument("length", TimeArgument.time(0))
                                         .executes(ctx -> play(ctx, false))
                                         .then(Commands.argument("easing", StringArgumentType.word())
@@ -256,7 +257,6 @@ public class CutsceneCommand implements EngineCommand {
         ServerCutsceneManager.cancelCutscene(player);
         return 1;
     }
-
     private int play(CommandContext<CommandSourceStack> ctx, boolean anchored) throws CommandSyntaxException {
         CommandSourceStack source = ctx.getSource();
         ServerLevel level = source.getLevel();
@@ -266,16 +266,21 @@ public class CutsceneCommand implements EngineCommand {
         String name = id.getPath();
 
         CutsceneSavedData data = CutsceneSavedData.get(level);
-        boolean exists = data.getCutscenes().stream().anyMatch(c -> c.getName().equals(name));
-        if (!exists) {
-            sendFailure(ctx, "No cutscene found with that name.");
+        Cutscene cutscene = data.getCutscenes().stream()
+                .filter(c -> c.getName().equals(name))
+                .findFirst()
+                .orElse(null);
+
+        if (cutscene == null) {
+            sendFailure(ctx, "No cutscene found with name: " + name);
             return 0;
         }
 
-        int length = ctx.getArgument("length", Integer.class);
-        int holdStart = getOptionalInt(ctx, "holdStart", 0);
-        int holdEnd = getOptionalInt(ctx, "holdEnd", 0);
-        String easingName = getOptionalString(ctx, "easing", LerpType.LINEAR.name());
+        int length = getOptionalInt(ctx, "length", cutscene.getDefaultLength());
+        int holdStart = getOptionalInt(ctx, "holdStart", cutscene.getDefaultHoldStart());
+        int holdEnd = getOptionalInt(ctx, "holdEnd", cutscene.getDefaultHoldEnd());
+
+        String easingName = getOptionalString(ctx, "easing", cutscene.getDefaultEasing());
         LerpType easing = LerpType.fromString(easingName);
 
         CompoundTag tag = new CompoundTag();
@@ -286,6 +291,7 @@ public class CutsceneCommand implements EngineCommand {
         tag.putInt("holdEnd", holdEnd);
 
         if (anchored) {
+            // Anchored logic remains the same
             boolean anchorStart = BoolArgumentType.getBool(ctx, "anchorStart");
             boolean anchorEnd = BoolArgumentType.getBool(ctx, "anchorEnd");
             if (anchorStart) tag.store("startPlayer", UUIDUtil.CODEC, targetPlayer.getUUID());
