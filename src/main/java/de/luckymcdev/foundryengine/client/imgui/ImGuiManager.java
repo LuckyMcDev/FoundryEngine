@@ -4,11 +4,10 @@
  */
 package de.luckymcdev.foundryengine.client.imgui;
 
+import com.mojang.blaze3d.opengl.GlDevice;
+import com.mojang.blaze3d.opengl.GlStateManager;
+import com.mojang.blaze3d.opengl.GlTexture;
 import com.mojang.blaze3d.pipeline.RenderTarget;
-import com.mojang.blaze3d.systems.CommandEncoder;
-import com.mojang.blaze3d.systems.RenderPass;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.GpuTextureView;
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.styles.ImTheme;
@@ -36,12 +35,13 @@ import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.util.Util;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL30C;
 import org.lwjgl.system.NativeResource;
 import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.OptionalDouble;
-import java.util.OptionalInt;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -82,7 +82,6 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
     private @Nullable ImFont font;
     private int dockId;
     private ImTheme currentTheme;
-    private @Nullable RenderPass currentRenderPass;
 
     public ImGuiManager() {
         //font = ImGui.getFont();
@@ -194,24 +193,14 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
             return;
         }
 
-        RenderTarget mainRenderTarget = Minecraft.getInstance().getMainRenderTarget();
-        GpuTextureView colorView = null;
-        GpuTextureView depthView = null;
-        if (mainRenderTarget.getColorTexture() != null && mainRenderTarget.getDepthTexture() != null) {
-            colorView = RenderSystem.getDevice().createTextureView(mainRenderTarget.getColorTexture());
-            depthView = RenderSystem.getDevice().createTextureView(mainRenderTarget.getDepthTexture());
-        }
+        final RenderTarget framebuffer = Minecraft.getInstance().getMainRenderTarget();
+        GlTexture colorTexture = Client.getGlColTexture();
+        GlDevice device = Client.getGlDevice();
 
-        CommandEncoder encoder = RenderSystem.getDevice().createCommandEncoder();
-        if (colorView != null && depthView != null) {
-            this.currentRenderPass = encoder.createRenderPass(
-                    () -> "ImGui Render Pass",
-                    colorView,
-                    OptionalInt.empty(),
-                    depthView,
-                    OptionalDouble.empty()
-            );
-        }
+        GlStateManager._glBindFramebuffer(
+                GL30C.GL_FRAMEBUFFER, colorTexture.getFbo(device.directStateAccess(), null)
+        );
+        GL11.glViewport(0, 0, framebuffer.width, framebuffer.height);
 
         imGuiImplGl3.newFrame();
         imGuiImplGlfw.newFrame();
@@ -232,17 +221,17 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
      */
     @Override
     public void end() {
-        if (!enabled.get() || this.currentRenderPass == null) return;
+        if (!enabled.get()) return;
         ImGui.render();
         imGuiImplGl3.renderDrawData(ImGui.getDrawData());
 
-        this.currentRenderPass.close();
-        this.currentRenderPass = null;
+        GlStateManager._glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
 
         if (ImGui.getIO().hasConfigFlags(ImGuiConfigFlags.ViewportsEnable)) {
             final long pointer = GLFW.glfwGetCurrentContext();
             ImGui.updatePlatformWindows();
             ImGui.renderPlatformWindowsDefault();
+
             GLFW.glfwMakeContextCurrent(pointer);
         }
     }

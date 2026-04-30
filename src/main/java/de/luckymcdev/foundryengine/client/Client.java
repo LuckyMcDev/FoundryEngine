@@ -1,8 +1,11 @@
 package de.luckymcdev.foundryengine.client;
 
+import com.mojang.blaze3d.opengl.GlDevice;
+import com.mojang.blaze3d.opengl.GlTexture;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.Window;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.client.editor.EditorManager;
 import de.luckymcdev.foundryengine.client.editor.MainMenu;
@@ -13,6 +16,7 @@ import de.luckymcdev.foundryengine.client.util.key.KeyBinding;
 import de.luckymcdev.foundryengine.client.util.key.KeyBindingManager;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.exceptions.EngineException;
+import de.luckymcdev.foundryengine.interfaces.EngineGpuDevice;
 import de.luckymcdev.foundryengine.interfaces.EngineMinecraft;
 import net.minecraft.client.Camera;
 import net.minecraft.client.KeyMapping;
@@ -160,6 +164,33 @@ public abstract class Client {
     public static EffectManager getEffectManager() {
         return EFFECT_MANAGER;
     }
+
+    // Rendering
+
+    public static GlDevice getGlDevice() {
+        return (GlDevice) ((EngineGpuDevice) RenderSystem.getDevice()).engine$getBackend();
+    }
+
+    public static GlTexture getGlColTexture() {
+        return getGlColTexture(getMainRenderTarget());
+    }
+
+    public static GlTexture getGlColTexture(RenderTarget target) {
+        return unwrapTexture(target.getColorTexture());
+    }
+
+    public static GlTexture getGlDepthTexture() {
+        return getGlDepthTexture(getMainRenderTarget());
+    }
+
+    public static GlTexture getGlDepthTexture(RenderTarget target) {
+        return unwrapTexture(target.getDepthTexture());
+    }
+
+    public static GlTexture unwrapTexture(Object tex) {
+        return (GlTexture) tex;
+    }
+
 
     /**
      * Returns the Content of a {@link Identifier} pointer as a String.
