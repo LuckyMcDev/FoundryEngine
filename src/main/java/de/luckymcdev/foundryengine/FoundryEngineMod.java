@@ -3,6 +3,7 @@ package de.luckymcdev.foundryengine;
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.api.event.BundleEvents;
 import de.luckymcdev.foundryengine.api.event.ClientEvents;
+import de.luckymcdev.foundryengine.api.event.CommandEvents;
 import de.luckymcdev.foundryengine.api.event.ServerEvents;
 import de.luckymcdev.foundryengine.api.event.registry.RegistryEvent;
 import de.luckymcdev.foundryengine.common.Common;
@@ -82,6 +83,9 @@ public class FoundryEngineMod {
         BUS.addListener(Common.getSceneManager()::entityLeaveLevel);
 
         BUS.addListener(BundleEvents.Internal::postVanillaGame);
+
+        BUS.addListener(CommandEvents.Internal::post);
+        BUS.addListener(CommandEvents.Internal::postClient);
 
         BUS.addListener(ServerEvents.Internal::postAboutToStart);
         BUS.addListener(ServerEvents.Internal::postStarting);
