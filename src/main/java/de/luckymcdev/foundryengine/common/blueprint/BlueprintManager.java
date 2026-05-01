@@ -54,6 +54,13 @@ public class BlueprintManager {
         bundleBlueprints.values().forEach(bp -> bp.engine().executeEvent(eventName, bp.graph()));
     }
 
+    /**
+     * Internal: execute an event with an additional runtime context payload.
+     */
+    public void executeCommonEvent(String eventName, Map<String, Object> payload) {
+        bundleBlueprints.values().forEach(bp -> bp.engine().executeEvent(eventName, bp.graph(), payload));
+    }
+
     public void executeEventForBundle(String bundleId, String eventName) {
         BundleBlueprints bp = bundleBlueprints.get(bundleId);
         if (bp != null) bp.engine().executeEvent(eventName, bp.graph());

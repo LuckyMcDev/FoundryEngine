@@ -1,8 +1,13 @@
 package de.luckymcdev.foundryengine.common.blueprint.engine;
 
 import com.mojang.logging.LogUtils;
+import de.luckymcdev.foundryengine.api.builder.block.BlockBuilder;
+import de.luckymcdev.foundryengine.api.builder.item.ItemBuilder;
+import de.luckymcdev.foundryengine.api.builder.sound.SoundBuilder;
+import de.luckymcdev.foundryengine.api.event.registry.RegistryEvent;
 import de.luckymcdev.foundryengine.common.blueprint.graph.*;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -15,6 +20,7 @@ import java.util.function.Supplier;
  */
 public class BlueprintEngine {
     private static final Logger LOGGER = LogUtils.getLogger();
+    public static final String CTX_REGISTRY_EVENT = "_registry_event";
 
     // Type Definitions
     public final NodePinType<Void> execType = BlueprintTypes.EXEC;
@@ -85,9 +91,18 @@ public class BlueprintEngine {
     }
 
     public void executeEvent(String eventName, BlueprintGraph graph) {
+        executeEvent(eventName, graph, Collections.emptyMap());
+    }
+
+    /**
+     * Internal entry point allowing callers to pass execution context.
+     * Not intended for user-blueprint wiring; used by engine event bridges.
+     */
+    public void executeEvent(String eventName, BlueprintGraph graph, Map<String, Object> payload) {
         for (BlueprintNode node : graph.nodes.values()) {
             if (node.identifier.equals(eventName)) {
                 BlueprintContext ctx = new BlueprintContext(graph);
+                payload.forEach(ctx::setVar);
                 executeNext(node, graph, ctx);
             }
         }
@@ -127,6 +142,8 @@ public class BlueprintEngine {
         registerMathNodes();
         registerUtilityNodes();
         registerEditorNodes();
+        registerRegistryNodes();
+        registerStringNodes();
     }
 
     private void registerCategoryColors() {
@@ -207,6 +224,14 @@ public class BlueprintEngine {
                 .out(anyType, "Out")
                 .behavior((n, e, g, ctx) -> n.setOutput("Out", ctx.resolvePin(n.inputPin("In"))))
                 .register();
+
+        node(Categories.LOGIC, "bool.not", "Not")
+                .in(boolType, "Value").defaultValue("Value", false)
+                .out(boolType, "Result")
+                .behavior((n, e, g, ctx) -> {
+                    boolean v = ctx.resolvePinAs(n.inputPin("Value"), Boolean.class, false);
+                    n.setOutput("Result", !v);
+                }).register();
     }
 
     private void registerMathNodes() {
@@ -217,6 +242,24 @@ public class BlueprintEngine {
                     int a = ctx.resolvePinAs(n.inputPin("A"), Integer.class, 0);
                     int b = ctx.resolvePinAs(n.inputPin("B"), Integer.class, 0);
                     n.setOutput("Result", a + b);
+                }).register();
+
+        node(Categories.MATH, "Int Sub")
+                .in(intType, "A").in(intType, "B")
+                .out(intType, "Result")
+                .behavior((n, e, g, ctx) -> {
+                    int a = ctx.resolvePinAs(n.inputPin("A"), Integer.class, 0);
+                    int b = ctx.resolvePinAs(n.inputPin("B"), Integer.class, 0);
+                    n.setOutput("Result", a - b);
+                }).register();
+
+        node(Categories.MATH, "Int Mul")
+                .in(intType, "A").in(intType, "B")
+                .out(intType, "Result")
+                .behavior((n, e, g, ctx) -> {
+                    int a = ctx.resolvePinAs(n.inputPin("A"), Integer.class, 0);
+                    int b = ctx.resolvePinAs(n.inputPin("B"), Integer.class, 0);
+                    n.setOutput("Result", a * b);
                 }).register();
 
         node(Categories.MATH, "Int Equals")
@@ -293,6 +336,131 @@ public class BlueprintEngine {
         node(Categories.COMMENTS, BuiltinNodes.COMMENT.id, "Comment").register();
     }
 
+    private void registerRegistryNodes() {
+        node(Categories.REGISTRY_ITEMS, "registry.item.register_simple", "Register Item (Simple)")
+                .in(execType, "In")
+                .in(stringType, "Id").defaultValue("Id", "mybundle:my_item")
+                .in(intType, "Max Stack").defaultValue("Max Stack", 64)
+                .in(boolType, "Fire Resistant").defaultValue("Fire Resistant", false)
+                .out(execType, "Out")
+                .behavior((n, e, g, ctx) -> {
+                    Object ev = ctx.getVar(CTX_REGISTRY_EVENT, Object.class);
+                    if (!(ev instanceof RegistryEvent regEv)) {
+                        LOGGER.warn("[Blueprint] Register Item: missing registry event context ({}).", CTX_REGISTRY_EVENT);
+                        e.executePin(n, "Out", g, ctx);
+                        return;
+                    }
+
+                    String idStr = ctx.resolvePinAs(n.inputPin("Id"), String.class, "");
+                    Identifier id = Identifier.tryParse(idStr);
+                    if (id == null) {
+                        LOGGER.warn("[Blueprint] Register Item: invalid id '{}'", idStr);
+                        e.executePin(n, "Out", g, ctx);
+                        return;
+                    }
+
+                    int stack = ctx.resolvePinAs(n.inputPin("Max Stack"), Integer.class, 64);
+                    boolean fire = ctx.resolvePinAs(n.inputPin("Fire Resistant"), Boolean.class, false);
+
+                    ItemBuilder b = ItemBuilder.create(id).stacksTo(stack);
+                    if (fire) b.fireResistant();
+                    regEv.items(b);
+
+                    e.executePin(n, "Out", g, ctx);
+                }).register();
+
+        node(Categories.REGISTRY_BLOCKS, "registry.block.register_simple", "Register Block (Simple)")
+                .in(execType, "In")
+                .in(stringType, "Id").defaultValue("Id", "mybundle:my_block")
+                .in(boolType, "Has Item").defaultValue("Has Item", true)
+                .out(execType, "Out")
+                .behavior((n, e, g, ctx) -> {
+                    Object ev = ctx.getVar(CTX_REGISTRY_EVENT, Object.class);
+                    if (!(ev instanceof RegistryEvent regEv)) {
+                        LOGGER.warn("[Blueprint] Register Block: missing registry event context ({}).", CTX_REGISTRY_EVENT);
+                        e.executePin(n, "Out", g, ctx);
+                        return;
+                    }
+
+                    String idStr = ctx.resolvePinAs(n.inputPin("Id"), String.class, "");
+                    Identifier id = Identifier.tryParse(idStr);
+                    if (id == null) {
+                        LOGGER.warn("[Blueprint] Register Block: invalid id '{}'", idStr);
+                        e.executePin(n, "Out", g, ctx);
+                        return;
+                    }
+
+                    boolean hasItem = ctx.resolvePinAs(n.inputPin("Has Item"), Boolean.class, true);
+                    BlockBuilder b = BlockBuilder.create(id);
+                    if (!hasItem) b.noItem();
+                    regEv.blocks(b);
+
+                    e.executePin(n, "Out", g, ctx);
+                }).register();
+
+        node(Categories.REGISTRY_SOUNDS, "registry.sound.register_simple", "Register Sound (Simple)")
+                .in(execType, "In")
+                .in(stringType, "Id").defaultValue("Id", "mybundle:my_sound")
+                .in(stringType, "Subtitle").defaultValue("Subtitle", "")
+                .in(floatType, "Range").defaultValue("Range", 16f)
+                .out(execType, "Out")
+                .behavior((n, e, g, ctx) -> {
+                    Object ev = ctx.getVar(CTX_REGISTRY_EVENT, Object.class);
+                    if (!(ev instanceof RegistryEvent regEv)) {
+                        LOGGER.warn("[Blueprint] Register Sound: missing registry event context ({}).", CTX_REGISTRY_EVENT);
+                        e.executePin(n, "Out", g, ctx);
+                        return;
+                    }
+
+                    String idStr = ctx.resolvePinAs(n.inputPin("Id"), String.class, "");
+                    Identifier id = Identifier.tryParse(idStr);
+                    if (id == null) {
+                        LOGGER.warn("[Blueprint] Register Sound: invalid id '{}'", idStr);
+                        e.executePin(n, "Out", g, ctx);
+                        return;
+                    }
+
+                    String subtitle = ctx.resolvePinAs(n.inputPin("Subtitle"), String.class, "").trim();
+                    float range = ctx.resolvePinAs(n.inputPin("Range"), Float.class, 16f);
+
+                    SoundBuilder b = SoundBuilder.create(id).range(range);
+                    if (!subtitle.isEmpty()) b.subtitle(subtitle);
+                    regEv.sounds(b);
+
+                    e.executePin(n, "Out", g, ctx);
+                }).register();
+    }
+
+    private void registerStringNodes() {
+        node(Categories.STRINGS, "string.concat", "Concat")
+                .in(stringType, "A").defaultValue("A", "")
+                .in(stringType, "B").defaultValue("B", "")
+                .out(stringType, "Result")
+                .behavior((n, e, g, ctx) -> {
+                    String a = ctx.resolvePinAs(n.inputPin("A"), String.class, "");
+                    String b = ctx.resolvePinAs(n.inputPin("B"), String.class, "");
+                    n.setOutput("Result", a + b);
+                }).register();
+
+        node(Categories.STRINGS, "string.equals", "Equals")
+                .in(stringType, "A").defaultValue("A", "")
+                .in(stringType, "B").defaultValue("B", "")
+                .out(boolType, "Result")
+                .behavior((n, e, g, ctx) -> {
+                    String a = ctx.resolvePinAs(n.inputPin("A"), String.class, "");
+                    String b = ctx.resolvePinAs(n.inputPin("B"), String.class, "");
+                    n.setOutput("Result", a.equals(b));
+                }).register();
+
+        node(Categories.STRINGS, "string.is_empty", "Is Empty")
+                .in(stringType, "Value").defaultValue("Value", "")
+                .out(boolType, "Result")
+                .behavior((n, e, g, ctx) -> {
+                    String v = ctx.resolvePinAs(n.inputPin("Value"), String.class, "");
+                    n.setOutput("Result", v.isEmpty());
+                }).register();
+    }
+
     @FunctionalInterface
     public interface NodeBehavior {
         void execute(BlueprintNode node, BlueprintEngine engine, BlueprintGraph graph, BlueprintContext ctx);
@@ -342,11 +510,15 @@ public class BlueprintEngine {
         public static final String EVENTS_CLIENT = "Events/Client";
         public static final String EVENTS_SERVER = "Events/Server";
         public static final String EVENTS_BUNDLE = "Events/Bundle";
+        public static final String REGISTRY_ITEMS = "Registry/Items";
+        public static final String REGISTRY_BLOCKS = "Registry/Blocks";
+        public static final String REGISTRY_SOUNDS = "Registry/Sounds";
         public static final String VARIABLES = "Variables";
         public static final String UTILS = "Utilities";
         public static final String INPUTS = "Inputs";
         public static final String LOGIC = "Logic";
         public static final String MATH = "Math";
+        public static final String STRINGS = "Strings";
         public static final String COMMENTS = "Comments";
 
         private Categories() {

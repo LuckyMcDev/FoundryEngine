@@ -6,6 +6,8 @@ import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintEngine;
 import net.neoforged.neoforge.event.VanillaGameEvent;
 import org.jetbrains.annotations.ApiStatus;
 
+import java.util.Map;
+
 public class BundleEvents {
     private static final EventGroup<RegistryEvent> LOAD = new EventGroup<>();
     private static final EventGroup<VanillaGameEvent> VANILLA_GAME = new EventGroup<>();
@@ -22,7 +24,10 @@ public class BundleEvents {
     public static class Internal {
         public static void postRegistry(RegistryEvent event) {
             LOAD.post(event);
-            Common.getBlueprintManager().executeCommonEvent(BlueprintEngine.BuiltinNodes.EVENT_REGISTRY.id);
+            Common.getBlueprintManager().executeCommonEvent(
+                    BlueprintEngine.BuiltinNodes.EVENT_REGISTRY.id,
+                    Map.of(BlueprintEngine.CTX_REGISTRY_EVENT, event)
+            );
         }
 
         public static void postVanillaGame(VanillaGameEvent event) {
