@@ -14,7 +14,19 @@ public class BlueprintNode {
     public final List<NodePinInfo> inputPins;
     public final List<NodePinInfo> outputPins;
     public final Map<String, Object> outputValues = new HashMap<>();
+    /**
+     * Arbitrary node metadata (editor UI state, comments, colors, etc).
+     * <p>
+     * Kept separate from {@link #outputValues} so runtime execution doesn't
+     * clobber editor-only state.
+     */
+    public final Map<String, Object> data = new HashMap<>();
     public int id;
+    /**
+     * Stable identifier used by the runtime (event dispatch, behavior lookup, etc).
+     * Display/UI should generally use {@link #name}.
+     */
+    public String identifier;
     public String name;
     public @Nullable String category;
     /**
@@ -23,6 +35,7 @@ public class BlueprintNode {
     public boolean selected;
 
     public BlueprintNode(String name, @Nullable String category, List<NodePin> pins) {
+        this.identifier = name;
         this.name = name;
         this.category = category;
         this.inputPins = new ArrayList<>();

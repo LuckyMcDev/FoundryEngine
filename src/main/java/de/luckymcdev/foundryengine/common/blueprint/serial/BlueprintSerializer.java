@@ -63,9 +63,11 @@ public class BlueprintSerializer {
         for (var node : graph.nodes.values()) {
             SerializedNode sn = new SerializedNode();
             sn.id = node.id;
+            sn.identifier = node.identifier;
             sn.name = node.name;
             sn.category = node.category;
             sn.outputValues = new HashMap<>(node.outputValues);
+            sn.data = node.data.isEmpty() ? null : new HashMap<>(node.data);
             float[] pos = positions.get(node.id);
             sn.posX = pos[0];
             sn.posY = pos[1];
@@ -119,8 +121,12 @@ public class BlueprintSerializer {
             for (var sn : bp.nodes) {
                 BlueprintNode node = new BlueprintNode(sn.name, new ArrayList<>());
                 node.id = sn.id;
+                String rawId = (sn.identifier != null && !sn.identifier.isBlank()) ? sn.identifier : sn.name;
+                String migrated = BlueprintEngine.BuiltinNodes.idFromLegacyName(rawId);
+                node.identifier = migrated != null ? migrated : rawId;
                 node.category = sn.category;
                 node.outputValues.putAll(sn.outputValues);
+                if (sn.data != null) node.data.putAll(sn.data);
                 nodeMap.put(sn.id, node);
                 nodePositions.put(sn.id, new float[]{sn.posX, sn.posY});
                 graph.addNode(node, false);

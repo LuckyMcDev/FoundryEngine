@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.api.event;
 
 import de.luckymcdev.foundryengine.common.Common;
+import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintEngine;
 import net.neoforged.neoforge.event.server.*;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.jetbrains.annotations.ApiStatus;
@@ -41,32 +42,32 @@ public class ServerEvents {
     public static class Internal {
         public static void postAboutToStart(ServerAboutToStartEvent event) {
             ABOUT_TO_START.post(event);
-            Common.getBlueprintManager().executeCommonEvent("Server About To Start");
+            Common.getBlueprintManager().executeCommonEvent(BlueprintEngine.BuiltinNodes.EVENT_SERVER_ABOUT_TO_START.id);
         }
 
         public static void postStarted(ServerStartedEvent event) {
             STARTED.post(event);
-            Common.getBlueprintManager().executeCommonEvent("Server Started");
+            Common.getBlueprintManager().executeCommonEvent(BlueprintEngine.BuiltinNodes.EVENT_SERVER_STARTED.id);
         }
 
         public static void postStarting(ServerStartingEvent event) {
             STARTING.post(event);
-            Common.getBlueprintManager().executeCommonEvent("Server Starting");
+            Common.getBlueprintManager().executeCommonEvent(BlueprintEngine.BuiltinNodes.EVENT_SERVER_STARTING.id);
         }
 
         public static void postStopped(ServerStoppedEvent event) {
             STOPPED.post(event);
-            Common.getBlueprintManager().executeCommonEvent("Server Stopped");
+            Common.getBlueprintManager().executeCommonEvent(BlueprintEngine.BuiltinNodes.EVENT_SERVER_STOPPED.id);
         }
 
         public static void postStopping(ServerStoppingEvent event) {
             STOPPING.post(event);
-            Common.getBlueprintManager().executeCommonEvent("Server Stopping");
+            Common.getBlueprintManager().executeCommonEvent(BlueprintEngine.BuiltinNodes.EVENT_SERVER_STOPPING.id);
         }
 
         public static void postTick(ServerTickEvent.Post event) {
             TICK.post(event);
-            Common.getBlueprintManager().executeCommonEvent("Server Tick");
+            Common.getBlueprintManager().executeCommonEvent(BlueprintEngine.BuiltinNodes.EVENT_SERVER_TICK.id);
         }
 
         public static void clear() {

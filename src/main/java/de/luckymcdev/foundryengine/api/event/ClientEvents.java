@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.api.event;
 
 import de.luckymcdev.foundryengine.common.Common;
+import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintEngine;
 import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.client.event.lifecycle.ClientStoppedEvent;
 import net.neoforged.neoforge.client.event.lifecycle.ClientStoppingEvent;
@@ -57,22 +58,22 @@ public class ClientEvents {
     public static class Internal {
         public static void postTick(ClientTickEvent.Post event) {
             TICK.post(event);
-            Common.getBlueprintManager().executeCommonEvent("Client Tick");
+            Common.getBlueprintManager().executeCommonEvent(BlueprintEngine.BuiltinNodes.EVENT_CLIENT_TICK.id);
         }
 
         public static void postStopped(ClientStoppedEvent event) {
             STOPPED.post(event);
-            Common.getBlueprintManager().executeCommonEvent("Client Stopped");
+            Common.getBlueprintManager().executeCommonEvent(BlueprintEngine.BuiltinNodes.EVENT_CLIENT_STOPPED.id);
         }
 
         public static void postStopping(ClientStoppingEvent event) {
             STOPPING.post(event);
-            Common.getBlueprintManager().executeCommonEvent("Client Stopping");
+            Common.getBlueprintManager().executeCommonEvent(BlueprintEngine.BuiltinNodes.EVENT_CLIENT_STOPPING.id);
         }
 
         public static void postChat(ClientChatEvent event) {
             CHAT.post(event);
-            Common.getBlueprintManager().executeCommonEvent("Chat Message");
+            Common.getBlueprintManager().executeCommonEvent(BlueprintEngine.BuiltinNodes.EVENT_CHAT_MESSAGE.id);
         }
 
         public static void postKeyMappings(RegisterKeyMappingsEvent event) {
@@ -81,7 +82,7 @@ public class ClientEvents {
 
         public static void postRenderGui(RenderGuiEvent.Post event) {
             RENDER_GUI.post(event);
-            Common.getBlueprintManager().executeCommonEvent("Render GUI");
+            Common.getBlueprintManager().executeCommonEvent(BlueprintEngine.BuiltinNodes.EVENT_RENDER_GUI.id);
         }
 
         public static void postRenderGuiLayer(RenderGuiLayerEvent.Post event) {

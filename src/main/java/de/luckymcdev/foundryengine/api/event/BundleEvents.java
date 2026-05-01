@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.api.event;
 
 import de.luckymcdev.foundryengine.api.event.registry.RegistryEvent;
 import de.luckymcdev.foundryengine.common.Common;
+import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintEngine;
 import net.neoforged.neoforge.event.VanillaGameEvent;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -21,12 +22,12 @@ public class BundleEvents {
     public static class Internal {
         public static void postRegistry(RegistryEvent event) {
             LOAD.post(event);
-            Common.getBlueprintManager().executeCommonEvent("Registry");
+            Common.getBlueprintManager().executeCommonEvent(BlueprintEngine.BuiltinNodes.EVENT_REGISTRY.id);
         }
 
         public static void postVanillaGame(VanillaGameEvent event) {
             VANILLA_GAME.post(event);
-            Common.getBlueprintManager().executeCommonEvent("Vanilla Game");
+            Common.getBlueprintManager().executeCommonEvent(BlueprintEngine.BuiltinNodes.EVENT_VANILLA_GAME.id);
         }
 
         public static void clear() {

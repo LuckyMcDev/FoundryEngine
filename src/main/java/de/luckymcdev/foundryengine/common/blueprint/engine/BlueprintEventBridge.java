@@ -7,11 +7,11 @@ import de.luckymcdev.foundryengine.common.blueprint.graph.BlueprintGraph;
 public class BlueprintEventBridge {
 
     public static void subscribe(BlueprintEngine engine, BlueprintGraph graph) {
-        ClientEvents.tick(event -> engine.executeEvent("Client Tick", graph));
-        ClientEvents.renderGui(event -> engine.executeEvent("Render GUI", graph));
-        ClientEvents.chat(event -> engine.executeEvent("Chat Message", graph));
+        ClientEvents.tick(event -> engine.executeEvent(BlueprintEngine.BuiltinNodes.EVENT_CLIENT_TICK.id, graph));
+        ClientEvents.renderGui(event -> engine.executeEvent(BlueprintEngine.BuiltinNodes.EVENT_RENDER_GUI.id, graph));
+        ClientEvents.chat(event -> engine.executeEvent(BlueprintEngine.BuiltinNodes.EVENT_CHAT_MESSAGE.id, graph));
 
-        ServerEvents.started(event -> engine.executeEvent("Server Started", graph));
-        ServerEvents.tick(event -> engine.executeEvent("Server Tick", graph));
+        ServerEvents.started(event -> engine.executeEvent(BlueprintEngine.BuiltinNodes.EVENT_SERVER_STARTED.id, graph));
+        ServerEvents.tick(event -> engine.executeEvent(BlueprintEngine.BuiltinNodes.EVENT_SERVER_TICK.id, graph));
     }
 }

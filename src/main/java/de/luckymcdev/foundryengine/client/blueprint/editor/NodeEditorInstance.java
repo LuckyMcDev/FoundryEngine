@@ -17,6 +17,8 @@ import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 
 /**
@@ -27,6 +29,8 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
     private final BlueprintEngine engine;
     private final ImInt tempSrc = new ImInt();
     private final ImInt tempDst = new ImInt();
+    private final Map<Integer, ImString> commentTitleBuffers = new HashMap<>();
+    private final Map<Integer, ImString> commentBodyBuffers = new HashMap<>();
     public float miniMap = 0.2f;
     private @Nullable NodePinInfo lastDroppedPin;
     private float spawnX, spawnY;
@@ -63,88 +67,27 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
         if (positionAtCursor) pendingSpawnId = node.id;
     }
 
+    private static int lighten(int argb, float amount) {
+        int a = (argb >>> 24) & 0xFF;
+        int r = (argb >>> 16) & 0xFF;
+        int g = (argb >>> 8) & 0xFF;
+        int b = argb & 0xFF;
+
+        r = Math.min(255, (int) (r + (255 - r) * amount));
+        g = Math.min(255, (int) (g + (255 - g) * amount));
+        b = Math.min(255, (int) (b + (255 - b) * amount));
+        return (a << 24) | (r << 16) | (g << 8) | b;
+    }
+
     public void render(Consumer<BlueprintNode> onContextMenu) {
         render(onContextMenu, null);
     }
 
-    public void render(Consumer<BlueprintNode> onContextMenu,
-                       @Nullable Consumer<BlueprintNode> onNodeBody) {
-
-        boolean mouseRight = ImGui.isMouseClicked(1);
-
-        ImNodes.beginNodeEditor();
-        boolean editorHovered = ImNodes.isEditorHovered();
-
-        float scroll = ImGui.getIO().getMouseWheelH();
-        if (scroll != 0f) {
-            ImVec2 pan = ImNodes.editorContextGetPanning();
-            float zoomFactor = 1f + (scroll * 0.1f);
-            ImNodes.editorContextResetPanning(new ImVec2(pan.x * zoomFactor, pan.y * zoomFactor));
-        }
-
-        BlueprintNode xButtonRemovedNode = null;
-
-        for (var node : nodes.values()) {
-            ImNodes.beginNode(node.id);
-
-            ImNodes.beginNodeTitleBar();
-            if (ImGui.button("X##del-" + node.id)) xButtonRemovedNode = node;
-            ImGui.sameLine();
-            ImGui.text(node.name);
-            ImNodes.endNodeTitleBar();
-
-            ImGui.pushItemWidth(130f);
-            if (onNodeBody != null) onNodeBody.accept(node);
-
-            for (var pin : node.inputPins) {
-                pushPinColor(pin.pin.type());
-                ImNodes.beginInputAttribute(pin.id, toImNodesShape(pin.pin.shape()));
-                popPinColor();
-
-                if (!pin.isConnected() && pin.defaultValue != null) {
-                    renderInlineDefault(pin);
-                } else {
-                    ImGui.textUnformatted(pin.pin.label());
-                }
-                ImNodes.endInputAttribute();
-            }
-
-            for (var pin : node.outputPins) {
-                pushPinColor(pin.pin.type());
-                ImNodes.beginOutputAttribute(pin.id, toImNodesShape(pin.pin.shape()));
-                ImGui.textUnformatted(pin.pin.label());
-                ImNodes.endOutputAttribute();
-                popPinColor();
-            }
-
-            ImGui.popItemWidth();
-            ImNodes.endNode();
-        }
-
-        for (var pin : pins.values()) {
-            if (pin.inputLink != null) {
-                pushLinkColor(pin.pin.type());
-                ImNodes.link(pin.id, pin.inputLink.id, pin.id);
-                popLinkColor();
-            }
-        }
-
-        if (miniMap > 0f) ImNodes.miniMap(miniMap, ImNodesMiniMapLocation.TopRight);
-
-        ImNodes.endNodeEditor();
-
-        if (pendingSpawnId != -1) {
-            ImNodes.setNodeScreenSpacePos(pendingSpawnId, spawnX, spawnY);
-            pendingSpawnId = -1;
-        }
-
-        handleLinkCreation();
-        handleLinkDeletion();
-        handleLinkDrop(onContextMenu);
-        handleContextMenu(onContextMenu, editorHovered, mouseRight);
-        handleNodeAndLinkSelection();
-        handleXButtonRemoval(xButtonRemovedNode);
-        handleDeleteKey();
+    @Override
+    public void removeNode(BlueprintNode node) {
+        super.removeNode(node);
+        commentTitleBuffers.remove(node.id);
+        commentBodyBuffers.remove(node.id);
     }
 
     public float[] getNodeGridPos(int nodeId) {
@@ -215,10 +158,6 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
             pin.inputLinkSelected = pin.inputLink != null && ImNodes.isLinkSelected(pin.id);
     }
 
-    private void handleXButtonRemoval(@Nullable BlueprintNode node) {
-        if (node != null) removeNode(node);
-    }
-
     private void handleDeleteKey() {
         if (!ImGui.isKeyPressed(GLFW.GLFW_KEY_DELETE)) return;
 
@@ -237,6 +176,155 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
     private void captureSpawnPos() {
         spawnX = ImGui.getMousePosX();
         spawnY = ImGui.getMousePosY();
+    }
+
+    public void render(Consumer<BlueprintNode> onContextMenu,
+                       @Nullable Consumer<BlueprintNode> onNodeBody) {
+
+        boolean mouseRight = ImGui.isMouseClicked(1);
+
+        ImNodes.beginNodeEditor();
+        boolean editorHovered = ImNodes.isEditorHovered();
+
+        float scroll = ImGui.getIO().getMouseWheelH();
+        if (scroll != 0f) {
+            ImVec2 pan = ImNodes.editorContextGetPanning();
+            float zoomFactor = 1f + (scroll * 0.1f);
+            ImNodes.editorContextResetPanning(new ImVec2(pan.x * zoomFactor, pan.y * zoomFactor));
+        }
+
+        for (var node : nodes.values()) {
+            pushNodeColors(node);
+            ImNodes.beginNode(node.id);
+
+            ImNodes.beginNodeTitleBar();
+            if (isCommentNode(node)) {
+                ImGui.textUnformatted(getCommentTitle(node));
+            } else {
+                ImGui.textUnformatted(node.name);
+            }
+            ImNodes.endNodeTitleBar();
+
+            ImGui.pushItemWidth(130f);
+            if (isCommentNode(node)) {
+                renderCommentBody(node);
+            } else if (onNodeBody != null) {
+                onNodeBody.accept(node);
+            }
+
+            for (var pin : node.inputPins) {
+                pushPinColor(pin.pin.type());
+                ImNodes.beginInputAttribute(pin.id, toImNodesShape(pin.pin.shape()));
+                popPinColor();
+
+                if (!pin.isConnected() && pin.defaultValue != null) {
+                    renderInlineDefault(pin);
+                } else {
+                    ImGui.textUnformatted(pin.pin.label());
+                }
+                ImNodes.endInputAttribute();
+            }
+
+            for (var pin : node.outputPins) {
+                pushPinColor(pin.pin.type());
+                ImNodes.beginOutputAttribute(pin.id, toImNodesShape(pin.pin.shape()));
+                ImGui.textUnformatted(pin.pin.label());
+                ImNodes.endOutputAttribute();
+                popPinColor();
+            }
+
+            ImGui.popItemWidth();
+            ImNodes.endNode();
+            popNodeColors();
+        }
+
+        for (var pin : pins.values()) {
+            if (pin.inputLink != null) {
+                pushLinkColor(pin.pin.type());
+                ImNodes.link(pin.id, pin.inputLink.id, pin.id);
+                popLinkColor();
+            }
+        }
+
+        if (miniMap > 0f) ImNodes.miniMap(miniMap, ImNodesMiniMapLocation.TopRight);
+
+        ImNodes.endNodeEditor();
+
+        if (pendingSpawnId != -1) {
+            ImNodes.setNodeScreenSpacePos(pendingSpawnId, spawnX, spawnY);
+            pendingSpawnId = -1;
+        }
+
+        handleLinkCreation();
+        handleLinkDeletion();
+        handleLinkDrop(onContextMenu);
+        handleContextMenu(onContextMenu, editorHovered, mouseRight);
+        handleNodeAndLinkSelection();
+        handleDeleteKey();
+    }
+
+    private boolean isCommentNode(BlueprintNode node) {
+        return BlueprintEngine.BuiltinNodes.COMMENT.id.equals(node.identifier)
+                && BlueprintEngine.Categories.COMMENTS.equals(node.category);
+    }
+
+    private String getCommentTitle(BlueprintNode node) {
+        Object t = node.data.get("title");
+        if (t instanceof String s && !s.isBlank()) return s;
+        return "Comment";
+    }
+
+    private void renderCommentBody(BlueprintNode node) {
+        // Title
+        ImString titleBuf = commentTitleBuffers.computeIfAbsent(node.id, id -> {
+            String initial = getCommentTitle(node);
+            return new ImString(initial, 128);
+        });
+        if (ImGui.inputText("Title##cmt-title-" + node.id, titleBuf)) {
+            node.data.put("title", titleBuf.get());
+        }
+
+        // Body
+        ImString bodyBuf = commentBodyBuffers.computeIfAbsent(node.id, id -> {
+            Object v = node.data.get("text");
+            String initial = v instanceof String s ? s : "";
+            return new ImString(initial, 2048);
+        });
+
+        // A fixed-size multiline field gives the node a "comment box" feel.
+        if (ImGui.inputTextMultiline("##cmt-body-" + node.id, bodyBuf, 260f, 140f)) {
+            node.data.put("text", bodyBuf.get());
+        }
+    }
+
+    private void pushNodeColors(BlueprintNode node) {
+        int title = engine.getCategoryColor(node.category);
+        int titleHovered = lighten(title, 0.10f);
+        int titleSelected = lighten(title, 0.18f);
+
+        // Dark node body to match Unreal-esque contrast.
+        int bg = 0xFF_242424;
+        int bgHovered = 0xFF_2C2C2C;
+        int bgSelected = 0xFF_303030;
+        int outline = 0xFF_000000;
+
+        ImNodes.pushColorStyle(ImNodesCol.TitleBar, title);
+        ImNodes.pushColorStyle(ImNodesCol.TitleBarHovered, titleHovered);
+        ImNodes.pushColorStyle(ImNodesCol.TitleBarSelected, titleSelected);
+        ImNodes.pushColorStyle(ImNodesCol.NodeBackground, bg);
+        ImNodes.pushColorStyle(ImNodesCol.NodeBackgroundHovered, bgHovered);
+        ImNodes.pushColorStyle(ImNodesCol.NodeBackgroundSelected, bgSelected);
+        ImNodes.pushColorStyle(ImNodesCol.NodeOutline, outline);
+    }
+
+    private void popNodeColors() {
+        ImNodes.popColorStyle(); // NodeOutline
+        ImNodes.popColorStyle(); // NodeBackgroundSelected
+        ImNodes.popColorStyle(); // NodeBackgroundHovered
+        ImNodes.popColorStyle(); // NodeBackground
+        ImNodes.popColorStyle(); // TitleBarSelected
+        ImNodes.popColorStyle(); // TitleBarHovered
+        ImNodes.popColorStyle(); // TitleBar
     }
 
     private void pushPinColor(NodePinType<?> t) {

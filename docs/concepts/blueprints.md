@@ -58,14 +58,16 @@ A blueprint file consists of three top-level arrays:
 
 Each node represents a discrete unit of logic in the blueprint graph.
 
-| Field          | Type                  | Description                                       |
-|----------------|-----------------------|---------------------------------------------------|
-| `id`           | `int`                 | Unique identifier for the node                    |
-| `name`         | `string`              | Display name of the node (e.g., `"Print String"`) |
-| `category`     | `string` or `null`    | Optional category for grouping nodes              |
-| `posX`         | `float`               | Grid-space X position in the editor               |
-| `posY`         | `float`               | Grid-space Y position in the editor               |
-| `outputValues` | `Map<string, object>` | Computed output values keyed by pin label         |
+| Field          | Type                  | Description                                         |
+|----------------|-----------------------|-----------------------------------------------------|
+| `id`           | `int`                 | Unique identifier for the node                      |
+| `identifier`   | `string`              | Stable runtime id (behavior lookup, event dispatch) |
+| `name`         | `string`              | Display name of the node (e.g., `"Print String"`)   |
+| `category`     | `string` or `null`    | Optional category for grouping nodes                |
+| `posX`         | `float`               | Grid-space X position in the editor                 |
+| `posY`         | `float`               | Grid-space Y position in the editor                 |
+| `outputValues` | `Map<string, object>` | Computed output values keyed by pin label           |
+| `data`         | `Map<string, object>` | Optional editor metadata (comments, UI state, etc)  |
 
 ## Pin
 

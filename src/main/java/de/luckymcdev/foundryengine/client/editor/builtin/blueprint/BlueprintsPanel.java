@@ -56,7 +56,7 @@ public class BlueprintsPanel extends EditorPanel {
         }
 
         ClientEvents.tick(event -> {
-            engine.executeEvent("Event Tick", this.editor);
+            engine.executeEvent(BlueprintEngine.BuiltinNodes.EVENT_CLIENT_TICK.id, this.editor);
         });
     }
 
@@ -173,6 +173,26 @@ public class BlueprintsPanel extends EditorPanel {
         }
     }
 
+    private static void renderCategoryTree(CategoryNode node, String path, int flags,
+                                           java.util.function.Consumer<BlueprintEngine.NodeTemplate> onPick) {
+        // Templates exactly on this category path.
+        for (var template : node.templates) {
+            if (ImGui.menuItem(template.displayName() + "##" + template.id())) {
+                onPick.accept(template);
+            }
+        }
+
+        for (var entry : node.children.entrySet()) {
+            String name = entry.getKey();
+            CategoryNode child = entry.getValue();
+            String childPath = path.isEmpty() ? name : path + "/" + name;
+            if (ImGui.treeNodeEx(name + "##cat-" + childPath, flags)) {
+                renderCategoryTree(child, childPath, flags, onPick);
+                ImGui.treePop();
+            }
+        }
+    }
+
     private void renderNodePalette() {
         if (ImGui.isWindowAppearing()) {
             ImGui.setKeyboardFocusHere();
@@ -184,33 +204,34 @@ public class BlueprintsPanel extends EditorPanel {
 
         String filter = searchFilter.get().toLowerCase().trim();
 
-        Map<String, List<BlueprintEngine.NodeTemplate>> grouped = new LinkedHashMap<>();
+        CategoryNode root = new CategoryNode();
         for (var template : engine.getRegistry()) {
-            if (!filter.isEmpty() && !template.name().toLowerCase().contains(filter)
-                    && !template.category().toLowerCase().contains(filter)) {
+            String displayName = template.displayName();
+            String category = template.category();
+            if (!filter.isEmpty()
+                    && !displayName.toLowerCase().contains(filter)
+                    && !template.id().toLowerCase().contains(filter)
+                    && !category.toLowerCase().contains(filter)) {
                 continue;
             }
-            grouped.computeIfAbsent(template.category(), k -> new java.util.ArrayList<>())
-                    .add(template);
+
+            CategoryNode cur = root;
+            for (String part : category.split("/")) {
+                if (part.isBlank()) continue;
+                cur = cur.children.computeIfAbsent(part, k -> new CategoryNode());
+            }
+            cur.templates.add(template);
         }
 
-        if (grouped.isEmpty()) {
+        if (root.isEmpty()) {
             ImGui.textDisabled("No matching nodes.");
         }
 
-        for (var entry : grouped.entrySet()) {
-            String cat = entry.getKey();
-            int flags = filter.isEmpty() ? ImGuiTreeNodeFlags.None : ImGuiTreeNodeFlags.DefaultOpen;
-            if (ImGui.treeNodeEx(cat, flags)) {
-                for (var template : entry.getValue()) {
-                    if (ImGui.menuItem(template.name() + "##" + cat)) {
-                        editor.addNode(template);
-                        searchFilter.set("");
-                    }
-                }
-                ImGui.treePop();
-            }
-        }
+        int flags = filter.isEmpty() ? ImGuiTreeNodeFlags.None : ImGuiTreeNodeFlags.DefaultOpen;
+        renderCategoryTree(root, "", flags, template -> {
+            editor.addNode(template);
+            searchFilter.set("");
+        });
 
         ImGui.separator();
         if (ImGui.menuItem("Clear All")) {
@@ -220,5 +241,16 @@ public class BlueprintsPanel extends EditorPanel {
 
     public void reload() {
         BlueprintEventBridge.subscribe(engine, editor);
+    }
+
+    private static final class CategoryNode {
+        final Map<String, CategoryNode> children = new LinkedHashMap<>();
+        final List<BlueprintEngine.NodeTemplate> templates = new java.util.ArrayList<>();
+
+        boolean isEmpty() {
+            if (!templates.isEmpty()) return false;
+            for (var c : children.values()) if (!c.isEmpty()) return false;
+            return true;
+        }
     }
 }
