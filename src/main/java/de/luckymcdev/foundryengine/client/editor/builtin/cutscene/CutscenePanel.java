@@ -257,6 +257,20 @@ public class CutscenePanel extends EditorPanel {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null) return;
 
+        if (selectedIndex != lastSelectedCutsceneIndex) {
+            playLength.set(c.getDefaultLength());
+            holdStart.set(c.getDefaultHoldStart());
+            holdEnd.set(c.getDefaultHoldEnd());
+            int easeIdx = 0;
+            for (int i = 0; i < EASING_NAMES.length; i++) {
+                if (EASING_NAMES[i].equalsIgnoreCase(c.getDefaultEasing())) {
+                    easeIdx = i;
+                    break;
+                }
+            }
+            easingImInt.set(easeIdx);
+        }
+
         String playerName = mc.player.getName().getString();
         String lerpName = EASING_NAMES[easingImInt.get()];
 
