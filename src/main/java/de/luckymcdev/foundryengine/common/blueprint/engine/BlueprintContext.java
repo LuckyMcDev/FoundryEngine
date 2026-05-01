@@ -62,7 +62,7 @@ public class BlueprintContext {
             BlueprintNode source = pin.inputLink.node;
             BlueprintEngine eng = graph instanceof EngineAwareGraph eag ? eag.getEngine() : null;
             if (eng != null) {
-                BlueprintEngine.NodeBehavior behavior = eng.getBehavior(source.name);
+                BlueprintEngine.NodeBehavior behavior = eng.getBehavior(source.identifier);
                 if (behavior != null) {
                     behavior.execute(source, eng, graph, this);
                 }

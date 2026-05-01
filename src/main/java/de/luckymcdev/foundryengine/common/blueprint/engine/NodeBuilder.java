@@ -12,15 +12,17 @@ import java.util.Map;
 public class NodeBuilder {
     private final BlueprintEngine engine;
     private final String category;
-    private final String name;
+    private final String id;
+    private final String displayName;
     private final List<NodePin> pins = new ArrayList<>();
     private final Map<String, Object> defaults = new HashMap<>();
     private @Nullable BlueprintEngine.NodeBehavior behavior;
 
-    public NodeBuilder(BlueprintEngine engine, String category, String name) {
+    public NodeBuilder(BlueprintEngine engine, String category, String id, String displayName) {
         this.engine = engine;
         this.category = category;
-        this.name = name;
+        this.id = id;
+        this.displayName = displayName;
     }
 
     public NodeBuilder in(NodePinType<?> type, String label) {
@@ -46,7 +48,7 @@ public class NodeBuilder {
     public BlueprintEngine register() {
         List<NodePin> capturedPins = List.copyOf(pins);
         Map<String, Object> capturedDefaults = Map.copyOf(defaults);
-        engine.registerNode(category, name, () -> new ArrayList<>(capturedPins), capturedDefaults, behavior);
+        engine.registerNode(category, id, displayName, () -> new ArrayList<>(capturedPins), capturedDefaults, behavior);
         return engine;
     }
 }
