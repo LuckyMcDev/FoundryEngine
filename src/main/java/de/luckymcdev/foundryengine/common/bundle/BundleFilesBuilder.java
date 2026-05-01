@@ -43,8 +43,9 @@ public class BundleFilesBuilder {
         );
 
         Path blueprints = root.resolve("blueprints");
+        Path saves = root.resolve("saves");
 
-        return new BundleFiles(root, assets, data, scriptFiles, blueprints, zipFs);
+        return new BundleFiles(root, assets, data, scriptFiles, blueprints, saves, zipFs);
     }
 
     private List<Path> findScripts(final Path directory) {
