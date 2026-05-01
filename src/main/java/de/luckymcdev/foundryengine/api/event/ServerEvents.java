@@ -6,6 +6,8 @@ import net.neoforged.neoforge.event.server.*;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.jetbrains.annotations.ApiStatus;
 
+import java.util.Map;
+
 public class ServerEvents {
     private static final EventGroup<ServerAboutToStartEvent> ABOUT_TO_START = new EventGroup<>();
     private static final EventGroup<ServerStartedEvent> STARTED = new EventGroup<>();
@@ -67,7 +69,13 @@ public class ServerEvents {
 
         public static void postTick(ServerTickEvent.Post event) {
             TICK.post(event);
-            Common.getBlueprintManager().executeCommonEvent(BlueprintEngine.BuiltinNodes.EVENT_SERVER_TICK.id);
+            Common.getBlueprintManager().executeCommonEvent(
+                    BlueprintEngine.BuiltinNodes.EVENT_SERVER_TICK.id,
+                    Map.of(
+                            "Tick", event.getServer().getTickCount(),
+                            "DeltaSeconds", 1f / 20f
+                    )
+            );
         }
 
         public static void clear() {

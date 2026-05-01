@@ -7,6 +7,8 @@ import net.neoforged.neoforge.client.event.lifecycle.ClientStoppedEvent;
 import net.neoforged.neoforge.client.event.lifecycle.ClientStoppingEvent;
 import org.jetbrains.annotations.ApiStatus;
 
+import java.util.Map;
+
 public class ClientEvents {
     private static final EventGroup<ClientTickEvent.Post> TICK = new EventGroup<>();
     private static final EventGroup<ClientStoppedEvent> STOPPED = new EventGroup<>();
@@ -56,9 +58,17 @@ public class ClientEvents {
 
     @ApiStatus.Internal
     public static class Internal {
+        private static int clientTick = 0;
+
         public static void postTick(ClientTickEvent.Post event) {
             TICK.post(event);
-            Common.getBlueprintManager().executeCommonEvent(BlueprintEngine.BuiltinNodes.EVENT_CLIENT_TICK.id);
+            Common.getBlueprintManager().executeCommonEvent(
+                    BlueprintEngine.BuiltinNodes.EVENT_CLIENT_TICK.id,
+                    Map.of(
+                            "Tick", ++clientTick,
+                            "DeltaSeconds", 1f / 20f
+                    )
+            );
         }
 
         public static void postStopped(ClientStoppedEvent event) {

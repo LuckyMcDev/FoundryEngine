@@ -103,6 +103,17 @@ public class BlueprintEngine {
             if (node.identifier.equals(eventName)) {
                 BlueprintContext ctx = new BlueprintContext(graph);
                 payload.forEach(ctx::setVar);
+
+                // If event dispatch provides values that match output pin labels,
+                // expose them as node outputs for downstream reads.
+                if (!payload.isEmpty()) {
+                    for (var out : node.outputPins) {
+                        if (out.pin.type() == execType) continue;
+                        Object v = payload.get(out.pin.label());
+                        if (v != null) node.setOutput(out.pin.label(), v);
+                    }
+                }
+
                 executeNext(node, graph, ctx);
             }
         }
@@ -168,7 +179,10 @@ public class BlueprintEngine {
 
         // Client Events
         node(Categories.EVENTS_CLIENT, BuiltinNodes.EVENT_CLIENT_TICK.id, "Client Tick")
-                .out(execType, "Out").register();
+                .out(execType, "Out")
+                .out(intType, "Tick")
+                .out(floatType, "DeltaSeconds")
+                .register();
         node(Categories.EVENTS_CLIENT, BuiltinNodes.EVENT_CLIENT_STOPPED.id, "Client Stopped")
                 .out(execType, "Out").register();
         node(Categories.EVENTS_CLIENT, BuiltinNodes.EVENT_CLIENT_STOPPING.id, "Client Stopping")
@@ -180,7 +194,10 @@ public class BlueprintEngine {
 
         // Server Events
         node(Categories.EVENTS_SERVER, BuiltinNodes.EVENT_SERVER_TICK.id, "Server Tick")
-                .out(execType, "Out").register();
+                .out(execType, "Out")
+                .out(intType, "Tick")
+                .out(floatType, "DeltaSeconds")
+                .register();
         node(Categories.EVENTS_SERVER, BuiltinNodes.EVENT_SERVER_ABOUT_TO_START.id, "Server About To Start")
                 .out(execType, "Out").register();
         node(Categories.EVENTS_SERVER, BuiltinNodes.EVENT_SERVER_STARTED.id, "Server Started")
@@ -232,6 +249,23 @@ public class BlueprintEngine {
                     boolean v = ctx.resolvePinAs(n.inputPin("Value"), Boolean.class, false);
                     n.setOutput("Result", !v);
                 }).register();
+        // Additional boolean logic nodes
+        node(Categories.LOGIC, "bool.and", "And")
+                .in(boolType, "A").in(boolType, "B")
+                .out(boolType, "Result")
+                .behavior((n, e, g, ctx) -> {
+                    boolean a = ctx.resolvePinAs(n.inputPin("A"), Boolean.class, false);
+                    boolean b = ctx.resolvePinAs(n.inputPin("B"), Boolean.class, false);
+                    n.setOutput("Result", a && b);
+                }).register();
+        node(Categories.LOGIC, "bool.or", "Or")
+                .in(boolType, "A").in(boolType, "B")
+                .out(boolType, "Result")
+                .behavior((n, e, g, ctx) -> {
+                    boolean a = ctx.resolvePinAs(n.inputPin("A"), Boolean.class, false);
+                    boolean b = ctx.resolvePinAs(n.inputPin("B"), Boolean.class, false);
+                    n.setOutput("Result", a || b);
+                }).register();
     }
 
     private void registerMathNodes() {
@@ -270,6 +304,50 @@ public class BlueprintEngine {
                     int b = ctx.resolvePinAs(n.inputPin("B"), Integer.class, 0);
                     n.setOutput("Result", a == b);
                 }).register();
+        // Int Modulo
+        node(Categories.MATH, "Int Mod")
+                .in(intType, "A").in(intType, "B")
+                .out(intType, "Result")
+                .behavior((n, e, g, ctx) -> {
+                    int a = ctx.resolvePinAs(n.inputPin("A"), Integer.class, 0);
+                    int b = ctx.resolvePinAs(n.inputPin("B"), Integer.class, 0);
+                    int res = (b != 0) ? (a % b) : 0;
+                    n.setOutput("Result", res);
+                }).register();
+        // Floating-point math nodes
+        node(Categories.MATH, "Float Add")
+                .in(floatType, "A").in(floatType, "B")
+                .out(floatType, "Result")
+                .behavior((n, e, g, ctx) -> {
+                    float a = ctx.resolvePinAs(n.inputPin("A"), Float.class, 0f);
+                    float b = ctx.resolvePinAs(n.inputPin("B"), Float.class, 0f);
+                    n.setOutput("Result", a + b);
+                }).register();
+        node(Categories.MATH, "Float Sub")
+                .in(floatType, "A").in(floatType, "B")
+                .out(floatType, "Result")
+                .behavior((n, e, g, ctx) -> {
+                    float a = ctx.resolvePinAs(n.inputPin("A"), Float.class, 0f);
+                    float b = ctx.resolvePinAs(n.inputPin("B"), Float.class, 0f);
+                    n.setOutput("Result", a - b);
+                }).register();
+        node(Categories.MATH, "Float Mul")
+                .in(floatType, "A").in(floatType, "B")
+                .out(floatType, "Result")
+                .behavior((n, e, g, ctx) -> {
+                    float a = ctx.resolvePinAs(n.inputPin("A"), Float.class, 0f);
+                    float b = ctx.resolvePinAs(n.inputPin("B"), Float.class, 0f);
+                    n.setOutput("Result", a * b);
+                }).register();
+        node(Categories.MATH, "Float Div")
+                .in(floatType, "A").in(floatType, "B")
+                .out(floatType, "Result")
+                .behavior((n, e, g, ctx) -> {
+                    float a = ctx.resolvePinAs(n.inputPin("A"), Float.class, 0f);
+                    float b = ctx.resolvePinAs(n.inputPin("B"), Float.class, 1f);
+                    if (b == 0f) b = 1f;
+                    n.setOutput("Result", a / b);
+                }).register();
     }
 
     private void registerVariableNodes() {
@@ -303,6 +381,12 @@ public class BlueprintEngine {
         node(Categories.INPUTS, "Integer")
                 .in(intType, "Value").defaultValue("Value", 0)
                 .out(intType, "Out")
+                .behavior((n, e, g, ctx) -> n.setOutput("Out", ctx.resolvePin(n.inputPin("Value"))))
+                .register();
+        // Boolean input
+        node(Categories.INPUTS, "Boolean")
+                .in(boolType, "Value").defaultValue("Value", false)
+                .out(boolType, "Out")
                 .behavior((n, e, g, ctx) -> n.setOutput("Out", ctx.resolvePin(n.inputPin("Value"))))
                 .register();
     }
@@ -458,6 +542,14 @@ public class BlueprintEngine {
                 .behavior((n, e, g, ctx) -> {
                     String v = ctx.resolvePinAs(n.inputPin("Value"), String.class, "");
                     n.setOutput("Result", v.isEmpty());
+                }).register();
+        // Length
+        node(Categories.STRINGS, "string.length", "Length")
+                .in(stringType, "Value").defaultValue("Value", "")
+                .out(intType, "Length")
+                .behavior((n, e, g, ctx) -> {
+                    String v = ctx.resolvePinAs(n.inputPin("Value"), String.class, "");
+                    n.setOutput("Length", v.length());
                 }).register();
     }
 
