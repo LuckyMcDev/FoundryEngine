@@ -41,22 +41,14 @@ public class CutsceneTimelinePanel extends EditorPanel {
     private static final String[] EFFECT_TYPES =
             Arrays.stream(ScreenEffectType.values()).map(Enum::name).toArray(String[]::new);
 
-    // Preview / playback params
-    private final ImInt previewLength = new ImInt(60);
-    private final ImInt holdStart = new ImInt(0);
-    private final ImInt holdEnd = new ImInt(0);
-    private final ImInt easingIdx = new ImInt(0);
-
-    // Timeline scrub
     private final ImBoolean previewEnabled = new ImBoolean(false);
     private final ImInt previewTick = new ImInt(0);
-    // Screen-effects editor
     private final ImInt selectedEffectIndex = new ImInt(-1);
     private final ImFloat selectedEffectAt = new ImFloat(0f);
     private final ImInt effectTypeIndex = new ImInt(0);
-    private final ImFloat effectIntroDuration = new ImFloat(0.1f); // Normalized: 10% of cutscene
-    private final ImFloat effectHoldDuration = new ImFloat(0.2f);  // Normalized: 20% of cutscene
-    private final ImFloat effectOutroDuration = new ImFloat(0.1f); // Normalized: 10% of cutscene
+    private final ImFloat effectIntroDuration = new ImFloat(0.1f);
+    private final ImFloat effectHoldDuration = new ImFloat(0.2f);
+    private final ImFloat effectOutroDuration = new ImFloat(0.1f);
     private final ImInt effectEasingIndex = new ImInt(0);
     private final ImString effectCommand = new ImString(256);
     private float zoomPxPerTick = 6.0f;
@@ -79,7 +71,6 @@ public class CutsceneTimelinePanel extends EditorPanel {
 
         List<Cutscene> cutscenes = CutsceneRenderer.cutscenes;
 
-        // Left: cutscene list
         ImGui.beginChild("##cs_tl_list", 220f, 0, true);
         try {
             if (cutscenes.isEmpty()) {
@@ -125,7 +116,7 @@ public class CutsceneTimelinePanel extends EditorPanel {
 
             renderPreviewSettings(selected);
 
-            int totalTicks = getTotalTicks();
+            int totalTicks = getTotalTicks(selected);
             ImGui.separator();
             renderNodeControls(selected);
 
@@ -154,6 +145,57 @@ public class CutsceneTimelinePanel extends EditorPanel {
         ImGui.spacing();
         ImGui.text("Preview Settings");
 
+        // Bind to the cutscene's values to avoid duplication across panels
+        int lenTicks = Math.max(1, c.getDefaultLength());
+        int hs = Math.max(0, c.getDefaultHoldStart());
+        int he = Math.max(0, c.getDefaultHoldEnd());
+        int easeIdx = 0;
+        for (int i = 0; i < EASING_NAMES.length; i++) {
+            if (EASING_NAMES[i].equalsIgnoreCase(c.getDefaultEasing())) {
+                easeIdx = i;
+                break;
+            }
+        }
+
+        boolean changed = false;
+
+        // Length
+        ImGui.setNextItemWidth(120);
+        ImInt lenInput = new ImInt(lenTicks);
+        if (ImGui.inputInt("Length (ticks)##cs_tl_len", lenInput)) {
+            c.setDefaultLength(Math.max(1, lenInput.get()));
+            changed = true;
+        }
+
+        // Hold Start
+        ImGui.setNextItemWidth(120);
+        ImInt hsInput = new ImInt(hs);
+        if (ImGui.inputInt("Hold Start##cs_tl_hs", hsInput)) {
+            c.setDefaultHoldStart(Math.max(0, hsInput.get()));
+            changed = true;
+        }
+
+        // Hold End
+        ImGui.setNextItemWidth(120);
+        ImInt heInput = new ImInt(he);
+        if (ImGui.inputInt("Hold End##cs_tl_he", heInput)) {
+            c.setDefaultHoldEnd(Math.max(0, heInput.get()));
+            changed = true;
+        }
+
+        // Easing
+        ImGui.setNextItemWidth(150);
+        ImInt easeInput = new ImInt(easeIdx);
+        if (ImGui.combo("Easing##cs_tl_ease", easeInput, EASING_NAMES)) {
+            c.setDefaultEasing(EASING_NAMES[easeInput.get()]);
+            changed = true;
+        }
+
+        if (changed) {
+            markDirty();
+        }
+
+        // Preview toggle: reintroduce direct control to allow live scrubbing on the timeline
         boolean inPlayback = ClientCutsceneManager.inCutscene();
         if (inPlayback) {
             ImGui.textDisabled("Disabled while a cutscene is playing.");
@@ -165,62 +207,20 @@ public class CutsceneTimelinePanel extends EditorPanel {
             ImGui.checkbox("Enable Preview##cs_tl_preview", previewEnabled);
         }
 
-        // Sync local ImInts with Cutscene object
-        previewLength.set(c.getDefaultLength());
-        holdStart.set(c.getDefaultHoldStart());
-        holdEnd.set(c.getDefaultHoldEnd());
-
-        // Find easing index
-        int currentEaseIdx = 0;
-        for (int i = 0; i < EASING_NAMES.length; i++) {
-            if (EASING_NAMES[i].equalsIgnoreCase(c.getDefaultEasing())) {
-                currentEaseIdx = i;
-                break;
-            }
-        }
-        easingIdx.set(currentEaseIdx);
-
-        boolean changed = false;
-
-        ImGui.setNextItemWidth(120);
-        if (ImGui.inputInt("Length (ticks)##cs_tl_len", previewLength)) {
-            c.setDefaultLength(Math.max(1, previewLength.get()));
-            changed = true;
-        }
-
-        ImGui.setNextItemWidth(120);
-        if (ImGui.inputInt("Hold Start##cs_tl_hs", holdStart)) {
-            c.setDefaultHoldStart(Math.max(0, holdStart.get()));
-            changed = true;
-        }
-
-        ImGui.setNextItemWidth(120);
-        if (ImGui.inputInt("Hold End##cs_tl_he", holdEnd)) {
-            c.setDefaultHoldEnd(Math.max(0, holdEnd.get()));
-            changed = true;
-        }
-
-        ImGui.setNextItemWidth(150);
-        if (ImGui.combo("Easing##cs_tl_ease", easingIdx, EASING_NAMES)) {
-            c.setDefaultEasing(EASING_NAMES[easingIdx.get()]);
-            changed = true;
-        }
-
-        if (changed) {
-            markDirty();
-        }
-
-        int total = getTotalTicks();
-        if (previewTick.get() > total) previewTick.set(total);
-        if (previewTick.get() < 0) previewTick.set(0);
-
+        int total = getTotalTicks(c);
+        int currentTick = Math.max(0, Math.min(previewTick.get(), total));
+        previewTick.set(currentTick);
         ImGui.setNextItemWidth(-1);
         int[] scrub = {previewTick.get()};
         if (ImGui.sliderInt("##cs_tl_scrub", scrub, 0, total)) {
             previewTick.set(scrub[0]);
+            // Enable live preview while scrubbing
+            previewEnabled.set(true);
         }
 
         applyPreviewCamera(c, total);
+        // If not currently playing, allow user to toggle preview and scrub live in the timeline
+        // (Preview toggle is provided below in the UI for clarity)
     }
 
     private void renderNodeControls(Cutscene c) {
@@ -321,6 +321,9 @@ public class CutsceneTimelinePanel extends EditorPanel {
             float minY = ImGui.getItemRectMin().y;
             float maxY = ImGui.getItemRectMax().y;
             float baseY = maxY - 18f;
+            float barTopY = minY + 8f;
+            float barHeight = 8;
+            float barBottomY = barTopY + barHeight;
 
             draw.addLine(minX, baseY, minX + contentW, baseY, 0x40FFFFFF, 1f);
 
@@ -336,8 +339,8 @@ public class CutsceneTimelinePanel extends EditorPanel {
             }
 
             int anchors = c.getAnchorPointCount();
-            int len = Math.max(1, previewLength.get());
-            int hs = Math.max(0, holdStart.get());
+            int len = Math.max(1, c.getDefaultLength());
+            int hs = Math.max(0, c.getDefaultHoldStart());
             int nodeCol = 0xB0000000 | (c.getColorArgb() & 0x00FFFFFF);
             for (int i = 0; i < anchors; i++) {
                 double distKey = getAnchorDistanceKey(c, i, anchors);
@@ -349,10 +352,16 @@ public class CutsceneTimelinePanel extends EditorPanel {
             var effects = c.getScreenEffects();
             for (int i = 0; i < effects.size(); i++) {
                 var ev = effects.get(i);
-                int tick = Mth.clamp(hs + Math.round(Mth.clamp(ev.at, 0f, 1f) * len), 0, totalTicks);
-                float x = minX + padding + (tick * zoomPxPerTick);
-                int col = (i == selectedEffectIndex.get()) ? 0xFFFFFFFF : 0xA0FFFFFF;
-                draw.addLine(x, minY + 2f, x, minY + 14f, col, 2f);
+                int startTick = hs + Math.round(ev.at * len);
+                int durationTicks = Math.max(1, Math.round((ev.introDuration + ev.holdDuration + ev.outroDuration) * len));
+                float x = minX + padding + (startTick * zoomPxPerTick);
+                float w = durationTicks * zoomPxPerTick;
+                int color = (i == selectedEffectIndex.get()) ? 0xFFFFFFFF : 0x66FFFFFF;
+                draw.addRectFilled(x, barTopY, x + w, barBottomY, color);
+                draw.addText(x + w * 0.5f, barTopY - 6f, 0xFFFFFFFF, ev.name);
+                if (ImGui.isMouseHoveringRect(x, barTopY, x + w, barBottomY)) {
+                    ImGui.setTooltip("Effect: " + ev.name + ", at=" + ev.at + ", duration=" + (ev.introDuration + ev.holdDuration + ev.outroDuration));
+                }
             }
 
             float playheadX = minX + padding + (previewTick.get() * zoomPxPerTick);
@@ -393,7 +402,7 @@ public class CutsceneTimelinePanel extends EditorPanel {
         ImGui.spacing();
 
         if (ImGui.button(ImIcons.FA.FA_PLUS + " Add at Playhead##cs_eff_add")) {
-            float at = computeAtFromPlayhead(totalTicks);
+            float at = computeAtFromPlayhead(c, totalTicks);
             var created = new Cutscene.ScreenEffectEvent(
                     at, ScreenEffectType.cinematic.name(), 0.1f, 0.2f, 0.1f, LerpType.LINEAR.name(), "");
             c.addScreenEffect(created);
@@ -407,8 +416,9 @@ public class CutsceneTimelinePanel extends EditorPanel {
             int idx = selectedEffectIndex.get();
             if (idx >= 0 && idx < effects.size()) {
                 var ev = effects.get(idx);
+                int len = Math.max(1, c.getDefaultLength());
                 de.luckymcdev.foundryengine.client.cutscene.ClientScreenEffectManager.startEffect(
-                        ev.name, ev.getIntroTicks(previewLength.get()), ev.getHoldTicks(previewLength.get()), ev.getOutroTicks(previewLength.get()), ev.lerpType, ev.command);
+                        ev.name, ev.getIntroTicks(len), ev.getHoldTicks(len), ev.getOutroTicks(len), ev.lerpType, ev.command);
             }
         }
 
@@ -445,25 +455,61 @@ public class CutsceneTimelinePanel extends EditorPanel {
 
         ImGui.sameLine();
         if (ImGui.button(ImIcons.FA.FA_LOCATION_DOT + " To Playhead##cs_eff_to_ph")) {
-            selectedEffectAt.set(computeAtFromPlayhead(totalTicks));
+            selectedEffectAt.set(computeAtFromPlayhead(c, totalTicks));
         }
 
         ImGui.setNextItemWidth(180);
         ImGui.combo("Type##cs_eff_type", effectTypeIndex, EFFECT_TYPES);
 
-        ImGui.setNextItemWidth(120);
-        ImGui.sliderFloat("Intro##cs_eff_intro", effectIntroDuration.getData(), 0f, 1f, "%.2f");
-        if (effectIntroDuration.get() < 0) effectIntroDuration.set(0f);
+        int len = Math.max(1, c.getDefaultLength());
+        var itemWidth = 200;
+        ImGui.setNextItemWidth(itemWidth);
+        int idxSel = selectedEffectIndex.get();
+        if (idxSel >= 0 && idxSel < effects.size()) {
+            var ev = effects.get(idxSel);
+            int atTicks = Math.max(0, Math.min(Math.round(ev.at * len), len));
+            ImInt atTicksInput = new ImInt(atTicks);
+            if (ImGui.inputInt("At (ticks)##cs_eff_at_ticks", atTicksInput)) {
+                ev.at = Math.clamp(atTicksInput.get() / (float) len, 0f, 1f);
+            }
 
-        ImGui.setNextItemWidth(120);
-        ImGui.sliderFloat("Hold##cs_eff_hold", effectHoldDuration.getData(), 0f, 1f, "%.2f");
-        if (effectHoldDuration.get() < 0) effectHoldDuration.set(0f);
+            int introTicks = Math.max(0, Math.round(ev.introDuration * len));
+            ImInt introTicksInput = new ImInt(introTicks);
+            ImGui.setNextItemWidth(itemWidth);
+            if (ImGui.inputInt("Intro (ticks)##cs_eff_intro_ticks", introTicksInput)) {
+                ev.introDuration = Math.max(0f, introTicksInput.get()) / (float) len;
+            }
 
-        ImGui.setNextItemWidth(120);
-        ImGui.sliderFloat("Outro##cs_eff_outro", effectOutroDuration.getData(), 0f, 1f, "%.2f");
-        if (effectOutroDuration.get() < 0) effectOutroDuration.set(0f);
+            int holdTicks = Math.max(0, Math.round(ev.holdDuration * len));
+            ImInt holdTicksInput = new ImInt(holdTicks);
+            ImGui.setNextItemWidth(itemWidth);
+            if (ImGui.inputInt("Hold (ticks)##cs_eff_hold_ticks", holdTicksInput)) {
+                ev.holdDuration = Math.max(0f, holdTicksInput.get()) / (float) len;
+            }
 
-        ImGui.setNextItemWidth(150);
+            int outroTicks = Math.max(0, Math.round(ev.outroDuration * len));
+            ImInt outroTicksInput = new ImInt(outroTicks);
+            ImGui.setNextItemWidth(itemWidth);
+            if (ImGui.inputInt("Outro (ticks)##cs_eff_outro_ticks", outroTicksInput)) {
+                ev.outroDuration = Math.max(0f, outroTicksInput.get()) / (float) len;
+            }
+        }
+
+        if (ImGui.collapsingHeader("Relative Settings")) {
+            ImGui.setNextItemWidth(itemWidth);
+            ImGui.sliderFloat("Intro##cs_eff_intro", effectIntroDuration.getData(), 0f, 1f, "%.2f");
+            if (effectIntroDuration.get() < 0) effectIntroDuration.set(0f);
+
+            ImGui.setNextItemWidth(itemWidth);
+            ImGui.sliderFloat("Hold##cs_eff_hold", effectHoldDuration.getData(), 0f, 1f, "%.2f");
+            if (effectHoldDuration.get() < 0) effectHoldDuration.set(0f);
+
+            ImGui.setNextItemWidth(itemWidth);
+            ImGui.sliderFloat("Outro##cs_eff_outro", effectOutroDuration.getData(), 0f, 1f, "%.2f");
+            if (effectOutroDuration.get() < 0) effectOutroDuration.set(0f);
+        }
+
+        ImGui.setNextItemWidth(itemWidth);
         ImGui.combo("Easing##cs_eff_ease", effectEasingIndex, EASING_NAMES);
 
         ImGui.setNextItemWidth(-1);
@@ -472,11 +518,11 @@ public class CutsceneTimelinePanel extends EditorPanel {
         if (ImGui.button(ImIcons.FA.FA_CHECK + " Apply##cs_eff_apply")) {
             int idx = selectedEffectIndex.get();
             var ev = effects.get(idx);
-            ev.at = Math.clamp(selectedEffectAt.get(), 0f, 1f);
+            // Persist all fields updated via the UI. In particular, do not override tick-based edits
+            // with 0..1 sliders unless the UI explicitly changed them. Here, we rely on whatever is
+            // currently stored in ev.* values.
+            ev.at = Math.max(0f, Math.min(1f, selectedEffectAt.get()));
             ev.name = EFFECT_TYPES[Math.clamp(effectTypeIndex.get(), 0, EFFECT_TYPES.length - 1)];
-            ev.introDuration = Math.max(0f, effectIntroDuration.get());
-            ev.holdDuration = Math.max(0f, effectHoldDuration.get());
-            ev.outroDuration = Math.max(0f, effectOutroDuration.get());
             ev.lerpType = EASING_NAMES[Math.clamp(effectEasingIndex.get(), 0, EASING_NAMES.length - 1)];
             ev.command = effectCommand.get();
             ClientPacketDistributor.sendToServer(new CutscenePacket(CutsceneEditor.toNbt()));
@@ -524,8 +570,11 @@ public class CutsceneTimelinePanel extends EditorPanel {
         effectCommand.set(ev.command == null ? "" : ev.command);
     }
 
-    private int getTotalTicks() {
-        return previewLength.get() + Math.max(0, holdStart.get()) + Math.max(0, holdEnd.get());
+    private int getTotalTicks(Cutscene c) {
+        int len = Math.max(1, c.getDefaultLength());
+        int hs = Math.max(0, c.getDefaultHoldStart());
+        int he = Math.max(0, c.getDefaultHoldEnd());
+        return len + hs + he;
     }
 
     private void applyPreviewCamera(Cutscene c, int totalTicks) {
@@ -534,9 +583,9 @@ public class CutsceneTimelinePanel extends EditorPanel {
             return;
         }
 
-        int len = Math.max(1, previewLength.get());
-        int hs = Math.max(0, holdStart.get());
-        int tick = Math.clamp(previewTick.get(), 0, Math.max(1, totalTicks));
+        int len = Math.max(1, c.getDefaultLength());
+        int hs = Math.max(0, c.getDefaultHoldStart());
+        int tick = Math.min(previewTick.get(), totalTicks);
 
         float t;
         if (tick <= hs) t = 0f;
@@ -546,10 +595,10 @@ public class CutsceneTimelinePanel extends EditorPanel {
         ClientCutsceneManager.setPreview(c, t);
     }
 
-    private float computeAtFromPlayhead(int totalTicks) {
-        int len = Math.max(1, previewLength.get());
-        int hs = Math.max(0, holdStart.get());
-        int tick = Math.clamp(previewTick.get(), 0, Math.max(1, totalTicks));
+    private float computeAtFromPlayhead(Cutscene c, int totalTicks) {
+        int len = Math.max(1, c.getDefaultLength());
+        int hs = Math.max(0, c.getDefaultHoldStart());
+        int tick = Math.max(0, Math.min(previewTick.get(), totalTicks));
         if (tick <= hs) return 0f;
         if (tick >= hs + len) return 1f;
         return (tick - hs) / (float) len;
