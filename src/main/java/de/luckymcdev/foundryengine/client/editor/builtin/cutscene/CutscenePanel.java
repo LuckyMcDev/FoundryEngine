@@ -301,16 +301,6 @@ public class CutscenePanel extends EditorPanel {
             setStatus("Playing: " + c.getName());
         }
         ImGui.sameLine();
-        if (ImGui.button(ImIcons.FA.FA_ANCHOR + " Play Anchored")) {
-            sendCommand("engine cutscene playAnchored " + playerName
-                    + " " + c.getName()
-                    + " " + CutsceneUiState.getPlaybackLength()
-                    + " true true"
-                    + " " + lerpName
-                    + " " + CutsceneUiState.getPlaybackHoldStart()
-                    + " " + CutsceneUiState.getPlaybackHoldEnd());
-            setStatus("Playing anchored: " + c.getName());
-        }
 
         if (ClientCutsceneManager.inCutscene()) {
             ImGui.sameLine();

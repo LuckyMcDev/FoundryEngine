@@ -1,4 +1,4 @@
-package de.luckymcdev.foundryengine.api.event;
+package de.luckymcdev.foundryengine.common.event;
 
 @FunctionalInterface
 public interface EventCallback<T> {

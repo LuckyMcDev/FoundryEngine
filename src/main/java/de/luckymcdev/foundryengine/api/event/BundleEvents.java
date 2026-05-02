@@ -1,43 +1,93 @@
 package de.luckymcdev.foundryengine.api.event;
 
 import de.luckymcdev.foundryengine.api.event.registry.RegistryEvent;
-import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintEngine;
+import de.luckymcdev.foundryengine.common.event.BlueprintContexts;
+import de.luckymcdev.foundryengine.common.event.EventCallback;
+import de.luckymcdev.foundryengine.common.event.EventGroupHolder;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
+import net.neoforged.fml.event.lifecycle.InterModProcessEvent;
 import net.neoforged.neoforge.event.VanillaGameEvent;
+import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import org.jetbrains.annotations.ApiStatus;
 
-import java.util.Map;
-
 public class BundleEvents {
-    private static final EventGroup<RegistryEvent> LOAD = new EventGroup<>();
-    private static final EventGroup<VanillaGameEvent> VANILLA_GAME = new EventGroup<>();
+    public static final EventGroupHolder<RegistryEvent> REGISTRY = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_REGISTRY, BlueprintContexts::bundleRegistry);
+    public static final EventGroupHolder<VanillaGameEvent> VANILLA_GAME = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_VANILLA_GAME);
+    public static final EventGroupHolder<FMLCommonSetupEvent> COMMON_SETUP = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_COMMON_SETUP);
+    public static final EventGroupHolder<FMLClientSetupEvent> CLIENT_SETUP = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_CLIENT_SETUP);
+    public static final EventGroupHolder<FMLDedicatedServerSetupEvent> DEDICATED_SERVER_SETUP = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_DEDICATED_SERVER_SETUP);
+    public static final EventGroupHolder<InterModProcessEvent> POST_INIT = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_POST_INIT);
+    public static final EventGroupHolder<ServerAboutToStartEvent> SERVER_ABOUT_TO_START = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_SERVER_ABOUT_TO_START);
 
     public static void registry(EventCallback<RegistryEvent> callback) {
-        LOAD.add(callback);
+        REGISTRY.register(callback);
     }
 
     public static void vanillaGame(EventCallback<VanillaGameEvent> callback) {
-        VANILLA_GAME.add(callback);
+        VANILLA_GAME.register(callback);
+    }
+
+    public static void commonSetup(EventCallback<FMLCommonSetupEvent> callback) {
+        COMMON_SETUP.register(callback);
+    }
+
+    public static void clientSetup(EventCallback<FMLClientSetupEvent> callback) {
+        CLIENT_SETUP.register(callback);
+    }
+
+    public static void dedicatedServerSetup(EventCallback<FMLDedicatedServerSetupEvent> callback) {
+        DEDICATED_SERVER_SETUP.register(callback);
+    }
+
+    public static void postInit(EventCallback<InterModProcessEvent> callback) {
+        POST_INIT.register(callback);
+    }
+
+    public static void serverAboutToStart(EventCallback<ServerAboutToStartEvent> callback) {
+        SERVER_ABOUT_TO_START.register(callback);
     }
 
     @ApiStatus.Internal
     public static class Internal {
         public static void postRegistry(RegistryEvent event) {
-            LOAD.post(event);
-            Common.getBlueprintManager().executeCommonEvent(
-                    BlueprintEngine.BuiltinNodes.EVENT_REGISTRY.id,
-                    Map.of(BlueprintEngine.CTX_REGISTRY_EVENT, event)
-            );
+            REGISTRY.post(event);
         }
 
         public static void postVanillaGame(VanillaGameEvent event) {
             VANILLA_GAME.post(event);
-            Common.getBlueprintManager().executeCommonEvent(BlueprintEngine.BuiltinNodes.EVENT_VANILLA_GAME.id);
+        }
+
+        public static void postCommonSetup(FMLCommonSetupEvent event) {
+            COMMON_SETUP.post(event);
+        }
+
+        public static void postClientSetup(FMLClientSetupEvent event) {
+            CLIENT_SETUP.post(event);
+        }
+
+        public static void postDedicatedServerSetup(FMLDedicatedServerSetupEvent event) {
+            DEDICATED_SERVER_SETUP.post(event);
+        }
+
+        public static void postPostInit(InterModProcessEvent event) {
+            POST_INIT.post(event);
+        }
+
+        public static void postServerAboutToStart(ServerAboutToStartEvent event) {
+            SERVER_ABOUT_TO_START.post(event);
         }
 
         public static void clear() {
-            LOAD.clear();
+            REGISTRY.clear();
             VANILLA_GAME.clear();
+            COMMON_SETUP.clear();
+            CLIENT_SETUP.clear();
+            DEDICATED_SERVER_SETUP.clear();
+            POST_INIT.clear();
+            SERVER_ABOUT_TO_START.clear();
         }
     }
 }

@@ -1,110 +1,115 @@
 package de.luckymcdev.foundryengine.api.event;
 
-import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintEngine;
+import de.luckymcdev.foundryengine.common.event.BlueprintContexts;
+import de.luckymcdev.foundryengine.common.event.EventCallback;
+import de.luckymcdev.foundryengine.common.event.EventGroupHolder;
 import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.client.event.lifecycle.ClientStoppedEvent;
 import net.neoforged.neoforge.client.event.lifecycle.ClientStoppingEvent;
 import org.jetbrains.annotations.ApiStatus;
 
-import java.util.Map;
-
 public class ClientEvents {
-    private static final EventGroup<ClientTickEvent.Post> TICK = new EventGroup<>();
-    private static final EventGroup<ClientStoppedEvent> STOPPED = new EventGroup<>();
-    private static final EventGroup<ClientStoppingEvent> STOPPING = new EventGroup<>();
-    private static final EventGroup<ClientChatEvent> CHAT = new EventGroup<>();
-    private static final EventGroup<RegisterKeyMappingsEvent> KEY_MAPPINGS = new EventGroup<>();
-    private static final EventGroup<RenderGuiEvent.Post> RENDER_GUI = new EventGroup<>();
-    private static final EventGroup<RenderGuiLayerEvent.Post> RENDER_GUI_LAYER = new EventGroup<>();
-    private static final EventGroup<RenderHandEvent> RENDER_HAND = new EventGroup<>();
-    private static final EventGroup<RenderLevelStageEvent.AfterLevel> RENDER_AFTER_LEVEL = new EventGroup<>();
+    public static final EventGroupHolder<ClientTickEvent.Post> TICK = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_CLIENT_TICK, BlueprintContexts::clientTick);
+    public static final EventGroupHolder<ClientStoppedEvent> STOPPED = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_CLIENT_STOPPED);
+    public static final EventGroupHolder<ClientStoppingEvent> STOPPING = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_CLIENT_STOPPING);
+    public static final EventGroupHolder<ClientChatEvent> CHAT = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_CHAT_MESSAGE);
+    public static final EventGroupHolder<RegisterKeyMappingsEvent> KEY_MAPPINGS = new EventGroupHolder<>();
+    public static final EventGroupHolder<RenderGuiEvent.Post> RENDER_GUI = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_RENDER_GUI);
+    public static final EventGroupHolder<RenderGuiLayerEvent.Post> RENDER_GUI_LAYER = new EventGroupHolder<>();
+    public static final EventGroupHolder<RenderHandEvent> RENDER_HAND = new EventGroupHolder<>();
+    public static final EventGroupHolder<RenderLevelStageEvent.AfterLevel> RENDER_AFTER_LEVEL = new EventGroupHolder<>();
+    public static final EventGroupHolder<ClientPlayerNetworkEvent.LoggingIn> LOGGED_IN = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_CLIENT_LOGGED_IN);
+    public static final EventGroupHolder<ClientPlayerNetworkEvent.LoggingOut> LOGGED_OUT = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_CLIENT_LOGGED_OUT);
 
-    public static void tick(EventCallback<ClientTickEvent.Post> callback) {
-        TICK.add(callback);
+    public static void tick(EventCallback<ClientTickEvent.Post> cb) {
+        TICK.register(cb);
     }
 
-    public static void stopped(EventCallback<ClientStoppedEvent> callback) {
-        STOPPED.add(callback);
+    public static void stopped(EventCallback<ClientStoppedEvent> cb) {
+        STOPPED.register(cb);
     }
 
-    public static void stopping(EventCallback<ClientStoppingEvent> callback) {
-        STOPPING.add(callback);
+    public static void stopping(EventCallback<ClientStoppingEvent> cb) {
+        STOPPING.register(cb);
     }
 
-    public static void chat(EventCallback<ClientChatEvent> callback) {
-        CHAT.add(callback);
+    public static void chat(EventCallback<ClientChatEvent> cb) {
+        CHAT.register(cb);
     }
 
-    public static void keyMappings(EventCallback<RegisterKeyMappingsEvent> callback) {
-        KEY_MAPPINGS.add(callback);
+    public static void keyMappings(EventCallback<RegisterKeyMappingsEvent> cb) {
+        KEY_MAPPINGS.register(cb);
     }
 
-    public static void renderGui(EventCallback<RenderGuiEvent.Post> callback) {
-        RENDER_GUI.add(callback);
+    public static void renderGui(EventCallback<RenderGuiEvent.Post> cb) {
+        RENDER_GUI.register(cb);
     }
 
-    public static void renderGuiLayer(EventCallback<RenderGuiLayerEvent.Post> callback) {
-        RENDER_GUI_LAYER.add(callback);
+    public static void renderGuiLayer(EventCallback<RenderGuiLayerEvent.Post> cb) {
+        RENDER_GUI_LAYER.register(cb);
     }
 
-    public static void renderHand(EventCallback<RenderHandEvent> callback) {
-        RENDER_HAND.add(callback);
+    public static void renderHand(EventCallback<RenderHandEvent> cb) {
+        RENDER_HAND.register(cb);
     }
 
-    public static void renderAfterLevel(EventCallback<RenderLevelStageEvent.AfterLevel> callback) {
-        RENDER_AFTER_LEVEL.add(callback);
+    public static void renderAfterLevel(EventCallback<RenderLevelStageEvent.AfterLevel> cb) {
+        RENDER_AFTER_LEVEL.register(cb);
+    }
+
+    public static void loggedIn(EventCallback<ClientPlayerNetworkEvent.LoggingIn> cb) {
+        LOGGED_IN.register(cb);
+    }
+
+    public static void loggedOut(EventCallback<ClientPlayerNetworkEvent.LoggingOut> cb) {
+        LOGGED_OUT.register(cb);
     }
 
     @ApiStatus.Internal
     public static class Internal {
-        private static int clientTick = 0;
-
-        public static void postTick(ClientTickEvent.Post event) {
-            TICK.post(event);
-            Common.getBlueprintManager().executeCommonEvent(
-                    BlueprintEngine.BuiltinNodes.EVENT_CLIENT_TICK.id,
-                    Map.of(
-                            "Tick", ++clientTick,
-                            "DeltaSeconds", 1f / 20f
-                    )
-            );
+        public static void postTick(ClientTickEvent.Post e) {
+            TICK.post(e);
         }
 
-        public static void postStopped(ClientStoppedEvent event) {
-            STOPPED.post(event);
-            Common.getBlueprintManager().executeCommonEvent(BlueprintEngine.BuiltinNodes.EVENT_CLIENT_STOPPED.id);
+        public static void postStopped(ClientStoppedEvent e) {
+            STOPPED.post(e);
         }
 
-        public static void postStopping(ClientStoppingEvent event) {
-            STOPPING.post(event);
-            Common.getBlueprintManager().executeCommonEvent(BlueprintEngine.BuiltinNodes.EVENT_CLIENT_STOPPING.id);
+        public static void postStopping(ClientStoppingEvent e) {
+            STOPPING.post(e);
         }
 
-        public static void postChat(ClientChatEvent event) {
-            CHAT.post(event);
-            Common.getBlueprintManager().executeCommonEvent(BlueprintEngine.BuiltinNodes.EVENT_CHAT_MESSAGE.id);
+        public static void postChat(ClientChatEvent e) {
+            CHAT.post(e);
         }
 
-        public static void postKeyMappings(RegisterKeyMappingsEvent event) {
-            KEY_MAPPINGS.post(event);
+        public static void postKeyMappings(RegisterKeyMappingsEvent e) {
+            KEY_MAPPINGS.post(e);
         }
 
-        public static void postRenderGui(RenderGuiEvent.Post event) {
-            RENDER_GUI.post(event);
-            Common.getBlueprintManager().executeCommonEvent(BlueprintEngine.BuiltinNodes.EVENT_RENDER_GUI.id);
+        public static void postRenderGui(RenderGuiEvent.Post e) {
+            RENDER_GUI.post(e);
         }
 
-        public static void postRenderGuiLayer(RenderGuiLayerEvent.Post event) {
-            RENDER_GUI_LAYER.post(event);
+        public static void postRenderGuiLayer(RenderGuiLayerEvent.Post e) {
+            RENDER_GUI_LAYER.post(e);
         }
 
-        public static void postRenderHand(RenderHandEvent event) {
-            RENDER_HAND.post(event);
+        public static void postRenderHand(RenderHandEvent e) {
+            RENDER_HAND.post(e);
         }
 
-        public static void postRenderAfterLevel(RenderLevelStageEvent.AfterLevel event) {
-            RENDER_AFTER_LEVEL.post(event);
+        public static void postRenderAfterLevel(RenderLevelStageEvent.AfterLevel e) {
+            RENDER_AFTER_LEVEL.post(e);
+        }
+
+        public static void postLoggedIn(ClientPlayerNetworkEvent.LoggingIn e) {
+            LOGGED_IN.post(e);
+        }
+
+        public static void postLoggedOut(ClientPlayerNetworkEvent.LoggingOut e) {
+            LOGGED_OUT.post(e);
         }
 
         public static void clear() {
@@ -117,6 +122,9 @@ public class ClientEvents {
             RENDER_GUI_LAYER.clear();
             RENDER_HAND.clear();
             RENDER_AFTER_LEVEL.clear();
+            LOGGED_IN.clear();
+            LOGGED_OUT.clear();
+            BlueprintContexts.resetClientTick();
         }
     }
 }

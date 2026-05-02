@@ -1,10 +1,7 @@
 package de.luckymcdev.foundryengine;
 
 import com.mojang.logging.LogUtils;
-import de.luckymcdev.foundryengine.api.event.BundleEvents;
-import de.luckymcdev.foundryengine.api.event.ClientEvents;
-import de.luckymcdev.foundryengine.api.event.CommandEvents;
-import de.luckymcdev.foundryengine.api.event.ServerEvents;
+import de.luckymcdev.foundryengine.api.event.*;
 import de.luckymcdev.foundryengine.api.event.registry.RegistryEvent;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.cutscene.CutsceneItems;
@@ -49,9 +46,6 @@ import org.slf4j.Logger;
 import java.io.IOException;
 import java.nio.file.Files;
 
-/**
- * Main Mod Entrypoint for FoundryEngine.
- */
 @Mod(Common.MODID)
 public class FoundryEngineMod {
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -59,52 +53,25 @@ public class FoundryEngineMod {
     public static ArtifactVersion modVersion;
     private static @Nullable IEventBus modBus;
 
-    /**
-     * Initializes the mod and registers events.
-     *
-     * @param modBus       the mod event bus
-     * @param modContainer the mod container
-     */
     public FoundryEngineMod(IEventBus modBus, ModContainer modContainer) {
         FoundryEngineMod.modBus = modBus;
         FoundryEngineMod.modVersion = modContainer.getModInfo().getVersion();
 
         registerModBus(modBus);
+        registerInternalEvents();
 
         modBus.addListener(this::commonSetup);
         modBus.addListener(this::onConstruct);
         modBus.addListener(this::onAddPackFinders);
         modBus.addListener(this::onRegisterPayloadHandlers);
         modBus.addListener(CutsceneItems::onRegister);
+
         BUS.addListener(this::onRegisterCommands);
         BUS.addListener(this::onServerAboutToStart);
         BUS.addListener(this::onServerTick);
-
         BUS.addListener(this::onRegisterVirtualPacks);
         BUS.addListener(Common.getSceneManager()::entityJoinLevel);
         BUS.addListener(Common.getSceneManager()::entityLeaveLevel);
-
-        BUS.addListener(BundleEvents.Internal::postVanillaGame);
-
-        BUS.addListener(CommandEvents.Internal::post);
-        BUS.addListener(CommandEvents.Internal::postClient);
-
-        BUS.addListener(ServerEvents.Internal::postAboutToStart);
-        BUS.addListener(ServerEvents.Internal::postStarting);
-        BUS.addListener(ServerEvents.Internal::postStarted);
-        BUS.addListener(ServerEvents.Internal::postStopping);
-        BUS.addListener(ServerEvents.Internal::postStopped);
-        BUS.addListener(ServerEvents.Internal::postTick);
-
-        BUS.addListener(ClientEvents.Internal::postTick);
-        BUS.addListener(ClientEvents.Internal::postStopped);
-        BUS.addListener(ClientEvents.Internal::postStopping);
-        BUS.addListener(ClientEvents.Internal::postChat);
-        BUS.addListener(ClientEvents.Internal::postRenderGui);
-        BUS.addListener(ClientEvents.Internal::postRenderGuiLayer);
-        BUS.addListener(ClientEvents.Internal::postRenderHand);
-        BUS.addListener(ClientEvents.Internal::postRenderAfterLevel);
-        modBus.addListener(ClientEvents.Internal::postKeyMappings);
 
         Config.registerCommon(modContainer);
         Config.registerStartup(modContainer);
@@ -117,16 +84,6 @@ public class FoundryEngineMod {
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
-
-        //Common.getGameBehaviorManager().register(Common.id("direct_world_load"),
-        //        new DirectWorldLoadBehavior("testWorld")
-        //);
-
-        //Common.getGameStageHandler().dimensions().requireStages(Level.END, "end");
-        //Common.getGameStageHandler().item().requireStages(Items.STICK, "stick");
-        //Common.getGameStageHandler().loot().requireStages(BuiltInLootTables.END_CITY_TREASURE, "mineshaft");
-        //Common.getGameStageHandler().mobs().requireStages(EntityType.ZOMBIE, "zombie");
-
         Common.getNetworkManager().register(TestPacket.DEFINITION);
         Common.getNetworkManager().register(ServerBoundSetTimePacket.DEFINITION);
         Common.getNetworkManager().register(ServerBoundChangeWeatherPacket.DEFINITION);
@@ -146,6 +103,82 @@ public class FoundryEngineMod {
         Common.getGameStageHandler().register(modBus);
         EngineRegistries.register(modBus);
         EngineEntities.register(modBus);
+    }
+
+    private void registerInternalEvents() {
+        BUS.addListener(BlockEvents.Internal::postBroken);
+        BUS.addListener(BlockEvents.Internal::postPlaced);
+        BUS.addListener(BlockEvents.Internal::postNeighborNotify);
+        BUS.addListener(BlockEvents.Internal::postLeftClicked);
+        BUS.addListener(BlockEvents.Internal::postRightClicked);
+        BUS.addListener(BlockEvents.Internal::postFarmlandTrampled);
+
+        BUS.addListener(BundleEvents.Internal::postVanillaGame);
+        BUS.addListener(BundleEvents.Internal::postServerAboutToStart);
+
+        BUS.addListener(ClientEvents.Internal::postTick);
+        BUS.addListener(ClientEvents.Internal::postStopped);
+        BUS.addListener(ClientEvents.Internal::postStopping);
+        BUS.addListener(ClientEvents.Internal::postChat);
+        BUS.addListener(ClientEvents.Internal::postRenderGui);
+        BUS.addListener(ClientEvents.Internal::postRenderGuiLayer);
+        BUS.addListener(ClientEvents.Internal::postRenderHand);
+        BUS.addListener(ClientEvents.Internal::postRenderAfterLevel);
+        BUS.addListener(ClientEvents.Internal::postLoggedIn);
+        BUS.addListener(ClientEvents.Internal::postLoggedOut);
+
+        BUS.addListener(CommandEvents.Internal::post);
+        BUS.addListener(CommandEvents.Internal::postClient);
+
+        BUS.addListener(EntityEvents.Internal::postJoinLevel);
+        BUS.addListener(EntityEvents.Internal::postDeath);
+        BUS.addListener(EntityEvents.Internal::postDrops);
+        BUS.addListener(EntityEvents.Internal::postHurt);
+        BUS.addListener(EntityEvents.Internal::postSpawned);
+        BUS.addListener(EntityEvents.Internal::postCheckSpawn);
+
+        BUS.addListener(ItemEvents.Internal::postPickedUp);
+        BUS.addListener(ItemEvents.Internal::postDestroyed);
+        BUS.addListener(ItemEvents.Internal::postRightClicked);
+        BUS.addListener(ItemEvents.Internal::postCrafted);
+        BUS.addListener(ItemEvents.Internal::postDropped);
+        BUS.addListener(ItemEvents.Internal::postFoodEaten);
+        BUS.addListener(ItemEvents.Internal::postSmelted);
+        BUS.addListener(ItemEvents.Internal::postDynamicTooltips);
+        BUS.addListener(ItemEvents.Internal::postEntityInteracted);
+        BUS.addListener(ItemEvents.Internal::postFirstLeftClicked);
+        BUS.addListener(ItemEvents.Internal::postFirstRightClicked);
+
+        BUS.addListener(LevelEvents.Internal::postLoad);
+        BUS.addListener(LevelEvents.Internal::postUnload);
+        BUS.addListener(LevelEvents.Internal::postSave);
+        BUS.addListener(LevelEvents.Internal::postTick);
+        BUS.addListener(LevelEvents.Internal::postBeforeExplosion);
+        BUS.addListener(LevelEvents.Internal::postAfterExplosion);
+
+        BUS.addListener(NetworkEvents.Internal::postLogin);
+        BUS.addListener(NetworkEvents.Internal::postLogout);
+
+        BUS.addListener(PlayerEvents.Internal::postLoggedIn);
+        BUS.addListener(PlayerEvents.Internal::postLoggedOut);
+        BUS.addListener(PlayerEvents.Internal::postTick);
+        BUS.addListener(PlayerEvents.Internal::postChat);
+        BUS.addListener(PlayerEvents.Internal::postAdvancement);
+        BUS.addListener(PlayerEvents.Internal::postChestClosed);
+        BUS.addListener(PlayerEvents.Internal::postChestOpened);
+        BUS.addListener(PlayerEvents.Internal::postRespawned);
+        BUS.addListener(PlayerEvents.Internal::postDecorateChat);
+
+        BUS.addListener(RecipeEvents.Internal::postRecipesReceived);
+        BUS.addListener(RecipeEvents.Internal::postModifyRecipes);
+
+        BUS.addListener(ServerEvents.Internal::postAboutToStart);
+        BUS.addListener(ServerEvents.Internal::postStarted);
+        BUS.addListener(ServerEvents.Internal::postStarting);
+        BUS.addListener(ServerEvents.Internal::postStopped);
+        BUS.addListener(ServerEvents.Internal::postStopping);
+        BUS.addListener(ServerEvents.Internal::postTick);
+        BUS.addListener(ServerEvents.Internal::postTags);
     }
 
     private void onAddPackFinders(AddPackFindersEvent event) {
@@ -193,13 +226,9 @@ public class FoundryEngineMod {
                 ModLoader.postEvent(registryEvent);
                 BundleEvents.Internal.postRegistry(registryEvent);
             });
-
-            //BundleDataGenerator.runAll();
-
         } catch (IOException e) {
             LOGGER.error("Error while Loading Bundles: {}", e.getLocalizedMessage());
         }
-
         EngineLogAppender.Holder.addAppender();
     }
 }

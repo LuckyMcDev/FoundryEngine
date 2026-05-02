@@ -1,4 +1,4 @@
-package de.luckymcdev.foundryengine.api.event;
+package de.luckymcdev.foundryengine.common.event;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
