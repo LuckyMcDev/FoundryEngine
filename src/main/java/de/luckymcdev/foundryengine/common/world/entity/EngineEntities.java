@@ -16,25 +16,25 @@ public class EngineEntities {
 
     public static final DeferredRegister.Entities ENTITY_TYPES = DeferredRegister.createEntities(Common.MODID);
 
-    public static final Supplier<EntityType<EngineBlockDisplay>> BLOCK_DISPLAY = create(
+    public static final Supplier<EntityType<EngineBlockDisplay>> BLOCK_DISPLAY = createDisplay(
             "block_display",
             EngineBlockDisplay::new,
             MobCategory.MISC
     );
 
-    public static final Supplier<EntityType<EngineItemDisplay>> ITEM_DISPLAY = create(
+    public static final Supplier<EntityType<EngineItemDisplay>> ITEM_DISPLAY = createDisplay(
             "item_display",
             EngineItemDisplay::new,
             MobCategory.MISC
     );
 
-    public static final Supplier<EntityType<EngineTextDisplay>> TEXT_DISPLAY = create(
+    public static final Supplier<EntityType<EngineTextDisplay>> TEXT_DISPLAY = createDisplay(
             "text_display",
             EngineTextDisplay::new,
             MobCategory.MISC
     );
 
-    private static <E extends Entity> Supplier<EntityType<E>> create(String name, EntityType.EntityFactory<E> factory, MobCategory category) {
+    private static <E extends Entity> Supplier<EntityType<E>> createDisplay(String name, EntityType.EntityFactory<E> factory, MobCategory category) {
         return ENTITY_TYPES.registerEntityType(
                 name,
                 factory,
