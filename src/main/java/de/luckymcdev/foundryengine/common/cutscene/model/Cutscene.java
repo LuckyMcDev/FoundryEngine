@@ -376,18 +376,27 @@ public class Cutscene {
          */
         public float at;
         public String name;
-        public int introTicks;
-        public int holdTicks;
-        public int outroTicks;
+        /**
+         * Normalized duration (0..1) of the intro phase, relative to cutscene length.
+         */
+        public float introDuration;
+        /**
+         * Normalized duration (0..1) of the hold phase, relative to cutscene length.
+         */
+        public float holdDuration;
+        /**
+         * Normalized duration (0..1) of the outro phase, relative to cutscene length.
+         */
+        public float outroDuration;
         public String lerpType;
         public String command;
 
-        public ScreenEffectEvent(float at, String name, int introTicks, int holdTicks, int outroTicks, String lerpType, String command) {
+        public ScreenEffectEvent(float at, String name, float introDuration, float holdDuration, float outroDuration, String lerpType, String command) {
             this.at = net.minecraft.util.Mth.clamp(at, 0f, 1f);
             this.name = name == null ? "" : name;
-            this.introTicks = Math.max(0, introTicks);
-            this.holdTicks = Math.max(0, holdTicks);
-            this.outroTicks = Math.max(0, outroTicks);
+            this.introDuration = Math.max(0f, introDuration);
+            this.holdDuration = Math.max(0f, holdDuration);
+            this.outroDuration = Math.max(0f, outroDuration);
             this.lerpType = (lerpType == null || lerpType.isBlank()) ? LerpType.LINEAR.name() : lerpType;
             this.command = command == null ? "" : command;
         }
@@ -395,11 +404,24 @@ public class Cutscene {
         public static ScreenEffectEvent fromNbt(CompoundTag tag) {
             float at = tag.getFloatOr("At", 0f);
             String name = tag.getStringOr("Name", "");
-            int intro = tag.getIntOr("Intro", 0);
-            int hold = tag.getIntOr("Hold", 0);
-            int outro = tag.getIntOr("Outro", 0);
+            float intro = tag.getFloatOr("IntroDuration", -1f);
+            float hold = tag.getFloatOr("HoldDuration", -1f);
+            float outro = tag.getFloatOr("OutroDuration", -1f);
             String lerp = tag.getStringOr("LerpType", LerpType.LINEAR.name());
             String cmd = tag.getStringOr("Command", "");
+
+            // Migration: if new fields not present, try old absolute tick fields
+            if (intro < 0f || hold < 0f || outro < 0f) {
+                int oldIntro = tag.getIntOr("Intro", 0);
+                int oldHold = tag.getIntOr("Hold", 0);
+                int oldOutro = tag.getIntOr("Outro", 0);
+                // Convert old absolute ticks to normalized (assuming default 60-tick cutscene)
+                float defaultLen = 60f;
+                intro = oldIntro / defaultLen;
+                hold = oldHold / defaultLen;
+                outro = oldOutro / defaultLen;
+            }
+
             return new ScreenEffectEvent(at, name, intro, hold, outro, lerp, cmd);
         }
 
@@ -407,12 +429,27 @@ public class Cutscene {
             CompoundTag tag = new CompoundTag();
             tag.putFloat("At", this.at);
             tag.putString("Name", this.name);
-            tag.putInt("Intro", this.introTicks);
-            tag.putInt("Hold", this.holdTicks);
-            tag.putInt("Outro", this.outroTicks);
+            tag.putFloat("IntroDuration", this.introDuration);
+            tag.putFloat("HoldDuration", this.holdDuration);
+            tag.putFloat("OutroDuration", this.outroDuration);
             tag.putString("LerpType", this.lerpType);
             tag.putString("Command", this.command);
             return tag;
+        }
+
+        /**
+         * Converts normalized durations to actual tick counts based on cutscene length.
+         */
+        public int getIntroTicks(float cutsceneLength) {
+            return Math.max(0, Math.round(introDuration * cutsceneLength));
+        }
+
+        public int getHoldTicks(float cutsceneLength) {
+            return Math.max(0, Math.round(holdDuration * cutsceneLength));
+        }
+
+        public int getOutroTicks(float cutsceneLength) {
+            return Math.max(0, Math.round(outroDuration * cutsceneLength));
         }
     }
 }

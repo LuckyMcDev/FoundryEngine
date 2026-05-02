@@ -14,12 +14,14 @@ public class ScreenEffectInstance {
     private final int outroTicks;
     private final LerpType lerpType;
     private final String command;
+    private final boolean isNone;
 
     private float ageInTicks = 0f;
     private boolean hasRunCommand = false;
 
     public ScreenEffectInstance(String effectName, int introTicks, int holdTicks, int outroTicks, String lerpType, String command) {
-        this.resourceLocation = Common.id(effectName);
+        this.isNone = "none".equalsIgnoreCase(effectName) || effectName == null || effectName.isBlank();
+        this.resourceLocation = this.isNone ? null : Common.id(effectName);
         this.introTicks = introTicks;
         this.holdTicks = holdTicks;
         this.outroTicks = outroTicks;
@@ -34,9 +36,24 @@ public class ScreenEffectInstance {
     public void update(float tickDelta) {
         Minecraft mc = Minecraft.getInstance();
 
+        // For "none" type, just handle command execution and complete immediately
+        if (this.isNone) {
+            if (!hasRunCommand && !command.isBlank()) {
+                ClientPacketDistributor.sendToServer(new ScreenEffectPacket("", 0, 0, 0, "", command));
+                hasRunCommand = true;
+            }
+            ClientScreenEffectManager.screenEffect = null;
+            if (!ClientCutsceneManager.inCutscene()) {
+                mc.options.hideGui = false;
+            }
+            return;
+        }
+
         if (this.ageInTicks < this.totalLengthTicks()) {
             this.ageInTicks += tickDelta;
-            mc.gameRenderer.setPostEffect(this.resourceLocation);
+            if (this.resourceLocation != null) {
+                mc.gameRenderer.setPostEffect(this.resourceLocation);
+            }
         } else {
             ClientScreenEffectManager.screenEffect = null;
             mc.gameRenderer.clearPostEffect();
@@ -51,6 +68,8 @@ public class ScreenEffectInstance {
             ClientPacketDistributor.sendToServer(new ScreenEffectPacket("", 0, 0, 0, "", command));
             hasRunCommand = true;
         }
+
+        if (this.isNone) return 0f;
 
         float progress = this.introTicks <= 0 ? 1f : (this.ageInTicks / (float) this.introTicks);
 

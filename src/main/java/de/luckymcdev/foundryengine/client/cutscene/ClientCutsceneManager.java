@@ -115,7 +115,7 @@ public class ClientCutsceneManager {
         float partial = mc.getDeltaTracker().getGameTimeDeltaPartialTick(true);
         pos = currentCutscene.getPosAt(eased, partial);
         rot = currentCutscene.getRotAt(eased);
-        currentCutscene.tickScreenEffects(t);
+        currentCutscene.tickScreenEffects(t, currentLengthInTicks);
     }
 
     public static void handlePacket(CutscenePacket packet) {
@@ -231,7 +231,7 @@ public class ClientCutsceneManager {
             return cutscene.getRotAt(t);
         }
 
-        public void tickScreenEffects(float rawT) {
+        public void tickScreenEffects(float rawT, float cutsceneLength) {
             var effects = cutscene.getScreenEffects();
             if (effects.isEmpty()) return;
 
@@ -249,7 +249,7 @@ public class ClientCutsceneManager {
                 Cutscene.ScreenEffectEvent ev = effects.get(i);
                 if (rawT + 1e-6f < ev.at) continue;
                 firedEffects[i] = true;
-                ClientScreenEffectManager.startEffect(ev.name, ev.introTicks, ev.holdTicks, ev.outroTicks, ev.lerpType, ev.command);
+                ClientScreenEffectManager.startEffect(ev.name, ev.getIntroTicks(cutsceneLength), ev.getHoldTicks(cutsceneLength), ev.getOutroTicks(cutsceneLength), ev.lerpType, ev.command);
             }
         }
     }

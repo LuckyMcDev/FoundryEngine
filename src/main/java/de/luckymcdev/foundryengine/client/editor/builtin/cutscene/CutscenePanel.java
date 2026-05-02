@@ -34,10 +34,6 @@ public class CutscenePanel extends EditorPanel {
             Arrays.stream(LerpType.values()).map(Enum::name).toArray(String[]::new);
 
     private final ImString newName = new ImString(64);
-    private final ImInt easingImInt = new ImInt(0);
-    private final ImInt playLength = new ImInt(60);
-    private final ImInt holdStart = new ImInt(0);
-    private final ImInt holdEnd = new ImInt(0);
 
     private final ImInt selectedNodeIndex = new ImInt(0);
     private final ImFloat selectedNodePitch = new ImFloat(0f);
@@ -257,58 +253,62 @@ public class CutscenePanel extends EditorPanel {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null) return;
 
+        // Sync from CutsceneUiState
         if (selectedIndex != lastSelectedCutsceneIndex) {
-            playLength.set(c.getDefaultLength());
-            holdStart.set(c.getDefaultHoldStart());
-            holdEnd.set(c.getDefaultHoldEnd());
-            int easeIdx = 0;
-            for (int i = 0; i < EASING_NAMES.length; i++) {
-                if (EASING_NAMES[i].equalsIgnoreCase(c.getDefaultEasing())) {
-                    easeIdx = i;
-                    break;
-                }
-            }
-            easingImInt.set(easeIdx);
+            CutsceneUiState.syncFromCutscene(c);
         }
 
         String playerName = mc.player.getName().getString();
-        String lerpName = EASING_NAMES[easingImInt.get()];
+        String lerpName = EASING_NAMES[CutsceneUiState.getPlaybackEasingIndex()];
 
         ImGui.setNextItemWidth(120);
-        ImGui.inputInt("Length (ticks)##len", playLength);
-        if (playLength.get() < 1) playLength.set(1);
+        int len = CutsceneUiState.getPlaybackLength();
+        if (ImGui.inputInt("Length (ticks)##len", new ImInt(len))) {
+            CutsceneUiState.setPlaybackLength(len);
+            CutsceneUiState.syncToCutscene(c);
+        }
 
         ImGui.setNextItemWidth(120);
-        ImGui.inputInt("Hold Start##hs", holdStart);
-        if (holdStart.get() < 0) holdStart.set(0);
+        int hs = CutsceneUiState.getPlaybackHoldStart();
+        if (ImGui.inputInt("Hold Start##hs", new ImInt(hs))) {
+            CutsceneUiState.setPlaybackHoldStart(hs);
+            CutsceneUiState.syncToCutscene(c);
+        }
 
         ImGui.setNextItemWidth(120);
-        ImGui.inputInt("Hold End##he", holdEnd);
-        if (holdEnd.get() < 0) holdEnd.set(0);
+        int he = CutsceneUiState.getPlaybackHoldEnd();
+        if (ImGui.inputInt("Hold End##he", new ImInt(he))) {
+            CutsceneUiState.setPlaybackHoldEnd(he);
+            CutsceneUiState.syncToCutscene(c);
+        }
 
         ImGui.setNextItemWidth(150);
-        ImGui.combo("Easing##ease", easingImInt, EASING_NAMES);
+        int easeIdx = CutsceneUiState.getPlaybackEasingIndex();
+        if (ImGui.combo("Easing##ease", new ImInt(easeIdx), EASING_NAMES)) {
+            CutsceneUiState.setPlaybackEasingIndex(easeIdx);
+            CutsceneUiState.syncToCutscene(c);
+        }
 
         ImGui.spacing();
 
         if (ImGui.button(ImIcons.FA.FA_PLAY + " Play")) {
             sendCommand("engine cutscene play " + playerName
                     + " " + c.getName()
-                    + " " + playLength.get()
+                    + " " + CutsceneUiState.getPlaybackLength()
                     + " " + lerpName
-                    + " " + holdStart.get()
-                    + " " + holdEnd.get());
+                    + " " + CutsceneUiState.getPlaybackHoldStart()
+                    + " " + CutsceneUiState.getPlaybackHoldEnd());
             setStatus("Playing: " + c.getName());
         }
         ImGui.sameLine();
         if (ImGui.button(ImIcons.FA.FA_ANCHOR + " Play Anchored")) {
             sendCommand("engine cutscene playAnchored " + playerName
                     + " " + c.getName()
-                    + " " + playLength.get()
+                    + " " + CutsceneUiState.getPlaybackLength()
                     + " true true"
                     + " " + lerpName
-                    + " " + holdStart.get()
-                    + " " + holdEnd.get());
+                    + " " + CutsceneUiState.getPlaybackHoldStart()
+                    + " " + CutsceneUiState.getPlaybackHoldEnd());
             setStatus("Playing anchored: " + c.getName());
         }
 

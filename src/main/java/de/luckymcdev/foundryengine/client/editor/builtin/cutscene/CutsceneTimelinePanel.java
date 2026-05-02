@@ -54,9 +54,9 @@ public class CutsceneTimelinePanel extends EditorPanel {
     private final ImInt selectedEffectIndex = new ImInt(-1);
     private final ImFloat selectedEffectAt = new ImFloat(0f);
     private final ImInt effectTypeIndex = new ImInt(0);
-    private final ImInt effectIntro = new ImInt(10);
-    private final ImInt effectHold = new ImInt(20);
-    private final ImInt effectOutro = new ImInt(10);
+    private final ImFloat effectIntroDuration = new ImFloat(0.1f); // Normalized: 10% of cutscene
+    private final ImFloat effectHoldDuration = new ImFloat(0.2f);  // Normalized: 20% of cutscene
+    private final ImFloat effectOutroDuration = new ImFloat(0.1f); // Normalized: 10% of cutscene
     private final ImInt effectEasingIndex = new ImInt(0);
     private final ImString effectCommand = new ImString(256);
     private float zoomPxPerTick = 6.0f;
@@ -395,7 +395,7 @@ public class CutsceneTimelinePanel extends EditorPanel {
         if (ImGui.button(ImIcons.FA.FA_PLUS + " Add at Playhead##cs_eff_add")) {
             float at = computeAtFromPlayhead(totalTicks);
             var created = new Cutscene.ScreenEffectEvent(
-                    at, ScreenEffectType.cinematic.name(), 10, 20, 10, LerpType.LINEAR.name(), "");
+                    at, ScreenEffectType.cinematic.name(), 0.1f, 0.2f, 0.1f, LerpType.LINEAR.name(), "");
             c.addScreenEffect(created);
             selectedEffectIndex.set(c.getScreenEffects().indexOf(created));
             loadEffectEditorFrom(c);
@@ -408,7 +408,7 @@ public class CutsceneTimelinePanel extends EditorPanel {
             if (idx >= 0 && idx < effects.size()) {
                 var ev = effects.get(idx);
                 de.luckymcdev.foundryengine.client.cutscene.ClientScreenEffectManager.startEffect(
-                        ev.name, ev.introTicks, ev.holdTicks, ev.outroTicks, ev.lerpType, ev.command);
+                        ev.name, ev.getIntroTicks(previewLength.get()), ev.getHoldTicks(previewLength.get()), ev.getOutroTicks(previewLength.get()), ev.lerpType, ev.command);
             }
         }
 
@@ -452,16 +452,16 @@ public class CutsceneTimelinePanel extends EditorPanel {
         ImGui.combo("Type##cs_eff_type", effectTypeIndex, EFFECT_TYPES);
 
         ImGui.setNextItemWidth(120);
-        ImGui.inputInt("Intro##cs_eff_intro", effectIntro);
-        if (effectIntro.get() < 0) effectIntro.set(0);
+        ImGui.sliderFloat("Intro##cs_eff_intro", effectIntroDuration.getData(), 0f, 1f, "%.2f");
+        if (effectIntroDuration.get() < 0) effectIntroDuration.set(0f);
 
         ImGui.setNextItemWidth(120);
-        ImGui.inputInt("Hold##cs_eff_hold", effectHold);
-        if (effectHold.get() < 0) effectHold.set(0);
+        ImGui.sliderFloat("Hold##cs_eff_hold", effectHoldDuration.getData(), 0f, 1f, "%.2f");
+        if (effectHoldDuration.get() < 0) effectHoldDuration.set(0f);
 
         ImGui.setNextItemWidth(120);
-        ImGui.inputInt("Outro##cs_eff_outro", effectOutro);
-        if (effectOutro.get() < 0) effectOutro.set(0);
+        ImGui.sliderFloat("Outro##cs_eff_outro", effectOutroDuration.getData(), 0f, 1f, "%.2f");
+        if (effectOutroDuration.get() < 0) effectOutroDuration.set(0f);
 
         ImGui.setNextItemWidth(150);
         ImGui.combo("Easing##cs_eff_ease", effectEasingIndex, EASING_NAMES);
@@ -474,9 +474,9 @@ public class CutsceneTimelinePanel extends EditorPanel {
             var ev = effects.get(idx);
             ev.at = Math.clamp(selectedEffectAt.get(), 0f, 1f);
             ev.name = EFFECT_TYPES[Math.clamp(effectTypeIndex.get(), 0, EFFECT_TYPES.length - 1)];
-            ev.introTicks = effectIntro.get();
-            ev.holdTicks = effectHold.get();
-            ev.outroTicks = effectOutro.get();
+            ev.introDuration = Math.max(0f, effectIntroDuration.get());
+            ev.holdDuration = Math.max(0f, effectHoldDuration.get());
+            ev.outroDuration = Math.max(0f, effectOutroDuration.get());
             ev.lerpType = EASING_NAMES[Math.clamp(effectEasingIndex.get(), 0, EASING_NAMES.length - 1)];
             ev.command = effectCommand.get();
             ClientPacketDistributor.sendToServer(new CutscenePacket(CutsceneEditor.toNbt()));
@@ -509,9 +509,9 @@ public class CutsceneTimelinePanel extends EditorPanel {
         }
         effectTypeIndex.set(tIdx);
 
-        effectIntro.set(Math.max(0, ev.introTicks));
-        effectHold.set(Math.max(0, ev.holdTicks));
-        effectOutro.set(Math.max(0, ev.outroTicks));
+        effectIntroDuration.set(Math.max(0f, ev.introDuration));
+        effectHoldDuration.set(Math.max(0f, ev.holdDuration));
+        effectOutroDuration.set(Math.max(0f, ev.outroDuration));
 
         int eIdx = 0;
         for (int i = 0; i < EASING_NAMES.length; i++) {
