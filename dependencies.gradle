@@ -17,7 +17,8 @@ dependencies {
     // Groovy
     bundle "org.apache.groovy:groovy:${groovy_version}"
 
-    //bundle "fr.mrqsdf:BbModelReader:${bbmodelreader_version}"
+    compileOnly("mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}")
+    runtimeOnly("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}")
 
     // RenderDoc Support
     bundle "dev.latvian.mods:renderdoc-support:${renderdoc_support_version}"
