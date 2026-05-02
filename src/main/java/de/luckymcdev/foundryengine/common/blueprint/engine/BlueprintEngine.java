@@ -146,6 +146,17 @@ public class BlueprintEngine {
 
     private void registerCategoryColors() {
         setCategoryColor(Categories.EVENTS, 0xFF_B83B2D);
+        setCategoryColor(Categories.EVENTS_BLOCK, 0xFF_B83B2D);
+        setCategoryColor(Categories.EVENTS_ENTITY, 0xFF_B83B2D);
+        setCategoryColor(Categories.EVENTS_ITEM, 0xFF_B83B2D);
+        setCategoryColor(Categories.EVENTS_LEVEL, 0xFF_B83B2D);
+        setCategoryColor(Categories.EVENTS_NETWORK, 0xFF_B83B2D);
+        setCategoryColor(Categories.EVENTS_PLAYER, 0xFF_B83B2D);
+        setCategoryColor(Categories.EVENTS_COMMAND, 0xFF_B83B2D);
+        setCategoryColor(Categories.EVENTS_RECIPE, 0xFF_B83B2D);
+        setCategoryColor(Categories.EVENTS_CLIENT, 0xFF_B83B2D);
+        setCategoryColor(Categories.EVENTS_SERVER, 0xFF_B83B2D);
+        setCategoryColor(Categories.EVENTS_BUNDLE, 0xFF_B83B2D);
         setCategoryColor(Categories.VARIABLES, 0xFF_2D9C4B);
         setCategoryColor(Categories.INPUTS, 0xFF_7B4BB3);
         setCategoryColor(Categories.LOGIC, 0xFF_D0912A);
@@ -155,6 +166,7 @@ public class BlueprintEngine {
     }
 
     private void registerEvents() {
+        // Bundle / startup events
         node(Categories.EVENTS_BUNDLE, BuiltinNodes.EVENT_BEGIN_PLAY)
                 .out(execType, "Out").register();
         node(Categories.EVENTS_BUNDLE, BuiltinNodes.EVENT_REGISTRY)
@@ -170,6 +182,7 @@ public class BlueprintEngine {
         node(Categories.EVENTS_BUNDLE, BuiltinNodes.EVENT_POST_INIT)
                 .out(execType, "Out").register();
 
+        // Client events
         node(Categories.EVENTS_CLIENT, BuiltinNodes.EVENT_CLIENT_TICK)
                 .out(execType, "Out")
                 .out(intType, "Tick")
@@ -188,6 +201,7 @@ public class BlueprintEngine {
         node(Categories.EVENTS_CLIENT, BuiltinNodes.EVENT_CLIENT_LOGGED_OUT)
                 .out(execType, "Out").register();
 
+        // Server events
         node(Categories.EVENTS_SERVER, BuiltinNodes.EVENT_SERVER_TICK)
                 .out(execType, "Out")
                 .out(intType, "Tick")
@@ -206,92 +220,100 @@ public class BlueprintEngine {
         node(Categories.EVENTS_SERVER, BuiltinNodes.EVENT_SERVER_TAGS)
                 .out(execType, "Out").register();
 
-        node(Categories.EVENTS, BuiltinNodes.EVENT_BLOCK_BROKEN)
+        // Block events
+        node(Categories.EVENTS_BLOCK, BuiltinNodes.EVENT_BLOCK_BROKEN)
                 .out(execType, "Out").register();
-        node(Categories.EVENTS, BuiltinNodes.EVENT_BLOCK_PLACED)
+        node(Categories.EVENTS_BLOCK, BuiltinNodes.EVENT_BLOCK_PLACED)
                 .out(execType, "Out").register();
-        node(Categories.EVENTS, BuiltinNodes.EVENT_BLOCK_LEFT_CLICKED)
+        node(Categories.EVENTS_BLOCK, BuiltinNodes.EVENT_BLOCK_LEFT_CLICKED)
                 .out(execType, "Out").register();
-        node(Categories.EVENTS, BuiltinNodes.EVENT_BLOCK_RIGHT_CLICKED)
+        node(Categories.EVENTS_BLOCK, BuiltinNodes.EVENT_BLOCK_RIGHT_CLICKED)
                 .out(execType, "Out").register();
-        node(Categories.EVENTS, BuiltinNodes.EVENT_FARMLAND_TRAMPLED)
-                .out(execType, "Out").register();
-
-        node(Categories.EVENTS, BuiltinNodes.EVENT_ENTITY_JOIN_LEVEL)
-                .out(execType, "Out").register();
-        node(Categories.EVENTS, BuiltinNodes.EVENT_LIVING_DEATH)
-                .out(execType, "Out").register();
-        node(Categories.EVENTS, BuiltinNodes.EVENT_LIVING_DROPS)
-                .out(execType, "Out").register();
-        node(Categories.EVENTS, BuiltinNodes.EVENT_LIVING_HURT)
+        node(Categories.EVENTS_BLOCK, BuiltinNodes.EVENT_FARMLAND_TRAMPLED)
                 .out(execType, "Out").register();
 
-        node(Categories.EVENTS, BuiltinNodes.EVENT_ITEM_PICKUP)
+        // Entity events
+        node(Categories.EVENTS_ENTITY, BuiltinNodes.EVENT_ENTITY_JOIN_LEVEL)
                 .out(execType, "Out").register();
-        node(Categories.EVENTS, BuiltinNodes.EVENT_ITEM_DESTROY)
+        node(Categories.EVENTS_ENTITY, BuiltinNodes.EVENT_LIVING_DEATH)
                 .out(execType, "Out").register();
-        node(Categories.EVENTS, BuiltinNodes.EVENT_ITEM_RIGHT_CLICK)
+        node(Categories.EVENTS_ENTITY, BuiltinNodes.EVENT_LIVING_DROPS)
                 .out(execType, "Out").register();
-        node(Categories.EVENTS, BuiltinNodes.EVENT_ITEM_CRAFTED)
-                .out(execType, "Out").register();
-        node(Categories.EVENTS, BuiltinNodes.EVENT_ITEM_DROPPED)
-                .out(execType, "Out").register();
-        node(Categories.EVENTS, BuiltinNodes.EVENT_ITEM_FOOD_EATEN)
-                .out(execType, "Out").register();
-        node(Categories.EVENTS, BuiltinNodes.EVENT_ITEM_SMELTED)
-                .out(execType, "Out").register();
-        node(Categories.EVENTS, BuiltinNodes.EVENT_ITEM_TOOLTIP)
-                .out(execType, "Out").register();
-        node(Categories.EVENTS, BuiltinNodes.EVENT_ITEM_ENTITY_INTERACT)
-                .out(execType, "Out").register();
-        node(Categories.EVENTS, BuiltinNodes.EVENT_ITEM_FIRST_LEFT_CLICK)
-                .out(execType, "Out").register();
-        node(Categories.EVENTS, BuiltinNodes.EVENT_ITEM_FIRST_RIGHT_CLICK)
+        node(Categories.EVENTS_ENTITY, BuiltinNodes.EVENT_LIVING_HURT)
                 .out(execType, "Out").register();
 
-        node(Categories.EVENTS, BuiltinNodes.EVENT_LEVEL_LOAD)
+        // Item events
+        node(Categories.EVENTS_ITEM, BuiltinNodes.EVENT_ITEM_PICKUP)
                 .out(execType, "Out").register();
-        node(Categories.EVENTS, BuiltinNodes.EVENT_LEVEL_UNLOAD)
+        node(Categories.EVENTS_ITEM, BuiltinNodes.EVENT_ITEM_DESTROY)
                 .out(execType, "Out").register();
-        node(Categories.EVENTS, BuiltinNodes.EVENT_LEVEL_SAVE)
+        node(Categories.EVENTS_ITEM, BuiltinNodes.EVENT_ITEM_RIGHT_CLICK)
                 .out(execType, "Out").register();
-        node(Categories.EVENTS, BuiltinNodes.EVENT_LEVEL_TICK)
+        node(Categories.EVENTS_ITEM, BuiltinNodes.EVENT_ITEM_CRAFTED)
                 .out(execType, "Out").register();
-        node(Categories.EVENTS, BuiltinNodes.EVENT_BEFORE_EXPLOSION)
+        node(Categories.EVENTS_ITEM, BuiltinNodes.EVENT_ITEM_DROPPED)
                 .out(execType, "Out").register();
-        node(Categories.EVENTS, BuiltinNodes.EVENT_AFTER_EXPLOSION)
+        node(Categories.EVENTS_ITEM, BuiltinNodes.EVENT_ITEM_FOOD_EATEN)
                 .out(execType, "Out").register();
-
-        node(Categories.EVENTS, BuiltinNodes.EVENT_NETWORK_LOGIN)
+        node(Categories.EVENTS_ITEM, BuiltinNodes.EVENT_ITEM_SMELTED)
                 .out(execType, "Out").register();
-        node(Categories.EVENTS, BuiltinNodes.EVENT_NETWORK_LOGOUT)
+        node(Categories.EVENTS_ITEM, BuiltinNodes.EVENT_ITEM_TOOLTIP)
                 .out(execType, "Out").register();
-
-        node(Categories.EVENTS, BuiltinNodes.EVENT_PLAYER_LOGGED_IN)
+        node(Categories.EVENTS_ITEM, BuiltinNodes.EVENT_ITEM_ENTITY_INTERACT)
                 .out(execType, "Out").register();
-        node(Categories.EVENTS, BuiltinNodes.EVENT_PLAYER_LOGGED_OUT)
+        node(Categories.EVENTS_ITEM, BuiltinNodes.EVENT_ITEM_FIRST_LEFT_CLICK)
                 .out(execType, "Out").register();
-        node(Categories.EVENTS, BuiltinNodes.EVENT_PLAYER_TICK)
-                .out(execType, "Out").register();
-        node(Categories.EVENTS, BuiltinNodes.EVENT_PLAYER_CHAT)
-                .out(execType, "Out").register();
-        node(Categories.EVENTS, BuiltinNodes.EVENT_PLAYER_ADVANCEMENT)
-                .out(execType, "Out").register();
-        node(Categories.EVENTS, BuiltinNodes.EVENT_CHEST_CLOSED)
-                .out(execType, "Out").register();
-        node(Categories.EVENTS, BuiltinNodes.EVENT_CHEST_OPENED)
-                .out(execType, "Out").register();
-        node(Categories.EVENTS, BuiltinNodes.EVENT_PLAYER_RESPAWNED)
-                .out(execType, "Out").register();
-        node(Categories.EVENTS, BuiltinNodes.EVENT_DECORATE_CHAT)
+        node(Categories.EVENTS_ITEM, BuiltinNodes.EVENT_ITEM_FIRST_RIGHT_CLICK)
                 .out(execType, "Out").register();
 
-        node(Categories.EVENTS, BuiltinNodes.EVENT_COMMANDS)
+        // Level events
+        node(Categories.EVENTS_LEVEL, BuiltinNodes.EVENT_LEVEL_LOAD)
                 .out(execType, "Out").register();
-        node(Categories.EVENTS, BuiltinNodes.EVENT_COMMANDS_CLIENT)
+        node(Categories.EVENTS_LEVEL, BuiltinNodes.EVENT_LEVEL_UNLOAD)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS_LEVEL, BuiltinNodes.EVENT_LEVEL_SAVE)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS_LEVEL, BuiltinNodes.EVENT_LEVEL_TICK)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS_LEVEL, BuiltinNodes.EVENT_BEFORE_EXPLOSION)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS_LEVEL, BuiltinNodes.EVENT_AFTER_EXPLOSION)
                 .out(execType, "Out").register();
 
-        node(Categories.EVENTS, BuiltinNodes.EVENT_RECIPE_VIEWER_UPDATED)
+        // Network events
+        node(Categories.EVENTS_NETWORK, BuiltinNodes.EVENT_NETWORK_LOGIN)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS_NETWORK, BuiltinNodes.EVENT_NETWORK_LOGOUT)
+                .out(execType, "Out").register();
+
+        // Player events
+        node(Categories.EVENTS_PLAYER, BuiltinNodes.EVENT_PLAYER_LOGGED_IN)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS_PLAYER, BuiltinNodes.EVENT_PLAYER_LOGGED_OUT)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS_PLAYER, BuiltinNodes.EVENT_PLAYER_TICK)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS_PLAYER, BuiltinNodes.EVENT_PLAYER_CHAT)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS_PLAYER, BuiltinNodes.EVENT_PLAYER_ADVANCEMENT)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS_PLAYER, BuiltinNodes.EVENT_CHEST_CLOSED)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS_PLAYER, BuiltinNodes.EVENT_CHEST_OPENED)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS_PLAYER, BuiltinNodes.EVENT_PLAYER_RESPAWNED)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS_PLAYER, BuiltinNodes.EVENT_DECORATE_CHAT)
+                .out(execType, "Out").register();
+
+        // Command events
+        node(Categories.EVENTS_COMMAND, BuiltinNodes.EVENT_COMMANDS)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS_COMMAND, BuiltinNodes.EVENT_COMMANDS_CLIENT)
+                .out(execType, "Out").register();
+
+        // Recipe events
+        node(Categories.EVENTS_RECIPE, BuiltinNodes.EVENT_RECIPE_VIEWER_UPDATED)
                 .out(execType, "Out").register();
     }
 
@@ -721,6 +743,14 @@ public class BlueprintEngine {
 
     public static final class Categories {
         public static final String EVENTS = "Events";
+        public static final String EVENTS_BLOCK = "Events/Block";
+        public static final String EVENTS_ENTITY = "Events/Entity";
+        public static final String EVENTS_ITEM = "Events/Item";
+        public static final String EVENTS_LEVEL = "Events/Level";
+        public static final String EVENTS_NETWORK = "Events/Network";
+        public static final String EVENTS_PLAYER = "Events/Player";
+        public static final String EVENTS_COMMAND = "Events/Command";
+        public static final String EVENTS_RECIPE = "Events/Recipe";
         public static final String EVENTS_CLIENT = "Events/Client";
         public static final String EVENTS_SERVER = "Events/Server";
         public static final String EVENTS_BUNDLE = "Events/Bundle";
