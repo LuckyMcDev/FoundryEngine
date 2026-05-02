@@ -10,6 +10,8 @@ import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.cutscene.CutsceneItems;
 import de.luckymcdev.foundryengine.common.cutscene.network.CutscenePacket;
 import de.luckymcdev.foundryengine.common.cutscene.network.ScreenEffectPacket;
+import de.luckymcdev.foundryengine.common.cutscene.util.ServerCutsceneManager;
+import de.luckymcdev.foundryengine.common.cutscene.util.ServerScreenEffectManager;
 import de.luckymcdev.foundryengine.common.log.EngineLogAppender;
 import de.luckymcdev.foundryengine.common.network.BundleHashPacket;
 import de.luckymcdev.foundryengine.common.network.TestPacket;
@@ -36,6 +38,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
@@ -75,6 +78,7 @@ public class FoundryEngineMod {
         modBus.addListener(CutsceneItems::onRegister);
         BUS.addListener(this::onRegisterCommands);
         BUS.addListener(this::onServerAboutToStart);
+        BUS.addListener(this::onServerTick);
 
         BUS.addListener(this::onRegisterVirtualPacks);
         BUS.addListener(Common.getSceneManager()::entityJoinLevel);
@@ -101,10 +105,6 @@ public class FoundryEngineMod {
         BUS.addListener(ClientEvents.Internal::postRenderHand);
         BUS.addListener(ClientEvents.Internal::postRenderAfterLevel);
         modBus.addListener(ClientEvents.Internal::postKeyMappings);
-
-
-        ServerEvents.tick(ev -> {
-        });
 
         Config.registerCommon(modContainer);
         Config.registerStartup(modContainer);
@@ -177,6 +177,11 @@ public class FoundryEngineMod {
 
     private void onServerAboutToStart(ServerAboutToStartEvent event) {
         Common.getBundleManager().loadServerScripts();
+    }
+
+    private void onServerTick(ServerTickEvent.Post event) {
+        ServerCutsceneManager.tick();
+        ServerScreenEffectManager.tick();
     }
 
     private void onConstruct(final FMLConstructModEvent event) {

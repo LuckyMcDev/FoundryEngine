@@ -2,8 +2,6 @@ package de.luckymcdev.foundryengine.server;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.common.Common;
-import de.luckymcdev.foundryengine.common.cutscene.util.ServerCutsceneManager;
-import de.luckymcdev.foundryengine.common.cutscene.util.ServerScreenEffectManager;
 import de.luckymcdev.foundryengine.config.Config;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -12,7 +10,6 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
-import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.slf4j.Logger;
 
 /**
@@ -28,16 +25,10 @@ public class FoundryEngineModServer {
 
         BUS.addListener(this::onAddReloadListeners);
         BUS.addListener(Common.getGameStageHandler()::onPlayerTick);
-        BUS.addListener(this::onServerTick);
 
         Config.registerServer(modContainer);
 
         LOGGER.debug("FoundryEngineModServer initialized");
-    }
-
-    private void onServerTick(ServerTickEvent.Post event) {
-        ServerCutsceneManager.tick();
-        ServerScreenEffectManager.tick();
     }
 
     private void onServerSetup(FMLDedicatedServerSetupEvent event) {
