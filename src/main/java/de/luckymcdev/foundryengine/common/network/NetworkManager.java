@@ -20,7 +20,7 @@ public class NetworkManager {
 
     @ApiStatus.Internal
     public void handleRegistration(RegisterPayloadHandlersEvent event) {
-        final PayloadRegistrar registrar = event.registrar("1");
+        final PayloadRegistrar registrar = event.registrar("1").optional();
 
         registrationQueue.forEach(def -> registerPacket(registrar, def));
         registrationQueue.clear();
