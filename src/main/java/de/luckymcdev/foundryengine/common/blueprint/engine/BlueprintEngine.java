@@ -15,14 +15,9 @@ import org.slf4j.Logger;
 import java.util.*;
 import java.util.function.Supplier;
 
-/**
- * Central engine for the Blueprint node graph.
- */
 public class BlueprintEngine {
     private static final Logger LOGGER = LogUtils.getLogger();
     public static final String CTX_REGISTRY_EVENT = "_registry_event";
-
-    // Type Definitions
     public final NodePinType<Void> execType = BlueprintTypes.EXEC;
     public final NodePinType<Boolean> boolType = BlueprintTypes.BOOL;
     public final NodePinType<Integer> intType = BlueprintTypes.INT;
@@ -33,9 +28,6 @@ public class BlueprintEngine {
 
     private final List<NodeTemplate> nodeRegistry = new ArrayList<>();
     private final Map<String, NodeBehavior> behaviors = new HashMap<>();
-    /**
-     * Client/editor hint: per-category title color (ARGB).
-     */
     private final Map<String, Integer> categoryColors = new HashMap<>();
 
     public void registerNode(String category, String id, String displayName, Supplier<List<NodePin>> pins,
@@ -53,6 +45,10 @@ public class BlueprintEngine {
         int slash = category.indexOf('/');
         String key = slash == -1 ? category : category.substring(0, slash);
         return categoryColors.getOrDefault(key, 0xFF_404040);
+    }
+
+    public NodeBuilder node(String category, BuiltinNodes builtinNode) {
+        return new NodeBuilder(this, category, builtinNode.id, builtinNode.legacyName);
     }
 
     public NodeBuilder node(String category, String id, String displayName) {
@@ -94,18 +90,11 @@ public class BlueprintEngine {
         executeEvent(eventName, graph, Collections.emptyMap());
     }
 
-    /**
-     * Internal entry point allowing callers to pass execution context.
-     * Not intended for user-blueprint wiring; used by engine event bridges.
-     */
     public void executeEvent(String eventName, BlueprintGraph graph, Map<String, Object> payload) {
         for (BlueprintNode node : graph.nodes.values()) {
             if (node.identifier.equals(eventName)) {
                 BlueprintContext ctx = new BlueprintContext(graph);
                 payload.forEach(ctx::setVar);
-
-                // If event dispatch provides values that match output pin labels,
-                // expose them as node outputs for downstream reads.
                 if (!payload.isEmpty()) {
                     for (var out : node.outputPins) {
                         if (out.pin.type() == execType) continue;
@@ -113,7 +102,6 @@ public class BlueprintEngine {
                         if (v != null) node.setOutput(out.pin.label(), v);
                     }
                 }
-
                 executeNext(node, graph, ctx);
             }
         }
@@ -125,7 +113,6 @@ public class BlueprintEngine {
             behavior.execute(node, this, graph, ctx);
             if (node.category.equals(Categories.LOGIC)) return;
         }
-
         for (var pin : node.outputPins) {
             if (pin.pin.type() == execType) {
                 executePin(node, pin.pin.label(), graph, ctx);
@@ -158,7 +145,6 @@ public class BlueprintEngine {
     }
 
     private void registerCategoryColors() {
-        // Loosely inspired by Unreal's "colored title bar per category" look.
         setCategoryColor(Categories.EVENTS, 0xFF_B83B2D);
         setCategoryColor(Categories.VARIABLES, 0xFF_2D9C4B);
         setCategoryColor(Categories.INPUTS, 0xFF_7B4BB3);
@@ -169,44 +155,143 @@ public class BlueprintEngine {
     }
 
     private void registerEvents() {
-        // Core and Bundle Events
-        node(Categories.EVENTS_BUNDLE, BuiltinNodes.EVENT_BEGIN_PLAY.id, "BeginPlay")
+        node(Categories.EVENTS_BUNDLE, BuiltinNodes.EVENT_BEGIN_PLAY)
                 .out(execType, "Out").register();
-        node(Categories.EVENTS_BUNDLE, BuiltinNodes.EVENT_REGISTRY.id, "Registry")
+        node(Categories.EVENTS_BUNDLE, BuiltinNodes.EVENT_REGISTRY)
                 .out(execType, "Out").register();
-        node(Categories.EVENTS_BUNDLE, BuiltinNodes.EVENT_VANILLA_GAME.id, "Vanilla Game")
+        node(Categories.EVENTS_BUNDLE, BuiltinNodes.EVENT_VANILLA_GAME)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS_BUNDLE, BuiltinNodes.EVENT_COMMON_SETUP)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS_BUNDLE, BuiltinNodes.EVENT_CLIENT_SETUP)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS_BUNDLE, BuiltinNodes.EVENT_DEDICATED_SERVER_SETUP)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS_BUNDLE, BuiltinNodes.EVENT_POST_INIT)
                 .out(execType, "Out").register();
 
-        // Client Events
-        node(Categories.EVENTS_CLIENT, BuiltinNodes.EVENT_CLIENT_TICK.id, "Client Tick")
+        node(Categories.EVENTS_CLIENT, BuiltinNodes.EVENT_CLIENT_TICK)
                 .out(execType, "Out")
                 .out(intType, "Tick")
                 .out(floatType, "DeltaSeconds")
                 .register();
-        node(Categories.EVENTS_CLIENT, BuiltinNodes.EVENT_CLIENT_STOPPED.id, "Client Stopped")
+        node(Categories.EVENTS_CLIENT, BuiltinNodes.EVENT_CLIENT_STOPPED)
                 .out(execType, "Out").register();
-        node(Categories.EVENTS_CLIENT, BuiltinNodes.EVENT_CLIENT_STOPPING.id, "Client Stopping")
+        node(Categories.EVENTS_CLIENT, BuiltinNodes.EVENT_CLIENT_STOPPING)
                 .out(execType, "Out").register();
-        node(Categories.EVENTS_CLIENT, BuiltinNodes.EVENT_CHAT_MESSAGE.id, "Chat Message")
+        node(Categories.EVENTS_CLIENT, BuiltinNodes.EVENT_CHAT_MESSAGE)
                 .out(execType, "Out").register();
-        node(Categories.EVENTS_CLIENT, BuiltinNodes.EVENT_RENDER_GUI.id, "Render GUI")
+        node(Categories.EVENTS_CLIENT, BuiltinNodes.EVENT_RENDER_GUI)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS_CLIENT, BuiltinNodes.EVENT_CLIENT_LOGGED_IN)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS_CLIENT, BuiltinNodes.EVENT_CLIENT_LOGGED_OUT)
                 .out(execType, "Out").register();
 
-        // Server Events
-        node(Categories.EVENTS_SERVER, BuiltinNodes.EVENT_SERVER_TICK.id, "Server Tick")
+        node(Categories.EVENTS_SERVER, BuiltinNodes.EVENT_SERVER_TICK)
                 .out(execType, "Out")
                 .out(intType, "Tick")
                 .out(floatType, "DeltaSeconds")
                 .register();
-        node(Categories.EVENTS_SERVER, BuiltinNodes.EVENT_SERVER_ABOUT_TO_START.id, "Server About To Start")
+        node(Categories.EVENTS_SERVER, BuiltinNodes.EVENT_SERVER_ABOUT_TO_START)
                 .out(execType, "Out").register();
-        node(Categories.EVENTS_SERVER, BuiltinNodes.EVENT_SERVER_STARTED.id, "Server Started")
+        node(Categories.EVENTS_SERVER, BuiltinNodes.EVENT_SERVER_STARTED)
                 .out(execType, "Out").register();
-        node(Categories.EVENTS_SERVER, BuiltinNodes.EVENT_SERVER_STARTING.id, "Server Starting")
+        node(Categories.EVENTS_SERVER, BuiltinNodes.EVENT_SERVER_STARTING)
                 .out(execType, "Out").register();
-        node(Categories.EVENTS_SERVER, BuiltinNodes.EVENT_SERVER_STOPPED.id, "Server Stopped")
+        node(Categories.EVENTS_SERVER, BuiltinNodes.EVENT_SERVER_STOPPED)
                 .out(execType, "Out").register();
-        node(Categories.EVENTS_SERVER, BuiltinNodes.EVENT_SERVER_STOPPING.id, "Server Stopping")
+        node(Categories.EVENTS_SERVER, BuiltinNodes.EVENT_SERVER_STOPPING)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS_SERVER, BuiltinNodes.EVENT_SERVER_TAGS)
+                .out(execType, "Out").register();
+
+        node(Categories.EVENTS, BuiltinNodes.EVENT_BLOCK_BROKEN)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS, BuiltinNodes.EVENT_BLOCK_PLACED)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS, BuiltinNodes.EVENT_BLOCK_LEFT_CLICKED)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS, BuiltinNodes.EVENT_BLOCK_RIGHT_CLICKED)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS, BuiltinNodes.EVENT_FARMLAND_TRAMPLED)
+                .out(execType, "Out").register();
+
+        node(Categories.EVENTS, BuiltinNodes.EVENT_ENTITY_JOIN_LEVEL)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS, BuiltinNodes.EVENT_LIVING_DEATH)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS, BuiltinNodes.EVENT_LIVING_DROPS)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS, BuiltinNodes.EVENT_LIVING_HURT)
+                .out(execType, "Out").register();
+
+        node(Categories.EVENTS, BuiltinNodes.EVENT_ITEM_PICKUP)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS, BuiltinNodes.EVENT_ITEM_DESTROY)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS, BuiltinNodes.EVENT_ITEM_RIGHT_CLICK)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS, BuiltinNodes.EVENT_ITEM_CRAFTED)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS, BuiltinNodes.EVENT_ITEM_DROPPED)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS, BuiltinNodes.EVENT_ITEM_FOOD_EATEN)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS, BuiltinNodes.EVENT_ITEM_SMELTED)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS, BuiltinNodes.EVENT_ITEM_TOOLTIP)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS, BuiltinNodes.EVENT_ITEM_ENTITY_INTERACT)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS, BuiltinNodes.EVENT_ITEM_FIRST_LEFT_CLICK)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS, BuiltinNodes.EVENT_ITEM_FIRST_RIGHT_CLICK)
+                .out(execType, "Out").register();
+
+        node(Categories.EVENTS, BuiltinNodes.EVENT_LEVEL_LOAD)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS, BuiltinNodes.EVENT_LEVEL_UNLOAD)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS, BuiltinNodes.EVENT_LEVEL_SAVE)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS, BuiltinNodes.EVENT_LEVEL_TICK)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS, BuiltinNodes.EVENT_BEFORE_EXPLOSION)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS, BuiltinNodes.EVENT_AFTER_EXPLOSION)
+                .out(execType, "Out").register();
+
+        node(Categories.EVENTS, BuiltinNodes.EVENT_NETWORK_LOGIN)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS, BuiltinNodes.EVENT_NETWORK_LOGOUT)
+                .out(execType, "Out").register();
+
+        node(Categories.EVENTS, BuiltinNodes.EVENT_PLAYER_LOGGED_IN)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS, BuiltinNodes.EVENT_PLAYER_LOGGED_OUT)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS, BuiltinNodes.EVENT_PLAYER_TICK)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS, BuiltinNodes.EVENT_PLAYER_CHAT)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS, BuiltinNodes.EVENT_PLAYER_ADVANCEMENT)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS, BuiltinNodes.EVENT_CHEST_CLOSED)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS, BuiltinNodes.EVENT_CHEST_OPENED)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS, BuiltinNodes.EVENT_PLAYER_RESPAWNED)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS, BuiltinNodes.EVENT_DECORATE_CHAT)
+                .out(execType, "Out").register();
+
+        node(Categories.EVENTS, BuiltinNodes.EVENT_COMMANDS)
+                .out(execType, "Out").register();
+        node(Categories.EVENTS, BuiltinNodes.EVENT_COMMANDS_CLIENT)
+                .out(execType, "Out").register();
+
+        node(Categories.EVENTS, BuiltinNodes.EVENT_RECIPE_VIEWER_UPDATED)
                 .out(execType, "Out").register();
     }
 
@@ -249,7 +334,7 @@ public class BlueprintEngine {
                     boolean v = ctx.resolvePinAs(n.inputPin("Value"), Boolean.class, false);
                     n.setOutput("Result", !v);
                 }).register();
-        // Additional boolean logic nodes
+
         node(Categories.LOGIC, "bool.and", "And")
                 .in(boolType, "A").in(boolType, "B")
                 .out(boolType, "Result")
@@ -258,6 +343,7 @@ public class BlueprintEngine {
                     boolean b = ctx.resolvePinAs(n.inputPin("B"), Boolean.class, false);
                     n.setOutput("Result", a && b);
                 }).register();
+
         node(Categories.LOGIC, "bool.or", "Or")
                 .in(boolType, "A").in(boolType, "B")
                 .out(boolType, "Result")
@@ -304,7 +390,7 @@ public class BlueprintEngine {
                     int b = ctx.resolvePinAs(n.inputPin("B"), Integer.class, 0);
                     n.setOutput("Result", a == b);
                 }).register();
-        // Int Modulo
+
         node(Categories.MATH, "Int Mod")
                 .in(intType, "A").in(intType, "B")
                 .out(intType, "Result")
@@ -314,7 +400,7 @@ public class BlueprintEngine {
                     int res = (b != 0) ? (a % b) : 0;
                     n.setOutput("Result", res);
                 }).register();
-        // Floating-point math nodes
+
         node(Categories.MATH, "Float Add")
                 .in(floatType, "A").in(floatType, "B")
                 .out(floatType, "Result")
@@ -323,6 +409,7 @@ public class BlueprintEngine {
                     float b = ctx.resolvePinAs(n.inputPin("B"), Float.class, 0f);
                     n.setOutput("Result", a + b);
                 }).register();
+
         node(Categories.MATH, "Float Sub")
                 .in(floatType, "A").in(floatType, "B")
                 .out(floatType, "Result")
@@ -331,6 +418,7 @@ public class BlueprintEngine {
                     float b = ctx.resolvePinAs(n.inputPin("B"), Float.class, 0f);
                     n.setOutput("Result", a - b);
                 }).register();
+
         node(Categories.MATH, "Float Mul")
                 .in(floatType, "A").in(floatType, "B")
                 .out(floatType, "Result")
@@ -339,6 +427,7 @@ public class BlueprintEngine {
                     float b = ctx.resolvePinAs(n.inputPin("B"), Float.class, 0f);
                     n.setOutput("Result", a * b);
                 }).register();
+
         node(Categories.MATH, "Float Div")
                 .in(floatType, "A").in(floatType, "B")
                 .out(floatType, "Result")
@@ -383,7 +472,7 @@ public class BlueprintEngine {
                 .out(intType, "Out")
                 .behavior((n, e, g, ctx) -> n.setOutput("Out", ctx.resolvePin(n.inputPin("Value"))))
                 .register();
-        // Boolean input
+
         node(Categories.INPUTS, "Boolean")
                 .in(boolType, "Value").defaultValue("Value", false)
                 .out(boolType, "Out")
@@ -434,7 +523,6 @@ public class BlueprintEngine {
                         e.executePin(n, "Out", g, ctx);
                         return;
                     }
-
                     String idStr = ctx.resolvePinAs(n.inputPin("Id"), String.class, "");
                     Identifier id = Identifier.tryParse(idStr);
                     if (id == null) {
@@ -442,14 +530,11 @@ public class BlueprintEngine {
                         e.executePin(n, "Out", g, ctx);
                         return;
                     }
-
                     int stack = ctx.resolvePinAs(n.inputPin("Max Stack"), Integer.class, 64);
                     boolean fire = ctx.resolvePinAs(n.inputPin("Fire Resistant"), Boolean.class, false);
-
                     ItemBuilder b = ItemBuilder.create(id).stacksTo(stack);
                     if (fire) b.fireResistant();
                     regEv.items(b);
-
                     e.executePin(n, "Out", g, ctx);
                 }).register();
 
@@ -465,7 +550,6 @@ public class BlueprintEngine {
                         e.executePin(n, "Out", g, ctx);
                         return;
                     }
-
                     String idStr = ctx.resolvePinAs(n.inputPin("Id"), String.class, "");
                     Identifier id = Identifier.tryParse(idStr);
                     if (id == null) {
@@ -473,12 +557,10 @@ public class BlueprintEngine {
                         e.executePin(n, "Out", g, ctx);
                         return;
                     }
-
                     boolean hasItem = ctx.resolvePinAs(n.inputPin("Has Item"), Boolean.class, true);
                     BlockBuilder b = BlockBuilder.create(id);
                     if (!hasItem) b.noItem();
                     regEv.blocks(b);
-
                     e.executePin(n, "Out", g, ctx);
                 }).register();
 
@@ -495,7 +577,6 @@ public class BlueprintEngine {
                         e.executePin(n, "Out", g, ctx);
                         return;
                     }
-
                     String idStr = ctx.resolvePinAs(n.inputPin("Id"), String.class, "");
                     Identifier id = Identifier.tryParse(idStr);
                     if (id == null) {
@@ -503,14 +584,11 @@ public class BlueprintEngine {
                         e.executePin(n, "Out", g, ctx);
                         return;
                     }
-
                     String subtitle = ctx.resolvePinAs(n.inputPin("Subtitle"), String.class, "").trim();
                     float range = ctx.resolvePinAs(n.inputPin("Range"), Float.class, 16f);
-
                     SoundBuilder b = SoundBuilder.create(id).range(range);
                     if (!subtitle.isEmpty()) b.subtitle(subtitle);
                     regEv.sounds(b);
-
                     e.executePin(n, "Out", g, ctx);
                 }).register();
     }
@@ -543,7 +621,7 @@ public class BlueprintEngine {
                     String v = ctx.resolvePinAs(n.inputPin("Value"), String.class, "");
                     n.setOutput("Result", v.isEmpty());
                 }).register();
-        // Length
+
         node(Categories.STRINGS, "string.length", "Length")
                 .in(stringType, "Value").defaultValue("Value", "")
                 .out(intType, "Length")
@@ -558,24 +636,68 @@ public class BlueprintEngine {
         void execute(BlueprintNode node, BlueprintEngine engine, BlueprintGraph graph, BlueprintContext ctx);
     }
 
-    /**
-     * Central ids for built-in nodes/events. Use these ids for dispatch instead of display names.
-     */
     public enum BuiltinNodes {
         EVENT_BEGIN_PLAY("event.begin_play", "BeginPlay"),
         EVENT_REGISTRY("event.registry", "Registry"),
         EVENT_VANILLA_GAME("event.vanilla_game", "Vanilla Game"),
+        EVENT_COMMON_SETUP("event.common_setup", "Common Setup"),
+        EVENT_CLIENT_SETUP("event.client_setup", "Client Setup"),
+        EVENT_DEDICATED_SERVER_SETUP("event.dedicated_server_setup", "Dedicated Server Setup"),
+        EVENT_POST_INIT("event.post_init", "Post Init"),
         EVENT_CLIENT_TICK("event.client_tick", "Client Tick"),
         EVENT_CLIENT_STOPPED("event.client_stopped", "Client Stopped"),
         EVENT_CLIENT_STOPPING("event.client_stopping", "Client Stopping"),
         EVENT_CHAT_MESSAGE("event.chat_message", "Chat Message"),
         EVENT_RENDER_GUI("event.render_gui", "Render GUI"),
+        EVENT_CLIENT_LOGGED_IN("event.client_logged_in", "Client Logged In"),
+        EVENT_CLIENT_LOGGED_OUT("event.client_logged_out", "Client Logged Out"),
         EVENT_SERVER_TICK("event.server_tick", "Server Tick"),
         EVENT_SERVER_ABOUT_TO_START("event.server_about_to_start", "Server About To Start"),
         EVENT_SERVER_STARTED("event.server_started", "Server Started"),
         EVENT_SERVER_STARTING("event.server_starting", "Server Starting"),
         EVENT_SERVER_STOPPED("event.server_stopped", "Server Stopped"),
         EVENT_SERVER_STOPPING("event.server_stopping", "Server Stopping"),
+        EVENT_SERVER_TAGS("event.server_tags", "Server Tags"),
+        EVENT_BLOCK_BROKEN("event.block_broken", "Block Broken"),
+        EVENT_BLOCK_PLACED("event.block_placed", "Block Placed"),
+        EVENT_BLOCK_LEFT_CLICKED("event.block_left_clicked", "Block Left Clicked"),
+        EVENT_BLOCK_RIGHT_CLICKED("event.block_right_clicked", "Block Right Clicked"),
+        EVENT_FARMLAND_TRAMPLED("event.farmland_trampled", "Farmland Trampled"),
+        EVENT_ENTITY_JOIN_LEVEL("event.entity_join_level", "Entity Join Level"),
+        EVENT_LIVING_DEATH("event.living_death", "Living Death"),
+        EVENT_LIVING_DROPS("event.living_drops", "Living Drops"),
+        EVENT_LIVING_HURT("event.living_hurt", "Living Hurt"),
+        EVENT_ITEM_PICKUP("event.item_pickup", "Item Pickup"),
+        EVENT_ITEM_DESTROY("event.item_destroy", "Item Destroy"),
+        EVENT_ITEM_RIGHT_CLICK("event.item_right_click", "Item Right Click"),
+        EVENT_ITEM_CRAFTED("event.item_crafted", "Item Crafted"),
+        EVENT_ITEM_DROPPED("event.item_dropped", "Item Dropped"),
+        EVENT_ITEM_FOOD_EATEN("event.item_food_eaten", "Item Food Eaten"),
+        EVENT_ITEM_SMELTED("event.item_smelted", "Item Smelted"),
+        EVENT_ITEM_TOOLTIP("event.item_tooltip", "Item Tooltip"),
+        EVENT_ITEM_ENTITY_INTERACT("event.item_entity_interact", "Item Entity Interact"),
+        EVENT_ITEM_FIRST_LEFT_CLICK("event.item_first_left_click", "Item First Left Click"),
+        EVENT_ITEM_FIRST_RIGHT_CLICK("event.item_first_right_click", "Item First Right Click"),
+        EVENT_LEVEL_LOAD("event.level_load", "Level Load"),
+        EVENT_LEVEL_UNLOAD("event.level_unload", "Level Unload"),
+        EVENT_LEVEL_SAVE("event.level_save", "Level Save"),
+        EVENT_LEVEL_TICK("event.level_tick", "Level Tick"),
+        EVENT_BEFORE_EXPLOSION("event.before_explosion", "Before Explosion"),
+        EVENT_AFTER_EXPLOSION("event.after_explosion", "After Explosion"),
+        EVENT_NETWORK_LOGIN("event.network_login", "Network Login"),
+        EVENT_NETWORK_LOGOUT("event.network_logout", "Network Logout"),
+        EVENT_PLAYER_LOGGED_IN("event.player_logged_in", "Player Logged In"),
+        EVENT_PLAYER_LOGGED_OUT("event.player_logged_out", "Player Logged Out"),
+        EVENT_PLAYER_TICK("event.player_tick", "Player Tick"),
+        EVENT_PLAYER_CHAT("event.player_chat", "Player Chat"),
+        EVENT_PLAYER_ADVANCEMENT("event.player_advancement", "Player Advancement"),
+        EVENT_CHEST_CLOSED("event.chest_closed", "Chest Closed"),
+        EVENT_CHEST_OPENED("event.chest_opened", "Chest Opened"),
+        EVENT_PLAYER_RESPAWNED("event.player_respawned", "Player Respawned"),
+        EVENT_DECORATE_CHAT("event.decorate_chat", "Decorate Chat"),
+        EVENT_COMMANDS("event.commands", "Commands"),
+        EVENT_COMMANDS_CLIENT("event.commands_client", "Client Commands"),
+        EVENT_RECIPE_VIEWER_UPDATED("event.recipe_viewer_updated", "Recipe Viewer Updated"),
         COMMENT("editor.comment", "Comment"),
         REROUTE_EXEC("logic.reroute_exec", "Reroute (Exec)"),
         REROUTE_ANY("logic.reroute_any", "Reroute (Any)");

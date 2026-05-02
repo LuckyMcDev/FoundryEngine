@@ -1,6 +1,5 @@
 package de.luckymcdev.foundryengine.server.command.builtin;
 
-import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -20,7 +19,6 @@ import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.IdentifierArgument;
 import net.minecraft.commands.arguments.TimeArgument;
-import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
@@ -104,48 +102,17 @@ public class CutsceneCommand implements EngineCommand {
                 .then(Commands.argument("player", EntityArgument.player())
                         .then(Commands.argument("name", IdentifierArgument.id())
                                 .suggests(CUTSCENE_SUGGESTIONS)
-                                .executes(ctx -> play(ctx, false))
+                                .executes(ctx -> play(ctx))
                                 .then(Commands.argument("length", TimeArgument.time(0))
-                                        .executes(ctx -> play(ctx, false))
+                                        .executes(ctx -> play(ctx))
                                         .then(Commands.argument("easing", StringArgumentType.word())
                                                 .suggests(EASING_SUGGESTIONS)
-                                                .executes(ctx -> play(ctx, false))
+                                                .executes(ctx -> play(ctx))
                                                 .then(Commands.argument("holdStart", TimeArgument.time(0))
-                                                        .executes(ctx -> play(ctx, false))
+                                                        .executes(ctx -> play(ctx))
                                                         .then(Commands.argument("holdEnd", TimeArgument.time(0))
-                                                                .executes(ctx -> play(ctx, false))))))));
+                                                                .executes(ctx -> play(ctx))))))));
         root.then(play);
-
-        // playAnchored <player> <name> <length> <anchorStart> <anchorEnd> [easing] [holdStart] [holdEnd]
-        var playAnchored = Commands.literal("playAnchored");
-        var paPlayer = Commands.argument("player", EntityArgument.player());
-        var paName = Commands.argument("name", IdentifierArgument.id()).suggests(CUTSCENE_SUGGESTIONS);
-        var paLength = Commands.argument("length", TimeArgument.time(0));
-        var paAnchorStart = Commands.argument("anchorStart", BoolArgumentType.bool());
-        var paAnchorEnd = Commands.argument("anchorEnd", BoolArgumentType.bool())
-                .executes(ctx -> play(ctx, true));
-
-        var paEasing = Commands.argument("easing", StringArgumentType.word())
-                .suggests(EASING_SUGGESTIONS)
-                .executes(ctx -> play(ctx, true));
-
-        var paHoldStart = Commands.argument("holdStart", TimeArgument.time(0))
-                .executes(ctx -> play(ctx, true));
-
-        var paHoldEnd = Commands.argument("holdEnd", TimeArgument.time(0))
-                .executes(ctx -> play(ctx, true));
-
-        paHoldStart.then(paHoldEnd);
-        paEasing.then(paHoldStart);
-        paAnchorEnd.then(paEasing);
-        paAnchorStart.then(paAnchorEnd);
-        paLength.then(paAnchorStart);
-        paName.then(paLength);
-        paPlayer.then(paName);
-        playAnchored.then(paPlayer);
-
-        root.then(playAnchored);
-
         return root;
     }
 
@@ -257,7 +224,8 @@ public class CutsceneCommand implements EngineCommand {
         ServerCutsceneManager.cancelCutscene(player);
         return 1;
     }
-    private int play(CommandContext<CommandSourceStack> ctx, boolean anchored) throws CommandSyntaxException {
+
+    private int play(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         CommandSourceStack source = ctx.getSource();
         ServerLevel level = source.getLevel();
 
@@ -289,14 +257,6 @@ public class CutsceneCommand implements EngineCommand {
         tag.putInt("Length", length);
         tag.putInt("holdStart", holdStart);
         tag.putInt("holdEnd", holdEnd);
-
-        if (anchored) {
-            // Anchored logic remains the same
-            boolean anchorStart = BoolArgumentType.getBool(ctx, "anchorStart");
-            boolean anchorEnd = BoolArgumentType.getBool(ctx, "anchorEnd");
-            if (anchorStart) tag.store("startPlayer", UUIDUtil.CODEC, targetPlayer.getUUID());
-            if (anchorEnd) tag.store("endPlayer", UUIDUtil.CODEC, targetPlayer.getUUID());
-        }
 
         data.syncToPlayer(targetPlayer);
         int total = length + holdStart + holdEnd;
