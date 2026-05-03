@@ -26,16 +26,12 @@ features:
     details: "Advanced visual effects and shader management."
   - title: "Groovy based Scripting Engine"
     details: "Powerful logic implementation using Groovy."
+  - title: "Cutscene API <b style='color: dodgerblue;'>[WIP / ALMOST DONE]</b>"
+    details: "A Cutscene editor and display api."
   - title: "Hytale inspired Data- & Resource-Pack Editor <b style='color: dodgerblue;'>[WIP]</b>"
     details: "Streamlined asset and data management."
-  - title: "Cutscene API <b style='color: orange;'>[Planned]</b>"
-    details: "A Cutscene editor and display api."
   - title: "Upcoming Feature <b style='color: orange;'>[Planned]</b>"
     details: "Description of another great feature in the works."
 ---
 
 **Welcome to the Foundry Engine Wiki!**
-
-<!--
-This should be public now!
--->
