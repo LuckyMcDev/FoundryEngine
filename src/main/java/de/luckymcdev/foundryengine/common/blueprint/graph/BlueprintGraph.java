@@ -25,7 +25,11 @@ public class BlueprintGraph {
      *                         ignored server-side.
      */
     public void addNode(BlueprintNode node, boolean positionAtCursor) {
-        if (node.id == 0) node.id = nextId();
+        if (node.id == 0) {
+            node.id = nextId();
+        } else if (node.id > lastId) {
+            lastId = node.id;
+        }
         nodes.put(node.id, node);
 
         for (var pin : node.inputPins) {
