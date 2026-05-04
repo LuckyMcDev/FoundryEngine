@@ -10,7 +10,10 @@ import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.cutscene.CutsceneItems;
+import de.luckymcdev.foundryengine.common.cutscene.model.CommandAttachment;
 import de.luckymcdev.foundryengine.common.cutscene.model.Cutscene;
+import de.luckymcdev.foundryengine.common.cutscene.model.CutsceneAttachment;
+import de.luckymcdev.foundryengine.common.cutscene.model.EffectAttachment;
 import de.luckymcdev.foundryengine.common.cutscene.network.CutscenePacket;
 import de.luckymcdev.foundryengine.common.cutscene.util.LerpType;
 import de.luckymcdev.foundryengine.common.cutscene.util.ScreenEffectType;
@@ -40,17 +43,22 @@ public class CutsceneTimelinePanel extends EditorPanel {
             Arrays.stream(LerpType.values()).map(Enum::name).toArray(String[]::new);
     private static final String[] EFFECT_TYPES =
             Arrays.stream(ScreenEffectType.values()).map(Enum::name).toArray(String[]::new);
+    private static final String[] ATTACHMENT_TYPES = new String[]{"Effect", "Command"};
 
     private final ImBoolean previewEnabled = new ImBoolean(false);
     private final ImInt previewTick = new ImInt(0);
-    private final ImInt selectedEffectIndex = new ImInt(-1);
-    private final ImFloat selectedEffectAt = new ImFloat(0f);
+    private final ImInt selectedAttachmentIndex = new ImInt(-1);
+    private final ImInt selectedAttachmentTypeIndex = new ImInt(0);
+    // Effect fields
+    private final ImFloat effectAt = new ImFloat(0f);
     private final ImInt effectTypeIndex = new ImInt(0);
     private final ImFloat effectIntroDuration = new ImFloat(0.1f);
     private final ImFloat effectHoldDuration = new ImFloat(0.2f);
     private final ImFloat effectOutroDuration = new ImFloat(0.1f);
     private final ImInt effectEasingIndex = new ImInt(0);
-    private final ImString effectCommand = new ImString(256);
+    // Command fields
+    private final ImString commandText = new ImString(256);
+    private final ImFloat commandDelay = new ImFloat(0f);
     private float zoomPxPerTick = 6.0f;
 
     private CutsceneTimelinePanel() {
@@ -93,7 +101,7 @@ public class CutsceneTimelinePanel extends EditorPanel {
 
                     if (ImGui.selectable(c.getName() + "##cs", sel, ImGuiSelectableFlags.None)) {
                         CutsceneUiState.setSelected(c);
-                        selectedEffectIndex.set(-1);
+                        selectedAttachmentIndex.set(-1);
                     }
                     ImGui.popID();
                 }
@@ -349,18 +357,35 @@ public class CutsceneTimelinePanel extends EditorPanel {
                 draw.addLine(x, minY + 18f, x, baseY, nodeCol, 2f);
             }
 
-            var effects = c.getScreenEffects();
-            for (int i = 0; i < effects.size(); i++) {
-                var ev = effects.get(i);
-                int startTick = hs + Math.round(ev.at * len);
-                int durationTicks = Math.max(1, Math.round((ev.introDuration + ev.holdDuration + ev.outroDuration) * len));
+            var attachments = c.getAttachments();
+            for (int i = 0; i < attachments.size(); i++) {
+                var att = attachments.get(i);
+                int startTick = hs + Math.round(att.getAt() * len);
+                float duration = att.getDuration();
+                int durationTicks = Math.max(1, Math.round(duration * len));
                 float x = minX + padding + (startTick * zoomPxPerTick);
-                float w = durationTicks * zoomPxPerTick;
-                int color = (i == selectedEffectIndex.get()) ? 0xFFFFFFFF : 0x66FFFFFF;
+                float w = Math.max(zoomPxPerTick, durationTicks * zoomPxPerTick);
+
+                int color;
+                int textColor = 0xFFFFFFFF;
+                String label;
+
+                if (att instanceof EffectAttachment eff) {
+                    color = (i == selectedAttachmentIndex.get()) ? 0xFFFFFFFF : 0x66FFCC00;
+                    label = eff.getEffectName();
+                } else if (att instanceof CommandAttachment cmd) {
+                    color = (i == selectedAttachmentIndex.get()) ? 0xFFFFFFFF : 0x6600CCFF;
+                    String cmdPreview = cmd.getCommand().length() > 15 ? cmd.getCommand().substring(0, 15) + "..." : cmd.getCommand();
+                    label = "Cmd: " + cmdPreview;
+                } else {
+                    color = (i == selectedAttachmentIndex.get()) ? 0xFFFFFFFF : 0x66666666;
+                    label = "Unknown";
+                }
+
                 draw.addRectFilled(x, barTopY, x + w, barBottomY, color);
-                draw.addText(x + w * 0.5f, barTopY - 6f, 0xFFFFFFFF, ev.name);
+                draw.addText(x + 2, barTopY - 6f, textColor, label);
                 if (ImGui.isMouseHoveringRect(x, barTopY, x + w, barBottomY)) {
-                    ImGui.setTooltip("Effect: " + ev.name + ", at=" + ev.at + ", duration=" + (ev.introDuration + ev.holdDuration + ev.outroDuration));
+                    ImGui.setTooltip(att.getDisplayName() + " at=" + att.getAt() + ", duration=" + duration);
                 }
             }
 
@@ -374,18 +399,20 @@ public class CutsceneTimelinePanel extends EditorPanel {
 
                 float px = minX + padding + (tick * zoomPxPerTick);
                 int picked = -1;
-                for (int i = 0; i < effects.size(); i++) {
-                    var ev = effects.get(i);
-                    int et = hs + Math.round(Mth.clamp(ev.at, 0f, 1f) * len);
+                for (int i = 0; i < attachments.size(); i++) {
+                    var att = attachments.get(i);
+                    int et = hs + Math.round(Mth.clamp(att.getAt(), 0f, 1f) * len);
                     float ex = minX + padding + (Mth.clamp(et, 0, totalTicks) * zoomPxPerTick);
-                    if (Math.abs(ex - px) <= 4f) {
+                    float dur = att.getDuration();
+                    float exEnd = ex + Math.max(zoomPxPerTick, (dur * len * zoomPxPerTick));
+                    if (px >= ex - 4f && px <= exEnd + 4f) {
                         picked = i;
                         break;
                     }
                 }
                 if (picked != -1) {
-                    selectedEffectIndex.set(picked);
-                    loadEffectEditorFrom(c);
+                    selectedAttachmentIndex.set(picked);
+                    loadAttachmentEditorFrom(c);
                 }
             }
         } finally {
@@ -396,178 +423,248 @@ public class CutsceneTimelinePanel extends EditorPanel {
     }
 
     private void renderEffectsEditor(Cutscene c, int totalTicks) {
-        var effects = c.getScreenEffects();
+        var attachments = c.getAttachments();
 
-        ImGui.text("Screen Effects");
+        ImGui.text("Attachments");
         ImGui.spacing();
 
-        if (ImGui.button(ImIcons.FA.FA_PLUS + " Add at Playhead##cs_eff_add")) {
+        // Add new attachment dropdown
+        ImGui.setNextItemWidth(100);
+        if (ImGui.combo("##cs_att_type_select", selectedAttachmentTypeIndex, ATTACHMENT_TYPES)) {
+            // Selection changed
+        }
+        ImGui.sameLine();
+
+        if (ImGui.button(ImIcons.FA.FA_PLUS + " Add at Playhead##cs_att_add")) {
             float at = computeAtFromPlayhead(c, totalTicks);
-            var created = new Cutscene.ScreenEffectEvent(
-                    at, ScreenEffectType.cinematic.name(), 0.1f, 0.2f, 0.1f, LerpType.LINEAR.name(), "");
-            c.addScreenEffect(created);
-            selectedEffectIndex.set(c.getScreenEffects().indexOf(created));
-            loadEffectEditorFrom(c);
+            int typeIdx = selectedAttachmentTypeIndex.get();
+            CutsceneAttachment newAtt;
+            if (typeIdx == 1) { // Command
+                newAtt = new CommandAttachment(at, "", 0f);
+            } else { // Effect (default)
+                newAtt = new EffectAttachment(at, ScreenEffectType.cinematic.name(), 0.1f, 0.2f, 0.1f, LerpType.LINEAR.name());
+            }
+            c.addAttachment(newAtt);
+            selectedAttachmentIndex.set(attachments.indexOf(newAtt));
+            loadAttachmentEditorFrom(c);
             ClientPacketDistributor.sendToServer(new CutscenePacket(CutsceneEditor.toNbt()));
         }
 
+        // Preview button for effects
         ImGui.sameLine();
-        if (ImGui.button(ImIcons.FA.FA_EYE + " Preview Type##cs_eff_preview")) {
-            int idx = selectedEffectIndex.get();
-            if (idx >= 0 && idx < effects.size()) {
-                var ev = effects.get(idx);
-                int len = Math.max(1, c.getDefaultLength());
-                de.luckymcdev.foundryengine.client.cutscene.ClientScreenEffectManager.startEffect(
-                        ev.name, ev.getIntroTicks(len), ev.getHoldTicks(len), ev.getOutroTicks(len), ev.lerpType, ev.command);
+        if (ImGui.button(ImIcons.FA.FA_EYE + " Preview##cs_att_preview")) {
+            int idx = selectedAttachmentIndex.get();
+            if (idx >= 0 && idx < attachments.size()) {
+                var att = attachments.get(idx);
+                if (att instanceof EffectAttachment eff) {
+                    int len = Math.max(1, c.getDefaultLength());
+                    de.luckymcdev.foundryengine.client.cutscene.ClientScreenEffectManager.startEffect(
+                            eff.getEffectName(), eff.getIntroTicks(len), eff.getHoldTicks(len), eff.getOutroTicks(len), eff.getLerpType());
+                }
             }
         }
 
-        if (effects.isEmpty()) {
+        if (attachments.isEmpty()) {
             ImGui.spacing();
-            ImGui.textDisabled("No screen effects.");
+            ImGui.textDisabled("No attachments. Click '+' to add one.");
             return;
         }
 
-        ImGui.beginChild("##cs_eff_list", 0, 120, true);
+        // Attachment list
+        ImGui.beginChild("##cs_att_list", 0, 120, true);
         try {
-            for (int i = 0; i < effects.size(); i++) {
-                var ev = effects.get(i);
-                boolean sel = (i == selectedEffectIndex.get());
-                String label = String.format("%d) t=%.2f  %s", i, ev.at, ev.name);
-                if (ImGui.selectable(label + "##eff" + i, sel, ImGuiSelectableFlags.None)) {
-                    selectedEffectIndex.set(sel ? -1 : i);
-                    if (selectedEffectIndex.get() >= 0) loadEffectEditorFrom(c);
+            for (int i = 0; i < attachments.size(); i++) {
+                var att = attachments.get(i);
+                boolean sel = (i == selectedAttachmentIndex.get());
+                String label = String.format("%d) t=%.2f  %s", i, att.getAt(), att.getDisplayName());
+                if (ImGui.selectable(label + "##att" + i, sel, ImGuiSelectableFlags.None)) {
+                    selectedAttachmentIndex.set(sel ? -1 : i);
+                    if (selectedAttachmentIndex.get() >= 0) loadAttachmentEditorFrom(c);
                 }
             }
         } finally {
             ImGui.endChild();
         }
 
-        if (selectedEffectIndex.get() < 0 || selectedEffectIndex.get() >= effects.size()) return;
+        if (selectedAttachmentIndex.get() < 0 || selectedAttachmentIndex.get() >= attachments.size()) return;
 
         ImGui.separator();
-        ImGui.text("Selected Effect");
+        ImGui.text("Selected Attachment");
 
+        var selectedAtt = attachments.get(selectedAttachmentIndex.get());
+
+        // Common: At position
         ImGui.setNextItemWidth(120);
-        float[] at = selectedEffectAt.getData();
-        ImGui.sliderFloat("At##cs_eff_at", at, 0f, 1f);
-        selectedEffectAt.set(at[0]);
+        float[] at = new float[]{selectedAtt.getAt()};
+        ImGui.sliderFloat("At##cs_att_at", at, 0f, 1f);
+        selectedAtt.setAt(at[0]);
 
         ImGui.sameLine();
-        if (ImGui.button(ImIcons.FA.FA_LOCATION_DOT + " To Playhead##cs_eff_to_ph")) {
-            selectedEffectAt.set(computeAtFromPlayhead(c, totalTicks));
+        if (ImGui.button(ImIcons.FA.FA_LOCATION_DOT + " To Playhead##cs_att_to_ph")) {
+            selectedAtt.setAt(computeAtFromPlayhead(c, totalTicks));
         }
 
-        ImGui.setNextItemWidth(180);
-        ImGui.combo("Type##cs_eff_type", effectTypeIndex, EFFECT_TYPES);
-
-        int len = Math.max(1, c.getDefaultLength());
-        var itemWidth = 200;
-        ImGui.setNextItemWidth(itemWidth);
-        int idxSel = selectedEffectIndex.get();
-        if (idxSel >= 0 && idxSel < effects.size()) {
-            var ev = effects.get(idxSel);
-            int atTicks = Math.max(0, Math.min(Math.round(ev.at * len), len));
-            ImInt atTicksInput = new ImInt(atTicks);
-            if (ImGui.inputInt("At (ticks)##cs_eff_at_ticks", atTicksInput)) {
-                ev.at = Math.clamp(atTicksInput.get() / (float) len, 0f, 1f);
-            }
-
-            int introTicks = Math.max(0, Math.round(ev.introDuration * len));
-            ImInt introTicksInput = new ImInt(introTicks);
-            ImGui.setNextItemWidth(itemWidth);
-            if (ImGui.inputInt("Intro (ticks)##cs_eff_intro_ticks", introTicksInput)) {
-                ev.introDuration = Math.max(0f, introTicksInput.get()) / (float) len;
-            }
-
-            int holdTicks = Math.max(0, Math.round(ev.holdDuration * len));
-            ImInt holdTicksInput = new ImInt(holdTicks);
-            ImGui.setNextItemWidth(itemWidth);
-            if (ImGui.inputInt("Hold (ticks)##cs_eff_hold_ticks", holdTicksInput)) {
-                ev.holdDuration = Math.max(0f, holdTicksInput.get()) / (float) len;
-            }
-
-            int outroTicks = Math.max(0, Math.round(ev.outroDuration * len));
-            ImInt outroTicksInput = new ImInt(outroTicks);
-            ImGui.setNextItemWidth(itemWidth);
-            if (ImGui.inputInt("Outro (ticks)##cs_eff_outro_ticks", outroTicksInput)) {
-                ev.outroDuration = Math.max(0f, outroTicksInput.get()) / (float) len;
-            }
+        // Type-specific editor
+        if (selectedAtt instanceof EffectAttachment eff) {
+            renderEffectAttachmentEditor(c, eff, totalTicks);
+        } else if (selectedAtt instanceof CommandAttachment cmd) {
+            renderCommandAttachmentEditor(c, cmd, totalTicks);
         }
 
-        if (ImGui.collapsingHeader("Relative Settings")) {
-            ImGui.setNextItemWidth(itemWidth);
-            ImGui.sliderFloat("Intro##cs_eff_intro", effectIntroDuration.getData(), 0f, 1f, "%.2f");
-            if (effectIntroDuration.get() < 0) effectIntroDuration.set(0f);
-
-            ImGui.setNextItemWidth(itemWidth);
-            ImGui.sliderFloat("Hold##cs_eff_hold", effectHoldDuration.getData(), 0f, 1f, "%.2f");
-            if (effectHoldDuration.get() < 0) effectHoldDuration.set(0f);
-
-            ImGui.setNextItemWidth(itemWidth);
-            ImGui.sliderFloat("Outro##cs_eff_outro", effectOutroDuration.getData(), 0f, 1f, "%.2f");
-            if (effectOutroDuration.get() < 0) effectOutroDuration.set(0f);
-        }
-
-        ImGui.setNextItemWidth(itemWidth);
-        ImGui.combo("Easing##cs_eff_ease", effectEasingIndex, EASING_NAMES);
-
-        ImGui.setNextItemWidth(-1);
-        ImGui.inputTextWithHint("Command##cs_eff_cmd", "optional server command", effectCommand);
-
-        if (ImGui.button(ImIcons.FA.FA_CHECK + " Apply##cs_eff_apply")) {
-            int idx = selectedEffectIndex.get();
-            var ev = effects.get(idx);
-            // Persist all fields updated via the UI. In particular, do not override tick-based edits
-            // with 0..1 sliders unless the UI explicitly changed them. Here, we rely on whatever is
-            // currently stored in ev.* values.
-            ev.at = Math.max(0f, Math.min(1f, selectedEffectAt.get()));
-            ev.name = EFFECT_TYPES[Math.clamp(effectTypeIndex.get(), 0, EFFECT_TYPES.length - 1)];
-            ev.lerpType = EASING_NAMES[Math.clamp(effectEasingIndex.get(), 0, EASING_NAMES.length - 1)];
-            ev.command = effectCommand.get();
+        // Apply/Remove buttons
+        if (ImGui.button(ImIcons.FA.FA_CHECK + " Apply##cs_att_apply")) {
             ClientPacketDistributor.sendToServer(new CutscenePacket(CutsceneEditor.toNbt()));
         }
         ImGui.sameLine();
         ImGui.pushStyleColor(ImGuiCol.Button, 0.55f, 0.10f, 0.10f, 1.0f);
         ImGui.pushStyleColor(ImGuiCol.ButtonHovered, 0.70f, 0.15f, 0.15f, 1.0f);
         ImGui.pushStyleColor(ImGuiCol.ButtonActive, 0.45f, 0.08f, 0.08f, 1.0f);
-        if (ImGui.button(ImIcons.FA.FA_TRASH + " Remove##cs_eff_rm")) {
-            c.removeScreenEffect(selectedEffectIndex.get());
-            selectedEffectIndex.set(-1);
+        if (ImGui.button(ImIcons.FA.FA_TRASH + " Remove##cs_att_rm")) {
+            c.removeAttachment(selectedAtt);
+            selectedAttachmentIndex.set(-1);
             ClientPacketDistributor.sendToServer(new CutscenePacket(CutsceneEditor.toNbt()));
         }
         ImGui.popStyleColor(3);
     }
 
-    private void loadEffectEditorFrom(Cutscene c) {
-        int idx = selectedEffectIndex.get();
-        if (idx < 0 || idx >= c.getScreenEffects().size()) return;
-        var ev = c.getScreenEffects().get(idx);
-
-        selectedEffectAt.set(ev.at);
-
-        int tIdx = 0;
+    private void renderEffectAttachmentEditor(Cutscene c, EffectAttachment eff, int totalTicks) {
+        ImGui.setNextItemWidth(180);
+        int typeIdx = 0;
         for (int i = 0; i < EFFECT_TYPES.length; i++) {
-            if (EFFECT_TYPES[i].equalsIgnoreCase(ev.name)) {
-                tIdx = i;
+            if (EFFECT_TYPES[i].equalsIgnoreCase(eff.getEffectName())) {
+                typeIdx = i;
                 break;
             }
         }
-        effectTypeIndex.set(tIdx);
+        ImInt typeIdxInput = new ImInt(typeIdx);
+        if (ImGui.combo("Effect Type##cs_eff_type", typeIdxInput, EFFECT_TYPES)) {
+            eff.setEffectName(EFFECT_TYPES[typeIdxInput.get()]);
+        }
 
-        effectIntroDuration.set(Math.max(0f, ev.introDuration));
-        effectHoldDuration.set(Math.max(0f, ev.holdDuration));
-        effectOutroDuration.set(Math.max(0f, ev.outroDuration));
+        int len = Math.max(1, c.getDefaultLength());
+        int itemWidth = 200;
 
-        int eIdx = 0;
+        int introTicks = Math.max(0, Math.round(eff.getIntroDuration() * len));
+        ImInt introTicksInput = new ImInt(introTicks);
+        ImGui.setNextItemWidth(itemWidth);
+        if (ImGui.inputInt("Intro (ticks)##cs_eff_intro", introTicksInput)) {
+            eff.setIntroDuration(Math.max(0f, introTicksInput.get()) / (float) len);
+        }
+
+        int holdTicks = Math.max(0, Math.round(eff.getHoldDuration() * len));
+        ImInt holdTicksInput = new ImInt(holdTicks);
+        ImGui.setNextItemWidth(itemWidth);
+        if (ImGui.inputInt("Hold (ticks)##cs_eff_hold", holdTicksInput)) {
+            eff.setHoldDuration(Math.max(0f, holdTicksInput.get()) / (float) len);
+        }
+
+        int outroTicks = Math.max(0, Math.round(eff.getOutroDuration() * len));
+        ImInt outroTicksInput = new ImInt(outroTicks);
+        ImGui.setNextItemWidth(itemWidth);
+        if (ImGui.inputInt("Outro (ticks)##cs_eff_outro", outroTicksInput)) {
+            eff.setOutroDuration(Math.max(0f, outroTicksInput.get()) / (float) len);
+        }
+
+        if (ImGui.collapsingHeader("Relative Settings##eff")) {
+            ImGui.setNextItemWidth(itemWidth);
+            float introRel = eff.getIntroDuration();
+            ImFloat introRelInput = new ImFloat(introRel);
+            if (ImGui.sliderFloat("Intro##cs_eff_intro_rel", introRelInput.getData(), 0f, 1f, "%.2f")) {
+                eff.setIntroDuration(Math.max(0f, introRelInput.get()));
+            }
+
+            ImGui.setNextItemWidth(itemWidth);
+            float holdRel = eff.getHoldDuration();
+            ImFloat holdRelInput = new ImFloat(holdRel);
+            if (ImGui.sliderFloat("Hold##cs_eff_hold_rel", holdRelInput.getData(), 0f, 1f, "%.2f")) {
+                eff.setHoldDuration(Math.max(0f, holdRelInput.get()));
+            }
+
+            ImGui.setNextItemWidth(itemWidth);
+            float outroRel = eff.getOutroDuration();
+            ImFloat outroRelInput = new ImFloat(outroRel);
+            if (ImGui.sliderFloat("Outro##cs_eff_outro_rel", outroRelInput.getData(), 0f, 1f, "%.2f")) {
+                eff.setOutroDuration(Math.max(0f, outroRelInput.get()));
+            }
+        }
+
+        ImGui.setNextItemWidth(itemWidth);
+        int easeIdx = 0;
         for (int i = 0; i < EASING_NAMES.length; i++) {
-            if (EASING_NAMES[i].equalsIgnoreCase(ev.lerpType)) {
-                eIdx = i;
+            if (EASING_NAMES[i].equalsIgnoreCase(eff.getLerpType())) {
+                easeIdx = i;
                 break;
             }
         }
-        effectEasingIndex.set(eIdx);
-        effectCommand.set(ev.command == null ? "" : ev.command);
+        ImInt easeInput = new ImInt(easeIdx);
+        if (ImGui.combo("Easing##cs_eff_ease", easeInput, EASING_NAMES)) {
+            eff.setLerpType(EASING_NAMES[easeInput.get()]);
+        }
+    }
+
+    private void renderCommandAttachmentEditor(Cutscene c, CommandAttachment cmd, int totalTicks) {
+        ImGui.setNextItemWidth(-1);
+        ImString cmdInput = new ImString(cmd.getCommand(), 256);
+        if (ImGui.inputTextWithHint("Command##cs_cmd_text", "server command (e.g., /say Hello)", cmdInput)) {
+            cmd.setCommand(cmdInput.get());
+        }
+
+        int len = Math.max(1, c.getDefaultLength());
+        int itemWidth = 200;
+
+        int delayTicks = Math.max(0, Math.round(cmd.getDelay() * len));
+        ImInt delayTicksInput = new ImInt(delayTicks);
+        ImGui.setNextItemWidth(itemWidth);
+        if (ImGui.inputInt("Delay (ticks)##cs_cmd_delay", delayTicksInput)) {
+            cmd.setDelay(Math.max(0f, delayTicksInput.get()) / (float) len);
+        }
+
+        if (ImGui.collapsingHeader("Relative Settings##cmd")) {
+            ImGui.setNextItemWidth(itemWidth);
+            float delayRel = cmd.getDelay();
+            ImFloat delayRelInput = new ImFloat(delayRel);
+            if (ImGui.sliderFloat("Delay##cs_cmd_delay_rel", delayRelInput.getData(), 0f, 1f, "%.2f")) {
+                cmd.setDelay(Math.max(0f, delayRelInput.get()));
+            }
+        }
+
+        // Show effective trigger time
+        ImGui.textDisabled(String.format("Trigger at: %.2f (tick %d)", cmd.getEffectiveAt(), cmd.getTriggerTick(len)));
+    }
+
+    private void loadAttachmentEditorFrom(Cutscene c) {
+        int idx = selectedAttachmentIndex.get();
+        if (idx < 0 || idx >= c.getAttachments().size()) return;
+        var att = c.getAttachments().get(idx);
+
+        if (att instanceof EffectAttachment eff) {
+            effectAt.set(eff.getAt());
+
+            int tIdx = 0;
+            for (int i = 0; i < EFFECT_TYPES.length; i++) {
+                if (EFFECT_TYPES[i].equalsIgnoreCase(eff.getEffectName())) {
+                    tIdx = i;
+                    break;
+                }
+            }
+            effectTypeIndex.set(tIdx);
+
+            effectIntroDuration.set(Math.max(0f, eff.getIntroDuration()));
+            effectHoldDuration.set(Math.max(0f, eff.getHoldDuration()));
+            effectOutroDuration.set(Math.max(0f, eff.getOutroDuration()));
+
+            int eIdx = 0;
+            for (int i = 0; i < EASING_NAMES.length; i++) {
+                if (EASING_NAMES[i].equalsIgnoreCase(eff.getLerpType())) {
+                    eIdx = i;
+                    break;
+                }
+            }
+            effectEasingIndex.set(eIdx);
+        } else if (att instanceof CommandAttachment cmd) {
+            commandText.set(cmd.getCommand() == null ? "" : cmd.getCommand());
+            commandDelay.set(Math.max(0f, cmd.getDelay()));
+        }
     }
 
     private int getTotalTicks(Cutscene c) {

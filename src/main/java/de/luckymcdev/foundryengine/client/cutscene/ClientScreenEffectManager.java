@@ -9,11 +9,11 @@ public class ClientScreenEffectManager {
     public static ScreenEffectInstance screenEffect;
 
     public static void handlePacket(ScreenEffectPacket packet) {
-        startEffect(packet.name(), packet.introTicks(), packet.holdTicks(), packet.outroTicks(), packet.lerpType(), packet.command());
+        startEffect(packet.name(), packet.introTicks(), packet.holdTicks(), packet.outroTicks(), packet.lerpType());
     }
 
-    public static void startEffect(String name, int introTicks, int holdTicks, int outroTicks, String lerpType, String command) {
-        screenEffect = new ScreenEffectInstance(name, introTicks, holdTicks, outroTicks, lerpType, command);
+    public static void startEffect(String name, int introTicks, int holdTicks, int outroTicks, String lerpType) {
+        screenEffect = new ScreenEffectInstance(name, introTicks, holdTicks, outroTicks, lerpType);
         Minecraft.getInstance().options.hideGui = true;
     }
 

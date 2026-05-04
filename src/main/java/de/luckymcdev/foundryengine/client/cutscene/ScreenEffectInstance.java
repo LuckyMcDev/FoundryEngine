@@ -1,11 +1,9 @@
 package de.luckymcdev.foundryengine.client.cutscene;
 
 import de.luckymcdev.foundryengine.common.Common;
-import de.luckymcdev.foundryengine.common.cutscene.network.ScreenEffectPacket;
 import de.luckymcdev.foundryengine.common.cutscene.util.LerpType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
-import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
 public class ScreenEffectInstance {
     private final Identifier resourceLocation;
@@ -13,20 +11,17 @@ public class ScreenEffectInstance {
     private final int holdTicks;
     private final int outroTicks;
     private final LerpType lerpType;
-    private final String command;
     private final boolean isNone;
 
     private float ageInTicks = 0f;
-    private boolean hasRunCommand = false;
 
-    public ScreenEffectInstance(String effectName, int introTicks, int holdTicks, int outroTicks, String lerpType, String command) {
+    public ScreenEffectInstance(String effectName, int introTicks, int holdTicks, int outroTicks, String lerpType) {
         this.isNone = "none".equalsIgnoreCase(effectName) || effectName == null || effectName.isBlank();
         this.resourceLocation = this.isNone ? null : Common.id(effectName);
         this.introTicks = introTicks;
         this.holdTicks = holdTicks;
         this.outroTicks = outroTicks;
         this.lerpType = LerpType.fromString(lerpType);
-        this.command = command == null ? "" : command;
     }
 
     private int totalLengthTicks() {
@@ -36,12 +31,8 @@ public class ScreenEffectInstance {
     public void update(float tickDelta) {
         Minecraft mc = Minecraft.getInstance();
 
-        // For "none" type, just handle command execution and complete immediately
+        // For "none" type, just complete immediately
         if (this.isNone) {
-            if (!hasRunCommand && !command.isBlank()) {
-                ClientPacketDistributor.sendToServer(new ScreenEffectPacket("", 0, 0, 0, "", command));
-                hasRunCommand = true;
-            }
             ClientScreenEffectManager.screenEffect = null;
             if (!ClientCutsceneManager.inCutscene()) {
                 mc.options.hideGui = false;
@@ -64,11 +55,6 @@ public class ScreenEffectInstance {
     }
 
     public float getProgress() {
-        if (!hasRunCommand && !command.isBlank() && this.ageInTicks > this.introTicks + (this.holdTicks / 2f)) {
-            ClientPacketDistributor.sendToServer(new ScreenEffectPacket("", 0, 0, 0, "", command));
-            hasRunCommand = true;
-        }
-
         if (this.isNone) return 0f;
 
         float progress = this.introTicks <= 0 ? 1f : (this.ageInTicks / (float) this.introTicks);

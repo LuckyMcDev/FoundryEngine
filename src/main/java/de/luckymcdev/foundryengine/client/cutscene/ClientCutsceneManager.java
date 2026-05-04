@@ -1,7 +1,10 @@
 package de.luckymcdev.foundryengine.client.cutscene;
 
+import de.luckymcdev.foundryengine.common.cutscene.model.CommandAttachment;
 import de.luckymcdev.foundryengine.common.cutscene.model.Cutscene;
+import de.luckymcdev.foundryengine.common.cutscene.model.EffectAttachment;
 import de.luckymcdev.foundryengine.common.cutscene.network.CutscenePacket;
+import de.luckymcdev.foundryengine.common.cutscene.network.ScreenEffectPacket;
 import de.luckymcdev.foundryengine.common.cutscene.storage.CutsceneSavedData;
 import de.luckymcdev.foundryengine.common.cutscene.util.LerpType;
 import net.minecraft.client.KeyMapping;
@@ -159,7 +162,8 @@ public class ClientCutsceneManager {
             int holdEnd = tag.getIntOr("holdEnd", 0);
             LerpType easing = LerpType.fromString(tag.getStringOr("LerpType", LerpType.LINEAR.name()));
 
-            queueCutscene(new PlayingCutscene(cutscene, startUuid, endUuid), length, easing, holdStart, holdEnd);
+            PlayingCutscene playingCutscene = new PlayingCutscene(cutscene, startUuid, endUuid);
+            queueCutscene(playingCutscene, length, easing, holdStart, holdEnd);
             return;
         }
 
@@ -199,6 +203,7 @@ public class ClientCutsceneManager {
 
         private float lastEffectT = -1f;
         private boolean[] firedEffects = null;
+        private boolean[] firedCommands = null;
 
         public PlayingCutscene(Cutscene cutscene, UUID startPlayerUuid, UUID endPlayerUuid) {
             this.cutscene = cutscene;
@@ -232,24 +237,44 @@ public class ClientCutsceneManager {
         }
 
         public void tickScreenEffects(float rawT, float cutsceneLength) {
-            var effects = cutscene.getScreenEffects();
-            if (effects.isEmpty()) return;
-
-            if (firedEffects == null || firedEffects.length != effects.size()) {
+            // Handle effect attachments
+            var effects = cutscene.getEffectAttachments();
+            if (firedEffects == null || (effects.size() > 0 && firedEffects.length != effects.size())) {
                 firedEffects = new boolean[effects.size()];
             }
 
+            // Handle command attachments
+            var commands = cutscene.getCommandAttachments();
+            if (firedCommands == null || (commands.size() > 0 && firedCommands.length != commands.size())) {
+                firedCommands = new boolean[commands.size()];
+            }
+
             if (rawT + 1e-6f < lastEffectT) {
-                for (int i = 0; i < firedEffects.length; i++) firedEffects[i] = false;
+                if (firedEffects != null) {
+                    for (int i = 0; i < firedEffects.length; i++) firedEffects[i] = false;
+                }
+                if (firedCommands != null) {
+                    for (int i = 0; i < firedCommands.length; i++) firedCommands[i] = false;
+                }
             }
             lastEffectT = rawT;
 
+            // Fire effects
             for (int i = 0; i < effects.size(); i++) {
                 if (firedEffects[i]) continue;
-                Cutscene.ScreenEffectEvent ev = effects.get(i);
-                if (rawT + 1e-6f < ev.at) continue;
+                EffectAttachment eff = effects.get(i);
+                if (rawT + 1e-6f < eff.getAt()) continue;
                 firedEffects[i] = true;
-                ClientScreenEffectManager.startEffect(ev.name, ev.getIntroTicks(cutsceneLength), ev.getHoldTicks(cutsceneLength), ev.getOutroTicks(cutsceneLength), ev.lerpType, ev.command);
+                ClientScreenEffectManager.startEffect(eff.getEffectName(), eff.getIntroTicks(cutsceneLength), eff.getHoldTicks(cutsceneLength), eff.getOutroTicks(cutsceneLength), eff.getLerpType());
+            }
+
+            // Fire commands
+            for (int i = 0; i < commands.size(); i++) {
+                if (firedCommands[i]) continue;
+                CommandAttachment cmd = commands.get(i);
+                if (rawT + 1e-6f < cmd.getEffectiveAt()) continue;
+                firedCommands[i] = true;
+                ClientPacketDistributor.sendToServer(new ScreenEffectPacket("", 0, 0, 0, "", cmd.getCommand()));
             }
         }
     }

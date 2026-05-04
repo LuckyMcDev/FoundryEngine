@@ -1,6 +1,5 @@
 package de.luckymcdev.foundryengine.common.cutscene.model;
 
-import de.luckymcdev.foundryengine.common.cutscene.util.LerpType;
 import de.luckymcdev.foundryengine.common.easing.BezierPath;
 import de.luckymcdev.foundryengine.common.easing.BezierPoint;
 import net.minecraft.nbt.CompoundTag;
@@ -17,7 +16,7 @@ public class Cutscene {
     public final BezierPath path;
     private final String name;
     private final ArrayList<Vec2> anchorRotations = new ArrayList<>();
-    private final ArrayList<ScreenEffectEvent> screenEffects = new ArrayList<>();
+    private final ArrayList<CutsceneAttachment> attachments = new ArrayList<>();
     private int colorArgb;
     private int defaultLength = 60;
     private int defaultHoldStart = 0;
@@ -59,13 +58,32 @@ public class Cutscene {
         cutscene.defaultHoldEnd = tag.getIntOr("DefaultHoldEnd", 0);
         cutscene.defaultEasing = tag.getStringOr("DefaultEasing", "LINEAR");
 
-        // Screen effects
-        ListTag effectList = tag.getListOrEmpty("ScreenEffects");
-        cutscene.screenEffects.clear();
-        for (int i = 0; i < effectList.size(); i++) {
-            cutscene.screenEffects.add(ScreenEffectEvent.fromNbt(effectList.getCompoundOrEmpty(i)));
+        // Attachments (with backward compatibility for old ScreenEffects)
+        cutscene.attachments.clear();
+        if (tag.contains("Attachments")) {
+            ListTag attachmentList = tag.getListOrEmpty("Attachments");
+            for (int i = 0; i < attachmentList.size(); i++) {
+                CompoundTag attTag = attachmentList.getCompoundOrEmpty(i);
+                CutsceneAttachment att = deserializeAttachment(attTag);
+                if (att != null) cutscene.attachments.add(att);
+            }
+        } else if (tag.contains("ScreenEffects")) {
+            // Migration: convert old ScreenEffectEvent to EffectAttachment and CommandAttachment
+            ListTag effectList = tag.getListOrEmpty("ScreenEffects");
+            for (int i = 0; i < effectList.size(); i++) {
+                CompoundTag effTag = effectList.getCompoundOrEmpty(i);
+                // Create EffectAttachment from old format
+                EffectAttachment eff = EffectAttachment.fromNbt(effTag);
+                cutscene.attachments.add(eff);
+                // If there was a command, create a separate CommandAttachment
+                String cmd = effTag.getStringOr("Command", "");
+                if (!cmd.isBlank()) {
+                    CommandAttachment cmdAtt = new CommandAttachment(eff.getAt(), cmd, 0f);
+                    cutscene.attachments.add(cmdAtt);
+                }
+            }
         }
-        cutscene.screenEffects.sort(Comparator.comparingDouble(e -> e.at));
+        cutscene.attachments.sort(Comparator.comparingDouble(a -> a.getAt()));
 
         cutscene.ensureAnchorRotations();
         return cutscene;
@@ -78,6 +96,18 @@ public class Cutscene {
         float hue = ((h >>> 1) & 0xFFFF) / 65535f;
         int rgb = Mth.hsvToRgb(hue, 0.65f, 0.95f); // 0xRRGGBB
         return 0xFF000000 | rgb;
+    }
+
+    /**
+     * Deserializes an attachment from NBT, handling different attachment types.
+     */
+    private static CutsceneAttachment deserializeAttachment(CompoundTag tag) {
+        String type = tag.getStringOr("Type", "");
+        return switch (type) {
+            case EffectAttachment.TYPE -> EffectAttachment.fromNbt(tag);
+            case CommandAttachment.TYPE -> CommandAttachment.fromNbt(tag);
+            default -> null; // Unknown type, skip
+        };
     }
 
     public String getName() {
@@ -182,11 +212,11 @@ public class Cutscene {
         tag.put("Rotations", rotList);
         tag.put("BezierPath", this.path.toNbt());
 
-        ListTag effectList = new ListTag();
-        for (ScreenEffectEvent ev : this.screenEffects) {
-            effectList.add(ev.toNbt());
+        ListTag attachmentList = new ListTag();
+        for (CutsceneAttachment att : this.attachments) {
+            attachmentList.add(att.toNbt());
         }
-        tag.put("ScreenEffects", effectList);
+        tag.put("Attachments", attachmentList);
 
         return tag;
     }
@@ -208,19 +238,83 @@ public class Cutscene {
         return this.anchorRotations;
     }
 
-    public ArrayList<ScreenEffectEvent> getScreenEffects() {
-        return this.screenEffects;
+    /**
+     * Returns all attachments of type EffectAttachment.
+     * For backward compatibility, this replaces the old getScreenEffects().
+     */
+    public ArrayList<EffectAttachment> getEffectAttachments() {
+        ArrayList<EffectAttachment> effects = new ArrayList<>();
+        for (CutsceneAttachment att : this.attachments) {
+            if (att instanceof EffectAttachment eff) effects.add(eff);
+        }
+        return effects;
     }
 
-    public void addScreenEffect(ScreenEffectEvent ev) {
-        if (ev == null) return;
-        this.screenEffects.add(ev);
-        this.screenEffects.sort(Comparator.comparingDouble(e -> e.at));
+    /**
+     * Returns all attachments of type CommandAttachment.
+     */
+    public ArrayList<CommandAttachment> getCommandAttachments() {
+        ArrayList<CommandAttachment> commands = new ArrayList<>();
+        for (CutsceneAttachment att : this.attachments) {
+            if (att instanceof CommandAttachment cmd) commands.add(cmd);
+        }
+        return commands;
     }
 
+    /**
+     * Returns all attachments.
+     */
+    public ArrayList<CutsceneAttachment> getAttachments() {
+        return this.attachments;
+    }
+
+    /**
+     * Adds an attachment to the cutscene.
+     */
+    public void addAttachment(CutsceneAttachment att) {
+        if (att == null) return;
+        this.attachments.add(att);
+        this.attachments.sort(Comparator.comparingDouble(a -> a.getAt()));
+    }
+
+    /**
+     * Removes an attachment at the specified index (from the filtered list).
+     *
+     * @param index Index in the filtered list of the specific type.
+     * @param type  The class type to filter by.
+     */
+    public void removeAttachment(int index, Class<? extends CutsceneAttachment> type) {
+        ArrayList<CutsceneAttachment> filtered = new ArrayList<>();
+        for (CutsceneAttachment att : this.attachments) {
+            if (type.isInstance(att)) filtered.add(att);
+        }
+        if (index < 0 || index >= filtered.size()) return;
+        this.attachments.remove(filtered.get(index));
+    }
+
+    /**
+     * Removes an attachment by its direct reference.
+     */
+    public void removeAttachment(CutsceneAttachment att) {
+        this.attachments.remove(att);
+    }
+
+    /**
+     * @deprecated Use addAttachment() with EffectAttachment instead.
+     */
+    @Deprecated
+    public void addScreenEffect(EffectAttachment ev) {
+        addAttachment(ev);
+    }
+
+    /**
+     * @deprecated Use removeAttachment() instead.
+     */
+    @Deprecated
     public void removeScreenEffect(int index) {
-        if (index < 0 || index >= this.screenEffects.size()) return;
-        this.screenEffects.remove(index);
+        ArrayList<EffectAttachment> effects = getEffectAttachments();
+        if (index < 0 || index >= effects.size()) return;
+        removeAttachment(effects.get(index));
     }
 
     public void setAnchorRotation(int anchorIndex, Vec2 rot) {
@@ -370,86 +464,4 @@ public class Cutscene {
         return path;
     }
 
-    public static class ScreenEffectEvent {
-        /**
-         * Normalized time (0..1) along the cutscene playback segment (excluding holds).
-         */
-        public float at;
-        public String name;
-        /**
-         * Normalized duration (0..1) of the intro phase, relative to cutscene length.
-         */
-        public float introDuration;
-        /**
-         * Normalized duration (0..1) of the hold phase, relative to cutscene length.
-         */
-        public float holdDuration;
-        /**
-         * Normalized duration (0..1) of the outro phase, relative to cutscene length.
-         */
-        public float outroDuration;
-        public String lerpType;
-        public String command;
-
-        public ScreenEffectEvent(float at, String name, float introDuration, float holdDuration, float outroDuration, String lerpType, String command) {
-            this.at = net.minecraft.util.Mth.clamp(at, 0f, 1f);
-            this.name = name == null ? "" : name;
-            this.introDuration = Math.max(0f, introDuration);
-            this.holdDuration = Math.max(0f, holdDuration);
-            this.outroDuration = Math.max(0f, outroDuration);
-            this.lerpType = (lerpType == null || lerpType.isBlank()) ? LerpType.LINEAR.name() : lerpType;
-            this.command = command == null ? "" : command;
-        }
-
-        public static ScreenEffectEvent fromNbt(CompoundTag tag) {
-            float at = tag.getFloatOr("At", 0f);
-            String name = tag.getStringOr("Name", "");
-            float intro = tag.getFloatOr("IntroDuration", -1f);
-            float hold = tag.getFloatOr("HoldDuration", -1f);
-            float outro = tag.getFloatOr("OutroDuration", -1f);
-            String lerp = tag.getStringOr("LerpType", LerpType.LINEAR.name());
-            String cmd = tag.getStringOr("Command", "");
-
-            // Migration: if new fields not present, try old absolute tick fields
-            if (intro < 0f || hold < 0f || outro < 0f) {
-                int oldIntro = tag.getIntOr("Intro", 0);
-                int oldHold = tag.getIntOr("Hold", 0);
-                int oldOutro = tag.getIntOr("Outro", 0);
-                // Convert old absolute ticks to normalized (assuming default 60-tick cutscene)
-                float defaultLen = 60f;
-                intro = oldIntro / defaultLen;
-                hold = oldHold / defaultLen;
-                outro = oldOutro / defaultLen;
-            }
-
-            return new ScreenEffectEvent(at, name, intro, hold, outro, lerp, cmd);
-        }
-
-        public CompoundTag toNbt() {
-            CompoundTag tag = new CompoundTag();
-            tag.putFloat("At", this.at);
-            tag.putString("Name", this.name);
-            tag.putFloat("IntroDuration", this.introDuration);
-            tag.putFloat("HoldDuration", this.holdDuration);
-            tag.putFloat("OutroDuration", this.outroDuration);
-            tag.putString("LerpType", this.lerpType);
-            tag.putString("Command", this.command);
-            return tag;
-        }
-
-        /**
-         * Converts normalized durations to actual tick counts based on cutscene length.
-         */
-        public int getIntroTicks(float cutsceneLength) {
-            return Math.max(0, Math.round(introDuration * cutsceneLength));
-        }
-
-        public int getHoldTicks(float cutsceneLength) {
-            return Math.max(0, Math.round(holdDuration * cutsceneLength));
-        }
-
-        public int getOutroTicks(float cutsceneLength) {
-            return Math.max(0, Math.round(outroDuration * cutsceneLength));
-        }
-    }
 }
