@@ -104,8 +104,8 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
 
 
         final ImGuiIO io = ImGui.getIO();
-        io.setIniFilename("feimgui");
-        io.setLogFilename("feimguilog");
+        io.setIniFilename("feimgui.ini");
+        io.setLogFilename("feimguilog.log");
         io.addConfigFlags(ImGuiConfigFlags.ViewportsEnable);
         io.addConfigFlags(ImGuiConfigFlags.DockingEnable);
         io.addConfigFlags(ImGuiConfigFlags.DpiEnableScaleFonts);
