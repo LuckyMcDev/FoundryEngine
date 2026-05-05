@@ -5,12 +5,14 @@ import de.luckymcdev.foundryengine.FoundryEngineMod;
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.common.blueprint.BlueprintManager;
 import de.luckymcdev.foundryengine.common.bundle.BundleManager;
+import de.luckymcdev.foundryengine.common.exceptions.EngineException;
 import de.luckymcdev.foundryengine.common.exceptions.UtilityClassException;
 import de.luckymcdev.foundryengine.common.game.behavior.GameBehaviorManager;
 import de.luckymcdev.foundryengine.common.game.stage.GameStageHandler;
 import de.luckymcdev.foundryengine.common.network.NetworkManager;
 import de.luckymcdev.foundryengine.common.scene.SceneManager;
 import de.luckymcdev.foundryengine.common.util.FirstRun;
+import de.luckymcdev.foundryengine.common.util.ini.IniFile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.RecipeManager;
@@ -20,10 +22,10 @@ import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.apache.commons.lang3.SystemProperties;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -52,21 +54,30 @@ public abstract class Common {
      * Base Config Dir
      */
     public static final Path CONFIG = FMLPaths.CONFIGDIR.get();
-    public static final String tmpdir = SystemProperties.getProperty("java.io.tmpdir");
-    public static final Path TEMP_DIR = Path.of(tmpdir).resolve(MODID);
+    public static final String TMPDIR_SYSPROP = SystemProperties.getProperty("java.io.tmpdir");
+    public static final Path TEMP_DIR = Path.of(TMPDIR_SYSPROP).resolve(MODID);
+    public static final IniFile INI_FILE;
     private static final boolean FIRST_RUN = FirstRun.isFor(MODID);
     public static final Path DIRECTORY = dir(GAMEDIR.resolve(MODNAME));
     public static final Path BUNDLES = dir(DIRECTORY.resolve("bundles"));
     public static final Path CACHE = dir(DIRECTORY.resolve(".cache"));
     public static final Path DUMPS = dir(CACHE.resolve("dumps"));
     public static final Path CONFIG_FE = dir(DIRECTORY.resolve("config"));
-    public static final Path INIFILE = file(DIRECTORY.resolve("foundryengine.ini"));
     private static final BundleManager BUNDLE_MANAGER = new BundleManager(FoundryEngineMod.getModBus(), CONFIG_FE);
+    public static final Path INIFILEPATH = file(DIRECTORY.resolve("foundryengine.ini"));
     private static final GameBehaviorManager GAME_BEHAVIOR_MANAGER = new GameBehaviorManager();
     private static final GameStageHandler GAME_STAGE_HANDLER = new GameStageHandler();
     private static final NetworkManager NETWORK_MANAGER = new NetworkManager();
     private static final SceneManager SCENE_MANAGER = new SceneManager();
     private static final BlueprintManager BLUEPRINT_MANAGER = new BlueprintManager();
+
+    static {
+        try {
+            INI_FILE = new IniFile(INIFILEPATH);
+        } catch (IOException e) {
+            throw new EngineException(e);
+        }
+    }
 
     private Common() {
         throw new UtilityClassException();
@@ -78,7 +89,7 @@ public abstract class Common {
      * @param path the Path of the {@link Identifier}
      * @return returns the assembled {@link Identifier}
      */
-    public static Identifier id(@NotNull String path) {
+    public static Identifier id(String path) {
         return Identifier.fromNamespaceAndPath(MODID, path);
     }
 
@@ -127,6 +138,7 @@ public abstract class Common {
             return "";
         }
     }
+
 
     // Event Bus
 
