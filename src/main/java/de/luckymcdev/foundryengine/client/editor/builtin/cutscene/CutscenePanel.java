@@ -10,6 +10,7 @@ import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.cutscene.model.Cutscene;
+import de.luckymcdev.foundryengine.common.cutscene.network.CutsceneActionPacket;
 import de.luckymcdev.foundryengine.common.cutscene.network.CutscenePacket;
 import de.luckymcdev.foundryengine.common.cutscene.util.LerpType;
 import imgui.ImGui;
@@ -128,7 +129,8 @@ public class CutscenePanel extends EditorPanel {
         if (ImGui.button("Create") || confirm) {
             String name = newName.get().trim();
             if (!name.isBlank()) {
-                sendCommand("engine cutscene add " + name);
+                ClientPacketDistributor.sendToServer(new CutsceneActionPacket(
+                        CutsceneActionPacket.Action.ADD, null, name, 0, null, 0, 0));
                 setStatus("Created: " + name);
                 showNewForm = false;
                 newName.set("");
@@ -193,7 +195,6 @@ public class CutscenePanel extends EditorPanel {
     }
 
     private void renderNodeRotationEditor(Cutscene c) {
-        // Reset state when the selected cutscene changes.
         if (selectedIndex != lastSelectedCutsceneIndex) {
             lastSelectedCutsceneIndex = selectedIndex;
             selectedNodeIndex.set(0);
@@ -208,7 +209,6 @@ public class CutscenePanel extends EditorPanel {
             return;
         }
 
-        // Clamp if nodes were added/removed.
         if (selectedNodeIndex.get() < 0) selectedNodeIndex.set(0);
         if (selectedNodeIndex.get() > anchors - 1) selectedNodeIndex.set(anchors - 1);
 
@@ -253,7 +253,6 @@ public class CutscenePanel extends EditorPanel {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null) return;
 
-        // Sync from CutsceneUiState
         if (selectedIndex != lastSelectedCutsceneIndex) {
             CutsceneUiState.syncFromCutscene(c);
         }
@@ -292,12 +291,10 @@ public class CutscenePanel extends EditorPanel {
         ImGui.spacing();
 
         if (ImGui.button(ImIcons.FA.FA_PLAY + " Play")) {
-            sendCommand("engine cutscene play " + playerName
-                    + " " + c.getName()
-                    + " " + CutsceneUiState.getPlaybackLength()
-                    + " " + lerpName
-                    + " " + CutsceneUiState.getPlaybackHoldStart()
-                    + " " + CutsceneUiState.getPlaybackHoldEnd());
+            ClientPacketDistributor.sendToServer(new CutsceneActionPacket(
+                    CutsceneActionPacket.Action.PLAY, playerName, c.getName(),
+                    CutsceneUiState.getPlaybackLength(), lerpName,
+                    CutsceneUiState.getPlaybackHoldStart(), CutsceneUiState.getPlaybackHoldEnd()));
             setStatus("Playing: " + c.getName());
         }
         ImGui.sameLine();
@@ -308,7 +305,8 @@ public class CutscenePanel extends EditorPanel {
             ImGui.pushStyleColor(ImGuiCol.ButtonHovered, 0.80f, 0.25f, 0.25f, 1.0f);
             ImGui.pushStyleColor(ImGuiCol.ButtonActive, 0.60f, 0.15f, 0.15f, 1.0f);
             if (ImGui.button(ImIcons.FA.FA_STOP + " Cancel")) {
-                sendCommand("engine cutscene cancel " + playerName);
+                ClientPacketDistributor.sendToServer(new CutsceneActionPacket(
+                        CutsceneActionPacket.Action.CANCEL, playerName, null, 0, null, 0, 0));
                 setStatus("Cutscene cancelled.");
             }
             ImGui.popStyleColor(3);
@@ -321,7 +319,8 @@ public class CutscenePanel extends EditorPanel {
         ImGui.pushStyleColor(ImGuiCol.ButtonHovered, 0.70f, 0.15f, 0.15f, 1.0f);
         ImGui.pushStyleColor(ImGuiCol.ButtonActive, 0.45f, 0.08f, 0.08f, 1.0f);
         if (ImGui.button(ImIcons.FA.FA_TRASH + " Delete " + c.getName())) {
-            sendCommand("engine cutscene remove " + c.getName());
+            ClientPacketDistributor.sendToServer(new CutsceneActionPacket(
+                    CutsceneActionPacket.Action.REMOVE, null, c.getName(), 0, null, 0, 0));
             selectedIndex = -1;
             CutsceneUiState.setSelected(null);
             setStatus("Deleted: " + c.getName());
@@ -349,12 +348,5 @@ public class CutscenePanel extends EditorPanel {
         CompoundTag tag = new CompoundTag();
         tag.putBoolean("Request", true);
         ClientPacketDistributor.sendToServer(new CutscenePacket(tag));
-    }
-
-    private void sendCommand(String command) {
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.getConnection() != null) {
-            mc.getConnection().sendCommand(command);
-        }
     }
 }

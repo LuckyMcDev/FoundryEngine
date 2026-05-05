@@ -5,6 +5,8 @@ import de.luckymcdev.foundryengine.api.event.*;
 import de.luckymcdev.foundryengine.api.event.registry.RegistryEvent;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.cutscene.CutsceneItems;
+import de.luckymcdev.foundryengine.common.cutscene.network.CutsceneActionPacket;
+import de.luckymcdev.foundryengine.common.cutscene.network.CutsceneCommandPacket;
 import de.luckymcdev.foundryengine.common.cutscene.network.CutscenePacket;
 import de.luckymcdev.foundryengine.common.cutscene.network.ScreenEffectPacket;
 import de.luckymcdev.foundryengine.common.cutscene.util.ServerCutsceneManager;
@@ -97,6 +99,8 @@ public class FoundryEngineMod {
         Common.getNetworkManager().register(BundleHashPacket.DEFINITION);
         Common.getNetworkManager().register(CutscenePacket.DEFINITION);
         Common.getNetworkManager().register(ScreenEffectPacket.DEFINITION);
+        Common.getNetworkManager().register(CutsceneCommandPacket.DEFINITION);
+        Common.getNetworkManager().register(CutsceneActionPacket.DEFINITION);
     }
 
     private void registerModBus(IEventBus modBus) {

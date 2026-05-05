@@ -5,6 +5,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
+import de.luckymcdev.foundryengine.common.cutscene.network.CutsceneCommandPacket;
 import de.luckymcdev.foundryengine.common.cutscene.network.ScreenEffectPacket;
 import de.luckymcdev.foundryengine.common.cutscene.util.LerpType;
 import de.luckymcdev.foundryengine.common.cutscene.util.ScreenEffectType;
@@ -76,8 +77,11 @@ public class ScreenEffectCommand implements EngineCommand {
         String command = hasCommand ? StringArgumentType.getString(ctx, "command") : "";
 
         for (ServerPlayer player : players) {
-            PacketDistributor.sendToPlayer(player, new ScreenEffectPacket(effect, intro, hold, outro, easing, command));
+            PacketDistributor.sendToPlayer(player, new ScreenEffectPacket(effect, intro, hold, outro, easing));
             ServerScreenEffectManager.addInstance(player, intro + hold + outro);
+            if (!command.isEmpty()) {
+                PacketDistributor.sendToPlayer(player, new CutsceneCommandPacket(command));
+            }
         }
 
         sendInfo(ctx, "Screen effect sent to " + players.size() + " player(s).");

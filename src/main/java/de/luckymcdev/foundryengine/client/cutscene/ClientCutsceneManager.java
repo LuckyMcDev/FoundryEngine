@@ -3,8 +3,8 @@ package de.luckymcdev.foundryengine.client.cutscene;
 import de.luckymcdev.foundryengine.common.cutscene.model.CommandAttachment;
 import de.luckymcdev.foundryengine.common.cutscene.model.Cutscene;
 import de.luckymcdev.foundryengine.common.cutscene.model.EffectAttachment;
+import de.luckymcdev.foundryengine.common.cutscene.network.CutsceneCommandPacket;
 import de.luckymcdev.foundryengine.common.cutscene.network.CutscenePacket;
-import de.luckymcdev.foundryengine.common.cutscene.network.ScreenEffectPacket;
 import de.luckymcdev.foundryengine.common.cutscene.storage.CutsceneSavedData;
 import de.luckymcdev.foundryengine.common.cutscene.util.LerpType;
 import net.minecraft.client.KeyMapping;
@@ -274,7 +274,7 @@ public class ClientCutsceneManager {
                 CommandAttachment cmd = commands.get(i);
                 if (rawT + 1e-6f < cmd.getEffectiveAt()) continue;
                 firedCommands[i] = true;
-                ClientPacketDistributor.sendToServer(new ScreenEffectPacket("", 0, 0, 0, "", cmd.getCommand()));
+                ClientPacketDistributor.sendToServer(new CutsceneCommandPacket(cmd.getCommand()));
             }
         }
     }

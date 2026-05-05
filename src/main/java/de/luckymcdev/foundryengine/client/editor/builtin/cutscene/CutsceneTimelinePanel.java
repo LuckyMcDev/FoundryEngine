@@ -35,7 +35,9 @@ import java.util.List;
 
 /**
  * Dedicated cutscene timeline / preview / effects panel.
+ * @deprecated Use {@link CutsceneEditorPanel} instead
  */
+@Deprecated
 public class CutsceneTimelinePanel extends EditorPanel {
     public static final CutsceneTimelinePanel INSTANCE = new CutsceneTimelinePanel();
 
