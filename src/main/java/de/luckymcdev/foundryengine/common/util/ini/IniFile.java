@@ -61,12 +61,34 @@ public class IniFile {
         Files.write(filePath, lines);
     }
 
+    /**
+     * Returns an existing section or creates a new one.
+     */
     public IniSection getOrCreateSection(String name) {
         return sections.computeIfAbsent(name, IniSection::new);
     }
 
+    /**
+     * Returns a section by name, if present.
+     */
     public Optional<IniSection> getSection(String name) {
         return Optional.ofNullable(sections.get(name));
+    }
+
+    /**
+     * Returns an unmodifiable view of all sections (name → section).
+     */
+    public Map<String, IniSection> getSections() {
+        return Collections.unmodifiableMap(sections);
+    }
+
+    /**
+     * Removes a section by name.
+     *
+     * @return true if the section existed and was removed, false otherwise
+     */
+    public boolean removeSection(String name) {
+        return sections.remove(name) != null;
     }
 
     /**
@@ -76,15 +98,20 @@ public class IniFile {
         globalComments.add(comment);
     }
 
+    /**
+     * Returns the file path this INI file is bound to.
+     */
+    public Path getPath() {
+        return filePath;
+    }
+
     private void parseLines(List<String> lines) {
         IniSection currentSection = null;
         for (String rawLine : lines) {
             String line = rawLine.trim();
 
-            // Skip empty lines
             if (line.isEmpty()) continue;
 
-            // Comment lines (starts with ';' or '#')
             if (line.startsWith(";") || line.startsWith("#")) {
                 String comment = line.substring(1).trim();
                 if (currentSection == null) {
@@ -95,14 +122,12 @@ public class IniFile {
                 continue;
             }
 
-            // Section header (e.g., "[Database]")
             if (line.startsWith("[") && line.endsWith("]")) {
                 String sectionName = line.substring(1, line.length() - 1).trim();
                 currentSection = getOrCreateSection(sectionName);
                 continue;
             }
 
-            // Key-value pair (e.g., "host=localhost")
             int delimiterIndex = findDelimiter(line);
             if (delimiterIndex > 0) {
                 String key = line.substring(0, delimiterIndex).trim();
@@ -112,18 +137,13 @@ public class IniFile {
                 }
                 currentSection.setValue(key, value);
             }
-            // If line is none of the above, it’s malformed – we simply ignore it.
         }
     }
 
-    /**
-     * Finds the first valid delimiter ('=' or ':') that separates key and value.
-     */
     private int findDelimiter(String line) {
         for (int i = 0; i < line.length(); i++) {
             char c = line.charAt(i);
             if (c == '=' || c == ':') return i;
-            // If we encounter a comment character before a delimiter, treat as no delimiter
             if (c == ';' || c == '#') break;
         }
         return -1;

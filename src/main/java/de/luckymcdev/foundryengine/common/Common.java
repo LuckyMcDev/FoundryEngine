@@ -13,6 +13,7 @@ import de.luckymcdev.foundryengine.common.network.NetworkManager;
 import de.luckymcdev.foundryengine.common.scene.SceneManager;
 import de.luckymcdev.foundryengine.common.util.FirstRun;
 import de.luckymcdev.foundryengine.common.util.ini.IniFile;
+import de.luckymcdev.foundryengine.common.util.ini.IniFileManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.RecipeManager;
@@ -70,10 +71,12 @@ public abstract class Common {
     private static final NetworkManager NETWORK_MANAGER = new NetworkManager();
     private static final SceneManager SCENE_MANAGER = new SceneManager();
     private static final BlueprintManager BLUEPRINT_MANAGER = new BlueprintManager();
+    private static final IniFileManager INI_FILE_MANAGER;
 
     static {
         try {
             INI_FILE = new IniFile(INIFILEPATH);
+            INI_FILE_MANAGER = new IniFileManager(INI_FILE);
         } catch (IOException e) {
             throw new EngineException(e);
         }

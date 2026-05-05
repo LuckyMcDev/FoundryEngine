@@ -42,4 +42,12 @@ public class IniSection {
         }
         return lines;
     }
+
+    public void removeKey(String key) {
+        values.remove(key);
+    }
+
+    public Set<String> getKeys() {
+        return Collections.unmodifiableSet(values.keySet());
+    }
 }
