@@ -60,6 +60,7 @@ public abstract class Common {
     public static final Path CACHE = dir(DIRECTORY.resolve(".cache"));
     public static final Path DUMPS = dir(CACHE.resolve("dumps"));
     public static final Path CONFIG_FE = dir(DIRECTORY.resolve("config"));
+    public static final Path INIFILE = file(DIRECTORY.resolve("foundryengine.ini"));
     private static final BundleManager BUNDLE_MANAGER = new BundleManager(FoundryEngineMod.getModBus(), CONFIG_FE);
     private static final GameBehaviorManager GAME_BEHAVIOR_MANAGER = new GameBehaviorManager();
     private static final GameStageHandler GAME_STAGE_HANDLER = new GameStageHandler();
@@ -135,6 +136,17 @@ public abstract class Common {
 
     public static <T extends Event> T post(EventPriority priority, T event) {
         return NeoForge.EVENT_BUS.post(priority, event);
+    }
+
+    static Path file(Path dir) {
+        if (Files.notExists(dir) && FIRST_RUN) {
+            try {
+                Files.createFile(dir);
+            } catch (Exception ex) {
+                LOGGER.error(ex.getLocalizedMessage());
+            }
+        }
+        return dir;
     }
 
     static Path dir(Path dir) {

@@ -104,7 +104,8 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
 
 
         final ImGuiIO io = ImGui.getIO();
-        io.setIniFilename("foundryengine.ini");
+        io.setIniFilename("feimgui");
+        io.setLogFilename("feimguilog");
         io.addConfigFlags(ImGuiConfigFlags.ViewportsEnable);
         io.addConfigFlags(ImGuiConfigFlags.DockingEnable);
         io.addConfigFlags(ImGuiConfigFlags.DpiEnableScaleFonts);
