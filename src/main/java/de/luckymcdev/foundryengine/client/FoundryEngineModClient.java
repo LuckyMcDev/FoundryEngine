@@ -7,7 +7,6 @@ import de.luckymcdev.foundryengine.client.cutscene.ClientCutsceneManager;
 import de.luckymcdev.foundryengine.client.cutscene.ClientScreenEffectManager;
 import de.luckymcdev.foundryengine.client.cutscene.CutsceneEditor;
 import de.luckymcdev.foundryengine.client.cutscene.CutsceneRenderer;
-import de.luckymcdev.foundryengine.client.debug.renderer.SimpleDebugScreenRenderer;
 import de.luckymcdev.foundryengine.client.debug.screen.BundleDebugEntry;
 import de.luckymcdev.foundryengine.client.debug.screen.GameStagesDebugEntry;
 import de.luckymcdev.foundryengine.client.editor.builtin.MainEditor;
@@ -26,6 +25,8 @@ import de.luckymcdev.foundryengine.client.event.RegisterRenderingStuffEvent;
 import de.luckymcdev.foundryengine.client.ext.ModPathBroadcaster;
 import de.luckymcdev.foundryengine.client.icons.ScreenIconExporter;
 import de.luckymcdev.foundryengine.client.render.entity.EngineEntityRenderers;
+import de.luckymcdev.foundryengine.client.scene.ClientSceneSync;
+import de.luckymcdev.foundryengine.client.scene.SelectionManager;
 import de.luckymcdev.foundryengine.client.util.key.RegisterKeyBindingEvent;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.network.BundleHashPacket;
@@ -115,10 +116,6 @@ public class FoundryEngineModClient {
     }
 
     private void onRegisterDebugRenderers(RegisterDebugRenderersEvent event) {
-        event.register(minecraft -> new SimpleDebugScreenRenderer(minecraft, (mc, camPos, debugValueAccess, frustum, partialTick) -> {
-            var selected = Common.getSceneManager().getNode(ScenePanel.INSTANCE.getSelectedUUID());
-            Common.getSceneManager().renderGizmos(selected);
-        }));
     }
 
     private void onRegisterPanels(RegisterPanelEvent event) {
@@ -147,10 +144,16 @@ public class FoundryEngineModClient {
         ClientCutsceneManager.renderTick();
         ClientScreenEffectManager.renderTick();
         CutsceneRenderer.render();
+        var selectedNode = SelectionManager.getSelected();
+        if (ScenePanel.INSTANCE.showGizmos && selectedNode != null) {
+            selectedNode.drawGizmos();
+        }
     }
 
     private void onClientTick(ClientTickEvent.Post event) {
         Client.getEditorManager().handleTick();
+
+        ClientSceneSync.clientTick();
 
         ClientCutsceneManager.clientTick();
         CutsceneEditor.clientTick();

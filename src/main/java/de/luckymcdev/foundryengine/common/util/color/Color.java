@@ -17,6 +17,28 @@ public class Color {
     public static final Color MAGENTA = new Color(255, 0, 255);
     public static final Color CYAN = new Color(0, 255, 255);
     public static final Color BLUE = new Color(0, 0, 255);
+    public static final Color PURPLE = new Color(128, 0, 128);
+    public static final Color VIOLET = new Color(238, 130, 238);
+    public static final Color BROWN = new Color(139, 69, 19);
+    public static final Color TAN = new Color(210, 180, 140);
+    public static final Color BEIGE = new Color(245, 245, 220);
+    public static final Color TEAL = new Color(0, 128, 128);
+    public static final Color TURQUOISE = new Color(64, 224, 208);
+    public static final Color GOLD = new Color(255, 215, 0);
+    public static final Color SILVER = new Color(192, 192, 192);
+    public static final Color SALMON = new Color(250, 128, 114);
+    public static final Color CORAL = new Color(255, 127, 80);
+    public static final Color NAVY = new Color(0, 0, 128);
+    public static final Color MAROON = new Color(128, 0, 0);
+    public static final Color OLIVE = new Color(128, 128, 0);
+    public static final Color LIME = new Color(0, 255, 0);
+    public static final Color AQUAMARINE = new Color(127, 255, 212);
+    public static final Color CORNFLOWER_BLUE = new Color(100, 149, 237);
+    public static final Color SLATE_BLUE = new Color(106, 90, 205);
+    public static final Color HOT_PINK = new Color(255, 105, 180);
+    public static final Color INDIGO = new Color(75, 0, 130);
+    public static final Color CRIMSON = new Color(220, 20, 60);
+    public static final Color FOREST_GREEN = new Color(34, 139, 34);
 
     public final float r;
     public final float g;

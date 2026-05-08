@@ -6,14 +6,15 @@ import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcon;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
+import de.luckymcdev.foundryengine.client.scene.ClientSceneSync;
 import de.luckymcdev.foundryengine.client.scene.SelectionManager;
 import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.network.packets.ServerBoundTeleportPacket;
 import de.luckymcdev.foundryengine.common.scene.EngineSceneNode;
-import de.luckymcdev.foundryengine.common.scene.EntitySceneNode;
-import de.luckymcdev.foundryengine.common.scene.PointNode;
+import de.luckymcdev.foundryengine.common.scene.PersistedSceneNode;
 import de.luckymcdev.foundryengine.common.scene.SceneZone;
+import de.luckymcdev.foundryengine.common.scene.WorldEntitySceneNode;
 import imgui.ImGui;
 import imgui.flag.ImGuiTreeNodeFlags;
 import imgui.type.ImBoolean;
@@ -21,7 +22,7 @@ import imgui.type.ImFloat;
 import imgui.type.ImInt;
 import imgui.type.ImString;
 import net.minecraft.client.Minecraft;
-import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.ChunkPos;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
@@ -31,8 +32,16 @@ public class ScenePanel extends EditorPanel {
     public static final ScenePanel INSTANCE = new ScenePanel();
 
     private final ImString searchBuffer = new ImString(256);
+    private final ImString createEmptyNameBuffer = new ImString(128);
+    private final ImString renameBuffer = new ImString(128);
     public boolean showGizmos = true;
+    private boolean showWorldEntities = true;
     private String selectedUUID = null;
+
+    private SceneZone activeZone;
+    private boolean followPlayer = false;
+
+    private String renameTargetUuid = null;
 
     public ScenePanel() {
         super(Common.id("scene"), "Scene", ImIcons.FA.FA_FOLDER_TREE, Shortcut.empty());
@@ -46,10 +55,12 @@ public class ScenePanel extends EditorPanel {
             return;
         }
 
-        EngineSceneNode selectedNode = (selectedUUID != null) ? Common.getSceneManager().getNode(selectedUUID) : null;
+        EngineSceneNode selectedNode = ClientSceneSync.findNode(selectedUUID);
 
         renderToolbar();
         renderSearchHeader();
+        renderRenamePopup();
+        renderCreateEmptyPopup();
 
         float totalAvailY = ImGui.getContentRegionAvail().y;
         float spacing = ImGui.getStyle().getItemSpacingY();
@@ -57,7 +68,7 @@ public class ScenePanel extends EditorPanel {
         float treeHeight = totalAvailY - inspectorHeight - (selectedNode != null ? spacing * 2 : 0);
 
         ImGui.beginChild("##scene_tree", 0, treeHeight, false);
-        renderGroupedTree(Common.getSceneManager().getFilteredRoots(), searchBuffer.get().toLowerCase());
+        renderTree(searchBuffer.get().toLowerCase());
         ImGui.endChild();
 
         if (selectedNode != null) {
@@ -74,6 +85,19 @@ public class ScenePanel extends EditorPanel {
             showGizmos = !showGizmos;
         }
         ImGui.sameLine();
+
+        String entitiesLabel = (showWorldEntities ? ImIcons.FA.FA_USERS : ImIcons.FA.FA_USER_SLASH) + "  Entities";
+        if (ImGui.button(entitiesLabel)) {
+            showWorldEntities = !showWorldEntities;
+        }
+        ImGui.sameLine();
+
+        if (ImGui.button(ImIcons.FA.FA_PLUS + "  Empty")) {
+            createEmptyNameBuffer.set("Empty");
+            ImGui.openPopup("###create-empty-node");
+        }
+        ImGui.sameLine();
+
         ImGui.separator();
         ImGui.sameLine();
     }
@@ -85,25 +109,27 @@ public class ScenePanel extends EditorPanel {
         ImGui.textDisabled(ImIcons.FA.FA_LOCATION_DOT + " Zone:");
         ImGui.sameLine();
         String currentZoneName = "Global (All)";
-        if (Common.getSceneManager().isFollowingPlayer()) {
+        if (followPlayer) {
             currentZoneName = "Current Chunk (Following)";
-        } else if (Common.getSceneManager().getActiveZone() != null) {
-            currentZoneName = Common.getSceneManager().getActiveZone().name();
+        } else if (activeZone != null) {
+            currentZoneName = activeZone.name();
         }
 
         if (ImGui.beginCombo("##zone_select", currentZoneName)) {
-            if (ImGui.selectable("Global (All)", !Common.getSceneManager().isFollowingPlayer() && Common.getSceneManager().getActiveZone() == null)) {
-                Common.getSceneManager().setFollowPlayer(false);
-                Common.getSceneManager().setActiveZone(null);
+            if (ImGui.selectable("Global (All)", !followPlayer && activeZone == null)) {
+                followPlayer = false;
+                activeZone = null;
             }
-            if (ImGui.selectable("Current Chunk (Follow)", Common.getSceneManager().isFollowingPlayer())) {
-                Common.getSceneManager().setFollowPlayer(true);
+            if (ImGui.selectable("Current Chunk (Follow)", followPlayer)) {
+                followPlayer = true;
+                activeZone = null;
             }
             if (ImGui.selectable("Snapshot Current Area", false)) {
                 if (Client.getPlayer() == null) return;
                 var chunkPos = Client.getPlayer().chunkPosition();
                 SceneZone snapshot = new SceneZone("Snapshot", chunkPos.getMinBlockX(), chunkPos.getMinBlockZ(), chunkPos.getMaxBlockX(), chunkPos.getMaxBlockZ());
-                Common.getSceneManager().setActiveZone(snapshot);
+                activeZone = snapshot;
+                followPlayer = false;
             }
             ImGui.endCombo();
         }
@@ -111,9 +137,63 @@ public class ScenePanel extends EditorPanel {
         ImGui.separator();
     }
 
+    private void renderTree(String filter) {
+        Collection<? extends EngineSceneNode> persistedRoots = filteredRoots(Common.getSceneManager().getClientGraph().getRoots());
+
+        int rootFlags = ImGuiTreeNodeFlags.SpanAvailWidth | ImGuiTreeNodeFlags.DefaultOpen;
+        boolean sceneOpen = ImGui.treeNodeEx("##persisted_scene_root", rootFlags, ImIcons.FA.FA_FOLDER_TREE + "  Scene");
+        if (sceneOpen) {
+            renderGroupedTree(new ArrayList<>(persistedRoots), filter);
+            ImGui.treePop();
+        }
+
+        if (showWorldEntities) {
+            boolean entOpen = ImGui.treeNodeEx("##world_entities_root", rootFlags, ImIcons.FA.FA_USERS + "  World Entities");
+            if (entOpen) {
+                renderGroupedTree(buildWorldEntityRoots(), filter);
+                ImGui.treePop();
+            }
+        }
+    }
+
+    private Collection<EngineSceneNode> buildWorldEntityRoots() {
+        var level = Minecraft.getInstance().level;
+        if (level == null) return List.of();
+
+        ArrayList<EngineSceneNode> roots = new ArrayList<>();
+        for (var e : level.entitiesForRendering()) {
+            if (e == null) continue;
+            roots.add(new WorldEntitySceneNode(e));
+        }
+        return filteredRoots(roots);
+    }
+
+    private <T extends EngineSceneNode> Collection<T> filteredRoots(Collection<T> input) {
+        ArrayList<T> filtered = new ArrayList<>(input);
+
+        if (followPlayer) {
+            var player = Client.getPlayer();
+            if (player != null) {
+                ChunkPos chunk = player.chunkPosition();
+                filtered.removeIf(n -> !isInChunk(n, chunk));
+            }
+        } else if (activeZone != null) {
+            filtered.removeIf(n -> !activeZone.contains(n.getPosition().x, n.getPosition().z));
+        }
+
+        return filtered;
+    }
+
+    private boolean isInChunk(EngineSceneNode node, ChunkPos chunk) {
+        float x = node.getPosition().x;
+        float z = node.getPosition().z;
+        return x >= chunk.getMinBlockX() && x <= chunk.getMaxBlockX()
+                && z >= chunk.getMinBlockZ() && z <= chunk.getMaxBlockZ();
+    }
+
     private void renderGroupedTree(Collection<EngineSceneNode> roots, String filter) {
         if (roots.isEmpty()) {
-            ImGui.textDisabled("  No entities in scene.");
+            ImGui.textDisabled("  No nodes.");
             return;
         }
 
@@ -129,29 +209,24 @@ public class ScenePanel extends EditorPanel {
         }
 
         if (categoryMap.isEmpty()) {
-            ImGui.textDisabled("  No matching entities.");
+            ImGui.textDisabled("  No matching nodes.");
             return;
         }
 
-        int rootFlags = ImGuiTreeNodeFlags.SpanAvailWidth;
-        boolean rootOpen = ImGui.treeNodeEx("##scene_root", rootFlags, ImIcons.FA.FA_FOLDER_TREE + "  Scene");
-        if (rootOpen) {
-            for (Map.Entry<String, Map<String, List<EngineSceneNode>>> catEntry : categoryMap.entrySet()) {
-                String category = catEntry.getKey();
-                Map<String, List<EngineSceneNode>> typeMap = catEntry.getValue();
+        for (Map.Entry<String, Map<String, List<EngineSceneNode>>> catEntry : categoryMap.entrySet()) {
+            String category = catEntry.getKey();
+            Map<String, List<EngineSceneNode>> typeMap = catEntry.getValue();
 
-                int catFlags = ImGuiTreeNodeFlags.SpanAvailWidth;
-                if (!filter.isEmpty()) catFlags |= ImGuiTreeNodeFlags.DefaultOpen;
-                String catLabel = getCategoryIcon(category) + "  " + category + "  (" + typeMap.size() + ")";
-                boolean catOpen = ImGui.treeNodeEx("##cat_" + category, catFlags, catLabel);
-                if (catOpen) {
-                    for (Map.Entry<String, List<EngineSceneNode>> typeEntry : typeMap.entrySet()) {
-                        renderTypeGroup(typeEntry.getKey(), typeEntry.getValue(), filter);
-                    }
-                    ImGui.treePop();
+            int catFlags = ImGuiTreeNodeFlags.SpanAvailWidth;
+            if (!filter.isEmpty()) catFlags |= ImGuiTreeNodeFlags.DefaultOpen;
+            String catLabel = getCategoryIcon(category) + "  " + category + "  (" + typeMap.size() + ")";
+            boolean catOpen = ImGui.treeNodeEx("##cat_" + category, catFlags, catLabel);
+            if (catOpen) {
+                for (Map.Entry<String, List<EngineSceneNode>> typeEntry : typeMap.entrySet()) {
+                    renderTypeGroup(typeEntry.getKey(), typeEntry.getValue(), filter);
                 }
+                ImGui.treePop();
             }
-            ImGui.treePop();
         }
     }
 
@@ -226,14 +301,105 @@ public class ScenePanel extends EditorPanel {
             if (ImGui.menuItem(ImIcons.FA.FA_LOCATION_CROSSHAIRS + "  Teleport to")) {
                 teleportTo(node.getPosition());
             }
-            if (ImGui.menuItem(ImIcons.FA.FA_TRASH + "  Remove")) {
+            boolean isPersisted = node instanceof PersistedSceneNode;
+
+            if (isPersisted && ImGui.menuItem(ImIcons.FA.FA_PEN + "  Rename")) {
+                renameTargetUuid = node.getUUID();
+                renameBuffer.set(node.getDisplayName());
+                ImGui.closeCurrentPopup();
+                ImGui.openPopup("###rename-node");
+            }
+
+            if (node.editable() && ImGui.menuItem(ImIcons.FA.FA_TRASH + "  Remove")) {
                 node.remove();
+                if (isPersisted) {
+                    maybePushGraph();
+                }
                 if (isSelected) {
                     selectedUUID = null;
                     SelectionManager.setSelected(null);
                 }
             }
             ImGui.endPopup();
+        }
+    }
+
+    private void renderRenamePopup() {
+        if (ImGui.beginPopupModal("###rename-node", new ImBoolean(true), imgui.flag.ImGuiWindowFlags.AlwaysAutoResize)) {
+            ImGui.text("Name:");
+            ImGui.setNextItemWidth(260f);
+            ImGui.inputText("##rename", renameBuffer);
+
+            if (ImGui.button("OK##rename", 80, 0)) {
+                String newName = renameBuffer.get().trim();
+                if (renameTargetUuid != null && !newName.isEmpty()) {
+                    var node = Common.getSceneManager().getClientGraph().getNode(renameTargetUuid);
+                    if (node != null) {
+                        node.setDisplayName(newName);
+                        maybePushGraph();
+                    }
+                }
+                renameTargetUuid = null;
+                renameBuffer.set("");
+                ImGui.closeCurrentPopup();
+            }
+
+            ImGui.sameLine();
+            if (ImGui.button("Cancel##rename", 80, 0)) {
+                renameTargetUuid = null;
+                renameBuffer.set("");
+                ImGui.closeCurrentPopup();
+            }
+
+            ImGui.endPopup();
+        }
+    }
+
+    private void renderCreateEmptyPopup() {
+        if (ImGui.beginPopupModal("###create-empty-node", new ImBoolean(true), imgui.flag.ImGuiWindowFlags.AlwaysAutoResize)) {
+            ImGui.text("Name:");
+            ImGui.setNextItemWidth(260f);
+            ImGui.inputText("##create-empty-name", createEmptyNameBuffer);
+
+            if (ImGui.button("Create##empty", 90, 0)) {
+                String name = createEmptyNameBuffer.get().trim();
+                if (name.isEmpty()) name = "Empty";
+                createEmptyNode(name);
+                createEmptyNameBuffer.set("");
+                ImGui.closeCurrentPopup();
+            }
+
+            ImGui.sameLine();
+            if (ImGui.button("Cancel##empty", 90, 0)) {
+                createEmptyNameBuffer.set("");
+                ImGui.closeCurrentPopup();
+            }
+
+            ImGui.endPopup();
+        }
+    }
+
+    private void createEmptyNode(String name) {
+        var player = Client.getPlayer();
+        if (player == null) return;
+        Vector3f pos = player.position().toVector3f();
+        Vector2f rot = new Vector2f(player.getXRot(), player.getYRot());
+        createNode("foundryengine:empty", name, pos, rot);
+    }
+
+    private void createNode(String typeName, String name, Vector3f pos, Vector2f rot) {
+        var graph = Common.getSceneManager().getClientGraph();
+        var node = graph.createNode(typeName, name, pos, rot, null);
+        ClientSceneSync.pushToServer(graph);
+
+        selectedUUID = node.getUUID();
+        SelectionManager.setSelected(node);
+    }
+
+    private void maybePushGraph() {
+        var graph = Common.getSceneManager().getClientGraph();
+        if (graph.isDirty()) {
+            ClientSceneSync.pushToServer(graph);
         }
     }
 
@@ -285,7 +451,7 @@ public class ScenePanel extends EditorPanel {
         ImGui.text("Position");
         ImGui.tableNextColumn();
 
-        Vector3f pos = node.getPosition();
+        Vector3f pos = node.getLocalPosition();
         boolean editable = node.editable();
 
         if (editable) {
@@ -303,16 +469,8 @@ public class ScenePanel extends EditorPanel {
 
             if (changed) {
                 Vector3f newPos = new Vector3f(x[0], y[0], z[0]);
-                if (node instanceof PointNode point) {
-                    point.setPosition(newPos);
-                } else if (node instanceof EntitySceneNode entityNode) {
-                    var entity = entityNode.asEntity();
-                    if (entity != null && entity.level() instanceof ServerLevel serverLevel) {
-                        Vector2f rot = node.getRotation();
-                        entity.teleportTo(serverLevel, newPos.x, newPos.y, newPos.z,
-                                Set.of(), rot.x, rot.y, false);
-                    }
-                }
+                node.setLocalPosition(newPos);
+                if (node instanceof PersistedSceneNode) maybePushGraph();
             }
         } else {
             ImGui.textDisabled(String.format("%.2f, %.2f, %.2f", pos.x, pos.y, pos.z));
@@ -324,8 +482,8 @@ public class ScenePanel extends EditorPanel {
         ImGui.text("Rotation");
         ImGui.tableNextColumn();
 
-        Vector2f rot = node.getRotation();
-        boolean editable = (node instanceof PointNode) || (node instanceof EntitySceneNode);
+        Vector2f rot = node.getLocalRotation();
+        boolean editable = node.editable();
 
         if (editable) {
             float[] yaw = {rot.x};
@@ -338,16 +496,8 @@ public class ScenePanel extends EditorPanel {
 
             if (changed) {
                 Vector2f newRot = new Vector2f(yaw[0], pitch[0]);
-                if (node instanceof PointNode point) {
-                    point.setRotation(newRot);
-                } else if (node instanceof EntitySceneNode entityNode) {
-                    var entity = entityNode.asEntity();
-                    if (entity != null && entity.level() instanceof ServerLevel serverLevel) {
-                        Vector3f pos = node.getPosition();
-                        entity.teleportTo(serverLevel, pos.x, pos.y, pos.z,
-                                Set.of(), newRot.x, newRot.y, false);
-                    }
-                }
+                node.setLocalRotation(newRot);
+                if (node instanceof PersistedSceneNode) maybePushGraph();
             }
         } else {
             ImGui.textDisabled(String.format("%.2f, %.2f", rot.x, rot.y));
@@ -364,21 +514,25 @@ public class ScenePanel extends EditorPanel {
             ImFloat val = new ImFloat((Float) value);
             if (ImGui.inputFloat("##" + key, val)) {
                 node.setProperty(key, val.get());
+                if (node instanceof PersistedSceneNode) maybePushGraph();
             }
         } else if (value instanceof Integer) {
             ImInt val = new ImInt((Integer) value);
             if (ImGui.inputInt("##" + key, val)) {
                 node.setProperty(key, val.get());
+                if (node instanceof PersistedSceneNode) maybePushGraph();
             }
         } else if (value instanceof Boolean) {
             ImBoolean val = new ImBoolean((Boolean) value);
             if (ImGui.checkbox("##" + key, val)) {
                 node.setProperty(key, val.get());
+                if (node instanceof PersistedSceneNode) maybePushGraph();
             }
         } else if (value instanceof String) {
             ImString val = new ImString((String) value, 256);
             if (ImGui.inputText("##" + key, val)) {
                 node.setProperty(key, val.get());
+                if (node instanceof PersistedSceneNode) maybePushGraph();
             }
         } else {
             ImGui.textDisabled(value.toString());
@@ -386,15 +540,15 @@ public class ScenePanel extends EditorPanel {
     }
 
     private String getNodeCategory(EngineSceneNode node) {
-        if (node instanceof EntitySceneNode) return "Entities";
-        if (node instanceof PointNode) return "Points";
+        if (node instanceof PersistedSceneNode) return "Scene";
+        if (node instanceof WorldEntitySceneNode) return "Entities";
         return "Other";
     }
 
     private ImIcon getCategoryIcon(String category) {
         return switch (category) {
+            case "Scene" -> ImIcons.FA.FA_CUBE;
             case "Entities" -> ImIcons.FA.FA_USERS;
-            case "Points" -> ImIcons.FA.FA_LOCATION_DOT;
             default -> ImIcons.FA.FA_CUBE;
         };
     }

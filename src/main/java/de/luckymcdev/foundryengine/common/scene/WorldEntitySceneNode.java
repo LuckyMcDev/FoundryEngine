@@ -3,15 +3,23 @@ package de.luckymcdev.foundryengine.common.scene;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gizmos.GizmoStyle;
 import net.minecraft.gizmos.Gizmos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.AABB;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
-public class EntitySceneNode extends AbstractSceneNode {
+import java.util.Set;
+
+/**
+ * A live node backed by a Minecraft entity.
+ *
+ * <p>Not persisted as part of the engine scene graph; it is just exposed to the editor.</p>
+ */
+public final class WorldEntitySceneNode extends AbstractSceneNode {
     private final Entity entity;
 
-    public EntitySceneNode(Entity entity) {
+    public WorldEntitySceneNode(Entity entity) {
         super(entity.getStringUUID(), entity.getName().getString());
         this.entity = entity;
     }
@@ -23,7 +31,8 @@ public class EntitySceneNode extends AbstractSceneNode {
 
     @Override
     public boolean editable() {
-        return true;
+        // Read-only for now: we don't have a server-authoritative edit packet yet.
+        return false;
     }
 
     @Override
@@ -40,14 +49,32 @@ public class EntitySceneNode extends AbstractSceneNode {
     }
 
     @Override
-    public Vector3f getPosition() {
+    public Vector3f getLocalPosition() {
         return entity.position().toVector3f();
     }
 
     @Override
-    public Vector2f getRotation() {
+    public void setLocalPosition(Vector3f pos) {
+        if (entity.level() instanceof ServerLevel serverLevel) {
+            Vector2f rot = getLocalRotation();
+            entity.teleportTo(serverLevel, pos.x, pos.y, pos.z, Set.of(), rot.x, rot.y, false);
+        } else {
+            entity.setPos(pos.x, pos.y, pos.z);
+        }
+    }
+
+    @Override
+    public Vector2f getLocalRotation() {
         var rot = entity.getRotationVector();
         return new Vector2f(rot.x, rot.y);
+    }
+
+    @Override
+    public void setLocalRotation(Vector2f rot) {
+        Vector3f pos = getLocalPosition();
+        if (entity.level() instanceof ServerLevel serverLevel) {
+            entity.teleportTo(serverLevel, pos.x, pos.y, pos.z, Set.of(), rot.y, rot.x, false);
+        }
     }
 
     @Override

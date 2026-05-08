@@ -1,18 +1,26 @@
 package de.luckymcdev.foundryengine.common.scene;
 
-import javax.annotation.Nullable;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
+import org.jspecify.annotations.Nullable;
+
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Base implementation for editor-visible nodes.
+ */
 public abstract class AbstractSceneNode implements EngineSceneNode {
     protected final String uuid;
     protected final List<EngineSceneNode> children = new ArrayList<>();
-    protected final Map<String, Object> properties = new HashMap<>();
+    protected final Map<String, Object> properties = new LinkedHashMap<>();
+
     protected String displayName;
-    @Nullable
-    protected EngineSceneNode parent;
+    protected final Vector3f localPosition = new Vector3f();
+    protected final Vector2f localRotation = new Vector2f();
+    protected @Nullable EngineSceneNode parent;
 
     protected AbstractSceneNode(String uuid, String displayName) {
         this.uuid = uuid;
@@ -29,13 +37,58 @@ public abstract class AbstractSceneNode implements EngineSceneNode {
         return displayName;
     }
 
+    @Override
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
     }
 
     @Override
-    @Nullable
-    public EngineSceneNode getParent() {
+    public Vector3f getLocalPosition() {
+        return localPosition;
+    }
+
+    @Override
+    public void setLocalPosition(Vector3f pos) {
+        this.localPosition.set(pos);
+    }
+
+    @Override
+    public Vector2f getLocalRotation() {
+        return localRotation;
+    }
+
+    @Override
+    public void setLocalRotation(Vector2f rot) {
+        this.localRotation.set(rot);
+    }
+
+    @Override
+    public Vector3f getPosition() {
+        // A pragmatic hierarchical transform (good enough for editor parenting and grouping):
+        // - Rotations are composed by simple addition.
+        // - Child positions are not rotated by parent rotation (keeps behavior predictable in Minecraft coords).
+        Vector3f world = new Vector3f(getLocalPosition());
+        EngineSceneNode p = this.parent;
+        while (p != null) {
+            world.add(p.getLocalPosition());
+            p = p.getParent();
+        }
+        return world;
+    }
+
+    @Override
+    public Vector2f getRotation() {
+        Vector2f world = new Vector2f(getLocalRotation());
+        EngineSceneNode p = this.parent;
+        while (p != null) {
+            world.add(p.getLocalRotation());
+            p = p.getParent();
+        }
+        return world;
+    }
+
+    @Override
+    public @Nullable EngineSceneNode getParent() {
         return parent;
     }
 
