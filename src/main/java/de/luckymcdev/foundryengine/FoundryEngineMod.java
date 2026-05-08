@@ -21,7 +21,6 @@ import de.luckymcdev.foundryengine.common.network.packets.ServerBoundTeleportPac
 import de.luckymcdev.foundryengine.common.network.packets.explorer.*;
 import de.luckymcdev.foundryengine.common.registry.EngineRegistries;
 import de.luckymcdev.foundryengine.common.scene.network.ScenePacket;
-import de.luckymcdev.foundryengine.common.scene.network.SpawnMarkersPacket;
 import de.luckymcdev.foundryengine.common.vpacks.BundleVirtualPacks;
 import de.luckymcdev.foundryengine.common.vpacks.event.RegisterVirtualPackEvent;
 import de.luckymcdev.foundryengine.common.world.entity.EngineEntities;
@@ -38,10 +37,8 @@ import net.neoforged.fml.event.lifecycle.FMLConstructModEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
@@ -76,7 +73,6 @@ public class FoundryEngineMod {
         BUS.addListener(this::onServerAboutToStart);
         BUS.addListener(this::onServerTick);
         BUS.addListener(this::onRegisterVirtualPacks);
-        BUS.addListener(this::onPlayerLoggedIn);
 
         Config.registerCommon(modContainer);
         Config.registerStartup(modContainer);
@@ -114,32 +110,6 @@ public class FoundryEngineMod {
         Common.getNetworkManager().register(CutsceneCommandPacket.DEFINITION);
         Common.getNetworkManager().register(CutsceneActionPacket.DEFINITION);
         Common.getNetworkManager().register(ScenePacket.DEFINITION);
-        Common.getNetworkManager().register(SpawnMarkersPacket.DEFINITION);
-    }
-
-    private void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-        if (!(event.getEntity() instanceof net.minecraft.server.level.ServerPlayer player)) return;
-        var server = player.level().getServer();
-        if (server == null) return;
-
-        var worldSpawn = player.level().getRespawnData().pos();
-
-        var cfg = player.getRespawnConfig();
-        var playerSpawn = (cfg != null) ? cfg.respawnData().pos() : worldSpawn;
-
-        int radius = 10;
-        try {
-            Object v = server.getGameRules().get(net.minecraft.world.level.gamerules.GameRules.RESPAWN_RADIUS);
-            if (v instanceof Integer i) radius = i;
-        } catch (Throwable ignored) {
-        }
-
-        var tag = new net.minecraft.nbt.CompoundTag();
-        tag.put("WorldSpawn", posToNbt(worldSpawn));
-        tag.put("PlayerSpawn", posToNbt(playerSpawn));
-        tag.putInt("RespawnRadius", Math.max(0, radius));
-
-        PacketDistributor.sendToPlayer(player, new SpawnMarkersPacket(tag));
     }
 
     private void registerModBus(IEventBus modBus) {
