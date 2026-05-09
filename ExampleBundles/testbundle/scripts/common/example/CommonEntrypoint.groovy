@@ -1,12 +1,19 @@
 package common.example
 
+import com.mojang.brigadier.CommandDispatcher
 import de.luckymcdev.foundryengine.api.builder.block.BlockBuilder
 import de.luckymcdev.foundryengine.api.builder.item.ItemBuilder
 import de.luckymcdev.foundryengine.api.builder.recipe.RecipeBuilder
 import de.luckymcdev.foundryengine.api.builder.sound.SoundBuilder
+import de.luckymcdev.foundryengine.api.event.AreaEvents
 import de.luckymcdev.foundryengine.api.event.BundleEvents
+import de.luckymcdev.foundryengine.api.event.CommandEvents
+import de.luckymcdev.foundryengine.client.Client
 import de.luckymcdev.foundryengine.common.script.BundleEntrypoint
 import net.minecraft.advancements.criterion.InventoryChangeTrigger
+import net.minecraft.client.Minecraft
+import net.minecraft.commands.CommandSourceStack
+import net.minecraft.commands.Commands
 import net.minecraft.core.component.DataComponents
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.Identifier
@@ -74,9 +81,22 @@ class CommonEntrypoint implements BundleEntrypoint {
             it.recipes(RECIPE)
             it.sounds(MY_SOUND)
         }
+
+        AreaEvents.areaEnter {
+            Client.getPlayer().sendSystemMessage(Component.literal("Entered Area: "+it.area.id()))
+        }
+
+        AreaEvents.areaLeave {
+            Client.getPlayer().sendSystemMessage(Component.literal("Left Area: "+it.area.id()))
+        }
+
+        AreaEvents.areaTick {
+            Client.getPlayer().sendSystemMessage(Component.literal("Tick Area: "+it.area.id()))
+        }
     }
 
     @Override
     void onUnload() {
     }
 }
+
