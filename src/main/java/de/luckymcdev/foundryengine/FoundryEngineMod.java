@@ -27,7 +27,9 @@ import de.luckymcdev.foundryengine.common.world.entity.EngineEntities;
 import de.luckymcdev.foundryengine.config.Config;
 import de.luckymcdev.foundryengine.server.command.FoundryCommands;
 import de.luckymcdev.foundryengine.server.packs.DynamicPackRepository;
+import net.minecraft.SharedConstants;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.util.Util;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModLoader;
@@ -35,6 +37,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLConstructModEvent;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.NeoForgeVersion;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
@@ -76,7 +79,17 @@ public class FoundryEngineMod {
 
         Config.registerCommon(modContainer);
         Config.registerStartup(modContainer);
-        LOGGER.debug("Foundry Engine version {} initialized", modVersion);
+
+        var neoVersion = NeoForgeVersion.getVersion();
+        var mcVersion = SharedConstants.getCurrentVersion().name();
+        var os = Util.getPlatform().name();
+        LOGGER.info("""\s
+                ███████╗███████╗
+                ██╔════╝██╔════╝  Foundry Engine {}
+                █████╗  █████╗    Running on NeoForge {}
+                ██╔══╝  ██╔══╝    Minecraft {}
+                ██║     ███████╗  Platform {}
+                ╚═╝     ╚══════╝""", modVersion, neoVersion, mcVersion, os);
     }
 
     @ApiStatus.Internal
