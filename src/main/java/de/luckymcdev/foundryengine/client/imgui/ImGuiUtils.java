@@ -156,6 +156,116 @@ public class ImGuiUtils {
         return true;
     }
 
+    /**
+     * Checks if the current environment meets world/level requirements for panel functionality.
+     * Displays appropriate error message if requirements are not met.
+     *
+     * @param requireSingleplayer if true, requires singleplayer mode
+     * @param requireMultiplayer  if true, requires multiplayer mode
+     * @param customMessage       custom message to display if requirements not met (null for default)
+     * @return true if requirements are met, false otherwise
+     */
+    public static boolean requireWorld(boolean requireSingleplayer, boolean requireMultiplayer, String customMessage) {
+        var mc = Minecraft.getInstance();
+
+        if (mc.level == null) {
+            if (customMessage != null) {
+                textDenied("World Required", customMessage);
+            } else {
+                textDenied("World Required", "You need to join a world for this panel to work.");
+            }
+            return false;
+        }
+
+        if (requireSingleplayer && !mc.isSingleplayer()) {
+            textDenied("Singleplayer Required", "This panel only works in singleplayer mode.");
+            return false;
+        }
+
+        if (requireMultiplayer && mc.isSingleplayer()) {
+            textDenied("Multiplayer Required", "This panel only works in multiplayer mode.");
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Convenience method for panels that require any world (singleplayer or multiplayer).
+     *
+     * @param customMessage custom message to display if no world is available
+     * @return true if in a world, false otherwise
+     */
+    public static boolean requireWorld(String customMessage) {
+        return requireWorld(false, false, customMessage);
+    }
+
+    /**
+     * Convenience method for panels that require any world with default message.
+     *
+     * @return true if in a world, false otherwise
+     */
+    public static boolean requireWorld() {
+        return requireWorld(false, false, null);
+    }
+
+    /**
+     * Checks if a player entity is available (non-null).
+     *
+     * @param customMessage custom message to display if player is not available
+     * @return true if player is available, false otherwise
+     */
+    public static boolean requirePlayer(String customMessage) {
+        var mc = Minecraft.getInstance();
+        if (mc.player == null) {
+            if (customMessage != null) {
+                textDenied("Player Required", customMessage);
+            } else {
+                textDenied("Player Required", "You need to be logged in for this panel to work.");
+            }
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Convenience method for requiring player with default message.
+     *
+     * @return true if player is available, false otherwise
+     */
+    public static boolean requirePlayer() {
+        return requirePlayer(null);
+    }
+
+    /**
+     * Combined check for both world and player requirements.
+     *
+     * @param customMessage custom message to display if requirements not met
+     * @return true if both world and player are available, false otherwise
+     */
+    public static boolean requireWorldAndPlayer(String customMessage) {
+        var mc = Minecraft.getInstance();
+
+        if (mc.level == null || mc.player == null) {
+            if (customMessage != null) {
+                textDenied("World and Player Required", customMessage);
+            } else {
+                textDenied("World and Player Required", "You need to join a world and be logged in.");
+            }
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Convenience method for requiring both world and player with default message.
+     *
+     * @return true if both world and player are available, false otherwise
+     */
+    public static boolean requireWorldAndPlayer() {
+        return requireWorldAndPlayer(null);
+    }
+
     public static boolean requireFull() {
         if (!requiresActiveSession()) return true; // not on a server, allow
         return requirePermissions();               // on a server, check perms

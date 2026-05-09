@@ -29,7 +29,9 @@ public class MinecraftToolsPanel extends EditorPanel {
 
     @Override
     public void content() {
-        if (ImGuiUtils.requiresActiveSession()) return;
+        if (!ImGuiUtils.requireWorld()) {
+            return;
+        }
 
         ImGui.text("A collection of Minecraft Tools");
         ImGui.separator();

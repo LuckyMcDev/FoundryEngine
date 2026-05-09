@@ -14,10 +14,7 @@ import de.luckymcdev.foundryengine.common.cutscene.util.ServerScreenEffectManage
 import de.luckymcdev.foundryengine.common.log.EngineLogAppender;
 import de.luckymcdev.foundryengine.common.network.BundleHashPacket;
 import de.luckymcdev.foundryengine.common.network.TestPacket;
-import de.luckymcdev.foundryengine.common.network.packets.ServerBoundChangeWeatherPacket;
-import de.luckymcdev.foundryengine.common.network.packets.ServerBoundSetTimePacket;
-import de.luckymcdev.foundryengine.common.network.packets.ServerBoundSpawnEntityPacket;
-import de.luckymcdev.foundryengine.common.network.packets.ServerBoundTeleportPacket;
+import de.luckymcdev.foundryengine.common.network.packets.*;
 import de.luckymcdev.foundryengine.common.network.packets.explorer.*;
 import de.luckymcdev.foundryengine.common.registry.EngineRegistries;
 import de.luckymcdev.foundryengine.common.scene.network.ScenePacket;
@@ -28,6 +25,7 @@ import de.luckymcdev.foundryengine.config.Config;
 import de.luckymcdev.foundryengine.server.command.FoundryCommands;
 import de.luckymcdev.foundryengine.server.packs.DynamicPackRepository;
 import net.minecraft.SharedConstants;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.util.Util;
 import net.neoforged.bus.api.IEventBus;
@@ -41,6 +39,7 @@ import net.neoforged.neoforge.common.NeoForgeVersion;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
@@ -77,13 +76,20 @@ public class FoundryEngineMod {
         BUS.addListener(this::onServerTick);
         BUS.addListener(this::onRegisterVirtualPacks);
 
+        BUS.addListener(Common.getAreaManager()::onEntityTick);
+        BUS.addListener(Common.getAreaManager()::onEntityRemoved);
+        BUS.addListener(Common.getAreaManager()::onPlayerLoggedIn);
+        BUS.addListener(Common.getAreaManager()::onLevelLoad);
+        BUS.addListener(Common.getAreaManager()::onServerStopping);
+
         Config.registerCommon(modContainer);
         Config.registerStartup(modContainer);
 
         var neoVersion = NeoForgeVersion.getVersion();
         var mcVersion = SharedConstants.getCurrentVersion().name();
         var os = Util.getPlatform().name();
-        LOGGER.info("""\s
+        LOGGER.info("""
+                
                 ███████╗███████╗
                 ██╔════╝██╔════╝  Foundry Engine {}
                 █████╗  █████╗    Running on NeoForge {}
@@ -95,15 +101,6 @@ public class FoundryEngineMod {
     @ApiStatus.Internal
     public static IEventBus getModBus() {
         return modBus;
-    }
-
-    private static net.minecraft.nbt.CompoundTag posToNbt(net.minecraft.core.BlockPos pos) {
-        var t = new net.minecraft.nbt.CompoundTag();
-        if (pos == null) return t;
-        t.putInt("X", pos.getX());
-        t.putInt("Y", pos.getY());
-        t.putInt("Z", pos.getZ());
-        return t;
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
@@ -123,6 +120,8 @@ public class FoundryEngineMod {
         Common.getNetworkManager().register(CutsceneCommandPacket.DEFINITION);
         Common.getNetworkManager().register(CutsceneActionPacket.DEFINITION);
         Common.getNetworkManager().register(ScenePacket.DEFINITION);
+        Common.getNetworkManager().register(AreaPacket.DEFINITION);
+        Common.getNetworkManager().register(ClientBoundAreaSyncPacket.DEFINITION);
     }
 
     private void registerModBus(IEventBus modBus) {
@@ -205,6 +204,10 @@ public class FoundryEngineMod {
         BUS.addListener(ServerEvents.Internal::postStopping);
         BUS.addListener(ServerEvents.Internal::postTick);
         BUS.addListener(ServerEvents.Internal::postTags);
+
+        BUS.addListener(AreaEvents.Internal::postAreaEnter);
+        BUS.addListener(AreaEvents.Internal::postAreaLeave);
+        BUS.addListener(AreaEvents.Internal::postAreaTick);
     }
 
     private void onAddPackFinders(AddPackFindersEvent event) {
@@ -236,6 +239,12 @@ public class FoundryEngineMod {
 
     private void onServerAboutToStart(ServerAboutToStartEvent event) {
         Common.getBundleManager().loadServerScripts();
+    }
+
+    private void onServerStarted(ServerStartedEvent event) {
+        for (ServerLevel level : event.getServer().getAllLevels()) {
+            Common.getAreaManager().loadFromLevel(level);
+        }
     }
 
     private void onServerTick(ServerTickEvent.Post event) {

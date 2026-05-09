@@ -3,6 +3,7 @@ package de.luckymcdev.foundryengine.common;
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.FoundryEngineMod;
 import de.luckymcdev.foundryengine.client.Client;
+import de.luckymcdev.foundryengine.common.area.AreaManager;
 import de.luckymcdev.foundryengine.common.blueprint.BlueprintManager;
 import de.luckymcdev.foundryengine.common.bundle.BundleManager;
 import de.luckymcdev.foundryengine.common.exceptions.EngineException;
@@ -71,6 +72,7 @@ public abstract class Common {
     private static final NetworkManager NETWORK_MANAGER = new NetworkManager();
     private static final SceneManager SCENE_MANAGER = new SceneManager();
     private static final BlueprintManager BLUEPRINT_MANAGER = new BlueprintManager();
+    private static final AreaManager AREA_MANAGER = new AreaManager();
     private static final IniFileManager INI_FILE_MANAGER;
 
     static {
@@ -122,6 +124,10 @@ public abstract class Common {
 
     public static BlueprintManager getBlueprintManager() {
         return BLUEPRINT_MANAGER;
+    }
+
+    public static AreaManager getAreaManager() {
+        return AREA_MANAGER;
     }
 
     public static @Nullable RecipeManager getRecipeManager() {

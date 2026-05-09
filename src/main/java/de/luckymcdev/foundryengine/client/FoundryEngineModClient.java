@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.client;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.api.event.registry.RegistryEvent;
+import de.luckymcdev.foundryengine.client.area.AreaRenderer;
 import de.luckymcdev.foundryengine.client.command.FoundryCommandsClient;
 import de.luckymcdev.foundryengine.client.cutscene.ClientCutsceneManager;
 import de.luckymcdev.foundryengine.client.cutscene.ClientScreenEffectManager;
@@ -11,6 +12,7 @@ import de.luckymcdev.foundryengine.client.debug.screen.BundleDebugEntry;
 import de.luckymcdev.foundryengine.client.debug.screen.GameStagesDebugEntry;
 import de.luckymcdev.foundryengine.client.editor.builtin.MainEditor;
 import de.luckymcdev.foundryengine.client.editor.builtin.TestPanel;
+import de.luckymcdev.foundryengine.client.editor.builtin.area.AreaPanel;
 import de.luckymcdev.foundryengine.client.editor.builtin.blueprint.BlueprintsPanel;
 import de.luckymcdev.foundryengine.client.editor.builtin.cutscene.CutscenePanel;
 import de.luckymcdev.foundryengine.client.editor.builtin.cutscene.CutsceneTimelinePanel;
@@ -132,6 +134,7 @@ public class FoundryEngineModClient {
         event.register(ThemeSelectorPanel.INSTANCE);
         event.register(EffectPanel.INSTANCE);
         event.register(BlueprintsPanel.INSTANCE);
+        event.register(AreaPanel.INSTANCE);
         event.register(CutscenePanel.INSTANCE);
         event.register(CutsceneTimelinePanel.INSTANCE);
     }
@@ -144,6 +147,7 @@ public class FoundryEngineModClient {
         ClientCutsceneManager.renderTick();
         ClientScreenEffectManager.renderTick();
         CutsceneRenderer.render();
+        AreaRenderer.render();
         var selectedNode = SelectionManager.getSelected();
         if (ScenePanel.INSTANCE.showGizmos && selectedNode != null) {
             selectedNode.drawGizmos();

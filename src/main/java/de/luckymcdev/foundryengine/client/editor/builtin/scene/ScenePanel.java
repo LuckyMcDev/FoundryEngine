@@ -50,8 +50,7 @@ public class ScenePanel extends EditorPanel {
 
     @Override
     public void content() {
-        if (Minecraft.getInstance().level == null) {
-            ImGuiUtils.textDenied("Non existing Level", "You need to join a World for this Panel to work.");
+        if (!ImGuiUtils.requireWorld("You need to join a world for this panel to work.")) {
             return;
         }
 

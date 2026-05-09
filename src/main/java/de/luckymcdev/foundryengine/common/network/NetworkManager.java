@@ -2,6 +2,9 @@ package de.luckymcdev.foundryengine.common.network;
 
 import de.luckymcdev.foundryengine.common.registry.GenericRegistry;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import org.jetbrains.annotations.ApiStatus;
@@ -50,5 +53,17 @@ public class NetworkManager {
         if (def.serverHandler() != null && def.clientHandler() != null) {
             registrar.playBidirectional(def.type(), def.codec(), def.serverHandler()::accept, def.clientHandler()::accept);
         }
+    }
+
+    public <T extends AbstractPacket<T>> void sendToServer(T packet) {
+        ClientPacketDistributor.sendToServer(packet);
+    }
+
+    public <T extends AbstractPacket<T>> void sendToPlayer(T packet, ServerPlayer player) {
+        PacketDistributor.sendToPlayer(player, packet);
+    }
+
+    public <T extends AbstractPacket<T>> void sendToAllPlayers(T packet) {
+        PacketDistributor.sendToAllPlayers(packet);
     }
 }
