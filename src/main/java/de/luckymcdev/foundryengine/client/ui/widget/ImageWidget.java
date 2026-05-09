@@ -59,12 +59,10 @@ public class ImageWidget extends WidgetBase {
         if (this.image == null || this.imageSize == null) return;
         UIArea drawArea = this.getRenderArea(tickDelta);
         switch (this.scaleType) {
-            case STRETCH -> {
-                guiGraphics.blit(this.image, drawArea.x, drawArea.x + drawArea.width, drawArea.y, drawArea.y + drawArea.height, 0f, 1f, 0f, 1f);
-            }
-            case TILE -> {
-                renderTiledTexture(guiGraphics, drawArea, new UIArea(0, 0, (int) imageSize.x, (int) imageSize.y));
-            }
+            case STRETCH ->
+                    guiGraphics.blit(this.image, drawArea.x, drawArea.x + drawArea.width, drawArea.y, drawArea.y + drawArea.height, 0f, 1f, 0f, 1f);
+            case TILE ->
+                    renderTiledTexture(guiGraphics, drawArea, new UIArea(0, 0, (int) imageSize.x, (int) imageSize.y));
             case NINESLICE -> {
                 if (this.nineSliceData == null) return;
                 int cornerWidth = nineSliceData.sliceLeft;

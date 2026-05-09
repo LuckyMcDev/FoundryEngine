@@ -128,7 +128,7 @@ public class ScreenIconExporter extends Screen {
         for (int i = 0; i < currentBatch.size(); i++) {
             ImageExportUtil.ItemExportData data = currentBatch.get(i);
             float x = (float) ((i % columns) * logicalIconSize);
-            float y = (float) ((i / columns) * logicalIconSize);
+            float y = (float) (((double) i / columns) * logicalIconSize);
 
             renderItem(guiGraphics, data.stack(), x, y, (float) logicalIconSize);
             exportNbtIfNeeded(data);

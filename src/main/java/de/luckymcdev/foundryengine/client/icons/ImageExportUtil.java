@@ -1,6 +1,5 @@
 package de.luckymcdev.foundryengine.client.icons;
 
-import com.google.common.base.Charsets;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentPatch;
@@ -16,6 +15,7 @@ import org.lwjgl.system.MemoryUtil;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class ImageExportUtil {
@@ -75,7 +75,7 @@ public class ImageExportUtil {
 
     public static void exportComponentsFile(HolderLookup.Provider lookupProvider, File dir, String baseFilename, DataComponentPatch components) throws IOException {
         File file = new File(dir, baseFilename + ".txt").getCanonicalFile();
-        FileUtils.writeStringToFile(file, componentsToString(lookupProvider, components), Charsets.UTF_8);
+        FileUtils.writeStringToFile(file, componentsToString(lookupProvider, components), StandardCharsets.UTF_8);
     }
 
     private static NativeImage cropSubImage(NativeImage source, int srcX, int srcY, int width, int height) {

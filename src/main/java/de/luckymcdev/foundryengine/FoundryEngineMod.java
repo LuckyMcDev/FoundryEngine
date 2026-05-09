@@ -12,7 +12,6 @@ import de.luckymcdev.foundryengine.common.cutscene.network.ScreenEffectPacket;
 import de.luckymcdev.foundryengine.common.cutscene.util.ServerCutsceneManager;
 import de.luckymcdev.foundryengine.common.cutscene.util.ServerScreenEffectManager;
 import de.luckymcdev.foundryengine.common.log.EngineLogAppender;
-import de.luckymcdev.foundryengine.common.network.BundleHashPacket;
 import de.luckymcdev.foundryengine.common.network.TestPacket;
 import de.luckymcdev.foundryengine.common.network.packets.*;
 import de.luckymcdev.foundryengine.common.network.packets.explorer.*;
@@ -25,7 +24,6 @@ import de.luckymcdev.foundryengine.config.Config;
 import de.luckymcdev.foundryengine.server.command.FoundryCommands;
 import de.luckymcdev.foundryengine.server.packs.DynamicPackRepository;
 import net.minecraft.SharedConstants;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.util.Util;
 import net.neoforged.bus.api.IEventBus;
@@ -39,7 +37,6 @@ import net.neoforged.neoforge.common.NeoForgeVersion;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
-import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
@@ -239,12 +236,6 @@ public class FoundryEngineMod {
 
     private void onServerAboutToStart(ServerAboutToStartEvent event) {
         Common.getBundleManager().loadServerScripts();
-    }
-
-    private void onServerStarted(ServerStartedEvent event) {
-        for (ServerLevel level : event.getServer().getAllLevels()) {
-            Common.getAreaManager().loadFromLevel(level);
-        }
     }
 
     private void onServerTick(ServerTickEvent.Post event) {

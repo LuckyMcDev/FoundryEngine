@@ -17,6 +17,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.UUID;
 
 public class ClientCutsceneManager {
@@ -239,22 +240,22 @@ public class ClientCutsceneManager {
         public void tickScreenEffects(float rawT, float cutsceneLength) {
             // Handle effect attachments
             var effects = cutscene.getEffectAttachments();
-            if (firedEffects == null || (effects.size() > 0 && firedEffects.length != effects.size())) {
+            if (firedEffects == null || (!effects.isEmpty() && firedEffects.length != effects.size())) {
                 firedEffects = new boolean[effects.size()];
             }
 
             // Handle command attachments
             var commands = cutscene.getCommandAttachments();
-            if (firedCommands == null || (commands.size() > 0 && firedCommands.length != commands.size())) {
+            if (firedCommands == null || (!commands.isEmpty() && firedCommands.length != commands.size())) {
                 firedCommands = new boolean[commands.size()];
             }
 
             if (rawT + 1e-6f < lastEffectT) {
                 if (firedEffects != null) {
-                    for (int i = 0; i < firedEffects.length; i++) firedEffects[i] = false;
+                    Arrays.fill(firedEffects, false);
                 }
                 if (firedCommands != null) {
-                    for (int i = 0; i < firedCommands.length; i++) firedCommands[i] = false;
+                    Arrays.fill(firedCommands, false);
                 }
             }
             lastEffectT = rawT;

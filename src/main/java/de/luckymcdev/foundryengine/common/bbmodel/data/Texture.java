@@ -1,5 +1,7 @@
 package de.luckymcdev.foundryengine.common.bbmodel.data;
 
+import de.luckymcdev.foundryengine.client.Client;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.ByteArrayInputStream;
@@ -156,7 +158,7 @@ public class Texture {
 
                 return image;
             } catch (Exception e) {
-                e.printStackTrace();
+                Client.LOGGER.error(e.getMessage());
                 return null;
             }
         }

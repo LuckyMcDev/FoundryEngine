@@ -13,8 +13,8 @@ import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.network.packets.ServerBoundTeleportPacket;
 import de.luckymcdev.foundryengine.common.scene.EngineSceneNode;
 import de.luckymcdev.foundryengine.common.scene.PersistedSceneNode;
-import de.luckymcdev.foundryengine.common.scene.SceneZone;
 import de.luckymcdev.foundryengine.common.scene.WorldEntitySceneNode;
+import de.luckymcdev.foundryengine.common.util.NamedAABB;
 import imgui.ImGui;
 import imgui.flag.ImGuiTreeNodeFlags;
 import imgui.type.ImBoolean;
@@ -38,7 +38,7 @@ public class ScenePanel extends EditorPanel {
     private boolean showWorldEntities = true;
     private String selectedUUID = null;
 
-    private SceneZone activeZone;
+    private NamedAABB activeZone;
     private boolean followPlayer = false;
 
     private String renameTargetUuid = null;
@@ -111,7 +111,7 @@ public class ScenePanel extends EditorPanel {
         if (followPlayer) {
             currentZoneName = "Current Chunk (Following)";
         } else if (activeZone != null) {
-            currentZoneName = activeZone.name();
+            currentZoneName = activeZone.name;
         }
 
         if (ImGui.beginCombo("##zone_select", currentZoneName)) {
@@ -126,8 +126,11 @@ public class ScenePanel extends EditorPanel {
             if (ImGui.selectable("Snapshot Current Area", false)) {
                 if (Client.getPlayer() == null) return;
                 var chunkPos = Client.getPlayer().chunkPosition();
-                SceneZone snapshot = new SceneZone("Snapshot", chunkPos.getMinBlockX(), chunkPos.getMinBlockZ(), chunkPos.getMaxBlockX(), chunkPos.getMaxBlockZ());
-                activeZone = snapshot;
+                var level = Minecraft.getInstance().level;
+                activeZone = new NamedAABB("Snapshot",
+                        chunkPos.getMinBlockX(), level.getMinY(), chunkPos.getMinBlockZ(),
+                        chunkPos.getMaxBlockX(), level.getMinY() + level.getHeight(), chunkPos.getMaxBlockZ()
+                );
                 followPlayer = false;
             }
             ImGui.endCombo();
@@ -177,7 +180,7 @@ public class ScenePanel extends EditorPanel {
                 filtered.removeIf(n -> !isInChunk(n, chunk));
             }
         } else if (activeZone != null) {
-            filtered.removeIf(n -> !activeZone.contains(n.getPosition().x, n.getPosition().z));
+            filtered.removeIf(n -> !activeZone.contains(n.getPosition().x, 0, n.getPosition().z));
         }
 
         return filtered;

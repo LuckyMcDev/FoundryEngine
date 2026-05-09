@@ -1229,7 +1229,7 @@ public class ImGuiImplGlfw {
         }
     }
 
-    private final class SetWindowSizeFunction extends ImPlatformFuncViewportImVec2 {
+    private static final class SetWindowSizeFunction extends ImPlatformFuncViewportImVec2 {
         private final int[] x = new int[1];
         private final int[] y = new int[1];
         private final int[] width = new int[1];
@@ -1259,7 +1259,7 @@ public class ImGuiImplGlfw {
         }
     }
 
-    private final class SetWindowFocusFunction extends ImPlatformFuncViewport {
+    private static final class SetWindowFocusFunction extends ImPlatformFuncViewport {
         @Override
         public void accept(final ImGuiViewport vp) {
             if (glfwHasFocusWindow) {
@@ -1271,7 +1271,7 @@ public class ImGuiImplGlfw {
         }
     }
 
-    private final class SetWindowAlphaFunction extends ImPlatformFuncViewportFloat {
+    private static final class SetWindowAlphaFunction extends ImPlatformFuncViewportFloat {
         @Override
         public void accept(final ImGuiViewport vp, final float value) {
             if (glfwHasWindowAlpha) {
