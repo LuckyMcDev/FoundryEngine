@@ -36,7 +36,7 @@ public abstract class MinecraftServerMixin {
         return original.clone();
     }
 
-    @WrapOperation(method = {"onGameRuleChanged"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/server/players/PlayerList;broadcastAll(Lnet/minecraft/network/protocol/Packet;)V"))
+    @WrapOperation(method = "onGameRuleChanged", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/players/PlayerList;broadcastAll(Lnet/minecraft/network/protocol/Packet;)V"))
     private void forceGameRunTimeSynchronization(PlayerList instance, Packet<?> packet, Operation<Void> original) {
         for (ServerLevel level : this.levels.values()) {
             if (level.clockManager() == this.clockManager) {
