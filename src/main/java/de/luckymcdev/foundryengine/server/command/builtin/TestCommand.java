@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.server.command.builtin;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.math.Transformation;
+import de.luckymcdev.foundryengine.common.util.ChatIcons;
 import de.luckymcdev.foundryengine.common.util.color.Color;
 import de.luckymcdev.foundryengine.common.world.entity.EngineEntities;
 import de.luckymcdev.foundryengine.common.world.entity.EntitySpawner;
@@ -99,6 +100,9 @@ public class TestCommand implements EngineCommand {
 
                     context.getSource().sendSuccess(
                             () -> Component.literal("Spawned 3 engine display entities (block / item / text)."), false);
+
+
+                    context.getSource().sendSuccess(() -> ChatIcons.ENERGY, false);
                     return 1;
                 });
     }

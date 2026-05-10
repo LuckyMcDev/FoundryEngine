@@ -16,7 +16,7 @@ import net.minecraft.server.packs.resources.ResourceManager;
 public record TTFFile(Identifier id, Identifier resource) {
     // The JetBrains Mono font which is the deafault for ImGui.
     public static final TTFFile JETBRAINS_MONO_NERDFONT_REGULAR =
-            new TTFFile(Common.id("jetbrains_mono_nerd"), Common.id("fonts/jetbrainsmononerdfontmono-regular.ttf"));
+            new TTFFile(Common.id("jetbrains_mono_nerd"), Common.id("font/jetbrainsmononerdfontmono-regular.ttf"));
 
     public static Object2ObjectOpenHashMap<Identifier, TTFFile> find(ResourceManager resourceManager) {
         var map = new Object2ObjectOpenHashMap<Identifier, TTFFile>();

@@ -1,0 +1,196 @@
+{
+  "providers": [
+    {
+      "type": "bitmap",
+      "file": "foundryengine:font/icons/small_space.png",
+      "ascent": 7,
+      "chars": [
+        "."
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "foundryengine:font/icons/error.png",
+      "ascent": 7,
+      "chars": [
+        "!"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "foundryengine:font/icons/plus.png",
+      "ascent": 7,
+      "chars": [
+        "+"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "foundryengine:font/icons/minus.png",
+      "ascent": 7,
+      "chars": [
+        "-"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "foundryengine:font/icons/tilde.png",
+      "ascent": 7,
+      "chars": [
+        "~"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "foundryengine:font/icons/bubble.png",
+      "ascent": 7,
+      "chars": [
+        "B"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "foundryengine:font/icons/copy.png",
+      "ascent": 7,
+      "chars": [
+        "C"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "foundryengine:font/icons/id.png",
+      "ascent": 7,
+      "chars": [
+        "D"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "foundryengine:font/icons/energy.png",
+      "ascent": 7,
+      "chars": [
+        "E"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "foundryengine:font/icons/fire.png",
+      "ascent": 7,
+      "chars": [
+        "F"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "foundryengine:font/icons/heart.png",
+      "ascent": 7,
+      "chars": [
+        "H"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "foundryengine:font/icons/half_heart.png",
+      "ascent": 7,
+      "chars": [
+        "h"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "foundryengine:font/icons/info.png",
+      "ascent": 7,
+      "chars": [
+        "I"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "foundryengine:font/icons/food.png",
+      "ascent": 7,
+      "chars": [
+        "J"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "foundryengine:font/icons/half_food.png",
+      "ascent": 7,
+      "chars": [
+        "j"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "foundryengine:font/icons/cold.png",
+      "ascent": 7,
+      "chars": [
+        "L"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "foundryengine:font/icons/camera.png",
+      "ascent": 7,
+      "chars": [
+        "M"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "foundryengine:font/icons/poison.png",
+      "ascent": 7,
+      "chars": [
+        "O"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "foundryengine:font/icons/prototype_component.png",
+      "ascent": 7,
+      "chars": [
+        "P"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "foundryengine:font/icons/patched_component.png",
+      "ascent": 7,
+      "chars": [
+        "Q"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "foundryengine:font/icons/tag.png",
+      "ascent": 7,
+      "chars": [
+        "T"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "foundryengine:font/icons/warn.png",
+      "ascent": 7,
+      "chars": [
+        "W"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "foundryengine:font/icons/no.png",
+      "ascent": 7,
+      "chars": [
+        "X"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "foundryengine:font/icons/yes.png",
+      "ascent": 7,
+      "chars": [
+        "Y"
+      ]
+    }
+  ]
+}
