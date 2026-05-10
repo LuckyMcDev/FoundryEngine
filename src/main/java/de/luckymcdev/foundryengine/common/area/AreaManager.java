@@ -14,6 +14,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
+import org.jspecify.annotations.Nullable;
 
 import java.util.*;
 
@@ -27,13 +28,17 @@ public class AreaManager {
         areasByDimension.put(dimension, new ArrayList<>(savedData.getAreas()));
     }
 
-    public void register(ServerLevel level, Area area) {
-        AreaSavedData.get(level).addArea(area);
+    public void register(@Nullable ServerLevel level, Area area) {
+        if (level != null) {
+            AreaSavedData.get(level).addArea(area);
+        }
         areasByDimension.computeIfAbsent(area.dimension(), k -> new ArrayList<>()).add(area);
     }
 
-    public void remove(ServerLevel level, Area area) {
-        AreaSavedData.get(level).removeArea(area.id());
+    public void remove(@Nullable ServerLevel level, Area area) {
+        if (level != null) {
+            AreaSavedData.get(level).removeArea(area.id());
+        }
         List<Area> list = areasByDimension.get(area.dimension());
         if (list != null) list.remove(area);
         entityAreaMap.values().forEach(set -> set.remove(area.id()));

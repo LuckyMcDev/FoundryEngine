@@ -38,6 +38,9 @@ public class AreaSavedData extends SavedData {
 
     public static AreaSavedData get(ServerLevel level) {
         SavedDataStorage storage = level.getDataStorage();
+        if (storage == null) {
+            throw new IllegalStateException("Data storage is null");
+        }
         return storage.computeIfAbsent(TYPE);
     }
 
