@@ -1,5 +1,6 @@
 package de.luckymcdev.foundryengine.mixin.level;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import de.luckymcdev.foundryengine.interfaces.EngineLevelStorageSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.storage.LevelStorageException;
@@ -8,7 +9,10 @@ import net.minecraft.world.level.storage.LevelStorageSource.LevelCandidates;
 import net.minecraft.world.level.storage.LevelStorageSource.LevelDirectory;
 import net.minecraft.world.level.validation.DirectoryValidator;
 import org.slf4j.Logger;
-import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -99,36 +103,14 @@ public class LevelStorageSourceMixin implements EngineLevelStorageSource {
         LOGGER.info("LevelStorageSource initialized");
     }
 
-    /**
-     * @author
-     * @reason
-     */
-    @Overwrite
-    public Path getLevelPath(String levelId) {
+    @ModifyReturnValue(method = "getLevelPath", at = @At("RETURN"))
+    private Path engine$modifyGetLevelPath(Path original, String levelId) {
         return engine$getPath(levelId);
     }
 
-    /**
-     * @author
-     * @reason
-     */
-    @Overwrite
-    public boolean levelExists(String levelId) {
-        if (Files.isDirectory(baseDir.resolve(levelId))) return true;
-        for (Path dir : engine$additionalBaseDirs) {
-            if (Files.isDirectory(dir.resolve(levelId))) return true;
-        }
-        return false;
-    }
-
-    /**
-     * @author
-     * @reason
-     */
-    @Overwrite
-    public LevelCandidates findLevelCandidates() throws LevelStorageException {
-        List<LevelDirectory> all = new ArrayList<>();
-        engine$addCandidatesFromDir(baseDir, all);
+    @ModifyReturnValue(method = "findLevelCandidates", at = @At("RETURN"))
+    private LevelCandidates engine$modifyFindLevelCandidates(LevelCandidates original) throws LevelStorageException {
+        List<LevelDirectory> all = new ArrayList<>(original.levels());
         for (Path dir : engine$additionalBaseDirs) {
             engine$addCandidatesFromDir(dir, all);
         }
