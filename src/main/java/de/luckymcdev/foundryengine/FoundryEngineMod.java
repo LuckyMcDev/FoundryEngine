@@ -20,12 +20,33 @@ import de.luckymcdev.foundryengine.common.scene.network.ScenePacket;
 import de.luckymcdev.foundryengine.common.vpacks.BundleVirtualPacks;
 import de.luckymcdev.foundryengine.common.vpacks.event.RegisterVirtualPackEvent;
 import de.luckymcdev.foundryengine.common.world.entity.EngineEntities;
+import de.luckymcdev.foundryengine.common.world.level.EngineLevels;
+import de.luckymcdev.foundryengine.common.world.level.runtime.RuntimeLevelConfig;
+import de.luckymcdev.foundryengine.common.world.level.runtime.RuntimeLevelHandle;
+import de.luckymcdev.foundryengine.common.world.level.test.CustomLevel;
+import de.luckymcdev.foundryengine.common.world.level.util.TransientChunkGenerator;
+import de.luckymcdev.foundryengine.common.world.level.util.VoidChunkGenerator;
 import de.luckymcdev.foundryengine.config.Config;
 import de.luckymcdev.foundryengine.server.command.FoundryCommands;
 import de.luckymcdev.foundryengine.server.packs.DynamicPackRepository;
 import net.minecraft.SharedConstants;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderGetter;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.util.Util;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.Biomes;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
+import net.minecraft.world.level.levelgen.FlatLevelSource;
+import net.minecraft.world.level.levelgen.flat.FlatLayerInfo;
+import net.minecraft.world.level.levelgen.flat.FlatLevelGeneratorSettings;
+import net.minecraft.world.level.levelgen.placement.PlacedFeature;
+import net.minecraft.world.level.levelgen.structure.StructureSet;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModLoader;
@@ -37,6 +58,7 @@ import net.neoforged.neoforge.common.NeoForgeVersion;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
@@ -47,6 +69,8 @@ import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.List;
+import java.util.Optional;
 
 @Mod(Common.MODID)
 public class FoundryEngineMod {
@@ -62,6 +86,7 @@ public class FoundryEngineMod {
         registerModBus(modBus);
         registerInternalEvents();
 
+        modBus.addListener(this::onRegisterEvent);
         modBus.addListener(this::commonSetup);
         modBus.addListener(this::onConstruct);
         modBus.addListener(this::onAddPackFinders);
@@ -70,6 +95,7 @@ public class FoundryEngineMod {
 
         BUS.addListener(this::onRegisterCommands);
         BUS.addListener(this::onServerAboutToStart);
+        BUS.addListener(this::onServerStarted);
         BUS.addListener(this::onServerTick);
         BUS.addListener(this::onRegisterVirtualPacks);
 
@@ -125,6 +151,13 @@ public class FoundryEngineMod {
         Common.getGameStageHandler().register(modBus);
         EngineRegistries.register(modBus);
         EngineEntities.register(modBus);
+    }
+
+    private void onRegisterEvent(RegisterEvent event) {
+        event.register(Registries.CHUNK_GENERATOR, helper -> {
+            helper.register(Common.id("void"), VoidChunkGenerator.CODEC);
+            helper.register(Common.id("transient"), TransientChunkGenerator.CODEC);
+        });
     }
 
     private void registerInternalEvents() {
@@ -236,6 +269,39 @@ public class FoundryEngineMod {
 
     private void onServerAboutToStart(ServerAboutToStartEvent event) {
         Common.getBundleManager().loadServerScripts();
+    }
+
+    private void onServerStarted(ServerStartedEvent event) {
+        var s = event.getServer();
+
+        // this is the demo world seed :D
+        EngineLevels.get(s).openTemporaryLevel(
+                new RuntimeLevelConfig()
+                        .setGenerator(s.overworld().getChunkSource().getGenerator())
+                        .setLevelConstructor(CustomLevel::new)
+                        .setSeed("North Carolina".hashCode())
+                        .setMirrorOverworldGameRules(true)
+        );
+
+
+        // cursed asf
+        RegistryAccess registryAccess = s.registryAccess();
+        HolderGetter<Biome> biomes = registryAccess.lookupOrThrow(Registries.BIOME);
+        HolderGetter<PlacedFeature> placedFeatures = registryAccess.lookupOrThrow(Registries.PLACED_FEATURE);
+        List<Holder<PlacedFeature>> lakes = FlatLevelGeneratorSettings.createLakesList(placedFeatures);
+        Holder<Biome> biome = biomes.getOrThrow(Biomes.PLAINS);
+        Optional<HolderSet<StructureSet>> structureOverrides = Optional.empty();
+        FlatLevelGeneratorSettings flatSettings = new FlatLevelGeneratorSettings(structureOverrides, biome, lakes);
+        flatSettings.getLayersInfo().add(new FlatLayerInfo(1, Blocks.STONE));
+        flatSettings.updateLayers();
+        FlatLevelSource generator = new FlatLevelSource(flatSettings);
+
+        RuntimeLevelHandle handle = EngineLevels.get(s).getOrOpenPersistentLevel(
+                Identifier.fromNamespaceAndPath("levels_test", "temp_overworld"),
+                new RuntimeLevelConfig()
+                        .setDimensionType(BuiltinDimensionTypes.OVERWORLD)
+                        .setGenerator(generator)
+                        .setShouldTickTime(true));
     }
 
     private void onServerTick(ServerTickEvent.Post event) {

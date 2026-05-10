@@ -4,6 +4,11 @@
   "package": "de.luckymcdev.foundryengine.mixin.level",
   "compatibilityLevel": "JAVA_25",
   "mixins": [
+    "ChunkMapMixin",
+    "LevelStemMixin",
+    "ServerChunkCacheMixin",
+    "ServerLevelMixin",
+    "WorldGenSettingsMixin"
   ],
   "client": [
     "LevelStorageSourceMixin"

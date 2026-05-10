@@ -32,6 +32,8 @@ config = "mixins/${mod_id}.entity.mixins.json"
 config = "mixins/${mod_id}.command.mixins.json"
 [[mixins]]
 config = "mixins/${mod_id}.level.mixins.json"
+[[mixins]]
+config = "mixins/${mod_id}.clock.mixins.json"
 
 #[[accessTransformers]]
 #"META-INF/accesstransformer.cfg"
