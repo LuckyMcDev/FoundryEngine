@@ -1,7 +1,6 @@
 package de.luckymcdev.foundryengine.client;
 
 import com.mojang.logging.LogUtils;
-import de.luckymcdev.foundryengine.api.event.registry.RegistryEvent;
 import de.luckymcdev.foundryengine.client.area.AreaRenderer;
 import de.luckymcdev.foundryengine.client.command.FoundryCommandsClient;
 import de.luckymcdev.foundryengine.client.cutscene.ClientCutsceneManager;
@@ -31,6 +30,7 @@ import de.luckymcdev.foundryengine.client.scene.ClientSceneSync;
 import de.luckymcdev.foundryengine.client.scene.SelectionManager;
 import de.luckymcdev.foundryengine.client.util.key.RegisterKeyBindingEvent;
 import de.luckymcdev.foundryengine.common.Common;
+import de.luckymcdev.foundryengine.common.event.TitleScreenModifyEvent;
 import de.luckymcdev.foundryengine.common.network.packets.BundleHashPacket;
 import de.luckymcdev.foundryengine.common.util.FolderHash;
 import de.luckymcdev.foundryengine.config.ClientConfig;
@@ -58,7 +58,6 @@ public class FoundryEngineModClient {
         modBus.addListener(this::onRegisterKeyMapping);
         modBus.addListener(this::onRegisterDebugEntry);
         modBus.addListener(this::onRegisterDebugRenderers);
-        modBus.addListener(this::onRegistry);
         modBus.addListener(EngineEntityRenderers::onRegisterRenderers);
 
         BUS.addListener(this::onRegisterKeyBinding);
@@ -67,11 +66,16 @@ public class FoundryEngineModClient {
         BUS.addListener(this::onRenderLevel);
         BUS.addListener(this::onRegisterCommands);
         BUS.addListener(this::onLoggingIn);
+        BUS.addListener(this::onTitleScreenModify);
 
         Config.registerClient(modContainer);
     }
 
-    private void onRegistry(RegistryEvent event) {
+    private void onTitleScreenModify(TitleScreenModifyEvent event) {
+        if (event.getButtonType() == TitleScreenModifyEvent.ButtonType.SINGLEPLAYER) {
+            //event.setCanceled(true);
+            //Minecraft.getInstance().setScreen(new GenericMessageScreen(Component.literal("test")));
+        }
     }
 
     private void onClientSetup(FMLClientSetupEvent event) {

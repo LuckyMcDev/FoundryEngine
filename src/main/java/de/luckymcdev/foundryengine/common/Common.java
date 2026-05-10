@@ -8,7 +8,6 @@ import de.luckymcdev.foundryengine.common.blueprint.BlueprintManager;
 import de.luckymcdev.foundryengine.common.bundle.BundleManager;
 import de.luckymcdev.foundryengine.common.exceptions.EngineException;
 import de.luckymcdev.foundryengine.common.exceptions.UtilityClassException;
-import de.luckymcdev.foundryengine.common.game.behavior.GameBehaviorManager;
 import de.luckymcdev.foundryengine.common.game.stage.GameStageHandler;
 import de.luckymcdev.foundryengine.common.network.NetworkManager;
 import de.luckymcdev.foundryengine.common.scene.SceneManager;
@@ -67,7 +66,6 @@ public abstract class Common {
     public static final Path CONFIG_FE = dir(DIRECTORY.resolve("config"));
     private static final BundleManager BUNDLE_MANAGER = new BundleManager(FoundryEngineMod.getModBus(), CONFIG_FE);
     public static final Path INIFILEPATH = file(DIRECTORY.resolve("foundryengine.ini"));
-    private static final GameBehaviorManager GAME_BEHAVIOR_MANAGER = new GameBehaviorManager();
     private static final GameStageHandler GAME_STAGE_HANDLER = new GameStageHandler();
     private static final NetworkManager NETWORK_MANAGER = new NetworkManager();
     private static final SceneManager SCENE_MANAGER = new SceneManager();
@@ -104,10 +102,6 @@ public abstract class Common {
 
     public static BundleManager getBundleManager() {
         return BUNDLE_MANAGER;
-    }
-
-    public static GameBehaviorManager getGameBehaviorManager() {
-        return GAME_BEHAVIOR_MANAGER;
     }
 
     public static GameStageHandler getGameStageHandler() {
