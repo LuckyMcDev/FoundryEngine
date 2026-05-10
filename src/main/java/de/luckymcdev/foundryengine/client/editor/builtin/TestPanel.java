@@ -18,7 +18,6 @@ import imgui.flag.ImGuiColorEditFlags;
 import imgui.flag.ImGuiKey;
 import imgui.type.ImBoolean;
 import imgui.type.ImFloat;
-import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import org.slf4j.Logger;
 
 public class TestPanel extends Panel {
@@ -52,7 +51,7 @@ public class TestPanel extends Panel {
         ImGui.progressBar(FLOAT.get() / 10, ImGui.getContentRegionAvailX(), 0, "Progress");
 
         if (ImGui.button("Press this!")) {
-            ClientPacketDistributor.sendToServer(new TestPacket(FLOAT.get()));
+            Common.getNetworkManager().sendToServer(new TestPacket(FLOAT.get()));
         }
 
         if (ImGui.button("Open Screen")) {
