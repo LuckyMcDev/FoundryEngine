@@ -1,7 +1,7 @@
 package de.luckymcdev.foundryengine.mixin.level;
 
 import com.google.common.collect.Maps;
-import de.luckymcdev.foundryengine.common.world.level.EngineDimensionOptions;
+import de.luckymcdev.foundryengine.interfaces.EngineDimensionOptions;
 import net.minecraft.world.level.levelgen.WorldDimensions;
 import net.minecraft.world.level.levelgen.WorldGenSettings;
 import org.spongepowered.asm.mixin.Mixin;

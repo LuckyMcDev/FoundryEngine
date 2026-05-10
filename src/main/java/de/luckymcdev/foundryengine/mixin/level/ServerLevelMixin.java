@@ -2,8 +2,8 @@ package de.luckymcdev.foundryengine.mixin.level;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import de.luckymcdev.foundryengine.common.world.level.EngineLevelAccess;
 import de.luckymcdev.foundryengine.common.world.level.runtime.RuntimeLevel;
+import de.luckymcdev.foundryengine.interfaces.EngineLevelAccess;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;

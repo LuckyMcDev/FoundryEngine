@@ -1,8 +1,8 @@
 package de.luckymcdev.foundryengine.common.world.level.runtime;
 
-import de.luckymcdev.foundryengine.common.world.level.EngineDimensionOptions;
 import de.luckymcdev.foundryengine.common.world.level.EngineLevels;
 import de.luckymcdev.foundryengine.common.world.level.RemoveFromRegistry;
+import de.luckymcdev.foundryengine.interfaces.EngineDimensionOptions;
 import de.luckymcdev.foundryengine.mixin.MinecraftServerAccess;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.RegistrationInfo;
