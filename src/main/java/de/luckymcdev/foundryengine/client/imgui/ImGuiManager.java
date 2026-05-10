@@ -8,6 +8,7 @@ import com.mojang.blaze3d.opengl.GlDevice;
 import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.opengl.GlTexture;
 import com.mojang.blaze3d.pipeline.RenderTarget;
+import com.mojang.blaze3d.platform.Window;
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.styles.ImTheme;
@@ -27,6 +28,7 @@ import imgui.extension.implot.ImPlotContext;
 import imgui.flag.ImGuiConfigFlags;
 import imgui.flag.ImGuiDockNodeFlags;
 import imgui.internal.ImGuiContext;
+import imgui.internal.ImGuiDockNode;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.input.InputQuirks;
@@ -84,14 +86,14 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
     private ImTheme currentTheme;
 
     public ImGuiManager() {
-        //font = ImGui.getFont();
+        currentTheme = ImThemes.BESS_DARK_IM_THEME;
     }
 
     /**
      * Creates a new ImGui context for the Window handle
      * See Implementation {@link GameRendererMixin#engine$renderHead(DeltaTracker, boolean, CallbackInfo)}
      *
-     * @param handle the Window handle to use. Eg: {@link com.mojang.blaze3d.platform.Window#handle()}
+     * @param handle the Window handle to use. Eg: {@link Window#handle()}
      */
     @Override
     public void create(final long handle) {
@@ -212,7 +214,7 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
         }
 
         dockId = ImGui.dockSpaceOverViewport(ImGui.getMainViewport(), ImGuiDockNodeFlags.PassthruCentralNode + ImGuiDockNodeFlags.AutoHideTabBar);
-        imgui.internal.ImGuiDockNode centralNode = imgui.internal.ImGui.dockBuilderGetCentralNode(dockId);
+        ImGuiDockNode centralNode = imgui.internal.ImGui.dockBuilderGetCentralNode(dockId);
         shouldBlockInput = centralNode.isLeafNode() && !centralNode.isEmpty();
     }
 
