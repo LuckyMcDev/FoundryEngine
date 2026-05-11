@@ -25,12 +25,12 @@ import de.luckymcdev.foundryengine.client.editor.event.RegisterPanelEvent;
 import de.luckymcdev.foundryengine.client.event.RegisterRenderingStuffEvent;
 import de.luckymcdev.foundryengine.client.ext.ModPathBroadcaster;
 import de.luckymcdev.foundryengine.client.icons.ScreenIconExporter;
+import de.luckymcdev.foundryengine.client.imgui.ImGuiManager;
 import de.luckymcdev.foundryengine.client.render.entity.EngineEntityRenderers;
 import de.luckymcdev.foundryengine.client.scene.ClientSceneSync;
 import de.luckymcdev.foundryengine.client.scene.SelectionManager;
 import de.luckymcdev.foundryengine.client.util.key.RegisterKeyBindingEvent;
 import de.luckymcdev.foundryengine.common.Common;
-import de.luckymcdev.foundryengine.common.event.TitleScreenModifyEvent;
 import de.luckymcdev.foundryengine.common.network.packets.BundleHashPacket;
 import de.luckymcdev.foundryengine.common.util.FolderHash;
 import de.luckymcdev.foundryengine.config.ClientConfig;
@@ -66,25 +66,14 @@ public class FoundryEngineModClient {
         BUS.addListener(this::onRenderLevel);
         BUS.addListener(this::onRegisterCommands);
         BUS.addListener(this::onLoggingIn);
-        BUS.addListener(this::onTitleScreenModify);
 
         Config.registerClient(modContainer);
     }
 
-    private void onTitleScreenModify(TitleScreenModifyEvent event) {
-        if (event.getButtonType() == TitleScreenModifyEvent.ButtonType.SINGLEPLAYER) {
-            //event.setCanceled(true);
-            //Minecraft.getInstance().setScreen(new GenericMessageScreen(Component.literal("test")));
-        }
-    }
-
     private void onClientSetup(FMLClientSetupEvent event) {
         LOGGER.debug("FoundryEngineModClient setup called");
-
         ModPathBroadcaster.onClientSetup();
-
         Common.getBundleManager().loadClientScripts();
-
         event.enqueueWork(() -> {
             BUS.post(new RegisterRenderingStuffEvent(Client.getResourceManager()));
             BUS.post(new RegisterPanelEvent());
@@ -93,8 +82,8 @@ public class FoundryEngineModClient {
 
     private void onLoggingIn(ClientPlayerNetworkEvent.LoggingIn event) {
         try {
-            String hashcode = FolderHash.hashFolder(Common.BUNDLES);
-            ClientPacketDistributor.sendToServer(new BundleHashPacket(hashcode));
+            String hash = FolderHash.hashFolder(Common.BUNDLES);
+            ClientPacketDistributor.sendToServer(new BundleHashPacket(hash));
         } catch (Exception e) {
             LOGGER.error("Failed to hash bundles folder", e);
         }
@@ -102,9 +91,7 @@ public class FoundryEngineModClient {
 
     private void onRegisterKeyMapping(RegisterKeyMappingsEvent event) {
         BUS.post(new RegisterKeyBindingEvent(Client.getKeyBindingManager()));
-        Client.getKeyBindingManager().getKeyBindings().forEach(keyBinding ->
-                event.register(keyBinding.mapping())
-        );
+        Client.getKeyBindingManager().getKeyBindings().forEach(kb -> event.register(kb.mapping()));
         event.registerCategory(Client.EDITOR_CATEGORY);
     }
 
@@ -144,7 +131,7 @@ public class FoundryEngineModClient {
     }
 
     private void addClientReloadListener(AddClientReloadListenersEvent event) {
-        event.addListener(Common.id("imgui_handler"), Client.getImGuiManager());
+        event.addListener(Common.id("imgui_handler"), (ImGuiManager) Client.getImGuiManager());
     }
 
     private void onRenderLevel(RenderLevelStageEvent.AfterLevel event) {
@@ -152,39 +139,38 @@ public class FoundryEngineModClient {
         ClientScreenEffectManager.renderTick();
         CutsceneRenderer.render();
         AreaRenderer.render();
-        var selectedNode = SelectionManager.getSelected();
-        if (ScenePanel.INSTANCE.showGizmos && selectedNode != null) {
-            selectedNode.drawGizmos();
+
+        var selected = SelectionManager.getSelected();
+        if (ScenePanel.INSTANCE.showGizmos && selected != null) {
+            selected.drawGizmos();
         }
     }
 
     private void onClientTick(ClientTickEvent.Post event) {
         Client.getEditorManager().handleTick();
-
         ClientSceneSync.clientTick();
-
         ClientCutsceneManager.clientTick();
         CutsceneEditor.clientTick();
 
-        if (ClientConfig.AUTO_EXPORT.get() && !hasIconAutoExported && Minecraft.getInstance().level != null) {
-            if (Minecraft.getInstance().screen != null) return;
+        if (!ClientConfig.AUTO_EXPORT.get() || hasIconAutoExported) return;
 
-            hasIconAutoExported = true;
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.level == null || mc.screen != null) return;
 
-            LOGGER.info("Auto-export: Initializing icon generation...");
-            double guiScale = Minecraft.getInstance().getWindow().getGuiScale();
-            ScreenIconExporter screen = new ScreenIconExporter(
-                    Minecraft.getInstance().level.registryAccess(),
-                    guiScale,
-                    null,
-                    false
-            );
+        hasIconAutoExported = true;
+        LOGGER.info("Auto-export: Initializing icon generation...");
 
-            if (screen.hasWork()) {
-                Minecraft.getInstance().setScreen(screen);
-            } else {
-                LOGGER.info("Auto-export: All icons are up to date.");
-            }
+        ScreenIconExporter screen = new ScreenIconExporter(
+                mc.level.registryAccess(),
+                mc.getWindow().getGuiScale(),
+                null,
+                false
+        );
+
+        if (screen.hasWork()) {
+            mc.setScreen(screen);
+        } else {
+            LOGGER.info("Auto-export: All icons are up to date.");
         }
     }
 }

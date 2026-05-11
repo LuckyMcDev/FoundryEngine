@@ -22,7 +22,6 @@ import de.luckymcdev.foundryengine.common.vpacks.event.RegisterVirtualPackEvent;
 import de.luckymcdev.foundryengine.common.world.entity.EngineEntities;
 import de.luckymcdev.foundryengine.common.world.level.EngineLevels;
 import de.luckymcdev.foundryengine.common.world.level.runtime.RuntimeLevelConfig;
-import de.luckymcdev.foundryengine.common.world.level.runtime.RuntimeLevelHandle;
 import de.luckymcdev.foundryengine.common.world.level.test.CustomLevel;
 import de.luckymcdev.foundryengine.common.world.level.util.TransientChunkGenerator;
 import de.luckymcdev.foundryengine.common.world.level.util.VoidChunkGenerator;
@@ -30,23 +29,9 @@ import de.luckymcdev.foundryengine.config.Config;
 import de.luckymcdev.foundryengine.server.command.FoundryCommands;
 import de.luckymcdev.foundryengine.server.packs.DynamicPackRepository;
 import net.minecraft.SharedConstants;
-import net.minecraft.core.Holder;
-import net.minecraft.core.HolderGetter;
-import net.minecraft.core.HolderSet;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.util.Util;
-import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.biome.Biomes;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
-import net.minecraft.world.level.levelgen.FlatLevelSource;
-import net.minecraft.world.level.levelgen.flat.FlatLayerInfo;
-import net.minecraft.world.level.levelgen.flat.FlatLevelGeneratorSettings;
-import net.minecraft.world.level.levelgen.placement.PlacedFeature;
-import net.minecraft.world.level.levelgen.structure.StructureSet;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModLoader;
@@ -69,14 +54,12 @@ import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.List;
-import java.util.Optional;
 
 @Mod(Common.MODID)
 public class FoundryEngineMod {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final IEventBus BUS = NeoForge.EVENT_BUS;
-    public static ArtifactVersion modVersion;
+    public static @Nullable ArtifactVersion modVersion;
     private static @Nullable IEventBus modBus;
 
     public FoundryEngineMod(IEventBus modBus, ModContainer modContainer) {
@@ -108,17 +91,18 @@ public class FoundryEngineMod {
         Config.registerCommon(modContainer);
         Config.registerStartup(modContainer);
 
-        var neoVersion = NeoForgeVersion.getVersion();
-        var mcVersion = SharedConstants.getCurrentVersion().name();
-        var os = Util.getPlatform().name();
         LOGGER.info("""
-                
-                ███████╗███████╗
-                ██╔════╝██╔════╝  Foundry Engine {}
-                █████╗  █████╗    Running on NeoForge {}
-                ██╔══╝  ██╔══╝    Minecraft {}
-                ██║     ███████╗  Platform {}
-                ╚═╝     ╚══════╝""", modVersion, neoVersion, mcVersion, os);
+                        
+                        ███████╗███████╗
+                        ██╔════╝██╔════╝  Foundry Engine {}
+                        █████╗  █████╗    Running on NeoForge {}
+                        ██╔══╝  ██╔══╝    Minecraft {}
+                        ██║     ███████╗  Platform {}
+                        ╚═╝     ╚══════╝""",
+                modVersion,
+                NeoForgeVersion.getVersion(),
+                SharedConstants.getCurrentVersion().name(),
+                Util.getPlatform().name());
     }
 
     @ApiStatus.Internal
@@ -126,31 +110,32 @@ public class FoundryEngineMod {
         return modBus;
     }
 
-    private void commonSetup(final FMLCommonSetupEvent event) {
-        Common.getNetworkManager().register(TestPacket.DEFINITION);
-        Common.getNetworkManager().register(ServerBoundSetTimePacket.DEFINITION);
-        Common.getNetworkManager().register(ServerBoundChangeWeatherPacket.DEFINITION);
-        Common.getNetworkManager().register(ClientBoundFileListPacket.DEFINITION);
-        Common.getNetworkManager().register(ClientBoundFileContentPacket.DEFINITION);
-        Common.getNetworkManager().register(ServerBoundRequestFileListPacket.DEFINITION);
-        Common.getNetworkManager().register(ServerBoundRequestFileContentPacket.DEFINITION);
-        Common.getNetworkManager().register(ServerBoundSaveFilePacket.DEFINITION);
-        Common.getNetworkManager().register(ServerBoundTeleportPacket.DEFINITION);
-        Common.getNetworkManager().register(ServerBoundSpawnEntityPacket.DEFINITION);
-        Common.getNetworkManager().register(BundleHashPacket.DEFINITION);
-        Common.getNetworkManager().register(CutscenePacket.DEFINITION);
-        Common.getNetworkManager().register(ScreenEffectPacket.DEFINITION);
-        Common.getNetworkManager().register(CutsceneCommandPacket.DEFINITION);
-        Common.getNetworkManager().register(CutsceneActionPacket.DEFINITION);
-        Common.getNetworkManager().register(ScenePacket.DEFINITION);
-        Common.getNetworkManager().register(AreaPacket.DEFINITION);
-        Common.getNetworkManager().register(ClientBoundAreaSyncPacket.DEFINITION);
-    }
-
     private void registerModBus(IEventBus modBus) {
         Common.getGameStageHandler().register(modBus);
         EngineRegistries.register(modBus);
         EngineEntities.register(modBus);
+    }
+
+    private void commonSetup(FMLCommonSetupEvent event) {
+        var network = Common.getNetworkManager();
+        network.register(TestPacket.DEFINITION);
+        network.register(ServerBoundSetTimePacket.DEFINITION);
+        network.register(ServerBoundChangeWeatherPacket.DEFINITION);
+        network.register(ClientBoundFileListPacket.DEFINITION);
+        network.register(ClientBoundFileContentPacket.DEFINITION);
+        network.register(ServerBoundRequestFileListPacket.DEFINITION);
+        network.register(ServerBoundRequestFileContentPacket.DEFINITION);
+        network.register(ServerBoundSaveFilePacket.DEFINITION);
+        network.register(ServerBoundTeleportPacket.DEFINITION);
+        network.register(ServerBoundSpawnEntityPacket.DEFINITION);
+        network.register(BundleHashPacket.DEFINITION);
+        network.register(CutscenePacket.DEFINITION);
+        network.register(ScreenEffectPacket.DEFINITION);
+        network.register(CutsceneCommandPacket.DEFINITION);
+        network.register(CutsceneActionPacket.DEFINITION);
+        network.register(ScenePacket.DEFINITION);
+        network.register(AreaPacket.DEFINITION);
+        network.register(ClientBoundAreaSyncPacket.DEFINITION);
     }
 
     private void onRegisterEvent(RegisterEvent event) {
@@ -160,12 +145,69 @@ public class FoundryEngineMod {
         });
     }
 
+    private void onConstruct(FMLConstructModEvent event) {
+        try {
+            Common.getBundleManager().discover(Common.BUNDLES);
+            if (modBus == null) return;
+            modBus.addListener((RegisterEvent ev) -> {
+                RegistryEvent registryEvent = new RegistryEvent(ev, modBus);
+                ModLoader.postEvent(registryEvent);
+                BundleEvents.Internal.postRegistry(registryEvent);
+            });
+        } catch (IOException e) {
+            LOGGER.error("Error while loading bundles: {}", e.getLocalizedMessage());
+        }
+        EngineLogAppender.Holder.addAppender();
+    }
+
+    private void onAddPackFinders(AddPackFindersEvent event) {
+        PackType type = event.getPackType();
+        event.addRepositorySource(new DynamicPackRepository(
+                type,
+                "foundry/bundles",
+                "FoundryEngine: Bundles",
+                () -> Common.getBundleManager().getBundles().stream()
+                        .map(b -> type == PackType.CLIENT_RESOURCES
+                                ? b.bundleFiles().assets()
+                                : b.bundleFiles().data())
+                        .filter(Files::exists)
+                        .toList()
+        ));
+    }
+
+    private void onRegisterPayloadHandlers(RegisterPayloadHandlersEvent event) {
+        Common.getNetworkManager().handleRegistration(event);
+    }
+
+    private void onRegisterCommands(RegisterCommandsEvent event) {
+        FoundryCommands.registerAll(event.getDispatcher(), event.getBuildContext());
+    }
+
+    private void onRegisterVirtualPacks(RegisterVirtualPackEvent.BeforeUser event) {
+        BundleVirtualPacks.create().forEach(event::addPack);
+    }
+
+    private void onServerAboutToStart(ServerAboutToStartEvent event) {
+        Common.getBundleManager().loadServerScripts();
+    }
+
+    private void onServerStarted(ServerStartedEvent event) {
+        var server = event.getServer();
+        EngineLevels.get(server).openTemporaryLevel(
+                new RuntimeLevelConfig()
+                        .setGenerator(server.overworld().getChunkSource().getGenerator())
+                        .setLevelConstructor(CustomLevel::new)
+                        .setSeed("North Carolina".hashCode())
+                        .setMirrorOverworldGameRules(true)
+        );
+    }
+
+    private void onServerTick(ServerTickEvent.Post event) {
+        ServerCutsceneManager.tick();
+        ServerScreenEffectManager.tick();
+    }
+
     private void registerInternalEvents() {
-        BUS.addListener(BlockEvents.Internal::postBroken);
-        BUS.addListener(BlockEvents.Internal::postPlaced);
-        BUS.addListener(BlockEvents.Internal::postNeighborNotify);
-        BUS.addListener(BlockEvents.Internal::postLeftClicked);
-        BUS.addListener(BlockEvents.Internal::postRightClicked);
         BUS.addListener(BlockEvents.Internal::postFarmlandTrampled);
 
         BUS.addListener(BundleEvents.Internal::postVanillaGame);
@@ -238,89 +280,5 @@ public class FoundryEngineMod {
         BUS.addListener(AreaEvents.Internal::postAreaEnter);
         BUS.addListener(AreaEvents.Internal::postAreaLeave);
         BUS.addListener(AreaEvents.Internal::postAreaTick);
-    }
-
-    private void onAddPackFinders(AddPackFindersEvent event) {
-        PackType type = event.getPackType();
-        event.addRepositorySource(new DynamicPackRepository(
-                type,
-                "foundry/bundles",
-                "FoundryEngine: Bundles",
-                () -> Common.getBundleManager().getBundles().stream()
-                        .map(b -> type == PackType.CLIENT_RESOURCES
-                                ? b.bundleFiles().assets()
-                                : b.bundleFiles().data())
-                        .filter(Files::exists)
-                        .toList()
-        ));
-    }
-
-    private void onRegisterPayloadHandlers(RegisterPayloadHandlersEvent event) {
-        Common.getNetworkManager().handleRegistration(event);
-    }
-
-    private void onRegisterCommands(RegisterCommandsEvent event) {
-        FoundryCommands.registerAll(event.getDispatcher(), event.getBuildContext());
-    }
-
-    private void onRegisterVirtualPacks(RegisterVirtualPackEvent.BeforeUser event) {
-        BundleVirtualPacks.create().forEach(event::addPack);
-    }
-
-    private void onServerAboutToStart(ServerAboutToStartEvent event) {
-        Common.getBundleManager().loadServerScripts();
-    }
-
-    private void onServerStarted(ServerStartedEvent event) {
-        var s = event.getServer();
-
-        // this is the demo world seed :D
-        EngineLevels.get(s).openTemporaryLevel(
-                new RuntimeLevelConfig()
-                        .setGenerator(s.overworld().getChunkSource().getGenerator())
-                        .setLevelConstructor(CustomLevel::new)
-                        .setSeed("North Carolina".hashCode())
-                        .setMirrorOverworldGameRules(true)
-        );
-
-
-        // cursed asf
-        RegistryAccess registryAccess = s.registryAccess();
-        HolderGetter<Biome> biomes = registryAccess.lookupOrThrow(Registries.BIOME);
-        HolderGetter<PlacedFeature> placedFeatures = registryAccess.lookupOrThrow(Registries.PLACED_FEATURE);
-        List<Holder<PlacedFeature>> lakes = FlatLevelGeneratorSettings.createLakesList(placedFeatures);
-        Holder<Biome> biome = biomes.getOrThrow(Biomes.PLAINS);
-        Optional<HolderSet<StructureSet>> structureOverrides = Optional.empty();
-        FlatLevelGeneratorSettings flatSettings = new FlatLevelGeneratorSettings(structureOverrides, biome, lakes);
-        flatSettings.getLayersInfo().add(new FlatLayerInfo(1, Blocks.STONE));
-        flatSettings.updateLayers();
-        FlatLevelSource generator = new FlatLevelSource(flatSettings);
-
-        RuntimeLevelHandle handle = EngineLevels.get(s).getOrOpenPersistentLevel(
-                Identifier.fromNamespaceAndPath("levels_test", "temp_overworld"),
-                new RuntimeLevelConfig()
-                        .setDimensionType(BuiltinDimensionTypes.OVERWORLD)
-                        .setGenerator(generator)
-                        .setShouldTickTime(true));
-    }
-
-    private void onServerTick(ServerTickEvent.Post event) {
-        ServerCutsceneManager.tick();
-        ServerScreenEffectManager.tick();
-    }
-
-    private void onConstruct(final FMLConstructModEvent event) {
-        try {
-            Common.getBundleManager().discover(Common.BUNDLES);
-            if (modBus == null) return;
-            modBus.addListener((RegisterEvent ev) -> {
-                RegistryEvent registryEvent = new RegistryEvent(ev, modBus);
-                ModLoader.postEvent(registryEvent);
-                BundleEvents.Internal.postRegistry(registryEvent);
-            });
-        } catch (IOException e) {
-            LOGGER.error("Error while Loading Bundles: {}", e.getLocalizedMessage());
-        }
-        EngineLogAppender.Holder.addAppender();
     }
 }

@@ -9,6 +9,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.client.editor.EditorManager;
 import de.luckymcdev.foundryengine.client.editor.MainMenu;
+import de.luckymcdev.foundryengine.client.imgui.EngineImGui;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiManager;
 import de.luckymcdev.foundryengine.client.particle.ParticleManager;
 import de.luckymcdev.foundryengine.client.post.EffectManager;
@@ -37,37 +38,18 @@ import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 public abstract class Client {
-    /**
-     * The Model View Matrix
-     */
     public static final Matrix4f MODEL_VIEW = new Matrix4f();
-    /**
-     * The Projection Matrix
-     */
     public static final Matrix4f PROJECTION = new Matrix4f();
-    /**
-     * The World Matrix
-     */
     public static final Matrix4f WORLD = new Matrix4f();
-    /**
-     * The Inverse World Matrix
-     */
     public static final Matrix4f INVERSE_WORLD = new Matrix4f();
-    /**
-     * The Perspective Matrix
-     */
     public static final Matrix4f PERSPECTIVE = new Matrix4f();
-    /**
-     * The Frustum Matrix
-     */
     public static final Matrix4f FRUSTUM = new Matrix4f();
+
     public static final KeyMapping.Category EDITOR_CATEGORY = new KeyMapping.Category(Common.id("editor"));
     public static final KeyBinding EDITOR_KEY = new KeyBinding(
             new KeyMapping(
@@ -80,7 +62,6 @@ public abstract class Client {
             }
     );
 
-    // Core Systems
     public static final Logger LOGGER = LogUtils.getLogger();
     private static final ImGuiManager IMGUI_MANAGER = new ImGuiManager();
     private static final MainMenu MAIN_MENU = new MainMenu();
@@ -92,8 +73,6 @@ public abstract class Client {
     private Client() {
         throw new EngineException();
     }
-
-    // Minecraft Core
 
     public static Minecraft getMc() {
         return ((EngineMinecraft) Minecraft.getInstance()).engine$self();
@@ -139,9 +118,7 @@ public abstract class Client {
         Objects.requireNonNull(getConnection()).send(packet);
     }
 
-    // Engine Managers.
-
-    public static ImGuiManager getImGuiManager() {
+    public static EngineImGui getImGuiManager() {
         return IMGUI_MANAGER;
     }
 
@@ -164,8 +141,6 @@ public abstract class Client {
     public static EffectManager getEffectManager() {
         return EFFECT_MANAGER;
     }
-
-    // Rendering
 
     public static GlDevice getGlDevice() {
         return (GlDevice) ((EngineGpuDevice) RenderSystem.getDevice()).engine$getBackend();
@@ -191,30 +166,19 @@ public abstract class Client {
         return (GlTexture) tex;
     }
 
-
     /**
-     * Returns the Content of a {@link Identifier} pointer as a String.
-     *
-     * @param location the Location where to get the Contents.
-     * @return the String content.
+     * Returns the content of the resource at {@code location} as a UTF-8 string.
      */
     public static String getIdSource(Identifier location) {
         return getIdSource(location, StandardCharsets.UTF_8);
     }
 
     /**
-     * {@link #getIdSource(Identifier)}
-     * but with a specifiable {@link Charset}
-     *
-     * @param location the Identifier.
-     * @param charset  the {@link Charset} with which to load the Identifier
-     * @return the String Content of the File.
+     * Returns the content of the resource at {@code location} decoded with {@code charset}.
      */
     public static String getIdSource(Identifier location, Charset charset) {
-        try (InputStream stream = Client.getResourceManager().getResourceOrThrow(location).open()) {
-            // Read entire stream into byte array, then decode once
-            byte[] bytes = stream.readAllBytes();
-            return new String(bytes, charset);
+        try (InputStream stream = getResourceManager().getResourceOrThrow(location).open()) {
+            return new String(stream.readAllBytes(), charset);
         } catch (IOException e) {
             LOGGER.error("Failed to load resource: {}", location, e);
             return "";
@@ -222,34 +186,8 @@ public abstract class Client {
     }
 
     /**
-     * Alternative implementation with reusable buffer for very large files.
-     */
-    public static String getIdSourceBuffered(Identifier location, Charset charset) {
-        try (InputStream stream = Client.getResourceManager().getResourceOrThrow(location).open();
-             Reader reader = new InputStreamReader(stream, charset)) {
-
-            StringBuilder sb = new StringBuilder(2048); // Pre-allocate reasonable size for shaders
-            char[] buffer = new char[2048]; // Reusable buffer
-            int charsRead;
-
-            while ((charsRead = reader.read(buffer)) != -1) {
-                sb.append(buffer, 0, charsRead);
-            }
-
-            return sb.toString();
-        } catch (IOException e) {
-            LOGGER.error("Failed to load resource: {}", location, e);
-            return "";
-        }
-    }
-
-    /**
-     * Updates the {@link #MODEL_VIEW}, {@link #PROJECTION}, {@link #WORLD} and {@link #INVERSE_WORLD} Matrices.
-     * <br>
-     * Called from {@link FrameGraphSetupEvent}
-     *
-     * @param modelView  updated Model View Matrix.
-     * @param projection updated Projection Matrix.
+     * Updates the model-view, projection, world, and inverse-world matrices.
+     * Called from {@link FrameGraphSetupEvent}.
      */
     public static void updateMain(Matrix4fc modelView, Matrix4fc projection) {
         MODEL_VIEW.set(modelView);

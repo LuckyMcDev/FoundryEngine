@@ -2,7 +2,7 @@ package de.luckymcdev.foundryengine.mixin.input;
 
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.EditorScreen;
-import de.luckymcdev.foundryengine.client.imgui.ImGuiManager;
+import de.luckymcdev.foundryengine.client.imgui.EngineImGui;
 import de.luckymcdev.foundryengine.interfaces.EngineKeyboardHandler;
 import net.minecraft.client.KeyboardHandler;
 import net.minecraft.client.Minecraft;
@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 
 /**
- * See {@link ImGuiManager#shouldInterceptKeyboard()}
+ * See {@link EngineImGui#shouldInterceptKeyboard()}
  * Cancels Minecraft Keyboard inputs if ImGui captures the keyboard.
  */
 @Mixin(KeyboardHandler.class)

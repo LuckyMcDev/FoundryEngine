@@ -19,11 +19,12 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.EventPriority;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.apache.commons.lang3.SystemProperties;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -33,30 +34,15 @@ import java.nio.file.Path;
 import java.util.function.Supplier;
 
 /**
- * Common things for FoundryEngine.
+ * Shared constants and singleton managers for FoundryEngine.
  */
 public abstract class Common {
-    /**
-     * Common Logger. Don't use, create your own.
-     */
-    public static final Logger LOGGER = LogUtils.getLogger();
-    /**
-     * Modid for FoundryEngine.
-     */
     public static final String MODID = "foundryengine";
-    /**
-     * Mod Name
-     */
     public static final String MODNAME = "FoundryEngine";
-
+    public static final Logger LOGGER = LogUtils.getLogger();
     public static final Path GAMEDIR = FMLPaths.GAMEDIR.get().normalize().toAbsolutePath();
-
-    /**
-     * Base Config Dir
-     */
     public static final Path CONFIG = FMLPaths.CONFIGDIR.get();
-    public static final String TMPDIR_SYSPROP = SystemProperties.getProperty("java.io.tmpdir");
-    public static final Path TEMP_DIR = Path.of(TMPDIR_SYSPROP).resolve(MODID);
+    public static final Path TEMP_DIR = Path.of(SystemProperties.getProperty("java.io.tmpdir")).resolve(MODID);
     public static final IniFile INI_FILE;
     private static final boolean FIRST_RUN = FirstRun.isFor(MODID);
     public static final Path DIRECTORY = dir(GAMEDIR.resolve(MODNAME));
@@ -87,10 +73,7 @@ public abstract class Common {
     }
 
     /**
-     * Returns an {@link Identifier} where the namespace is {@link #MODID}
-     *
-     * @param path the Path of the {@link Identifier}
-     * @return returns the assembled {@link Identifier}
+     * Returns a {@link Identifier} namespaced to {@link #MODID}.
      */
     public static Identifier id(String path) {
         return Identifier.fromNamespaceAndPath(MODID, path);
@@ -125,25 +108,26 @@ public abstract class Common {
     }
 
     public static @Nullable RecipeManager getRecipeManager() {
-        Minecraft mc = Client.getMc();
-        if (mc.getSingleplayerServer() != null) {
-            return mc.getSingleplayerServer().getRecipeManager();
+        if (FMLEnvironment.getDist().isClient()) {
+            Minecraft mc = Client.getMc();
+            if (mc.getSingleplayerServer() != null) {
+                return mc.getSingleplayerServer().getRecipeManager();
+            }
+        } else {
+            var server = ServerLifecycleHooks.getCurrentServer();
+            return server != null ? server.getRecipeManager() : null;
         }
-        var server = ServerLifecycleHooks.getCurrentServer();
-        return server != null ? server.getRecipeManager() : null;
+        return null;
     }
 
     public static String getFileContent(Path file) {
         try (InputStream is = Files.newInputStream(file)) {
             return new String(is.readAllBytes());
-        } catch (Exception ex) {
-            LOGGER.error("Failed to read file content: {}", file, ex);
+        } catch (Exception e) {
+            LOGGER.error("Failed to read file: {}", file, e);
             return "";
         }
     }
-
-
-    // Event Bus
 
     public static <T extends Event> T post(T event) {
         return NeoForge.EVENT_BUS.post(event);
@@ -153,25 +137,25 @@ public abstract class Common {
         return NeoForge.EVENT_BUS.post(priority, event);
     }
 
-    static Path file(Path dir) {
-        if (Files.notExists(dir) && FIRST_RUN) {
+    static Path file(Path path) {
+        if (Files.notExists(path) && FIRST_RUN) {
             try {
-                Files.createFile(dir);
-            } catch (Exception ex) {
-                LOGGER.error(ex.getLocalizedMessage());
+                Files.createFile(path);
+            } catch (Exception e) {
+                LOGGER.error(e.getLocalizedMessage());
             }
         }
-        return dir;
+        return path;
     }
 
-    static Path dir(Path dir) {
-        if (Files.notExists(dir) && FIRST_RUN) {
+    static Path dir(Path path) {
+        if (Files.notExists(path) && FIRST_RUN) {
             try {
-                Files.createDirectories(dir);
-            } catch (Exception ex) {
-                LOGGER.error(ex.getLocalizedMessage());
+                Files.createDirectories(path);
+            } catch (Exception e) {
+                LOGGER.error(e.getLocalizedMessage());
             }
         }
-        return dir;
+        return path;
     }
 }

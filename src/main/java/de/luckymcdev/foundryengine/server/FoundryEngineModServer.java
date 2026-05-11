@@ -13,7 +13,7 @@ import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import org.slf4j.Logger;
 
 /**
- * Dedicated Server Mod Entrypoint for FoundryEngine.
+ * Dedicated server entrypoint for FoundryEngine.
  */
 @Mod(value = Common.MODID, dist = Dist.DEDICATED_SERVER)
 public class FoundryEngineModServer {
