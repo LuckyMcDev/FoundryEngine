@@ -1,7 +1,3 @@
-/*
- * This file is part of fabric-imgui-example-mod - https://github.com/FlorianMichael/fabric-imgui-example-mod
- * by FlorianMichael/EnZaXD and contributors
- */
 package de.luckymcdev.foundryengine.client.imgui;
 
 import com.mojang.blaze3d.opengl.GlDevice;
@@ -16,11 +12,12 @@ import de.luckymcdev.foundryengine.client.editor.styles.ImThemes;
 import de.luckymcdev.foundryengine.client.imgui.backend.ImGuiImplGl3;
 import de.luckymcdev.foundryengine.client.imgui.backend.ImGuiImplGlfw;
 import de.luckymcdev.foundryengine.client.imgui.graphics.ImGuiGraphicsStack;
-import de.luckymcdev.foundryengine.common.font.TTFFile;
 import de.luckymcdev.foundryengine.config.ClientConfig;
 import de.luckymcdev.foundryengine.mixin.MinecraftMixin;
 import de.luckymcdev.foundryengine.mixin.render.GameRendererMixin;
-import imgui.*;
+import imgui.ImFont;
+import imgui.ImGui;
+import imgui.ImGuiIO;
 import imgui.extension.imnodes.ImNodes;
 import imgui.extension.imnodes.ImNodesContext;
 import imgui.extension.implot.ImPlot;
@@ -48,40 +45,23 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * The Central ImGui Manager.
- * Manages The low level ImGui Hooks and also has {@link ImGuiImplGlfw} and {@link ImGuiImplGl3} contexts.
- * It uses OpenGl version 4.1 as the version for {@link ImGuiImplGl3#init(String version)}
+ * Manages the low‑level ImGui hooks and holds {@link ImGuiImplGlfw} and {@link ImGuiImplGl3} contexts.
+ * Font management is delegated to {@link ImGuiFontManager} for improved modularity.
+ * Uses OpenGL version 330 core profile.
  */
 public final class ImGuiManager implements EngineImGui, ResourceManagerReloadListener, NativeResource {
     private static final Logger LOGGER = LogUtils.getLogger();
+
     private final ImGuiImplGlfw imGuiImplGlfw = new ImGuiImplGlfw();
     private final ImGuiImplGl3 imGuiImplGl3 = new ImGuiImplGl3();
     private final ImGuiGraphicsStack graphicsStack = new ImGuiGraphicsStack();
+    private final ImGuiFontManager fontManager = new ImGuiFontManager(imGuiImplGl3);
     private final AtomicBoolean enabled = new AtomicBoolean(false);
-    /**
-     * The Glyph Ranges for the {@link TTFFile#JETBRAINS_MONO_NERDFONT_REGULAR} Font.
-     */
-    private final short[] GLYPH_RANGES = {
-            0x0020, 0x00FF, // Basic Latin
-            0x0100, 0x017F, // Latin Extended-A
-            0x0400, 0x052F, // Cyrillic
-            0x3040, 0x30FF, // Hiragana & Katakana
-            (short) 0x4E00, (short) 0x9FFF, // CJK Unified Ideographs (Kanji, BMP portion)
-            (short) 0xE0A0, (short) 0xE0A2, // Powerline symbols
-            (short) 0xE000, (short) 0xE00A, // Pomicons
-            (short) 0xE200, (short) 0xE2A9, // FA Extension
-            (short) 0xE5FA, (short) 0xE6B7, // Seti-UI
-            (short) 0xE700, (short) 0xE8EF, // Devicons
-            (short) 0xED00, (short) 0xF2FF, // Font Awesome
-            (short) 0xE300, (short) 0xE3E3, // Weather Icons
-            (short) 0xF400, (short) 0xF533, // Octicons
-            0x2665, 0x26A1, // Extra Octicons
-            0
-    };
+
     private @Nullable ImGuiContext imGuiContext;
     private @Nullable ImPlotContext imPlotContext;
     private @Nullable ImNodesContext imNodesContext;
     private boolean shouldBlockInput = false;
-    private @Nullable ImFont font;
     private int dockId;
     private ImTheme currentTheme;
 
@@ -90,10 +70,10 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
     }
 
     /**
-     * Creates a new ImGui context for the Window handle
-     * See Implementation {@link GameRendererMixin#engine$renderHead(DeltaTracker, boolean, CallbackInfo)}
+     * Creates a new ImGui context for the given window handle.
+     * See {@link GameRendererMixin#engine$renderHead(DeltaTracker, boolean, CallbackInfo)} for usage.
      *
-     * @param handle the Window handle to use. Eg: {@link Window#handle()}
+     * @param handle the window handle, e.g. {@link Window#handle()}
      */
     @Override
     public void create(final long handle) {
@@ -104,7 +84,6 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
         ImPlot.setCurrentContext(imPlotContext);
         ImNodes.setCurrentContext(imNodesContext);
 
-
         final ImGuiIO io = ImGui.getIO();
         io.setIniFilename("feimgui.ini");
         io.setLogFilename("feimguilog.log");
@@ -112,20 +91,17 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
         io.addConfigFlags(ImGuiConfigFlags.DockingEnable);
         io.addConfigFlags(ImGuiConfigFlags.DpiEnableScaleFonts);
         io.addConfigFlags(ImGuiConfigFlags.DpiEnableScaleViewports);
-        //io.addConfigFlags(ImGuiConfigFlags.NavEnableKeyboard); // this sometimes causes issues. So for now its disabled.
         io.getFonts().setFreeTypeRenderer(true);
         io.setConfigDockingWithShift(true);
         io.setConfigWindowsMoveFromTitleBarOnly(false);
         io.setConfigMacOSXBehaviors(InputQuirks.ON_OSX);
 
-        imGuiImplGl3.init("#version 410 core");
+        imGuiImplGl3.init("#version 330 core");
         imGuiImplGlfw.init(handle, true);
 
-        var fonts = io.getFonts();
-        if (!fonts.isBuilt()) fonts.build();
+        fontManager.initializeDefaultFont();
 
         ImGui.styleColorsDark();
-
         loadThemeFromConfig();
     }
 
@@ -139,9 +115,6 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
         enabled.set(false);
     }
 
-    /**
-     * Toggles the ImGui state between enabled and disabled.
-     */
     @Override
     public void toggle() {
         if (isEnabled()) {
@@ -187,7 +160,7 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
     }
 
     /**
-     * Begins Rendering. Sets up custom FrameBuffer and other handling for ImGui rendering.
+     * Prepares the frame for ImGui rendering: custom framebuffer, ImGui new frame, docking setup.
      */
     @Override
     public void begin() {
@@ -216,18 +189,19 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
             io.setMousePos(-1, -1);
         }
 
-        dockId = ImGui.dockSpaceOverViewport(ImGui.getMainViewport(), ImGuiDockNodeFlags.PassthruCentralNode + ImGuiDockNodeFlags.AutoHideTabBar);
+        dockId = ImGui.dockSpaceOverViewport(ImGui.getMainViewport(),
+                ImGuiDockNodeFlags.PassthruCentralNode + ImGuiDockNodeFlags.AutoHideTabBar);
         ImGuiDockNode centralNode = imgui.internal.ImGui.dockBuilderGetCentralNode(dockId);
         shouldBlockInput = centralNode.isLeafNode() && !centralNode.isEmpty();
     }
 
     /**
-     * Ends ImGui Rendering, drawing via {@link ImGuiImplGl3#renderDrawData(ImDrawData)} with {@link ImDrawData} being
-     * accessed by {@link ImGui#getDrawData()}
+     * Ends ImGui rendering, draws the result and restores the default framebuffer.
      */
     @Override
     public void end() {
         if (!enabled.get()) return;
+
         ImGui.render();
         imGuiImplGl3.renderDrawData(ImGui.getDrawData());
 
@@ -237,17 +211,10 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
             final long pointer = GLFW.glfwGetCurrentContext();
             ImGui.updatePlatformWindows();
             ImGui.renderPlatformWindowsDefault();
-
             GLFW.glfwMakeContextCurrent(pointer);
         }
     }
 
-    /**
-     * Returns the Main {@link ImGuiGraphicsStack} although you should be able to create a new one using
-     * {@link ImGuiGraphicsStack} constructor.
-     *
-     * @return the {@link ImGuiGraphicsStack}
-     */
     @Override
     public ImGuiGraphicsStack getGraphicsStack() {
         return graphicsStack;
@@ -258,96 +225,42 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
     }
 
     /**
-     * Loads the {@link TTFFile#JETBRAINS_MONO_NERDFONT_REGULAR} font with a resource Manager.
-     *
-     * @param resourceManager the {@link ResourceManager} with which to access the resources.
-     *                        Handles a null Font / an error during Font Loading and goes back to {@link ImFontAtlas#addFontDefault()}
+     * Returns the font manager used for custom font configuration.
      */
-    public void loadFonts(ResourceManager resourceManager) {
-        var fonts = ImGui.getIO().getFonts();
-        fonts.clear();
-
-        var config = new ImFontConfig();
-        config.setGlyphRanges(GLYPH_RANGES);
-        config.setOversampleH(3);
-        config.setOversampleV(3);
-        config.setRasterizerMultiply(1.2f);
-        config.setGlyphOffset(0, 0);
-
-        boolean fontLoadSuccess = false;
-        try {
-            var bytes = TTFFile.JETBRAINS_MONO_NERDFONT_REGULAR.load(resourceManager);
-            font = fonts.addFontFromMemoryTTF(bytes, 20F, config);
-            fontLoadSuccess = (font != null);
-        } catch (Exception e) {
-            LOGGER.error("Failed to load custom font: {}", e.getMessage(), e);
-        }
-
-        if (!fontLoadSuccess) {
-            LOGGER.warn("Using default font due to custom font load failure");
-            font = fonts.addFontDefault();
-        }
-
-        if (!fonts.build()) {
-            LOGGER.error("Failed to build font atlas!");
-            fonts.clear();
-            font = fonts.addFontDefault();
-            fonts.build();
-        }
-
-        imGuiImplGl3.destroyFontsTexture();
-        imGuiImplGl3.createFontsTexture();
-
-        config.destroy();
-        fonts.clearTexData();
-
-        if (ImGui.getFont() == null) {
-            LOGGER.error("Font still null after loading, reinitializing with default");
-            fonts.clear();
-            fonts.addFontDefault();
-            fonts.build();
-            imGuiImplGl3.destroyFontsTexture();
-            imGuiImplGl3.createFontsTexture();
-        }
+    public ImGuiFontManager getFontManager() {
+        return fontManager;
     }
 
     /**
-     * Weather ImGui should intercept Mouse movement.
-     *
-     * @return if ImGui wants to capture the Mouse and the Mouse is not grabbed by Minecraft.
+     * Returns the currently active ImFont, or {@code null} if none is loaded.
      */
+    @Override
+    public ImFont getFont() {
+        return fontManager.getFont();
+    }
+
     @Override
     public boolean shouldInterceptMouse() {
         return shouldBlockInput || (ImGui.getIO().getWantCaptureMouse() && !Client.getMc().mouseHandler.isMouseGrabbed());
     }
 
-    /**
-     * Weather ImGui should intercept Mouse movement
-     *
-     * @return if ImGui wants to capture keyboard.
-     */
     @Override
     public boolean shouldInterceptKeyboard() {
         return shouldBlockInput || ImGui.getIO().getWantCaptureKeyboard();
     }
 
-    @Override
-    public ImFont getFont() {
-        return font;
-    }
-
     /**
-     * Disposes of all Implementations and the 2 Stacks.
-     * Called in {@link MinecraftMixin#engine$close(CallbackInfo)}
-     * amd {@link ImGuiManager#free()} which is from {@link NativeResource}
+     * Disposes all ImGui implementations and resources.
+     * Called from {@link MinecraftMixin#engine$close(CallbackInfo)} and {@link #free()}.
      */
     public void dispose() {
+        fontManager.destroy();
+        graphicsStack.destroy();
         imGuiImplGl3.shutdown();
         imGuiImplGlfw.shutdown();
         ImGui.destroyContext(imGuiContext);
         ImPlot.destroyContext(imPlotContext);
         ImNodes.destroyContext(imNodesContext);
-        graphicsStack.destroy();
     }
 
     @Override
@@ -358,7 +271,7 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
     @Override
     public void onResourceManagerReload(ResourceManager resourceManager) {
         if (Util.getPlatform() == Util.OS.WINDOWS) {
-            loadFonts(resourceManager);
+            fontManager.loadFonts(resourceManager);
         } else {
             LOGGER.info("Hey, You're not on Windows, which means you'll sadly see a lot of ? in the editor, as the icons im using dont really support anything else.");
         }

@@ -29,7 +29,7 @@ public class TestPanel extends Panel {
     private CataloguePanel.CataloguePayload cataloguePayload;
 
     private TestPanel() {
-        super(Common.id("test_panel"), "My Panel", ImIcons.DEV.DEV_PYTEST, Shortcut.ctrl(ImGuiKey.F5));
+        super(Common.id("test_panel"), "My Panel", ImIcons.FAE.FAE_BACTERIA, Shortcut.ctrl(ImGuiKey.F5));
         this.category = PanelCategory.OPEN;
     }
 
