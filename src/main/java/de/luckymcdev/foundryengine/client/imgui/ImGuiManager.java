@@ -166,10 +166,12 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
         ClientConfig.SELECTED_THEME.save();
     }
 
+    @Override
     public void setTheme(ImTheme theme) {
         setTheme(theme, true);
     }
 
+    @Override
     public void setTheme(ImTheme theme, boolean saveToConfig) {
         theme.apply(ImGui.getStyle());
         this.currentTheme = theme;
@@ -179,6 +181,7 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
         LOGGER.info("Applied theme '{}'", theme.getName());
     }
 
+    @Override
     public ImTheme getCurrentTheme() {
         return currentTheme;
     }
@@ -245,6 +248,7 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
      *
      * @return the {@link ImGuiGraphicsStack}
      */
+    @Override
     public ImGuiGraphicsStack getGraphicsStack() {
         return graphicsStack;
     }
@@ -312,6 +316,7 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
      *
      * @return if ImGui wants to capture the Mouse and the Mouse is not grabbed by Minecraft.
      */
+    @Override
     public boolean shouldInterceptMouse() {
         return shouldBlockInput || (ImGui.getIO().getWantCaptureMouse() && !Client.getMc().mouseHandler.isMouseGrabbed());
     }
@@ -321,10 +326,12 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
      *
      * @return if ImGui wants to capture keyboard.
      */
+    @Override
     public boolean shouldInterceptKeyboard() {
         return shouldBlockInput || ImGui.getIO().getWantCaptureKeyboard();
     }
 
+    @Override
     public ImFont getFont() {
         return font;
     }
