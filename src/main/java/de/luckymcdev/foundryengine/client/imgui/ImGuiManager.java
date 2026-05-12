@@ -12,10 +12,10 @@ import de.luckymcdev.foundryengine.client.editor.styles.ImThemes;
 import de.luckymcdev.foundryengine.client.imgui.backend.ImGuiImplGl3;
 import de.luckymcdev.foundryengine.client.imgui.backend.ImGuiImplGlfw;
 import de.luckymcdev.foundryengine.client.imgui.graphics.ImGuiGraphicsStack;
+import de.luckymcdev.foundryengine.common.font.BuiltInFonts;
 import de.luckymcdev.foundryengine.config.ClientConfig;
 import de.luckymcdev.foundryengine.mixin.MinecraftMixin;
 import de.luckymcdev.foundryengine.mixin.render.GameRendererMixin;
-import imgui.ImFont;
 import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.extension.imnodes.ImNodes;
@@ -31,7 +31,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.input.InputQuirks;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
-import net.minecraft.util.Util;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
@@ -51,23 +50,17 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public final class ImGuiManager implements EngineImGui, ResourceManagerReloadListener, NativeResource {
     private static final Logger LOGGER = LogUtils.getLogger();
-
     private final ImGuiImplGlfw imGuiImplGlfw = new ImGuiImplGlfw();
     private final ImGuiImplGl3 imGuiImplGl3 = new ImGuiImplGl3();
     private final ImGuiGraphicsStack graphicsStack = new ImGuiGraphicsStack();
     private final ImGuiFontManager fontManager = new ImGuiFontManager(imGuiImplGl3);
     private final AtomicBoolean enabled = new AtomicBoolean(false);
-
     private @Nullable ImGuiContext imGuiContext;
     private @Nullable ImPlotContext imPlotContext;
     private @Nullable ImNodesContext imNodesContext;
     private boolean shouldBlockInput = false;
     private int dockId;
     private ImTheme currentTheme;
-
-    public ImGuiManager() {
-        currentTheme = ImThemes.BESS_DARK_IM_THEME;
-    }
 
     /**
      * Creates a new ImGui context for the given window handle.
@@ -99,7 +92,7 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
         imGuiImplGl3.init("#version 330 core");
         imGuiImplGlfw.init(handle, true);
 
-        fontManager.initializeDefaultFont();
+        BuiltInFonts.registerAll(fontManager);
 
         ImGui.styleColorsDark();
         loadThemeFromConfig();
@@ -128,10 +121,11 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
         return enabled.get();
     }
 
-    private void loadThemeFromConfig() {
+    private ImTheme loadThemeFromConfig() {
         String themeName = ClientConfig.SELECTED_THEME.get();
         ImTheme theme = ImThemes.getThemeByName(themeName);
         setTheme(theme);
+        return theme;
     }
 
     public void saveThemeToConfig(ImTheme theme) {
@@ -227,16 +221,9 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
     /**
      * Returns the font manager used for custom font configuration.
      */
+    @Override
     public ImGuiFontManager getFontManager() {
         return fontManager;
-    }
-
-    /**
-     * Returns the currently active ImFont, or {@code null} if none is loaded.
-     */
-    @Override
-    public ImFont getFont() {
-        return fontManager.getFont();
     }
 
     @Override
@@ -270,10 +257,15 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
 
     @Override
     public void onResourceManagerReload(ResourceManager resourceManager) {
-        if (Util.getPlatform() == Util.OS.WINDOWS) {
+        LOGGER.info("Hey. Fonts might be broken. If they appear really bad for you, disable custom fonts in the config.");
+        if (ClientConfig.IMGUI_FONTS_ENABLED.getAsBoolean()) {
             fontManager.loadFonts(resourceManager);
-        } else {
-            LOGGER.info("Hey, You're not on Windows, which means you'll sadly see a lot of ? in the editor, as the icons im using dont really support anything else.");
         }
+        // Testing on linux now aswell.
+        //if (Util.getPlatform() == Util.OS.WINDOWS) {
+        //    fontManager.loadFonts(resourceManager);
+        //} else {
+        //    LOGGER.info("Hey, You're not on Windows, which means you'll sadly see a lot of ? in the editor, as the icons im using dont really support anything else.");
+        //}
     }
 }

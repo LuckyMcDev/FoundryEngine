@@ -2,7 +2,6 @@ package de.luckymcdev.foundryengine.client.imgui;
 
 import de.luckymcdev.foundryengine.client.editor.styles.ImTheme;
 import de.luckymcdev.foundryengine.client.imgui.graphics.ImGuiGraphicsStack;
-import imgui.ImFont;
 
 public interface EngineImGui {
     void create(final long handle);
@@ -25,11 +24,11 @@ public interface EngineImGui {
 
     void end();
 
+    ImGuiFontManager getFontManager();
+
     boolean shouldInterceptMouse();
 
     boolean shouldInterceptKeyboard();
-
-    ImFont getFont();
 
     void free();
 

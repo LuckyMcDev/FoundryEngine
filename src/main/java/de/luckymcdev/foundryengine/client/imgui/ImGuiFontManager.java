@@ -7,14 +7,18 @@ import imgui.ImFont;
 import imgui.ImFontAtlas;
 import imgui.ImFontConfig;
 import imgui.ImGui;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
+import java.util.*;
 import java.util.function.Function;
 
 /**
- * Manages ImGui font loading, atlas building and texture creation.
- * Highly configurable to support custom fonts and glyph ranges.
+ * Manages multiple ImGui fonts. Register fonts, then call {@link #loadFonts(ResourceManager)}
+ * to build the atlas. Use {@link #getFont(Identifier)} to retrieve an ImFont and
+ * {@link #pushFont(Identifier)} / {@link #popFont()} for easy switching.
  */
 public final class ImGuiFontManager {
     public static final short[] DEFAULT_GLYPH_RANGES = {
@@ -22,158 +26,242 @@ public final class ImGuiFontManager {
             0x0100, 0x017F,   // Latin Extended-A
             0x0400, 0x052F,   // Cyrillic
             0x3040, 0x30FF,   // Hiragana & Katakana
-            (short) 0xE200, (short) 0xE2A9, // FA Extension
-            (short) 0xED00, (short) 0xF2FF, // Font Awesome
             0
     };
     private static final Logger LOGGER = LogUtils.getLogger();
     private final ImGuiImplGl3 glImpl;
-    private ImFont currentFont;
-    private short[] glyphRanges = DEFAULT_GLYPH_RANGES;
+    private final List<FontRegistration> registrations = new ArrayList<>();
+    private final Map<Identifier, ImFont> loadedFonts = new LinkedHashMap<>();
+    private Identifier defaultFontId;
+    private short[] globalGlyphRanges = DEFAULT_GLYPH_RANGES;
     private int oversampleH = 3;
     private int oversampleV = 3;
     private float rasterizerMultiply = 1.2f;
     private float glyphOffsetX = 0.0f;
     private float glyphOffsetY = 0.0f;
-    private float fontSize = 20.0f;
-
-    /**
-     * Optional external font provider. Receives the current {@link ResourceManager} and returns the TTF bytes.
-     * By default, {@link TTFFile#JETBRAINS_MONO_NERDFONT_REGULAR} is used.
-     */
-    private Function<ResourceManager, byte[]> fontProvider;
 
     public ImGuiFontManager(ImGuiImplGl3 glImpl) {
         this.glImpl = glImpl;
     }
 
-    public void setGlyphRanges(short[] ranges) {
-        this.glyphRanges = ranges;
+    public void setGlobalGlyphRanges(short[] ranges) {
+        this.globalGlyphRanges = ranges;
     }
 
-    public void setOversample(int h, int v) {
+    public void setGlobalOversample(int h, int v) {
         this.oversampleH = h;
         this.oversampleV = v;
     }
 
-    public void setRasterizerMultiply(float multiply) {
-        this.rasterizerMultiply = multiply;
+    public void setGlobalRasterizerMultiply(float mul) {
+        this.rasterizerMultiply = mul;
     }
 
-    public void setGlyphOffset(float x, float y) {
+    public void setGlobalGlyphOffset(float x, float y) {
         this.glyphOffsetX = x;
         this.glyphOffsetY = y;
     }
 
-    public void setFontSize(float size) {
-        this.fontSize = size;
+
+    public void registerFont(TTFFile ttfFile) {
+        registerFont(ttfFile, 20.0f);
     }
 
-    /**
-     * Sets a custom font provider. The function receives the {@link ResourceManager} on reload
-     * and must return the raw TTF bytes. Return {@code null} to fall back to the default font.
-     */
-    public void setFontProvider(Function<ResourceManager, byte[]> provider) {
-        this.fontProvider = provider;
+    public void registerFont(TTFFile ttfFile, float fontSize) {
+        registerFont(ttfFile, fontSize, null);
     }
 
-    /**
-     * Ensures a minimal default font atlas exists. Call once after ImGui context creation
-     * but before resource reload, to provide a fallback font for early rendering.
-     */
-    public void initializeDefaultFont() {
-        ImFontAtlas fonts = ImGui.getIO().getFonts();
-        if (!fonts.isBuilt()) {
-            currentFont = fonts.addFontDefault();
-            if (!fonts.build()) {
-                LOGGER.error("Failed to build default font atlas!");
-            }
-            glImpl.createFontsTexture();
-        }
+    public void registerFont(TTFFile ttfFile, float fontSize, @Nullable ImFontConfig customConfig) {
+        Objects.requireNonNull(ttfFile, "TTFFile cannot be null");
+        registrations.add(new TTFFileRegistration(ttfFile, fontSize, customConfig));
     }
 
-    /**
-     * Clears the current font atlas, loads the configured font (custom or default)
-     * and rebuilds the font texture. Should be called on resource reload.
-     *
-     * @param resourceManager the current resource manager, passed to the font provider
-     */
+    public void registerRawFont(Identifier id, Function<ResourceManager, byte[]> ttfProvider,
+                                float fontSize, ImFontConfig config) {
+        registrations.add(new RawFontRegistration(id, ttfProvider, fontSize, config));
+    }
+
+    public void setDefaultFont(Identifier id) {
+        this.defaultFontId = id;
+    }
+
     public void loadFonts(ResourceManager resourceManager) {
-        ImFontAtlas fonts = ImGui.getIO().getFonts();
-
-        fonts.clear();
+        ImFontAtlas atlas = ImGui.getIO().getFonts();
+        atlas.clear();
         glImpl.destroyFontsTexture();
 
-        ImFontConfig config = new ImFontConfig();
-        config.setGlyphRanges(glyphRanges);
-        config.setOversampleH(oversampleH);
-        config.setOversampleV(oversampleV);
-        config.setRasterizerMultiply(rasterizerMultiply);
-        config.setGlyphOffset(glyphOffsetX, glyphOffsetY);
+        loadedFonts.clear();
 
-        boolean fontLoaded = false;
+        for (FontRegistration reg : registrations) {
+            try {
+                byte[] ttfData = reg.loadBytes(resourceManager);
+                if (ttfData == null) {
+                    LOGGER.warn("Skipping font {} – no TTF data", reg.getId());
+                    continue;
+                }
 
-        try {
-            byte[] ttfBytes = null;
+                ImFontConfig fontConfig;
+                if (reg.getCustomConfig() != null) {
+                    fontConfig = reg.getCustomConfig();
+                } else {
+                    fontConfig = new ImFontConfig();
+                    fontConfig.setOversampleH(oversampleH);
+                    fontConfig.setOversampleV(oversampleV);
+                    fontConfig.setRasterizerMultiply(rasterizerMultiply);
+                    fontConfig.setGlyphOffset(glyphOffsetX, glyphOffsetY);
 
-            // Try external provider first
-            if (fontProvider != null) {
-                ttfBytes = fontProvider.apply(resourceManager);
-            }
-            // Default provider: built-in JetBrains Mono
-            if (ttfBytes == null) {
-                ttfBytes = TTFFile.JETBRAINS_MONO_NERDFONT_REGULAR.load(resourceManager);
-            }
+                    short[] ranges = reg.getGlyphRanges();
+                    if (ranges == null || ranges.length == 0) {
+                        ranges = globalGlyphRanges;
+                    }
+                    fontConfig.setGlyphRanges(ranges);
+                }
 
-            if (ttfBytes != null) {
-                currentFont = fonts.addFontFromMemoryTTF(ttfBytes, fontSize, config);
-                fontLoaded = (currentFont != null);
-            }
-        } catch (Exception e) {
-            LOGGER.error("Failed to load custom font: {}", e.getMessage(), e);
-        }
+                ImFont font = atlas.addFontFromMemoryTTF(ttfData, reg.getFontSize(), fontConfig);
+                if (font != null) {
+                    loadedFonts.put(reg.getId(), font);
+                    LOGGER.debug("Loaded font: {}", reg.getId());
+                } else {
+                    LOGGER.error("Failed to add font from TTF: {}", reg.getId());
+                }
 
-        // 3. Fall back to default font if custom font failed
-        if (!fontLoaded) {
-            LOGGER.warn("Using default font because custom font could not be loaded.");
-            currentFont = fonts.addFontDefault();
-        }
-
-        // 4. Build atlas, with an extra safety fallback
-        if (!fonts.build()) {
-            LOGGER.error("Failed to build font atlas with custom font; falling back to default.");
-            fonts.clear();
-            currentFont = fonts.addFontDefault();
-            if (!fonts.build()) {
-                LOGGER.error("Failed to build even the default font atlas!");
+                if (reg.getCustomConfig() == null) {
+                    fontConfig.destroy();
+                }
+            } catch (Exception e) {
+                LOGGER.error("Exception while loading font {}: {}", reg.getId(), e.getMessage(), e);
             }
         }
 
-        // 5. Update font texture
+        if (loadedFonts.isEmpty()) {
+            LOGGER.warn("No fonts were loaded – falling back to ImGui default font");
+            loadedFonts.put(Identifier.withDefaultNamespace("default"), atlas.addFontDefault());
+        }
+
+        if (!atlas.build()) {
+            LOGGER.error("Failed to build font atlas! Falling back to a minimal default font.");
+            atlas.clear();
+            loadedFonts.clear();
+            loadedFonts.put(Identifier.withDefaultNamespace("default"), atlas.addFontDefault());
+            if (!atlas.build()) {
+                throw new IllegalStateException("Could not build even the default font atlas");
+            }
+        }
+
         glImpl.createFontsTexture();
 
-        // 6. Clean up
-        config.destroy();
-        fonts.clearTexData();
+        ImFont defaultFont = defaultFontId != null ? loadedFonts.get(defaultFontId) : loadedFonts.values().iterator().next();
+        if (defaultFont != null) {
+            ImGui.getIO().setFontDefault(defaultFont);
+        } else if (!loadedFonts.isEmpty()) {
+            ImGui.getIO().setFontDefault(loadedFonts.values().iterator().next());
+        }
 
-        if (ImGui.getFont() == null) {
-            LOGGER.error("Font still null after loading, reinitializing with default.");
-            fonts.clear();
-            fonts.addFontDefault();
-            fonts.build();
-            glImpl.createFontsTexture();
+        atlas.clearTexData();
+    }
+
+    public void destroy() {
+        glImpl.destroyFontsTexture();
+        loadedFonts.clear();
+        registrations.clear();
+        defaultFontId = null;
+    }
+
+    public ImFont getCurrent() {
+        return ImGui.getFont();
+    }
+
+    public ImFont getFont(Identifier id) {
+        ImFont font = loadedFonts.get(id);
+        if (font == null) {
+            throw new IllegalArgumentException("Unknown font ID: " + id);
+        }
+        return font;
+    }
+
+    public Set<Identifier> getLoadedFontIds() {
+        return Collections.unmodifiableSet(loadedFonts.keySet());
+    }
+
+    public void withFont(Identifier font, Runnable runnable) {
+        pushFont(font);
+        runnable.run();
+        popFont();
+    }
+
+    public void pushFont(Identifier id) {
+        ImGui.pushFont(getFont(id));
+    }
+
+    public void popFont() {
+        ImGui.popFont();
+    }
+
+    private interface FontRegistration {
+        Identifier getId();
+
+        byte[] loadBytes(ResourceManager rm) throws Exception;
+
+        float getFontSize();
+
+        ImFontConfig getCustomConfig();
+
+        short[] getGlyphRanges();
+    }
+
+    private record TTFFileRegistration(TTFFile file, float fontSize,
+                                       @Nullable ImFontConfig customConfig) implements FontRegistration {
+        @Override
+        public Identifier getId() {
+            return file.id();
+        }
+
+        @Override
+        public byte[] loadBytes(ResourceManager rm) {
+            return file.load(rm);
+        }
+
+        @Override
+        public short[] getGlyphRanges() {
+            return file.glyphRanges();
+        }
+
+        @Override
+        public float getFontSize() {
+            return fontSize;
+        }
+
+        @Override
+        public ImFontConfig getCustomConfig() {
+            return customConfig;
         }
     }
 
-    /**
-     * Destroys the font texture and clears the font reference.
-     */
-    public void destroy() {
-        glImpl.destroyFontsTexture();
-        currentFont = null;
-    }
+    private record RawFontRegistration(Identifier id, Function<ResourceManager, byte[]> provider,
+                                       float fontSize, ImFontConfig customConfig) implements FontRegistration {
+        @Override
+        public byte[] loadBytes(ResourceManager rm) {
+            return provider.apply(rm);
+        }
 
-    public ImFont getFont() {
-        return currentFont;
+        @Override
+        public short[] getGlyphRanges() {
+            return null;
+        }
+
+        @Override
+        public Identifier getId() {
+            return id;
+        }
+
+        @Override
+        public float getFontSize() {
+            return fontSize;
+        }
+
+        @Override
+        public ImFontConfig getCustomConfig() {
+            return customConfig;
+        }
     }
 }

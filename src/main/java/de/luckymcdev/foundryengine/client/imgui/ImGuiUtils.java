@@ -31,7 +31,7 @@ import java.io.InputStream;
  * some ImGui utils.
  */
 public class ImGuiUtils {
-    private static final StringSplitter IM_GUI_SPLITTER = new StringSplitter((charId, style) -> Client.getImGuiManager().getFont().getCharAdvance(charId));
+    private static final StringSplitter IM_GUI_SPLITTER = new StringSplitter((charId, style) -> Client.getImGuiManager().getFontManager().getCurrent().getCharAdvance(charId));
 
     /**
      * Displays a (?) with a hover tooltip. Useful for example information.
@@ -272,11 +272,11 @@ public class ImGuiUtils {
     }
 
     /**
-     * Displays a resource location with a dimmed namespace
+     * Displays an identifier with a dimmed namespace
      *
-     * @param loc The resource location
+     * @param loc The identifier
      */
-    public static void resourceLocation(Identifier loc) {
+    public static void identifier(Identifier loc) {
         ImGui.beginGroup();
         ImGui.textColored(colorOf(loc.getNamespace()), loc.getNamespace() + ":");
 

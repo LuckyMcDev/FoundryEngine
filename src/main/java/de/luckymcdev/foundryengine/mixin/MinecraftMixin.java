@@ -2,7 +2,6 @@ package de.luckymcdev.foundryengine.mixin;
 
 import com.mojang.blaze3d.platform.Window;
 import de.luckymcdev.foundryengine.client.Client;
-import de.luckymcdev.foundryengine.common.font.TTFFile;
 import de.luckymcdev.foundryengine.interfaces.EngineMinecraft;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.main.GameConfig;
@@ -36,7 +35,6 @@ public class MinecraftMixin implements EngineMinecraft {
     @Override
     @Inject(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;resizeGui()V", shift = At.Shift.BEFORE))
     public void engine$init(GameConfig gameConfig, CallbackInfo ci) {
-        TTFFile.find(resourceManager);
         Client.getImGuiManager().create(window.handle());
         Client.getMainMenu().register();
     }

@@ -10,6 +10,7 @@ import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.client.ui.ExampleScreen;
 import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
+import de.luckymcdev.foundryengine.common.font.BuiltInFonts;
 import de.luckymcdev.foundryengine.common.network.TestPacket;
 import de.luckymcdev.foundryengine.common.util.color.Color;
 import imgui.ImGui;
@@ -43,9 +44,34 @@ public class TestPanel extends Panel {
         ImGui.text("You dont know what i do? Hover it.");
         ImGuiUtils.helpTooltip("BOO!");
 
-        ImGuiUtils.h1(() -> ImGui.text("BIG"));
+
+        var fonts = Client.getImGuiManager().getFontManager();
+
+        fonts.pushFont(BuiltInFonts.LIGHT);
+        ImGui.text("Hello World (Light)");
+        fonts.popFont();
+        fonts.pushFont(BuiltInFonts.REGULAR);
+        ImGui.text("Hello World (Regular)");
+        fonts.popFont();
+        fonts.pushFont(BuiltInFonts.MEDIUM);
+        ImGui.text("Hello World (Medium)");
+        fonts.popFont();
+        fonts.pushFont(BuiltInFonts.SEMIBOLD);
+        ImGui.text("Hello World (SemiBold)");
+        fonts.popFont();
+        fonts.pushFont(BuiltInFonts.BOLD);
+        ImGui.text("Hello World (Bold)");
+        fonts.popFont();
+        fonts.pushFont(BuiltInFonts.ITALIC);
+        ImGui.text("Hello World (Italic)");
+        fonts.popFont();
+        fonts.pushFont(BuiltInFonts.BOLD_ITALIC);
+        ImGui.text("Hello World (Bold Italic)");
+        fonts.popFont();
+        fonts.withFont(BuiltInFonts.FALLBACK_JB, () -> ImGui.text("Hello World (Fallback)"));
+
         ImGuiUtils.textCentered("center center", ImGui.getWindowWidth());
-        ImGuiUtils.resourceLocation(Common.id("imguiiscool"));
+        ImGuiUtils.identifier(Common.id("imguiiscool"));
 
         ImGuiKnobs.knob("This Will Damage you if you press that button!", FLOAT, 0.0f, 10.0f);
         ImGui.progressBar(FLOAT.get() / 10, ImGui.getContentRegionAvailX(), 0, "Progress");
