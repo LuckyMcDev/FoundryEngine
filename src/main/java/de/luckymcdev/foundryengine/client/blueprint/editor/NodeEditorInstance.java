@@ -3,6 +3,7 @@ package de.luckymcdev.foundryengine.client.blueprint.editor;
 import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintContext;
 import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintEngine;
 import de.luckymcdev.foundryengine.common.blueprint.graph.*;
+import de.luckymcdev.foundryengine.common.blueprint.nodes.BuiltinNode;
 import de.luckymcdev.foundryengine.common.blueprint.serial.BlueprintSerializer;
 import imgui.ImGui;
 import imgui.ImVec2;
@@ -61,9 +62,9 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
         return engine;
     }
 
-    public void addNode(BlueprintEngine.NodeTemplate template) {
+    public void addNode(BuiltinNode builtin) {
         pushUndoState();
-        BlueprintNode node = engine.createNode(template);
+        BlueprintNode node = builtin.createNode();
         addNode(node, true);
     }
 

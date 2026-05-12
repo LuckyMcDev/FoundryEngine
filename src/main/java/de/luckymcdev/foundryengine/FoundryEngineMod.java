@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.api.event.*;
 import de.luckymcdev.foundryengine.api.event.registry.RegistryEvent;
 import de.luckymcdev.foundryengine.common.Common;
+import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintEngine;
 import de.luckymcdev.foundryengine.common.cutscene.CutsceneItems;
 import de.luckymcdev.foundryengine.common.cutscene.network.CutsceneActionPacket;
 import de.luckymcdev.foundryengine.common.cutscene.network.CutsceneCommandPacket;
@@ -36,8 +37,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.event.lifecycle.FMLConstructModEvent;
+import net.neoforged.fml.event.lifecycle.*;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeVersion;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
@@ -75,6 +75,9 @@ public class FoundryEngineMod {
         modBus.addListener(this::onAddPackFinders);
         modBus.addListener(this::onRegisterPayloadHandlers);
         modBus.addListener(CutsceneItems::onRegister);
+        modBus.addListener(this::clientSetup);
+        modBus.addListener(this::dedicatedServerSetup);
+        modBus.addListener(this::postInit);
 
         BUS.addListener(this::onRegisterCommands);
         BUS.addListener(this::onServerAboutToStart);
@@ -117,6 +120,8 @@ public class FoundryEngineMod {
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
+        BundleEvents.Internal.postCommonSetup(event);
+
         var network = Common.getNetworkManager();
         network.register(TestPacket.DEFINITION);
         network.register(ServerBoundSetTimePacket.DEFINITION);
@@ -138,6 +143,18 @@ public class FoundryEngineMod {
         network.register(ClientBoundAreaSyncPacket.DEFINITION);
     }
 
+    private void clientSetup(FMLClientSetupEvent event) {
+        BundleEvents.Internal.postClientSetup(event);
+    }
+
+    private void dedicatedServerSetup(FMLDedicatedServerSetupEvent event) {
+        BundleEvents.Internal.postDedicatedServerSetup(event);
+    }
+
+    private void postInit(InterModProcessEvent event) {
+        BundleEvents.Internal.postPostInit(event);
+    }
+
     private void onRegisterEvent(RegisterEvent event) {
         event.register(Registries.CHUNK_GENERATOR, helper -> {
             helper.register(Common.id("void"), VoidChunkGenerator.CODEC);
@@ -148,15 +165,19 @@ public class FoundryEngineMod {
     private void onConstruct(FMLConstructModEvent event) {
         try {
             Common.getBundleManager().discover(Common.BUNDLES);
-            if (modBus == null) return;
-            modBus.addListener((RegisterEvent ev) -> {
-                RegistryEvent registryEvent = new RegistryEvent(ev, modBus);
-                ModLoader.postEvent(registryEvent);
-                BundleEvents.Internal.postRegistry(registryEvent);
-            });
+            if (modBus != null) {
+                modBus.addListener((RegisterEvent ev) -> {
+                    RegistryEvent registryEvent = new RegistryEvent(ev, modBus);
+                    ModLoader.postEvent(registryEvent);
+                    BundleEvents.Internal.postRegistry(registryEvent);
+                });
+            }
         } catch (IOException e) {
             LOGGER.error("Error while loading bundles: {}", e.getLocalizedMessage());
         }
+
+        Common.getBlueprintManager().executeCommonEvent(BlueprintEngine.BuiltinNodes.EVENT_BEGIN_PLAY.id);
+
         EngineLogAppender.Holder.addAppender();
     }
 
@@ -208,6 +229,10 @@ public class FoundryEngineMod {
     }
 
     private void registerInternalEvents() {
+        BUS.addListener(BlockEvents.Internal::postBroken);
+        BUS.addListener(BlockEvents.Internal::postPlaced);
+        BUS.addListener(BlockEvents.Internal::postLeftClicked);
+        BUS.addListener(BlockEvents.Internal::postRightClicked);
         BUS.addListener(BlockEvents.Internal::postFarmlandTrampled);
 
         BUS.addListener(BundleEvents.Internal::postVanillaGame);

@@ -9,6 +9,7 @@ import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintEngine;
+import de.luckymcdev.foundryengine.common.blueprint.nodes.BuiltinNode;
 import de.luckymcdev.foundryengine.common.blueprint.serial.BlueprintSerializer;
 import imgui.ImGui;
 import imgui.flag.ImGuiTreeNodeFlags;
@@ -172,11 +173,10 @@ public class BlueprintsPanel extends EditorPanel {
     }
 
     private static void renderCategoryTree(CategoryNode node, String path, int flags,
-                                           java.util.function.Consumer<BlueprintEngine.NodeTemplate> onPick) {
-        // Templates exactly on this category path.
-        for (var template : node.templates) {
-            if (ImGui.menuItem(template.displayName() + "##" + template.id())) {
-                onPick.accept(template);
+                                           java.util.function.Consumer<BuiltinNode> onPick) {
+        for (var builtin : node.builtins) {
+            if (ImGui.menuItem(builtin.name + "##" + builtin.identifier)) {
+                onPick.accept(builtin);
             }
         }
 
@@ -203,12 +203,12 @@ public class BlueprintsPanel extends EditorPanel {
         String filter = searchFilter.get().toLowerCase().trim();
 
         CategoryNode root = new CategoryNode();
-        for (var template : engine.getRegistry()) {
-            String displayName = template.displayName();
-            String category = template.category();
+        for (var builtin : engine.getBuiltinNodes()) {
+            String displayName = builtin.name;
+            String category = builtin.category;
             if (!filter.isEmpty()
                     && !displayName.toLowerCase().contains(filter)
-                    && !template.id().toLowerCase().contains(filter)
+                    && !builtin.identifier.toLowerCase().contains(filter)
                     && !category.toLowerCase().contains(filter)) {
                 continue;
             }
@@ -218,7 +218,7 @@ public class BlueprintsPanel extends EditorPanel {
                 if (part.isBlank()) continue;
                 cur = cur.children.computeIfAbsent(part, k -> new CategoryNode());
             }
-            cur.templates.add(template);
+            cur.builtins.add(builtin);
         }
 
         if (root.isEmpty()) {
@@ -226,8 +226,8 @@ public class BlueprintsPanel extends EditorPanel {
         }
 
         int flags = filter.isEmpty() ? ImGuiTreeNodeFlags.None : ImGuiTreeNodeFlags.DefaultOpen;
-        renderCategoryTree(root, "", flags, template -> {
-            editor.addNode(template);
+        renderCategoryTree(root, "", flags, builtin -> {
+            editor.addNode(builtin);
             searchFilter.set("");
         });
 
@@ -239,10 +239,10 @@ public class BlueprintsPanel extends EditorPanel {
 
     private static final class CategoryNode {
         final Map<String, CategoryNode> children = new LinkedHashMap<>();
-        final List<BlueprintEngine.NodeTemplate> templates = new java.util.ArrayList<>();
+        final List<BuiltinNode> builtins = new java.util.ArrayList<>();
 
         boolean isEmpty() {
-            if (!templates.isEmpty()) return false;
+            if (!builtins.isEmpty()) return false;
             for (var c : children.values()) if (!c.isEmpty()) return false;
             return true;
         }

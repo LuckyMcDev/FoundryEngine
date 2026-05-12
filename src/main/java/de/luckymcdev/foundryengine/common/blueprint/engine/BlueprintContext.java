@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.common.blueprint.graph.BlueprintGraph;
 import de.luckymcdev.foundryengine.common.blueprint.graph.BlueprintNode;
 import de.luckymcdev.foundryengine.common.blueprint.graph.NodePinInfo;
+import de.luckymcdev.foundryengine.common.blueprint.nodes.BuiltinNode;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -11,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Runtime context passed to every {@link BlueprintEngine.NodeBehavior}
+ * Runtime context passed to every {@link BuiltinNode#execute}
  * during graph execution.
  */
 public class BlueprintContext {
@@ -62,9 +63,9 @@ public class BlueprintContext {
             BlueprintNode source = pin.inputLink.node;
             BlueprintEngine eng = graph instanceof EngineAwareGraph eag ? eag.getEngine() : null;
             if (eng != null) {
-                BlueprintEngine.NodeBehavior behavior = eng.getBehavior(source.identifier);
-                if (behavior != null) {
-                    behavior.execute(source, eng, graph, this);
+                BuiltinNode builtin = eng.getById(source.identifier);
+                if (builtin != null) {
+                    builtin.execute(source, eng, graph, this);
                 }
             }
 

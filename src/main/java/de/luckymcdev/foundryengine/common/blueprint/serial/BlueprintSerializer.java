@@ -3,6 +3,7 @@ package de.luckymcdev.foundryengine.common.blueprint.serial;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintEngine;
+import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintTypes;
 import de.luckymcdev.foundryengine.common.blueprint.graph.*;
 import de.luckymcdev.foundryengine.common.blueprint.serial.model.SerializedBlueprint;
 import de.luckymcdev.foundryengine.common.blueprint.serial.model.SerializedLink;
@@ -204,15 +205,15 @@ public class BlueprintSerializer {
         return deserialize(json, graph);
     }
 
-    private @Nullable NodePinType<?> resolvePinType(String typeName) {
+    private static @Nullable NodePinType<?> resolvePinType(String typeName) {
         return switch (typeName) {
-            case "Exec" -> engine.execType;
-            case "Bool" -> engine.boolType;
-            case "Int" -> engine.intType;
-            case "Float" -> engine.floatType;
-            case "String" -> engine.stringType;
-            case "Object" -> engine.objectType;
-            case "Any" -> engine.anyType;
+            case "Exec" -> BlueprintTypes.EXEC;
+            case "Bool" -> BlueprintTypes.BOOL;
+            case "Int" -> BlueprintTypes.INT;
+            case "Float" -> BlueprintTypes.FLOAT;
+            case "String" -> BlueprintTypes.STRING;
+            case "Object" -> BlueprintTypes.OBJECT;
+            case "Any" -> BlueprintTypes.ANY;
             default -> null;
         };
     }
