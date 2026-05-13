@@ -11,16 +11,16 @@ import org.jetbrains.annotations.ApiStatus;
 
 public class ClientEvents {
     public static final EventGroupHolder<ClientTickEvent.Post> TICK = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_CLIENT_TICK, BlueprintContexts::clientTick);
-    public static final EventGroupHolder<ClientStoppedEvent> STOPPED = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_CLIENT_STOPPED);
-    public static final EventGroupHolder<ClientStoppingEvent> STOPPING = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_CLIENT_STOPPING);
-    public static final EventGroupHolder<ClientChatEvent> CHAT = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_CHAT_MESSAGE);
+    public static final EventGroupHolder<ClientStoppedEvent> STOPPED = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_CLIENT_STOPPED, BlueprintContexts::clientStopped);
+    public static final EventGroupHolder<ClientStoppingEvent> STOPPING = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_CLIENT_STOPPING, BlueprintContexts::clientStopping);
+    public static final EventGroupHolder<ClientChatEvent> CHAT = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_CHAT_MESSAGE, BlueprintContexts::clientChat);
     public static final EventGroupHolder<RegisterKeyMappingsEvent> KEY_MAPPINGS = new EventGroupHolder<>();
-    public static final EventGroupHolder<RenderGuiEvent.Post> RENDER_GUI = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_RENDER_GUI);
+    public static final EventGroupHolder<RenderGuiEvent.Post> RENDER_GUI = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_RENDER_GUI, BlueprintContexts::renderGui);
     public static final EventGroupHolder<RenderGuiLayerEvent.Post> RENDER_GUI_LAYER = new EventGroupHolder<>();
     public static final EventGroupHolder<RenderHandEvent> RENDER_HAND = new EventGroupHolder<>();
     public static final EventGroupHolder<RenderLevelStageEvent.AfterLevel> RENDER_AFTER_LEVEL = new EventGroupHolder<>();
-    public static final EventGroupHolder<ClientPlayerNetworkEvent.LoggingIn> LOGGED_IN = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_CLIENT_LOGGED_IN);
-    public static final EventGroupHolder<ClientPlayerNetworkEvent.LoggingOut> LOGGED_OUT = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_CLIENT_LOGGED_OUT);
+    public static final EventGroupHolder<ClientPlayerNetworkEvent.LoggingIn> LOGGED_IN = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_CLIENT_LOGGED_IN, BlueprintContexts::clientLoggedIn);
+    public static final EventGroupHolder<ClientPlayerNetworkEvent.LoggingOut> LOGGED_OUT = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_CLIENT_LOGGED_OUT, BlueprintContexts::clientLoggedOut);
 
     public static void tick(EventCallback<ClientTickEvent.Post> cb) {
         TICK.register(cb);
@@ -124,7 +124,6 @@ public class ClientEvents {
             RENDER_AFTER_LEVEL.clear();
             LOGGED_IN.clear();
             LOGGED_OUT.clear();
-            BlueprintContexts.resetClientTick();
         }
     }
 }

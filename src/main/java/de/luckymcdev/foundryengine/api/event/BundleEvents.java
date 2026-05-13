@@ -15,12 +15,12 @@ import org.jetbrains.annotations.ApiStatus;
 
 public class BundleEvents {
     public static final EventGroupHolder<RegistryEvent> REGISTRY = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_REGISTRY, BlueprintContexts::bundleRegistry);
-    public static final EventGroupHolder<VanillaGameEvent> VANILLA_GAME = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_VANILLA_GAME);
-    public static final EventGroupHolder<FMLCommonSetupEvent> COMMON_SETUP = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_COMMON_SETUP);
-    public static final EventGroupHolder<FMLClientSetupEvent> CLIENT_SETUP = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_CLIENT_SETUP);
-    public static final EventGroupHolder<FMLDedicatedServerSetupEvent> DEDICATED_SERVER_SETUP = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_DEDICATED_SERVER_SETUP);
-    public static final EventGroupHolder<InterModProcessEvent> POST_INIT = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_POST_INIT);
-    public static final EventGroupHolder<ServerAboutToStartEvent> SERVER_ABOUT_TO_START = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_SERVER_ABOUT_TO_START);
+    public static final EventGroupHolder<VanillaGameEvent> VANILLA_GAME = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_VANILLA_GAME, BlueprintContexts::vanillaGame);
+    public static final EventGroupHolder<FMLCommonSetupEvent> COMMON_SETUP = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_COMMON_SETUP, BlueprintContexts::commonSetup);
+    public static final EventGroupHolder<FMLClientSetupEvent> CLIENT_SETUP = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_CLIENT_SETUP, BlueprintContexts::clientSetup);
+    public static final EventGroupHolder<FMLDedicatedServerSetupEvent> DEDICATED_SERVER_SETUP = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_DEDICATED_SERVER_SETUP, BlueprintContexts::dedicatedServerSetup);
+    public static final EventGroupHolder<InterModProcessEvent> POST_INIT = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_POST_INIT, BlueprintContexts::postInit);
+    public static final EventGroupHolder<ServerAboutToStartEvent> SERVER_ABOUT_TO_START = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_SERVER_ABOUT_TO_START, BlueprintContexts::serverAboutToStart);
 
     public static void registry(EventCallback<RegistryEvent> callback) {
         REGISTRY.register(callback);

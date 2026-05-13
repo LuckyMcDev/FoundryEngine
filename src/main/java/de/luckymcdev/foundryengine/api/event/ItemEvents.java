@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.api.event;
 
 import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintEngine;
+import de.luckymcdev.foundryengine.common.event.BlueprintContexts;
 import de.luckymcdev.foundryengine.common.event.EventCallback;
 import de.luckymcdev.foundryengine.common.event.EventGroupHolder;
 import net.neoforged.neoforge.event.entity.item.ItemTossEvent;
@@ -10,27 +11,27 @@ import org.jetbrains.annotations.ApiStatus;
 
 public class ItemEvents {
     public static final EventGroupHolder<ItemEntityPickupEvent.Post> PICKED_UP =
-            new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_ITEM_PICKUP);
+            new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_ITEM_PICKUP, BlueprintContexts::itemPickedUp);
     public static final EventGroupHolder<PlayerDestroyItemEvent> DESTROYED =
-            new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_ITEM_DESTROY);
+            new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_ITEM_DESTROY, BlueprintContexts::itemDestroyed);
     public static final EventGroupHolder<PlayerInteractEvent.RightClickItem> RIGHT_CLICKED =
-            new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_ITEM_RIGHT_CLICK);
+            new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_ITEM_RIGHT_CLICK, BlueprintContexts::itemRightClicked);
     public static final EventGroupHolder<PlayerEvent.ItemCraftedEvent> CRAFTED =
-            new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_ITEM_CRAFTED);
+            new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_ITEM_CRAFTED, BlueprintContexts::itemCrafted);
     public static final EventGroupHolder<ItemTossEvent> DROPPED =
-            new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_ITEM_DROPPED);
+            new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_ITEM_DROPPED, BlueprintContexts::itemDropped);
     public static final EventGroupHolder<LivingEntityUseItemEvent.Finish> FOOD_EATEN =
-            new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_ITEM_FOOD_EATEN);
+            new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_ITEM_FOOD_EATEN, BlueprintContexts::foodEaten);
     public static final EventGroupHolder<PlayerEvent.ItemSmeltedEvent> SMELTED =
-            new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_ITEM_SMELTED);
+            new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_ITEM_SMELTED, BlueprintContexts::itemSmelted);
     public static final EventGroupHolder<ItemTooltipEvent> DYNAMIC_TOOLTIPS =
-            new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_ITEM_TOOLTIP);
+            new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_ITEM_TOOLTIP, BlueprintContexts::itemTooltip);
     public static final EventGroupHolder<PlayerInteractEvent.EntityInteract> ENTITY_INTERACTED =
-            new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_ITEM_ENTITY_INTERACT);
+            new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_ITEM_ENTITY_INTERACT, BlueprintContexts::itemEntityInteract);
     public static final EventGroupHolder<PlayerInteractEvent.LeftClickEmpty> FIRST_LEFT_CLICKED =
-            new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_ITEM_FIRST_LEFT_CLICK);
+            new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_ITEM_FIRST_LEFT_CLICK, BlueprintContexts::firstLeftClicked);
     public static final EventGroupHolder<PlayerInteractEvent.RightClickEmpty> FIRST_RIGHT_CLICKED =
-            new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_ITEM_FIRST_RIGHT_CLICK);
+            new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_ITEM_FIRST_RIGHT_CLICK, BlueprintContexts::firstRightClicked);
 
     public static void pickedUp(EventCallback<ItemEntityPickupEvent.Post> cb) {
         PICKED_UP.register(cb);

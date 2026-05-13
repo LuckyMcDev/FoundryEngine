@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.api.event;
 
 import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintEngine;
+import de.luckymcdev.foundryengine.common.event.BlueprintContexts;
 import de.luckymcdev.foundryengine.common.event.EventCallback;
 import de.luckymcdev.foundryengine.common.event.EventGroupHolder;
 import net.neoforged.neoforge.client.event.RecipesReceivedEvent;
@@ -9,7 +10,7 @@ import org.jetbrains.annotations.ApiStatus;
 
 public class RecipeEvents {
     public static final EventGroupHolder<RecipesReceivedEvent> RECIPES_UPDATED =
-            new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_RECIPE_VIEWER_UPDATED);
+            new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_RECIPE_VIEWER_UPDATED, BlueprintContexts::recipesReceived);
 
     public static final EventGroupHolder<ModifyRecipeJsonsEvent> MODIFY_RECIPES =
             new EventGroupHolder<>();
