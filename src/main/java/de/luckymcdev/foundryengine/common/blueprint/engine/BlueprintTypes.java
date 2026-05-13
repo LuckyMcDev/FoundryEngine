@@ -8,42 +8,38 @@ import de.luckymcdev.foundryengine.common.blueprint.graph.NodePinType;
  * Unreal Engine 5's visual language.
  */
 public final class BlueprintTypes {
-    /**
-     * White triangles – control flow.
-     */
-    public static final NodePinType<Void> EXEC =
-            new NodePinType<>("Exec", NodePinShape.FILLED_TRIANGLE, 0xFF_FFFFFF, null);
-    /**
-     * Red circle – boolean value.
-     */
-    public static final NodePinType<Boolean> BOOL =
-            new NodePinType<>("Bool", NodePinShape.FILLED_CIRCLE, 0xFF_E05555, null);
-    /**
-     * Teal circle – integer value.
-     */
-    public static final NodePinType<Integer> INT =
-            new NodePinType<>("Int", NodePinShape.FILLED_CIRCLE, 0xFF_4FC3A1, null);
-    /**
-     * Green circle – floating-point value.
-     */
-    public static final NodePinType<Float> FLOAT =
-            new NodePinType<>("Float", NodePinShape.FILLED_CIRCLE, 0xFF_83C567, null);
-    /**
-     * Magenta circle – text value.
-     */
-    public static final NodePinType<String> STRING =
-            new NodePinType<>("String", NodePinShape.FILLED_CIRCLE, 0xFF_D85BC9, null);
-    /**
-     * Blue square – arbitrary object / reference.
-     */
-    public static final NodePinType<Object> OBJECT =
-            new NodePinType<>("Object", NodePinShape.FILLED_SQUARE, 0xFF_4F8FE8, null);
-    /**
-     * Gray circle – wildcard, compatible with any other type.
-     */
-    public static final NodePinType<Object> ANY =
-            new NodePinType<>("Any", NodePinShape.CIRCLE, 0xFF_AAAAAA, null);
+    public static final NodePinType<Void> EXEC = new NodePinType<>("Exec", NodePinShape.FILLED_TRIANGLE);
+    public static final NodePinType<Boolean> BOOL = new NodePinType<>("Bool", NodePinShape.FILLED_CIRCLE);
+    public static final NodePinType<Integer> INT = new NodePinType<>("Int", NodePinShape.FILLED_CIRCLE);
+    public static final NodePinType<Float> FLOAT = new NodePinType<>("Float", NodePinShape.FILLED_CIRCLE);
+    public static final NodePinType<String> STRING = new NodePinType<>("String", NodePinShape.FILLED_CIRCLE);
+    public static final NodePinType<Object> OBJECT = new NodePinType<>("Object", NodePinShape.FILLED_SQUARE);
+    public static final NodePinType<Object> ANY = new NodePinType<>("Any", NodePinShape.CIRCLE);
+    public static final NodePinType<Object> MINECRAFT_SERVER = reg("MinecraftServer");
+    public static final NodePinType<Object> MINECRAFT = reg("Minecraft");
+    public static final NodePinType<Object> PLAYER = reg("Player");
+    public static final NodePinType<Object> ENTITY = reg("Entity");
+    public static final NodePinType<Object> LIVING_ENTITY = reg("LivingEntity");
+    public static final NodePinType<Object> LEVEL = reg("Level");
+    public static final NodePinType<Object> BLOCK_POS = reg("BlockPos");
+    public static final NodePinType<Object> BLOCK_STATE = reg("BlockState");
+    public static final NodePinType<Object> DIRECTION = reg("Direction");
+    public static final NodePinType<Object> ITEM_STACK = reg("ItemStack");
+    public static final NodePinType<Object> ITEM_ENTITY = reg("ItemEntity");
+    public static final NodePinType<Object> COMPONENT = reg("Component");
+    public static final NodePinType<Object> ADVANCEMENT = reg("Advancement");
+    public static final NodePinType<Object> CONTAINER = reg("Container");
+    public static final NodePinType<Object> EXPLOSION = reg("Explosion");
+    public static final NodePinType<Object> DAMAGE_SOURCE = reg("DamageSource");
+    public static final NodePinType<Object> CONNECTION = reg("Connection");
+    public static final NodePinType<Object> INTERACTION_HAND = reg("InteractionHand");
+    public static final NodePinType<Object> PLAYER_ACTION = reg("PlayerAction");
+    public static final NodePinType<Object> UPDATE_CAUSE = reg("UpdateCause");
+    public static final NodePinType<Object> LOOKUP_PROVIDER = reg("LookupProvider");
+    public static final NodePinType<Object> TOOLTIP_FLAG = reg("TooltipFlag");
+    public static final NodePinType<Object> COMMAND_DISPATCHER = reg("CommandDispatcher");
 
-    private BlueprintTypes() {
+    private static NodePinType<Object> reg(String name) {
+        return new NodePinType<>(name, NodePinShape.FILLED_SQUARE);
     }
 }

@@ -5,8 +5,7 @@ import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintEngine;
 import de.luckymcdev.foundryengine.common.blueprint.graph.BlueprintGraph;
 import de.luckymcdev.foundryengine.common.blueprint.graph.BlueprintNode;
 
-import static de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintTypes.FLOAT;
-import static de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintTypes.INT;
+import static de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintTypes.*;
 
 public final class EventNodes {
 
@@ -130,8 +129,7 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
-            output(INT, "Tick");
-            output(FLOAT, "DeltaSeconds");
+            output(MINECRAFT, "Client");
         }
 
         @Override
@@ -147,6 +145,7 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(MINECRAFT, "Client");
         }
 
         @Override
@@ -162,6 +161,7 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(MINECRAFT, "Client");
         }
 
         @Override
@@ -177,6 +177,8 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(STRING, "Message");
+            output(STRING, "OriginalMessage");
         }
 
         @Override
@@ -192,6 +194,7 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(FLOAT, "PartialTicks");
         }
 
         @Override
@@ -207,6 +210,8 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(PLAYER, "Player");
+            output(CONNECTION, "Connection");
         }
 
         @Override
@@ -222,6 +227,7 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(PLAYER, "Player");
         }
 
         @Override
@@ -239,8 +245,7 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
-            output(INT, "Tick");
-            output(FLOAT, "DeltaSeconds");
+            output(MINECRAFT_SERVER, "Server");
         }
 
         @Override
@@ -256,6 +261,7 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(MINECRAFT_SERVER, "Server");
         }
 
         @Override
@@ -271,6 +277,7 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(MINECRAFT_SERVER, "Server");
         }
 
         @Override
@@ -286,6 +293,7 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(MINECRAFT_SERVER, "Server");
         }
 
         @Override
@@ -301,6 +309,7 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(MINECRAFT_SERVER, "Server");
         }
 
         @Override
@@ -316,6 +325,7 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(MINECRAFT_SERVER, "Server");
         }
 
         @Override
@@ -331,6 +341,8 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(LOOKUP_PROVIDER, "LookupProvider");
+            output(UPDATE_CAUSE, "UpdateCause");
         }
 
         @Override
@@ -348,6 +360,10 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(LEVEL, "Level");
+            output(PLAYER, "Player");
+            output(BLOCK_POS, "BlockPos");
+            output(BLOCK_STATE, "BlockState");
         }
 
         @Override
@@ -363,6 +379,10 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(LEVEL, "Level");
+            output(ENTITY, "Entity");
+            output(BLOCK_POS, "BlockPos");
+            output(BLOCK_STATE, "BlockState");
         }
 
         @Override
@@ -378,6 +398,11 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(LEVEL, "Level");
+            output(PLAYER, "Entity");
+            output(BLOCK_POS, "BlockPos");
+            output(DIRECTION, "Direction");
+            output(PLAYER_ACTION, "Action");
         }
 
         @Override
@@ -393,6 +418,10 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(LEVEL, "Level");
+            output(PLAYER, "Entity");
+            output(BLOCK_POS, "BlockPos");
+            output(DIRECTION, "Direction");
         }
 
         @Override
@@ -408,6 +437,10 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(LEVEL, "Level");
+            output(ENTITY, "Entity");
+            output(BLOCK_POS, "BlockPos");
+            output(FLOAT, "FallDistance");
         }
 
         @Override
@@ -425,6 +458,8 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(ENTITY, "Entity");
+            output(LEVEL, "Level");
         }
 
         @Override
@@ -440,6 +475,8 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(LIVING_ENTITY, "Entity");
+            output(DAMAGE_SOURCE, "DamageSource");
         }
 
         @Override
@@ -455,6 +492,8 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(LIVING_ENTITY, "Entity");
+            output(DAMAGE_SOURCE, "DamageSource");
         }
 
         @Override
@@ -470,6 +509,8 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(LIVING_ENTITY, "Entity");
+            output(DAMAGE_SOURCE, "DamageSource");
         }
 
         @Override
@@ -487,6 +528,10 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(PLAYER, "Player");
+            output(ITEM_STACK, "CurrentStack");
+            output(ITEM_STACK, "OriginalStack");
+            output(ITEM_ENTITY, "ItemEntity");
         }
 
         @Override
@@ -502,6 +547,7 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(PLAYER, "Player");
         }
 
         @Override
@@ -517,6 +563,11 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(PLAYER, "Player");
+            output(LEVEL, "Level");
+            output(BLOCK_POS, "BlockPos");
+            output(INTERACTION_HAND, "Hand");
+            output(ITEM_STACK, "ItemStack");
         }
 
         @Override
@@ -532,6 +583,8 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(PLAYER, "Player");
+            output(ITEM_STACK, "Crafting");
         }
 
         @Override
@@ -547,6 +600,8 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(PLAYER, "Player");
+            output(ITEM_ENTITY, "ItemEntity");
         }
 
         @Override
@@ -562,6 +617,10 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(LIVING_ENTITY, "LivingEntity");
+            output(ITEM_STACK, "OriginalStack");
+            output(ITEM_STACK, "ResultStack");
+            output(INT, "Duration");
         }
 
         @Override
@@ -577,6 +636,9 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(LIVING_ENTITY, "LivingEntity");
+            output(ITEM_STACK, "ItemStack");
+            output(INT, "AmmountRemoved");
         }
 
         @Override
@@ -592,6 +654,10 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(PLAYER, "Player");
+            output(OBJECT, "TooltipContext");
+            output(TOOLTIP_FLAG, "TooltipFlags");
+            output(ITEM_STACK, "ItemStack");
         }
 
         @Override
@@ -607,6 +673,10 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(PLAYER, "Entity");
+            output(ENTITY, "Target");
+            output(LEVEL, "Level");
+            output(ITEM_STACK, "ItemStack");
         }
 
         @Override
@@ -654,6 +724,7 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(LEVEL, "Level");
         }
 
         @Override
@@ -669,6 +740,7 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(LEVEL, "Level");
         }
 
         @Override
@@ -684,6 +756,7 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(LEVEL, "Level");
         }
 
         @Override
@@ -699,6 +772,7 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(LEVEL, "Level");
         }
 
         @Override
@@ -714,6 +788,8 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(LEVEL, "Level");
+            output(EXPLOSION, "Explosion");
         }
 
         @Override
@@ -729,6 +805,8 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(LEVEL, "Level");
+            output(EXPLOSION, "Explosion");
         }
 
         @Override
@@ -746,6 +824,7 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(PLAYER, "Player");
         }
 
         @Override
@@ -761,6 +840,7 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(PLAYER, "Player");
         }
 
         @Override
@@ -778,6 +858,7 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(PLAYER, "Player");
         }
 
         @Override
@@ -793,6 +874,7 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(PLAYER, "Player");
         }
 
         @Override
@@ -808,6 +890,7 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(PLAYER, "Player");
         }
 
         @Override
@@ -823,6 +906,10 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(PLAYER, "Player");
+            output(STRING, "Username");
+            output(COMPONENT, "Message");
+            output(STRING, "RawText");
         }
 
         @Override
@@ -838,6 +925,8 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(PLAYER, "Player");
+            output(ADVANCEMENT, "Advancement");
         }
 
         @Override
@@ -853,6 +942,8 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(PLAYER, "Player");
+            output(CONTAINER, "Container");
         }
 
         @Override
@@ -868,6 +959,8 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(PLAYER, "Player");
+            output(CONTAINER, "Container");
         }
 
         @Override
@@ -883,6 +976,7 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(PLAYER, "Player");
         }
 
         @Override
@@ -898,6 +992,7 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(COMPONENT, "Message");
         }
 
         @Override
@@ -915,6 +1010,7 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(COMMAND_DISPATCHER, "Dispatcher");
         }
 
         @Override
@@ -930,6 +1026,7 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(COMMAND_DISPATCHER, "Dispatcher");
         }
 
         @Override

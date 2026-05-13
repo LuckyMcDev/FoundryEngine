@@ -2,22 +2,16 @@ package de.luckymcdev.foundryengine.common.blueprint.graph;
 
 import org.jetbrains.annotations.Nullable;
 
+import java.awt.*;
 import java.util.List;
 import java.util.function.Consumer;
 
 public class NodePinType<T> {
     public final String displayName;
     public final NodePinShape defaultShape;
-    /**
-     * ARGB packed color, e.g. {@code 0xFF_FFFFFF}. Used by client rendering.
-     */
     public final int color;
     public final List<NodePin> singleOutput;
     public final List<NodePin> singleRequiredInput;
-    /**
-     * Optional client-side context-menu builder. {@code null} on the server/common
-     * side; client code may supply a non-null value when constructing instances.
-     */
     public final @Nullable Consumer<Consumer<BlueprintNode>> menuBuilder;
 
     public NodePinType(String displayName, NodePinShape defaultShape, int color,
@@ -28,6 +22,15 @@ public class NodePinType<T> {
         this.menuBuilder = menuBuilder;
         this.singleOutput = List.of(output("Out"));
         this.singleRequiredInput = List.of(required("In"));
+    }
+
+    public NodePinType(String displayName, NodePinShape defaultShape) {
+        this(displayName, defaultShape, deriveColor(displayName), null);
+    }
+
+    private static int deriveColor(String name) {
+        float hue = (name.hashCode() & 0x7FFF) / 32767f;
+        return 0xFF000000 | Color.HSBtoRGB(hue, 0.75f, 0.9f);
     }
 
     public NodePinType(String displayName, NodePinShape defaultShape,
