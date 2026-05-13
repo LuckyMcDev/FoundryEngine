@@ -4,21 +4,22 @@ import de.luckymcdev.foundryengine.client.editor.styles.ImThemes;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
+import java.util.Arrays;
+
 public final class ClientConfig extends EngineConfig {
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
     public static final ModConfigSpec.ConfigValue<String> SELECTED_THEME =
             BUILDER.comment("The currently selected ImGui theme. Available themes: " + ImThemes.getAvailableThemeNames())
-                    .define("selectedTheme", ImThemes.BESS_DARK_IM_THEME.getName());
+                    .define("SELECTED_THEME", ImThemes.BESS_DARK_IM_THEME.getName());
 
-    public static final ModConfigSpec.BooleanValue IMGUI_FONTS_ENABLED =
-            BUILDER.comment("Wether ImGui Font loading is enabled. If you see artifacts, set this to false.")
-                    .define("IMGUI_FONTS_ENABLED", true);
+    public static final String[] FONT_OPTION_VALUES = {"MINIMAL", "NORMAL", "DISABLED"};
 
-    public static final ModConfigSpec.BooleanValue IMGUI_FONTS_FALLBACK =
-            BUILDER.comment("If instead of absolutely no fonts, a fallback font should be used. (needs IMGUI_FONTS_ENABLED to be true)")
-                    .define("IMGUI_FONTS_FALLBACK", false);
-
+    public static final ModConfigSpec.ConfigValue<String> FONT_OPTION =
+            BUILDER.comment("What should happen with fonts.")
+                    .comment("Can be: " + Arrays.toString(FONT_OPTION_VALUES))
+                    .comment("")
+                    .define("FONT_OPTION", "NORMAL");
 
     public static final ModConfigSpec.BooleanValue RENDER_OFFHAND =
             BUILDER.comment("A Funny Offhand rendering technique. It makes it be rendered the same way the main hand is.")

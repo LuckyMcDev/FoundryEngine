@@ -56,6 +56,7 @@ public record TTFFile(Identifier id, Identifier resource, FontVariant variant, s
             Common.id("jetbrains_mono_nerd/bold_italic"),
             Common.id("font/jetbrainsmononerdfontmonobolditalic.ttf"),
             FontVariant.BOLD_ITALIC, DEFAULT_GLYPH_RANGES);
+
     public static final TTFFile[] JETBRAINS_MONO_NERDFONT_ALL = {
             JETBRAINS_MONO_LIGHT,
             JETBRAINS_MONO_REGULAR,

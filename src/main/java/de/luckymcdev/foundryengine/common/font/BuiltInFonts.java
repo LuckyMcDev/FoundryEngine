@@ -1,8 +1,6 @@
 package de.luckymcdev.foundryengine.common.font;
 
-import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiFontManager;
-import de.luckymcdev.foundryengine.config.ClientConfig;
 import net.minecraft.resources.Identifier;
 
 public class BuiltInFonts {
@@ -18,16 +16,9 @@ public class BuiltInFonts {
     /**
      * Registers all built-in fonts to the manager.
      */
-    public static void registerAll(ImGuiFontManager manager) {
+    public static void registerJetbrainsMonoNerdFontMono(ImGuiFontManager manager) {
         for (TTFFile ttf : TTFFile.JETBRAINS_MONO_NERDFONT_ALL) {
-            manager.registerFont(ttf, 20.0f);
-        }
-        if (ClientConfig.IMGUI_FONTS_FALLBACK.getAsBoolean()) {
-            Client.LOGGER.debug("Fallback Fonts used.");
-            manager.setDefaultFont(FALLBACK_JB);
-        } else {
-            Client.LOGGER.debug("Regular Font used.");
-            manager.setDefaultFont(REGULAR);
+            manager.registerFont(ttf);
         }
     }
 }

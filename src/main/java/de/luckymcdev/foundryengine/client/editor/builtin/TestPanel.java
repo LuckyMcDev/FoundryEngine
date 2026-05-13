@@ -68,7 +68,7 @@ public class TestPanel extends Panel {
         fonts.pushFont(BuiltInFonts.BOLD_ITALIC);
         ImGui.text("Hello World (Bold Italic)");
         fonts.popFont();
-        fonts.withFont(BuiltInFonts.FALLBACK_JB, () -> ImGui.text("Hello World (Fallback)"));
+        //fonts.withFont(BuiltInFonts.FALLBACK_JB, () -> ImGui.text("Hello World (Fallback)"));
 
         ImGuiUtils.textCentered("center center", ImGui.getWindowWidth());
         ImGuiUtils.identifier(Common.id("imguiiscool"));

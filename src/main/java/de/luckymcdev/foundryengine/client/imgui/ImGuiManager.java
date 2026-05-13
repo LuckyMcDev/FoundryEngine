@@ -13,6 +13,7 @@ import de.luckymcdev.foundryengine.client.imgui.backend.ImGuiImplGl3;
 import de.luckymcdev.foundryengine.client.imgui.backend.ImGuiImplGlfw;
 import de.luckymcdev.foundryengine.client.imgui.graphics.ImGuiGraphicsStack;
 import de.luckymcdev.foundryengine.common.font.BuiltInFonts;
+import de.luckymcdev.foundryengine.common.font.TTFFile;
 import de.luckymcdev.foundryengine.config.ClientConfig;
 import de.luckymcdev.foundryengine.mixin.MinecraftMixin;
 import de.luckymcdev.foundryengine.mixin.render.GameRendererMixin;
@@ -91,8 +92,6 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
 
         imGuiImplGl3.init("#version 330 core");
         imGuiImplGlfw.init(handle, true);
-
-        BuiltInFonts.registerAll(fontManager);
 
         ImGui.styleColorsDark();
         loadThemeFromConfig();
@@ -258,14 +257,23 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
     @Override
     public void onResourceManagerReload(ResourceManager resourceManager) {
         LOGGER.info("Hey. Fonts might be broken. If they appear really bad for you, disable custom fonts in the config.");
-        if (ClientConfig.IMGUI_FONTS_ENABLED.getAsBoolean()) {
-            fontManager.loadFonts(resourceManager);
+        switch (ClientConfig.FONT_OPTION.get()) {
+            case "MINIMAL": {
+                fontManager.registerFont(TTFFile.FALLBACK_JB);
+                fontManager.loadFonts(resourceManager);
+                fontManager.setDefaultFont(BuiltInFonts.FALLBACK_JB);
+                break;
+            }
+            case "NORMAL": {
+                BuiltInFonts.registerJetbrainsMonoNerdFontMono(fontManager);
+                fontManager.loadFonts(resourceManager);
+                fontManager.setDefaultFont(BuiltInFonts.REGULAR);
+                break;
+            }
+            case "DISABLED": {
+                LOGGER.info("Fonts are Disabled.");
+                break;
+            }
         }
-        // Testing on linux now aswell.
-        //if (Util.getPlatform() == Util.OS.WINDOWS) {
-        //    fontManager.loadFonts(resourceManager);
-        //} else {
-        //    LOGGER.info("Hey, You're not on Windows, which means you'll sadly see a lot of ? in the editor, as the icons im using dont really support anything else.");
-        //}
     }
 }

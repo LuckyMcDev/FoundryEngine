@@ -32,7 +32,8 @@ public final class ImGuiFontManager {
     private final ImGuiImplGl3 glImpl;
     private final List<FontRegistration> registrations = new ArrayList<>();
     private final Map<Identifier, ImFont> loadedFonts = new LinkedHashMap<>();
-    private Identifier defaultFontId;
+    private @Nullable ImFont actualImGuiDefaultFont;
+    private @Nullable Identifier defaultFontId;
     private short[] globalGlyphRanges = DEFAULT_GLYPH_RANGES;
     private int oversampleH = 3;
     private int oversampleV = 3;
@@ -64,7 +65,7 @@ public final class ImGuiFontManager {
 
 
     public void registerFont(TTFFile ttfFile) {
-        registerFont(ttfFile, 20.0f);
+        registerFont(ttfFile, 18.0f);
     }
 
     public void registerFont(TTFFile ttfFile, float fontSize) {
@@ -91,6 +92,7 @@ public final class ImGuiFontManager {
         glImpl.destroyFontsTexture();
 
         loadedFonts.clear();
+        actualImGuiDefaultFont = null;
 
         for (FontRegistration reg : registrations) {
             try {
@@ -135,14 +137,16 @@ public final class ImGuiFontManager {
 
         if (loadedFonts.isEmpty()) {
             LOGGER.warn("No fonts were loaded – falling back to ImGui default font");
-            loadedFonts.put(Identifier.withDefaultNamespace("default"), atlas.addFontDefault());
+            actualImGuiDefaultFont = atlas.addFontDefault();
+            loadedFonts.put(Identifier.withDefaultNamespace("default"), actualImGuiDefaultFont);
         }
 
         if (!atlas.build()) {
             LOGGER.error("Failed to build font atlas! Falling back to a minimal default font.");
             atlas.clear();
             loadedFonts.clear();
-            loadedFonts.put(Identifier.withDefaultNamespace("default"), atlas.addFontDefault());
+            actualImGuiDefaultFont = atlas.addFontDefault();
+            loadedFonts.put(Identifier.withDefaultNamespace("default"), actualImGuiDefaultFont);
             if (!atlas.build()) {
                 throw new IllegalStateException("Could not build even the default font atlas");
             }
@@ -152,9 +156,11 @@ public final class ImGuiFontManager {
 
         ImFont defaultFont = defaultFontId != null ? loadedFonts.get(defaultFontId) : loadedFonts.values().iterator().next();
         if (defaultFont != null) {
+            actualImGuiDefaultFont = defaultFont;
             ImGui.getIO().setFontDefault(defaultFont);
         } else if (!loadedFonts.isEmpty()) {
-            ImGui.getIO().setFontDefault(loadedFonts.values().iterator().next());
+            actualImGuiDefaultFont = loadedFonts.values().iterator().next();
+            ImGui.getIO().setFontDefault(actualImGuiDefaultFont);
         }
 
         atlas.clearTexData();
@@ -165,6 +171,7 @@ public final class ImGuiFontManager {
         loadedFonts.clear();
         registrations.clear();
         defaultFontId = null;
+        actualImGuiDefaultFont = null;
     }
 
     public ImFont getCurrent() {
@@ -174,7 +181,8 @@ public final class ImGuiFontManager {
     public ImFont getFont(Identifier id) {
         ImFont font = loadedFonts.get(id);
         if (font == null) {
-            throw new IllegalArgumentException("Unknown font ID: " + id);
+            LOGGER.error("Font '{}' not found, returning default font.", id);
+            return actualImGuiDefaultFont != null ? actualImGuiDefaultFont : ImGui.getIO().getFontDefault();
         }
         return font;
     }
