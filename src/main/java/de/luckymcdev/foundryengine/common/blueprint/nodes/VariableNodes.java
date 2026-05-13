@@ -23,7 +23,7 @@ public final class VariableNodes {
             execInput("In");
             input(STRING, "Name", "myVar");
             input(ANY, "Value");
-            execOutput("Out");
+            execOutput("Continue");
         }
 
         @Override

@@ -186,7 +186,11 @@ public class BlueprintEngine {
         register(new EventNodes.RecipeViewerUpdated());
 
         // Logic nodes
-        register(new LogicNodes.Branch());
+        register(new LogicNodes.If());
+        register(new LogicNodes.IfElse());
+        register(new LogicNodes.Repeat());
+        register(new LogicNodes.RepeatUntil());
+        register(new LogicNodes.ForRange());
         register(new LogicNodes.Sequence());
         register(new LogicNodes.RerouteExec());
         register(new LogicNodes.RerouteAny());
