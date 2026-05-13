@@ -63,7 +63,6 @@ public final class ImGuiFontManager {
         this.glyphOffsetY = y;
     }
 
-
     public void registerFont(TTFFile ttfFile) {
         registerFont(ttfFile, 18.0f);
     }
@@ -86,7 +85,11 @@ public final class ImGuiFontManager {
         this.defaultFontId = id;
     }
 
-    public void loadFonts(ResourceManager resourceManager) {
+    /**
+     * Loads all registered fonts. Pass an empty list to load all fonts,
+     * or a non-empty list to load only the fonts with matching IDs.
+     */
+    public void loadFonts(ResourceManager resourceManager, List<Identifier> filter) {
         ImFontAtlas atlas = ImGui.getIO().getFonts();
         atlas.clear();
         glImpl.destroyFontsTexture();
@@ -95,6 +98,9 @@ public final class ImGuiFontManager {
         actualImGuiDefaultFont = null;
 
         for (FontRegistration reg : registrations) {
+            if (!filter.isEmpty() && !filter.contains(reg.getId())) {
+                continue;
+            }
             try {
                 byte[] ttfData = reg.loadBytes(resourceManager);
                 if (ttfData == null) {
@@ -164,6 +170,10 @@ public final class ImGuiFontManager {
         }
 
         atlas.clearTexData();
+    }
+
+    public void loadFonts(ResourceManager resourceManager) {
+        loadFonts(resourceManager, List.of());
     }
 
     public void destroy() {

@@ -13,7 +13,6 @@ import de.luckymcdev.foundryengine.client.imgui.backend.ImGuiImplGl3;
 import de.luckymcdev.foundryengine.client.imgui.backend.ImGuiImplGlfw;
 import de.luckymcdev.foundryengine.client.imgui.graphics.ImGuiGraphicsStack;
 import de.luckymcdev.foundryengine.common.font.BuiltInFonts;
-import de.luckymcdev.foundryengine.common.font.TTFFile;
 import de.luckymcdev.foundryengine.config.ClientConfig;
 import de.luckymcdev.foundryengine.mixin.MinecraftMixin;
 import de.luckymcdev.foundryengine.mixin.render.GameRendererMixin;
@@ -89,6 +88,8 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
         io.setConfigDockingWithShift(true);
         io.setConfigWindowsMoveFromTitleBarOnly(false);
         io.setConfigMacOSXBehaviors(InputQuirks.ON_OSX);
+
+        BuiltInFonts.registerAll(fontManager);
 
         imGuiImplGl3.init("#version 330 core");
         imGuiImplGlfw.init(handle, true);
@@ -259,14 +260,12 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
         LOGGER.info("Hey. Fonts might be broken. If they appear really bad for you, disable custom fonts in the config.");
         switch (ClientConfig.FONT_OPTION.get()) {
             case "MINIMAL": {
-                fontManager.registerFont(TTFFile.FALLBACK_JB);
-                fontManager.loadFonts(resourceManager);
+                fontManager.loadFonts(resourceManager, BuiltInFonts.MINIMAL_LIST);
                 fontManager.setDefaultFont(BuiltInFonts.FALLBACK_JB);
                 break;
             }
             case "NORMAL": {
-                BuiltInFonts.registerJetbrainsMonoNerdFontMono(fontManager);
-                fontManager.loadFonts(resourceManager);
+                fontManager.loadFonts(resourceManager, BuiltInFonts.NORMAL_LIST);
                 fontManager.setDefaultFont(BuiltInFonts.REGULAR);
                 break;
             }
