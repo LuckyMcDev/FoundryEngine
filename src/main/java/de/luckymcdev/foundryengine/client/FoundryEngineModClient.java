@@ -161,25 +161,26 @@ public class FoundryEngineModClient {
         CutsceneEditor.clientTick();
         handleWaypointKeys();
 
-        if (!ClientConfig.AUTO_EXPORT.get() || hasIconAutoExported) return;
+        if (ClientConfig.AUTO_EXPORT.get() || hasIconAutoExported) {
 
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.level == null || mc.screen != null) return;
+            Minecraft mc = Minecraft.getInstance();
+            if (mc.level == null || mc.screen != null) return;
 
-        hasIconAutoExported = true;
-        LOGGER.info("Auto-export: Initializing icon generation...");
+            hasIconAutoExported = true;
+            LOGGER.info("Auto-export: Initializing icon generation...");
 
-        ScreenIconExporter screen = new ScreenIconExporter(
-                mc.level.registryAccess(),
-                mc.getWindow().getGuiScale(),
-                null,
-                false
-        );
+            ScreenIconExporter screen = new ScreenIconExporter(
+                    mc.level.registryAccess(),
+                    mc.getWindow().getGuiScale(),
+                    null,
+                    false
+            );
 
-        if (screen.hasWork()) {
-            mc.setScreen(screen);
-        } else {
-            LOGGER.info("Auto-export: All icons are up to date.");
+            if (screen.hasWork()) {
+                mc.setScreen(screen);
+            } else {
+                LOGGER.info("Auto-export: All icons are up to date.");
+            }
         }
     }
 
