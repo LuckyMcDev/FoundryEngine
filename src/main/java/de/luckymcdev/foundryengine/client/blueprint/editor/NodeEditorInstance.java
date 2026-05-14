@@ -556,19 +556,15 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
         int bg = 0xFF_1E1E1E | bgTint;
         int bgHover = 0xFF_262626 | bgTint;
         int bgSel = 0xFF_2C2C2C | (bgTint * 2 & 0xFF_FFFFFF);
-        int outline = titleBar & 0xFF_666666 | 0xAA_000000;
-
         ImNodes.pushColorStyle(ImNodesCol.TitleBar, titleBar);
         ImNodes.pushColorStyle(ImNodesCol.TitleBarHovered, lighten(titleBar, 0.12f));
         ImNodes.pushColorStyle(ImNodesCol.TitleBarSelected, lighten(titleBar, 0.20f));
         ImNodes.pushColorStyle(ImNodesCol.NodeBackground, bg);
         ImNodes.pushColorStyle(ImNodesCol.NodeBackgroundHovered, bgHover);
         ImNodes.pushColorStyle(ImNodesCol.NodeBackgroundSelected, bgSel);
-        ImNodes.pushColorStyle(ImNodesCol.NodeOutline, outline);
     }
 
     private void popNodeColors() {
-        ImNodes.popColorStyle(); // NodeOutline
         ImNodes.popColorStyle(); // NodeBackgroundSelected
         ImNodes.popColorStyle(); // NodeBackgroundHovered
         ImNodes.popColorStyle(); // NodeBackground
