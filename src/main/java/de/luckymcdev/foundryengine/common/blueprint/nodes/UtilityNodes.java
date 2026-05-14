@@ -34,6 +34,7 @@ public final class UtilityNodes {
         public void execute(BlueprintNode node, BlueprintEngine engine, BlueprintGraph graph, BlueprintContext ctx) {
             String text = ctx.resolvePinAs(node.inputPin("String"), String.class, "");
             LOGGER.info("[Blueprint] {}", text);
+            engine.executePin(node, "Continue", graph, ctx);
         }
     }
 
@@ -55,6 +56,7 @@ public final class UtilityNodes {
             Player player = ctx.resolvePinAs(node.inputPin("Target"), Player.class, null);
             String msg = ctx.resolvePinAs(node.inputPin("Message"), String.class, "");
             if (player != null) player.sendSystemMessage(Component.literal(msg));
+            engine.executePin(node, "Continue", graph, ctx);
         }
     }
 }

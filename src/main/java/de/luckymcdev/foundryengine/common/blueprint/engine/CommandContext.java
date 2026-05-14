@@ -80,7 +80,7 @@ public class CommandContext {
             sb.append(" rotated ").append(rotation.x).append(" ").append(rotation.y);
         }
 
-        if (anchoredEntity != null && anchor != Anchor.FEET) {
+        if (anchor != Anchor.FEET) {
             sb.append(" anchored ").append(anchor.name().toLowerCase());
         }
 

@@ -114,18 +114,14 @@ public final class ExecuteModifierNodes {
         @Override
         protected void initPins() {
             execInput("In");
-            input(COORD, "X", 0);
-            input(COORD, "Y", 0);
-            input(COORD, "Z", 0);
+            input(VEC3, "Position", new Vec3(0, 0, 0));
             execOutput("Execute");
         }
 
         @Override
         public void execute(BlueprintNode node, BlueprintEngine engine, BlueprintGraph graph, BlueprintContext bpc) {
-            float x = bpc.resolvePinAs(node.inputPin("X"), Float.class, 0f);
-            float y = bpc.resolvePinAs(node.inputPin("Y"), Float.class, 0f);
-            float z = bpc.resolvePinAs(node.inputPin("Z"), Float.class, 0f);
-            ctx(bpc).position = new Vec3(x, y, z);
+            Vec3 pos = bpc.resolvePinAs(node.inputPin("Position"), Vec3.class, new Vec3(0, 0, 0));
+            ctx(bpc).position = pos;
             engine.executePin(node, "Execute", graph, bpc);
         }
     }
@@ -244,18 +240,14 @@ public final class ExecuteModifierNodes {
         @Override
         protected void initPins() {
             execInput("In");
-            input(COORD, "X", 0);
-            input(COORD, "Y", 0);
-            input(COORD, "Z", 0);
+            input(VEC3, "Position", new Vec3(0, 0, 0));
             execOutput("Execute");
         }
 
         @Override
         public void execute(BlueprintNode node, BlueprintEngine engine, BlueprintGraph graph, BlueprintContext bpc) {
-            float x = bpc.resolvePinAs(node.inputPin("X"), Float.class, 0f);
-            float y = bpc.resolvePinAs(node.inputPin("Y"), Float.class, 0f);
-            float z = bpc.resolvePinAs(node.inputPin("Z"), Float.class, 0f);
-            ctx(bpc).facingPos = new Vec3(x, y, z);
+            Vec3 pos = bpc.resolvePinAs(node.inputPin("Position"), Vec3.class, new Vec3(0, 0, 0));
+            ctx(bpc).facingPos = pos;
             ctx(bpc).facingEntity = null;
             engine.executePin(node, "Execute", graph, bpc);
         }
@@ -320,20 +312,16 @@ public final class ExecuteModifierNodes {
 
         @Override
         protected void initConditionPins() {
-            input(COORD, "X", 0);
-            input(COORD, "Y", 0);
-            input(COORD, "Z", 0);
+            input(VEC3, "Position", new Vec3(0, 0, 0));
             input(BLOCK_STATE, "Block");
         }
 
         @Override
         protected void recordCondition(BlueprintNode node, BlueprintContext bpc) {
-            int x = bpc.resolvePinAs(node.inputPin("X"), Integer.class, 0);
-            int y = bpc.resolvePinAs(node.inputPin("Y"), Integer.class, 0);
-            int z = bpc.resolvePinAs(node.inputPin("Z"), Integer.class, 0);
+            Vec3 pos = bpc.resolvePinAs(node.inputPin("Position"), Vec3.class, new Vec3(0, 0, 0));
             String block = bpc.resolvePinAs(node.inputPin("Block"), String.class, "minecraft:air");
             ctx(bpc).conditions.add(new CommandContext.Condition("if_block",
-                    new BlockPos(x, y, z), block));
+                    BlockPos.containing(pos.x, pos.y, pos.z), block));
         }
     }
 
@@ -344,20 +332,16 @@ public final class ExecuteModifierNodes {
 
         @Override
         protected void initConditionPins() {
-            input(COORD, "X", 0);
-            input(COORD, "Y", 0);
-            input(COORD, "Z", 0);
+            input(VEC3, "Position", new Vec3(0, 0, 0));
             input(BLOCK_STATE, "Block");
         }
 
         @Override
         protected void recordCondition(BlueprintNode node, BlueprintContext bpc) {
-            int x = bpc.resolvePinAs(node.inputPin("X"), Integer.class, 0);
-            int y = bpc.resolvePinAs(node.inputPin("Y"), Integer.class, 0);
-            int z = bpc.resolvePinAs(node.inputPin("Z"), Integer.class, 0);
+            Vec3 pos = bpc.resolvePinAs(node.inputPin("Position"), Vec3.class, new Vec3(0, 0, 0));
             String block = bpc.resolvePinAs(node.inputPin("Block"), String.class, "minecraft:air");
             ctx(bpc).conditions.add(new CommandContext.Condition("unless_block",
-                    new BlockPos(x, y, z), block));
+                    BlockPos.containing(pos.x, pos.y, pos.z), block));
         }
     }
 

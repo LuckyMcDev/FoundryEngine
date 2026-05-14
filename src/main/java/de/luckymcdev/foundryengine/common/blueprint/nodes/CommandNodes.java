@@ -11,6 +11,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
 import org.slf4j.Logger;
 
 import static de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintTypes.*;
@@ -25,6 +26,7 @@ public final class CommandNodes {
     private static final String CD = BlueprintEngine.Categories.COMMANDS_DATA;
     private static final String CT = BlueprintEngine.Categories.COMMANDS_TIME;
     private static final String CM = BlueprintEngine.Categories.COMMANDS_MISC;
+
     private CommandNodes() {
     }
 
@@ -64,12 +66,16 @@ public final class CommandNodes {
         return "@p";
     }
 
-    private static String pos(float x, float y, float z) {
-        return x + " " + y + " " + z;
+    private static String formatVec(Vec3 v) {
+        return v.x + " " + v.y + " " + v.z;
     }
 
-    private static String pos(int x, int y, int z) {
-        return x + " " + y + " " + z;
+    private static String formatBlockPos(Vec3 v) {
+        return (int) Math.floor(v.x) + " " + (int) Math.floor(v.y) + " " + (int) Math.floor(v.z);
+    }
+
+    private static Vec3 resolveVec3(BlueprintNode node, BlueprintContext c, String label, Vec3 fallback) {
+        return c.resolvePinAs(node.inputPin(label), Vec3.class, fallback);
     }
 
     private static NodeBuilder basic(String id, String name) {
@@ -139,13 +145,13 @@ public final class CommandNodes {
     public static BuiltinNode summon() {
         return entity("command.summon", "Summon")
                 .execInput("In").input(STRING, "Entity Type", "minecraft:pig")
-                .input(FLOAT, "X", 0f).input(FLOAT, "Y", 0f).input(FLOAT, "Z", 0f)
+                .input(VEC3, "Position", new Vec3(0, 0, 0))
                 .input(NBT, "NBT", "").execOutput("Continue")
                 .build((n, e, g, c) -> {
                     String type = c.resolvePinAs(n.inputPin("Entity Type"), String.class, "minecraft:pig");
-                    float x = c.resolvePinAs(n.inputPin("X"), Float.class, 0f), y = c.resolvePinAs(n.inputPin("Y"), Float.class, 0f), z = c.resolvePinAs(n.inputPin("Z"), Float.class, 0f);
+                    Vec3 pos = resolveVec3(n, c, "Position", new Vec3(0, 0, 0));
                     String nbt = c.resolvePinAs(n.inputPin("NBT"), String.class, "");
-                    runCmd(n, e, g, c, "summon " + type + " " + pos(x, y, z) + (nbt.isEmpty() ? "" : " " + nbt));
+                    runCmd(n, e, g, c, "summon " + type + " " + formatVec(pos) + (nbt.isEmpty() ? "" : " " + nbt));
                 });
     }
 
@@ -169,12 +175,12 @@ public final class CommandNodes {
     public static BuiltinNode teleport() {
         return entity("command.tp", "Teleport")
                 .execInput("In").input(SELECTOR, "Target", "@s")
-                .input(FLOAT, "X", 0f).input(FLOAT, "Y", 0f).input(FLOAT, "Z", 0f)
+                .input(VEC3, "Position", new Vec3(0, 0, 0))
                 .input(FLOAT, "Yaw", 0f).input(FLOAT, "Pitch", 0f).execOutput("Continue")
                 .build((n, e, g, c) -> {
-                    float x = c.resolvePinAs(n.inputPin("X"), Float.class, 0f), y = c.resolvePinAs(n.inputPin("Y"), Float.class, 0f), z = c.resolvePinAs(n.inputPin("Z"), Float.class, 0f);
+                    Vec3 pos = resolveVec3(n, c, "Position", new Vec3(0, 0, 0));
                     float yaw = c.resolvePinAs(n.inputPin("Yaw"), Float.class, 0f), pitch = c.resolvePinAs(n.inputPin("Pitch"), Float.class, 0f);
-                    runCmd(n, e, g, c, "tp " + resolveSelector(n, c, "Target") + " " + pos(x, y, z) + " " + yaw + " " + pitch);
+                    runCmd(n, e, g, c, "tp " + resolveSelector(n, c, "Target") + " " + formatVec(pos) + " " + yaw + " " + pitch);
                 });
     }
 
@@ -206,50 +212,46 @@ public final class CommandNodes {
 
     public static BuiltinNode setBlock() {
         return world("command.setblock", "Set Block")
-                .execInput("In").input(COORD, "X", 0).input(COORD, "Y", 0).input(COORD, "Z", 0)
+                .execInput("In").input(VEC3, "Position", new Vec3(0, 0, 0))
                 .input(BLOCK_STATE, "Block").input(FILL_MODE, "Mode", "replace").execOutput("Continue")
                 .build((n, e, g, c) -> {
-                    int x = c.resolvePinAs(n.inputPin("X"), Integer.class, 0), y = c.resolvePinAs(n.inputPin("Y"), Integer.class, 0), z = c.resolvePinAs(n.inputPin("Z"), Integer.class, 0);
+                    Vec3 pos = resolveVec3(n, c, "Position", new Vec3(0, 0, 0));
                     String block = c.resolvePinAs(n.inputPin("Block"), String.class, "minecraft:stone");
-                    runCmd(n, e, g, c, "setblock " + pos(x, y, z) + " " + block + " " + c.resolvePinAs(n.inputPin("Mode"), String.class, "replace"));
+                    runCmd(n, e, g, c, "setblock " + formatBlockPos(pos) + " " + block + " " + c.resolvePinAs(n.inputPin("Mode"), String.class, "replace"));
                 });
     }
 
     public static BuiltinNode fill() {
         return world("command.fill", "Fill")
-                .execInput("In")
-                .input(COORD, "From X", 0).input(COORD, "From Y", 0).input(COORD, "From Z", 0)
-                .input(COORD, "To X", 0).input(COORD, "To Y", 0).input(COORD, "To Z", 0)
+                .execInput("In").input(VEC3, "From", new Vec3(0, 0, 0)).input(VEC3, "To", new Vec3(0, 0, 0))
                 .input(BLOCK_STATE, "Block").input(FILL_MODE, "Mode", "replace").execOutput("Continue")
                 .build((n, e, g, c) -> {
-                    int fx = c.resolvePinAs(n.inputPin("From X"), Integer.class, 0), fy = c.resolvePinAs(n.inputPin("From Y"), Integer.class, 0), fz = c.resolvePinAs(n.inputPin("From Z"), Integer.class, 0);
-                    int tx = c.resolvePinAs(n.inputPin("To X"), Integer.class, 0), ty = c.resolvePinAs(n.inputPin("To Y"), Integer.class, 0), tz = c.resolvePinAs(n.inputPin("To Z"), Integer.class, 0);
+                    Vec3 from = resolveVec3(n, c, "From", new Vec3(0, 0, 0));
+                    Vec3 to = resolveVec3(n, c, "To", new Vec3(0, 0, 0));
                     String block = c.resolvePinAs(n.inputPin("Block"), String.class, "minecraft:stone");
-                    runCmd(n, e, g, c, "fill " + pos(fx, fy, fz) + " " + pos(tx, ty, tz) + " " + block + " " + c.resolvePinAs(n.inputPin("Mode"), String.class, "replace"));
+                    runCmd(n, e, g, c, "fill " + formatBlockPos(from) + " " + formatBlockPos(to) + " " + block + " " + c.resolvePinAs(n.inputPin("Mode"), String.class, "replace"));
                 });
     }
 
     public static BuiltinNode clone_() {
         return world("command.clone", "Clone")
-                .execInput("In")
-                .input(COORD, "From X", 0).input(COORD, "From Y", 0).input(COORD, "From Z", 0)
-                .input(COORD, "To X", 0).input(COORD, "To Y", 0).input(COORD, "To Z", 0)
-                .input(COORD, "Dest X", 0).input(COORD, "Dest Y", 0).input(COORD, "Dest Z", 0)
+                .execInput("In").input(VEC3, "From", new Vec3(0, 0, 0))
+                .input(VEC3, "To", new Vec3(0, 0, 0)).input(VEC3, "Dest", new Vec3(0, 0, 0))
                 .input(CLONE_MODE, "Mode", "normal").execOutput("Continue")
                 .build((n, e, g, c) -> {
-                    int fx = c.resolvePinAs(n.inputPin("From X"), Integer.class, 0), fy = c.resolvePinAs(n.inputPin("From Y"), Integer.class, 0), fz = c.resolvePinAs(n.inputPin("From Z"), Integer.class, 0);
-                    int tx = c.resolvePinAs(n.inputPin("To X"), Integer.class, 0), ty = c.resolvePinAs(n.inputPin("To Y"), Integer.class, 0), tz = c.resolvePinAs(n.inputPin("To Z"), Integer.class, 0);
-                    int dx = c.resolvePinAs(n.inputPin("Dest X"), Integer.class, 0), dy = c.resolvePinAs(n.inputPin("Dest Y"), Integer.class, 0), dz = c.resolvePinAs(n.inputPin("Dest Z"), Integer.class, 0);
-                    runCmd(n, e, g, c, "clone " + pos(fx, fy, fz) + " " + pos(tx, ty, tz) + " " + pos(dx, dy, dz) + " " + c.resolvePinAs(n.inputPin("Mode"), String.class, "normal"));
+                    Vec3 from = resolveVec3(n, c, "From", new Vec3(0, 0, 0));
+                    Vec3 to = resolveVec3(n, c, "To", new Vec3(0, 0, 0));
+                    Vec3 dest = resolveVec3(n, c, "Dest", new Vec3(0, 0, 0));
+                    runCmd(n, e, g, c, "clone " + formatBlockPos(from) + " " + formatBlockPos(to) + " " + formatBlockPos(dest) + " " + c.resolvePinAs(n.inputPin("Mode"), String.class, "normal"));
                 });
     }
 
     public static BuiltinNode destroy() {
         return world("command.destroy", "Destroy Block")
-                .execInput("In").input(COORD, "X", 0).input(COORD, "Y", 0).input(COORD, "Z", 0).execOutput("Continue")
+                .execInput("In").input(VEC3, "Position", new Vec3(0, 0, 0)).execOutput("Continue")
                 .build((n, e, g, c) -> {
-                    int x = c.resolvePinAs(n.inputPin("X"), Integer.class, 0), y = c.resolvePinAs(n.inputPin("Y"), Integer.class, 0), z = c.resolvePinAs(n.inputPin("Z"), Integer.class, 0);
-                    runCmd(n, e, g, c, "setblock " + pos(x, y, z) + " minecraft:air destroy");
+                    Vec3 pos = resolveVec3(n, c, "Position", new Vec3(0, 0, 0));
+                    runCmd(n, e, g, c, "setblock " + formatBlockPos(pos) + " minecraft:air destroy");
                 });
     }
 
@@ -333,20 +335,20 @@ public final class CommandNodes {
     public static BuiltinNode spawnPoint() {
         return player("command.spawnpoint", "Set Spawn Point")
                 .execInput("In").input(SELECTOR, "Target", "@p")
-                .input(COORD, "X", 0).input(COORD, "Y", 0).input(COORD, "Z", 0).execOutput("Continue")
+                .input(VEC3, "Position", new Vec3(0, 0, 0)).execOutput("Continue")
                 .build((n, e, g, c) -> {
-                    int x = c.resolvePinAs(n.inputPin("X"), Integer.class, 0), y = c.resolvePinAs(n.inputPin("Y"), Integer.class, 0), z = c.resolvePinAs(n.inputPin("Z"), Integer.class, 0);
-                    runCmd(n, e, g, c, "spawnpoint " + resolveSelector(n, c, "Target") + " " + pos(x, y, z));
+                    Vec3 pos = resolveVec3(n, c, "Position", new Vec3(0, 0, 0));
+                    runCmd(n, e, g, c, "spawnpoint " + resolveSelector(n, c, "Target") + " " + formatBlockPos(pos));
                 });
     }
 
     public static BuiltinNode setWorldSpawn() {
         return player("command.setworldspawn", "Set World Spawn")
-                .execInput("In").input(COORD, "X", 0).input(COORD, "Y", 0).input(COORD, "Z", 0)
+                .execInput("In").input(VEC3, "Position", new Vec3(0, 0, 0))
                 .input(FLOAT, "Angle", 0f).execOutput("Continue")
                 .build((n, e, g, c) -> {
-                    int x = c.resolvePinAs(n.inputPin("X"), Integer.class, 0), y = c.resolvePinAs(n.inputPin("Y"), Integer.class, 0), z = c.resolvePinAs(n.inputPin("Z"), Integer.class, 0);
-                    runCmd(n, e, g, c, "setworldspawn " + pos(x, y, z) + " " + c.resolvePinAs(n.inputPin("Angle"), Float.class, 0f));
+                    Vec3 pos = resolveVec3(n, c, "Position", new Vec3(0, 0, 0));
+                    runCmd(n, e, g, c, "setworldspawn " + formatBlockPos(pos) + " " + c.resolvePinAs(n.inputPin("Angle"), Float.class, 0f));
                 });
     }
 
@@ -354,11 +356,11 @@ public final class CommandNodes {
 
     public static BuiltinNode dataMergeBlock() {
         return data("command.data_merge_block", "Data Merge Block")
-                .execInput("In").input(COORD, "X", 0).input(COORD, "Y", 0).input(COORD, "Z", 0)
+                .execInput("In").input(VEC3, "Position", new Vec3(0, 0, 0))
                 .input(NBT, "NBT", "{}").execOutput("Continue")
                 .build((n, e, g, c) -> {
-                    int x = c.resolvePinAs(n.inputPin("X"), Integer.class, 0), y = c.resolvePinAs(n.inputPin("Y"), Integer.class, 0), z = c.resolvePinAs(n.inputPin("Z"), Integer.class, 0);
-                    runCmd(n, e, g, c, "data merge block " + pos(x, y, z) + " " + c.resolvePinAs(n.inputPin("NBT"), String.class, "{}"));
+                    Vec3 pos = resolveVec3(n, c, "Position", new Vec3(0, 0, 0));
+                    runCmd(n, e, g, c, "data merge block " + formatBlockPos(pos) + " " + c.resolvePinAs(n.inputPin("NBT"), String.class, "{}"));
                 });
     }
 
@@ -383,9 +385,12 @@ public final class CommandNodes {
                 .build((n, e, g, c) -> {
                     String type = c.resolvePinAs(n.inputPin("Type"), String.class, "daytime");
                     int val = c.resolvePinAs(n.inputPin("Value"), Integer.class, 1000);
-                    if ("day".equals(type)) runCmd(n, e, g, c, "time set day");
-                    else if ("night".equals(type) || val == 13000) runCmd(n, e, g, c, "time set night");
-                    else runCmd(n, e, g, c, "time set " + val);
+                    String cmd = switch (type) {
+                        case "day" -> "time set day";
+                        case "night" -> "time set night";
+                        default -> "time set " + val;
+                    };
+                    runCmd(n, e, g, c, cmd);
                 });
     }
 
@@ -422,25 +427,24 @@ public final class CommandNodes {
     public static BuiltinNode particle() {
         return misc("command.particle", "Spawn Particle")
                 .execInput("In").input(STRING, "Particle", "minecraft:poof")
-                .input(FLOAT, "X", 0f).input(FLOAT, "Y", 0f).input(FLOAT, "Z", 0f)
-                .input(FLOAT, "DX", 0f).input(FLOAT, "DY", 0f).input(FLOAT, "DZ", 0f)
+                .input(VEC3, "Position", new Vec3(0, 0, 0)).input(VEC3, "Delta", new Vec3(0, 0, 0))
                 .input(FLOAT, "Speed", 0f).input(INT, "Count", 1).execOutput("Continue")
                 .build((n, e, g, c) -> {
                     String p = c.resolvePinAs(n.inputPin("Particle"), String.class, "minecraft:poof");
-                    float x = c.resolvePinAs(n.inputPin("X"), Float.class, 0f), y = c.resolvePinAs(n.inputPin("Y"), Float.class, 0f), z = c.resolvePinAs(n.inputPin("Z"), Float.class, 0f);
-                    float dx = c.resolvePinAs(n.inputPin("DX"), Float.class, 0f), dy = c.resolvePinAs(n.inputPin("DY"), Float.class, 0f), dz = c.resolvePinAs(n.inputPin("DZ"), Float.class, 0f);
-                    runCmd(n, e, g, c, "particle " + p + " " + pos(x, y, z) + " " + dx + " " + dy + " " + dz + " " + c.resolvePinAs(n.inputPin("Speed"), Float.class, 0f) + " " + c.resolvePinAs(n.inputPin("Count"), Integer.class, 1));
+                    Vec3 pos = resolveVec3(n, c, "Position", new Vec3(0, 0, 0));
+                    Vec3 delta = resolveVec3(n, c, "Delta", new Vec3(0, 0, 0));
+                    runCmd(n, e, g, c, "particle " + p + " " + formatVec(pos) + " " + formatVec(delta) + " " + c.resolvePinAs(n.inputPin("Speed"), Float.class, 0f) + " " + c.resolvePinAs(n.inputPin("Count"), Integer.class, 1));
                 });
     }
 
     public static BuiltinNode playSound() {
         return misc("command.playsound", "Play Sound")
                 .execInput("In").input(STRING, "Sound", "minecraft:entity.pig.ambient").input(SOUND_SOURCE, "Source", "master")
-                .input(SELECTOR, "Target", "@p").input(FLOAT, "X", 0f).input(FLOAT, "Y", 0f).input(FLOAT, "Z", 0f)
+                .input(SELECTOR, "Target", "@p").input(VEC3, "Position", new Vec3(0, 0, 0))
                 .input(FLOAT, "Volume", 1f).input(FLOAT, "Pitch", 1f).execOutput("Continue")
                 .build((n, e, g, c) -> {
-                    float x = c.resolvePinAs(n.inputPin("X"), Float.class, 0f), y = c.resolvePinAs(n.inputPin("Y"), Float.class, 0f), z = c.resolvePinAs(n.inputPin("Z"), Float.class, 0f);
-                    runCmd(n, e, g, c, "playsound " + c.resolvePinAs(n.inputPin("Sound"), String.class, "") + " " + c.resolvePinAs(n.inputPin("Source"), String.class, "master") + " " + resolveSelector(n, c, "Target") + " " + pos(x, y, z) + " " + c.resolvePinAs(n.inputPin("Volume"), Float.class, 1f) + " " + c.resolvePinAs(n.inputPin("Pitch"), Float.class, 1f));
+                    Vec3 pos = resolveVec3(n, c, "Position", new Vec3(0, 0, 0));
+                    runCmd(n, e, g, c, "playsound " + c.resolvePinAs(n.inputPin("Sound"), String.class, "") + " " + c.resolvePinAs(n.inputPin("Source"), String.class, "master") + " " + resolveSelector(n, c, "Target") + " " + formatVec(pos) + " " + c.resolvePinAs(n.inputPin("Volume"), Float.class, 1f) + " " + c.resolvePinAs(n.inputPin("Pitch"), Float.class, 1f));
                 });
     }
 
@@ -483,7 +487,7 @@ public final class CommandNodes {
                 .input(BOOL, "Respect Teams", true).input(SELECTOR, "Target", "@p").execOutput("Continue")
                 .build((n, e, g, c) -> {
                     boolean teams = c.resolvePinAs(n.inputPin("Respect Teams"), Boolean.class, true);
-                    runCmd(n, e, g, c, "spreadplayers " + c.resolvePinAs(n.inputPin("X"), Float.class, 0f) + " " + c.resolvePinAs(n.inputPin("Z"), Float.class, 0f) + " " + c.resolvePinAs(n.inputPin("Spread Distance"), Float.class, 5f) + " " + c.resolvePinAs(n.inputPin("Max Range"), Float.class, 20f) + " " + (Boolean.toString(teams)) + " " + resolveSelector(n, c, "Target"));
+                    runCmd(n, e, g, c, "spreadplayers " + c.resolvePinAs(n.inputPin("X"), Float.class, 0f) + " " + c.resolvePinAs(n.inputPin("Z"), Float.class, 0f) + " " + c.resolvePinAs(n.inputPin("Spread Distance"), Float.class, 5f) + " " + c.resolvePinAs(n.inputPin("Max Range"), Float.class, 20f) + " " + (teams) + " " + resolveSelector(n, c, "Target"));
                 });
     }
 

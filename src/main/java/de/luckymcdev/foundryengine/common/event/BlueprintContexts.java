@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.common.event;
 
 import de.luckymcdev.foundryengine.api.event.registry.RegistryEvent;
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
@@ -130,7 +131,7 @@ public class BlueprintContexts {
         var ctx = new HashMap<String, Object>();
         ctx.put("Level", event.getLevel());
         ctx.put("Player", event.getPlayer());
-        ctx.put("BlockPos", event.getPos());
+        ctx.put("Pos", Vec3.atCenterOf(event.getPos()));
         ctx.put("BlockState", event.getState());
         return ctx;
     }
@@ -139,7 +140,7 @@ public class BlueprintContexts {
         var ctx = new HashMap<String, Object>();
         ctx.put("Level", event.getLevel());
         ctx.put("Entity", event.getEntity());
-        ctx.put("BlockPos", event.getPos());
+        ctx.put("Pos", Vec3.atCenterOf(event.getPos()));
         ctx.put("BlockState", event.getState());
         return ctx;
     }
@@ -148,7 +149,7 @@ public class BlueprintContexts {
         var ctx = new HashMap<String, Object>();
         ctx.put("Level", event.getLevel());
         ctx.put("Entity", event.getEntity());
-        ctx.put("BlockPos", event.getPos());
+        ctx.put("Pos", Vec3.atCenterOf(event.getPos()));
         ctx.put("Direction", event.getFace());
         ctx.put("Action", event.getAction());
         return ctx;
@@ -158,7 +159,7 @@ public class BlueprintContexts {
         var ctx = new HashMap<String, Object>();
         ctx.put("Level", event.getLevel());
         ctx.put("Entity", event.getEntity());
-        ctx.put("BlockPos", event.getPos());
+        ctx.put("Pos", Vec3.atCenterOf(event.getPos()));
         ctx.put("Direction", event.getFace());
         return ctx;
     }
@@ -167,7 +168,7 @@ public class BlueprintContexts {
         var ctx = new HashMap<String, Object>();
         ctx.put("Level", event.getLevel());
         ctx.put("Entity", event.getEntity());
-        ctx.put("BlockPos", event.getPos());
+        ctx.put("Pos", Vec3.atCenterOf(event.getPos()));
         ctx.put("FallDistance", event.getFallDistance());
         return ctx;
     }
@@ -291,7 +292,7 @@ public class BlueprintContexts {
         var ctx = new HashMap<String, Object>();
         ctx.put("Player", event.getEntity());
         ctx.put("Level", event.getLevel());
-        ctx.put("BlockPos", event.getPos());
+        ctx.put("Pos", Vec3.atCenterOf(event.getPos()));
         ctx.put("Hand", event.getHand());
         ctx.put("ItemStack", event.getItemStack());
         return ctx;
@@ -324,7 +325,7 @@ public class BlueprintContexts {
         var ctx = new HashMap<String, Object>();
         ctx.put("LivingEntity", event.getEntity());
         ctx.put("ItemStack", event.getSmelting());
-        ctx.put("AmmountRemoved", event.getAmountRemoved());
+        ctx.put("AmountRemoved", event.getAmountRemoved());
         return ctx;
     }
 

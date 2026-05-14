@@ -66,11 +66,18 @@ public class BlueprintEngine {
         }
     }
 
+    private static boolean hasExecInput(BlueprintNode node) {
+        for (var p : node.inputPins) {
+            if (p.pin.type() == BlueprintTypes.EXEC) return true;
+        }
+        return false;
+    }
+
     public void executeNext(BlueprintNode node, BlueprintGraph graph, BlueprintContext ctx) {
         BuiltinNode builtin = builtinById.get(node.identifier);
         if (builtin != null) {
             builtin.execute(node, this, graph, ctx);
-            if (Categories.LOGIC.equals(node.category)) return;
+            if (hasExecInput(node)) return;
         }
         for (var pin : node.outputPins) {
             if (pin.pin.type() == BlueprintTypes.EXEC) {
@@ -211,6 +218,19 @@ public class BlueprintEngine {
         // Utility nodes
         register(new UtilityNodes.PrintString());
         register(new UtilityNodes.Tell());
+
+        // Vector nodes
+        register(new VectorNodes.CreateVec3());
+        register(new VectorNodes.BreakVec3());
+        register(new VectorNodes.Vec3Add());
+        register(new VectorNodes.Vec3Sub());
+        register(new VectorNodes.Vec3Mul());
+        register(new VectorNodes.Vec3Div());
+        register(new VectorNodes.Vec3Distance());
+        register(new VectorNodes.Vec3Length());
+        register(new VectorNodes.Vec3Normalize());
+        register(new VectorNodes.Vec3Lerp());
+        register(new VectorNodes.EntityPosition());
 
         // Registry nodes
         register(new RegistryNodes.RegisterItem());
@@ -435,6 +455,7 @@ public class BlueprintEngine {
         public static final String COMMANDS_MISC = reg("Misc", 0xFF_95A5A6);
         public static final String COMMANDS_EXECUTE = reg("Execute", 0xFF_E67E22);
         public static final String COMMANDS_TARGET = reg("Targeting", 0xFF_1ABC9C);
+        public static final String VECTORS = reg("Vectors", 0xFF_2AA7B1);
         private Categories() {
         }
 

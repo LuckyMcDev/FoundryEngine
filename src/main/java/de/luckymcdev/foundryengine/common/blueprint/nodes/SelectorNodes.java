@@ -4,6 +4,7 @@ import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintContext;
 import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintEngine;
 import de.luckymcdev.foundryengine.common.blueprint.graph.BlueprintGraph;
 import de.luckymcdev.foundryengine.common.blueprint.graph.BlueprintNode;
+import net.minecraft.world.phys.Vec3;
 
 import static de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintTypes.*;
 
@@ -103,6 +104,11 @@ public final class SelectorNodes {
             super("selector.build", "Entity Selector", CAT);
         }
 
+        private static String formatCoord(double d) {
+            if (d == (int) d) return String.valueOf((int) d);
+            return String.valueOf(d);
+        }
+
         @Override
         protected void initPins() {
             input(SELECTOR, "Base", "@e");
@@ -112,15 +118,18 @@ public final class SelectorNodes {
             input(STRING, "Team", "");
             input(STRING, "Name", "");
             input(FLOAT, "Distance", -1f);
-            input(COORD, "X", 0);
-            input(COORD, "Y", 0);
-            input(COORD, "Z", 0);
+            input(VEC3, "Position", new Vec3(0, 0, 0));
             input(FLOAT, "DX", 0f);
             input(FLOAT, "DY", 0f);
             input(FLOAT, "DZ", 0f);
-            input(STRING, "Sort", "");
+            input(SORT_MODE, "Sort", "nearest");
             input(STRING, "Predicate", "");
             output(SELECTOR, "Selector");
+        }
+
+        private void appendArg(StringBuilder sb, String key, String value) {
+            if (sb.length() > 1 && sb.charAt(sb.length() - 1) != '[') sb.append(",");
+            sb.append(key).append("=").append(value);
         }
 
         @Override
@@ -167,14 +176,11 @@ public final class SelectorNodes {
                 hasArgs = true;
             }
 
-            int x = ctx.resolvePinAs(node.inputPin("X"), Integer.class, 0);
-            int y = ctx.resolvePinAs(node.inputPin("Y"), Integer.class, 0);
-            int z = ctx.resolvePinAs(node.inputPin("Z"), Integer.class, 0);
-            boolean hasPos = x != 0 || y != 0 || z != 0;
-            if (hasPos) {
-                appendArg(args, "x", String.valueOf(x));
-                appendArg(args, "y", String.valueOf(y));
-                appendArg(args, "z", String.valueOf(z));
+            Vec3 pos = ctx.resolvePinAs(node.inputPin("Position"), Vec3.class, null);
+            if (pos != null) {
+                appendArg(args, "x", formatCoord(pos.x));
+                appendArg(args, "y", formatCoord(pos.y));
+                appendArg(args, "z", formatCoord(pos.z));
                 hasArgs = true;
             }
 
@@ -212,11 +218,6 @@ public final class SelectorNodes {
             }
 
             node.setOutput("Selector", sb.toString());
-        }
-
-        private void appendArg(StringBuilder sb, String key, String value) {
-            if (sb.length() > 1 && sb.charAt(sb.length() - 1) != '[') sb.append(",");
-            sb.append(key).append("=").append(value);
         }
     }
 }

@@ -31,7 +31,7 @@ public final class BlueprintTypes {
     public static final NodePinType<Object> MINECRAFT = reg("Minecraft");
     public static final NodePinType<Object> PLAYER = new NodePinType<>("Player", NodePinShape.FILLED_SQUARE, "Entity", "Selector");
     public static final NodePinType<Object> LIVING_ENTITY = new NodePinType<>("LivingEntity", NodePinShape.FILLED_SQUARE, "Entity", "Selector");
-    public static final NodePinType<Object> BLOCK_POS = new NodePinType<>("BlockPos", NodePinShape.FILLED_SQUARE, "Position", "Vec3");
+    public static final NodePinType<Object> VEC3 = new NodePinType<>("Vec3", NodePinShape.FILLED_SQUARE, "Position", "Coordinate");
     public static final NodePinType<Object> LEVEL = reg("Level");
     public static final NodePinType<Object> ITEM_STACK = new NodePinType<>("ItemStack", NodePinShape.FILLED_SQUARE, "ItemEntity");
     public static final NodePinType<Object> BLOCK_STATE = reg("BlockState");
@@ -67,13 +67,6 @@ public final class BlueprintTypes {
     // ======================== Command Parameter Types ========================
     // These are string-based representations of game objects.
     // They are compatible with their object counterparts for easy wiring.
-    /**
-     * 3D position (as "x y z" string).
-     * Compatible with: BlockPos, Vec3, or individual Int/Float triples.
-     */
-    public static final NodePinType<String> POSITION = new NodePinType<>("Position",
-            NodePinShape.FILLED_CIRCLE,
-            "BlockPos", "Vec3");
     /**
      * Single coordinate axis value.
      */

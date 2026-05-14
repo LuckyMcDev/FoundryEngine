@@ -5,6 +5,8 @@ import de.luckymcdev.foundryengine.common.blueprint.graph.BlueprintGraph;
 import de.luckymcdev.foundryengine.common.blueprint.graph.BlueprintNode;
 import de.luckymcdev.foundryengine.common.blueprint.graph.NodePinInfo;
 import de.luckymcdev.foundryengine.common.blueprint.nodes.BuiltinNode;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -91,6 +93,12 @@ public class BlueprintContext {
             }
             case Number n when type == Boolean.class -> {
                 return (V) (Boolean) (n.intValue() != 0);
+            }
+            case BlockPos bp when type == Vec3.class -> {
+                return (V) Vec3.atCenterOf(bp);
+            }
+            case Vec3 vec when type == BlockPos.class -> {
+                return (V) BlockPos.containing(vec.x, vec.y, vec.z);
             }
             default -> {
             }

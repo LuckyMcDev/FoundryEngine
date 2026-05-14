@@ -362,7 +362,7 @@ public final class EventNodes {
             execOutput("Out");
             output(LEVEL, "Level");
             output(PLAYER, "Player");
-            output(BLOCK_POS, "BlockPos");
+            output(VEC3, "Pos");
             output(BLOCK_STATE, "BlockState");
         }
 
@@ -381,7 +381,7 @@ public final class EventNodes {
             execOutput("Out");
             output(LEVEL, "Level");
             output(ENTITY, "Entity");
-            output(BLOCK_POS, "BlockPos");
+            output(VEC3, "Pos");
             output(BLOCK_STATE, "BlockState");
         }
 
@@ -400,7 +400,7 @@ public final class EventNodes {
             execOutput("Out");
             output(LEVEL, "Level");
             output(PLAYER, "Entity");
-            output(BLOCK_POS, "BlockPos");
+            output(VEC3, "Pos");
             output(DIRECTION, "Direction");
             output(PLAYER_ACTION, "Action");
         }
@@ -420,7 +420,7 @@ public final class EventNodes {
             execOutput("Out");
             output(LEVEL, "Level");
             output(PLAYER, "Entity");
-            output(BLOCK_POS, "BlockPos");
+            output(VEC3, "Pos");
             output(DIRECTION, "Direction");
         }
 
@@ -439,7 +439,7 @@ public final class EventNodes {
             execOutput("Out");
             output(LEVEL, "Level");
             output(ENTITY, "Entity");
-            output(BLOCK_POS, "BlockPos");
+            output(VEC3, "Pos");
             output(FLOAT, "FallDistance");
         }
 
@@ -567,7 +567,7 @@ public final class EventNodes {
             execOutput("Out");
             output(PLAYER, "Player");
             output(LEVEL, "Level");
-            output(BLOCK_POS, "BlockPos");
+            output(VEC3, "Pos");
             output(INTERACTION_HAND, "Hand");
             output(ITEM_STACK, "ItemStack");
         }
@@ -640,7 +640,7 @@ public final class EventNodes {
             execOutput("Out");
             output(LIVING_ENTITY, "LivingEntity");
             output(ITEM_STACK, "ItemStack");
-            output(INT, "AmmountRemoved");
+            output(INT, "AmountRemoved");
         }
 
         @Override
