@@ -282,6 +282,8 @@ public class BlueprintContexts {
     public static Map<String, Object> itemDestroyed(PlayerDestroyItemEvent event) {
         var ctx = new HashMap<String, Object>();
         ctx.put("Player", event.getEntity());
+        ctx.put("ItemStack", event.getOriginal());
+        ctx.put("Hand", event.getHand());
         return ctx;
     }
 
@@ -346,11 +348,19 @@ public class BlueprintContexts {
 
     public static Map<String, Object> firstLeftClicked(PlayerInteractEvent.LeftClickEmpty event) {
         var ctx = new HashMap<String, Object>();
+        ctx.put("Player", event.getEntity());
+        ctx.put("Level", event.getLevel());
+        ctx.put("Hand", event.getHand());
+        ctx.put("ItemStack", event.getItemStack());
         return ctx;
     }
 
     public static Map<String, Object> firstRightClicked(PlayerInteractEvent.RightClickEmpty event) {
         var ctx = new HashMap<String, Object>();
+        ctx.put("Player", event.getEntity());
+        ctx.put("Level", event.getLevel());
+        ctx.put("Hand", event.getHand());
+        ctx.put("ItemStack", event.getItemStack());
         return ctx;
     }
 

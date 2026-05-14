@@ -36,6 +36,16 @@ public abstract class BuiltinNode {
         initPins();
     }
 
+    protected BuiltinNode(String identifier, String name, String category, boolean skipInit) {
+        this.identifier = identifier;
+        this.name = name;
+        this.category = category;
+        this.declaredInputs = new ArrayList<>();
+        this.declaredOutputs = new ArrayList<>();
+        this.pinDefaults = new HashMap<>();
+        if (!skipInit) initPins();
+    }
+
     protected void initPins() {
     }
 

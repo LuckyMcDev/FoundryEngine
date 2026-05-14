@@ -87,4 +87,22 @@ public final class StringNodes {
             node.setOutput("Length", v.length());
         }
     }
+
+    public static final class ToString extends BuiltinNode {
+        public ToString() {
+            super("string.to_string", "To String", BlueprintEngine.Categories.STRINGS);
+        }
+
+        @Override
+        protected void initPins() {
+            input(ANY, "Value");
+            output(STRING, "Result");
+        }
+
+        @Override
+        public void execute(BlueprintNode node, BlueprintEngine engine, BlueprintGraph graph, BlueprintContext ctx) {
+            Object v = ctx.resolvePin(node.inputPin("Value"));
+            node.setOutput("Result", v != null ? v.toString() : "null");
+        }
+    }
 }

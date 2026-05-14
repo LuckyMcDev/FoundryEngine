@@ -1,5 +1,6 @@
 package de.luckymcdev.foundryengine.client.blueprint.editor;
 
+import de.luckymcdev.foundryengine.client.editor.builtin.tools.CataloguePanel;
 import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintContext;
 import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintEngine;
 import de.luckymcdev.foundryengine.common.blueprint.graph.*;
@@ -555,6 +556,15 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
     }
 
     private void renderInlineDefault(NodePinInfo pin) {
+        // If the pin's type has a dedicated renderer, use it.
+        var renderer = pin.pin.type().renderer;
+        if (renderer != null) {
+            renderer.render(pin, this::pushUndoState);
+            acceptCatalogueDrop(pin);
+            return;
+        }
+
+        // Fallback: render by Java type
         String id = "##dv_" + pin.id;
         Object v = pin.defaultValue;
 
@@ -593,6 +603,30 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
                 }
             }
             default -> ImGui.textUnformatted(pin.pin.label() + ": " + v);
+        }
+
+        // Catalogue drag-drop target for registry-based pins
+        if (!pin.isConnected()) {
+            acceptCatalogueDrop(pin);
+        }
+    }
+
+    private void acceptCatalogueDrop(NodePinInfo pin) {
+        String typeName = pin.pin.type().displayName;
+        boolean compatible = switch (typeName) {
+            case "ItemStack", "BlockState", "EntityType", "Effect", "Enchantment",
+                 "Particle", "SoundEvent", "Recipe" -> true;
+            default -> false;
+        };
+        if (!compatible) return;
+
+        if (ImGui.beginDragDropTarget()) {
+            Object payload = ImGui.acceptDragDropPayload("CATALOGUE_ENTRY");
+            if (payload instanceof CataloguePanel.CataloguePayload data) {
+                pushUndoState();
+                pin.defaultValue = data.id().toString();
+            }
+            ImGui.endDragDropTarget();
         }
     }
 }

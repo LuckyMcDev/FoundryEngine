@@ -11,27 +11,18 @@ import org.slf4j.Logger;
 import java.util.*;
 
 public class BlueprintEngine {
-    private static final Logger LOGGER = LogUtils.getLogger();
     public static final String CTX_REGISTRY_EVENT = "_registry_event";
-
+    private static final Logger LOGGER = LogUtils.getLogger();
     private final List<BuiltinNode> builtinNodes = new ArrayList<>();
     private final Map<String, BuiltinNode> builtinById = new HashMap<>();
-    private final Map<String, Integer> categoryColors = new HashMap<>();
 
     public void register(BuiltinNode node) {
         builtinNodes.add(node);
         builtinById.put(node.identifier, node);
     }
 
-    public void setCategoryColor(String category, int argb) {
-        categoryColors.put(category, argb);
-    }
-
     public int getCategoryColor(@Nullable String category) {
-        if (category == null) return 0xFF_404040;
-        int slash = category.indexOf('/');
-        String key = slash == -1 ? category : category.substring(0, slash);
-        return categoryColors.getOrDefault(key, 0xFF_404040);
+        return Categories.color(category);
     }
 
     public List<BuiltinNode> getBuiltinNodes() {
@@ -100,7 +91,6 @@ public class BlueprintEngine {
     }
 
     public void registerBuiltins() {
-        registerCategoryColors();
 
         // Bundle events
         register(new EventNodes.BeginPlay());
@@ -232,30 +222,96 @@ public class BlueprintEngine {
         register(new StringNodes.Equals());
         register(new StringNodes.IsEmpty());
         register(new StringNodes.Length());
+        register(new StringNodes.ToString());
 
         // Editor nodes
         register(new CommentNode());
-    }
 
-    private void registerCategoryColors() {
-        setCategoryColor(Categories.EVENTS, 0xFF_B83B2D);
-        setCategoryColor(Categories.EVENTS_BLOCK, 0xFF_B83B2D);
-        setCategoryColor(Categories.EVENTS_ENTITY, 0xFF_B83B2D);
-        setCategoryColor(Categories.EVENTS_ITEM, 0xFF_B83B2D);
-        setCategoryColor(Categories.EVENTS_LEVEL, 0xFF_B83B2D);
-        setCategoryColor(Categories.EVENTS_NETWORK, 0xFF_B83B2D);
-        setCategoryColor(Categories.EVENTS_PLAYER, 0xFF_B83B2D);
-        setCategoryColor(Categories.EVENTS_COMMAND, 0xFF_B83B2D);
-        setCategoryColor(Categories.EVENTS_RECIPE, 0xFF_B83B2D);
-        setCategoryColor(Categories.EVENTS_CLIENT, 0xFF_B83B2D);
-        setCategoryColor(Categories.EVENTS_SERVER, 0xFF_B83B2D);
-        setCategoryColor(Categories.EVENTS_BUNDLE, 0xFF_B83B2D);
-        setCategoryColor(Categories.VARIABLES, 0xFF_2D9C4B);
-        setCategoryColor(Categories.INPUTS, 0xFF_7B4BB3);
-        setCategoryColor(Categories.LOGIC, 0xFF_D0912A);
-        setCategoryColor(Categories.MATH, 0xFF_2AA7B1);
-        setCategoryColor(Categories.UTILS, 0xFF_2D6DB8);
-        setCategoryColor(Categories.COMMENTS, 0xFF_B7A11E);
+        // --- Command Nodes (builder-pattern factories) ---
+
+        // Basic
+        register(CommandNodes.runCommand());
+        register(CommandNodes.say());
+        register(CommandNodes.tell());
+        register(CommandNodes.me());
+        register(CommandNodes.reload());
+
+        // Entity
+        register(CommandNodes.summon());
+        register(CommandNodes.kill());
+        register(CommandNodes.damage());
+        register(CommandNodes.teleport());
+        register(CommandNodes.teleportTo());
+        register(CommandNodes.tagAdd());
+        register(CommandNodes.tagRemove());
+        register(CommandNodes.entityData());
+
+        // World
+        register(CommandNodes.setBlock());
+        register(CommandNodes.fill());
+        register(CommandNodes.clone_());
+        register(CommandNodes.destroy());
+
+        // Player
+        register(CommandNodes.give());
+        register(CommandNodes.clear());
+        register(CommandNodes.effectGive());
+        register(CommandNodes.effectClear());
+        register(CommandNodes.experienceAdd());
+        register(CommandNodes.experienceSet());
+        register(CommandNodes.gameMode());
+        register(CommandNodes.titleSend());
+        register(CommandNodes.spawnPoint());
+        register(CommandNodes.setWorldSpawn());
+
+        // Data
+        register(CommandNodes.dataMergeBlock());
+        register(CommandNodes.dataMergeStorage());
+        register(CommandNodes.dataRemove());
+
+        // Time & Weather
+        register(CommandNodes.timeSet());
+        register(CommandNodes.timeAdd());
+        register(CommandNodes.weather());
+
+        // Misc
+        register(CommandNodes.difficulty());
+        register(CommandNodes.enchant());
+        register(CommandNodes.particle());
+        register(CommandNodes.playSound());
+        register(CommandNodes.stopSound());
+        register(CommandNodes.recipeGive());
+        register(CommandNodes.recipeTake());
+        register(CommandNodes.schedule());
+        register(CommandNodes.spreadPlayers());
+        register(CommandNodes.lootGive());
+        register(CommandNodes.worldBorder());
+
+        // --- Selector nodes ---
+        register(new SelectorNodes.NearestPlayer());
+        register(new SelectorNodes.AllPlayers());
+        register(new SelectorNodes.RandomPlayer());
+        register(new SelectorNodes.Self());
+        register(new SelectorNodes.AllEntities());
+        register(new SelectorNodes.EntitySelector());
+
+        // --- Execute modifier nodes ---
+        register(new ExecuteModifierNodes.AsEntity());
+        register(new ExecuteModifierNodes.AtEntity());
+        register(new ExecuteModifierNodes.AsAt());
+        register(new ExecuteModifierNodes.PositionedTo());
+        register(new ExecuteModifierNodes.PositionedAs());
+        register(new ExecuteModifierNodes.RotatedTo());
+        register(new ExecuteModifierNodes.RotatedAs());
+        register(new ExecuteModifierNodes.Anchored());
+        register(new ExecuteModifierNodes.Align());
+        register(new ExecuteModifierNodes.FacingPos());
+        register(new ExecuteModifierNodes.FacingEntity());
+        register(new ExecuteModifierNodes.IfBlock());
+        register(new ExecuteModifierNodes.UnlessBlock());
+        register(new ExecuteModifierNodes.IfEntity());
+        register(new ExecuteModifierNodes.UnlessEntity());
+        register(new ExecuteModifierNodes.IfPredicate());
     }
 
     public enum BuiltinNodes {
@@ -341,31 +397,64 @@ public class BlueprintEngine {
         }
     }
 
+    /**
+     * All node categories. Each constant is its display path.
+     * Color is stored alongside for quick lookup via {@link #color(String)}.
+     * To add a new category, add one line here — no other changes needed.
+     */
     public static final class Categories {
-        public static final String EVENTS = "Events";
-        public static final String EVENTS_BLOCK = "Events/Block";
-        public static final String EVENTS_ENTITY = "Events/Entity";
-        public static final String EVENTS_ITEM = "Events/Item";
-        public static final String EVENTS_LEVEL = "Events/Level";
-        public static final String EVENTS_NETWORK = "Events/Network";
-        public static final String EVENTS_PLAYER = "Events/Player";
-        public static final String EVENTS_COMMAND = "Events/Command";
-        public static final String EVENTS_RECIPE = "Events/Recipe";
-        public static final String EVENTS_CLIENT = "Events/Client";
-        public static final String EVENTS_SERVER = "Events/Server";
-        public static final String EVENTS_BUNDLE = "Events/Bundle";
-        public static final String REGISTRY_ITEMS = "Registry/Items";
-        public static final String REGISTRY_BLOCKS = "Registry/Blocks";
-        public static final String REGISTRY_SOUNDS = "Registry/Sounds";
-        public static final String VARIABLES = "Variables";
-        public static final String UTILS = "Utilities";
-        public static final String INPUTS = "Inputs";
-        public static final String LOGIC = "Logic";
-        public static final String MATH = "Math";
-        public static final String STRINGS = "Strings";
-        public static final String COMMENTS = "Comments";
-
+        private static final Map<String, Integer> COLORS = new LinkedHashMap<>();
+        public static final String EVENTS = reg("Events", 0xFF_B83B2D);
+        public static final String EVENTS_BLOCK = reg("Events/Block", 0xFF_B83B2D);
+        public static final String EVENTS_ENTITY = reg("Events/Entity", 0xFF_B83B2D);
+        public static final String EVENTS_ITEM = reg("Events/Item", 0xFF_B83B2D);
+        public static final String EVENTS_LEVEL = reg("Events/Level", 0xFF_B83B2D);
+        public static final String EVENTS_NETWORK = reg("Events/Network", 0xFF_B83B2D);
+        public static final String EVENTS_PLAYER = reg("Events/Player", 0xFF_B83B2D);
+        public static final String EVENTS_COMMAND = reg("Events/Command", 0xFF_B83B2D);
+        public static final String EVENTS_RECIPE = reg("Events/Recipe", 0xFF_B83B2D);
+        public static final String EVENTS_CLIENT = reg("Events/Client", 0xFF_B83B2D);
+        public static final String EVENTS_SERVER = reg("Events/Server", 0xFF_B83B2D);
+        public static final String EVENTS_BUNDLE = reg("Events/Bundle", 0xFF_B83B2D);
+        public static final String REGISTRY_ITEMS = reg("Registry/Items", 0xFF_9B59B6);
+        public static final String REGISTRY_BLOCKS = reg("Registry/Blocks", 0xFF_9B59B6);
+        public static final String REGISTRY_SOUNDS = reg("Registry/Sounds", 0xFF_9B59B6);
+        public static final String VARIABLES = reg("Variables", 0xFF_2D9C4B);
+        public static final String UTILS = reg("Utilities", 0xFF_2D6DB8);
+        public static final String INPUTS = reg("Inputs", 0xFF_7B4BB3);
+        public static final String LOGIC = reg("Logic", 0xFF_D0912A);
+        public static final String MATH = reg("Math", 0xFF_2AA7B1);
+        public static final String STRINGS = reg("Strings", 0xFF_5BA32D);
+        public static final String COMMENTS = reg("Comments", 0xFF_B7A11E);
+        public static final String COMMANDS_BASIC = reg("Basic", 0xFF_C0392B);
+        public static final String COMMANDS_ENTITY = reg("Entity", 0xFF_27AE60);
+        public static final String COMMANDS_WORLD = reg("World", 0xFF_8E44AD);
+        public static final String COMMANDS_PLAYER = reg("Player", 0xFF_2980B9);
+        public static final String COMMANDS_DATA = reg("Data", 0xFF_16A085);
+        public static final String COMMANDS_TIME = reg("Time & Weather", 0xFF_F39C12);
+        public static final String COMMANDS_MISC = reg("Misc", 0xFF_95A5A6);
+        public static final String COMMANDS_EXECUTE = reg("Execute", 0xFF_E67E22);
+        public static final String COMMANDS_TARGET = reg("Targeting", 0xFF_1ABC9C);
         private Categories() {
+        }
+
+        private static String reg(String path, int color) {
+            COLORS.put(path, color);
+            return path;
+        }
+
+        /**
+         * Look up a category's colour; falls back to a mid-grey.
+         */
+        public static int color(@Nullable String path) {
+            if (path == null) return 0xFF_404040;
+            Integer c = COLORS.get(path);
+            if (c != null) return c;
+            // fallback: try the top-level segment
+            int slash = path.indexOf('/');
+            String key = slash == -1 ? path : path.substring(0, slash);
+            c = COLORS.get(key);
+            return c != null ? c : 0xFF_404040;
         }
     }
 

@@ -1,10 +1,12 @@
 package de.luckymcdev.foundryengine.common.blueprint.graph;
 
+import de.luckymcdev.foundryengine.common.blueprint.nodes.PinRenderer;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.function.Consumer;
+import java.util.Set;
 
 public class NodePinType<T> {
     public final String displayName;
@@ -12,34 +14,70 @@ public class NodePinType<T> {
     public final int color;
     public final List<NodePin> singleOutput;
     public final List<NodePin> singleRequiredInput;
-    public final @Nullable Consumer<Consumer<BlueprintNode>> menuBuilder;
+    public final @Nullable List<String> enumValues;
+    public final @Nullable PinRenderer renderer;
+    private final Set<String> compatibleNames;
 
     public NodePinType(String displayName, NodePinShape defaultShape, int color,
-                       @Nullable Consumer<Consumer<BlueprintNode>> menuBuilder) {
+                       @Nullable List<String> enumValues, @Nullable PinRenderer renderer,
+                       String... compatibleWith) {
         this.displayName = displayName;
         this.defaultShape = defaultShape;
         this.color = color;
-        this.menuBuilder = menuBuilder;
+        this.enumValues = enumValues;
+        this.renderer = renderer;
         this.singleOutput = List.of(output("Out"));
         this.singleRequiredInput = List.of(required("In"));
+        this.compatibleNames = new LinkedHashSet<>();
+        this.compatibleNames.add(displayName);
+        this.compatibleNames.addAll(List.of(compatibleWith));
     }
 
-    public NodePinType(String displayName, NodePinShape defaultShape) {
-        this(displayName, defaultShape, deriveColor(displayName), null);
+    // ---- Convenience constructors ----
+
+    /**
+     * Auto color, no enum, no renderer.
+     */
+    public NodePinType(String displayName, NodePinShape defaultShape, String... compatibleWith) {
+        this(displayName, defaultShape, deriveColor(displayName), null, null, compatibleWith);
+    }
+
+    /**
+     * Auto color, enum values + combo renderer, optional compat.
+     */
+    public NodePinType(String displayName, NodePinShape defaultShape,
+                       List<String> enumValues, String... compatibleWith) {
+        this(displayName, defaultShape, deriveColor(displayName), enumValues,
+                enumValues != null && !enumValues.isEmpty() ? PinRenderer.enumPin(enumValues) : null,
+                compatibleWith);
+    }
+
+    /**
+     * Auto color, enum, no shape override (FILLED_CIRCLE).
+     */
+    public NodePinType(String displayName, List<String> enumValues, String... compatibleWith) {
+        this(displayName, NodePinShape.FILLED_CIRCLE, enumValues, compatibleWith);
+    }
+
+    /**
+     * Explicit color + renderer.
+     */
+    public NodePinType(String displayName, NodePinShape defaultShape, int color,
+                       @Nullable PinRenderer renderer, String... compatibleWith) {
+        this(displayName, defaultShape, color, null, renderer, compatibleWith);
+    }
+
+    /**
+     * Explicit renderer, auto color.
+     */
+    public NodePinType(String displayName, NodePinShape defaultShape,
+                       @Nullable PinRenderer renderer, String... compatibleWith) {
+        this(displayName, defaultShape, deriveColor(displayName), null, renderer, compatibleWith);
     }
 
     private static int deriveColor(String name) {
         float hue = (name.hashCode() & 0x7FFF) / 32767f;
         return 0xFF000000 | Color.HSBtoRGB(hue, 0.75f, 0.9f);
-    }
-
-    public NodePinType(String displayName, NodePinShape defaultShape,
-                       @Nullable Consumer<Consumer<BlueprintNode>> menuBuilder) {
-        this(displayName, defaultShape, 0xFF_FFFFFF, menuBuilder);
-    }
-
-    public NodePinType(String displayName) {
-        this(displayName, NodePinShape.FILLED_TRIANGLE, 0xFF_FFFFFF, null);
     }
 
     public NodePin output(String label) {
@@ -56,7 +94,9 @@ public class NodePinType<T> {
 
     public boolean isCompatibleWith(NodePinType<?> other) {
         if (this == other) return true;
-        return "Any".equals(this.displayName) || "Any".equals(other.displayName);
+        if ("Any".equals(this.displayName) || "Any".equals(other.displayName)) return true;
+        return this.compatibleNames.contains(other.displayName)
+                || other.compatibleNames.contains(this.displayName);
     }
 
     public float r() {
@@ -71,7 +111,5 @@ public class NodePinType<T> {
         return (color & 0xFF) / 255f;
     }
 
-    public float a() {
-        return ((color >> 24) & 0xFF) / 255f;
-    }
+    public float a() { return ((color >> 24) & 0xFF) / 255f; }
 }

@@ -548,6 +548,8 @@ public final class EventNodes {
         protected void initPins() {
             execOutput("Out");
             output(PLAYER, "Player");
+            output(ITEM_STACK, "ItemStack");
+            output(INTERACTION_HAND, "Hand");
         }
 
         @Override
@@ -692,6 +694,10 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(PLAYER, "Player");
+            output(LEVEL, "Level");
+            output(INTERACTION_HAND, "Hand");
+            output(ITEM_STACK, "ItemStack");
         }
 
         @Override
@@ -707,6 +713,10 @@ public final class EventNodes {
         @Override
         protected void initPins() {
             execOutput("Out");
+            output(PLAYER, "Player");
+            output(LEVEL, "Level");
+            output(INTERACTION_HAND, "Hand");
+            output(ITEM_STACK, "ItemStack");
         }
 
         @Override
