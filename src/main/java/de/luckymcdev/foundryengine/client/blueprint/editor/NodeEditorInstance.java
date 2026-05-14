@@ -12,8 +12,8 @@ import imgui.extension.imnodes.ImNodes;
 import imgui.extension.imnodes.flag.ImNodesCol;
 import imgui.extension.imnodes.flag.ImNodesMiniMapLocation;
 import imgui.extension.imnodes.flag.ImNodesPinShape;
-import imgui.flag.ImGuiFocusedFlags;
-import imgui.flag.ImGuiKey;
+import imgui.extension.imnodes.flag.ImNodesStyleVar;
+import imgui.flag.*;
 import imgui.type.ImBoolean;
 import imgui.type.ImFloat;
 import imgui.type.ImInt;
@@ -65,6 +65,7 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
 
     public void addNode(BuiltinNode builtin) {
         pushUndoState();
+        captureSpawnPos();
         BlueprintNode node = builtin.createNode();
         addNode(node, true);
     }
@@ -156,7 +157,14 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
             ImGui.openPopup("###context-menu");
         }
 
-        if (ImGui.beginPopup("###context-menu")) {
+        // Clamp popup to viewport so the search menu never goes off-screen.
+        if (ImGui.isPopupOpen("###context-menu")) {
+            float mx = Math.min(spawnX, ImGui.getIO().getDisplaySizeX() - 320f);
+            float my = Math.min(spawnY, ImGui.getIO().getDisplaySizeY() - 400f);
+            ImGui.setNextWindowPos(mx, my, ImGuiCond.Appearing);
+        }
+
+        if (ImGui.beginPopup("###context-menu", ImGuiWindowFlags.NoMove)) {
             if (onContextMenu != null) onContextMenu.accept(null);
             ImGui.endPopup();
         }
@@ -377,6 +385,16 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
 
         boolean mouseRight = ImGui.isMouseClicked(1);
 
+        // ── Global style ──────────────────────────────────────────────
+        ImNodes.pushStyleVar(ImNodesStyleVar.NodePadding, new ImVec2(8f, 4f));
+        ImNodes.pushStyleVar(ImNodesStyleVar.NodeBorderThickness, 1.2f);
+        ImNodes.pushStyleVar(ImNodesStyleVar.PinCircleRadius, 5f);
+        ImNodes.pushStyleVar(ImNodesStyleVar.PinQuadSideLength, 7f);
+        ImNodes.pushStyleVar(ImNodesStyleVar.PinTriangleSideLength, 8f);
+        ImNodes.pushStyleVar(ImNodesStyleVar.PinLineThickness, 1.5f);
+        ImNodes.pushStyleVar(ImNodesStyleVar.LinkThickness, 2.5f);
+        // ───────────────────────────────────────────────────────────────
+
         ImNodes.beginNodeEditor();
         boolean editorHovered = ImNodes.isEditorHovered();
 
@@ -387,42 +405,57 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
             ImNodes.editorContextResetPanning(new ImVec2(pan.x * zoomFactor, pan.y * zoomFactor));
         }
 
+        // ── Grid background ───────────────────────────────────────────
+        ImNodes.pushColorStyle(ImNodesCol.GridBackground, 0xFF_1A1A1A);
+        ImNodes.pushColorStyle(ImNodesCol.GridLine, 0xFF_2A2A2A);
+        ImNodes.pushColorStyle(ImNodesCol.GridLinePrimary, 0xFF_333333);
+
         for (var node : nodes.values()) {
             pushNodeColors(node);
             ImNodes.beginNode(node.id);
 
+            // ── Title bar ─────────────────────────────────────────────
             ImNodes.beginNodeTitleBar();
+            ImGui.pushStyleColor(ImGuiCol.Text, 0xFF_FFFFFF);
             if (isCommentNode(node)) {
                 ImGui.textUnformatted(getCommentTitle(node));
             } else {
                 ImGui.textUnformatted(node.name);
             }
+            ImGui.popStyleColor();
             ImNodes.endNodeTitleBar();
 
-            ImGui.pushItemWidth(130f);
+            // ── Body ──────────────────────────────────────────────────
+            ImGui.pushItemWidth(140f);
             if (isCommentNode(node)) {
                 renderCommentBody(node);
             } else if (onNodeBody != null) {
                 onNodeBody.accept(node);
             }
 
+            // ── Input pins ────────────────────────────────────────────
             for (var pin : node.inputPins) {
                 pushPinColor(pin.pin.type());
                 ImNodes.beginInputAttribute(pin.id, toImNodesShape(pin.pin.shape()));
                 popPinColor();
 
+                ImGui.pushStyleColor(ImGuiCol.Text, 0xFF_BBBBBB);
                 if (!pin.isConnected() && pin.defaultValue != null) {
                     renderInlineDefault(pin);
                 } else {
                     ImGui.textUnformatted(pin.pin.label());
                 }
+                ImGui.popStyleColor();
                 ImNodes.endInputAttribute();
             }
 
+            // ── Output pins ───────────────────────────────────────────
             for (var pin : node.outputPins) {
                 pushPinColor(pin.pin.type());
                 ImNodes.beginOutputAttribute(pin.id, toImNodesShape(pin.pin.shape()));
+                ImGui.pushStyleColor(ImGuiCol.Text, 0xFF_BBBBBB);
                 ImGui.textUnformatted(pin.pin.label());
+                ImGui.popStyleColor();
                 ImNodes.endOutputAttribute();
                 popPinColor();
             }
@@ -432,6 +465,11 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
             popNodeColors();
         }
 
+        ImNodes.popColorStyle(); // GridLinePrimary
+        ImNodes.popColorStyle(); // GridLine
+        ImNodes.popColorStyle(); // GridBackground
+
+        // ── Links ─────────────────────────────────────────────────────
         for (var pin : pins.values()) {
             if (pin.inputLink != null) {
                 pushLinkColor(pin.pin.type());
@@ -443,6 +481,14 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
         if (miniMap > 0f) ImNodes.miniMap(miniMap, ImNodesMiniMapLocation.TopRight);
 
         ImNodes.endNodeEditor();
+
+        ImNodes.popStyleVar(); // LinkThickness
+        ImNodes.popStyleVar(); // PinLineThickness
+        ImNodes.popStyleVar(); // PinTriangleSideLength
+        ImNodes.popStyleVar(); // PinQuadSideLength
+        ImNodes.popStyleVar(); // PinCircleRadius
+        ImNodes.popStyleVar(); // NodeBorderThickness
+        ImNodes.popStyleVar(); // NodePadding
 
         if (pendingSpawnId != -1) {
             ImNodes.setNodeScreenSpacePos(pendingSpawnId, spawnX, spawnY);
@@ -496,21 +542,28 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
 
     private void pushNodeColors(BlueprintNode node) {
         int title = engine.getCategoryColor(node.category);
-        int titleHovered = lighten(title, 0.10f);
-        int titleSelected = lighten(title, 0.18f);
+        int titleHovered = lighten(title, 0.12f);
+        int titleSelected = lighten(title, 0.20f);
 
-        // Dark node body to match Unreal-esque contrast.
-        int bg = 0xFF_242424;
-        int bgHovered = 0xFF_2C2C2C;
-        int bgSelected = 0xFF_303030;
-        int outline = 0xFF_000000;
+        // Slightly transparent title so the body feels integrated.
+        int titleBar = (title & 0x00FFFFFF) | 0xF0_000000;
 
-        ImNodes.pushColorStyle(ImNodesCol.TitleBar, title);
-        ImNodes.pushColorStyle(ImNodesCol.TitleBarHovered, titleHovered);
-        ImNodes.pushColorStyle(ImNodesCol.TitleBarSelected, titleSelected);
+        // Node body – dark but with a hint of the category tint.
+        float tr = ((title >> 16) & 0xFF) / 255f;
+        float tg = ((title >> 8) & 0xFF) / 255f;
+        float tb = (title & 0xFF) / 255f;
+        int bgTint = ((int) (tr * 16f) << 16) | ((int) (tg * 16f) << 8) | (int) (tb * 16f);
+        int bg = 0xFF_1E1E1E | bgTint;
+        int bgHover = 0xFF_262626 | bgTint;
+        int bgSel = 0xFF_2C2C2C | (bgTint * 2 & 0xFF_FFFFFF);
+        int outline = titleBar & 0xFF_666666 | 0xAA_000000;
+
+        ImNodes.pushColorStyle(ImNodesCol.TitleBar, titleBar);
+        ImNodes.pushColorStyle(ImNodesCol.TitleBarHovered, lighten(titleBar, 0.12f));
+        ImNodes.pushColorStyle(ImNodesCol.TitleBarSelected, lighten(titleBar, 0.20f));
         ImNodes.pushColorStyle(ImNodesCol.NodeBackground, bg);
-        ImNodes.pushColorStyle(ImNodesCol.NodeBackgroundHovered, bgHovered);
-        ImNodes.pushColorStyle(ImNodesCol.NodeBackgroundSelected, bgSelected);
+        ImNodes.pushColorStyle(ImNodesCol.NodeBackgroundHovered, bgHover);
+        ImNodes.pushColorStyle(ImNodesCol.NodeBackgroundSelected, bgSel);
         ImNodes.pushColorStyle(ImNodesCol.NodeOutline, outline);
     }
 
