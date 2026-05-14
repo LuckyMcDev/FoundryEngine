@@ -30,12 +30,15 @@ import de.luckymcdev.foundryengine.client.render.entity.EngineEntityRenderers;
 import de.luckymcdev.foundryengine.client.scene.ClientSceneSync;
 import de.luckymcdev.foundryengine.client.scene.SelectionManager;
 import de.luckymcdev.foundryengine.client.util.key.RegisterKeyBindingEvent;
+import de.luckymcdev.foundryengine.client.waypoint.WaypointManager;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.network.packets.BundleHashPacket;
 import de.luckymcdev.foundryengine.common.util.FolderHash;
+import de.luckymcdev.foundryengine.common.util.color.Color;
 import de.luckymcdev.foundryengine.config.ClientConfig;
 import de.luckymcdev.foundryengine.config.Config;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.Vec3i;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -93,6 +96,10 @@ public class FoundryEngineModClient {
         BUS.post(new RegisterKeyBindingEvent(Client.getKeyBindingManager()));
         Client.getKeyBindingManager().getKeyBindings().forEach(kb -> event.register(kb.mapping()));
         event.registerCategory(Client.EDITOR_CATEGORY);
+        event.register(Client.PRIMARY_WAYPOINT_KEY);
+        event.register(Client.SECONDARY_WAYPOINT_KEY);
+        event.register(Client.REMOVE_WAYPOINT_KEY);
+        event.register(Client.CLEAR_WAYPOINTS_KEY);
     }
 
     private void onRegisterKeyBinding(RegisterKeyBindingEvent event) {
@@ -139,6 +146,7 @@ public class FoundryEngineModClient {
         ClientScreenEffectManager.renderTick();
         CutsceneRenderer.render();
         AreaRenderer.render();
+        Client.getBoxRenderer().renderWaypoints(event);
 
         var selected = SelectionManager.getSelected();
         if (ScenePanel.INSTANCE.showGizmos && selected != null) {
@@ -151,6 +159,7 @@ public class FoundryEngineModClient {
         ClientSceneSync.clientTick();
         ClientCutsceneManager.clientTick();
         CutsceneEditor.clientTick();
+        handleWaypointKeys();
 
         if (!ClientConfig.AUTO_EXPORT.get() || hasIconAutoExported) return;
 
@@ -171,6 +180,28 @@ public class FoundryEngineModClient {
             mc.setScreen(screen);
         } else {
             LOGGER.info("Auto-export: All icons are up to date.");
+        }
+    }
+
+    private void handleWaypointKeys() {
+        Vec3i targetedCoords = Client.getHitOrNull();
+        while (Client.PRIMARY_WAYPOINT_KEY.consumeClick()) {
+            if (targetedCoords != null) {
+                WaypointManager.addWaypoint(targetedCoords, Color.BLUE);
+            }
+        }
+        while (Client.SECONDARY_WAYPOINT_KEY.consumeClick()) {
+            if (targetedCoords != null) {
+                WaypointManager.addWaypoint(targetedCoords, Color.TURQUOISE);
+            }
+        }
+        while (Client.REMOVE_WAYPOINT_KEY.consumeClick()) {
+            if (targetedCoords != null) {
+                WaypointManager.removeWaypoint(targetedCoords.getX(), targetedCoords.getY(), targetedCoords.getZ());
+            }
+        }
+        while (Client.CLEAR_WAYPOINTS_KEY.consumeClick()) {
+            WaypointManager.clearWaypoints();
         }
     }
 }

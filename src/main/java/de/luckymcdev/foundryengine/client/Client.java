@@ -15,6 +15,7 @@ import de.luckymcdev.foundryengine.client.particle.ParticleManager;
 import de.luckymcdev.foundryengine.client.post.EffectManager;
 import de.luckymcdev.foundryengine.client.util.key.KeyBinding;
 import de.luckymcdev.foundryengine.client.util.key.KeyBindingManager;
+import de.luckymcdev.foundryengine.client.waypoint.BoxRenderer;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.exceptions.EngineException;
 import de.luckymcdev.foundryengine.interfaces.EngineGpuDevice;
@@ -26,14 +27,18 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.core.Vec3i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.neoforged.neoforge.client.event.FrameGraphSetupEvent;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 import org.jspecify.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -61,7 +66,32 @@ public abstract class Client {
             () -> {
             }
     );
+    public static final KeyMapping PRIMARY_WAYPOINT_KEY = new KeyMapping(
+            "key.foundryengine.primary_waypoint",
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_B,
+            EDITOR_CATEGORY
+    );
 
+    public static final KeyMapping SECONDARY_WAYPOINT_KEY = new KeyMapping(
+            "key.foundryengine.secondary_waypoint",
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_N,
+            EDITOR_CATEGORY
+    );
+
+    public static final KeyMapping REMOVE_WAYPOINT_KEY = new KeyMapping(
+            "key.foundryengine.remove_waypoint",
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_M,
+            EDITOR_CATEGORY
+    );
+    public static final KeyMapping CLEAR_WAYPOINTS_KEY = new KeyMapping(
+            "key.foundryengine.clear_waypoints",
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_COMMA,
+            EDITOR_CATEGORY
+    );
     public static final Logger LOGGER = LogUtils.getLogger();
     private static final ImGuiManager IMGUI_MANAGER = new ImGuiManager();
     private static final MainMenu MAIN_MENU = new MainMenu();
@@ -69,6 +99,7 @@ public abstract class Client {
     private static final KeyBindingManager KEY_BINDING_MANAGER = new KeyBindingManager();
     private static final ParticleManager PARTICLE_MANAGER = new ParticleManager();
     private static final EffectManager EFFECT_MANAGER = new EffectManager();
+    private static final BoxRenderer BOX_RENDERER = new BoxRenderer();
 
     private Client() {
         throw new EngineException();
@@ -164,6 +195,20 @@ public abstract class Client {
 
     public static GlTexture unwrapTexture(Object tex) {
         return (GlTexture) tex;
+    }
+
+    public static BoxRenderer getBoxRenderer() {
+        return BOX_RENDERER;
+    }
+
+    public static @Nullable Vec3i getHitOrNull() {
+        HitResult hit = getMc().hitResult;
+        if (hit != null && hit.getType() == (HitResult.Type.BLOCK)) {
+            BlockHitResult blockHit = (BlockHitResult) hit;
+            return blockHit.getBlockPos();
+
+        }
+        return null;
     }
 
     /**

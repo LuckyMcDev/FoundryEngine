@@ -157,4 +157,9 @@ public class GameRendererMixin implements EngineGameRenderer {
             }
         }
     }
+
+    @Inject(method = "close", at = @At("RETURN"))
+    private void onGameRendererClose(CallbackInfo ci) {
+        Client.getBoxRenderer().close();
+    }
 }
