@@ -20,6 +20,7 @@ import de.luckymcdev.foundryengine.common.registry.EngineRegistries;
 import de.luckymcdev.foundryengine.common.scene.network.ScenePacket;
 import de.luckymcdev.foundryengine.common.vpacks.BundleVirtualPacks;
 import de.luckymcdev.foundryengine.common.vpacks.event.RegisterVirtualPackEvent;
+import de.luckymcdev.foundryengine.common.waypoint.storage.WaypointSavedData;
 import de.luckymcdev.foundryengine.common.world.entity.EngineEntities;
 import de.luckymcdev.foundryengine.common.world.level.EngineLevels;
 import de.luckymcdev.foundryengine.common.world.level.runtime.RuntimeLevelConfig;
@@ -31,6 +32,7 @@ import de.luckymcdev.foundryengine.server.command.FoundryCommands;
 import de.luckymcdev.foundryengine.server.packs.DynamicPackRepository;
 import net.minecraft.SharedConstants;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.util.Util;
 import net.neoforged.bus.api.IEventBus;
@@ -42,9 +44,11 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeVersion;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
@@ -90,6 +94,20 @@ public class FoundryEngineMod {
         BUS.addListener(Common.getAreaManager()::onPlayerLoggedIn);
         BUS.addListener(Common.getAreaManager()::onLevelLoad);
         BUS.addListener(Common.getAreaManager()::onServerStopping);
+
+        BUS.addListener((PlayerEvent.PlayerLoggedInEvent event) -> {
+            if (event.getEntity() instanceof ServerPlayer player) {
+                var data = WaypointSavedData.get(player.level());
+                PacketDistributor.sendToPlayer(player, new ClientBoundWaypointSyncPacket(data.getData()));
+            }
+        });
+
+        BUS.addListener((PlayerEvent.PlayerChangedDimensionEvent event) -> {
+            if (event.getEntity() instanceof ServerPlayer player) {
+                var data = WaypointSavedData.get(player.level());
+                PacketDistributor.sendToPlayer(player, new ClientBoundWaypointSyncPacket(data.getData()));
+            }
+        });
 
         Config.registerCommon(modContainer);
         Config.registerStartup(modContainer);
@@ -141,6 +159,8 @@ public class FoundryEngineMod {
         network.register(ScenePacket.DEFINITION);
         network.register(AreaPacket.DEFINITION);
         network.register(ClientBoundAreaSyncPacket.DEFINITION);
+        network.register(WaypointPacket.DEFINITION);
+        network.register(ClientBoundWaypointSyncPacket.DEFINITION);
     }
 
     private void clientSetup(FMLClientSetupEvent event) {

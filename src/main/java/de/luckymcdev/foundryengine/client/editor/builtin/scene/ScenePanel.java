@@ -7,7 +7,7 @@ import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcon;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.client.scene.ClientSceneSync;
-import de.luckymcdev.foundryengine.client.scene.SelectionManager;
+import de.luckymcdev.foundryengine.client.scene.SceneSelectionManager;
 import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.network.packets.ServerBoundTeleportPacket;
@@ -260,7 +260,7 @@ public class ScenePanel extends EditorPanel {
 
         if (ImGui.isItemClicked()) {
             selectedUUID = node.getUUID();
-            SelectionManager.setSelected(node);
+            SceneSelectionManager.setSelected(node);
         }
 
         renderNodeContextMenu(node, node.getUUID().equals(selectedUUID));
@@ -319,7 +319,7 @@ public class ScenePanel extends EditorPanel {
                 }
                 if (isSelected) {
                     selectedUUID = null;
-                    SelectionManager.setSelected(null);
+                    SceneSelectionManager.setSelected(null);
                 }
             }
             ImGui.endPopup();
@@ -395,7 +395,7 @@ public class ScenePanel extends EditorPanel {
         ClientSceneSync.pushToServer(graph);
 
         selectedUUID = node.getUUID();
-        SelectionManager.setSelected(node);
+        SceneSelectionManager.setSelected(node);
     }
 
     private void maybePushGraph() {

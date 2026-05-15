@@ -13,9 +13,11 @@ import de.luckymcdev.foundryengine.client.imgui.EngineImGui;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiManager;
 import de.luckymcdev.foundryengine.client.particle.ParticleManager;
 import de.luckymcdev.foundryengine.client.post.EffectManager;
+import de.luckymcdev.foundryengine.client.render.MeshRenderer;
+import de.luckymcdev.foundryengine.client.render.obj.ObjModelManager;
 import de.luckymcdev.foundryengine.client.util.key.KeyBinding;
 import de.luckymcdev.foundryengine.client.util.key.KeyBindingManager;
-import de.luckymcdev.foundryengine.client.waypoint.BoxRenderer;
+import de.luckymcdev.foundryengine.client.waypoint.WaypointRenderer;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.exceptions.EngineException;
 import de.luckymcdev.foundryengine.interfaces.EngineGpuDevice;
@@ -34,7 +36,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.neoforged.neoforge.client.event.FrameGraphSetupEvent;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 import org.jspecify.annotations.Nullable;
@@ -99,7 +100,9 @@ public abstract class Client {
     private static final KeyBindingManager KEY_BINDING_MANAGER = new KeyBindingManager();
     private static final ParticleManager PARTICLE_MANAGER = new ParticleManager();
     private static final EffectManager EFFECT_MANAGER = new EffectManager();
-    private static final BoxRenderer BOX_RENDERER = new BoxRenderer();
+    private static final WaypointRenderer WAYPOINT_RENDERER = new WaypointRenderer();
+    private static final MeshRenderer MESH_RENDERER = new MeshRenderer();
+    private static final ObjModelManager OBJ_MODEL_MANAGER = new ObjModelManager();
 
     private Client() {
         throw new EngineException();
@@ -173,6 +176,14 @@ public abstract class Client {
         return EFFECT_MANAGER;
     }
 
+    public static MeshRenderer getMeshRenderer() {
+        return MESH_RENDERER;
+    }
+
+    public static ObjModelManager getObjModelManager() {
+        return OBJ_MODEL_MANAGER;
+    }
+
     public static GlDevice getGlDevice() {
         return (GlDevice) ((EngineGpuDevice) RenderSystem.getDevice()).engine$getBackend();
     }
@@ -197,8 +208,8 @@ public abstract class Client {
         return (GlTexture) tex;
     }
 
-    public static BoxRenderer getBoxRenderer() {
-        return BOX_RENDERER;
+    public static WaypointRenderer getWaypointRenderer() {
+        return WAYPOINT_RENDERER;
     }
 
     public static @Nullable Vec3i getHitOrNull() {
@@ -230,10 +241,6 @@ public abstract class Client {
         }
     }
 
-    /**
-     * Updates the model-view, projection, world, and inverse-world matrices.
-     * Called from {@link FrameGraphSetupEvent}.
-     */
     public static void updateMain(Matrix4fc modelView, Matrix4fc projection) {
         MODEL_VIEW.set(modelView);
         PROJECTION.set(projection);

@@ -6,7 +6,7 @@ import net.neoforged.neoforge.common.NeoForge;
 
 import javax.annotation.Nullable;
 
-public class SelectionManager {
+public class SceneSelectionManager {
     private static EngineSceneNode selectedNode;
 
     @Nullable

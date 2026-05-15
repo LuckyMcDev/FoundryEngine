@@ -1,7 +1,10 @@
 package de.luckymcdev.foundryengine.client.render.obj;
 
+import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.vertex.PoseStack;
+import de.luckymcdev.foundryengine.client.Client;
 import net.minecraft.client.renderer.rendertype.RenderType;
+import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -29,31 +32,55 @@ public class ObjObject {
 
     public void render(PoseStack poseStack, RenderType renderType, int packedLight) {
         poseStack.pushPose();
-
-        poseStack.translate(position.x, position.y, position.z);
-
-        Quaternionf quaternion = new Quaternionf().rotateXYZ(rotation.x, rotation.y, rotation.z);
-        poseStack.mulPose(quaternion);
-
-        poseStack.scale(scale.x, scale.y, scale.z);
-
+        applyTransformToPoseStack(poseStack);
         faces.forEach(face -> face.renderFace(poseStack, renderType, packedLight));
-
         poseStack.popPose();
+    }
+
+    public void render(RenderPipeline pipeline, Matrix4f viewMatrix,
+                       float r, float g, float b, float a) {
+        Matrix4f mvp = new Matrix4f(viewMatrix).mul(buildModelMatrix());
+
+        Client.getMeshRenderer().draw(pipeline, mvp, buffer -> {
+            PoseStack poseStack = new PoseStack();
+            for (Face face : faces) {
+                face.buildVertices(buffer, poseStack, r, g, b, a);
+            }
+        });
+    }
+
+    public void render(RenderPipeline pipeline, Matrix4f viewMatrix) {
+        render(pipeline, viewMatrix, 1f, 1f, 1f, 1f);
     }
 
     public Vector3f getCentroid() {
         if (faces.isEmpty()) return new Vector3f(0, 0, 0);
-
         Vector3f centroid = new Vector3f();
-        for (Face face : faces) {
-            centroid.add(face.getCentroid());
-        }
+        for (Face face : faces) centroid.add(face.getCentroid());
         centroid.mul(1f / faces.size());
         return centroid;
     }
 
-    // Getters and setters for animation
+    /**
+     * Builds a local model matrix from this object's position, rotation, and scale.
+     */
+    private Matrix4f buildModelMatrix() {
+        return new Matrix4f()
+                .translate(position)
+                .rotate(new Quaternionf().rotateXYZ(rotation.x, rotation.y, rotation.z))
+                .scale(scale);
+    }
+
+    /**
+     * Applies this object's transform to a PoseStack (used by the RenderType path).
+     */
+    private void applyTransformToPoseStack(PoseStack poseStack) {
+        poseStack.translate(position.x, position.y, position.z);
+        poseStack.mulPose(new Quaternionf().rotateXYZ(rotation.x, rotation.y, rotation.z));
+        poseStack.scale(scale.x, scale.y, scale.z);
+    }
+
+    // Getters / setters
     public String getName() {
         return name;
     }
@@ -66,8 +93,8 @@ public class ObjObject {
         return position;
     }
 
-    public void setPosition(Vector3f position) {
-        this.position = position;
+    public void setPosition(Vector3f p) {
+        this.position = p;
     }
 
     public void setPosition(float x, float y, float z) {
@@ -78,8 +105,8 @@ public class ObjObject {
         return rotation;
     }
 
-    public void setRotation(Vector3f rotation) {
-        this.rotation = rotation;
+    public void setRotation(Vector3f r) {
+        this.rotation = r;
     }
 
     public void setRotation(float x, float y, float z) {
@@ -90,12 +117,12 @@ public class ObjObject {
         return scale;
     }
 
-    public void setScale(Vector3f scale) {
-        this.scale = scale;
+    public void setScale(Vector3f s) {
+        this.scale = s;
     }
 
-    public void setScale(float uniform) {
-        this.scale.set(uniform, uniform, uniform);
+    public void setScale(float u) {
+        this.scale.set(u, u, u);
     }
 
     public void setScale(float x, float y, float z) {

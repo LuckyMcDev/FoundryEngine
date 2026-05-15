@@ -1,17 +1,20 @@
 package de.luckymcdev.foundryengine.client.render.obj;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class ObjModelManager {
-    public static List<ObjModel> OBJ_MODELS = new ArrayList<>();
+    public List<ObjModel> OBJ_MODELS = new ArrayList<>();
 
-    public static ObjModel registerObjModel(ObjModel objModel) {
+    public ObjModel registerObjModel(ObjModel objModel) {
         OBJ_MODELS.add(objModel);
         return objModel;
     }
 
-    public static void loadModels() {
+    @ApiStatus.Internal
+    public void loadModels() {
         OBJ_MODELS.forEach(ObjModel::loadModel);
     }
 }
