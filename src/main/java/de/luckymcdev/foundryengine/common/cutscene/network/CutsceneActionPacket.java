@@ -79,14 +79,14 @@ public record CutsceneActionPacket(Action action, String targetPlayer, String cu
                 ArrayList<Cutscene> cutscenes = new ArrayList<>(data.getCutscenes());
                 cutscenes.add(new Cutscene(cutsceneName, rot, rot, path));
                 data.setCutscenes(cutscenes);
-                data.syncToClients(level);
+                Common.getSavedDataManager().syncToDimension(level);
             }
             case REMOVE -> {
                 ArrayList<Cutscene> cutscenes = new ArrayList<>(data.getCutscenes());
                 boolean removed = cutscenes.removeIf(c -> c.getName().equals(cutsceneName));
                 if (removed) {
                     data.setCutscenes(cutscenes);
-                    data.syncToClients(level);
+                    Common.getSavedDataManager().syncToDimension(level);
                 }
             }
             case PLAY -> {
@@ -106,7 +106,7 @@ public record CutsceneActionPacket(Action action, String targetPlayer, String cu
                 tag.putInt("holdStart", holdStart);
                 tag.putInt("holdEnd", holdEnd);
 
-                data.syncToPlayer(target);
+                Common.getSavedDataManager().syncToPlayer(target);
                 int total = length + holdStart + holdEnd;
                 ServerCutsceneManager.addInstance(target, total);
                 PacketDistributor.sendToPlayer(target, new CutscenePacket(tag));

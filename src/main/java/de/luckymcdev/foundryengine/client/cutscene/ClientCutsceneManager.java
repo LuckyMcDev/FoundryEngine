@@ -5,7 +5,6 @@ import de.luckymcdev.foundryengine.common.cutscene.model.Cutscene;
 import de.luckymcdev.foundryengine.common.cutscene.model.EffectAttachment;
 import de.luckymcdev.foundryengine.common.cutscene.network.CutsceneCommandPacket;
 import de.luckymcdev.foundryengine.common.cutscene.network.CutscenePacket;
-import de.luckymcdev.foundryengine.common.cutscene.storage.CutsceneSavedData;
 import de.luckymcdev.foundryengine.common.cutscene.util.LerpType;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -31,7 +30,6 @@ public class ClientCutsceneManager {
     public static LerpType currentLerpType = LerpType.LINEAR;
     public static Vec3 pos = Vec3.ZERO;
     public static Vec2 rot = new Vec2(0, 0);
-    private static boolean requestedSync = false;
     private static boolean previewActive = false;
     private static Cutscene previewCutscene = null;
     private static float previewT = 0f;
@@ -40,19 +38,11 @@ public class ClientCutsceneManager {
         Minecraft mc = Minecraft.getInstance();
 
         if (mc.level == null || mc.player == null) {
-            requestedSync = false;
             currentCutscene = null;
             cutsceneQueue.clear();
             clearPreview();
-            return;
         }
 
-        if (!requestedSync) {
-            requestedSync = true;
-            CompoundTag tag = new CompoundTag();
-            tag.putBoolean("Request", true);
-            ClientPacketDistributor.sendToServer(new CutscenePacket(tag));
-        }
     }
 
     public static void setPreview(Cutscene cutscene, float t) {
@@ -165,10 +155,12 @@ public class ClientCutsceneManager {
 
             PlayingCutscene playingCutscene = new PlayingCutscene(cutscene, startUuid, endUuid);
             queueCutscene(playingCutscene, length, easing, holdStart, holdEnd);
-            return;
         }
 
-        CutsceneRenderer.setCutscenes(CutsceneSavedData.makeList(tag));
+    }
+
+    public static void handleSync(CompoundTag tag) {
+        CutsceneRenderer.setCutscenes(de.luckymcdev.foundryengine.common.cutscene.storage.CutsceneSavedData.makeList(tag));
     }
 
     private static void setCutscene(QueuedCutscene queuedCutscene) {

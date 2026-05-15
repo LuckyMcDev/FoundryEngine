@@ -20,9 +20,9 @@ public record ScenePacket(CompoundTag nbt) implements AbstractPacket<ScenePacket
 
     public static final Definition<ScenePacket> DEFINITION = new Definition<>(
             AbstractPacket.createType(Common.id("scene_graph_nbt")),
-            PacketBounds.BOTH,
+            PacketBounds.SERVER,
             StreamCodec.composite(ByteBufCodecs.COMPOUND_TAG, ScenePacket::nbt, ScenePacket::new),
-            ScenePacket::handleClient,
+            null,
             ScenePacket::handleServer
     );
 
@@ -42,30 +42,15 @@ public record ScenePacket(CompoundTag nbt) implements AbstractPacket<ScenePacket
     }
 
     @Override
-    public void handleClient(IPayloadContext ctx) {
-        ctx.enqueueWork(() -> de.luckymcdev.foundryengine.client.scene.ClientSceneSync.handlePacket(this));
-    }
-
-    @Override
     public void handleServer(IPayloadContext ctx) {
         if (!(ctx.player() instanceof ServerPlayer player)) return;
 
-        CompoundTag tag = this.nbt;
-
-        if (tag.getBooleanOr("Request", false)) {
-            SceneSavedData.get(player.level()).syncToPlayer(player);
-            return;
-        }
-
         if (!PermissionChecks.COMMANDS_GAMEMASTER.check(player.permissions())) return;
-
-        // Strip transient fields
-        tag.remove("Request");
 
         ServerLevel level = player.level();
         SceneSavedData data = SceneSavedData.get(level);
-        data.setData(tag);
-        data.syncToClients(level);
+        data.setData(this.nbt);
+        Common.getSavedDataManager().syncToDimension(level);
     }
 }
 

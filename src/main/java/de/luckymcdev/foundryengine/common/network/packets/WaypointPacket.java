@@ -9,7 +9,6 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record WaypointPacket(String action, int x, int y, int z, String icon, String name,
@@ -52,7 +51,7 @@ public record WaypointPacket(String action, int x, int y, int z, String icon, St
                 }
             }
 
-            PacketDistributor.sendToPlayersInDimension(level, new ClientBoundWaypointSyncPacket(data.getData()));
+            Common.getSavedDataManager().syncToDimension(level);
         });
     }
 

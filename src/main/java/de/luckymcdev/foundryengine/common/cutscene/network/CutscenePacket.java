@@ -47,18 +47,11 @@ public record CutscenePacket(CompoundTag nbt) implements AbstractPacket<Cutscene
     public void handleServer(IPayloadContext ctx) {
         if (!(ctx.player() instanceof ServerPlayer player)) return;
 
-        CompoundTag tag = this.nbt;
-
-        if (tag.getBooleanOr("Request", false)) {
-            CutsceneSavedData.get(player.level()).syncToPlayer(player);
-            return;
-        }
-
         if (!PermissionChecks.COMMANDS_GAMEMASTER.check(player.permissions())) return;
 
         ServerLevel level = player.level();
         CutsceneSavedData data = CutsceneSavedData.get(level);
-        data.setData(tag);
-        data.syncToClients(level);
+        data.setData(this.nbt);
+        Common.getSavedDataManager().syncToDimension(level);
     }
 }

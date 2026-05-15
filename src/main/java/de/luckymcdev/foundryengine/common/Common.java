@@ -10,6 +10,7 @@ import de.luckymcdev.foundryengine.common.exceptions.EngineException;
 import de.luckymcdev.foundryengine.common.exceptions.UtilityClassException;
 import de.luckymcdev.foundryengine.common.game.stage.GameStageHandler;
 import de.luckymcdev.foundryengine.common.network.NetworkManager;
+import de.luckymcdev.foundryengine.common.savedata.SavedDataManager;
 import de.luckymcdev.foundryengine.common.scene.SceneManager;
 import de.luckymcdev.foundryengine.common.util.FirstRun;
 import de.luckymcdev.foundryengine.common.util.ini.IniFile;
@@ -57,6 +58,7 @@ public abstract class Common {
     private static final SceneManager SCENE_MANAGER = new SceneManager();
     private static final BlueprintManager BLUEPRINT_MANAGER = new BlueprintManager();
     private static final AreaManager AREA_MANAGER = new AreaManager();
+    private static final SavedDataManager SAVED_DATA_MANAGER = new SavedDataManager();
     private static final IniFileManager INI_FILE_MANAGER;
 
     static {
@@ -105,6 +107,10 @@ public abstract class Common {
 
     public static AreaManager getAreaManager() {
         return AREA_MANAGER;
+    }
+
+    public static SavedDataManager getSavedDataManager() {
+        return SAVED_DATA_MANAGER;
     }
 
     public static @Nullable RecipeManager getRecipeManager() {

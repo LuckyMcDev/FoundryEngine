@@ -5,6 +5,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
+import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.cutscene.model.Cutscene;
 import de.luckymcdev.foundryengine.common.cutscene.network.CutscenePacket;
 import de.luckymcdev.foundryengine.common.cutscene.storage.CutsceneSavedData;
@@ -120,7 +121,7 @@ public class CutsceneCommand implements EngineCommand {
         ServerLevel level = ctx.getSource().getLevel();
         CutsceneSavedData data = CutsceneSavedData.get(level);
         data.setData(new CompoundTag());
-        data.syncToClients(level);
+        Common.getSavedDataManager().syncToDimension(level);
         sendSuccess(ctx, "All cutscenes removed.", true);
         return 1;
     }
@@ -154,7 +155,7 @@ public class CutsceneCommand implements EngineCommand {
         cutscenes.add(new Cutscene(name, rot, rot, path));
 
         data.setCutscenes(cutscenes);
-        data.syncToClients(level);
+        Common.getSavedDataManager().syncToDimension(level);
         sendSuccess(ctx, "Added cutscene: " + name, true);
         return 1;
     }
@@ -171,7 +172,7 @@ public class CutsceneCommand implements EngineCommand {
             return 0;
         }
         data.setCutscenes(cutscenes);
-        data.syncToClients(level);
+        Common.getSavedDataManager().syncToDimension(level);
         sendSuccess(ctx, "Removed cutscene: " + name, true);
         return 1;
     }
@@ -207,7 +208,7 @@ public class CutsceneCommand implements EngineCommand {
         target.path.getPoints().get(2).setPos(tangent);
 
         data.setCutscenes(cutscenes);
-        data.syncToClients(level);
+        Common.getSavedDataManager().syncToDimension(level);
         sendInfo(ctx, "Linearized cutscene: " + name);
         return 1;
     }
@@ -258,7 +259,7 @@ public class CutsceneCommand implements EngineCommand {
         tag.putInt("holdStart", holdStart);
         tag.putInt("holdEnd", holdEnd);
 
-        data.syncToPlayer(targetPlayer);
+        Common.getSavedDataManager().syncToPlayer(targetPlayer);
         int total = length + holdStart + holdEnd;
         ServerCutsceneManager.addInstance(targetPlayer, total);
         PacketDistributor.sendToPlayer(targetPlayer, new CutscenePacket(tag));

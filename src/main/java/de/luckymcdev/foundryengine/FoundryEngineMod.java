@@ -20,7 +20,6 @@ import de.luckymcdev.foundryengine.common.registry.EngineRegistries;
 import de.luckymcdev.foundryengine.common.scene.network.ScenePacket;
 import de.luckymcdev.foundryengine.common.vpacks.BundleVirtualPacks;
 import de.luckymcdev.foundryengine.common.vpacks.event.RegisterVirtualPackEvent;
-import de.luckymcdev.foundryengine.common.waypoint.storage.WaypointSavedData;
 import de.luckymcdev.foundryengine.common.world.entity.EngineEntities;
 import de.luckymcdev.foundryengine.common.world.level.EngineLevels;
 import de.luckymcdev.foundryengine.common.world.level.runtime.RuntimeLevelConfig;
@@ -48,7 +47,6 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
@@ -91,23 +89,20 @@ public class FoundryEngineMod {
 
         BUS.addListener(Common.getAreaManager()::onEntityTick);
         BUS.addListener(Common.getAreaManager()::onEntityRemoved);
-        BUS.addListener(Common.getAreaManager()::onPlayerLoggedIn);
         BUS.addListener(Common.getAreaManager()::onLevelLoad);
         BUS.addListener(Common.getAreaManager()::onServerStopping);
-
         BUS.addListener((PlayerEvent.PlayerLoggedInEvent event) -> {
             if (event.getEntity() instanceof ServerPlayer player) {
-                var data = WaypointSavedData.get(player.level());
-                PacketDistributor.sendToPlayer(player, new ClientBoundWaypointSyncPacket(data.getData()));
+                Common.getSavedDataManager().syncToPlayer(player);
+            }
+        });
+        BUS.addListener((PlayerEvent.PlayerChangedDimensionEvent event) -> {
+            if (event.getEntity() instanceof ServerPlayer player) {
+                Common.getSavedDataManager().syncToPlayer(player);
             }
         });
 
-        BUS.addListener((PlayerEvent.PlayerChangedDimensionEvent event) -> {
-            if (event.getEntity() instanceof ServerPlayer player) {
-                var data = WaypointSavedData.get(player.level());
-                PacketDistributor.sendToPlayer(player, new ClientBoundWaypointSyncPacket(data.getData()));
-            }
-        });
+        registerSavedDataTypes();
 
         Config.registerCommon(modContainer);
         Config.registerStartup(modContainer);
@@ -137,6 +132,22 @@ public class FoundryEngineMod {
         EngineEntities.register(modBus);
     }
 
+    private void registerSavedDataTypes() {
+        var manager = Common.getSavedDataManager();
+        manager.register(Common.id("waypoints"),
+                level -> de.luckymcdev.foundryengine.common.waypoint.storage.WaypointSavedData.get(level).getData(),
+                null);
+        manager.register(Common.id("areas"),
+                level -> de.luckymcdev.foundryengine.common.area.AreaSavedData.get(level).toNbt(),
+                null);
+        manager.register(Common.id("scene_graph"),
+                level -> de.luckymcdev.foundryengine.common.scene.storage.SceneSavedData.get(level).getData(),
+                null);
+        manager.register(Common.id("cutscene_manager"),
+                level -> de.luckymcdev.foundryengine.common.cutscene.storage.CutsceneSavedData.get(level).getData(),
+                null);
+    }
+
     private void commonSetup(FMLCommonSetupEvent event) {
         BundleEvents.Internal.postCommonSetup(event);
 
@@ -158,9 +169,8 @@ public class FoundryEngineMod {
         network.register(CutsceneActionPacket.DEFINITION);
         network.register(ScenePacket.DEFINITION);
         network.register(AreaPacket.DEFINITION);
-        network.register(ClientBoundAreaSyncPacket.DEFINITION);
         network.register(WaypointPacket.DEFINITION);
-        network.register(ClientBoundWaypointSyncPacket.DEFINITION);
+        network.register(SavedDataSyncPacket.DEFINITION);
     }
 
     private void clientSetup(FMLClientSetupEvent event) {

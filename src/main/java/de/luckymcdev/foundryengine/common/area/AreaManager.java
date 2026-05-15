@@ -1,7 +1,6 @@
 package de.luckymcdev.foundryengine.common.area;
 
 import de.luckymcdev.foundryengine.common.Common;
-import de.luckymcdev.foundryengine.common.network.packets.ClientBoundAreaSyncPacket;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
@@ -10,7 +9,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
@@ -88,17 +86,7 @@ public class AreaManager {
     }
 
     public void syncAreasToPlayer(ServerPlayer player) {
-        ResourceKey<Level> dimension = player.level().dimension();
-        List<Area> areas = getAreasForDimension(dimension);
-
-        var packet = ClientBoundAreaSyncPacket.create(dimension.identifier(), areas);
-        Common.getNetworkManager().sendToPlayer(packet, player);
-    }
-
-    public void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-        if (event.getEntity() instanceof ServerPlayer player) {
-            syncAreasToPlayer(player);
-        }
+        Common.getSavedDataManager().syncToPlayer(player);
     }
 
     public void onLevelLoad(LevelEvent.Load event) {

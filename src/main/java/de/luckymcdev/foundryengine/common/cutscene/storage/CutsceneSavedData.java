@@ -2,17 +2,14 @@ package de.luckymcdev.foundryengine.common.cutscene.storage;
 
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.cutscene.model.Cutscene;
-import de.luckymcdev.foundryengine.common.cutscene.network.CutscenePacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
 import net.minecraft.world.level.storage.SavedDataStorage;
-import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -81,11 +78,4 @@ public class CutsceneSavedData extends SavedData {
         this.setDirty();
     }
 
-    public void syncToPlayer(ServerPlayer player) {
-        PacketDistributor.sendToPlayer(player, new CutscenePacket(this.data));
-    }
-
-    public void syncToClients(ServerLevel level) {
-        PacketDistributor.sendToPlayersInDimension(level, new CutscenePacket(this.data));
-    }
 }
