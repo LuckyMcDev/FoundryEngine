@@ -2,6 +2,9 @@ package de.luckymcdev.foundryengine.client.waypoint;
 
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.render.WorldViewMatrix;
+import de.luckymcdev.foundryengine.common.Common;
+import de.luckymcdev.foundryengine.common.util.ChatIcons;
+import de.luckymcdev.foundryengine.common.util.color.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -13,17 +16,18 @@ import org.joml.Matrix4f;
 public class WaypointRenderer {
     public void renderWaypoints(RenderLevelStageEvent.AfterLevel context) {
         Minecraft mc = Client.getMc();
+        if (mc.level == null) return;
         MultiBufferSource.BufferSource bufferSource = mc.renderBuffers().bufferSource();
         Vec3 cameraPos = context.getLevelRenderState().cameraRenderState.pos;
         Font font = mc.font;
 
-        for (Waypoint wp : WaypointManager.getWaypoints()) {
-            Vec3 wpPos = new Vec3(wp.getX() + 0.5, wp.getY() + 1.2, wp.getZ() + 0.5);
+        for (var w : Common.getWaypointManager().getWaypoints(mc.level.dimension())) {
+            Vec3 wpPos = new Vec3(w.x() + 0.5, w.y() + 1.2, w.z() + 0.5);
             double dist = cameraPos.distanceTo(wpPos);
 
             String distText = String.format("%.1fb", dist);
 
-            Component icon = wp.icon();
+            Component icon = Component.literal(w.icon()).setStyle(ChatIcons.ICONS);
 
             float baseScale = 0.05f;
             float distScale = (float) Math.max(1.0, dist / 10.0);
@@ -35,7 +39,7 @@ public class WaypointRenderer {
                     .scale(finalScale, -finalScale, finalScale)
                     .buildModelView();
 
-            int color = wp.color().argb();
+            int color = new Color(w.color()).argb();
             float prefixWidth = font.width(icon);
             font.drawInBatch(
                     icon,

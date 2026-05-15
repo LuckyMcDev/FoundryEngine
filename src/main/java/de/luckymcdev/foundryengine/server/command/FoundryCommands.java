@@ -25,7 +25,8 @@ public class FoundryCommands {
             new TestCommand(),
             new EvalCommand(),
             new CutsceneCommand(),
-            new ScreenEffectCommand()
+            new ScreenEffectCommand(),
+            new WaypointCommand()
     );
 
     public static void registerAll(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext context) {

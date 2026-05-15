@@ -91,6 +91,13 @@ public class FoundryEngineMod {
         BUS.addListener(Common.getAreaManager()::onEntityRemoved);
         BUS.addListener(Common.getAreaManager()::onLevelLoad);
         BUS.addListener(Common.getAreaManager()::onServerStopping);
+        BUS.addListener((net.neoforged.neoforge.event.level.LevelEvent.Load event) -> {
+            if (event.getLevel() instanceof net.minecraft.world.level.Level level) {
+                Common.getWaypointManager().onLevelLoad(level);
+            }
+        });
+        BUS.addListener((net.neoforged.neoforge.event.server.ServerStoppingEvent event) ->
+                Common.getWaypointManager().onServerStopping(event));
         BUS.addListener((PlayerEvent.PlayerLoggedInEvent event) -> {
             if (event.getEntity() instanceof ServerPlayer player) {
                 Common.getSavedDataManager().syncToPlayer(player);

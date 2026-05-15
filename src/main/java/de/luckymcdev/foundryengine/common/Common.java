@@ -15,6 +15,7 @@ import de.luckymcdev.foundryengine.common.scene.SceneManager;
 import de.luckymcdev.foundryengine.common.util.FirstRun;
 import de.luckymcdev.foundryengine.common.util.ini.IniFile;
 import de.luckymcdev.foundryengine.common.util.ini.IniFileManager;
+import de.luckymcdev.foundryengine.common.waypoint.WaypointManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.RecipeManager;
@@ -59,6 +60,7 @@ public abstract class Common {
     private static final BlueprintManager BLUEPRINT_MANAGER = new BlueprintManager();
     private static final AreaManager AREA_MANAGER = new AreaManager();
     private static final SavedDataManager SAVED_DATA_MANAGER = new SavedDataManager();
+    private static final WaypointManager WAYPOINT_MANAGER = new WaypointManager();
     private static final IniFileManager INI_FILE_MANAGER;
 
     static {
@@ -111,6 +113,10 @@ public abstract class Common {
 
     public static SavedDataManager getSavedDataManager() {
         return SAVED_DATA_MANAGER;
+    }
+
+    public static WaypointManager getWaypointManager() {
+        return WAYPOINT_MANAGER;
     }
 
     public static @Nullable RecipeManager getRecipeManager() {

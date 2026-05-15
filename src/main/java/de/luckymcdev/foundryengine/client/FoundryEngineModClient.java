@@ -93,27 +93,20 @@ public class FoundryEngineModClient {
     }
 
     private void registerClientSyncHandlers() {
-        var manager = Common.getSavedDataManager();
-        manager.registerClientHandler(Common.id("waypoints"), data -> {
-            de.luckymcdev.foundryengine.client.waypoint.WaypointManager.clearWaypoints();
+        var savedataManager = Common.getSavedDataManager();
+        savedataManager.registerClientHandler(Common.id("waypoints"), data -> {
+            var dimension = Client.getMc().level != null ? Client.getMc().level.dimension() : null;
+            if (dimension == null) return;
+            var waypoints = new java.util.ArrayList<de.luckymcdev.foundryengine.common.waypoint.WaypointData>();
             var list = data.getListOrEmpty("Waypoints");
             for (int i = 0; i < list.size(); i++) {
-                var tag = list.getCompoundOrEmpty(i);
-                int x = tag.getInt("x").orElse(0);
-                int y = tag.getInt("y").orElse(0);
-                int z = tag.getInt("z").orElse(0);
-                String name = tag.getString("name").orElse("");
-                String iconStr = tag.getString("icon").orElse("I");
-                int colorInt = tag.getInt("color").orElse(0xFFFFFFFF);
-                var icon = net.minecraft.network.chat.Component.literal(iconStr).setStyle(de.luckymcdev.foundryengine.common.util.ChatIcons.ICONS);
-                var color = new de.luckymcdev.foundryengine.common.util.color.Color(colorInt);
-                de.luckymcdev.foundryengine.client.waypoint.WaypointManager.addWaypoint(
-                        new de.luckymcdev.foundryengine.client.waypoint.Waypoint(icon, name, new net.minecraft.core.Vec3i(x, y, z), color));
+                waypoints.add(de.luckymcdev.foundryengine.common.waypoint.WaypointData.fromNbt(list.getCompoundOrEmpty(i)));
             }
+            Common.getWaypointManager().replaceAll(dimension, waypoints);
         });
-        manager.registerClientHandler(Common.id("scene_graph"),
+        savedataManager.registerClientHandler(Common.id("scene_graph"),
                 tag -> de.luckymcdev.foundryengine.client.scene.ClientSceneSync.handleSync(tag));
-        manager.registerClientHandler(Common.id("cutscene_manager"),
+        savedataManager.registerClientHandler(Common.id("cutscene_manager"),
                 tag -> de.luckymcdev.foundryengine.client.cutscene.ClientCutsceneManager.handleSync(tag));
     }
 
