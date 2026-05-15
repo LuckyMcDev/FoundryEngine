@@ -187,8 +187,8 @@ public class FoundryEngineModClient {
         AreaRenderer.render();
         Client.getWaypointRenderer().renderWaypoints(event);
 
-        Matrix4f mvp = WorldViewMatrix.from(event).at(0, 110, 0).build();
-        SUZANNE.renderModel(mvp, EngineRenderPipelines.POSITION_COLOR_NORMAL);
+        Matrix4f modelView = WorldViewMatrix.from(event).at(0, 110, 0).scale(2).buildModelView();
+        SUZANNE.renderModel(modelView, EngineRenderPipelines.POSITION_COLOR_NORMAL);
 
         var selected = SceneSelectionManager.getSelected();
         if (ScenePanel.INSTANCE.showGizmos && selected != null) {

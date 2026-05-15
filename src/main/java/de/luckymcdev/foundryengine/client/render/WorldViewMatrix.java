@@ -1,6 +1,5 @@
 package de.luckymcdev.foundryengine.client.render;
 
-import de.luckymcdev.foundryengine.client.Client;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import org.joml.Matrix4f;
@@ -30,8 +29,8 @@ public class WorldViewMatrix {
      */
     public static WorldViewMatrix from(RenderLevelStageEvent.AfterLevel event) {
         return new WorldViewMatrix(
-                Client.PROJECTION,
-                Client.MODEL_VIEW,
+                event.getLevelRenderState().cameraRenderState.projectionMatrix,
+                event.getModelViewMatrix(),
                 event.getLevelRenderState().cameraRenderState.pos
         );
     }

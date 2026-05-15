@@ -2,7 +2,7 @@
 #version 330
 #moj_import <minecraft:light.glsl>
 #moj_import <minecraft:dynamictransforms.glsl>
-#moj_import <minecraft projection.glsl>
+#moj_import <minecraft:projection.glsl>
 
 in vec3 Position;
 in vec4 Color;

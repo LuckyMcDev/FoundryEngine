@@ -26,14 +26,13 @@ public class WaypointRenderer {
             double dist = cameraPos.distanceTo(wpPos);
 
             String distText = String.format("%.1fb", dist);
-
             Component icon = Component.literal(w.icon()).setStyle(ChatIcons.ICONS);
 
             float baseScale = 0.05f;
             float distScale = (float) Math.max(1.0, dist / 10.0);
             float finalScale = baseScale * distScale;
 
-            Matrix4f textMv = WorldViewMatrix.from(context)
+            Matrix4f iconMv = WorldViewMatrix.from(context)
                     .at((float) wpPos.x, (float) wpPos.y, (float) wpPos.z)
                     .billboard()
                     .scale(finalScale, -finalScale, finalScale)
@@ -41,19 +40,20 @@ public class WaypointRenderer {
 
             int color = new Color(w.color()).argb();
             float prefixWidth = font.width(icon);
+
             font.drawInBatch(
                     icon,
                     -prefixWidth / 2f, -10f,
                     color,
                     false,
-                    textMv,
+                    iconMv,
                     bufferSource,
                     Font.DisplayMode.SEE_THROUGH,
                     0,
                     15728880
             );
-            textMv.scale(0.6f);
 
+            Matrix4f textMv = new Matrix4f(iconMv).scale(0.6f);
             float distWidth = font.width(distText);
 
             font.drawInBatch(
