@@ -112,4 +112,15 @@ public class AreaSavedData extends SavedData {
         }
         return removed;
     }
+
+    public boolean updateArea(String id, Area updatedArea) {
+        for (int i = 0; i < areas.size(); i++) {
+            if (areas.get(i).id().equals(id)) {
+                areas.set(i, updatedArea);
+                setDirty();
+                return true;
+            }
+        }
+        return false;
+    }
 }

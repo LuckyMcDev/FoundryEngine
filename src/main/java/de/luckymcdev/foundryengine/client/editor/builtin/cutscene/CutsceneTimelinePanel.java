@@ -28,6 +28,7 @@ import imgui.type.ImInt;
 import imgui.type.ImString;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
@@ -244,12 +245,12 @@ public class CutsceneTimelinePanel extends EditorPanel {
 
         if (ImGui.button(ImIcons.FA.FA_PLUS + " Start##cs_node_add_start")) {
             CutsceneEditor.addNodeAtStart(c);
-            setStatus("Node added at start.");
+            sendChatStatus("Node added at start.");
         }
         ImGui.sameLine();
         if (ImGui.button(ImIcons.FA.FA_PLUS + " End##cs_node_add_end")) {
             CutsceneEditor.addNodeAtEnd(c);
-            setStatus("Node added at end.");
+            sendChatStatus("Node added at end.");
         }
 
         ImGui.spacing();
@@ -261,9 +262,9 @@ public class CutsceneTimelinePanel extends EditorPanel {
             boolean deleted = CutsceneEditor.removeFirstNode(c);
             if (deleted) {
                 CutsceneUiState.setSelected(null);
-                setStatus("Cutscene deleted (was single-point).");
+                sendChatStatus("Cutscene deleted (was single-point).");
             } else {
-                setStatus("First node removed.");
+                sendChatStatus("First node removed.");
             }
         }
         ImGui.sameLine();
@@ -271,9 +272,9 @@ public class CutsceneTimelinePanel extends EditorPanel {
             boolean deleted = CutsceneEditor.removeLastNode(c);
             if (deleted) {
                 CutsceneUiState.setSelected(null);
-                setStatus("Cutscene deleted (was single-point).");
+                sendChatStatus("Cutscene deleted (was single-point).");
             } else {
-                setStatus("Last node removed.");
+                sendChatStatus("Last node removed.");
             }
         }
         ImGui.popStyleColor(3);
@@ -283,7 +284,7 @@ public class CutsceneTimelinePanel extends EditorPanel {
         if (nodes == 2) {
             if (ImGui.button(ImIcons.FA.FA_BEZIER_CURVE + " Linearize##cs_node_linearize")) {
                 sendCommand("engine cutscene linearize " + c.getName());
-                setStatus("Linearized: " + c.getName());
+                sendChatStatus("Linearized: " + c.getName());
             }
             if (ImGui.isItemHovered())
                 ImGui.setTooltip("Straightens the tangent handles so the camera travels in a straight line.");
@@ -296,7 +297,7 @@ public class CutsceneTimelinePanel extends EditorPanel {
             if (!hasItem) {
                 if (ImGui.button(ImIcons.FA.FA_PENCIL + " Give Editor Item")) {
                     sendCommand("give " + mc.player.getName().getString() + " foundryengine:editor 1");
-                    setStatus("Editor item given. Hold RMB to drag points.");
+                    sendChatStatus("Editor item given. Hold RMB to drag points.");
                 }
             } else {
                 if (ImGui.button(ImIcons.FA.FA_PENCIL + " Editor Item (active) — click to remove")) {
@@ -633,7 +634,6 @@ public class CutsceneTimelinePanel extends EditorPanel {
             }
         }
 
-        // Show effective trigger time
         ImGui.textDisabled(String.format("Trigger at: %.2f (tick %d)", cmd.getEffectiveAt(), cmd.getTriggerTick(len)));
     }
 
@@ -724,10 +724,9 @@ public class CutsceneTimelinePanel extends EditorPanel {
         }
     }
 
-    private void setStatus(String message) {
+    private void sendChatStatus(String message) {
         if (Minecraft.getInstance().player != null) {
-            Minecraft.getInstance().player.sendSystemMessage(
-                    net.minecraft.network.chat.Component.literal(message));
+            Minecraft.getInstance().player.sendSystemMessage(Component.literal(message));
         }
     }
 

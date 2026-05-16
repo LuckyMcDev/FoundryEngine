@@ -12,8 +12,8 @@ import de.luckymcdev.foundryengine.common.area.AreaManager;
 import de.luckymcdev.foundryengine.common.network.packets.AreaPacket;
 import de.luckymcdev.foundryengine.common.network.packets.ServerBoundTeleportPacket;
 import imgui.ImGui;
-import imgui.flag.ImGuiInputTextFlags;
 import imgui.flag.ImGuiKey;
+import imgui.type.ImInt;
 import imgui.type.ImString;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -26,16 +26,23 @@ import java.util.List;
 public class AreaPanel extends EditorPanel {
     public static final AreaPanel INSTANCE = new AreaPanel();
     private final ImString newAreaName = new ImString(64);
-    private final ImString areaSizeX = new ImString("5", 16);
-    private final ImString areaSizeY = new ImString("4", 16);
-    private final ImString areaSizeZ = new ImString("5", 16);
-    private final ImString areaOffsetY = new ImString("0", 16);
+    private static final int WORLD_LIMIT = 30000000;
+    private final ImInt areaSizeX = new ImInt(5);
+    private final ImInt areaSizeY = new ImInt(4);
+    private final ImInt areaSizeZ = new ImInt(5);
+    private final ImInt areaOffsetY = new ImInt(0);
+    private final ImInt editMinX = new ImInt();
+    private final ImInt editMinY = new ImInt();
+    private final ImInt editMinZ = new ImInt();
+    private final ImInt editMaxX = new ImInt();
+    private final ImInt editMaxY = new ImInt();
+    private final ImInt editMaxZ = new ImInt();
+
     public boolean showDebugOutlines = false;
     private boolean showNewForm = false;
     private boolean showAreaDetails = false;
     private Area selectedArea = null;
-    private String statusMessage = "";
-    private long statusExpiry = 0L;
+    private String selectedAreaId = null;
 
     private AreaPanel() {
         super(Common.id("area_panel"), "Areas", ImIcons.FA.FA_MAP, Shortcut.ctrl(ImGuiKey.F4));
@@ -52,8 +59,9 @@ public class AreaPanel extends EditorPanel {
         renderMenuBar();
         ImGui.separator();
 
+        beginContent();
         renderAreaList();
-        renderStatus();
+        endContent();
     }
 
     private void renderMenuBar() {
@@ -91,7 +99,6 @@ public class AreaPanel extends EditorPanel {
         ClientLevel level = mc.level;
         AreaManager areaManager = Common.getAreaManager();
 
-        // Get areas for current dimension
         List<Area> areas = areaManager.getAreasForDimension(level.dimension());
 
         if (areas == null || areas.isEmpty()) {
@@ -109,6 +116,10 @@ public class AreaPanel extends EditorPanel {
                 if (ImGui.selectable(areaLabel, selectedArea != null && selectedArea.id().equals(area.id()))) {
                     selectedArea = area;
                     showAreaDetails = true;
+                    if (!area.id().equals(selectedAreaId)) {
+                        selectedAreaId = area.id();
+                        populateEditFields(area);
+                    }
                 }
             }
         }
@@ -125,60 +136,55 @@ public class AreaPanel extends EditorPanel {
             ImGui.setTooltip("Unique identifier for the area (no spaces recommended)");
         }
         ImGui.setNextItemWidth(-1);
-        boolean confirm = ImGui.inputTextWithHint("##newareaname", "e.g., spawn_area, pvp_zone", newAreaName,
-                ImGuiInputTextFlags.EnterReturnsTrue);
+        boolean nameConfirmed = ImGui.inputTextWithHint("##newareaname", "e.g., spawn_area, pvp_zone", newAreaName);
+        if (ImGui.isItemFocused() && ImGui.isKeyPressed(ImGuiKey.Enter)) {
+            nameConfirmed = true;
+        }
 
         ImGui.text("Size (blocks):");
         if (ImGui.isItemHovered()) {
             ImGui.setTooltip("Dimensions of the area in blocks (X=width, Y=height, Z=depth)");
         }
+
         ImGui.text("X:");
         ImGui.sameLine();
-        ImGui.setNextItemWidth(60);
-        ImGui.inputText("##sizeX", areaSizeX, ImGuiInputTextFlags.CharsDecimal);
+        ImGui.setNextItemWidth(80);
+        ImGui.inputInt("##sizeX", areaSizeX);
 
         ImGui.sameLine();
         ImGui.text("Y:");
         ImGui.sameLine();
-        ImGui.setNextItemWidth(60);
-        ImGui.inputText("##sizeY", areaSizeY, ImGuiInputTextFlags.CharsDecimal);
+        ImGui.setNextItemWidth(80);
+        ImGui.inputInt("##sizeY", areaSizeY);
 
         ImGui.sameLine();
         ImGui.text("Z:");
         ImGui.sameLine();
-        ImGui.setNextItemWidth(60);
-        ImGui.inputText("##sizeZ", areaSizeZ, ImGuiInputTextFlags.CharsDecimal);
+        ImGui.setNextItemWidth(80);
+        ImGui.inputInt("##sizeZ", areaSizeZ);
 
         ImGui.text("Vertical Offset:");
         if (ImGui.isItemHovered()) {
             ImGui.setTooltip("Vertical position adjustment (0 = centered on player)");
         }
         ImGui.sameLine();
-        ImGui.setNextItemWidth(60);
-        ImGui.inputText("##offsetY", areaOffsetY, ImGuiInputTextFlags.CharsDecimal);
+        ImGui.setNextItemWidth(80);
+        ImGui.inputInt("##offsetY", areaOffsetY);
         ImGui.sameLine();
         ImGui.textDisabled("(0 = centered on player)");
 
         boolean createClicked = ImGui.button("Create Area");
-        if (createClicked || confirm) {
+
+        if (createClicked || nameConfirmed) {
             String name = newAreaName.get().trim();
             if (name.isEmpty()) {
                 setStatus("Error: Area name cannot be empty");
+            } else if (areaSizeX.get() <= 0 || areaSizeY.get() <= 0 || areaSizeZ.get() <= 0) {
+                setStatus("Error: Size values must be positive");
             } else {
-                try {
-                    // Quick validation of size fields
-                    Integer.parseInt(areaSizeX.get());
-                    Integer.parseInt(areaSizeY.get());
-                    Integer.parseInt(areaSizeZ.get());
-                    Integer.parseInt(areaOffsetY.get());
-
-                    createNewArea(name);
-                    setStatus("Area creation request sent: " + name);
-                    showNewForm = false;
-                    newAreaName.set("");
-                } catch (NumberFormatException e) {
-                    setStatus("Error: Invalid number format in size fields");
-                }
+                createNewArea(name);
+                showNewForm = false;
+                newAreaName.set("");
             }
         }
 
@@ -214,18 +220,40 @@ public class AreaPanel extends EditorPanel {
         ImGui.text("Area Details: " + selectedArea.id());
         ImGui.separator();
 
-        AABB bounds = selectedArea.bounds();
-        ImGui.text(String.format("Position: (%.1f, %.1f, %.1f) to (%.1f, %.1f, %.1f)",
-                bounds.minX, bounds.minY, bounds.minZ,
-                bounds.maxX, bounds.maxY, bounds.maxZ));
+        ImGui.text("Dimension: " + selectedArea.dimension().identifier());
+        ImGui.separator();
 
+        ImGui.text("Position (Min):");
+        ImGui.setNextItemWidth(120);
+        ImGui.dragInt("X##editMinX", editMinX.getData(), 1f, -WORLD_LIMIT, WORLD_LIMIT);
+        ImGui.sameLine();
+        ImGui.setNextItemWidth(120);
+        ImGui.dragInt("Y##editMinY", editMinY.getData(), 1f, -WORLD_LIMIT, WORLD_LIMIT);
+        ImGui.sameLine();
+        ImGui.setNextItemWidth(120);
+        ImGui.dragInt("Z##editMinZ", editMinZ.getData(), 1f, -WORLD_LIMIT, WORLD_LIMIT);
+
+        ImGui.text("Position (Max):");
+        ImGui.setNextItemWidth(120);
+        ImGui.dragInt("X##editMaxX", editMaxX.getData(), 1f, -WORLD_LIMIT, WORLD_LIMIT);
+        ImGui.sameLine();
+        ImGui.setNextItemWidth(120);
+        ImGui.dragInt("Y##editMaxY", editMaxY.getData(), 1f, -WORLD_LIMIT, WORLD_LIMIT);
+        ImGui.sameLine();
+        ImGui.setNextItemWidth(120);
+        ImGui.dragInt("Z##editMaxZ", editMaxZ.getData(), 1f, -WORLD_LIMIT, WORLD_LIMIT);
+
+        AABB bounds = selectedArea.bounds();
         ImGui.text(String.format("Size: %.1f x %.1f x %.1f",
                 bounds.maxX - bounds.minX,
                 bounds.maxY - bounds.minY,
                 bounds.maxZ - bounds.minZ));
 
-        ImGui.text("Dimension: " + selectedArea.dimension().identifier());
+        if (ImGui.button("Save Changes")) {
+            saveAreaChanges();
+        }
 
+        ImGui.sameLine();
         if (ImGui.button("Teleport to Area")) {
             teleportToArea();
         }
@@ -241,70 +269,63 @@ public class AreaPanel extends EditorPanel {
         }
     }
 
-    private void createNewArea(String name) {
-        Minecraft mc = Minecraft.getInstance();
-        // Level and player checks are handled at the panel level, so we can assume they're available here
-
-        try {
-            // Parse size values
-            int sizeX = Integer.parseInt(areaSizeX.get());
-            int sizeY = Integer.parseInt(areaSizeY.get());
-            int sizeZ = Integer.parseInt(areaSizeZ.get());
-            int offsetY = Integer.parseInt(areaOffsetY.get());
-
-            // Validate sizes
-            if (sizeX <= 0 || sizeY <= 0 || sizeZ <= 0) {
-                setStatus("Error: Size values must be positive");
-                return;
-            }
-
-            // Create area around the player
-            Vec3 playerPos = mc.player.position();
-            double centerY = playerPos.y + offsetY;
-
-            Vec3 min = new Vec3(
-                    playerPos.x - sizeX / 2.0,
-                    centerY - sizeY / 2.0,
-                    playerPos.z - sizeZ / 2.0
-            );
-
-            Vec3 max = new Vec3(
-                    playerPos.x + sizeX / 2.0,
-                    centerY + sizeY / 2.0,
-                    playerPos.z + sizeZ / 2.0
-            );
-
-            Area newArea = Area.of(name, min, max, mc.level.dimension());
-
-            // Send to server to register the area
-            var packet = AreaPacket.create(newArea);
-            Common.getNetworkManager().sendToServer(packet);
-
-            setStatus("Area creation request sent: " + name);
-
-        } catch (NumberFormatException e) {
-            setStatus("Error: Invalid number format in size fields");
-        } catch (Exception e) {
-            setStatus("Error creating area: " + e.getMessage());
-        }
+    private void populateEditFields(Area area) {
+        AABB b = area.bounds();
+        editMinX.set((int) Math.floor(b.minX));
+        editMinY.set((int) Math.floor(b.minY));
+        editMinZ.set((int) Math.floor(b.minZ));
+        editMaxX.set((int) Math.ceil(b.maxX));
+        editMaxY.set((int) Math.ceil(b.maxY));
+        editMaxZ.set((int) Math.ceil(b.maxZ));
     }
 
-    private void renderStatus() {
-        if (!statusMessage.isEmpty()) {
-            if (System.currentTimeMillis() > statusExpiry) {
-                statusMessage = "";
-            } else {
-                ImGui.separator();
-                ImGui.textDisabled(statusMessage);
-            }
-        }
+    private void saveAreaChanges() {
+        if (selectedArea == null) return;
+
+        Vec3 min = new Vec3(editMinX.get(), editMinY.get(), editMinZ.get());
+        Vec3 max = new Vec3(editMaxX.get(), editMaxY.get(), editMaxZ.get());
+
+        Area updatedArea = Area.of(selectedArea.id(), min, max, selectedArea.dimension());
+
+        var packet = AreaPacket.update(updatedArea);
+        Common.getNetworkManager().sendToServer(packet);
+
+        setStatus("Area update request sent: " + selectedArea.id());
+    }
+
+    private void createNewArea(String name) {
+        Minecraft mc = Minecraft.getInstance();
+
+        int sizeX = areaSizeX.get();
+        int sizeY = areaSizeY.get();
+        int sizeZ = areaSizeZ.get();
+        int offsetY = areaOffsetY.get();
+
+        Vec3 playerPos = mc.player.position();
+        double centerY = playerPos.y + offsetY;
+
+        Vec3 min = new Vec3(
+                playerPos.x - sizeX / 2.0,
+                centerY - sizeY / 2.0,
+                playerPos.z - sizeZ / 2.0
+        );
+
+        Vec3 max = new Vec3(
+                playerPos.x + sizeX / 2.0,
+                centerY + sizeY / 2.0,
+                playerPos.z + sizeZ / 2.0
+        );
+
+        Area newArea = Area.of(name, min, max, mc.level.dimension());
+
+        var packet = AreaPacket.create(newArea);
+        Common.getNetworkManager().sendToServer(packet);
+
+        setStatus("Area creation request sent: " + name);
     }
 
     private void teleportToArea() {
         if (selectedArea == null) return;
-
-        Minecraft mc = Minecraft.getInstance();
-        // Level and player checks are handled at the panel level
 
         AABB bounds = selectedArea.bounds();
         Vector3f center = new Vector3f(
@@ -321,21 +342,11 @@ public class AreaPanel extends EditorPanel {
     private void deleteArea() {
         if (selectedArea == null) return;
 
-        Minecraft mc = Minecraft.getInstance();
-        // Level check is handled at the panel level
-
-        // Send removal request to server
         var packet = AreaPacket.remove(selectedArea.id(), selectedArea.dimension().identifier());
         Common.getNetworkManager().sendToServer(packet);
 
         setStatus("Area deletion request sent: " + selectedArea.id());
         showAreaDetails = false;
         selectedArea = null;
-    }
-
-
-    private void setStatus(String message) {
-        statusMessage = message;
-        statusExpiry = System.currentTimeMillis() + 4000L;
     }
 }

@@ -33,6 +33,21 @@ public class AreaManager {
         areasByDimension.computeIfAbsent(area.dimension(), k -> new ArrayList<>()).add(area);
     }
 
+    public void update(@Nullable ServerLevel level, Area updatedArea) {
+        if (level != null) {
+            AreaSavedData.get(level).updateArea(updatedArea.id(), updatedArea);
+        }
+        List<Area> list = areasByDimension.get(updatedArea.dimension());
+        if (list != null) {
+            for (int i = 0; i < list.size(); i++) {
+                if (list.get(i).id().equals(updatedArea.id())) {
+                    list.set(i, updatedArea);
+                    break;
+                }
+            }
+        }
+    }
+
     public void remove(@Nullable ServerLevel level, Area area) {
         if (level != null) {
             AreaSavedData.get(level).removeArea(area.id());

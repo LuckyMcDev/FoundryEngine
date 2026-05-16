@@ -44,8 +44,6 @@ public class CutscenePanel extends EditorPanel {
     private int lastSelectedCutsceneIndex = Integer.MIN_VALUE;
     private int selectedIndex = -1;
     private boolean showNewForm = false;
-    private String statusMessage = "";
-    private long statusExpiry = 0L;
 
     private CutscenePanel() {
         super(Common.id("cutscene_panel"), "Cutscenes", ImIcons.FA.FA_FILM, Shortcut.ctrl(ImGuiKey.F3));
@@ -62,12 +60,12 @@ public class CutscenePanel extends EditorPanel {
         renderMenuBar();
         ImGui.separator();
 
+        beginContent();
         List<Cutscene> cutscenes = CutsceneRenderer.cutscenes;
         renderLeftPanel(cutscenes);
         ImGui.sameLine();
         renderRightPanel(cutscenes);
-
-        renderStatus();
+        endContent();
     }
 
     @Override
@@ -331,22 +329,6 @@ public class CutscenePanel extends EditorPanel {
             setStatus("Deleted: " + c.getName());
         }
         ImGui.popStyleColor(3);
-    }
-
-    private void renderStatus() {
-        if (!statusMessage.isEmpty()) {
-            if (System.currentTimeMillis() > statusExpiry) {
-                statusMessage = "";
-            } else {
-                ImGui.separator();
-                ImGui.textDisabled(statusMessage);
-            }
-        }
-    }
-
-    private void setStatus(String message) {
-        statusMessage = message;
-        statusExpiry = System.currentTimeMillis() + 4000L;
     }
 
     private void requestSync() {
