@@ -28,13 +28,13 @@ public class ScreenEffectInstance {
         return this.holdTicks + this.introTicks + this.outroTicks;
     }
 
-    public void update(float tickDelta) {
+    public void update(float tickDelta, ClientScreenEffectManager owner) {
         Minecraft mc = Minecraft.getInstance();
 
         // For "none" type, just complete immediately
         if (this.isNone) {
-            ClientScreenEffectManager.screenEffect = null;
-            if (!ClientCutsceneManager.inCutscene()) {
+            owner.clearActiveEffect();
+            if (!de.luckymcdev.foundryengine.client.Client.getCutsceneManager().inCutscene()) {
                 mc.options.hideGui = false;
             }
             return;
@@ -46,9 +46,9 @@ public class ScreenEffectInstance {
                 mc.gameRenderer.setPostEffect(this.resourceLocation);
             }
         } else {
-            ClientScreenEffectManager.screenEffect = null;
+            owner.clearActiveEffect();
             mc.gameRenderer.clearPostEffect();
-            if (!ClientCutsceneManager.inCutscene()) {
+            if (!de.luckymcdev.foundryengine.client.Client.getCutsceneManager().inCutscene()) {
                 mc.options.hideGui = false;
             }
         }

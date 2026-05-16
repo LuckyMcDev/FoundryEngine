@@ -6,7 +6,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import de.luckymcdev.foundryengine.common.Common;
-import de.luckymcdev.foundryengine.common.waypoint.WaypointData;
+import de.luckymcdev.foundryengine.common.waypoint.Waypoint;
 import de.luckymcdev.foundryengine.server.command.EngineCommand;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
@@ -48,7 +48,7 @@ public class WaypointCommand implements EngineCommand {
         BlockPos pos = BlockPosArgument.getBlockPos(ctx, "pos");
         String name = StringArgumentType.getString(ctx, "name");
 
-        Common.getWaypointManager().addWaypoint(level, new WaypointData(name, icon, pos.getX(), pos.getY(), pos.getZ(), color));
+        Common.getWaypointManager().addWaypoint(level, new Waypoint(name, icon, pos.getX(), pos.getY(), pos.getZ(), color));
         Common.getSavedDataManager().syncToDimension(level);
         sendSuccess(ctx, "Added waypoint [" + name + "] at " + pos.toShortString(), true);
         return 1;
@@ -82,14 +82,14 @@ public class WaypointCommand implements EngineCommand {
         CommandSourceStack source = ctx.getSource();
         ServerLevel level = source.getLevel();
 
-        List<WaypointData> waypoints = Common.getWaypointManager().getWaypoints(level.dimension());
+        List<Waypoint> waypoints = Common.getWaypointManager().getWaypoints(level.dimension());
         if (waypoints.isEmpty()) {
             sendInfo(ctx, "No waypoints in this dimension.");
             return 1;
         }
 
         sendInfo(ctx, "Waypoints (" + waypoints.size() + "):");
-        for (WaypointData w : waypoints) {
+        for (Waypoint w : waypoints) {
             sendInfo(ctx, "  [" + w.name() + "] at (" + w.x() + ", " + w.y() + ", " + w.z() + ")");
         }
         return 1;

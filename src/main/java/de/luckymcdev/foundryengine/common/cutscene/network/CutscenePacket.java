@@ -1,7 +1,6 @@
 package de.luckymcdev.foundryengine.common.cutscene.network;
 
 import de.luckymcdev.foundryengine.common.Common;
-import de.luckymcdev.foundryengine.common.cutscene.storage.CutsceneSavedData;
 import de.luckymcdev.foundryengine.common.network.AbstractPacket;
 import de.luckymcdev.foundryengine.common.network.PacketBounds;
 import de.luckymcdev.foundryengine.common.util.PermissionChecks;
@@ -40,7 +39,7 @@ public record CutscenePacket(CompoundTag nbt) implements AbstractPacket<Cutscene
 
     @Override
     public void handleClient(IPayloadContext ctx) {
-        ctx.enqueueWork(() -> de.luckymcdev.foundryengine.client.cutscene.ClientCutsceneManager.handlePacket(this));
+        ctx.enqueueWork(() -> de.luckymcdev.foundryengine.client.Client.getCutsceneManager().handlePacket(this));
     }
 
     @Override
@@ -50,8 +49,14 @@ public record CutscenePacket(CompoundTag nbt) implements AbstractPacket<Cutscene
         if (!PermissionChecks.COMMANDS_GAMEMASTER.check(player.permissions())) return;
 
         ServerLevel level = player.level();
-        CutsceneSavedData data = CutsceneSavedData.get(level);
-        data.setData(this.nbt);
+
+        // Client explicitly requested a re-sync (do not mutate persistent data).
+        if (this.nbt.getBooleanOr("Request", false)) {
+            Common.getSavedDataManager().syncToPlayer(player);
+            return;
+        }
+
+        Common.getCutsceneManager().applyFullNbt(level, this.nbt);
         Common.getSavedDataManager().syncToDimension(level);
     }
 }

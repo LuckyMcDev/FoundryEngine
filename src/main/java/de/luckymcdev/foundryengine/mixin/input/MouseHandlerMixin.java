@@ -1,7 +1,6 @@
 package de.luckymcdev.foundryengine.mixin.input;
 
 import de.luckymcdev.foundryengine.client.Client;
-import de.luckymcdev.foundryengine.client.cutscene.ClientCutsceneManager;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiManager;
 import de.luckymcdev.foundryengine.interfaces.EngineMouseHandler;
 import net.minecraft.client.Minecraft;
@@ -35,7 +34,8 @@ public class MouseHandlerMixin implements EngineMouseHandler {
             return;
         }
 
-        if (Minecraft.getInstance().screen == null && ClientCutsceneManager.shouldBlockInput()) {
+        // In-world cutscene editor uses scroll to push/pull points.
+        if (Minecraft.getInstance().screen == null && Client.getCutsceneEditor().onScroll(vertical)) {
             ci.cancel();
         }
     }

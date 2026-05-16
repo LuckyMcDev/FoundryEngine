@@ -1,16 +1,15 @@
 package de.luckymcdev.foundryengine.client.cutscene;
 
+import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.common.cutscene.model.CommandAttachment;
 import de.luckymcdev.foundryengine.common.cutscene.model.Cutscene;
 import de.luckymcdev.foundryengine.common.cutscene.model.EffectAttachment;
 import de.luckymcdev.foundryengine.common.cutscene.network.CutsceneCommandPacket;
 import de.luckymcdev.foundryengine.common.cutscene.network.CutscenePacket;
 import de.luckymcdev.foundryengine.common.cutscene.util.LerpType;
-import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.entity.player.Input;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
@@ -19,22 +18,31 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.UUID;
 
+/**
+ * Client-side cutscene playback manager.
+ * <p>
+ * Owned by {@link Client} as a singleton instance (not static state).
+ */
 public class ClientCutsceneManager {
     public static final double RENDER_PLAYER_RANGE = 1.0;
-    private static final ArrayList<QueuedCutscene> cutsceneQueue = new ArrayList<>();
-    public static PlayingCutscene currentCutscene;
-    public static float holdTimeEnd;
-    public static float holdTimeStart;
-    public static float currentLengthInTicks;
-    public static float currentAgeInTicks;
-    public static LerpType currentLerpType = LerpType.LINEAR;
-    public static Vec3 pos = Vec3.ZERO;
-    public static Vec2 rot = new Vec2(0, 0);
-    private static boolean previewActive = false;
-    private static Cutscene previewCutscene = null;
-    private static float previewT = 0f;
 
-    public static void clientTick() {
+    private final ArrayList<QueuedCutscene> cutsceneQueue = new ArrayList<>();
+
+    private PlayingCutscene currentCutscene;
+    private float holdTimeEnd;
+    private float holdTimeStart;
+    private float currentLengthInTicks;
+    private float currentAgeInTicks;
+    private LerpType currentLerpType = LerpType.LINEAR;
+
+    private Vec3 pos = Vec3.ZERO;
+    private Vec2 rot = new Vec2(0, 0);
+
+    private boolean previewActive = false;
+    private Cutscene previewCutscene = null;
+    private float previewT = 0f;
+
+    public void clientTick() {
         Minecraft mc = Minecraft.getInstance();
 
         if (mc.level == null || mc.player == null) {
@@ -42,27 +50,26 @@ public class ClientCutsceneManager {
             cutsceneQueue.clear();
             clearPreview();
         }
-
     }
 
-    public static void setPreview(Cutscene cutscene, float t) {
+    public void setPreview(Cutscene cutscene, float t) {
         if (inCutscene()) return;
         previewActive = cutscene != null;
         previewCutscene = cutscene;
         previewT = net.minecraft.util.Mth.clamp(t, 0f, 1f);
     }
 
-    public static void clearPreview() {
+    public void clearPreview() {
         previewActive = false;
         previewCutscene = null;
         previewT = 0f;
     }
 
-    public static boolean isCameraOverrideDisabled() {
+    public boolean isCameraOverrideDisabled() {
         return !inCutscene() && !previewActive;
     }
 
-    public static void renderTick() {
+    public void renderTick() {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null || mc.player == null) return;
 
@@ -77,11 +84,6 @@ public class ClientCutsceneManager {
 
         mc.options.hideGui = true;
 
-        if (mc.screen == null && shouldBlockInput()) {
-            KeyMapping.releaseAll();
-            mc.player.input.keyPresses = Input.EMPTY;
-        }
-
         float deltaTicks = mc.getDeltaTracker().getGameTimeDeltaTicks();
 
         if (currentCutscene == null) {
@@ -92,7 +94,7 @@ public class ClientCutsceneManager {
         if (currentAgeInTicks >= total) {
             if (cutsceneQueue.isEmpty()) {
                 currentCutscene = null;
-                if (!ClientScreenEffectManager.inScreenEffect()) {
+                if (!Client.getCutsceneScreenEffectManager().inScreenEffect()) {
                     mc.options.hideGui = false;
                 }
                 return;
@@ -112,18 +114,17 @@ public class ClientCutsceneManager {
         currentCutscene.tickScreenEffects(t, currentLengthInTicks);
     }
 
-    public static void handlePacket(CutscenePacket packet) {
+    public void handlePacket(CutscenePacket packet) {
         CompoundTag tag = packet.nbt();
 
         if (tag.getBooleanOr("Cancel", false)) {
+            Client.getCutsceneScreenEffectManager().stopEffect();
             if (cutsceneQueue.isEmpty()) {
                 currentCutscene = null;
                 currentLengthInTicks = 0;
                 holdTimeEnd = 0;
                 holdTimeStart = 0;
-                if (!ClientScreenEffectManager.inScreenEffect()) {
-                    Minecraft.getInstance().options.hideGui = false;
-                }
+                Minecraft.getInstance().options.hideGui = false;
                 return;
             }
             setCutscene(cutsceneQueue.getFirst());
@@ -156,14 +157,21 @@ public class ClientCutsceneManager {
             PlayingCutscene playingCutscene = new PlayingCutscene(cutscene, startUuid, endUuid);
             queueCutscene(playingCutscene, length, easing, holdStart, holdEnd);
         }
-
     }
 
-    public static void handleSync(CompoundTag tag) {
-        CutsceneRenderer.setCutscenes(de.luckymcdev.foundryengine.common.cutscene.storage.CutsceneSavedData.makeList(tag));
+    public boolean inCutscene() {
+        return currentCutscene != null;
     }
 
-    private static void setCutscene(QueuedCutscene queuedCutscene) {
+    public Vec3 getPos() {
+        return pos;
+    }
+
+    public Vec2 getRot() {
+        return rot;
+    }
+
+    private void setCutscene(QueuedCutscene queuedCutscene) {
         currentCutscene = queuedCutscene.cutscene;
         currentLengthInTicks = queuedCutscene.length;
         currentLerpType = queuedCutscene.lerpType;
@@ -173,23 +181,15 @@ public class ClientCutsceneManager {
         cutsceneQueue.removeFirst();
     }
 
-    public static void queueCutscene(PlayingCutscene cutscene, float length, LerpType lerpType, float holdStart, float holdEnd) {
+    public void queueCutscene(PlayingCutscene cutscene, float length, LerpType lerpType, float holdStart, float holdEnd) {
         cutsceneQueue.add(new QueuedCutscene(cutscene, length, lerpType, holdStart, holdEnd));
-    }
-
-    public static boolean inCutscene() {
-        return currentCutscene != null;
-    }
-
-    public static boolean shouldBlockInput() {
-        return inCutscene() || ClientScreenEffectManager.disableMovement();
     }
 
     public record QueuedCutscene(PlayingCutscene cutscene, float length, LerpType lerpType, float holdStart,
                                  float holdEnd) {
     }
 
-    public static final class PlayingCutscene {
+    public final class PlayingCutscene {
         public final Cutscene cutscene;
         public final UUID startPlayerUuid;
         public final UUID endPlayerUuid;
@@ -258,7 +258,13 @@ public class ClientCutsceneManager {
                 EffectAttachment eff = effects.get(i);
                 if (rawT + 1e-6f < eff.getAt()) continue;
                 firedEffects[i] = true;
-                ClientScreenEffectManager.startEffect(eff.getEffectName(), eff.getIntroTicks(cutsceneLength), eff.getHoldTicks(cutsceneLength), eff.getOutroTicks(cutsceneLength), eff.getLerpType());
+                Client.getCutsceneScreenEffectManager().startEffect(
+                        eff.getEffectName(),
+                        eff.getIntroTicks(cutsceneLength),
+                        eff.getHoldTicks(cutsceneLength),
+                        eff.getOutroTicks(cutsceneLength),
+                        eff.getLerpType()
+                );
             }
 
             // Fire commands
@@ -272,3 +278,4 @@ public class ClientCutsceneManager {
         }
     }
 }
+

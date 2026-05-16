@@ -11,7 +11,7 @@ import de.luckymcdev.foundryengine.common.network.packets.ServerBoundTeleportPac
 import de.luckymcdev.foundryengine.common.network.packets.WaypointPacket;
 import de.luckymcdev.foundryengine.common.util.ChatIcons;
 import de.luckymcdev.foundryengine.common.util.color.Color;
-import de.luckymcdev.foundryengine.common.waypoint.WaypointData;
+import de.luckymcdev.foundryengine.common.waypoint.Waypoint;
 import imgui.ImGui;
 import imgui.flag.ImGuiColorEditFlags;
 import imgui.type.ImInt;
@@ -38,7 +38,7 @@ public class WaypointPanel extends EditorPanel {
     private final ImInt selectedIconIndex = new ImInt(0);
     private int newColor = Color.TURQUOISE.argb();
     private boolean showNewForm = false;
-    private WaypointData selectedWaypoint = null;
+    private Waypoint selectedWaypoint = null;
     private WaypointPanel() {
         super(Common.id("waypoint_panel"), "Waypoints", ImIcons.FA.FA_MAP_PIN, Shortcut.empty());
         this.category = PanelCategory.TOOLS;
@@ -92,7 +92,7 @@ public class WaypointPanel extends EditorPanel {
 
         Minecraft mc = Minecraft.getInstance();
         ClientLevel level = mc.level;
-        List<WaypointData> waypoints = Common.getWaypointManager().getWaypoints(level.dimension());
+        List<Waypoint> waypoints = Common.getWaypointManager().getWaypoints(level.dimension());
 
         if (waypoints.isEmpty()) {
             ImGui.textDisabled("No waypoints in current dimension");
@@ -100,7 +100,7 @@ public class WaypointPanel extends EditorPanel {
             ImGui.text("Waypoints in " + level.dimension().identifier() + ":");
             ImGui.separator();
 
-            for (WaypointData wp : waypoints) {
+            for (Waypoint wp : waypoints) {
                 renderWaypointEntry(wp);
             }
         }
@@ -113,7 +113,7 @@ public class WaypointPanel extends EditorPanel {
         ImGui.endChild();
     }
 
-    private void renderWaypointEntry(WaypointData wp) {
+    private void renderWaypointEntry(Waypoint wp) {
         float colorR = ((wp.color() >> 16) & 0xFF) / 255.0f;
         float colorG = ((wp.color() >> 8) & 0xFF) / 255.0f;
         float colorB = (wp.color() & 0xFF) / 255.0f;
@@ -208,7 +208,7 @@ public class WaypointPanel extends EditorPanel {
     private void renderWaypointDetails() {
         if (selectedWaypoint == null) return;
 
-        WaypointData wp = selectedWaypoint;
+        Waypoint wp = selectedWaypoint;
         ImGui.text("Waypoint Details: " + wp.name());
         ImGui.separator();
 
@@ -250,7 +250,7 @@ public class WaypointPanel extends EditorPanel {
         setStatus("Waypoint creation request sent: " + name);
     }
 
-    private void teleportTo(WaypointData wp) {
+    private void teleportTo(Waypoint wp) {
         if (Client.getConnection() != null) {
             Client.getConnection().send(new ServerBoundTeleportPacket(
                     new Vector3f(wp.x() + 0.5f, wp.y() + 1.0f, wp.z() + 0.5f)
@@ -259,7 +259,7 @@ public class WaypointPanel extends EditorPanel {
         }
     }
 
-    private void deleteWaypoint(WaypointData wp) {
+    private void deleteWaypoint(Waypoint wp) {
         ClientPacketDistributor.sendToServer(WaypointPacket.remove(wp.x(), wp.y(), wp.z()));
         setStatus("Waypoint deletion request sent: " + wp.name());
         if (selectedWaypoint == wp) {

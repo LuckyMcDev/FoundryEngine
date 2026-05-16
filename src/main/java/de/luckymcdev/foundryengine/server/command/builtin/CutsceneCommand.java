@@ -8,9 +8,7 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.cutscene.model.Cutscene;
 import de.luckymcdev.foundryengine.common.cutscene.network.CutscenePacket;
-import de.luckymcdev.foundryengine.common.cutscene.storage.CutsceneSavedData;
 import de.luckymcdev.foundryengine.common.cutscene.util.LerpType;
-import de.luckymcdev.foundryengine.common.cutscene.util.ServerCutsceneManager;
 import de.luckymcdev.foundryengine.common.easing.BezierPath;
 import de.luckymcdev.foundryengine.server.command.EngineCommand;
 import net.minecraft.commands.CommandBuildContext;
@@ -28,21 +26,21 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class CutsceneCommand implements EngineCommand {
     private static final SuggestionProvider<CommandSourceStack> CUTSCENE_SUGGESTIONS = (context, builder) -> {
         ServerLevel level = context.getSource().getLevel();
         return SharedSuggestionProvider.suggestResource(
-                CutsceneSavedData.get(level).getSuggestions(),
+                Common.getCutsceneManager().getSuggestions(level),
                 builder
         );
     };
 
     private static final SuggestionProvider<CommandSourceStack> EASING_SUGGESTIONS = (context, builder) ->
             SharedSuggestionProvider.suggest(
-                    java.util.Arrays.stream(LerpType.values()).map(Enum::name),
+                    Arrays.stream(LerpType.values()).map(Enum::name),
                     builder
             );
 
@@ -119,8 +117,7 @@ public class CutsceneCommand implements EngineCommand {
 
     private int resetAll(CommandContext<CommandSourceStack> ctx) {
         ServerLevel level = ctx.getSource().getLevel();
-        CutsceneSavedData data = CutsceneSavedData.get(level);
-        data.setData(new CompoundTag());
+        Common.getCutsceneManager().clear(level);
         Common.getSavedDataManager().syncToDimension(level);
         sendSuccess(ctx, "All cutscenes removed.", true);
         return 1;
@@ -128,7 +125,9 @@ public class CutsceneCommand implements EngineCommand {
 
     private int listCutscenes(CommandContext<CommandSourceStack> ctx) {
         ServerLevel level = ctx.getSource().getLevel();
-        List<Cutscene> cutscenes = CutsceneSavedData.get(level).getCutscenes();
+        var manager = Common.getCutsceneManager();
+        if (!manager.isLoaded(level.dimension())) manager.loadFromLevel(level);
+        List<Cutscene> cutscenes = manager.getCutscenes(level.dimension());
         sendInfo(ctx, "There are " + cutscenes.size() + " cutscenes:");
         for (Cutscene cutscene : cutscenes) {
             sendInfo(ctx, "  " + cutscene.getName());
@@ -140,21 +139,16 @@ public class CutsceneCommand implements EngineCommand {
         ServerPlayer player = getPlayer(ctx);
         String name = StringArgumentType.getString(ctx, "name");
         ServerLevel level = ctx.getSource().getLevel();
-        CutsceneSavedData data = CutsceneSavedData.get(level);
-        List<Cutscene> cutscenes = new ArrayList<>(data.getCutscenes());
-
-        for (Cutscene cutscene : cutscenes) {
-            if (cutscene.getName().equals(name)) {
-                sendFailure(ctx, "Cutscene of name [" + name + "] already exists!");
-                return 0;
-            }
+        var manager = Common.getCutsceneManager();
+        if (!manager.isLoaded(level.dimension())) manager.loadFromLevel(level);
+        if (manager.find(level.dimension(), name) != null) {
+            sendFailure(ctx, "Cutscene of name [" + name + "] already exists!");
+            return 0;
         }
 
         BezierPath path = new BezierPath(player.getEyePosition());
         Vec2 rot = new Vec2(player.getXRot(), player.getYRot());
-        cutscenes.add(new Cutscene(name, rot, rot, path));
-
-        data.setCutscenes(cutscenes);
+        manager.add(level, new Cutscene(name, rot, rot, path));
         Common.getSavedDataManager().syncToDimension(level);
         sendSuccess(ctx, "Added cutscene: " + name, true);
         return 1;
@@ -164,14 +158,13 @@ public class CutsceneCommand implements EngineCommand {
         ServerLevel level = ctx.getSource().getLevel();
         Identifier id = IdentifierArgument.getId(ctx, "name");
         String name = id.getPath();
-        CutsceneSavedData data = CutsceneSavedData.get(level);
-        List<Cutscene> cutscenes = new ArrayList<>(data.getCutscenes());
-        boolean removed = cutscenes.removeIf(c -> c.getName().equals(name));
+        var manager = Common.getCutsceneManager();
+        if (!manager.isLoaded(level.dimension())) manager.loadFromLevel(level);
+        boolean removed = manager.remove(level, name);
         if (!removed) {
             sendFailure(ctx, "No cutscene found with name: " + name);
             return 0;
         }
-        data.setCutscenes(cutscenes);
         Common.getSavedDataManager().syncToDimension(level);
         sendSuccess(ctx, "Removed cutscene: " + name, true);
         return 1;
@@ -181,16 +174,9 @@ public class CutsceneCommand implements EngineCommand {
         ServerLevel level = ctx.getSource().getLevel();
         Identifier id = IdentifierArgument.getId(ctx, "name");
         String name = id.getPath();
-        CutsceneSavedData data = CutsceneSavedData.get(level);
-        List<Cutscene> cutscenes = new ArrayList<>(data.getCutscenes());
-
-        Cutscene target = null;
-        for (Cutscene c : cutscenes) {
-            if (c.getName().equals(name)) {
-                target = c;
-                break;
-            }
-        }
+        var manager = Common.getCutsceneManager();
+        if (!manager.isLoaded(level.dimension())) manager.loadFromLevel(level);
+        Cutscene target = manager.find(level.dimension(), name);
         if (target == null) {
             sendFailure(ctx, "No cutscene found with name: " + name);
             return 0;
@@ -207,7 +193,7 @@ public class CutsceneCommand implements EngineCommand {
         target.path.getPoints().get(1).setPos(tangent);
         target.path.getPoints().get(2).setPos(tangent);
 
-        data.setCutscenes(cutscenes);
+        manager.persist(level);
         Common.getSavedDataManager().syncToDimension(level);
         sendInfo(ctx, "Linearized cutscene: " + name);
         return 1;
@@ -215,14 +201,14 @@ public class CutsceneCommand implements EngineCommand {
 
     private int cancelCutscene(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         ServerPlayer player = EntityArgument.getPlayer(ctx, "player");
-        if (!ServerCutsceneManager.inCutscene(player)) {
+        if (!Common.getCutsceneSessionManager().inCutscene(player)) {
             sendFailure(ctx, player.getName().getString() + " is not viewing any cutscenes.");
             return 0;
         }
         CompoundTag tag = new CompoundTag();
         tag.putBoolean("Cancel", true);
         PacketDistributor.sendToPlayer(player, new CutscenePacket(tag));
-        ServerCutsceneManager.cancelCutscene(player);
+        Common.getCutsceneSessionManager().cancelCutscene(player);
         return 1;
     }
 
@@ -234,11 +220,9 @@ public class CutsceneCommand implements EngineCommand {
         Identifier id = IdentifierArgument.getId(ctx, "name");
         String name = id.getPath();
 
-        CutsceneSavedData data = CutsceneSavedData.get(level);
-        Cutscene cutscene = data.getCutscenes().stream()
-                .filter(c -> c.getName().equals(name))
-                .findFirst()
-                .orElse(null);
+        var manager = Common.getCutsceneManager();
+        if (!manager.isLoaded(level.dimension())) manager.loadFromLevel(level);
+        Cutscene cutscene = manager.find(level.dimension(), name);
 
         if (cutscene == null) {
             sendFailure(ctx, "No cutscene found with name: " + name);
@@ -261,7 +245,7 @@ public class CutsceneCommand implements EngineCommand {
 
         Common.getSavedDataManager().syncToPlayer(targetPlayer);
         int total = length + holdStart + holdEnd;
-        ServerCutsceneManager.addInstance(targetPlayer, total);
+        Common.getCutsceneSessionManager().addInstance(targetPlayer, total);
         PacketDistributor.sendToPlayer(targetPlayer, new CutscenePacket(tag));
 
         return 1;

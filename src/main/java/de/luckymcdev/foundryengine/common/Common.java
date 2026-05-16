@@ -6,6 +6,8 @@ import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.common.area.AreaManager;
 import de.luckymcdev.foundryengine.common.blueprint.BlueprintManager;
 import de.luckymcdev.foundryengine.common.bundle.BundleManager;
+import de.luckymcdev.foundryengine.common.cutscene.CutsceneManager;
+import de.luckymcdev.foundryengine.common.cutscene.CutsceneSessionManager;
 import de.luckymcdev.foundryengine.common.exceptions.EngineException;
 import de.luckymcdev.foundryengine.common.exceptions.UtilityClassException;
 import de.luckymcdev.foundryengine.common.game.stage.GameStageHandler;
@@ -57,6 +59,8 @@ public abstract class Common {
     private static final NetworkManager NETWORK_MANAGER = new NetworkManager();
     private static final BlueprintManager BLUEPRINT_MANAGER = new BlueprintManager();
     private static final AreaManager AREA_MANAGER = new AreaManager();
+    private static final CutsceneManager CUTSCENE_MANAGER = new CutsceneManager();
+    private static final CutsceneSessionManager CUTSCENE_SESSION_MANAGER = new CutsceneSessionManager();
     private static final SavedDataManager SAVED_DATA_MANAGER = new SavedDataManager();
     private static final WaypointManager WAYPOINT_MANAGER = new WaypointManager();
     private static final IniFileManager INI_FILE_MANAGER;
@@ -103,6 +107,14 @@ public abstract class Common {
 
     public static AreaManager getAreaManager() {
         return AREA_MANAGER;
+    }
+
+    public static CutsceneManager getCutsceneManager() {
+        return CUTSCENE_MANAGER;
+    }
+
+    public static CutsceneSessionManager getCutsceneSessionManager() {
+        return CUTSCENE_SESSION_MANAGER;
     }
 
     public static SavedDataManager getSavedDataManager() {

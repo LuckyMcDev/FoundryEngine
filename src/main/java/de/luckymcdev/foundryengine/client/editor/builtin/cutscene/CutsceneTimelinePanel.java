@@ -1,7 +1,6 @@
 package de.luckymcdev.foundryengine.client.editor.builtin.cutscene;
 
-import de.luckymcdev.foundryengine.client.cutscene.ClientCutsceneManager;
-import de.luckymcdev.foundryengine.client.cutscene.CutsceneEditor;
+import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.cutscene.CutsceneRenderer;
 import de.luckymcdev.foundryengine.client.cutscene.CutsceneUiState;
 import de.luckymcdev.foundryengine.client.editor.builtin.EditorPanel;
@@ -71,7 +70,7 @@ public class CutsceneTimelinePanel extends EditorPanel {
 
     @Override
     public void onClosed() {
-        ClientCutsceneManager.clearPreview();
+        Client.getCutsceneManager().clearPreview();
         previewEnabled.set(false);
     }
 
@@ -83,7 +82,7 @@ public class CutsceneTimelinePanel extends EditorPanel {
 
         renderMenuBar();
 
-        List<Cutscene> cutscenes = CutsceneRenderer.cutscenes;
+        List<Cutscene> cutscenes = CutsceneRenderer.getCutscenes();
 
         ImGui.beginChild("##cs_tl_list", 220f, 0, true);
         try {
@@ -124,7 +123,7 @@ public class CutsceneTimelinePanel extends EditorPanel {
             Cutscene selected = CutsceneUiState.getSelectedCutscene();
             if (selected == null) {
                 ImGui.textDisabled("Select a cutscene on the left (or in the Cutscenes panel).");
-                ClientCutsceneManager.clearPreview();
+                    Client.getCutsceneManager().clearPreview();
                 return;
             }
 
@@ -210,12 +209,12 @@ public class CutsceneTimelinePanel extends EditorPanel {
         }
 
         // Preview toggle: reintroduce direct control to allow live scrubbing on the timeline
-        boolean inPlayback = ClientCutsceneManager.inCutscene();
+        boolean inPlayback = Client.getCutsceneManager().inCutscene();
         if (inPlayback) {
             ImGui.textDisabled("Disabled while a cutscene is playing.");
             if (previewEnabled.get()) {
                 previewEnabled.set(false);
-                ClientCutsceneManager.clearPreview();
+                    Client.getCutsceneManager().clearPreview();
             }
         } else {
             ImGui.checkbox("Enable Preview##cs_tl_preview", previewEnabled);
@@ -244,12 +243,12 @@ public class CutsceneTimelinePanel extends EditorPanel {
         ImGui.spacing();
 
         if (ImGui.button(ImIcons.FA.FA_PLUS + " Start##cs_node_add_start")) {
-            CutsceneEditor.addNodeAtStart(c);
+            Client.getCutsceneEditor().addNodeAtStart(c);
             sendChatStatus("Node added at start.");
         }
         ImGui.sameLine();
         if (ImGui.button(ImIcons.FA.FA_PLUS + " End##cs_node_add_end")) {
-            CutsceneEditor.addNodeAtEnd(c);
+            Client.getCutsceneEditor().addNodeAtEnd(c);
             sendChatStatus("Node added at end.");
         }
 
@@ -259,7 +258,7 @@ public class CutsceneTimelinePanel extends EditorPanel {
         ImGui.pushStyleColor(ImGuiCol.ButtonHovered, 0.70f, 0.35f, 0.15f, 1.0f);
         ImGui.pushStyleColor(ImGuiCol.ButtonActive, 0.45f, 0.20f, 0.08f, 1.0f);
         if (ImGui.button(ImIcons.FA.FA_MINUS + " Start##cs_node_rm_start")) {
-            boolean deleted = CutsceneEditor.removeFirstNode(c);
+            boolean deleted = Client.getCutsceneEditor().removeFirstNode(c);
             if (deleted) {
                 CutsceneUiState.setSelected(null);
                 sendChatStatus("Cutscene deleted (was single-point).");
@@ -269,7 +268,7 @@ public class CutsceneTimelinePanel extends EditorPanel {
         }
         ImGui.sameLine();
         if (ImGui.button(ImIcons.FA.FA_MINUS + " End##cs_node_rm_end")) {
-            boolean deleted = CutsceneEditor.removeLastNode(c);
+            boolean deleted = Client.getCutsceneEditor().removeLastNode(c);
             if (deleted) {
                 CutsceneUiState.setSelected(null);
                 sendChatStatus("Cutscene deleted (was single-point).");
@@ -453,7 +452,7 @@ public class CutsceneTimelinePanel extends EditorPanel {
             c.addAttachment(newAtt);
             selectedAttachmentIndex.set(attachments.indexOf(newAtt));
             loadAttachmentEditorFrom(c);
-            ClientPacketDistributor.sendToServer(new CutscenePacket(CutsceneEditor.toNbt()));
+            ClientPacketDistributor.sendToServer(new CutscenePacket(Client.getCutsceneEditor().toNbt()));
         }
 
         // Preview button for effects
@@ -464,7 +463,7 @@ public class CutsceneTimelinePanel extends EditorPanel {
                 var att = attachments.get(idx);
                 if (att instanceof EffectAttachment eff) {
                     int len = Math.max(1, c.getDefaultLength());
-                    de.luckymcdev.foundryengine.client.cutscene.ClientScreenEffectManager.startEffect(
+                    Client.getCutsceneScreenEffectManager().startEffect(
                             eff.getEffectName(), eff.getIntroTicks(len), eff.getHoldTicks(len), eff.getOutroTicks(len), eff.getLerpType());
                 }
             }
@@ -519,7 +518,7 @@ public class CutsceneTimelinePanel extends EditorPanel {
 
         // Apply/Remove buttons
         if (ImGui.button(ImIcons.FA.FA_CHECK + " Apply##cs_att_apply")) {
-            ClientPacketDistributor.sendToServer(new CutscenePacket(CutsceneEditor.toNbt()));
+            ClientPacketDistributor.sendToServer(new CutscenePacket(Client.getCutsceneEditor().toNbt()));
         }
         ImGui.sameLine();
         ImGui.pushStyleColor(ImGuiCol.Button, 0.55f, 0.10f, 0.10f, 1.0f);
@@ -528,7 +527,7 @@ public class CutsceneTimelinePanel extends EditorPanel {
         if (ImGui.button(ImIcons.FA.FA_TRASH + " Remove##cs_att_rm")) {
             c.removeAttachment(selectedAtt);
             selectedAttachmentIndex.set(-1);
-            ClientPacketDistributor.sendToServer(new CutscenePacket(CutsceneEditor.toNbt()));
+            ClientPacketDistributor.sendToServer(new CutscenePacket(Client.getCutsceneEditor().toNbt()));
         }
         ImGui.popStyleColor(3);
     }
@@ -680,8 +679,8 @@ public class CutsceneTimelinePanel extends EditorPanel {
     }
 
     private void applyPreviewCamera(Cutscene c, int totalTicks) {
-        if (!previewEnabled.get() || ClientCutsceneManager.inCutscene()) {
-            ClientCutsceneManager.clearPreview();
+        if (!previewEnabled.get() || Client.getCutsceneManager().inCutscene()) {
+            Client.getCutsceneManager().clearPreview();
             return;
         }
 
@@ -694,7 +693,7 @@ public class CutsceneTimelinePanel extends EditorPanel {
         else if (tick >= hs + len) t = 1f;
         else t = (tick - hs) / (float) len;
 
-        ClientCutsceneManager.setPreview(c, t);
+        Client.getCutsceneManager().setPreview(c, t);
     }
 
     private float computeAtFromPlayhead(Cutscene c, int totalTicks) {
@@ -731,6 +730,6 @@ public class CutsceneTimelinePanel extends EditorPanel {
     }
 
     private void markDirty() {
-        ClientPacketDistributor.sendToServer(new CutscenePacket(CutsceneEditor.toNbt()));
+        ClientPacketDistributor.sendToServer(new CutscenePacket(Client.getCutsceneEditor().toNbt()));
     }
 }

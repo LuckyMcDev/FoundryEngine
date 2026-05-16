@@ -1,5 +1,6 @@
 package de.luckymcdev.foundryengine.common.cutscene.util;
 
+import de.luckymcdev.foundryengine.common.Common;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.GameType;
 
@@ -20,7 +21,7 @@ public class ServerScreenEffectManager {
 
             if (tickLengths.isEmpty()) {
                 it.remove();
-                if (!ServerCutsceneManager.inCutscene(player)) {
+                if (!Common.getCutsceneSessionManager().inCutscene(player)) {
                     player.setInvulnerable(false);
                 }
                 continue;

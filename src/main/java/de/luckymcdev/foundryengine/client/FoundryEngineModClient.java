@@ -3,9 +3,6 @@ package de.luckymcdev.foundryengine.client;
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.client.area.AreaRenderer;
 import de.luckymcdev.foundryengine.client.command.FoundryCommandsClient;
-import de.luckymcdev.foundryengine.client.cutscene.ClientCutsceneManager;
-import de.luckymcdev.foundryengine.client.cutscene.ClientScreenEffectManager;
-import de.luckymcdev.foundryengine.client.cutscene.CutsceneEditor;
 import de.luckymcdev.foundryengine.client.cutscene.CutsceneRenderer;
 import de.luckymcdev.foundryengine.client.debug.screen.BundleDebugEntry;
 import de.luckymcdev.foundryengine.client.debug.screen.GameStagesDebugEntry;
@@ -35,7 +32,7 @@ import de.luckymcdev.foundryengine.common.network.packets.BundleHashPacket;
 import de.luckymcdev.foundryengine.common.network.packets.WaypointPacket;
 import de.luckymcdev.foundryengine.common.util.FolderHash;
 import de.luckymcdev.foundryengine.common.util.color.Color;
-import de.luckymcdev.foundryengine.common.waypoint.WaypointData;
+import de.luckymcdev.foundryengine.common.waypoint.Waypoint;
 import de.luckymcdev.foundryengine.config.ClientConfig;
 import de.luckymcdev.foundryengine.config.Config;
 import net.minecraft.client.Minecraft;
@@ -96,14 +93,23 @@ public class FoundryEngineModClient {
         savedataManager.registerClientHandler(Common.id("waypoints"), data -> {
             var dimension = Client.getMc().level != null ? Client.getMc().level.dimension() : null;
             if (dimension == null) return;
-            var waypoints = new ArrayList<WaypointData>();
+            var waypoints = new ArrayList<Waypoint>();
             var list = data.getListOrEmpty("Waypoints");
             for (int i = 0; i < list.size(); i++) {
-                waypoints.add(WaypointData.fromNbt(list.getCompoundOrEmpty(i)));
+                waypoints.add(Waypoint.fromNbt(list.getCompoundOrEmpty(i)));
             }
             Common.getWaypointManager().replaceAll(dimension, waypoints);
         });
-        savedataManager.registerClientHandler(Common.id("cutscene_manager"), ClientCutsceneManager::handleSync);
+        savedataManager.registerClientHandler(Common.id("areas"), data -> {
+            var dimension = Client.getMc().level != null ? Client.getMc().level.dimension() : null;
+            if (dimension == null) return;
+            Common.getAreaManager().replaceAllFromNbt(dimension, data);
+        });
+        savedataManager.registerClientHandler(Common.id("cutscene_manager"), data -> {
+            var dimension = Client.getMc().level != null ? Client.getMc().level.dimension() : null;
+            if (dimension == null) return;
+            Common.getCutsceneManager().applySync(dimension, data);
+        });
     }
 
     private void onLoggingIn(ClientPlayerNetworkEvent.LoggingIn event) {
@@ -177,8 +183,8 @@ public class FoundryEngineModClient {
         var camState = event.getLevelRenderState().cameraRenderState;
         Client.updateMain(camState.viewRotationMatrix, camState.projectionMatrix);
 
-        ClientCutsceneManager.renderTick();
-        ClientScreenEffectManager.renderTick();
+        Client.getCutsceneManager().renderTick();
+        Client.getCutsceneScreenEffectManager().renderTick();
         CutsceneRenderer.render();
         AreaRenderer.render();
         Client.getWaypointRenderer().renderWaypoints(event);
@@ -189,8 +195,8 @@ public class FoundryEngineModClient {
 
     private void onClientTick(ClientTickEvent.Post event) {
         Client.getEditorManager().handleTick();
-        ClientCutsceneManager.clientTick();
-        CutsceneEditor.clientTick();
+        Client.getCutsceneManager().clientTick();
+        Client.getCutsceneEditor().clientTick();
         handleWaypointKeys();
 
         if (!hasIconAutoExported && ClientConfig.AUTO_EXPORT.get()) {

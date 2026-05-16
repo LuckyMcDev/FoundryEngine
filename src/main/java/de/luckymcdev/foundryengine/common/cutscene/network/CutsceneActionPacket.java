@@ -2,9 +2,7 @@ package de.luckymcdev.foundryengine.common.cutscene.network;
 
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.cutscene.model.Cutscene;
-import de.luckymcdev.foundryengine.common.cutscene.storage.CutsceneSavedData;
 import de.luckymcdev.foundryengine.common.cutscene.util.LerpType;
-import de.luckymcdev.foundryengine.common.cutscene.util.ServerCutsceneManager;
 import de.luckymcdev.foundryengine.common.easing.BezierPath;
 import de.luckymcdev.foundryengine.common.network.AbstractPacket;
 import de.luckymcdev.foundryengine.common.network.PacketBounds;
@@ -18,8 +16,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.phys.Vec2;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-
-import java.util.ArrayList;
 
 public record CutsceneActionPacket(Action action, String targetPlayer, String cutsceneName,
                                    int length, String lerpType, int holdStart,
@@ -69,33 +65,30 @@ public record CutsceneActionPacket(Action action, String targetPlayer, String cu
         if (!PermissionChecks.COMMANDS_GAMEMASTER.check(player.permissions())) return;
 
         ServerLevel level = player.level();
-        CutsceneSavedData data = CutsceneSavedData.get(level);
+        var cutsceneManager = Common.getCutsceneManager();
+        if (!cutsceneManager.isLoaded(level.dimension())) {
+            cutsceneManager.loadFromLevel(level);
+        }
 
         switch (action) {
             case ADD -> {
-                if (data.getCutscenes().stream().anyMatch(c -> c.getName().equals(cutsceneName))) return;
                 BezierPath path = new BezierPath(player.getEyePosition());
                 Vec2 rot = new Vec2(player.getXRot(), player.getYRot());
-                ArrayList<Cutscene> cutscenes = new ArrayList<>(data.getCutscenes());
-                cutscenes.add(new Cutscene(cutsceneName, rot, rot, path));
-                data.setCutscenes(cutscenes);
-                Common.getSavedDataManager().syncToDimension(level);
+                boolean added = cutsceneManager.add(level, new Cutscene(cutsceneName, rot, rot, path));
+                if (added) {
+                    Common.getSavedDataManager().syncToDimension(level);
+                }
             }
             case REMOVE -> {
-                ArrayList<Cutscene> cutscenes = new ArrayList<>(data.getCutscenes());
-                boolean removed = cutscenes.removeIf(c -> c.getName().equals(cutsceneName));
+                boolean removed = cutsceneManager.remove(level, cutsceneName);
                 if (removed) {
-                    data.setCutscenes(cutscenes);
                     Common.getSavedDataManager().syncToDimension(level);
                 }
             }
             case PLAY -> {
                 ServerPlayer target = player.level().getServer().getPlayerList().getPlayerByName(targetPlayer);
                 if (target == null) return;
-                Cutscene cutscene = data.getCutscenes().stream()
-                        .filter(c -> c.getName().equals(cutsceneName))
-                        .findFirst()
-                        .orElse(null);
+                Cutscene cutscene = cutsceneManager.find(level.dimension(), cutsceneName);
                 if (cutscene == null) return;
 
                 LerpType easing = LerpType.fromString(lerpType);
@@ -108,7 +101,7 @@ public record CutsceneActionPacket(Action action, String targetPlayer, String cu
 
                 Common.getSavedDataManager().syncToPlayer(target);
                 int total = length + holdStart + holdEnd;
-                ServerCutsceneManager.addInstance(target, total);
+                Common.getCutsceneSessionManager().addInstance(target, total);
                 PacketDistributor.sendToPlayer(target, new CutscenePacket(tag));
             }
             case CANCEL -> {
@@ -117,7 +110,7 @@ public record CutsceneActionPacket(Action action, String targetPlayer, String cu
                 CompoundTag tag = new CompoundTag();
                 tag.putBoolean("Cancel", true);
                 PacketDistributor.sendToPlayer(target, new CutscenePacket(tag));
-                ServerCutsceneManager.cancelCutscene(target);
+                Common.getCutsceneSessionManager().cancelCutscene(target);
             }
         }
     }

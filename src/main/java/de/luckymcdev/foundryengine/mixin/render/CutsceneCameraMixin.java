@@ -1,6 +1,6 @@
 package de.luckymcdev.foundryengine.mixin.render;
 
-import de.luckymcdev.foundryengine.client.cutscene.ClientCutsceneManager;
+import de.luckymcdev.foundryengine.client.Client;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -27,22 +27,22 @@ public abstract class CutsceneCameraMixin {
 
     @Inject(method = "isDetached", at = @At("HEAD"), cancellable = true)
     private void engine$detachCameraDuringCutscene(CallbackInfoReturnable<Boolean> cir) {
-        if (ClientCutsceneManager.isCameraOverrideDisabled()) return;
+        if (Client.getCutsceneManager().isCameraOverrideDisabled()) return;
         var player = Minecraft.getInstance().player;
         if (player == null) return;
 
-        Vec3 cam = ClientCutsceneManager.pos;
-        if (!player.getEyePosition().closerThan(cam, ClientCutsceneManager.RENDER_PLAYER_RANGE)) {
+        Vec3 cam = Client.getCutsceneManager().getPos();
+        if (!player.getEyePosition().closerThan(cam, de.luckymcdev.foundryengine.client.cutscene.ClientCutsceneManager.RENDER_PLAYER_RANGE)) {
             cir.setReturnValue(true);
         }
     }
 
     @Inject(method = "setPosition(Lnet/minecraft/world/phys/Vec3;)V", at = @At("TAIL"))
     private void engine$overridePosition(Vec3 ignored, CallbackInfo ci) {
-        if (ClientCutsceneManager.isCameraOverrideDisabled()) return;
+        if (Client.getCutsceneManager().isCameraOverrideDisabled()) return;
 
-        Vec3 newPos = ClientCutsceneManager.pos;
-        var newRot = ClientCutsceneManager.rot;
+        Vec3 newPos = Client.getCutsceneManager().getPos();
+        var newRot = Client.getCutsceneManager().getRot();
 
         this.position = newPos;
         this.blockPosition.set(newPos.x, newPos.y, newPos.z);

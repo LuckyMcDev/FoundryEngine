@@ -33,7 +33,7 @@ public class AreaSavedData extends SavedData {
     }
 
     public AreaSavedData(CompoundTag tag) {
-        this.areas = fromNbt(tag);
+        this.areas = makeList(tag);
     }
 
     public static AreaSavedData get(ServerLevel level) {
@@ -44,7 +44,7 @@ public class AreaSavedData extends SavedData {
         return storage.computeIfAbsent(TYPE);
     }
 
-    private static List<Area> fromNbt(CompoundTag tag) {
+    public static List<Area> makeList(CompoundTag tag) {
         List<Area> result = new ArrayList<>();
         ListTag list = tag.getListOrEmpty("Areas");
         for (int i = 0; i < list.size(); i++) {

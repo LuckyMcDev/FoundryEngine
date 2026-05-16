@@ -14,13 +14,31 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
+/**
+ * Client-side in-world cutscene editor input handler.
+ * <p>
+ * Owned by {@link de.luckymcdev.foundryengine.client.Client} (instance, not static state).
+ */
 public class CutsceneEditor {
-    private static boolean wasUsing = false;
-    private static int useTicks = 0;
-    private static BezierPoint selectedPoint;
-    private static boolean changed = false;
+    private boolean wasUsing = false;
+    private int useTicks = 0;
+    private BezierPoint selectedPoint;
+    private boolean changed = false;
 
-    public static void clientTick() {
+    private static BezierPoint pickHovered(LivingEntity user) {
+        for (Cutscene cutscene : CutsceneRenderer.getCutscenes()) {
+            for (BezierSpline spline : cutscene.path.splines) {
+                for (BezierPoint point : spline.points) {
+                    if (point.isHovered(user)) {
+                        return point;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    public void clientTick() {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null || mc.player == null || CutsceneItems.EDITOR_ITEM == null) {
             reset();
@@ -76,7 +94,17 @@ public class CutsceneEditor {
         }
     }
 
-    public static void addNodeAtEnd(Cutscene cutscene) {
+    /**
+     * Returns true if the scroll should be consumed by the cutscene editor (and thus not reach vanilla).
+     */
+    public boolean onScroll(double vertical) {
+        if (!wasUsing) return false;
+        if (CutsceneRenderer.storedPoint == null) return false;
+        CutsceneRenderer.storedDistance = Math.max(CutsceneRenderer.storedDistance + (vertical * 0.25), 0);
+        return true;
+    }
+
+    public void addNodeAtEnd(Cutscene cutscene) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null) return;
 
@@ -94,7 +122,7 @@ public class CutsceneEditor {
         ClientPacketDistributor.sendToServer(new CutscenePacket(toNbt()));
     }
 
-    public static void addNodeAtStart(Cutscene cutscene) {
+    public void addNodeAtStart(Cutscene cutscene) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null) return;
 
@@ -112,10 +140,11 @@ public class CutsceneEditor {
         ClientPacketDistributor.sendToServer(new CutscenePacket(toNbt()));
     }
 
-    public static boolean removeLastNode(Cutscene cutscene) {
+    public boolean removeLastNode(Cutscene cutscene) {
         BezierPath path = cutscene.path;
         if (path.isSinglePoint()) {
-            CutsceneRenderer.cutscenes.remove(cutscene);
+            var list = CutsceneRenderer.getCutscenes();
+            if (!list.isEmpty()) list.remove(cutscene);
             ClientPacketDistributor.sendToServer(new CutscenePacket(toNbt()));
             return true;
         }
@@ -126,10 +155,11 @@ public class CutsceneEditor {
         return false;
     }
 
-    public static boolean removeFirstNode(Cutscene cutscene) {
+    public boolean removeFirstNode(Cutscene cutscene) {
         BezierPath path = cutscene.path;
         if (path.isSinglePoint()) {
-            CutsceneRenderer.cutscenes.remove(cutscene);
+            var list = CutsceneRenderer.getCutscenes();
+            if (!list.isEmpty()) list.remove(cutscene);
             ClientPacketDistributor.sendToServer(new CutscenePacket(toNbt()));
             return true;
         }
@@ -140,34 +170,17 @@ public class CutsceneEditor {
         return false;
     }
 
-    private static BezierPoint pickHovered(LivingEntity user) {
-        for (Cutscene cutscene : CutsceneRenderer.cutscenes) {
-            for (BezierSpline spline : cutscene.path.splines) {
-                for (BezierPoint point : spline.points) {
-                    if (point.isHovered(user)) {
-                        return point;
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
-    public static void updateStoredDistance(double delta) {
-        CutsceneRenderer.storedDistance = Math.max(CutsceneRenderer.storedDistance + (delta * 0.25), 0);
-    }
-
-    public static CompoundTag toNbt() {
+    public CompoundTag toNbt() {
         CompoundTag tag = new CompoundTag();
         ListTag list = new ListTag();
-        for (Cutscene cutscene : CutsceneRenderer.cutscenes) {
+        for (Cutscene cutscene : CutsceneRenderer.getCutscenes()) {
             list.add(cutscene.toNbt());
         }
         tag.put("CutsceneList", list);
         return tag;
     }
 
-    private static void reset() {
+    private void reset() {
         wasUsing = false;
         useTicks = 0;
         selectedPoint = null;
@@ -175,3 +188,4 @@ public class CutsceneEditor {
         CutsceneRenderer.storedPoint = null;
     }
 }
+

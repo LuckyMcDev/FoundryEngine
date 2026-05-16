@@ -3,7 +3,7 @@ package de.luckymcdev.foundryengine.common.network.packets;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.network.AbstractPacket;
 import de.luckymcdev.foundryengine.common.network.PacketBounds;
-import de.luckymcdev.foundryengine.common.waypoint.WaypointData;
+import de.luckymcdev.foundryengine.common.waypoint.Waypoint;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -43,7 +43,7 @@ public record WaypointPacket(String action, int x, int y, int z, String icon, St
 
             switch (packet.action()) {
                 case "ADD" -> manager.addWaypoint(level,
-                        new WaypointData(packet.name(), packet.icon(), packet.x(), packet.y(), packet.z(), packet.color()));
+                        new Waypoint(packet.name(), packet.icon(), packet.x(), packet.y(), packet.z(), packet.color()));
                 case "REMOVE" -> manager.removeWaypoint(level, packet.x(), packet.y(), packet.z());
                 case "CLEAR" -> manager.clearWaypoints(level);
                 default -> {

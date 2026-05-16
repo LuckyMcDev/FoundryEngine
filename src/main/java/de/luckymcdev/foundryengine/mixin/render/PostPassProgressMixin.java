@@ -8,7 +8,7 @@ import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.resource.ResourceHandle;
 import com.mojang.blaze3d.systems.CommandEncoder;
 import com.mojang.blaze3d.systems.RenderSystem;
-import de.luckymcdev.foundryengine.client.cutscene.ClientScreenEffectManager;
+import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.common.cutscene.util.ScreenEffectType;
 import net.minecraft.client.renderer.PostPass;
 import net.minecraft.resources.Identifier;
@@ -67,9 +67,8 @@ public abstract class PostPassProgressMixin {
             customUniforms.put("ProgressBuffer", engine$progressBuffer);
         }
 
-        float progress = ClientScreenEffectManager.screenEffect != null
-                ? ClientScreenEffectManager.screenEffect.getProgress()
-                : 0f;
+        var inst = Client.getCutsceneScreenEffectManager().getScreenEffect();
+        float progress = inst != null ? inst.getProgress() : 0f;
 
         CommandEncoder encoder = RenderSystem.getDevice().createCommandEncoder();
         try (GpuBuffer.MappedView view = encoder.mapBuffer(engine$progressBuffer, false, true)) {

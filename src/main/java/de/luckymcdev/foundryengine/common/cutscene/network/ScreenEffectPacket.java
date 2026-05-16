@@ -48,6 +48,6 @@ public record ScreenEffectPacket(
 
     @Override
     public void handleClient(IPayloadContext ctx) {
-        ctx.enqueueWork(() -> de.luckymcdev.foundryengine.client.cutscene.ClientScreenEffectManager.handlePacket(this));
+        ctx.enqueueWork(() -> de.luckymcdev.foundryengine.client.Client.getCutsceneScreenEffectManager().handlePacket(this));
     }
 }

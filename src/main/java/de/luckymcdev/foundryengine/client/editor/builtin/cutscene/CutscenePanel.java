@@ -1,7 +1,6 @@
 package de.luckymcdev.foundryengine.client.editor.builtin.cutscene;
 
-import de.luckymcdev.foundryengine.client.cutscene.ClientCutsceneManager;
-import de.luckymcdev.foundryengine.client.cutscene.CutsceneEditor;
+import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.cutscene.CutsceneRenderer;
 import de.luckymcdev.foundryengine.client.cutscene.CutsceneUiState;
 import de.luckymcdev.foundryengine.client.editor.builtin.EditorPanel;
@@ -61,7 +60,7 @@ public class CutscenePanel extends EditorPanel {
         ImGui.separator();
 
         beginContent();
-        List<Cutscene> cutscenes = CutsceneRenderer.cutscenes;
+        List<Cutscene> cutscenes = CutsceneRenderer.getCutscenes();
         renderLeftPanel(cutscenes);
         ImGui.sameLine();
         renderRightPanel(cutscenes);
@@ -70,7 +69,7 @@ public class CutscenePanel extends EditorPanel {
 
     @Override
     public void onClosed() {
-        ClientCutsceneManager.clearPreview();
+        Client.getCutsceneManager().clearPreview();
     }
 
     private void renderMenuBar() {
@@ -152,7 +151,7 @@ public class CutscenePanel extends EditorPanel {
         if (selectedIndex < 0 || selectedIndex >= cutscenes.size()) {
             ImGui.textDisabled("Select a cutscene on the left.");
             CutsceneUiState.setSelected(null);
-            ClientCutsceneManager.clearPreview();
+            Client.getCutsceneManager().clearPreview();
             ImGui.endChild();
             return;
         }
@@ -192,7 +191,7 @@ public class CutscenePanel extends EditorPanel {
             int g = Math.clamp(Math.round(col[1] * 255f), 0, 255);
             int b = Math.clamp(Math.round(col[2] * 255f), 0, 255);
             c.setColorArgb((a << 24) | (r << 16) | (g << 8) | b);
-            ClientPacketDistributor.sendToServer(new CutscenePacket(CutsceneEditor.toNbt()));
+            ClientPacketDistributor.sendToServer(new CutscenePacket(Client.getCutsceneEditor().toNbt()));
         }
         if (ImGui.isItemHovered()) ImGui.setTooltip("Track color");
     }
@@ -247,7 +246,7 @@ public class CutscenePanel extends EditorPanel {
         if (ImGui.button(ImIcons.FA.FA_CHECK + " Apply")) {
             c.setAnchorRotation(selectedNodeIndex.get(),
                     new net.minecraft.world.phys.Vec2(selectedNodePitch.get(), selectedNodeYaw.get()));
-            ClientPacketDistributor.sendToServer(new CutscenePacket(CutsceneEditor.toNbt()));
+            ClientPacketDistributor.sendToServer(new CutscenePacket(Client.getCutsceneEditor().toNbt()));
             setStatus("Rotation updated for node " + selectedNodeIndex.get() + ".");
         }
     }
@@ -302,7 +301,7 @@ public class CutscenePanel extends EditorPanel {
         }
         ImGui.sameLine();
 
-        if (ClientCutsceneManager.inCutscene()) {
+        if (Client.getCutsceneManager().inCutscene()) {
             ImGui.sameLine();
             ImGui.pushStyleColor(ImGuiCol.Button, 0.70f, 0.20f, 0.20f, 1.0f);
             ImGui.pushStyleColor(ImGuiCol.ButtonHovered, 0.80f, 0.25f, 0.25f, 1.0f);

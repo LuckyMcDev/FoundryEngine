@@ -1,5 +1,6 @@
 package de.luckymcdev.foundryengine.client.cutscene;
 
+import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.cutscene.CutsceneItems;
 import de.luckymcdev.foundryengine.common.cutscene.model.Cutscene;
 import de.luckymcdev.foundryengine.common.easing.BezierPoint;
@@ -17,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CutsceneRenderer {
-    public static final ArrayList<Cutscene> cutscenes = new ArrayList<>();
     private static final double ENDPOINT_DIST = 0.5;
     private static final double ENDPOINT_W = 0.9;
     private static final double ENDPOINT_H = 0.475;
@@ -34,13 +34,14 @@ public class CutsceneRenderer {
     public static BezierPoint storedPoint;
     public static double storedDistance;
 
-    public static void setCutscenes(List<Cutscene> list) {
-        cutscenes.clear();
-        cutscenes.addAll(list);
+    public static List<Cutscene> getCutscenes() {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.level == null) return List.of();
+        return Common.getCutsceneManager().getCutscenes(mc.level.dimension());
     }
 
     public static Cutscene findByName(String name) {
-        for (Cutscene c : cutscenes) {
+        for (Cutscene c : getCutscenes()) {
             if (c.getName().equals(name)) return c;
         }
         return null;
@@ -57,7 +58,7 @@ public class CutsceneRenderer {
 
         float partial = mc.getDeltaTracker().getGameTimeDeltaPartialTick(true);
 
-        for (Cutscene cutscene : cutscenes) {
+        for (Cutscene cutscene : getCutscenes()) {
             renderCutscene(cutscene);
         }
 
@@ -71,7 +72,7 @@ public class CutsceneRenderer {
             Vec3 newPos = eye.add(look.scale(storedDistance));
             storedPoint.setPos(newPos);
 
-            for (Cutscene cutscene : cutscenes) {
+            for (Cutscene cutscene : getCutscenes()) {
                 for (BezierPoint near : cutscene.path.getPoints()) {
                     if (near == storedPoint) continue;
                     if (near.getPos().distanceTo(storedPoint.getPos()) <= 0.1) {
@@ -82,7 +83,7 @@ public class CutsceneRenderer {
             }
 
             if (!storedPoint.isTangent()) {
-                for (Cutscene cutscene : cutscenes) {
+                for (Cutscene cutscene : getCutscenes()) {
                     if (cutscene.path == storedPoint.getPath()) {
                         Vec2 playerRot = new Vec2(mc.player.getXRot(), mc.player.getYRot());
                         cutscene.setRotationForAnchorPoint(storedPoint, playerRot);

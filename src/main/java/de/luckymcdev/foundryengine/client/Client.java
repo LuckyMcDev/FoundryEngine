@@ -7,6 +7,9 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
+import de.luckymcdev.foundryengine.client.cutscene.ClientCutsceneManager;
+import de.luckymcdev.foundryengine.client.cutscene.ClientScreenEffectManager;
+import de.luckymcdev.foundryengine.client.cutscene.CutsceneEditor;
 import de.luckymcdev.foundryengine.client.editor.EditorManager;
 import de.luckymcdev.foundryengine.client.editor.MainMenu;
 import de.luckymcdev.foundryengine.client.imgui.EngineImGui;
@@ -103,6 +106,9 @@ public abstract class Client {
     private static final WaypointRenderer WAYPOINT_RENDERER = new WaypointRenderer();
     private static final MeshRenderer MESH_RENDERER = new MeshRenderer();
     private static final ObjModelManager OBJ_MODEL_MANAGER = new ObjModelManager();
+    private static final ClientCutsceneManager CUTSCENE_MANAGER = new ClientCutsceneManager();
+    private static final ClientScreenEffectManager CUTSCENE_SCREEN_EFFECT_MANAGER = new ClientScreenEffectManager();
+    private static final CutsceneEditor CUTSCENE_EDITOR = new CutsceneEditor();
 
     private Client() {
         throw new EngineException();
@@ -210,6 +216,18 @@ public abstract class Client {
 
     public static WaypointRenderer getWaypointRenderer() {
         return WAYPOINT_RENDERER;
+    }
+
+    public static ClientCutsceneManager getCutsceneManager() {
+        return CUTSCENE_MANAGER;
+    }
+
+    public static ClientScreenEffectManager getCutsceneScreenEffectManager() {
+        return CUTSCENE_SCREEN_EFFECT_MANAGER;
+    }
+
+    public static CutsceneEditor getCutsceneEditor() {
+        return CUTSCENE_EDITOR;
     }
 
     public static @Nullable Vec3i getHitOrNull() {

@@ -1,24 +1,38 @@
 package de.luckymcdev.foundryengine.common.area;
 
 import de.luckymcdev.foundryengine.common.Common;
-import net.minecraft.core.GlobalPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
-import net.neoforged.neoforge.event.tick.EntityTickEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import org.jspecify.annotations.Nullable;
 
 import java.util.*;
 
 public class AreaManager {
     private final Map<ResourceKey<Level>, List<Area>> areasByDimension = new HashMap<>();
-    private final Map<UUID, Set<String>> entityAreaMap = new HashMap<>();
+    private final Map<ResourceKey<Level>, Map<String, Set<UUID>>> lastMembersByDimension = new HashMap<>();
+
+    private static CompoundTag areaToNbt(Area area) {
+        CompoundTag tag = new CompoundTag();
+        tag.putString("id", area.id());
+        tag.putString("dimension", area.dimension().identifier().toString());
+        var b = area.bounds();
+        tag.putDouble("minX", b.minX);
+        tag.putDouble("minY", b.minY);
+        tag.putDouble("minZ", b.minZ);
+        tag.putDouble("maxX", b.maxX);
+        tag.putDouble("maxY", b.maxY);
+        tag.putDouble("maxZ", b.maxZ);
+        return tag;
+    }
 
     public void loadFromLevel(ServerLevel level) {
         AreaSavedData savedData = AreaSavedData.get(level);
@@ -48,56 +62,121 @@ public class AreaManager {
         }
     }
 
+    public boolean isLoaded(ResourceKey<Level> dimension) {
+        return areasByDimension.containsKey(dimension);
+    }
+
     public void remove(@Nullable ServerLevel level, Area area) {
         if (level != null) {
             AreaSavedData.get(level).removeArea(area.id());
         }
         List<Area> list = areasByDimension.get(area.dimension());
         if (list != null) list.remove(area);
-        entityAreaMap.values().forEach(set -> set.remove(area.id()));
-    }
-
-    public void onEntityTick(EntityTickEvent.Post event) {
-        Entity entity = event.getEntity();
-        if (entity.level().isClientSide()) return;
-
-        GlobalPos globalPos = GlobalPos.of(entity.level().dimension(), entity.blockPosition());
-        UUID uuid = entity.getUUID();
-
-        List<Area> dimensionAreas = areasByDimension.getOrDefault(globalPos.dimension(), Collections.emptyList());
-
-        Set<String> previousAreas = entityAreaMap.getOrDefault(uuid, Collections.emptySet());
-        Set<String> currentAreas = new HashSet<>();
-
-        for (Area area : dimensionAreas) {
-            if (area.contains(globalPos)) {
-                currentAreas.add(area.id());
-            }
-        }
-
-        for (Area area : dimensionAreas) {
-            String id = area.id();
-            boolean wasInside = previousAreas.contains(id);
-            boolean isInside = currentAreas.contains(id);
-
-            if (isInside && !wasInside) {
-                NeoForge.EVENT_BUS.post(new AreaEvent.AreaEnterEvent(area, List.of(entity)));
-            } else if (!isInside && wasInside) {
-                NeoForge.EVENT_BUS.post(new AreaEvent.AreaLeaveEvent(area, List.of(entity)));
-            } else if (isInside) {
-                NeoForge.EVENT_BUS.post(new AreaEvent.AreaTickEvent(area, List.of(entity)));
-            }
-        }
-
-        if (currentAreas.isEmpty()) {
-            entityAreaMap.remove(uuid);
-        } else {
-            entityAreaMap.put(uuid, currentAreas);
-        }
+        var members = lastMembersByDimension.get(area.dimension());
+        if (members != null) members.remove(area.id());
     }
 
     public List<Area> getAreasForDimension(ResourceKey<Level> dimension) {
         return areasByDimension.getOrDefault(dimension, Collections.emptyList());
+    }
+
+    public void onLevelTick(LevelTickEvent.Post event) {
+        if (!(event.getLevel() instanceof ServerLevel level)) return;
+
+        ResourceKey<Level> dim = level.dimension();
+        if (!isLoaded(dim)) {
+            loadFromLevel(level);
+        }
+
+        List<Area> areas = getAreasForDimension(dim);
+        if (areas.isEmpty()) {
+            lastMembersByDimension.remove(dim);
+            return;
+        }
+
+        Map<String, Set<UUID>> prevMembers = lastMembersByDimension.getOrDefault(dim, Collections.emptyMap());
+        Map<String, Set<UUID>> currMembers = new HashMap<>();
+        for (Area a : areas) {
+            currMembers.put(a.id(), new HashSet<>());
+        }
+
+        Map<UUID, Entity> entitiesByUuid = new HashMap<>();
+        level.getEntities().getAll().forEach(e -> entitiesByUuid.put(e.getUUID(), e));
+
+        for (Entity entity : entitiesByUuid.values()) {
+            var pos = entity.blockPosition();
+            int x = pos.getX();
+            int y = pos.getY();
+            int z = pos.getZ();
+
+            for (Area area : areas) {
+                if (area.bounds().contains(x, y, z)) {
+                    currMembers.get(area.id()).add(entity.getUUID());
+                }
+            }
+        }
+
+        for (Area area : areas) {
+            Set<UUID> prev = prevMembers.getOrDefault(area.id(), Collections.emptySet());
+            Set<UUID> curr = currMembers.getOrDefault(area.id(), Collections.emptySet());
+
+            if (!curr.isEmpty()) {
+                ArrayList<Entity> inside = new ArrayList<>(curr.size());
+                for (UUID u : curr) {
+                    Entity e = entitiesByUuid.get(u);
+                    if (e != null) inside.add(e);
+                }
+                if (!inside.isEmpty()) {
+                    NeoForge.EVENT_BUS.post(new AreaEvent.AreaTickEvent(area, inside));
+                }
+            }
+
+            if (!curr.isEmpty()) {
+                ArrayList<Entity> entering = new ArrayList<>();
+                for (UUID u : curr) {
+                    if (prev.contains(u)) continue;
+                    Entity e = entitiesByUuid.get(u);
+                    if (e != null) entering.add(e);
+                }
+                if (!entering.isEmpty()) {
+                    NeoForge.EVENT_BUS.post(new AreaEvent.AreaEnterEvent(area, entering));
+                }
+            }
+
+            if (!prev.isEmpty()) {
+                ArrayList<Entity> leaving = new ArrayList<>();
+                for (UUID u : prev) {
+                    if (curr.contains(u)) continue;
+                    Entity e = entitiesByUuid.get(u);
+                    if (e != null) leaving.add(e);
+                }
+                if (!leaving.isEmpty()) {
+                    NeoForge.EVENT_BUS.post(new AreaEvent.AreaLeaveEvent(area, leaving));
+                }
+            }
+        }
+
+        lastMembersByDimension.put(dim, currMembers);
+    }
+
+    /**
+     * Client-side: replace current dimension areas from synced NBT ({@link AreaSavedData#toNbt()}).
+     */
+    public void replaceAllFromNbt(ResourceKey<Level> dimension, net.minecraft.nbt.CompoundTag tag) {
+        areasByDimension.put(dimension, new ArrayList<>(AreaSavedData.makeList(tag)));
+    }
+
+    public CompoundTag toNbt(ServerLevel level) {
+        if (!isLoaded(level.dimension())) {
+            loadFromLevel(level);
+        }
+        CompoundTag tag = new CompoundTag();
+        ListTag list = new ListTag();
+        for (Area area : getAreasForDimension(level.dimension())) {
+            list.add(areaToNbt(area));
+        }
+        tag.put("Areas", list);
+        return tag;
     }
 
     public void syncAreasToPlayer(ServerPlayer player) {
@@ -115,20 +194,6 @@ public class AreaManager {
         for (ServerLevel level : event.getServer().getAllLevels()) {
             AreaSavedData savedData = AreaSavedData.get(level);
             savedData.setDirty(); // Ensure data is saved
-        }
-    }
-
-    public void onEntityRemoved(EntityLeaveLevelEvent event) {
-        Entity entity = event.getEntity();
-        UUID uuid = entity.getUUID();
-        Set<String> occupiedAreas = entityAreaMap.remove(uuid);
-        if (occupiedAreas == null || occupiedAreas.isEmpty()) return;
-
-        List<Area> dimensionAreas = areasByDimension.getOrDefault(entity.level().dimension(), Collections.emptyList());
-        for (Area area : dimensionAreas) {
-            if (occupiedAreas.contains(area.id())) {
-                NeoForge.EVENT_BUS.post(new AreaEvent.AreaLeaveEvent(area, List.of(entity)));
-            }
         }
     }
 }

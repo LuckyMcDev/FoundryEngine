@@ -4,15 +4,12 @@ import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.api.event.*;
 import de.luckymcdev.foundryengine.api.event.registry.RegistryEvent;
 import de.luckymcdev.foundryengine.common.Common;
-import de.luckymcdev.foundryengine.common.area.AreaSavedData;
 import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintEngine;
 import de.luckymcdev.foundryengine.common.cutscene.CutsceneItems;
 import de.luckymcdev.foundryengine.common.cutscene.network.CutsceneActionPacket;
 import de.luckymcdev.foundryengine.common.cutscene.network.CutsceneCommandPacket;
 import de.luckymcdev.foundryengine.common.cutscene.network.CutscenePacket;
 import de.luckymcdev.foundryengine.common.cutscene.network.ScreenEffectPacket;
-import de.luckymcdev.foundryengine.common.cutscene.storage.CutsceneSavedData;
-import de.luckymcdev.foundryengine.common.cutscene.util.ServerCutsceneManager;
 import de.luckymcdev.foundryengine.common.cutscene.util.ServerScreenEffectManager;
 import de.luckymcdev.foundryengine.common.log.EngineLogAppender;
 import de.luckymcdev.foundryengine.common.network.TestPacket;
@@ -21,7 +18,6 @@ import de.luckymcdev.foundryengine.common.network.packets.explorer.*;
 import de.luckymcdev.foundryengine.common.registry.EngineRegistries;
 import de.luckymcdev.foundryengine.common.vpacks.BundleVirtualPacks;
 import de.luckymcdev.foundryengine.common.vpacks.event.RegisterVirtualPackEvent;
-import de.luckymcdev.foundryengine.common.waypoint.storage.WaypointSavedData;
 import de.luckymcdev.foundryengine.common.world.entity.EngineEntities;
 import de.luckymcdev.foundryengine.common.world.level.EngineLevels;
 import de.luckymcdev.foundryengine.common.world.level.runtime.RuntimeLevelConfig;
@@ -89,10 +85,10 @@ public class FoundryEngineMod {
         BUS.addListener(this::onServerTick);
         BUS.addListener(this::onRegisterVirtualPacks);
 
-        BUS.addListener(Common.getAreaManager()::onEntityTick);
-        BUS.addListener(Common.getAreaManager()::onEntityRemoved);
+        BUS.addListener(Common.getAreaManager()::onLevelTick);
         BUS.addListener(Common.getAreaManager()::onLevelLoad);
         BUS.addListener(Common.getAreaManager()::onServerStopping);
+        BUS.addListener(Common.getCutsceneManager()::onLevelLoad);
         BUS.addListener((net.neoforged.neoforge.event.level.LevelEvent.Load event) -> {
             if (event.getLevel() instanceof net.minecraft.world.level.Level level) {
                 Common.getWaypointManager().onLevelLoad(level);
@@ -143,11 +139,11 @@ public class FoundryEngineMod {
 
     private void registerSavedDataTypes() {
         var manager = Common.getSavedDataManager();
-        manager.register(Common.id("waypoints"), level -> WaypointSavedData.get(level).getData(),
+        manager.register(Common.id("waypoints"), level -> Common.getWaypointManager().toNbt(level),
                 null);
-        manager.register(Common.id("areas"), level -> AreaSavedData.get(level).toNbt(),
+        manager.register(Common.id("areas"), level -> Common.getAreaManager().toNbt(level),
                 null);
-        manager.register(Common.id("cutscene_manager"), level -> CutsceneSavedData.get(level).getData(),
+        manager.register(Common.id("cutscene_manager"), level -> Common.getCutsceneManager().toNbt(level),
                 null);
     }
 
@@ -256,7 +252,7 @@ public class FoundryEngineMod {
     }
 
     private void onServerTick(ServerTickEvent.Post event) {
-        ServerCutsceneManager.tick();
+        Common.getCutsceneSessionManager().tick(event.getServer());
         ServerScreenEffectManager.tick();
     }
 

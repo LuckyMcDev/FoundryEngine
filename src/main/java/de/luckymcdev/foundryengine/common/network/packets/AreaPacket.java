@@ -5,6 +5,7 @@ import de.luckymcdev.foundryengine.common.area.Area;
 import de.luckymcdev.foundryengine.common.network.AbstractPacket;
 import de.luckymcdev.foundryengine.common.network.PacketBounds;
 import de.luckymcdev.foundryengine.common.network.codecs.AABBCodec;
+import de.luckymcdev.foundryengine.common.util.PermissionChecks;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -43,6 +44,7 @@ public record AreaPacket(
     private static void handleServer(AreaPacket packet, IPayloadContext ctx) {
         ctx.enqueueWork(() -> {
             if (!(ctx.player() instanceof ServerPlayer player)) return;
+            if (!PermissionChecks.COMMANDS_GAMEMASTER.check(player.permissions())) return;
 
             var level = player.level();
             if (level == null) return;
