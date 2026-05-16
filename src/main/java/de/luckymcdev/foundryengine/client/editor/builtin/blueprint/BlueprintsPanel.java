@@ -39,7 +39,7 @@ public class BlueprintsPanel extends EditorPanel {
 
     protected BlueprintsPanel() {
         super(Common.id("blueprints"), "Blueprints", ImIcons.FA.FA_MAP, Shortcut.empty());
-        this.category = PanelCategory.EDITOR_BLUEPRINTS;
+        this.category = PanelCategory.EDITOR;
         this.engine = new BlueprintEngine();
         this.editor = new NodeEditorInstance(engine);
         this.serializer = new BlueprintSerializer(engine);

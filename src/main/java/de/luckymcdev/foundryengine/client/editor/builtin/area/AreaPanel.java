@@ -25,7 +25,6 @@ import java.util.List;
 
 public class AreaPanel extends EditorPanel {
     public static final AreaPanel INSTANCE = new AreaPanel();
-
     private final ImString newAreaName = new ImString(64);
     private final ImString areaSizeX = new ImString("5", 16);
     private final ImString areaSizeY = new ImString("4", 16);
@@ -40,7 +39,7 @@ public class AreaPanel extends EditorPanel {
 
     private AreaPanel() {
         super(Common.id("area_panel"), "Areas", ImIcons.FA.FA_MAP, Shortcut.ctrl(ImGuiKey.F4));
-        this.category = PanelCategory.EDITOR_SCENE;
+        this.category = PanelCategory.EDITOR;
         this.menuBar = true;
     }
 

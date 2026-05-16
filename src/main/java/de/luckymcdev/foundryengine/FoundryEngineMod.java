@@ -4,12 +4,14 @@ import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.api.event.*;
 import de.luckymcdev.foundryengine.api.event.registry.RegistryEvent;
 import de.luckymcdev.foundryengine.common.Common;
+import de.luckymcdev.foundryengine.common.area.AreaSavedData;
 import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintEngine;
 import de.luckymcdev.foundryengine.common.cutscene.CutsceneItems;
 import de.luckymcdev.foundryengine.common.cutscene.network.CutsceneActionPacket;
 import de.luckymcdev.foundryengine.common.cutscene.network.CutsceneCommandPacket;
 import de.luckymcdev.foundryengine.common.cutscene.network.CutscenePacket;
 import de.luckymcdev.foundryengine.common.cutscene.network.ScreenEffectPacket;
+import de.luckymcdev.foundryengine.common.cutscene.storage.CutsceneSavedData;
 import de.luckymcdev.foundryengine.common.cutscene.util.ServerCutsceneManager;
 import de.luckymcdev.foundryengine.common.cutscene.util.ServerScreenEffectManager;
 import de.luckymcdev.foundryengine.common.log.EngineLogAppender;
@@ -17,9 +19,9 @@ import de.luckymcdev.foundryengine.common.network.TestPacket;
 import de.luckymcdev.foundryengine.common.network.packets.*;
 import de.luckymcdev.foundryengine.common.network.packets.explorer.*;
 import de.luckymcdev.foundryengine.common.registry.EngineRegistries;
-import de.luckymcdev.foundryengine.common.scene.network.ScenePacket;
 import de.luckymcdev.foundryengine.common.vpacks.BundleVirtualPacks;
 import de.luckymcdev.foundryengine.common.vpacks.event.RegisterVirtualPackEvent;
+import de.luckymcdev.foundryengine.common.waypoint.storage.WaypointSavedData;
 import de.luckymcdev.foundryengine.common.world.entity.EngineEntities;
 import de.luckymcdev.foundryengine.common.world.level.EngineLevels;
 import de.luckymcdev.foundryengine.common.world.level.runtime.RuntimeLevelConfig;
@@ -141,17 +143,11 @@ public class FoundryEngineMod {
 
     private void registerSavedDataTypes() {
         var manager = Common.getSavedDataManager();
-        manager.register(Common.id("waypoints"),
-                level -> de.luckymcdev.foundryengine.common.waypoint.storage.WaypointSavedData.get(level).getData(),
+        manager.register(Common.id("waypoints"), level -> WaypointSavedData.get(level).getData(),
                 null);
-        manager.register(Common.id("areas"),
-                level -> de.luckymcdev.foundryengine.common.area.AreaSavedData.get(level).toNbt(),
+        manager.register(Common.id("areas"), level -> AreaSavedData.get(level).toNbt(),
                 null);
-        manager.register(Common.id("scene_graph"),
-                level -> de.luckymcdev.foundryengine.common.scene.storage.SceneSavedData.get(level).getData(),
-                null);
-        manager.register(Common.id("cutscene_manager"),
-                level -> de.luckymcdev.foundryengine.common.cutscene.storage.CutsceneSavedData.get(level).getData(),
+        manager.register(Common.id("cutscene_manager"), level -> CutsceneSavedData.get(level).getData(),
                 null);
     }
 
@@ -174,7 +170,6 @@ public class FoundryEngineMod {
         network.register(ScreenEffectPacket.DEFINITION);
         network.register(CutsceneCommandPacket.DEFINITION);
         network.register(CutsceneActionPacket.DEFINITION);
-        network.register(ScenePacket.DEFINITION);
         network.register(AreaPacket.DEFINITION);
         network.register(WaypointPacket.DEFINITION);
         network.register(SavedDataSyncPacket.DEFINITION);

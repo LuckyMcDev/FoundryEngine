@@ -17,7 +17,6 @@ import de.luckymcdev.foundryengine.client.editor.builtin.cutscene.CutscenePanel;
 import de.luckymcdev.foundryengine.client.editor.builtin.cutscene.CutsceneTimelinePanel;
 import de.luckymcdev.foundryengine.client.editor.builtin.explorer.FileExplorerPanel;
 import de.luckymcdev.foundryengine.client.editor.builtin.explorer.ResourceExplorerPanel;
-import de.luckymcdev.foundryengine.client.editor.builtin.scene.ScenePanel;
 import de.luckymcdev.foundryengine.client.editor.builtin.tools.*;
 import de.luckymcdev.foundryengine.client.editor.builtin.view.InfoPanel;
 import de.luckymcdev.foundryengine.client.editor.builtin.view.ThemeSelectorPanel;
@@ -30,14 +29,13 @@ import de.luckymcdev.foundryengine.client.render.EngineRenderPipelines;
 import de.luckymcdev.foundryengine.client.render.WorldViewMatrix;
 import de.luckymcdev.foundryengine.client.render.entity.EngineEntityRenderers;
 import de.luckymcdev.foundryengine.client.render.obj.ObjModel;
-import de.luckymcdev.foundryengine.client.scene.ClientSceneSync;
-import de.luckymcdev.foundryengine.client.scene.SceneSelectionManager;
 import de.luckymcdev.foundryengine.client.util.key.RegisterKeyBindingEvent;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.network.packets.BundleHashPacket;
 import de.luckymcdev.foundryengine.common.network.packets.WaypointPacket;
 import de.luckymcdev.foundryengine.common.util.FolderHash;
 import de.luckymcdev.foundryengine.common.util.color.Color;
+import de.luckymcdev.foundryengine.common.waypoint.WaypointData;
 import de.luckymcdev.foundryengine.config.ClientConfig;
 import de.luckymcdev.foundryengine.config.Config;
 import net.minecraft.client.Minecraft;
@@ -53,6 +51,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import org.joml.Matrix4f;
 import org.slf4j.Logger;
 
+import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 
 @Mod(value = Common.MODID, dist = Dist.CLIENT)
@@ -97,17 +96,14 @@ public class FoundryEngineModClient {
         savedataManager.registerClientHandler(Common.id("waypoints"), data -> {
             var dimension = Client.getMc().level != null ? Client.getMc().level.dimension() : null;
             if (dimension == null) return;
-            var waypoints = new java.util.ArrayList<de.luckymcdev.foundryengine.common.waypoint.WaypointData>();
+            var waypoints = new ArrayList<WaypointData>();
             var list = data.getListOrEmpty("Waypoints");
             for (int i = 0; i < list.size(); i++) {
-                waypoints.add(de.luckymcdev.foundryengine.common.waypoint.WaypointData.fromNbt(list.getCompoundOrEmpty(i)));
+                waypoints.add(WaypointData.fromNbt(list.getCompoundOrEmpty(i)));
             }
             Common.getWaypointManager().replaceAll(dimension, waypoints);
         });
-        savedataManager.registerClientHandler(Common.id("scene_graph"),
-                tag -> de.luckymcdev.foundryengine.client.scene.ClientSceneSync.handleSync(tag));
-        savedataManager.registerClientHandler(Common.id("cutscene_manager"),
-                tag -> de.luckymcdev.foundryengine.client.cutscene.ClientCutsceneManager.handleSync(tag));
+        savedataManager.registerClientHandler(Common.id("cutscene_manager"), ClientCutsceneManager::handleSync);
     }
 
     private void onLoggingIn(ClientPlayerNetworkEvent.LoggingIn event) {
@@ -154,7 +150,6 @@ public class FoundryEngineModClient {
         event.register(MinecraftToolsPanel.INSTANCE);
         event.register(StopwatchPanel.INSTANCE);
         event.register(InfoPanel.INSTANCE);
-        event.register(ScenePanel.INSTANCE);
         event.register(CataloguePanel.INSTANCE);
         event.register(ThemeSelectorPanel.INSTANCE);
         event.register(EffectPanel.INSTANCE);
@@ -189,16 +184,10 @@ public class FoundryEngineModClient {
 
         Matrix4f modelView = WorldViewMatrix.from(event).at(0, 110, 0).scale(2).buildModelView();
         SUZANNE.renderModel(modelView, EngineRenderPipelines.POSITION_COLOR_NORMAL);
-
-        var selected = SceneSelectionManager.getSelected();
-        if (ScenePanel.INSTANCE.showGizmos && selected != null) {
-            selected.drawGizmos();
-        }
     }
 
     private void onClientTick(ClientTickEvent.Post event) {
         Client.getEditorManager().handleTick();
-        ClientSceneSync.clientTick();
         ClientCutsceneManager.clientTick();
         CutsceneEditor.clientTick();
         handleWaypointKeys();
