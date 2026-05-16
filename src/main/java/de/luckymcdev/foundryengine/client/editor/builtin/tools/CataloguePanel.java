@@ -42,7 +42,7 @@ public class CataloguePanel extends EditorPanel {
 
     public CataloguePanel() {
         super(Common.id("catalogue"), "Catalogue", ImIcons.FA.FA_LIST, Shortcut.empty());
-        this.category = PanelCategory.EDITOR_TOOLS;
+        this.category = PanelCategory.TOOLS;
     }
 
     public static void acceptDrop(Consumer<CataloguePayload> callback) {

@@ -21,7 +21,7 @@ public class EffectPanel extends EditorPanel {
 
     public EffectPanel() {
         super(Common.id("effect_panel"), "Effects", ImIcons.FA.FA_VIDEO_CAMERA, Shortcut.empty());
-        this.category = PanelCategory.EDITOR_TOOLS;
+        this.category = PanelCategory.TOOLS;
     }
 
     @Override

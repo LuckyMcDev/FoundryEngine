@@ -37,7 +37,7 @@ public class ConsolePanel extends EditorPanel {
     private ConsolePanel() {
         super(Common.id("console"), "Console", ImIcons.FA.FA_TERMINAL, Shortcut.ctrl(ImGuiKey.F1));
         menuBar = true;
-        this.category = PanelCategory.EDITOR_TOOLS;
+        this.category = PanelCategory.TOOLS;
     }
 
     private List<LogEntry> getFilteredLogs() {

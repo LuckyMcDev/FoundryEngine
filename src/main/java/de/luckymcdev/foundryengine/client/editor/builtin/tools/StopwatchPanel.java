@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.client.editor.builtin.tools;
 
 import de.luckymcdev.foundryengine.client.editor.builtin.EditorPanel;
+import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.config.PanelStyle;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
@@ -21,6 +22,7 @@ public class StopwatchPanel extends EditorPanel {
         this.temporary = true;
         this.style = PanelStyle.MINIMAL;
         this.stopwatch = new Stopwatch(System.currentTimeMillis(), 0L);
+        this.category = PanelCategory.TOOLS;
     }
 
     @Override

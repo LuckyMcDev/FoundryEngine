@@ -13,7 +13,6 @@ public enum PanelCategory {
 
     EDITOR_EXPLORER("Explorer", ImIcons.FA.FA_FOLDER, EDITOR),
     EDITOR_FILES("Files", ImIcons.FA.FA_FILE, EDITOR),
-    EDITOR_TOOLS("Tools", ImIcons.FA.FA_TOOLBOX, EDITOR),
     EDITOR_BLUEPRINTS("Blueprints", ImIcons.FA.FA_MAP, EDITOR),
     EDITOR_CUTSCENES("Cutscenes", ImIcons.FA.FA_FILM, EDITOR),
     EDITOR_SCENE("Scene", ImIcons.FA.FA_FOLDER_TREE, EDITOR);

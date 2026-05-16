@@ -24,7 +24,7 @@ public class MinecraftToolsPanel extends EditorPanel {
 
     private MinecraftToolsPanel() {
         super(Common.id("minecraft_tools"), "Mincraft Tools", ImIcons.FA.FA_TOOLBOX, Shortcut.ctrl(ImGuiKey.F3));
-        this.category = PanelCategory.EDITOR_TOOLS;
+        this.category = PanelCategory.TOOLS;
     }
 
     @Override
