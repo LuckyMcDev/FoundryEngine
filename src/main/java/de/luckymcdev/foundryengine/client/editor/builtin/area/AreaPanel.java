@@ -26,7 +26,6 @@ import java.util.List;
 public class AreaPanel extends EditorPanel {
     public static final AreaPanel INSTANCE = new AreaPanel();
     private final ImString newAreaName = new ImString(64);
-    private static final int WORLD_LIMIT = 30000000;
     private final ImInt areaSizeX = new ImInt(5);
     private final ImInt areaSizeY = new ImInt(4);
     private final ImInt areaSizeZ = new ImInt(5);
@@ -225,23 +224,23 @@ public class AreaPanel extends EditorPanel {
 
         ImGui.text("Position (Min):");
         ImGui.setNextItemWidth(120);
-        ImGui.dragInt("X##editMinX", editMinX.getData(), 1f, -WORLD_LIMIT, WORLD_LIMIT);
+        ImGui.inputInt("X##editMinX", editMinX);
         ImGui.sameLine();
         ImGui.setNextItemWidth(120);
-        ImGui.dragInt("Y##editMinY", editMinY.getData(), 1f, -WORLD_LIMIT, WORLD_LIMIT);
+        ImGui.inputInt("Y##editMinY", editMinY);
         ImGui.sameLine();
         ImGui.setNextItemWidth(120);
-        ImGui.dragInt("Z##editMinZ", editMinZ.getData(), 1f, -WORLD_LIMIT, WORLD_LIMIT);
+        ImGui.inputInt("Z##editMinZ", editMinZ);
 
         ImGui.text("Position (Max):");
         ImGui.setNextItemWidth(120);
-        ImGui.dragInt("X##editMaxX", editMaxX.getData(), 1f, -WORLD_LIMIT, WORLD_LIMIT);
+        ImGui.inputInt("X##editMaxX", editMaxX);
         ImGui.sameLine();
         ImGui.setNextItemWidth(120);
-        ImGui.dragInt("Y##editMaxY", editMaxY.getData(), 1f, -WORLD_LIMIT, WORLD_LIMIT);
+        ImGui.inputInt("Y##editMaxY", editMaxY);
         ImGui.sameLine();
         ImGui.setNextItemWidth(120);
-        ImGui.dragInt("Z##editMaxZ", editMaxZ.getData(), 1f, -WORLD_LIMIT, WORLD_LIMIT);
+        ImGui.inputInt("Z##editMaxZ", editMaxZ);
 
         AABB bounds = selectedArea.bounds();
         ImGui.text(String.format("Size: %.1f x %.1f x %.1f",
