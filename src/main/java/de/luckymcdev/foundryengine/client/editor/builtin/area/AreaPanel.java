@@ -135,10 +135,8 @@ public class AreaPanel extends EditorPanel {
             ImGui.setTooltip("Unique identifier for the area (no spaces recommended)");
         }
         ImGui.setNextItemWidth(-1);
-        boolean nameConfirmed = ImGui.inputTextWithHint("##newareaname", "e.g., spawn_area, pvp_zone", newAreaName);
-        if (ImGui.isItemFocused() && ImGui.isKeyPressed(ImGuiKey.Enter)) {
-            nameConfirmed = true;
-        }
+        ImGui.inputTextWithHint("##newareaname", "e.g., spawn_area, pvp_zone", newAreaName);
+        boolean nameConfirmed = ImGui.isItemDeactivatedAfterEdit();
 
         ImGui.text("Size (blocks):");
         if (ImGui.isItemHovered()) {

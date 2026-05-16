@@ -157,6 +157,7 @@ public class FoundryEngineModClient {
         event.register(AreaPanel.INSTANCE);
         event.register(CutscenePanel.INSTANCE);
         event.register(CutsceneTimelinePanel.INSTANCE);
+        event.register(WaypointPanel.INSTANCE);
     }
 
     private void addClientReloadListener(AddClientReloadListenersEvent event) {

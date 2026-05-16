@@ -39,4 +39,35 @@ public interface ChatIcons {
     private static Component icon(char c) {
         return Component.literal(String.valueOf(c)).setStyle(ICONS);
     }
+
+    static Entry[] values() {
+        return new Entry[]{
+                new Entry('.', "Small Space", SMALL_SPACE),
+                new Entry('!', "Error", ERROR),
+                new Entry('+', "Plus", PLUS),
+                new Entry('-', "Minus", MINUS),
+                new Entry('~', "Tilde", TILDE),
+                new Entry('B', "Bubble", BUBBLE),
+                new Entry('C', "Copy", COPY),
+                new Entry('D', "ID", ID),
+                new Entry('E', "Energy", ENERGY),
+                new Entry('F', "Fire", FIRE),
+                new Entry('H', "Heart", HEART),
+                new Entry('h', "Half Heart", HALF_HEART),
+                new Entry('I', "Info", INFO),
+                new Entry('J', "Food", FOOD),
+                new Entry('j', "Half Food", HALF_FOOD),
+                new Entry('L', "Cold", COLD),
+                new Entry('M', "Camera", CAMERA),
+                new Entry('O', "Poison", POISON),
+                new Entry('P', "Prototype Component", PROTOTYPE_COMPONENT),
+                new Entry('Q', "Patched Component", PATCHED_COMPONENT),
+                new Entry('T', "Tag", TAG),
+                new Entry('W', "Warn", WARN),
+                new Entry('X', "No", NO),
+                new Entry('Y', "Yes", YES),
+        };
+    }
+
+    record Entry(char character, String name, Component component) {}
 }
