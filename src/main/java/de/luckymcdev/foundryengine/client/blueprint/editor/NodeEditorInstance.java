@@ -32,8 +32,6 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
     private static final int UNDO_LIMIT = 100;
     private final ImInt tempSrc = new ImInt();
     private final ImInt tempDst = new ImInt();
-    private final Map<Integer, ImString> commentTitleBuffers = new HashMap<>();
-    private final Map<Integer, ImString> commentBodyBuffers = new HashMap<>();
     private final BlueprintSerializer serializer;
     private final ArrayDeque<String> undoStack = new ArrayDeque<>();
     private final ArrayDeque<String> redoStack = new ArrayDeque<>();
@@ -95,8 +93,6 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
     @Override
     public void removeNode(BlueprintNode node) {
         super.removeNode(node);
-        commentTitleBuffers.remove(node.id);
-        commentBodyBuffers.remove(node.id);
     }
 
     public float[] getNodeGridPos(int nodeId) {
@@ -238,9 +234,6 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
     }
 
     private void applyState(String json) {
-        commentTitleBuffers.clear();
-        commentBodyBuffers.clear();
-
         var pos = serializer.deserialize(json, this);
         pos.forEach((id, p) -> setNodeGridPos(id, p[0], p[1]));
     }
@@ -417,19 +410,13 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
             // ── Title bar ─────────────────────────────────────────────
             ImNodes.beginNodeTitleBar();
             ImGui.pushStyleColor(ImGuiCol.Text, 0xFF_FFFFFF);
-            if (isCommentNode(node)) {
-                ImGui.textUnformatted(getCommentTitle(node));
-            } else {
-                ImGui.textUnformatted(node.name);
-            }
+            ImGui.textUnformatted(node.name);
             ImGui.popStyleColor();
             ImNodes.endNodeTitleBar();
 
             // ── Body ──────────────────────────────────────────────────
             ImGui.pushItemWidth(140f);
-            if (isCommentNode(node)) {
-                renderCommentBody(node);
-            } else if (onNodeBody != null) {
+            if (onNodeBody != null) {
                 onNodeBody.accept(node);
             }
 
@@ -502,42 +489,6 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
         handleNodeAndLinkSelection();
         handleShortcuts(editorHovered);
         handleDeleteKey();
-    }
-
-    private boolean isCommentNode(BlueprintNode node) {
-        return BlueprintEngine.BuiltinNodes.COMMENT.id.equals(node.identifier)
-                && BlueprintEngine.Categories.COMMENTS.equals(node.category);
-    }
-
-    private String getCommentTitle(BlueprintNode node) {
-        Object t = node.data.get("title");
-        if (t instanceof String s && !s.isBlank()) return s;
-        return "Comment";
-    }
-
-    private void renderCommentBody(BlueprintNode node) {
-        // Title
-        ImString titleBuf = commentTitleBuffers.computeIfAbsent(node.id, id -> {
-            String initial = getCommentTitle(node);
-            return new ImString(initial, 128);
-        });
-        if (ImGui.inputText("Title##cmt-title-" + node.id, titleBuf)) {
-            pushUndoState();
-            node.data.put("title", titleBuf.get());
-        }
-
-        // Body
-        ImString bodyBuf = commentBodyBuffers.computeIfAbsent(node.id, id -> {
-            Object v = node.data.get("text");
-            String initial = v instanceof String s ? s : "";
-            return new ImString(initial, 2048);
-        });
-
-        // A fixed-size multiline field gives the node a "comment box" feel.
-        if (ImGui.inputTextMultiline("##cmt-body-" + node.id, bodyBuf, 260f, 140f)) {
-            pushUndoState();
-            node.data.put("text", bodyBuf.get());
-        }
     }
 
     private void pushNodeColors(BlueprintNode node) {

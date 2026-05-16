@@ -4,7 +4,7 @@ import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.common.blueprint.graph.BlueprintGraph;
 import de.luckymcdev.foundryengine.common.blueprint.graph.BlueprintNode;
 import de.luckymcdev.foundryengine.common.blueprint.graph.NodePinInfo;
-import de.luckymcdev.foundryengine.common.blueprint.nodes.*;
+import de.luckymcdev.foundryengine.common.blueprint.nodes.BuiltinNode;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -98,240 +98,6 @@ public class BlueprintEngine {
     }
 
     public void registerBuiltins() {
-
-        // Bundle events
-        register(new EventNodes.BeginPlay());
-        register(new EventNodes.Registry());
-        register(new EventNodes.VanillaGame());
-        register(new EventNodes.CommonSetup());
-        register(new EventNodes.ClientSetup());
-        register(new EventNodes.DedicatedServerSetup());
-        register(new EventNodes.PostInit());
-
-        // Client events
-        register(new EventNodes.ClientTick());
-        register(new EventNodes.ClientStopped());
-        register(new EventNodes.ClientStopping());
-        register(new EventNodes.ChatMessage());
-        register(new EventNodes.RenderGui());
-        register(new EventNodes.ClientLoggedIn());
-        register(new EventNodes.ClientLoggedOut());
-
-        // Server events
-        register(new EventNodes.ServerTick());
-        register(new EventNodes.ServerAboutToStart());
-        register(new EventNodes.ServerStarted());
-        register(new EventNodes.ServerStarting());
-        register(new EventNodes.ServerStopped());
-        register(new EventNodes.ServerStopping());
-        register(new EventNodes.ServerTags());
-
-        // Block events
-        register(new EventNodes.BlockBroken());
-        register(new EventNodes.BlockPlaced());
-        register(new EventNodes.BlockLeftClicked());
-        register(new EventNodes.BlockRightClicked());
-        register(new EventNodes.FarmlandTrampled());
-
-        // Entity events
-        register(new EventNodes.EntityJoinLevel());
-        register(new EventNodes.LivingDeath());
-        register(new EventNodes.LivingDrops());
-        register(new EventNodes.LivingHurt());
-
-        // Item events
-        register(new EventNodes.ItemPickup());
-        register(new EventNodes.ItemDestroy());
-        register(new EventNodes.ItemRightClick());
-        register(new EventNodes.ItemCrafted());
-        register(new EventNodes.ItemDropped());
-        register(new EventNodes.ItemFoodEaten());
-        register(new EventNodes.ItemSmelted());
-        register(new EventNodes.ItemTooltip());
-        register(new EventNodes.ItemEntityInteract());
-        register(new EventNodes.ItemFirstLeftClick());
-        register(new EventNodes.ItemFirstRightClick());
-
-        // Level events
-        register(new EventNodes.LevelLoad());
-        register(new EventNodes.LevelUnload());
-        register(new EventNodes.LevelSave());
-        register(new EventNodes.LevelTick());
-        register(new EventNodes.BeforeExplosion());
-        register(new EventNodes.AfterExplosion());
-
-        // Network events
-        register(new EventNodes.NetworkLogin());
-        register(new EventNodes.NetworkLogout());
-
-        // Player events
-        register(new EventNodes.PlayerLoggedIn());
-        register(new EventNodes.PlayerLoggedOut());
-        register(new EventNodes.PlayerTick());
-        register(new EventNodes.PlayerChat());
-        register(new EventNodes.PlayerAdvancement());
-        register(new EventNodes.ChestClosed());
-        register(new EventNodes.ChestOpened());
-        register(new EventNodes.PlayerRespawned());
-        register(new EventNodes.DecorateChat());
-
-        // Command events
-        register(new EventNodes.Commands());
-        register(new EventNodes.ClientCommands());
-
-        // Recipe events
-        register(new EventNodes.RecipeViewerUpdated());
-
-        // Logic nodes
-        register(new LogicNodes.If());
-        register(new LogicNodes.IfElse());
-        register(new LogicNodes.Repeat());
-        register(new LogicNodes.RepeatUntil());
-        register(new LogicNodes.ForRange());
-        register(new LogicNodes.Sequence());
-        register(new LogicNodes.RerouteExec());
-        register(new LogicNodes.RerouteAny());
-        register(new LogicNodes.Not());
-        register(new LogicNodes.And());
-        register(new LogicNodes.Or());
-
-        // Math nodes
-        register(new MathNodes.IntAdd());
-        register(new MathNodes.IntSub());
-        register(new MathNodes.IntMul());
-        register(new MathNodes.IntEquals());
-        register(new MathNodes.IntMod());
-        register(new MathNodes.FloatAdd());
-        register(new MathNodes.FloatSub());
-        register(new MathNodes.FloatMul());
-        register(new MathNodes.FloatDiv());
-
-        // Variable nodes
-        register(new VariableNodes.SetVariable());
-        register(new VariableNodes.GetVariable());
-
-        // Input nodes
-        register(new InputNodes.StringInput());
-        register(new InputNodes.IntegerInput());
-        register(new InputNodes.BooleanInput());
-
-        // Utility nodes
-        register(new UtilityNodes.PrintString());
-        register(new UtilityNodes.Tell());
-
-        // Vector nodes
-        register(new VectorNodes.CreateVec3());
-        register(new VectorNodes.BreakVec3());
-        register(new VectorNodes.Vec3Add());
-        register(new VectorNodes.Vec3Sub());
-        register(new VectorNodes.Vec3Mul());
-        register(new VectorNodes.Vec3Div());
-        register(new VectorNodes.Vec3Distance());
-        register(new VectorNodes.Vec3Length());
-        register(new VectorNodes.Vec3Normalize());
-        register(new VectorNodes.Vec3Lerp());
-        register(new VectorNodes.EntityPosition());
-
-        // Registry nodes
-        register(new RegistryNodes.RegisterItem());
-        register(new RegistryNodes.RegisterBlock());
-        register(new RegistryNodes.RegisterSound());
-
-        // String nodes
-        register(new StringNodes.Concat());
-        register(new StringNodes.Equals());
-        register(new StringNodes.IsEmpty());
-        register(new StringNodes.Length());
-        register(new StringNodes.ToString());
-
-        // Editor nodes
-        register(new CommentNode());
-
-        // --- Command Nodes (builder-pattern factories) ---
-
-        // Basic
-        register(CommandNodes.runCommand());
-        register(CommandNodes.say());
-        register(CommandNodes.tell());
-        register(CommandNodes.me());
-        register(CommandNodes.reload());
-
-        // Entity
-        register(CommandNodes.summon());
-        register(CommandNodes.kill());
-        register(CommandNodes.damage());
-        register(CommandNodes.teleport());
-        register(CommandNodes.teleportTo());
-        register(CommandNodes.tagAdd());
-        register(CommandNodes.tagRemove());
-        register(CommandNodes.entityData());
-
-        // World
-        register(CommandNodes.setBlock());
-        register(CommandNodes.fill());
-        register(CommandNodes.clone_());
-        register(CommandNodes.destroy());
-
-        // Player
-        register(CommandNodes.give());
-        register(CommandNodes.clear());
-        register(CommandNodes.effectGive());
-        register(CommandNodes.effectClear());
-        register(CommandNodes.experienceAdd());
-        register(CommandNodes.experienceSet());
-        register(CommandNodes.gameMode());
-        register(CommandNodes.titleSend());
-        register(CommandNodes.spawnPoint());
-        register(CommandNodes.setWorldSpawn());
-
-        // Data
-        register(CommandNodes.dataMergeBlock());
-        register(CommandNodes.dataMergeStorage());
-        register(CommandNodes.dataRemove());
-
-        // Time & Weather
-        register(CommandNodes.timeSet());
-        register(CommandNodes.timeAdd());
-        register(CommandNodes.weather());
-
-        // Misc
-        register(CommandNodes.difficulty());
-        register(CommandNodes.enchant());
-        register(CommandNodes.particle());
-        register(CommandNodes.playSound());
-        register(CommandNodes.stopSound());
-        register(CommandNodes.recipeGive());
-        register(CommandNodes.recipeTake());
-        register(CommandNodes.schedule());
-        register(CommandNodes.spreadPlayers());
-        register(CommandNodes.lootGive());
-        register(CommandNodes.worldBorder());
-
-        // --- Selector nodes ---
-        register(new SelectorNodes.NearestPlayer());
-        register(new SelectorNodes.AllPlayers());
-        register(new SelectorNodes.RandomPlayer());
-        register(new SelectorNodes.Self());
-        register(new SelectorNodes.AllEntities());
-        register(new SelectorNodes.EntitySelector());
-
-        // --- Execute modifier nodes ---
-        register(new ExecuteModifierNodes.AsEntity());
-        register(new ExecuteModifierNodes.AtEntity());
-        register(new ExecuteModifierNodes.AsAt());
-        register(new ExecuteModifierNodes.PositionedTo());
-        register(new ExecuteModifierNodes.PositionedAs());
-        register(new ExecuteModifierNodes.RotatedTo());
-        register(new ExecuteModifierNodes.RotatedAs());
-        register(new ExecuteModifierNodes.Anchored());
-        register(new ExecuteModifierNodes.Align());
-        register(new ExecuteModifierNodes.FacingPos());
-        register(new ExecuteModifierNodes.FacingEntity());
-        register(new ExecuteModifierNodes.IfBlock());
-        register(new ExecuteModifierNodes.UnlessBlock());
-        register(new ExecuteModifierNodes.IfEntity());
-        register(new ExecuteModifierNodes.UnlessEntity());
-        register(new ExecuteModifierNodes.IfPredicate());
     }
 
     public enum BuiltinNodes {
@@ -417,61 +183,21 @@ public class BlueprintEngine {
         }
     }
 
-    /**
-     * All node categories. Each constant is its display path.
-     * Color is stored alongside for quick lookup via {@link #color(String)}.
-     * To add a new category, add one line here — no other changes needed.
-     */
     public static final class Categories {
         private static final Map<String, Integer> COLORS = new LinkedHashMap<>();
-        public static final String EVENTS = reg("Events", 0xFF_B83B2D);
-        public static final String EVENTS_BLOCK = reg("Events/Block", 0xFF_B83B2D);
-        public static final String EVENTS_ENTITY = reg("Events/Entity", 0xFF_B83B2D);
-        public static final String EVENTS_ITEM = reg("Events/Item", 0xFF_B83B2D);
-        public static final String EVENTS_LEVEL = reg("Events/Level", 0xFF_B83B2D);
-        public static final String EVENTS_NETWORK = reg("Events/Network", 0xFF_B83B2D);
-        public static final String EVENTS_PLAYER = reg("Events/Player", 0xFF_B83B2D);
-        public static final String EVENTS_COMMAND = reg("Events/Command", 0xFF_B83B2D);
-        public static final String EVENTS_RECIPE = reg("Events/Recipe", 0xFF_B83B2D);
-        public static final String EVENTS_CLIENT = reg("Events/Client", 0xFF_B83B2D);
-        public static final String EVENTS_SERVER = reg("Events/Server", 0xFF_B83B2D);
-        public static final String EVENTS_BUNDLE = reg("Events/Bundle", 0xFF_B83B2D);
-        public static final String REGISTRY_ITEMS = reg("Registry/Items", 0xFF_9B59B6);
-        public static final String REGISTRY_BLOCKS = reg("Registry/Blocks", 0xFF_9B59B6);
-        public static final String REGISTRY_SOUNDS = reg("Registry/Sounds", 0xFF_9B59B6);
-        public static final String VARIABLES = reg("Variables", 0xFF_2D9C4B);
-        public static final String UTILS = reg("Utilities", 0xFF_2D6DB8);
-        public static final String INPUTS = reg("Inputs", 0xFF_7B4BB3);
-        public static final String LOGIC = reg("Logic", 0xFF_D0912A);
-        public static final String MATH = reg("Math", 0xFF_2AA7B1);
-        public static final String STRINGS = reg("Strings", 0xFF_5BA32D);
-        public static final String COMMENTS = reg("Comments", 0xFF_B7A11E);
-        public static final String COMMANDS_BASIC = reg("Basic", 0xFF_C0392B);
-        public static final String COMMANDS_ENTITY = reg("Entity", 0xFF_27AE60);
-        public static final String COMMANDS_WORLD = reg("World", 0xFF_8E44AD);
-        public static final String COMMANDS_PLAYER = reg("Player", 0xFF_2980B9);
-        public static final String COMMANDS_DATA = reg("Data", 0xFF_16A085);
-        public static final String COMMANDS_TIME = reg("Time & Weather", 0xFF_F39C12);
-        public static final String COMMANDS_MISC = reg("Misc", 0xFF_95A5A6);
-        public static final String COMMANDS_EXECUTE = reg("Execute", 0xFF_E67E22);
-        public static final String COMMANDS_TARGET = reg("Targeting", 0xFF_1ABC9C);
-        public static final String VECTORS = reg("Vectors", 0xFF_2AA7B1);
+
         private Categories() {
         }
 
-        private static String reg(String path, int color) {
+        public static String define(String path, int color) {
             COLORS.put(path, color);
             return path;
         }
 
-        /**
-         * Look up a category's colour; falls back to a mid-grey.
-         */
         public static int color(@Nullable String path) {
             if (path == null) return 0xFF_404040;
             Integer c = COLORS.get(path);
             if (c != null) return c;
-            // fallback: try the top-level segment
             int slash = path.indexOf('/');
             String key = slash == -1 ? path : path.substring(0, slash);
             c = COLORS.get(key);
