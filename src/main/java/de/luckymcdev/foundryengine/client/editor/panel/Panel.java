@@ -229,6 +229,12 @@ public class Panel {
                 }
             } else {
                 this.focused = false;
+                if (!WINDOW.get()) {
+                    this.close();
+                    if (!open) {
+                        onClosed();
+                    }
+                }
             }
 
             type = ImGuiWindowType.get(Client.getWindow().handle());

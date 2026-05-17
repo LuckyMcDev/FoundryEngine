@@ -55,6 +55,7 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
     private final ImGuiGraphicsStack graphicsStack = new ImGuiGraphicsStack();
     private final ImGuiFontManager fontManager = new ImGuiFontManager(imGuiImplGl3);
     private final AtomicBoolean enabled = new AtomicBoolean(false);
+    private final AtomicBoolean menuBarVisible = new AtomicBoolean(true);
     private @Nullable ImGuiContext imGuiContext;
     private @Nullable ImPlotContext imPlotContext;
     private @Nullable ImNodesContext imNodesContext;
@@ -106,6 +107,26 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
     @Override
     public void disable() {
         enabled.set(false);
+    }
+
+    @Override
+    public void showMenuBar() {
+        menuBarVisible.set(true);
+    }
+
+    @Override
+    public void hideMenuBar() {
+        menuBarVisible.set(false);
+    }
+
+    @Override
+    public void toggleMenuBar() {
+        menuBarVisible.set(!menuBarVisible.get());
+    }
+
+    @Override
+    public boolean isMenuBarVisible() {
+        return menuBarVisible.get();
     }
 
     @Override
@@ -214,6 +235,7 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
         return graphicsStack;
     }
 
+    @Override
     public int getDockId() {
         return dockId;
     }

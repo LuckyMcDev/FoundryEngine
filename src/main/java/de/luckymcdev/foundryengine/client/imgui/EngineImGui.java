@@ -33,4 +33,14 @@ public interface EngineImGui {
     void free();
 
     ImGuiGraphicsStack getGraphicsStack();
+
+    int getDockId();
+
+    void showMenuBar();
+
+    void hideMenuBar();
+
+    void toggleMenuBar();
+
+    boolean isMenuBarVisible();
 }

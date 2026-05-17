@@ -29,6 +29,10 @@ public class KeyboardHandlerMixin implements EngineKeyboardHandler {
             return;
         }
 
+        if (handle == Client.getWindow().handle() && action == GLFW_PRESS && Client.MENU_BAR_KEY.mapping().matches(event)) {
+            Client.getImGuiManager().toggleMenuBar();
+        }
+
         if (handle == Client.getWindow().handle() && action == GLFW_PRESS && Client.EDITOR_KEY.mapping().matches(event)) {
             if (event.hasControlDown()) {
                 Client.getImGuiManager().enable();

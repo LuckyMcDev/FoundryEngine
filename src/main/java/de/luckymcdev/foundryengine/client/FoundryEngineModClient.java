@@ -21,7 +21,6 @@ import de.luckymcdev.foundryengine.client.editor.panel.view.ThemeSelectorPanel;
 import de.luckymcdev.foundryengine.client.event.RegisterRenderingStuffEvent;
 import de.luckymcdev.foundryengine.client.ext.ModPathBroadcaster;
 import de.luckymcdev.foundryengine.client.icons.ScreenIconExporter;
-import de.luckymcdev.foundryengine.client.imgui.ImGuiManager;
 import de.luckymcdev.foundryengine.client.render.EngineRenderPipelines;
 import de.luckymcdev.foundryengine.client.render.WorldViewMatrix;
 import de.luckymcdev.foundryengine.client.render.entity.EngineEntityRenderers;
@@ -37,6 +36,7 @@ import de.luckymcdev.foundryengine.config.ClientConfig;
 import de.luckymcdev.foundryengine.config.Config;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Vec3i;
+import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -133,6 +133,7 @@ public class FoundryEngineModClient {
 
     private void onRegisterKeyBinding(RegisterKeyBindingEvent event) {
         event.register(Client.EDITOR_KEY);
+        event.register(Client.MENU_BAR_KEY);
     }
 
     private void onRegisterCommands(RegisterClientCommandsEvent event) {
@@ -167,7 +168,7 @@ public class FoundryEngineModClient {
     }
 
     private void addClientReloadListener(AddClientReloadListenersEvent event) {
-        event.addListener(Common.id("imgui_handler"), (ImGuiManager) Client.getImGuiManager());
+        event.addListener(Common.id("imgui_handler"), (ResourceManagerReloadListener) Client.getImGuiManager());
         event.addListener(Common.id("obj_models"), (sharedState, backgroundExecutor, barrier, gameExecutor) ->
                 CompletableFuture
                         .<Void>supplyAsync(() -> null, backgroundExecutor)

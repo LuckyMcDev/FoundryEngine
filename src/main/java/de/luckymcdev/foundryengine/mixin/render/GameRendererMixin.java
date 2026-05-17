@@ -150,7 +150,10 @@ public class GameRendererMixin implements EngineGameRenderer {
 
             try {
                 imguiManager.begin();
-                mainMenu.handleRender();
+                mainMenu.handleShortcuts();
+                if (imguiManager.isMenuBarVisible()) {
+                    mainMenu.render();
+                }
                 editorManager.handleRender();
             } finally {
                 imguiManager.end();

@@ -70,6 +70,16 @@ public abstract class Client {
             () -> {
             }
     );
+    public static final KeyBinding MENU_BAR_KEY = new KeyBinding(
+            new KeyMapping(
+                    Component.translatable("key.foundryengine.menu_bar").getString(),
+                    InputConstants.Type.KEYSYM,
+                    InputConstants.KEY_F6,
+                    EDITOR_CATEGORY
+            ),
+            () -> {
+            }
+    );
     public static final KeyMapping PRIMARY_WAYPOINT_KEY = new KeyMapping(
             "key.foundryengine.primary_waypoint",
             InputConstants.Type.KEYSYM,
