@@ -19,7 +19,8 @@ public record AreaPacket(
         AABB bounds,
         Identifier dimensionId,
         boolean isRemoval,
-        boolean isUpdate
+        boolean isUpdate,
+        int color
 ) implements AbstractPacket<AreaPacket> {
 
     public static final Type<AreaPacket> TYPE = AbstractPacket.createType(Common.id("area_packet"));
@@ -30,6 +31,7 @@ public record AreaPacket(
             Identifier.STREAM_CODEC, AreaPacket::dimensionId,
             ByteBufCodecs.BOOL, AreaPacket::isRemoval,
             ByteBufCodecs.BOOL, AreaPacket::isUpdate,
+            ByteBufCodecs.INT, AreaPacket::color,
             AreaPacket::new
     );
 
@@ -66,12 +68,10 @@ public record AreaPacket(
                         .findFirst()
                         .ifPresent(area -> areaManager.remove(level, area));
             } else if (packet.isUpdate()) {
-                // Update existing area bounds
-                var updatedArea = new Area(packet.id(), packet.bounds(), dimensionKey);
+                var updatedArea = new Area(packet.id(), packet.bounds(), dimensionKey, packet.color());
                 areaManager.update(level, updatedArea);
             } else {
-                // Create and register the area
-                var area = new Area(packet.id(), packet.bounds(), dimensionKey);
+                var area = new Area(packet.id(), packet.bounds(), dimensionKey, packet.color());
                 areaManager.register(level, area);
             }
 
@@ -86,7 +86,8 @@ public record AreaPacket(
                 area.bounds(),
                 area.dimension().identifier(),
                 false,
-                false
+                false,
+                area.color()
         );
     }
 
@@ -96,16 +97,17 @@ public record AreaPacket(
                 area.bounds(),
                 area.dimension().identifier(),
                 false,
-                true
+                true,
+                area.color()
         );
     }
 
     public static AreaPacket remove(String areaId, Identifier dimensionId) {
-        return new AreaPacket(areaId, new AABB(0, 0, 0, 0, 0, 0), dimensionId, true, false);
+        return new AreaPacket(areaId, new AABB(0, 0, 0, 0, 0, 0), dimensionId, true, false, 0);
     }
 
     public static AreaPacket requestSync(Identifier dimensionId) {
-        return new AreaPacket("REQUEST_SYNC", new AABB(0, 0, 0, 0, 0, 0), dimensionId, false, false);
+        return new AreaPacket("REQUEST_SYNC", new AABB(0, 0, 0, 0, 0, 0), dimensionId, false, false, 0);
     }
 
     @Override

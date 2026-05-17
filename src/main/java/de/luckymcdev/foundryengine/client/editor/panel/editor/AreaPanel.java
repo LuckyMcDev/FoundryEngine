@@ -9,6 +9,7 @@ import de.luckymcdev.foundryengine.common.area.Area;
 import de.luckymcdev.foundryengine.common.area.AreaManager;
 import de.luckymcdev.foundryengine.common.network.packets.AreaPacket;
 import de.luckymcdev.foundryengine.common.network.packets.ServerBoundTeleportPacket;
+import de.luckymcdev.foundryengine.common.util.color.Color;
 import imgui.ImGui;
 import imgui.type.ImInt;
 import imgui.type.ImString;
@@ -34,6 +35,9 @@ public class AreaPanel extends EditorPanel {
     private final ImInt editMaxY = new ImInt();
     private final ImInt editMaxZ = new ImInt();
 
+    private final float[] newAreaColor = new float[3];
+    private final float[] editColor = new float[3];
+
     private boolean showNewForm = false;
     private boolean showAreaDetails = false;
     private Area selectedArea = null;
@@ -43,6 +47,18 @@ public class AreaPanel extends EditorPanel {
         super(Common.id("area_panel"), "Areas", ImIcons.FA.FA_MAP);
         this.category = PanelCategory.EDITOR;
         this.menuBar = true;
+        colorToFloats(Area.DEFAULT_COLOR, newAreaColor);
+    }
+
+    private static void colorToFloats(int argb, float[] out) {
+        Color c = new Color(argb);
+        out[0] = c.r();
+        out[1] = c.g();
+        out[2] = c.b();
+    }
+
+    private static int floatsToColor(float[] rgb) {
+        return new Color(rgb[0], rgb[1], rgb[2], 1.0f).argb();
     }
 
     @Override
@@ -162,6 +178,10 @@ public class AreaPanel extends EditorPanel {
         ImGui.sameLine();
         ImGui.textDisabled("(0 = centered on player)");
 
+        ImGui.text("Color:");
+        ImGui.sameLine();
+        ImGui.colorEdit3("##newAreaColor", newAreaColor);
+
         boolean createClicked = ImGui.button("Create Area");
 
         if (createClicked || nameConfirmed) {
@@ -233,6 +253,10 @@ public class AreaPanel extends EditorPanel {
                 bounds.maxY - bounds.minY,
                 bounds.maxZ - bounds.minZ));
 
+        ImGui.text("Color:");
+        ImGui.sameLine();
+        ImGui.colorEdit3("##editAreaColor", editColor);
+
         if (ImGui.button("Save Changes")) {
             saveAreaChanges();
         }
@@ -261,6 +285,7 @@ public class AreaPanel extends EditorPanel {
         editMaxX.set((int) Math.ceil(b.maxX));
         editMaxY.set((int) Math.ceil(b.maxY));
         editMaxZ.set((int) Math.ceil(b.maxZ));
+        colorToFloats(area.color(), editColor);
     }
 
     private void saveAreaChanges() {
@@ -269,7 +294,8 @@ public class AreaPanel extends EditorPanel {
         Vec3 min = new Vec3(editMinX.get(), editMinY.get(), editMinZ.get());
         Vec3 max = new Vec3(editMaxX.get(), editMaxY.get(), editMaxZ.get());
 
-        Area updatedArea = Area.of(selectedArea.id(), min, max, selectedArea.dimension());
+        int color = floatsToColor(editColor);
+        Area updatedArea = Area.of(selectedArea.id(), min, max, selectedArea.dimension(), color);
 
         var packet = AreaPacket.update(updatedArea);
         Common.getNetworkManager().sendToServer(packet);
@@ -300,7 +326,8 @@ public class AreaPanel extends EditorPanel {
                 playerPos.z + sizeZ / 2.0
         );
 
-        Area newArea = Area.of(name, min, max, mc.level.dimension());
+        int color = floatsToColor(newAreaColor);
+        Area newArea = Area.of(name, min, max, mc.level.dimension(), color);
 
         var packet = AreaPacket.create(newArea);
         Common.getNetworkManager().sendToServer(packet);

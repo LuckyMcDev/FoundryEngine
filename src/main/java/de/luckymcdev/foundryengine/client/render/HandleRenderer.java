@@ -39,4 +39,12 @@ public class HandleRenderer {
     public static void renderOutline(AABB bounds, int color) {
         Gizmos.cuboid(bounds, GizmoStyle.stroke(color));
     }
+
+    public static boolean isHovered(Vec3 position, Vec3 eye, Vec3 look, double threshold) {
+        Vec3 toPos = position.subtract(eye);
+        double t = toPos.dot(look);
+        if (t < 0) return false;
+        Vec3 projected = eye.add(look.scale(t));
+        return projected.distanceTo(position) < threshold;
+    }
 }

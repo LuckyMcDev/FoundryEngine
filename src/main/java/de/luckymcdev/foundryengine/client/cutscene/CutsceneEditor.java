@@ -72,6 +72,11 @@ public class CutsceneEditor extends DragEditorFeature {
     }
 
     @Override
+    public void render() {
+        CutsceneRenderer.render();
+    }
+
+    @Override
     protected void onDistanceChanged() {
         CutsceneRenderer.storedDistance = storedDistance;
     }

@@ -19,7 +19,6 @@ import de.luckymcdev.foundryengine.client.editor.panel.view.ThemeSelectorPanel;
 import de.luckymcdev.foundryengine.client.event.RegisterRenderingStuffEvent;
 import de.luckymcdev.foundryengine.client.ext.ModPathBroadcaster;
 import de.luckymcdev.foundryengine.client.icons.ScreenIconExporter;
-import de.luckymcdev.foundryengine.client.render.EngineDebugRenderer;
 import de.luckymcdev.foundryengine.client.render.EngineRenderPipelines;
 import de.luckymcdev.foundryengine.client.render.WorldViewMatrix;
 import de.luckymcdev.foundryengine.client.render.entity.EngineEntityRenderers;
@@ -185,7 +184,7 @@ public class FoundryEngineModClient {
 
         Client.getCutsceneManager().renderTick();
         Client.getCutsceneScreenEffectManager().renderTick();
-        EngineDebugRenderer.render();
+        Client.getEditorController().renderFeatures();
         Client.getWaypointRenderer().renderWaypoints(event);
 
         Matrix4f modelView = WorldViewMatrix.from(event).at(0, 110, 0).scale(2).buildModelView();

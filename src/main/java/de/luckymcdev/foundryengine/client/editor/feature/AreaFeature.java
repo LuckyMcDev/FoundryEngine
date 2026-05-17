@@ -11,6 +11,8 @@ import net.minecraft.world.phys.Vec3;
 import java.util.List;
 
 public class AreaFeature extends DragEditorFeature {
+    public static final double PICK_THRESHOLD = 0.8;
+
     private Area selectedArea;
     private boolean draggingMin = false;
 
@@ -45,6 +47,11 @@ public class AreaFeature extends DragEditorFeature {
     }
 
     @Override
+    public void render() {
+        AreaRenderer.render();
+    }
+
+    @Override
     protected void onDistanceChanged() {
         AreaRenderer.storedDistance = storedDistance;
     }
@@ -66,7 +73,7 @@ public class AreaFeature extends DragEditorFeature {
     private void sendAreaUpdate() {
         if (selectedArea == null) return;
         AABB b = selectedArea.bounds();
-        Area updated = Area.of(selectedArea.id(), new Vec3(b.minX, b.minY, b.minZ), new Vec3(b.maxX, b.maxY, b.maxZ), selectedArea.dimension());
+        Area updated = Area.of(selectedArea.id(), new Vec3(b.minX, b.minY, b.minZ), new Vec3(b.maxX, b.maxY, b.maxZ), selectedArea.dimension(), selectedArea.color());
         var packet = AreaPacket.update(updated);
         Common.getNetworkManager().sendToServer(packet);
     }
@@ -77,7 +84,6 @@ public class AreaFeature extends DragEditorFeature {
 
         Vec3 eye = mc.player.getEyePosition();
         Vec3 look = mc.player.getViewVector(1.0f);
-        double threshold = 0.5;
 
         Area closestArea = null;
         boolean closestIsMin = false;
@@ -95,7 +101,7 @@ public class AreaFeature extends DragEditorFeature {
 
                 Vec3 projected = eye.add(look.scale(t));
                 double dist = projected.distanceTo(entry);
-                if (dist < threshold) {
+                if (dist < PICK_THRESHOLD) {
                     double totalDist = t;
                     if (totalDist < closestDist) {
                         closestDist = totalDist;
@@ -147,7 +153,8 @@ public class AreaFeature extends DragEditorFeature {
         Area newArea = Area.of(selectedArea.id(),
                 new Vec3(newBounds.minX, newBounds.minY, newBounds.minZ),
                 new Vec3(newBounds.maxX, newBounds.maxY, newBounds.maxZ),
-                selectedArea.dimension());
+                selectedArea.dimension(),
+                selectedArea.color());
 
         List<Area> areas = Common.getAreaManager().getAreasForDimension(selectedArea.dimension());
         for (int i = 0; i < areas.size(); i++) {

@@ -21,17 +21,7 @@ public class AreaManager {
     private final Map<ResourceKey<Level>, Map<String, Set<UUID>>> lastMembersByDimension = new HashMap<>();
 
     private static CompoundTag areaToNbt(Area area) {
-        CompoundTag tag = new CompoundTag();
-        tag.putString("id", area.id());
-        tag.putString("dimension", area.dimension().identifier().toString());
-        var b = area.bounds();
-        tag.putDouble("minX", b.minX);
-        tag.putDouble("minY", b.minY);
-        tag.putDouble("minZ", b.minZ);
-        tag.putDouble("maxX", b.maxX);
-        tag.putDouble("maxY", b.maxY);
-        tag.putDouble("maxZ", b.maxZ);
-        return tag;
+        return Area.writeToNbt(area);
     }
 
     public void loadFromLevel(ServerLevel level) {
