@@ -5,7 +5,9 @@ import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.menu.MenuSection;
 import de.luckymcdev.foundryengine.client.editor.menu.ShortcutHandler;
 import de.luckymcdev.foundryengine.client.editor.menu.builtin.CategoryMenuSection;
+import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.graphics.ImGuiGraphicsStack;
+import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.common.registry.GenericRegistry;
 import imgui.ImGui;
 
@@ -49,7 +51,30 @@ public class MainMenu {
             graphicsStack.push();
             menuSections.forEach(MenuSection::render);
             graphicsStack.pop();
+
+            renderDevEditorButton();
+
             ImGui.endMainMenuBar();
+        }
+    }
+
+    private void renderDevEditorButton() {
+        boolean hasItem = EditorController.isHoldingEditorItem();
+
+        float textWidth = ImGui.calcTextSize(ImGuiUtils.icon(ImIcons.FA.FA_PENCIL) + " Dev Editor").x + 20;
+        float windowWidth = ImGui.getWindowWidth();
+        ImGui.setCursorPosX(windowWidth - textWidth - ImGui.getStyle().getItemSpacingX() * 2);
+
+        if (hasItem) {
+            if (ImGui.button(ImGuiUtils.icon(ImIcons.FA.FA_PENCIL) + " Dev Editor (active)")) {
+                Client.sendCommand("clear @p foundryengine:editor");
+            }
+            if (ImGui.isItemHovered()) ImGui.setTooltip("Click to remove the Dev Editor item from your inventory");
+        } else {
+            if (ImGui.button(ImGuiUtils.icon(ImIcons.FA.FA_PENCIL) + " Give Dev Editor")) {
+                Client.sendCommand("give @p foundryengine:editor 1");
+            }
+            if (ImGui.isItemHovered()) ImGui.setTooltip("Gives you the Dev Editor item. Hold RMB + scroll to edit cutscene paths and area bounds in-world");
         }
     }
 

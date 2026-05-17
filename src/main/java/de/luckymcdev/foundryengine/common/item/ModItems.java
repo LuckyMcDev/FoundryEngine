@@ -1,13 +1,12 @@
-package de.luckymcdev.foundryengine.common.cutscene;
+package de.luckymcdev.foundryengine.common.item;
 
 import de.luckymcdev.foundryengine.api.builder.item.ItemBuilder;
 import de.luckymcdev.foundryengine.common.Common;
-import de.luckymcdev.foundryengine.common.cutscene.item.EditorItem;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
-public class CutsceneItems {
+public class ModItems {
 
     public static Item EDITOR_ITEM;
 

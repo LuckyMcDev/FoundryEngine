@@ -1,9 +1,7 @@
 package de.luckymcdev.foundryengine.client;
 
 import com.mojang.logging.LogUtils;
-import de.luckymcdev.foundryengine.client.area.AreaRenderer;
 import de.luckymcdev.foundryengine.client.command.FoundryCommandsClient;
-import de.luckymcdev.foundryengine.client.cutscene.CutsceneRenderer;
 import de.luckymcdev.foundryengine.client.debug.screen.BundleDebugEntry;
 import de.luckymcdev.foundryengine.client.debug.screen.GameStagesDebugEntry;
 import de.luckymcdev.foundryengine.client.editor.event.RegisterPanelEvent;
@@ -21,6 +19,7 @@ import de.luckymcdev.foundryengine.client.editor.panel.view.ThemeSelectorPanel;
 import de.luckymcdev.foundryengine.client.event.RegisterRenderingStuffEvent;
 import de.luckymcdev.foundryengine.client.ext.ModPathBroadcaster;
 import de.luckymcdev.foundryengine.client.icons.ScreenIconExporter;
+import de.luckymcdev.foundryengine.client.render.EngineDebugRenderer;
 import de.luckymcdev.foundryengine.client.render.EngineRenderPipelines;
 import de.luckymcdev.foundryengine.client.render.WorldViewMatrix;
 import de.luckymcdev.foundryengine.client.render.entity.EngineEntityRenderers;
@@ -186,8 +185,7 @@ public class FoundryEngineModClient {
 
         Client.getCutsceneManager().renderTick();
         Client.getCutsceneScreenEffectManager().renderTick();
-        CutsceneRenderer.render();
-        AreaRenderer.render();
+        EngineDebugRenderer.render();
         Client.getWaypointRenderer().renderWaypoints(event);
 
         Matrix4f modelView = WorldViewMatrix.from(event).at(0, 110, 0).scale(2).buildModelView();
@@ -197,7 +195,7 @@ public class FoundryEngineModClient {
     private void onClientTick(ClientTickEvent.Post event) {
         Client.getEditorManager().handleTick();
         Client.getCutsceneManager().clientTick();
-        Client.getCutsceneEditor().clientTick();
+        Client.getEditorController().clientTick();
         handleWaypointKeys();
 
         if (!hasIconAutoExported && ClientConfig.AUTO_EXPORT.get()) {

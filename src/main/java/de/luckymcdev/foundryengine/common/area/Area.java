@@ -19,7 +19,7 @@ public record Area(String id, AABB bounds, ResourceKey<Level> dimension) {
                 bounds.contains(position.pos().getX(), position.pos().getY(), position.pos().getZ());
     }
 
-    public void drawDebugOutline() {
-        Gizmos.cuboid(bounds, GizmoStyle.stroke(0xFFFF0000));
+    public void drawDebugOutline(int color) {
+        Gizmos.cuboid(bounds, GizmoStyle.stroke(color));
     }
 }

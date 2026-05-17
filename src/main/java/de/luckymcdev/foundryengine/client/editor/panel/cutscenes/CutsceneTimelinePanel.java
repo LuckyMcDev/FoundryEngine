@@ -8,7 +8,6 @@ import de.luckymcdev.foundryengine.client.editor.panel.PanelRequirements;
 import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.common.Common;
-import de.luckymcdev.foundryengine.common.cutscene.CutsceneItems;
 import de.luckymcdev.foundryengine.common.cutscene.model.CommandAttachment;
 import de.luckymcdev.foundryengine.common.cutscene.model.Cutscene;
 import de.luckymcdev.foundryengine.common.cutscene.model.CutsceneAttachment;
@@ -16,6 +15,7 @@ import de.luckymcdev.foundryengine.common.cutscene.model.EffectAttachment;
 import de.luckymcdev.foundryengine.common.cutscene.network.CutscenePacket;
 import de.luckymcdev.foundryengine.common.cutscene.util.LerpType;
 import de.luckymcdev.foundryengine.common.cutscene.util.ScreenEffectType;
+import de.luckymcdev.foundryengine.common.item.ModItems;
 import imgui.ImGui;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiSelectableFlags;
@@ -284,9 +284,9 @@ public class CutsceneTimelinePanel extends EditorPanel {
         }
 
         ImGui.separator();
-        if (mc.player != null && CutsceneItems.EDITOR_ITEM != null) {
-            boolean hasItem = mc.player.getMainHandItem().getItem() == CutsceneItems.EDITOR_ITEM
-                    || mc.player.getOffhandItem().getItem() == CutsceneItems.EDITOR_ITEM;
+        if (mc.player != null && ModItems.EDITOR_ITEM != null) {
+            boolean hasItem = mc.player.getMainHandItem().getItem() == ModItems.EDITOR_ITEM
+                    || mc.player.getOffhandItem().getItem() == ModItems.EDITOR_ITEM;
             if (!hasItem) {
                 if (ImGui.button(ImIcons.FA.FA_PENCIL + " Give Editor Item")) {
                     sendCommand("give " + mc.player.getName().getString() + " foundryengine:editor 1");

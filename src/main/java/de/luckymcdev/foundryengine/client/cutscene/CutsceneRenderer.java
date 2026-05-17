@@ -1,16 +1,13 @@
 package de.luckymcdev.foundryengine.client.cutscene;
 
+import de.luckymcdev.foundryengine.client.render.HandleRenderer;
 import de.luckymcdev.foundryengine.common.Common;
-import de.luckymcdev.foundryengine.common.cutscene.CutsceneItems;
 import de.luckymcdev.foundryengine.common.cutscene.model.Cutscene;
 import de.luckymcdev.foundryengine.common.easing.BezierPoint;
 import de.luckymcdev.foundryengine.common.easing.BezierSpline;
 import net.minecraft.client.Minecraft;
-import net.minecraft.gizmos.GizmoStyle;
-import net.minecraft.gizmos.Gizmos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 
@@ -30,7 +27,7 @@ public class CutsceneRenderer {
     private static final List<Vec3> NODE_RELATIVE_POINTS = ENDPOINT_RELATIVE_POINTS.stream()
             .map(v -> v.scale(0.55))
             .toList();
-    private static final double POINT_SIZE = 0.05;
+    private static final double POINT_SIZE = 0.125;
     public static BezierPoint storedPoint;
     public static double storedDistance;
 
@@ -50,11 +47,6 @@ public class CutsceneRenderer {
     public static void render() {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null || mc.player == null) return;
-        if (CutsceneItems.EDITOR_ITEM == null) return;
-
-        boolean holding = mc.player.getMainHandItem().getItem() == CutsceneItems.EDITOR_ITEM
-                || mc.player.getOffhandItem().getItem() == CutsceneItems.EDITOR_ITEM;
-        if (!holding) return;
 
         float partial = mc.getDeltaTracker().getGameTimeDeltaPartialTick(true);
 
@@ -95,7 +87,6 @@ public class CutsceneRenderer {
     }
 
     private static void renderCutscene(Cutscene cutscene) {
-        // Draw orientation frames at every anchor (node) so per-node rotations are visible in-editor.
         var anchors = cutscene.path.getAnchorPoints();
         var rots = cutscene.getAnchorRotations();
         int count = Math.min(anchors.size(), rots.size());
@@ -104,14 +95,13 @@ public class CutsceneRenderer {
             Vec3 pos = anchors.get(i).getPos();
             Vec2 rot = rots.get(i);
 
-            boolean endpoint = (i == 0 || i == count - 1);
             int base = cutscene.getColorArgb();
             int color;
             if (i == 0) color = (0xA0000000) | (base & 0x00FFFFFF);
             else if (i == count - 1) color = (0xA0000000) | (base & 0x00FFFFFF);
             else color = (0x70000000) | (base & 0x00FFFFFF);
 
-            renderPointsRelative(pos, endpoint ? ENDPOINT_RELATIVE_POINTS : NODE_RELATIVE_POINTS, rot, color);
+            renderPointsRelative(pos, i == 0 || i == count - 1 ? ENDPOINT_RELATIVE_POINTS : NODE_RELATIVE_POINTS, rot, color);
         }
 
         renderBezierPath(cutscene);
@@ -124,7 +114,7 @@ public class CutsceneRenderer {
             for (double d = 0.00; d < 1; d += delta) {
                 Vec3 pos1 = spline.lerp(d);
                 Vec3 pos2 = spline.lerp(d + delta);
-                Gizmos.line(pos1, pos2, lineColor, 5);
+                HandleRenderer.renderLine(pos1, pos2, lineColor, 5);
             }
         }
 
@@ -144,15 +134,11 @@ public class CutsceneRenderer {
         if (point.isTangent()) {
             BezierPoint root = point.getRoot();
             if (root != null) {
-                Gizmos.line(point.getPos(), root.getPos(), scaleAlpha(getBezierPointColor(point), 0.5f), 5);
+                HandleRenderer.renderLine(point.getPos(), root.getPos(), scaleAlpha(getBezierPointColor(point), 0.5f), 5);
             }
         }
 
-        AABB bb = new AABB(
-                point.getPos().add(new Vec3(POINT_SIZE, POINT_SIZE, POINT_SIZE)),
-                point.getPos().subtract(new Vec3(POINT_SIZE, POINT_SIZE, POINT_SIZE))
-        );
-        Gizmos.cuboid(bb, GizmoStyle.stroke(color), true);
+        HandleRenderer.renderHandle(point.getPos(), POINT_SIZE, color);
     }
 
     private static int getBezierPointColor(BezierPoint point) {
@@ -185,12 +171,12 @@ public class CutsceneRenderer {
             translatedPoints.add(rotatePointRelative(origin, point, rot));
         }
         for (Vec3 point : translatedPoints) {
-            Gizmos.line(origin, point, color, 3);
+            HandleRenderer.renderLine(origin, point, color, 3);
         }
         for (int i = 0; i < translatedPoints.size() - 1; i++) {
-            Gizmos.line(translatedPoints.get(i), translatedPoints.get(i + 1), color, 3);
+            HandleRenderer.renderLine(translatedPoints.get(i), translatedPoints.get(i + 1), color, 3);
         }
-        Gizmos.line(translatedPoints.getLast(), translatedPoints.getFirst(), color, 3);
+        HandleRenderer.renderLine(translatedPoints.getLast(), translatedPoints.getFirst(), color, 3);
     }
 
     private static Vec3 rotatePointRelative(Vec3 origin, Vec3 relativeCoordinate, Vec2 rot) {

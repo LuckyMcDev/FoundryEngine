@@ -1,4 +1,4 @@
-package de.luckymcdev.foundryengine.common.cutscene.item;
+package de.luckymcdev.foundryengine.common.item;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
@@ -31,7 +31,8 @@ public class EditorItem extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> consumer, TooltipFlag flag) {
-        consumer.accept(Component.literal("Use in Combination with the Cutscene Panel to manage them"));
-        consumer.accept(Component.literal("Right click and drag points to change them."));
+        consumer.accept(Component.literal("General-purpose dev editor tool"));
+        consumer.accept(Component.literal("Hold RMB and look at cutscene points or area corners to drag them."));
+        consumer.accept(Component.literal("Scroll to push/pull. Shows area outlines when held."));
     }
 }

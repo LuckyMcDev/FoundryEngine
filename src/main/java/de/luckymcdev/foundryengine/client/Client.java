@@ -10,6 +10,7 @@ import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.client.cutscene.ClientCutsceneManager;
 import de.luckymcdev.foundryengine.client.cutscene.ClientScreenEffectManager;
 import de.luckymcdev.foundryengine.client.cutscene.CutsceneEditor;
+import de.luckymcdev.foundryengine.client.editor.EditorController;
 import de.luckymcdev.foundryengine.client.editor.EditorManager;
 import de.luckymcdev.foundryengine.client.editor.MainMenu;
 import de.luckymcdev.foundryengine.client.imgui.EngineImGui;
@@ -118,7 +119,8 @@ public abstract class Client {
     private static final ObjModelManager OBJ_MODEL_MANAGER = new ObjModelManager();
     private static final ClientCutsceneManager CUTSCENE_MANAGER = new ClientCutsceneManager();
     private static final ClientScreenEffectManager CUTSCENE_SCREEN_EFFECT_MANAGER = new ClientScreenEffectManager();
-    private static final CutsceneEditor CUTSCENE_EDITOR = new CutsceneEditor();
+    private static final EditorController EDITOR_CONTROLLER = new EditorController();
+    private static final CutsceneEditor CUTSCENE_EDITOR = EDITOR_CONTROLLER.getCutsceneEditor();
 
     private Client() {
         throw new EngineException();
@@ -234,6 +236,10 @@ public abstract class Client {
 
     public static ClientScreenEffectManager getCutsceneScreenEffectManager() {
         return CUTSCENE_SCREEN_EFFECT_MANAGER;
+    }
+
+    public static EditorController getEditorController() {
+        return EDITOR_CONTROLLER;
     }
 
     public static CutsceneEditor getCutsceneEditor() {

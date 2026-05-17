@@ -34,7 +34,6 @@ public class AreaPanel extends EditorPanel {
     private final ImInt editMaxY = new ImInt();
     private final ImInt editMaxZ = new ImInt();
 
-    public boolean showDebugOutlines = false;
     private boolean showNewForm = false;
     private boolean showAreaDetails = false;
     private Area selectedArea = null;
@@ -65,10 +64,6 @@ public class AreaPanel extends EditorPanel {
 
         if (ImGui.menuItem(ImIcons.FA.FA_ARROW_ROTATE_RIGHT + " Refresh")) {
             refreshAreas();
-        }
-
-        if (ImGui.menuItem(ImIcons.FA.FA_EYE + " Toggle Debug Outlines")) {
-            toggleDebugOutlines();
         }
 
         if (ImGui.menuItem("Create Area")) {
@@ -198,11 +193,6 @@ public class AreaPanel extends EditorPanel {
         } else {
             setStatus("Cannot refresh: not in a world");
         }
-    }
-
-    private void toggleDebugOutlines() {
-        showDebugOutlines = !showDebugOutlines;
-        setStatus("Debug outlines " + (showDebugOutlines ? "enabled" : "disabled"));
     }
 
     private void renderAreaDetails() {
