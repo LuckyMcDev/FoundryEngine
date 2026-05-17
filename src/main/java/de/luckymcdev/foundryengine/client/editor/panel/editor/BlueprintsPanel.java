@@ -1,12 +1,10 @@
-package de.luckymcdev.foundryengine.client.editor.builtin.blueprint;
+package de.luckymcdev.foundryengine.client.editor.panel.editor;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.api.event.ClientEvents;
 import de.luckymcdev.foundryengine.client.blueprint.editor.NodeEditorInstance;
-import de.luckymcdev.foundryengine.client.editor.builtin.EditorPanel;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
-import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintEngine;
 import de.luckymcdev.foundryengine.common.blueprint.nodes.BuiltinNode;
@@ -38,7 +36,7 @@ public class BlueprintsPanel extends EditorPanel {
     private final Path blueprintsDirectory;
 
     protected BlueprintsPanel() {
-        super(Common.id("blueprints"), "Blueprints", ImIcons.FA.FA_MAP, Shortcut.empty());
+        super(Common.id("blueprints"), "Blueprints", ImIcons.FA.FA_MAP);
         this.category = PanelCategory.EDITOR;
         this.engine = new BlueprintEngine();
         this.editor = new NodeEditorInstance(engine);
@@ -57,6 +55,25 @@ public class BlueprintsPanel extends EditorPanel {
         ClientEvents.tick(event -> {
             engine.executeEvent(BlueprintEngine.BuiltinNodes.EVENT_CLIENT_TICK.id, this.editor);
         });
+    }
+
+    private static void renderCategoryTree(CategoryNode node, String path, int flags,
+                                           java.util.function.Consumer<BuiltinNode> onPick) {
+        for (var builtin : node.builtins) {
+            if (ImGui.menuItem(builtin.name + "##" + builtin.identifier)) {
+                onPick.accept(builtin);
+            }
+        }
+
+        for (var entry : node.children.entrySet()) {
+            String name = entry.getKey();
+            CategoryNode child = entry.getValue();
+            String childPath = path.isEmpty() ? name : path + "/" + name;
+            if (ImGui.treeNodeEx(name + "##cat-" + childPath, flags)) {
+                renderCategoryTree(child, childPath, flags, onPick);
+                ImGui.treePop();
+            }
+        }
     }
 
     @Override
@@ -169,25 +186,6 @@ public class BlueprintsPanel extends EditorPanel {
             positions.forEach((nodeId, pos) -> editor.setNodeGridPos(nodeId, pos[0], pos[1]));
         } catch (IOException e) {
             LOGGER.error("Failed to load blueprint from {}", filePath, e);
-        }
-    }
-
-    private static void renderCategoryTree(CategoryNode node, String path, int flags,
-                                           java.util.function.Consumer<BuiltinNode> onPick) {
-        for (var builtin : node.builtins) {
-            if (ImGui.menuItem(builtin.name + "##" + builtin.identifier)) {
-                onPick.accept(builtin);
-            }
-        }
-
-        for (var entry : node.children.entrySet()) {
-            String name = entry.getKey();
-            CategoryNode child = entry.getValue();
-            String childPath = path.isEmpty() ? name : path + "/" + name;
-            if (ImGui.treeNodeEx(name + "##cat-" + childPath, flags)) {
-                renderCategoryTree(child, childPath, flags, onPick);
-                ImGui.treePop();
-            }
         }
     }
 

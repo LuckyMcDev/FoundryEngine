@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.client.editor;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.client.editor.event.RegisterPanelEvent;
+import de.luckymcdev.foundryengine.client.editor.panel.Panel;
 import de.luckymcdev.foundryengine.common.registry.GenericRegistry;
 import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;

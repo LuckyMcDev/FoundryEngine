@@ -1,10 +1,9 @@
-package de.luckymcdev.foundryengine.client.editor.builtin.files;
+package de.luckymcdev.foundryengine.client.editor.panel.files;
 
-import de.luckymcdev.foundryengine.client.editor.builtin.EditorPanel;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
+import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
-import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import imgui.ImGui;
 import net.minecraft.resources.Identifier;
 
@@ -15,14 +14,14 @@ public class TextureViewerPanel extends EditorPanel {
     private final String sourcePath;
 
     public TextureViewerPanel(Identifier id, String title, Identifier identifier) {
-        super(id, title, ImIcons.FA.FA_IMAGES, Shortcut.empty());
+        super(id, title, ImIcons.FA.FA_IMAGES);
         this.image = ImGuiUtils.getTexture(identifier);
         this.sourcePath = identifier.toString();
         this.category = PanelCategory.EDITOR_FILES;
     }
 
     public TextureViewerPanel(Identifier id, String title, File file) {
-        super(id, title, ImIcons.FA.FA_IMAGES, Shortcut.empty());
+        super(id, title, ImIcons.FA.FA_IMAGES);
         this.image = ImGuiUtils.getTexture(file);
         this.sourcePath = file.getAbsolutePath();
         this.category = PanelCategory.EDITOR_FILES;

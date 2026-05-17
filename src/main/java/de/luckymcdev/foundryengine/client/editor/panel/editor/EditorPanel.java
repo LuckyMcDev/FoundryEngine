@@ -1,7 +1,7 @@
-package de.luckymcdev.foundryengine.client.editor.builtin;
+package de.luckymcdev.foundryengine.client.editor.panel.editor;
 
-import de.luckymcdev.foundryengine.client.editor.Panel;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
+import de.luckymcdev.foundryengine.client.editor.panel.Panel;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcon;
 import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import imgui.ImGui;
@@ -17,6 +17,11 @@ public class EditorPanel extends Panel {
 
     protected EditorPanel(Identifier id, String label) {
         super(id, label);
+    }
+
+    protected EditorPanel(Identifier id, String label, ImIcon icon) {
+        super(id, label, icon);
+        this.category = PanelCategory.EDITOR;
     }
 
     protected EditorPanel(Identifier id, String label, ImIcon icon, Shortcut shortcut) {

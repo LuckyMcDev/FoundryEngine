@@ -1,11 +1,10 @@
-package de.luckymcdev.foundryengine.client.editor.builtin.tools;
+package de.luckymcdev.foundryengine.client.editor.panel.tools;
 
 import de.luckymcdev.foundryengine.client.Client;
-import de.luckymcdev.foundryengine.client.editor.builtin.EditorPanel;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
-import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
+import de.luckymcdev.foundryengine.client.editor.panel.PanelRequirements;
+import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
-import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.network.packets.ServerBoundTeleportPacket;
 import de.luckymcdev.foundryengine.common.network.packets.WaypointPacket;
@@ -40,7 +39,7 @@ public class WaypointPanel extends EditorPanel {
     private boolean showNewForm = false;
     private Waypoint selectedWaypoint = null;
     private WaypointPanel() {
-        super(Common.id("waypoint_panel"), "Waypoints", ImIcons.FA.FA_MAP_PIN, Shortcut.empty());
+        super(Common.id("waypoint_panel"), "Waypoints", ImIcons.FA.FA_MAP_PIN);
         this.category = PanelCategory.TOOLS;
         this.menuBar = true;
     }
@@ -55,7 +54,7 @@ public class WaypointPanel extends EditorPanel {
 
     @Override
     public void content() {
-        if (!ImGuiUtils.requireWorld("You need to join a world to manage waypoints.")) {
+        if (!PanelRequirements.requireWorld("You need to join a world to manage waypoints.")) {
             return;
         }
 

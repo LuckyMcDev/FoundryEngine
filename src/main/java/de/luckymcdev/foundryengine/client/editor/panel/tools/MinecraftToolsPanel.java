@@ -1,16 +1,15 @@
-package de.luckymcdev.foundryengine.client.editor.builtin.tools;
+package de.luckymcdev.foundryengine.client.editor.panel.tools;
 
 import de.luckymcdev.foundryengine.client.Client;
-import de.luckymcdev.foundryengine.client.editor.builtin.EditorPanel;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
+import de.luckymcdev.foundryengine.client.editor.panel.PanelRequirements;
+import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
-import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.network.packets.ServerBoundChangeWeatherPacket;
 import de.luckymcdev.foundryengine.common.network.packets.ServerBoundSetTimePacket;
 import imgui.ImGui;
-import imgui.flag.ImGuiKey;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.protocol.game.ServerboundChangeGameModePacket;
 import net.minecraft.network.protocol.game.ServerboundSetGameRulePacket;
@@ -23,13 +22,13 @@ public class MinecraftToolsPanel extends EditorPanel {
     public static final MinecraftToolsPanel INSTANCE = new MinecraftToolsPanel();
 
     private MinecraftToolsPanel() {
-        super(Common.id("minecraft_tools"), "Mincraft Tools", ImIcons.FA.FA_TOOLBOX, Shortcut.ctrl(ImGuiKey.F3));
+        super(Common.id("minecraft_tools"), "Mincraft Tools", ImIcons.FA.FA_TOOLBOX);
         this.category = PanelCategory.TOOLS;
     }
 
     @Override
     public void content() {
-        if (!ImGuiUtils.requireWorld()) {
+        if (!PanelRequirements.requireWorld()) {
             return;
         }
 

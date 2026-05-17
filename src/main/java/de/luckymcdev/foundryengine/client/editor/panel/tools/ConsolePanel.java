@@ -1,10 +1,9 @@
-package de.luckymcdev.foundryengine.client.editor.builtin.tools;
+package de.luckymcdev.foundryengine.client.editor.panel.tools;
 
 import de.luckymcdev.foundryengine.client.Client;
-import de.luckymcdev.foundryengine.client.editor.builtin.EditorPanel;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
+import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
-import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.log.EngineLogAppender;
 import de.luckymcdev.foundryengine.common.log.LogEntry;
@@ -35,7 +34,7 @@ public class ConsolePanel extends EditorPanel {
     private boolean autoScroll = true;
 
     private ConsolePanel() {
-        super(Common.id("console"), "Console", ImIcons.FA.FA_TERMINAL, Shortcut.ctrl(ImGuiKey.F1));
+        super(Common.id("console"), "Console", ImIcons.FA.FA_TERMINAL);
         menuBar = true;
         this.category = PanelCategory.TOOLS;
     }

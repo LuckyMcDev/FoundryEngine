@@ -1,13 +1,12 @@
-package de.luckymcdev.foundryengine.client.editor.builtin.cutscene;
+package de.luckymcdev.foundryengine.client.editor.panel.cutscenes;
 
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.cutscene.CutsceneRenderer;
 import de.luckymcdev.foundryengine.client.cutscene.CutsceneUiState;
-import de.luckymcdev.foundryengine.client.editor.builtin.EditorPanel;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
-import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
+import de.luckymcdev.foundryengine.client.editor.panel.PanelRequirements;
+import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
-import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.cutscene.CutsceneItems;
 import de.luckymcdev.foundryengine.common.cutscene.model.CommandAttachment;
@@ -50,20 +49,18 @@ public class CutsceneTimelinePanel extends EditorPanel {
     private final ImInt previewTick = new ImInt(0);
     private final ImInt selectedAttachmentIndex = new ImInt(-1);
     private final ImInt selectedAttachmentTypeIndex = new ImInt(0);
-    // Effect fields
     private final ImFloat effectAt = new ImFloat(0f);
     private final ImInt effectTypeIndex = new ImInt(0);
     private final ImFloat effectIntroDuration = new ImFloat(0.1f);
     private final ImFloat effectHoldDuration = new ImFloat(0.2f);
     private final ImFloat effectOutroDuration = new ImFloat(0.1f);
     private final ImInt effectEasingIndex = new ImInt(0);
-    // Command fields
     private final ImString commandText = new ImString(256);
     private final ImFloat commandDelay = new ImFloat(0f);
     private float zoomPxPerTick = 6.0f;
 
     private CutsceneTimelinePanel() {
-        super(Common.id("cutscene_timeline"), "Cutscene Timeline", ImIcons.FA.FA_SLIDERS, Shortcut.empty());
+        super(Common.id("cutscene_timeline"), "Cutscene Timeline", ImIcons.FA.FA_SLIDERS);
         this.category = PanelCategory.EDITOR_CUTSCENES;
         this.menuBar = true;
     }
@@ -76,7 +73,7 @@ public class CutsceneTimelinePanel extends EditorPanel {
 
     @Override
     public void content() {
-        if (!ImGuiUtils.requireWorld()) {
+        if (!PanelRequirements.requireWorld()) {
             return;
         }
 
@@ -221,19 +218,16 @@ public class CutsceneTimelinePanel extends EditorPanel {
         }
 
         int total = getTotalTicks(c);
-        int currentTick = Math.max(0, Math.min(previewTick.get(), total));
+        int currentTick = Math.clamp(previewTick.get(), 0, total);
         previewTick.set(currentTick);
         ImGui.setNextItemWidth(-1);
         int[] scrub = {previewTick.get()};
         if (ImGui.sliderInt("##cs_tl_scrub", scrub, 0, total)) {
             previewTick.set(scrub[0]);
-            // Enable live preview while scrubbing
             previewEnabled.set(true);
         }
 
         applyPreviewCamera(c, total);
-        // If not currently playing, allow user to toggle preview and scrub live in the timeline
-        // (Preview toggle is provided below in the UI for clarity)
     }
 
     private void renderNodeControls(Cutscene c) {

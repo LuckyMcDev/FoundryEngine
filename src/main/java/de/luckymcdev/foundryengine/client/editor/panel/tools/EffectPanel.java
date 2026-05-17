@@ -1,11 +1,10 @@
-package de.luckymcdev.foundryengine.client.editor.builtin.tools;
+package de.luckymcdev.foundryengine.client.editor.panel.tools;
 
 import de.luckymcdev.foundryengine.client.Client;
-import de.luckymcdev.foundryengine.client.editor.builtin.EditorPanel;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
+import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.client.post.PrioritizedEffect;
-import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
 import imgui.ImGui;
 import imgui.type.ImBoolean;
@@ -20,7 +19,7 @@ public class EffectPanel extends EditorPanel {
     public static final EffectPanel INSTANCE = new EffectPanel();
 
     public EffectPanel() {
-        super(Common.id("effect_panel"), "Effects", ImIcons.FA.FA_VIDEO_CAMERA, Shortcut.empty());
+        super(Common.id("effect_panel"), "Effects", ImIcons.FA.FA_VIDEO_CAMERA);
         this.category = PanelCategory.TOOLS;
     }
 

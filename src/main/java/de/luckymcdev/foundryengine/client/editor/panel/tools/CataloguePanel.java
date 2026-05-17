@@ -1,12 +1,11 @@
-package de.luckymcdev.foundryengine.client.editor.builtin.tools;
+package de.luckymcdev.foundryengine.client.editor.panel.tools;
 
 import de.luckymcdev.foundryengine.client.Client;
-import de.luckymcdev.foundryengine.client.editor.builtin.EditorPanel;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
+import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
 import de.luckymcdev.foundryengine.client.icons.ImageExportUtil;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
-import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.config.ClientConfig;
 import imgui.ImGui;
@@ -41,7 +40,7 @@ public class CataloguePanel extends EditorPanel {
     private final ImString searchBuffer = new ImString(256);
 
     public CataloguePanel() {
-        super(Common.id("catalogue"), "Catalogue", ImIcons.FA.FA_LIST, Shortcut.empty());
+        super(Common.id("catalogue"), "Catalogue", ImIcons.FA.FA_LIST);
         this.category = PanelCategory.TOOLS;
     }
 

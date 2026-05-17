@@ -1,6 +1,6 @@
 package de.luckymcdev.foundryengine.client.blueprint.editor;
 
-import de.luckymcdev.foundryengine.client.editor.builtin.tools.CataloguePanel;
+import de.luckymcdev.foundryengine.client.editor.panel.tools.CataloguePanel;
 import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintContext;
 import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintEngine;
 import de.luckymcdev.foundryengine.common.blueprint.graph.*;
@@ -27,9 +27,8 @@ import java.util.function.Consumer;
  * Client-only node editor canvas backed by ImGui-Node-Editor.
  */
 public class NodeEditorInstance extends BlueprintGraph implements BlueprintContext.EngineAwareGraph {
-
-    private final BlueprintEngine engine;
     private static final int UNDO_LIMIT = 100;
+    private final BlueprintEngine engine;
     private final ImInt tempSrc = new ImInt();
     private final ImInt tempDst = new ImInt();
     private final BlueprintSerializer serializer;
@@ -56,6 +55,18 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
         };
     }
 
+    private static int lighten(int argb, float amount) {
+        int a = (argb >>> 24) & 0xFF;
+        int r = (argb >>> 16) & 0xFF;
+        int g = (argb >>> 8) & 0xFF;
+        int b = argb & 0xFF;
+
+        r = Math.min(255, (int) (r + (255 - r) * amount));
+        g = Math.min(255, (int) (g + (255 - g) * amount));
+        b = Math.min(255, (int) (b + (255 - b) * amount));
+        return (a << 24) | (r << 16) | (g << 8) | b;
+    }
+
     @Override
     public BlueprintEngine getEngine() {
         return engine;
@@ -72,18 +83,6 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
     public void addNode(BlueprintNode node, boolean positionAtCursor) {
         super.addNode(node, positionAtCursor);
         if (positionAtCursor) pendingSpawnId = node.id;
-    }
-
-    private static int lighten(int argb, float amount) {
-        int a = (argb >>> 24) & 0xFF;
-        int r = (argb >>> 16) & 0xFF;
-        int g = (argb >>> 8) & 0xFF;
-        int b = argb & 0xFF;
-
-        r = Math.min(255, (int) (r + (255 - r) * amount));
-        g = Math.min(255, (int) (g + (255 - g) * amount));
-        b = Math.min(255, (int) (b + (255 - b) * amount));
-        return (a << 24) | (r << 16) | (g << 8) | b;
     }
 
     public void render(Consumer<BlueprintNode> onContextMenu) {
@@ -378,7 +377,6 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
 
         boolean mouseRight = ImGui.isMouseClicked(1);
 
-        // ── Global style ──────────────────────────────────────────────
         ImNodes.pushStyleVar(ImNodesStyleVar.NodePadding, new ImVec2(8f, 4f));
         ImNodes.pushStyleVar(ImNodesStyleVar.NodeBorderThickness, 1.2f);
         ImNodes.pushStyleVar(ImNodesStyleVar.PinCircleRadius, 5f);
@@ -386,7 +384,6 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
         ImNodes.pushStyleVar(ImNodesStyleVar.PinTriangleSideLength, 8f);
         ImNodes.pushStyleVar(ImNodesStyleVar.PinLineThickness, 1.5f);
         ImNodes.pushStyleVar(ImNodesStyleVar.LinkThickness, 2.5f);
-        // ───────────────────────────────────────────────────────────────
 
         ImNodes.beginNodeEditor();
         boolean editorHovered = ImNodes.isEditorHovered();
@@ -398,7 +395,6 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
             ImNodes.editorContextResetPanning(new ImVec2(pan.x * zoomFactor, pan.y * zoomFactor));
         }
 
-        // ── Grid background ───────────────────────────────────────────
         ImNodes.pushColorStyle(ImNodesCol.GridBackground, 0xFF_1A1A1A);
         ImNodes.pushColorStyle(ImNodesCol.GridLine, 0xFF_2A2A2A);
         ImNodes.pushColorStyle(ImNodesCol.GridLinePrimary, 0xFF_333333);
@@ -407,20 +403,17 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
             pushNodeColors(node);
             ImNodes.beginNode(node.id);
 
-            // ── Title bar ─────────────────────────────────────────────
             ImNodes.beginNodeTitleBar();
             ImGui.pushStyleColor(ImGuiCol.Text, 0xFF_FFFFFF);
             ImGui.textUnformatted(node.name);
             ImGui.popStyleColor();
             ImNodes.endNodeTitleBar();
 
-            // ── Body ──────────────────────────────────────────────────
             ImGui.pushItemWidth(140f);
             if (onNodeBody != null) {
                 onNodeBody.accept(node);
             }
 
-            // ── Input pins ────────────────────────────────────────────
             for (var pin : node.inputPins) {
                 pushPinColor(pin.pin.type());
                 ImNodes.beginInputAttribute(pin.id, toImNodesShape(pin.pin.shape()));
@@ -436,7 +429,6 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
                 ImNodes.endInputAttribute();
             }
 
-            // ── Output pins ───────────────────────────────────────────
             for (var pin : node.outputPins) {
                 pushPinColor(pin.pin.type());
                 ImNodes.beginOutputAttribute(pin.id, toImNodesShape(pin.pin.shape()));

@@ -1,13 +1,11 @@
-package de.luckymcdev.foundryengine.client.editor.builtin;
+package de.luckymcdev.foundryengine.client.editor.panel.editor;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
-import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
 import imgui.ImGui;
-import imgui.flag.ImGuiKey;
 import imgui.type.ImInt;
 import imgui.type.ImString;
 import org.slf4j.Logger;
@@ -26,7 +24,7 @@ public class MainEditor extends EditorPanel {
     private boolean wantsNew = false;
 
     private MainEditor() {
-        super(Common.id("main_editor"), "Main Editor", ImIcons.FA.FA_EDIT, Shortcut.ctrl(ImGuiKey.F9));
+        super(Common.id("main_editor"), "Main Editor", ImIcons.FA.FA_EDIT);
         this.category = PanelCategory.EDITOR;
         this.menuBar = true;
     }

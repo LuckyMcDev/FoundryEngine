@@ -1,6 +1,6 @@
 package de.luckymcdev.foundryengine.common.network.packets.explorer;
 
-import de.luckymcdev.foundryengine.client.editor.builtin.explorer.FileExplorerPanel;
+import de.luckymcdev.foundryengine.client.editor.panel.explorer.FileExplorerPanel;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.network.AbstractPacket;
 import de.luckymcdev.foundryengine.common.network.PacketBounds;

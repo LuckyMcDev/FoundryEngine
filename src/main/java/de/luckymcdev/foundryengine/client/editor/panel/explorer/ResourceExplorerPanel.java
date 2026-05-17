@@ -1,13 +1,12 @@
-package de.luckymcdev.foundryengine.client.editor.builtin.explorer;
+package de.luckymcdev.foundryengine.client.editor.panel.explorer;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.client.Client;
-import de.luckymcdev.foundryengine.client.editor.builtin.files.CodeEditor;
-import de.luckymcdev.foundryengine.client.editor.builtin.files.TextureViewerPanel;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
+import de.luckymcdev.foundryengine.client.editor.panel.files.CodeEditor;
+import de.luckymcdev.foundryengine.client.editor.panel.files.TextureViewerPanel;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
-import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
 import imgui.ImGui;
 import imgui.flag.ImGuiKey;
@@ -50,7 +49,7 @@ public class ResourceExplorerPanel extends AbstractExplorerPanel {
     private volatile boolean reloadInProgress = false;
 
     public ResourceExplorerPanel() {
-        super(Common.id("resource_browser"), "Resource Browser", ImIcons.FA.FA_IMAGE, Shortcut.empty());
+        super(Common.id("resource_browser"), "Resource Browser", ImIcons.FA.FA_IMAGE);
         this.category = PanelCategory.EDITOR_EXPLORER;
     }
 

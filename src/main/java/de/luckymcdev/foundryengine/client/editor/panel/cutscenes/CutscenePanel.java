@@ -1,13 +1,12 @@
-package de.luckymcdev.foundryengine.client.editor.builtin.cutscene;
+package de.luckymcdev.foundryengine.client.editor.panel.cutscenes;
 
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.cutscene.CutsceneRenderer;
 import de.luckymcdev.foundryengine.client.cutscene.CutsceneUiState;
-import de.luckymcdev.foundryengine.client.editor.builtin.EditorPanel;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
-import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
+import de.luckymcdev.foundryengine.client.editor.panel.PanelRequirements;
+import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
-import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.cutscene.model.Cutscene;
 import de.luckymcdev.foundryengine.common.cutscene.network.CutsceneActionPacket;
@@ -16,7 +15,6 @@ import de.luckymcdev.foundryengine.common.cutscene.util.LerpType;
 import imgui.ImGui;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiColorEditFlags;
-import imgui.flag.ImGuiKey;
 import imgui.flag.ImGuiSelectableFlags;
 import imgui.type.ImFloat;
 import imgui.type.ImInt;
@@ -45,14 +43,14 @@ public class CutscenePanel extends EditorPanel {
     private boolean showNewForm = false;
 
     private CutscenePanel() {
-        super(Common.id("cutscene_panel"), "Cutscenes", ImIcons.FA.FA_FILM, Shortcut.ctrl(ImGuiKey.F3));
+        super(Common.id("cutscene_panel"), "Cutscenes", ImIcons.FA.FA_FILM);
         this.category = PanelCategory.EDITOR_CUTSCENES;
         this.menuBar = true;
     }
 
     @Override
     public void content() {
-        if (!ImGuiUtils.requireWorld()) {
+        if (!PanelRequirements.requireWorld()) {
             return;
         }
 

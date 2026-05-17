@@ -1,8 +1,8 @@
-package de.luckymcdev.foundryengine.client.editor.builtin.files;
+package de.luckymcdev.foundryengine.client.editor.panel.files;
 
-import de.luckymcdev.foundryengine.client.editor.builtin.EditorPanel;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
-import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
+import de.luckymcdev.foundryengine.client.editor.panel.PanelRequirements;
+import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import imgui.ImGui;
@@ -118,8 +118,7 @@ public class CodeEditor extends EditorPanel {
 
     @Override
     public void content() {
-        //TODO: Same thing as the File Explorer.
-        if (!ImGuiUtils.requireFull()) return;
+        if (!PanelRequirements.requireLevelOnServer(net.minecraft.server.permissions.PermissionLevel.OWNERS)) return;
         this.unsaved = isDirty() && !forceReadOnly;
 
         renderMenuBar();

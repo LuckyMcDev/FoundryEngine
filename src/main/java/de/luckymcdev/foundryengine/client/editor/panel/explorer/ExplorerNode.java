@@ -1,4 +1,4 @@
-package de.luckymcdev.foundryengine.client.editor.builtin.explorer;
+package de.luckymcdev.foundryengine.client.editor.panel.explorer;
 
 import net.minecraft.resources.Identifier;
 import org.jspecify.annotations.Nullable;

@@ -1,18 +1,15 @@
-package de.luckymcdev.foundryengine.client.editor.builtin.area;
+package de.luckymcdev.foundryengine.client.editor.panel.editor;
 
 import de.luckymcdev.foundryengine.client.Client;
-import de.luckymcdev.foundryengine.client.editor.builtin.EditorPanel;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
-import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
+import de.luckymcdev.foundryengine.client.editor.panel.PanelRequirements;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
-import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.area.Area;
 import de.luckymcdev.foundryengine.common.area.AreaManager;
 import de.luckymcdev.foundryengine.common.network.packets.AreaPacket;
 import de.luckymcdev.foundryengine.common.network.packets.ServerBoundTeleportPacket;
 import imgui.ImGui;
-import imgui.flag.ImGuiKey;
 import imgui.type.ImInt;
 import imgui.type.ImString;
 import net.minecraft.client.Minecraft;
@@ -44,14 +41,14 @@ public class AreaPanel extends EditorPanel {
     private String selectedAreaId = null;
 
     private AreaPanel() {
-        super(Common.id("area_panel"), "Areas", ImIcons.FA.FA_MAP, Shortcut.ctrl(ImGuiKey.F4));
+        super(Common.id("area_panel"), "Areas", ImIcons.FA.FA_MAP);
         this.category = PanelCategory.EDITOR;
         this.menuBar = true;
     }
 
     @Override
     public void content() {
-        if (!ImGuiUtils.requireWorld("You need to join a world to manage areas.")) {
+        if (!PanelRequirements.requireWorld("You need to join a world to manage areas.")) {
             return;
         }
 

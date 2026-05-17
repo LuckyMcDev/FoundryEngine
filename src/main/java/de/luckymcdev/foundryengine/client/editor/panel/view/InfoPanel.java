@@ -1,10 +1,9 @@
-package de.luckymcdev.foundryengine.client.editor.builtin.view;
+package de.luckymcdev.foundryengine.client.editor.panel.view;
 
 import de.luckymcdev.foundryengine.FoundryEngineMod;
-import de.luckymcdev.foundryengine.client.editor.builtin.EditorPanel;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
+import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
-import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
 import imgui.ImGui;
 import imgui.flag.ImGuiTreeNodeFlags;
@@ -17,7 +16,7 @@ public class InfoPanel extends EditorPanel {
     public static final InfoPanel INSTANCE = new InfoPanel();
 
     protected InfoPanel() {
-        super(Common.id("info"), "Info", ImIcons.FA.FA_INFO, Shortcut.empty());
+        super(Common.id("info"), "Info", ImIcons.FA.FA_INFO);
         this.category = PanelCategory.VIEW;
     }
 

@@ -1,6 +1,6 @@
 package de.luckymcdev.foundryengine.client.area;
 
-import de.luckymcdev.foundryengine.client.editor.builtin.area.AreaPanel;
+import de.luckymcdev.foundryengine.client.editor.panel.editor.AreaPanel;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.area.Area;
 import de.luckymcdev.foundryengine.common.area.AreaManager;

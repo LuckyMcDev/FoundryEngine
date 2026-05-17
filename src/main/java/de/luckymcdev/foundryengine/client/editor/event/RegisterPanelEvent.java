@@ -1,7 +1,7 @@
 package de.luckymcdev.foundryengine.client.editor.event;
 
 import de.luckymcdev.foundryengine.client.Client;
-import de.luckymcdev.foundryengine.client.editor.Panel;
+import de.luckymcdev.foundryengine.client.editor.panel.Panel;
 import net.neoforged.bus.api.Event;
 
 /**

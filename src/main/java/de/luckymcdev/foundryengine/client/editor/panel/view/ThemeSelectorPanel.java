@@ -1,12 +1,11 @@
-package de.luckymcdev.foundryengine.client.editor.builtin.view;
+package de.luckymcdev.foundryengine.client.editor.panel.view;
 
 import de.luckymcdev.foundryengine.client.Client;
-import de.luckymcdev.foundryengine.client.editor.builtin.EditorPanel;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
+import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
 import de.luckymcdev.foundryengine.client.editor.styles.ImTheme;
 import de.luckymcdev.foundryengine.client.editor.styles.ImThemes;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
-import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
 import imgui.ImGui;
 
@@ -14,7 +13,7 @@ public class ThemeSelectorPanel extends EditorPanel {
     public static final ThemeSelectorPanel INSTANCE = new ThemeSelectorPanel();
 
     public ThemeSelectorPanel() {
-        super(Common.id("theme_selector"), "Theme Selector", ImIcons.FA.FA_THEMECO, Shortcut.empty());
+        super(Common.id("theme_selector"), "Theme Selector", ImIcons.FA.FA_THEMECO);
         this.category = PanelCategory.VIEW;
     }
 

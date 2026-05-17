@@ -1,4 +1,4 @@
-package de.luckymcdev.foundryengine.client.editor;
+package de.luckymcdev.foundryengine.client.editor.panel;
 
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.config.ImGuiWindowType;
@@ -80,6 +80,10 @@ public class Panel {
         this.style = PanelStyle.NORMAL;
         this.type = ImGuiWindowType.WINDOW;
         this.category = PanelCategory.OPEN;
+    }
+
+    protected Panel(Identifier id, String label, ImIcon icon) {
+        this(id, label, icon, Shortcut.empty());
     }
 
     /**

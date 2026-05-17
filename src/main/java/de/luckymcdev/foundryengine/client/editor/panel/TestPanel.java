@@ -1,10 +1,9 @@
-package de.luckymcdev.foundryengine.client.editor.builtin;
+package de.luckymcdev.foundryengine.client.editor.panel;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.client.Client;
-import de.luckymcdev.foundryengine.client.editor.Panel;
-import de.luckymcdev.foundryengine.client.editor.builtin.tools.CataloguePanel;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
+import de.luckymcdev.foundryengine.client.editor.panel.tools.CataloguePanel;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.client.ui.ExampleScreen;
@@ -16,7 +15,6 @@ import de.luckymcdev.foundryengine.common.util.color.Color;
 import imgui.ImGui;
 import imgui.extension.imguiknobs.ImGuiKnobs;
 import imgui.flag.ImGuiColorEditFlags;
-import imgui.flag.ImGuiKey;
 import imgui.type.ImBoolean;
 import imgui.type.ImFloat;
 import org.slf4j.Logger;
@@ -30,13 +28,13 @@ public class TestPanel extends Panel {
     private CataloguePanel.CataloguePayload cataloguePayload;
 
     private TestPanel() {
-        super(Common.id("test_panel"), "My Panel", ImIcons.FAE.FAE_BACTERIA, Shortcut.ctrl(ImGuiKey.F5));
+        super(Common.id("test_panel"), "My Panel", ImIcons.FAE.FAE_BACTERIA, Shortcut.empty());
         this.category = PanelCategory.OPEN;
     }
 
     @Override
     public void content() {
-        if (ImGuiUtils.requiresActiveSession()) return;
+        if (!PanelRequirements.requireLocal()) return;
 
         ImGui.text("Hello, World!");
         ImGui.separator();
@@ -68,7 +66,6 @@ public class TestPanel extends Panel {
         fonts.pushFont(BuiltInFonts.BOLD_ITALIC);
         ImGui.text("Hello World (Bold Italic)");
         fonts.popFont();
-        //fonts.withFont(BuiltInFonts.FALLBACK_JB, () -> ImGui.text("Hello World (Fallback)"));
 
         ImGuiUtils.textCentered("center center", ImGui.getWindowWidth());
         ImGuiUtils.identifier(Common.id("imguiiscool"));

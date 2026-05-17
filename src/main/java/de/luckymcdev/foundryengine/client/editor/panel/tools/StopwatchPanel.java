@@ -1,11 +1,10 @@
-package de.luckymcdev.foundryengine.client.editor.builtin.tools;
+package de.luckymcdev.foundryengine.client.editor.panel.tools;
 
-import de.luckymcdev.foundryengine.client.editor.builtin.EditorPanel;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.config.PanelStyle;
+import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
-import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
 import imgui.ImGui;
 import net.minecraft.world.Stopwatch;
@@ -17,7 +16,7 @@ public class StopwatchPanel extends EditorPanel {
     private boolean running = false;
 
     public StopwatchPanel(String id) {
-        super(Common.id("stopwatch-" + id.toLowerCase().replace(" ", "_")), "Stopwatch", ImIcons.FA.FA_STOPWATCH, Shortcut.empty());
+        super(Common.id("stopwatch-" + id.toLowerCase().replace(" ", "_")), "Stopwatch", ImIcons.FA.FA_STOPWATCH);
         this.displayThing = id;
         this.temporary = true;
         this.style = PanelStyle.MINIMAL;

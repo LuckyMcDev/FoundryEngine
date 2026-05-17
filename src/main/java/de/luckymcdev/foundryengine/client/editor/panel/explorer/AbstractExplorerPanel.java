@@ -1,11 +1,11 @@
-package de.luckymcdev.foundryengine.client.editor.builtin.explorer;
+package de.luckymcdev.foundryengine.client.editor.panel.explorer;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.client.Client;
-import de.luckymcdev.foundryengine.client.editor.Panel;
-import de.luckymcdev.foundryengine.client.editor.builtin.EditorPanel;
-import de.luckymcdev.foundryengine.client.editor.builtin.files.CodeEditor;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
+import de.luckymcdev.foundryengine.client.editor.panel.Panel;
+import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
+import de.luckymcdev.foundryengine.client.editor.panel.files.CodeEditor;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcon;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
@@ -25,6 +25,11 @@ import org.slf4j.Logger;
 public abstract class AbstractExplorerPanel extends EditorPanel {
     protected static final Logger LOGGER = LogUtils.getLogger();
     protected boolean initialized = false;
+
+    protected AbstractExplorerPanel(Identifier id, String displayName, ImIcon icon) {
+        super(id, displayName, icon);
+        this.category = PanelCategory.EDITOR_EXPLORER;
+    }
 
     protected AbstractExplorerPanel(Identifier id, String displayName, ImIcon icon, Shortcut shortcut) {
         super(id, displayName, icon, shortcut);

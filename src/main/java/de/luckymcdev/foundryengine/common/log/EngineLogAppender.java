@@ -1,6 +1,5 @@
 package de.luckymcdev.foundryengine.common.log;
 
-import de.luckymcdev.foundryengine.client.editor.builtin.tools.ConsolePanel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.Layout;
@@ -15,7 +14,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 /**
- * A Log Appender to make the {@link ConsolePanel} work.
+ * A Log Appender to make the {@link de.luckymcdev.foundryengine.client.editor.panel.tools.ConsolePanel} work.
  * {@link Holder} is the way of creating this, Although I don't like that and will likely remove it.
  */
 public class EngineLogAppender extends AbstractAppender {

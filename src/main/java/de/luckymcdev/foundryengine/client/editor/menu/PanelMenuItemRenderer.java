@@ -1,7 +1,7 @@
 package de.luckymcdev.foundryengine.client.editor.menu;
 
 import de.luckymcdev.foundryengine.client.editor.EditorManager;
-import de.luckymcdev.foundryengine.client.editor.Panel;
+import de.luckymcdev.foundryengine.client.editor.panel.Panel;
 import imgui.ImGui;
 
 public class PanelMenuItemRenderer {

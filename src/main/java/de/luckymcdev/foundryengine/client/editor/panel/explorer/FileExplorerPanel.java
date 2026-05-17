@@ -1,13 +1,13 @@
-package de.luckymcdev.foundryengine.client.editor.builtin.explorer;
+package de.luckymcdev.foundryengine.client.editor.panel.explorer;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.client.Client;
-import de.luckymcdev.foundryengine.client.editor.builtin.files.CodeEditor;
-import de.luckymcdev.foundryengine.client.editor.builtin.files.TextureViewerPanel;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
+import de.luckymcdev.foundryengine.client.editor.panel.PanelRequirements;
+import de.luckymcdev.foundryengine.client.editor.panel.files.CodeEditor;
+import de.luckymcdev.foundryengine.client.editor.panel.files.TextureViewerPanel;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
-import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.exceptions.EngineException;
 import de.luckymcdev.foundryengine.common.network.packets.explorer.ClientBoundFileListPacket;
@@ -60,7 +60,7 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
     private boolean remoteLoading = false;
 
     public FileExplorerPanel(File rootDir) {
-        super(Common.id("file_explorer"), "File Explorer", ImIcons.FA.FA_FILES_O, Shortcut.ctrl(ImGuiKey.F2));
+        super(Common.id("file_explorer"), "File Explorer", ImIcons.FA.FA_FILES_O);
         this.rootDir = rootDir;
         this.category = PanelCategory.EDITOR_EXPLORER;
     }
@@ -188,10 +188,7 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
 
     @Override
     protected void renderBrowser() {
-        //TODO: Fix this so that we dont need a level to check permissions
-        //TODO: Or i guess do it some other way so that there isnt a check going on here at all?
-        //TODO: Maybe make it so that the permissions check is only active if youre in a server? <-- Tried to do this.
-        if (!ImGuiUtils.requireFull()) return;
+        if (!PanelRequirements.requireLevelOnServer(net.minecraft.server.permissions.PermissionLevel.OWNERS)) return;
 
         renderToolbar();
         renderErrorBanner();
