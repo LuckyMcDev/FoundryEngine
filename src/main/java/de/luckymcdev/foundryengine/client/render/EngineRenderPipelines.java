@@ -18,7 +18,6 @@ public class EngineRenderPipelines {
     public static final RenderPipeline POSITION_COLOR = reg("position_color", Snippets.POSITION_COLOR_SN);
     public static final RenderPipeline POSITION_COLOR_NORMAL = reg("lit_models", Snippets.POSITION_COLOR_NORMAL_SN); // Use this for Suzanne!
     public static final RenderPipeline POSITION_TEX_COLOR = reg("textured", Snippets.POSITION_TEX_COLOR_SN);
-    public static final RenderPipeline POSITION_COLOR_TEX_LIGHTMAP = reg("world_models", Snippets.POSITION_COLOR_TEX_LIGHTMAP_SN);
     public static final RenderPipeline DEBUG_LINES = reg("debug_lines", Snippets.LINE_SN);
     public static final RenderPipeline FILLED_THROUGH_WALLS = RenderPipelinesInvoker.register(
             RenderPipeline.builder(Snippets.POSITION_COLOR_SN)
@@ -56,13 +55,6 @@ public class EngineRenderPipelines {
                 .withSampler("Sampler0")
                 .withVertexShader(Common.id("core/position_tex_color"))
                 .withFragmentShader(Common.id("core/position_tex_color"))
-                .buildSnippet();
-        public static final RenderPipeline.Snippet POSITION_COLOR_TEX_LIGHTMAP_SN = base()
-                .withVertexFormat(DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS)
-                .withSampler("Sampler0")
-                .withSampler("Sampler2")
-                .withVertexShader(Common.id("core/position_color_tex_lightmap"))
-                .withFragmentShader(Common.id("core/position_color_tex_lightmap"))
                 .buildSnippet();
         public static final RenderPipeline.Snippet LINE_SN = base()
                 .withVertexFormat(DefaultVertexFormat.POSITION_COLOR_NORMAL_LINE_WIDTH, VertexFormat.Mode.LINES)
