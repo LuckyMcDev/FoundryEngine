@@ -77,7 +77,7 @@ void test(String argument) {
 
 You can change your Entrypoint to this:
 
-```groovy{7,17,18}
+```groovy{7,13,14}
 // example/Entrypoint.groovy
 package example
 
