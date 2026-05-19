@@ -7,9 +7,9 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.cutscene.model.Cutscene;
-import de.luckymcdev.foundryengine.common.cutscene.network.CutscenePacket;
 import de.luckymcdev.foundryengine.common.cutscene.util.LerpType;
 import de.luckymcdev.foundryengine.common.easing.BezierPath;
+import de.luckymcdev.foundryengine.common.network.packets.editor.CutscenePacket;
 import de.luckymcdev.foundryengine.server.command.EngineCommand;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
@@ -117,8 +117,9 @@ public class CutsceneCommand implements EngineCommand {
 
     private int resetAll(CommandContext<CommandSourceStack> ctx) {
         ServerLevel level = ctx.getSource().getLevel();
-        Common.getCutsceneManager().clear(level);
-        Common.getSavedDataManager().syncToDimension(level);
+        var manager = Common.getCutsceneManager();
+        manager.clear(level);
+        manager.syncToDimension(level);
         sendSuccess(ctx, "All cutscenes removed.", true);
         return 1;
     }
@@ -149,7 +150,7 @@ public class CutsceneCommand implements EngineCommand {
         BezierPath path = new BezierPath(player.getEyePosition());
         Vec2 rot = new Vec2(player.getXRot(), player.getYRot());
         manager.add(level, new Cutscene(name, rot, rot, path));
-        Common.getSavedDataManager().syncToDimension(level);
+        manager.syncToDimension(level);
         sendSuccess(ctx, "Added cutscene: " + name, true);
         return 1;
     }
@@ -165,7 +166,7 @@ public class CutsceneCommand implements EngineCommand {
             sendFailure(ctx, "No cutscene found with name: " + name);
             return 0;
         }
-        Common.getSavedDataManager().syncToDimension(level);
+        manager.syncToDimension(level);
         sendSuccess(ctx, "Removed cutscene: " + name, true);
         return 1;
     }
@@ -194,7 +195,7 @@ public class CutsceneCommand implements EngineCommand {
         target.path.getPoints().get(2).setPos(tangent);
 
         manager.persist(level);
-        Common.getSavedDataManager().syncToDimension(level);
+        manager.syncToDimension(level);
         sendInfo(ctx, "Linearized cutscene: " + name);
         return 1;
     }
@@ -243,7 +244,7 @@ public class CutsceneCommand implements EngineCommand {
         tag.putInt("holdStart", holdStart);
         tag.putInt("holdEnd", holdEnd);
 
-        Common.getSavedDataManager().syncToPlayer(targetPlayer);
+        manager.syncToPlayer(targetPlayer);
         int total = length + holdStart + holdEnd;
         Common.getCutsceneSessionManager().addInstance(targetPlayer, total);
         PacketDistributor.sendToPlayer(targetPlayer, new CutscenePacket(tag));

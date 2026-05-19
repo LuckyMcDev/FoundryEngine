@@ -10,7 +10,7 @@ import de.luckymcdev.foundryengine.client.ui.ExampleScreen;
 import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.font.BuiltInFonts;
-import de.luckymcdev.foundryengine.common.network.TestPacket;
+import de.luckymcdev.foundryengine.common.network.packets.TestPacket;
 import de.luckymcdev.foundryengine.common.util.color.Color;
 import imgui.ImGui;
 import imgui.extension.imguiknobs.ImGuiKnobs;

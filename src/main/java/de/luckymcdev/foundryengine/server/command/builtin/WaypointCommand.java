@@ -48,8 +48,9 @@ public class WaypointCommand implements EngineCommand {
         BlockPos pos = BlockPosArgument.getBlockPos(ctx, "pos");
         String name = StringArgumentType.getString(ctx, "name");
 
-        Common.getWaypointManager().addWaypoint(level, new Waypoint(name, icon, pos.getX(), pos.getY(), pos.getZ(), color));
-        Common.getSavedDataManager().syncToDimension(level);
+        var manager = Common.getWaypointManager();
+        manager.addWaypoint(level, new Waypoint(name, icon, pos.getX(), pos.getY(), pos.getZ(), color));
+        manager.syncToDimension(level);
         sendSuccess(ctx, "Added waypoint [" + name + "] at " + pos.toShortString(), true);
         return 1;
     }
@@ -59,8 +60,9 @@ public class WaypointCommand implements EngineCommand {
         ServerLevel level = source.getLevel();
         BlockPos pos = BlockPosArgument.getBlockPos(ctx, "pos");
 
-        if (Common.getWaypointManager().removeWaypoint(level, pos.getX(), pos.getY(), pos.getZ())) {
-            Common.getSavedDataManager().syncToDimension(level);
+        var manager = Common.getWaypointManager();
+        if (manager.removeWaypoint(level, pos.getX(), pos.getY(), pos.getZ())) {
+            manager.syncToDimension(level);
             sendSuccess(ctx, "Removed waypoint at " + pos.toShortString(), true);
             return 1;
         }
@@ -72,8 +74,9 @@ public class WaypointCommand implements EngineCommand {
         CommandSourceStack source = ctx.getSource();
         ServerLevel level = source.getLevel();
 
-        Common.getWaypointManager().clearWaypoints(level);
-        Common.getSavedDataManager().syncToDimension(level);
+        var manager = Common.getWaypointManager();
+        manager.clearWaypoints(level);
+        manager.syncToDimension(level);
         sendSuccess(ctx, "All waypoints cleared.", true);
         return 1;
     }

@@ -7,6 +7,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import org.jspecify.annotations.Nullable;
@@ -121,6 +122,14 @@ public class CutsceneManager {
     public void clear(ServerLevel level) {
         CutsceneSavedData.get(level).setData(new CompoundTag());
         replaceAll(level.dimension(), List.of());
+    }
+
+    public void syncToPlayer(ServerPlayer player) {
+        Common.getSavedDataManager().syncToPlayer(player);
+    }
+
+    public void syncToDimension(ServerLevel level) {
+        Common.getSavedDataManager().syncToDimension(level);
     }
 
     public void persist(ServerLevel level) {

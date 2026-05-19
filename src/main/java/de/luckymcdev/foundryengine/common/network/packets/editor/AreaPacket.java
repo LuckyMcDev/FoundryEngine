@@ -1,4 +1,4 @@
-package de.luckymcdev.foundryengine.common.network.packets;
+package de.luckymcdev.foundryengine.common.network.packets.editor;
 
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.area.Area;
@@ -55,13 +55,11 @@ public record AreaPacket(
             var dimensionKey = level.dimension();
 
             if (packet.isSyncRequest()) {
-                // Client requested a sync - send current areas
-                areaManager.syncAreasToPlayer(player);
+                areaManager.syncToPlayer(player);
                 return;
             }
 
             if (packet.isRemoval()) {
-                // Find and remove the area
                 var areas = areaManager.getAreasForDimension(dimensionKey);
                 areas.stream()
                         .filter(a -> a.id().equals(packet.id()))
@@ -75,8 +73,7 @@ public record AreaPacket(
                 areaManager.register(level, area);
             }
 
-            // Sync areas back to the client
-            areaManager.syncAreasToPlayer(player);
+            areaManager.syncToPlayer(player);
         });
     }
 

@@ -149,10 +149,7 @@ public class AreaManager {
         lastMembersByDimension.put(dim, currMembers);
     }
 
-    /**
-     * Client-side: replace current dimension areas from synced NBT ({@link AreaSavedData#toNbt()}).
-     */
-    public void replaceAllFromNbt(ResourceKey<Level> dimension, net.minecraft.nbt.CompoundTag tag) {
+    public void applySync(ResourceKey<Level> dimension, CompoundTag tag) {
         areasByDimension.put(dimension, new ArrayList<>(AreaSavedData.makeList(tag)));
     }
 
@@ -169,8 +166,12 @@ public class AreaManager {
         return tag;
     }
 
-    public void syncAreasToPlayer(ServerPlayer player) {
+    public void syncToPlayer(ServerPlayer player) {
         Common.getSavedDataManager().syncToPlayer(player);
+    }
+
+    public void syncToDimension(ServerLevel level) {
+        Common.getSavedDataManager().syncToDimension(level);
     }
 
     public void onLevelLoad(LevelEvent.Load event) {

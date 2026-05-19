@@ -3,7 +3,7 @@ package de.luckymcdev.foundryengine.client.editor.feature;
 import de.luckymcdev.foundryengine.client.area.AreaRenderer;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.area.Area;
-import de.luckymcdev.foundryengine.common.network.packets.AreaPacket;
+import de.luckymcdev.foundryengine.common.network.packets.editor.AreaPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;

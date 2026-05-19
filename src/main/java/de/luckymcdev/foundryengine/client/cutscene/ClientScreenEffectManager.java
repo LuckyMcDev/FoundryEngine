@@ -1,7 +1,7 @@
 package de.luckymcdev.foundryengine.client.cutscene;
 
 import de.luckymcdev.foundryengine.client.Client;
-import de.luckymcdev.foundryengine.common.cutscene.network.ScreenEffectPacket;
+import de.luckymcdev.foundryengine.common.network.packets.sync.ScreenEffectPacket;
 import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.Nullable;
 

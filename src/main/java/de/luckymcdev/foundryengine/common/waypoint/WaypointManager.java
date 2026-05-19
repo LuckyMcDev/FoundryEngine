@@ -1,10 +1,12 @@
 package de.luckymcdev.foundryengine.common.waypoint;
 
+import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.waypoint.storage.WaypointSavedData;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 
 import java.util.*;
@@ -67,8 +69,21 @@ public class WaypointManager {
         waypointsByDimension.remove(dimension);
     }
 
-    public void replaceAll(ResourceKey<Level> dimension, List<Waypoint> waypoints) {
-        waypointsByDimension.put(dimension, new ArrayList<>(waypoints));
+    public void applySync(ResourceKey<Level> dimension, CompoundTag tag) {
+        var waypoints = new ArrayList<Waypoint>();
+        var list = tag.getListOrEmpty("Waypoints");
+        for (int i = 0; i < list.size(); i++) {
+            waypoints.add(Waypoint.fromNbt(list.getCompoundOrEmpty(i)));
+        }
+        waypointsByDimension.put(dimension, waypoints);
+    }
+
+    public void syncToPlayer(ServerPlayer player) {
+        Common.getSavedDataManager().syncToPlayer(player);
+    }
+
+    public void syncToDimension(ServerLevel level) {
+        Common.getSavedDataManager().syncToDimension(level);
     }
 
     public void onLevelLoad(Level level) {

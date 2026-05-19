@@ -1,4 +1,4 @@
-package de.luckymcdev.foundryengine.common.network.packets;
+package de.luckymcdev.foundryengine.common.network.packets.world;
 
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.network.AbstractPacket;
@@ -17,18 +17,6 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.Optional;
 
-/**
- * Sent from client to server to spawn any registered entity at a given position.
- *
- * <pre>{@code
- * // Example: spawn a zombie at the player's feet
- * Common.getNetworkManager().send(new ServerBoundSpawnEntityPacket(
- *         "minecraft:zombie",
- *         player.getX(), player.getY(), player.getZ(),
- *         0f, 0f
- * ));
- * }</pre>
- */
 public record ServerBoundSpawnEntityPacket(
         String entityTypeId,
         double x,

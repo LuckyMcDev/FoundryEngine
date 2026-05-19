@@ -1,7 +1,7 @@
 package de.luckymcdev.foundryengine.common.world.entity;
 
 import de.luckymcdev.foundryengine.common.Common;
-import de.luckymcdev.foundryengine.common.network.packets.ServerBoundSpawnEntityPacket;
+import de.luckymcdev.foundryengine.common.network.packets.world.ServerBoundSpawnEntityPacket;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;

@@ -2,10 +2,10 @@ package de.luckymcdev.foundryengine.client.cutscene;
 
 import de.luckymcdev.foundryengine.client.editor.feature.DragEditorFeature;
 import de.luckymcdev.foundryengine.common.cutscene.model.Cutscene;
-import de.luckymcdev.foundryengine.common.cutscene.network.CutscenePacket;
 import de.luckymcdev.foundryengine.common.easing.BezierPath;
 import de.luckymcdev.foundryengine.common.easing.BezierPoint;
 import de.luckymcdev.foundryengine.common.easing.BezierSpline;
+import de.luckymcdev.foundryengine.common.network.packets.editor.CutscenePacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;

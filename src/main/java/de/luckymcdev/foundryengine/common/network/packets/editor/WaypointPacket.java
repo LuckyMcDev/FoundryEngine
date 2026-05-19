@@ -1,4 +1,4 @@
-package de.luckymcdev.foundryengine.common.network.packets;
+package de.luckymcdev.foundryengine.common.network.packets.editor;
 
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.network.AbstractPacket;
@@ -51,7 +51,7 @@ public record WaypointPacket(String action, int x, int y, int z, String icon, St
                 }
             }
 
-            Common.getSavedDataManager().syncToDimension(level);
+            manager.syncToDimension(level);
         });
     }
 

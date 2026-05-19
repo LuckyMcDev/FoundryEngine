@@ -9,9 +9,8 @@ import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.cutscene.model.Cutscene;
-import de.luckymcdev.foundryengine.common.cutscene.network.CutsceneActionPacket;
-import de.luckymcdev.foundryengine.common.cutscene.network.CutscenePacket;
 import de.luckymcdev.foundryengine.common.cutscene.util.LerpType;
+import de.luckymcdev.foundryengine.common.network.packets.editor.CutscenePacket;
 import imgui.ImGui;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiColorEditFlags;
@@ -20,7 +19,6 @@ import imgui.type.ImFloat;
 import imgui.type.ImInt;
 import imgui.type.ImString;
 import net.minecraft.client.Minecraft;
-import net.minecraft.nbt.CompoundTag;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
 import java.util.Arrays;
@@ -129,8 +127,7 @@ public class CutscenePanel extends EditorPanel {
         if (ImGui.button("Create") || confirm) {
             String name = newName.get().trim();
             if (!name.isBlank()) {
-                ClientPacketDistributor.sendToServer(new CutsceneActionPacket(
-                        CutsceneActionPacket.Action.ADD, null, name, 0, null, 0, 0));
+                ClientPacketDistributor.sendToServer(CutscenePacket.addAction(name));
                 setStatus("Created: " + name);
                 showNewForm = false;
                 newName.set("");
@@ -291,8 +288,8 @@ public class CutscenePanel extends EditorPanel {
         ImGui.spacing();
 
         if (ImGui.button(ImIcons.FA.FA_PLAY + " Play")) {
-            ClientPacketDistributor.sendToServer(new CutsceneActionPacket(
-                    CutsceneActionPacket.Action.PLAY, playerName, c.getName(),
+            ClientPacketDistributor.sendToServer(CutscenePacket.playAction(
+                    playerName, c.getName(),
                     CutsceneUiState.getPlaybackLength(), lerpName,
                     CutsceneUiState.getPlaybackHoldStart(), CutsceneUiState.getPlaybackHoldEnd()));
             setStatus("Playing: " + c.getName());
@@ -305,8 +302,7 @@ public class CutscenePanel extends EditorPanel {
             ImGui.pushStyleColor(ImGuiCol.ButtonHovered, 0.80f, 0.25f, 0.25f, 1.0f);
             ImGui.pushStyleColor(ImGuiCol.ButtonActive, 0.60f, 0.15f, 0.15f, 1.0f);
             if (ImGui.button(ImIcons.FA.FA_STOP + " Cancel")) {
-                ClientPacketDistributor.sendToServer(new CutsceneActionPacket(
-                        CutsceneActionPacket.Action.CANCEL, playerName, null, 0, null, 0, 0));
+                ClientPacketDistributor.sendToServer(CutscenePacket.cancelAction(playerName));
                 setStatus("Cutscene cancelled.");
             }
             ImGui.popStyleColor(3);
@@ -319,8 +315,7 @@ public class CutscenePanel extends EditorPanel {
         ImGui.pushStyleColor(ImGuiCol.ButtonHovered, 0.70f, 0.15f, 0.15f, 1.0f);
         ImGui.pushStyleColor(ImGuiCol.ButtonActive, 0.45f, 0.08f, 0.08f, 1.0f);
         if (ImGui.button(ImIcons.FA.FA_TRASH + " Delete " + c.getName())) {
-            ClientPacketDistributor.sendToServer(new CutsceneActionPacket(
-                    CutsceneActionPacket.Action.REMOVE, null, c.getName(), 0, null, 0, 0));
+            ClientPacketDistributor.sendToServer(CutscenePacket.removeAction(c.getName()));
             selectedIndex = -1;
             CutsceneUiState.setSelected(null);
             setStatus("Deleted: " + c.getName());
@@ -329,8 +324,6 @@ public class CutscenePanel extends EditorPanel {
     }
 
     private void requestSync() {
-        CompoundTag tag = new CompoundTag();
-        tag.putBoolean("Request", true);
-        ClientPacketDistributor.sendToServer(new CutscenePacket(tag));
+        ClientPacketDistributor.sendToServer(CutscenePacket.requestSync());
     }
 }

@@ -1,4 +1,4 @@
-package de.luckymcdev.foundryengine.common.network.packets;
+package de.luckymcdev.foundryengine.common.network.packets.world;
 
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.network.AbstractPacket;

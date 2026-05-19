@@ -5,16 +5,22 @@ import de.luckymcdev.foundryengine.api.event.*;
 import de.luckymcdev.foundryengine.api.event.registry.RegistryEvent;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintEngine;
-import de.luckymcdev.foundryengine.common.cutscene.network.CutsceneActionPacket;
-import de.luckymcdev.foundryengine.common.cutscene.network.CutsceneCommandPacket;
-import de.luckymcdev.foundryengine.common.cutscene.network.CutscenePacket;
-import de.luckymcdev.foundryengine.common.cutscene.network.ScreenEffectPacket;
 import de.luckymcdev.foundryengine.common.cutscene.util.ServerScreenEffectManager;
 import de.luckymcdev.foundryengine.common.item.ModItems;
 import de.luckymcdev.foundryengine.common.log.EngineLogAppender;
-import de.luckymcdev.foundryengine.common.network.TestPacket;
-import de.luckymcdev.foundryengine.common.network.packets.*;
+import de.luckymcdev.foundryengine.common.network.packets.BundleHashPacket;
+import de.luckymcdev.foundryengine.common.network.packets.TestPacket;
+import de.luckymcdev.foundryengine.common.network.packets.editor.AreaPacket;
+import de.luckymcdev.foundryengine.common.network.packets.editor.CutsceneCommandPacket;
+import de.luckymcdev.foundryengine.common.network.packets.editor.CutscenePacket;
+import de.luckymcdev.foundryengine.common.network.packets.editor.WaypointPacket;
 import de.luckymcdev.foundryengine.common.network.packets.explorer.*;
+import de.luckymcdev.foundryengine.common.network.packets.sync.SavedDataSyncPacket;
+import de.luckymcdev.foundryengine.common.network.packets.sync.ScreenEffectPacket;
+import de.luckymcdev.foundryengine.common.network.packets.world.ServerBoundChangeWeatherPacket;
+import de.luckymcdev.foundryengine.common.network.packets.world.ServerBoundSetTimePacket;
+import de.luckymcdev.foundryengine.common.network.packets.world.ServerBoundSpawnEntityPacket;
+import de.luckymcdev.foundryengine.common.network.packets.world.ServerBoundTeleportPacket;
 import de.luckymcdev.foundryengine.common.registry.EngineRegistries;
 import de.luckymcdev.foundryengine.common.vpacks.BundleVirtualPacks;
 import de.luckymcdev.foundryengine.common.vpacks.event.RegisterVirtualPackEvent;
@@ -55,7 +61,7 @@ import org.slf4j.Logger;
 import java.io.IOException;
 import java.nio.file.Files;
 
-@Mod(Common.MODID)
+@Mod(value = Common.MODID)
 public class FoundryEngineMod {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final IEventBus BUS = NeoForge.EVENT_BUS;
@@ -165,7 +171,6 @@ public class FoundryEngineMod {
         network.register(CutscenePacket.DEFINITION);
         network.register(ScreenEffectPacket.DEFINITION);
         network.register(CutsceneCommandPacket.DEFINITION);
-        network.register(CutsceneActionPacket.DEFINITION);
         network.register(AreaPacket.DEFINITION);
         network.register(WaypointPacket.DEFINITION);
         network.register(SavedDataSyncPacket.DEFINITION);

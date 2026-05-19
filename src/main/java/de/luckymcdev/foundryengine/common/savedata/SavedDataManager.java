@@ -1,7 +1,7 @@
 package de.luckymcdev.foundryengine.common.savedata;
 
 import de.luckymcdev.foundryengine.common.Common;
-import de.luckymcdev.foundryengine.common.network.packets.SavedDataSyncPacket;
+import de.luckymcdev.foundryengine.common.network.packets.sync.SavedDataSyncPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;

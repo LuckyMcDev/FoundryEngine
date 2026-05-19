@@ -26,10 +26,9 @@ import de.luckymcdev.foundryengine.client.render.obj.ObjModel;
 import de.luckymcdev.foundryengine.client.util.key.RegisterKeyBindingEvent;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.network.packets.BundleHashPacket;
-import de.luckymcdev.foundryengine.common.network.packets.WaypointPacket;
+import de.luckymcdev.foundryengine.common.network.packets.editor.WaypointPacket;
 import de.luckymcdev.foundryengine.common.util.FolderHash;
 import de.luckymcdev.foundryengine.common.util.color.Color;
-import de.luckymcdev.foundryengine.common.waypoint.Waypoint;
 import de.luckymcdev.foundryengine.config.ClientConfig;
 import de.luckymcdev.foundryengine.config.Config;
 import net.minecraft.client.Minecraft;
@@ -46,7 +45,6 @@ import net.neoforged.neoforge.common.NeoForge;
 import org.joml.Matrix4f;
 import org.slf4j.Logger;
 
-import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 
 @Mod(value = Common.MODID, dist = Dist.CLIENT)
@@ -91,17 +89,12 @@ public class FoundryEngineModClient {
         savedataManager.registerClientHandler(Common.id("waypoints"), data -> {
             var dimension = Client.getMc().level != null ? Client.getMc().level.dimension() : null;
             if (dimension == null) return;
-            var waypoints = new ArrayList<Waypoint>();
-            var list = data.getListOrEmpty("Waypoints");
-            for (int i = 0; i < list.size(); i++) {
-                waypoints.add(Waypoint.fromNbt(list.getCompoundOrEmpty(i)));
-            }
-            Common.getWaypointManager().replaceAll(dimension, waypoints);
+            Common.getWaypointManager().applySync(dimension, data);
         });
         savedataManager.registerClientHandler(Common.id("areas"), data -> {
             var dimension = Client.getMc().level != null ? Client.getMc().level.dimension() : null;
             if (dimension == null) return;
-            Common.getAreaManager().replaceAllFromNbt(dimension, data);
+            Common.getAreaManager().applySync(dimension, data);
         });
         savedataManager.registerClientHandler(Common.id("cutscene_manager"), data -> {
             var dimension = Client.getMc().level != null ? Client.getMc().level.dimension() : null;

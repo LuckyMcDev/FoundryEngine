@@ -1,6 +1,8 @@
-package de.luckymcdev.foundryengine.common.network;
+package de.luckymcdev.foundryengine.common.network.packets;
 
 import de.luckymcdev.foundryengine.common.Common;
+import de.luckymcdev.foundryengine.common.network.AbstractPacket;
+import de.luckymcdev.foundryengine.common.network.PacketBounds;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
