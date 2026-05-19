@@ -49,13 +49,13 @@ of that, a specific version.
 ## Building and Testing Your Bundle
 
 Depending on your choice in [Workspace](concepts/workspaces.md), you either just run the game with the bundle in the
-`.minecraft/FoundryEnine/bundles` folder,
+`.minecraft/FoundryEngine/bundles` folder,
 
 Or you run the Gradle task `gradlew deployBundle` and afterward `gradlew runClient` / the Client task.
 
 ## Distributing your Bundle
 
-To distribute, you either just copy the folder in the `.minecraft/FoundryEnine/bundles` folder
+To distribute, you either just copy the folder in the `.minecraft/FoundryEngine/bundles` folder
 And distribute that,
 
 Or you run the Gradle task `gradlew deployBundle` and copy the folder inside `build/bundles`.
