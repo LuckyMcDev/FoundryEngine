@@ -18,12 +18,6 @@ public class EngineLanguageProvider extends LanguageProvider {
         this.bundleId = modid;
     }
 
-    /**
-     * Formats a string like "example_block_name" to "Example Block Name".
-     *
-     * @param input the string to format.
-     * @return the formatted string.
-     */
     private static String formatTitleCase(String input) {
         if (input == null || input.isEmpty()) return "";
         String[] words = input.split("_");
@@ -66,6 +60,25 @@ public class EngineLanguageProvider extends LanguageProvider {
         query.creativeModeTabs().forEach(tab -> {
             Identifier id = BuiltInRegistries.CREATIVE_MODE_TAB.getKey(tab);
             add("itemGroup." + id.getNamespace() + "." + id.getPath(), formatTitleCase(id.getPath()));
+        });
+
+        query.getFluids().forEach(fluid -> {
+            Identifier id = BuiltInRegistries.FLUID.getKey(fluid);
+            add("fluid." + id.getNamespace() + "." + id.getPath(), formatTitleCase(id.getPath()));
+        });
+
+        query.getPotions().forEach(potion -> {
+            Identifier id = BuiltInRegistries.POTION.getKey(potion);
+            String name = formatTitleCase(id.getPath());
+            add("item.minecraft.potion.effect." + id.getPath(), name);
+            add("item.minecraft.splash_potion.effect." + id.getPath(), name);
+            add("item.minecraft.lingering_potion.effect." + id.getPath(), name);
+            add("item.minecraft.tipped_arrow.effect." + id.getPath(), name);
+        });
+
+        query.getSoundEvents().forEach(sound -> {
+            Identifier id = sound.location();
+            add("sound_event." + id.getNamespace() + "." + id.getPath(), formatTitleCase(id.getPath()));
         });
     }
 }

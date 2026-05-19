@@ -1,7 +1,10 @@
 package de.luckymcdev.foundryengine.api.builder.recipe;
 
-import de.luckymcdev.foundryengine.common.vpacks.json.recipe.AbstractJRecipe;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.Identifier;
 
-public record RecipeResult(Identifier id, AbstractJRecipe get) {
+import java.util.function.BiConsumer;
+
+public record RecipeResult(Identifier id, BiConsumer<RecipeOutput, HolderLookup.Provider> save) {
 }

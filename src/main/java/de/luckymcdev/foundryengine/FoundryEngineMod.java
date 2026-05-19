@@ -6,6 +6,7 @@ import de.luckymcdev.foundryengine.api.event.registry.RegistryEvent;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintEngine;
 import de.luckymcdev.foundryengine.common.cutscene.util.ServerScreenEffectManager;
+import de.luckymcdev.foundryengine.common.data.BundleDataGenerator;
 import de.luckymcdev.foundryengine.common.item.ModItems;
 import de.luckymcdev.foundryengine.common.log.EngineLogAppender;
 import de.luckymcdev.foundryengine.common.network.packets.BundleHashPacket;
@@ -22,8 +23,6 @@ import de.luckymcdev.foundryengine.common.network.packets.world.ServerBoundSetTi
 import de.luckymcdev.foundryengine.common.network.packets.world.ServerBoundSpawnEntityPacket;
 import de.luckymcdev.foundryengine.common.network.packets.world.ServerBoundTeleportPacket;
 import de.luckymcdev.foundryengine.common.registry.EngineRegistries;
-import de.luckymcdev.foundryengine.common.vpacks.BundleVirtualPacks;
-import de.luckymcdev.foundryengine.common.vpacks.event.RegisterVirtualPackEvent;
 import de.luckymcdev.foundryengine.common.world.entity.EngineEntities;
 import de.luckymcdev.foundryengine.common.world.level.EngineLevels;
 import de.luckymcdev.foundryengine.common.world.level.runtime.RuntimeLevelConfig;
@@ -60,6 +59,8 @@ import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
 
 @Mod(value = Common.MODID)
 public class FoundryEngineMod {
@@ -89,7 +90,6 @@ public class FoundryEngineMod {
         BUS.addListener(this::onServerAboutToStart);
         BUS.addListener(this::onServerStarted);
         BUS.addListener(this::onServerTick);
-        BUS.addListener(this::onRegisterVirtualPacks);
 
         BUS.addListener(Common.getAreaManager()::onLevelTick);
         BUS.addListener(Common.getAreaManager()::onLevelLoad);
@@ -155,6 +155,7 @@ public class FoundryEngineMod {
 
     private void commonSetup(FMLCommonSetupEvent event) {
         BundleEvents.Internal.postCommonSetup(event);
+        BundleDataGenerator.runAll();
 
         var network = Common.getNetworkManager();
         network.register(TestPacket.DEFINITION);
@@ -227,6 +228,17 @@ public class FoundryEngineMod {
                         .filter(Files::exists)
                         .toList()
         ));
+        event.addRepositorySource(new DynamicPackRepository(
+                type,
+                "foundry/bundles_generated",
+                "FoundryEngine: Generated",
+                () -> {
+                    Path path = type == PackType.CLIENT_RESOURCES
+                            ? BundleDataGenerator.getGeneratedAssetsPath()
+                            : BundleDataGenerator.getGeneratedDataPath();
+                    return path != null && Files.exists(path) ? List.of(path) : List.of();
+                }
+        ));
     }
 
     private void onRegisterPayloadHandlers(RegisterPayloadHandlersEvent event) {
@@ -235,10 +247,6 @@ public class FoundryEngineMod {
 
     private void onRegisterCommands(RegisterCommandsEvent event) {
         FoundryCommands.registerAll(event.getDispatcher(), event.getBuildContext());
-    }
-
-    private void onRegisterVirtualPacks(RegisterVirtualPackEvent.BeforeUser event) {
-        BundleVirtualPacks.create().forEach(event::addPack);
     }
 
     private void onServerAboutToStart(ServerAboutToStartEvent event) {

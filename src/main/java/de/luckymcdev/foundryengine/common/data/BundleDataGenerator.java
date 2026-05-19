@@ -18,11 +18,12 @@ import net.minecraft.core.LayeredRegistryAccess;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.server.RegistryLayer;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import org.slf4j.Logger;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
@@ -48,6 +49,17 @@ import java.util.concurrent.CompletableFuture;
 public class BundleDataGenerator {
     private static final Logger LOGGER = LogUtils.getLogger();
 
+    private static Path generatedDataPath;
+    private static Path generatedAssetsPath;
+
+    public static Path getGeneratedDataPath() {
+        return generatedDataPath;
+    }
+
+    public static Path getGeneratedAssetsPath() {
+        return generatedAssetsPath;
+    }
+
     public static void runAll() {
         for (Bundle bundle : Common.getBundleManager().getBundles()) {
             run(bundle.info().id());
@@ -63,9 +75,10 @@ public class BundleDataGenerator {
         );
 
         PackOutput pOut = gen.getGenerator().getPackOutput();
+        Path outputRoot = gen.getOutput();
 
         try {
-            LOGGER.info(gen.getOutput().toAbsolutePath().toString());
+            LOGGER.info(outputRoot.toAbsolutePath().toString());
 
             // Server
             gen.addProvider(new EngineAdvancementProvider(
@@ -81,12 +94,12 @@ public class BundleDataGenerator {
                     List.of(
                             new LootTableProvider.SubProviderEntry(
                                     EngineLootTableSubProvider::new,
-                                    net.minecraft.world.level.storage.loot.parameters.LootContextParamSets.BLOCK
+                                    LootContextParamSets.BLOCK
                             )
                     ),
                     lookupProvider
             ));
-            gen.addProvider(new EngineRecipeProvider.Runner(pOut, lookupProvider));
+            gen.addProvider(new EngineRecipeProvider.Runner(pOut, lookupProvider, bundleId));
             gen.addProvider(new EngineRecipePrioritiesProvider(pOut, lookupProvider, bundleId));
             gen.addProvider(new EngineBlockTagsProvider(pOut, lookupProvider, bundleId));
             gen.addProvider(new EngineItemTagsProvider(pOut, lookupProvider, bundleId));
@@ -94,7 +107,7 @@ public class BundleDataGenerator {
 
 
             // Client
-            gen.addProvider(new EngineLanguageProvider(pOut, bundleId, Locale.ENGLISH.toString()));
+            gen.addProvider(new EngineLanguageProvider(pOut, bundleId, "en_us"));
             gen.addProvider(new EngineModelProvider(pOut, bundleId));
             gen.addProvider(new EngineEquipmentAssetProvider(pOut));
             gen.addProvider(new EngineParticleDescriptionProvider(pOut));
@@ -102,6 +115,9 @@ public class BundleDataGenerator {
 
 
             gen.run();
+
+            generatedDataPath = outputRoot.resolve("data");
+            generatedAssetsPath = outputRoot.resolve("assets");
         } catch (IOException e) {
             LOGGER.error("Failed to run data generator: {}", e.getMessage());
         }

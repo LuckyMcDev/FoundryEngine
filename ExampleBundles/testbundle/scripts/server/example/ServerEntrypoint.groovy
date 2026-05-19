@@ -2,7 +2,6 @@ package server.example
 
 import de.luckymcdev.foundryengine.api.event.ServerEvents
 import de.luckymcdev.foundryengine.common.script.BundleEntrypoint
-import net.minecraft.network.chat.Component
 
 class ServerEntrypoint implements BundleEntrypoint {
 
@@ -10,7 +9,7 @@ class ServerEntrypoint implements BundleEntrypoint {
     void onLoad() {
         ServerEvents.tick {
             if (it.server.tickCount % 20 == 0) {
-                it.server.sendSystemMessage(Component.literal("Test " + it.server.tickCount))
+                //it.server.sendSystemMessage(Component.literal("Test " + it.server.tickCount))
             }
         }
     }

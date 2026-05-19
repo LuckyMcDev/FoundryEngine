@@ -16,17 +16,14 @@ import imgui.type.ImString;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.world.level.storage.WorldData;
 import org.slf4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
@@ -38,8 +35,6 @@ import java.util.stream.Collectors;
  * Supports every standard resource folder (textures, models, shaders, …) plus any
  * custom mod resources.  Files always open in <em>read-only</em> mode; images are
  * shown in the {@link TextureViewerPanel}, everything else in a {@link CodeEditor}.
- * <p>
- * TODO: Fix "Invalid path : Invalid path ''" Error by VanillaPackResources
  */
 public class ResourceExplorerPanel extends AbstractExplorerPanel {
     public static final ResourceExplorerPanel INSTANCE = new ResourceExplorerPanel();
@@ -70,6 +65,7 @@ public class ResourceExplorerPanel extends AbstractExplorerPanel {
     private void scanPacks(ResourceManager rm, PackType type) {
         rm.listPacks().forEach(pack -> {
             for (String namespace : pack.getNamespaces(type)) {
+                if (namespace.isEmpty()) continue;
                 try {
                     pack.listResources(type, namespace, "", (id, supplier) -> {
                         ExplorerNode.ResourceExplorerNode nsNode = namespaces.computeIfAbsent(
@@ -78,7 +74,7 @@ public class ResourceExplorerPanel extends AbstractExplorerPanel {
                         );
                         addResourceToTree(nsNode, id);
                     });
-                } catch (Exception ignored) {
+                } catch (IllegalArgumentException ignored) {
                 }
             }
         });
@@ -150,26 +146,10 @@ public class ResourceExplorerPanel extends AbstractExplorerPanel {
     }
 
     private void reloadResources() {
-        MinecraftServer server = Client.getMc().getSingleplayerServer();
-        if (server == null) return;
-
         if (reloadInProgress) return;
         reloadInProgress = true;
 
-        PackRepository repo = server.getPackRepository();
-        WorldData worldData = server.getWorldData();
-        Collection<String> current = repo.getSelectedIds();
-        Collection<String> selected = com.google.common.collect.Lists.newArrayList(current);
-
-        repo.reload();
-        for (String pack : repo.getAvailableIds()) {
-            if (!worldData.getDataConfiguration().dataPacks().getDisabled().contains(pack)
-                    && !selected.contains(pack)) {
-                selected.add(pack);
-            }
-        }
-
-        server.reloadResources(selected)
+        Common.reloadServerResources()
                 .thenRun(() -> {
                     reloadInProgress = false;
                     refresh();

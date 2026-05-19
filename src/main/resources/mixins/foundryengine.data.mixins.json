@@ -4,8 +4,6 @@
   "package": "de.luckymcdev.foundryengine.mixin.data",
   "compatibilityLevel": "JAVA_25",
   "mixins": [
-    "FolderRepositorySourceMixin",
-    "PackMixin"
   ],
   "injectors": {
     "defaultRequire": 1

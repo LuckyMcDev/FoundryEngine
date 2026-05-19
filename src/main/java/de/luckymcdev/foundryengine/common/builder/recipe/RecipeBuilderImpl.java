@@ -4,19 +4,15 @@ import de.luckymcdev.foundryengine.api.builder.recipe.RecipeBuilder;
 import de.luckymcdev.foundryengine.api.builder.recipe.RecipeResult;
 import de.luckymcdev.foundryengine.common.builder.BuilderState;
 import de.luckymcdev.foundryengine.common.registry.EngineRegistries;
-import de.luckymcdev.foundryengine.common.vpacks.json.recipe.*;
-import de.luckymcdev.foundryengine.common.vpacks.json.recipe.crafting.JShapedRecipe;
-import de.luckymcdev.foundryengine.common.vpacks.json.recipe.crafting.JShapelessRecipe;
-import de.luckymcdev.foundryengine.common.vpacks.json.recipe.smelting.JSmeltingRecipe;
-import de.luckymcdev.foundryengine.common.vpacks.json.recipe.smelting.SmeltingTypes;
-import de.luckymcdev.foundryengine.common.vpacks.json.recipe.smithing.JSmithingTransformRecipe;
-import de.luckymcdev.foundryengine.common.vpacks.json.recipe.smithing.JSmithingTrimRecipe;
 import net.minecraft.advancements.Criterion;
+import net.minecraft.advancements.criterion.InventoryChangeTrigger;
 import net.minecraft.core.HolderGetter;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.data.recipes.RecipeCategory;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.data.recipes.*;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.crafting.CookingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.registries.RegisterEvent;
@@ -24,10 +20,6 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.*;
 
-/**
- * Recipe Builder using composition instead of inheritance.
- * Simpler and more flexible than extending BuilderBaseImpl.
- */
 public class RecipeBuilderImpl implements RecipeBuilder {
     private final BuilderState<RecipeResult> state;
     private final RecipeType type;
@@ -273,134 +265,10 @@ public class RecipeBuilderImpl implements RecipeBuilder {
         return type == RecipeType.SMITHING_TRANSFORM || type == RecipeType.SMITHING_TRIM;
     }
 
-    public AbstractJRecipe toJson() {
-        ensureValidForJson(state.id);
-
-        return switch (type) {
-            case SHAPED -> buildShapedJson();
-            case SHAPELESS -> buildShapelessJson();
-            case SMELTING -> buildSmeltingJson(SmeltingTypes.SMELTING);
-            case BLASTING -> buildSmeltingJson(SmeltingTypes.BLASTING);
-            case SMOKING -> buildSmeltingJson(SmeltingTypes.SMOKING);
-            case CAMPFIRE_COOKING -> buildSmeltingJson(SmeltingTypes.CAMPFIRE_COOKING);
-            case STONECUTTING -> buildStonecuttingJson();
-            case SMITHING_TRANSFORM -> buildSmithingTransformJson();
-            case SMITHING_TRIM -> buildSmithingTrimJson();
-        };
-    }
-
-    private JShapedRecipe buildShapedJson() {
-        JShapedRecipe recipe = new JShapedRecipe();
-        for (int i = 0; i < pattern.size() && i < 3; i++) {
-            recipe.row(i, pattern.get(i));
-        }
-        for (Map.Entry<Character, Ingredient> entry : keys.entrySet()) {
-            recipe.key(String.valueOf(entry.getKey()), ingredientToJson(entry.getValue()));
-        }
-        recipe.result(createResult());
-        if (!group.isEmpty()) {
-            recipe.group(group);
-        }
-        return recipe;
-    }
-
-    private JShapelessRecipe buildShapelessJson() {
-        JShapelessRecipe recipe = new JShapelessRecipe();
-        for (Ingredient ingredient : ingredients) {
-            recipe.ingredient(ingredientToJson(ingredient));
-        }
-        recipe.result(createResult());
-        if (!group.isEmpty()) {
-            recipe.group(group);
-        }
-        return recipe;
-    }
-
-    private JSmeltingRecipe buildSmeltingJson(String recipeType) {
-        JSmeltingRecipe recipe = new JSmeltingRecipe(recipeType);
-        recipe.ingredient(ingredientToJson(cookingIngredient));
-        recipe.result(createResult());
-        recipe.experience((int) experience);
-        recipe.cookingTime(cookingTime);
-        recipe.category(categoryToString(category));
-        if (!group.isEmpty()) {
-            recipe.group(group);
-        }
-        return recipe;
-    }
-
-    private JStonecuttingRecipe buildStonecuttingJson() {
-        JStonecuttingRecipe recipe = new JStonecuttingRecipe();
-        recipe.ingredient(ingredientToJson(cookingIngredient));
-        recipe.result(createResult());
-        return recipe;
-    }
-
-    private JSmithingTransformRecipe buildSmithingTransformJson() {
-        JSmithingTransformRecipe recipe = new JSmithingTransformRecipe();
-        if (smithingTemplate != null) {
-            recipe.template(ingredientToJson(smithingTemplate));
-        }
-        if (smithingBase != null) {
-            recipe.base(ingredientToJson(smithingBase));
-        }
-        if (smithingAddition != null) {
-            recipe.addition(ingredientToJson(smithingAddition));
-        }
-        recipe.result(createResult());
-        return recipe;
-    }
-
-    private JSmithingTrimRecipe buildSmithingTrimJson() {
-        JSmithingTrimRecipe recipe = new JSmithingTrimRecipe();
-        if (smithingTemplate != null) {
-            recipe.template(ingredientToJson(smithingTemplate));
-        }
-        if (smithingBase != null) {
-            recipe.base(ingredientToJson(smithingBase));
-        } else {
-            recipe.trimmableArmor();
-        }
-        if (smithingAddition != null) {
-            recipe.addition(ingredientToJson(smithingAddition));
-        }
-        return recipe;
-    }
-
-    private JResult createResult() {
-        JResult jResult = new JResult();
-        Identifier itemId = BuiltInRegistries.ITEM.getKey(result.asItem());
-        jResult.id(itemId);
-        jResult.count(Math.max(1, resultCount));
-        return jResult;
-    }
-
-    private JIngredient ingredientToJson(Ingredient ingredient) {
-        JIngredient jIngredient = new JIngredient();
-        var values = ingredient.getValues();
-        for (var value : values) {
-            value.unwrap().ifLeft(resourceKeyItem -> {
-                jIngredient.entry(resourceKeyItem.identifier().toString());
-            }).ifRight(item -> {
-                Identifier itemId = BuiltInRegistries.ITEM.getKey(item);
-                jIngredient.entry(itemId.toString());
-            });
-        }
-        return jIngredient;
-    }
-
-    private String categoryToString(RecipeCategory category) {
-        return switch (category) {
-            case BUILDING_BLOCKS -> JRecipeBookCategory.BUILDING;
-            case REDSTONE -> JRecipeBookCategory.REDSTONE;
-            default -> JRecipeBookCategory.MISCELLANEOUS;
-        };
-    }
-
     @Override
     public RecipeResult build() {
-        AbstractJRecipe jsonRecipe = toJson();
-        return new RecipeResult(state.id, jsonRecipe);
+        ensureValid();
+        return new RecipeResult(state.id, this::saveTo);
     }
 
     @Override
@@ -411,25 +279,150 @@ public class RecipeBuilderImpl implements RecipeBuilder {
         return result;
     }
 
-    private void ensureValidForJson(Identifier recipeId) {
+    private void ensureValid() {
         if (type == RecipeType.SHAPED) {
             if (pattern.isEmpty()) {
-                throw new IllegalStateException("Shaped recipe " + recipeId + " must have a pattern");
+                throw new IllegalStateException("Shaped recipe " + state.id + " must have a pattern");
             }
             if (keys.isEmpty()) {
-                throw new IllegalStateException("Shaped recipe " + recipeId + " must define ingredients");
+                throw new IllegalStateException("Shaped recipe " + state.id + " must define ingredients");
             }
         } else if (type == RecipeType.SHAPELESS) {
             if (ingredients.isEmpty()) {
-                throw new IllegalStateException("Shapeless recipe " + recipeId + " must have ingredients");
+                throw new IllegalStateException("Shapeless recipe " + state.id + " must have ingredients");
             }
         } else if (isCookingRecipe() || type == RecipeType.STONECUTTING) {
             if (cookingIngredient == null) {
-                throw new IllegalStateException(type + " recipe " + recipeId + " must have an ingredient");
+                throw new IllegalStateException(type + " recipe " + state.id + " must have an ingredient");
             }
         } else if (isSmithingRecipe()) {
             if (smithingTemplate == null && smithingBase == null && smithingAddition == null) {
-                throw new IllegalStateException("Smithing recipe " + recipeId + " must have template, base, and/or addition");
+                throw new IllegalStateException("Smithing recipe " + state.id + " must have template, base, and/or addition");
+            }
+        }
+    }
+
+    private void saveTo(RecipeOutput output, HolderLookup.Provider registries) {
+        switch (type) {
+            case SHAPED -> saveShaped(output, registries);
+            case SHAPELESS -> saveShapeless(output, registries);
+            case SMELTING -> saveCooking(output, registries, true, false, false, false);
+            case BLASTING -> saveCooking(output, registries, false, true, false, false);
+            case SMOKING -> saveCooking(output, registries, false, false, true, false);
+            case CAMPFIRE_COOKING -> saveCooking(output, registries, false, false, false, true);
+            case STONECUTTING -> saveStonecutting(output, registries);
+            case SMITHING_TRANSFORM -> saveSmithingTransform(output, registries);
+            case SMITHING_TRIM -> saveSmithingTrim(output, registries);
+        }
+    }
+
+    private void saveShaped(RecipeOutput output, HolderLookup.Provider registries) {
+        var itemGetter = registries.lookupOrThrow(Registries.ITEM);
+        ShapedRecipeBuilder builder = ShapedRecipeBuilder.shaped(itemGetter, category, result);
+        for (String row : pattern) {
+            builder.pattern(row);
+        }
+        for (Map.Entry<Character, Ingredient> entry : keys.entrySet()) {
+            builder.define(entry.getKey(), entry.getValue());
+        }
+        if (!group.isEmpty()) {
+            builder.group(group);
+        }
+        applyCriteria(builder);
+        builder.save(output, state.id.toString());
+    }
+
+    private void saveShapeless(RecipeOutput output, HolderLookup.Provider registries) {
+        var itemGetter = registries.lookupOrThrow(Registries.ITEM);
+        ShapelessRecipeBuilder builder = ShapelessRecipeBuilder.shapeless(itemGetter, category, result);
+        for (Ingredient ingredient : ingredients) {
+            builder.requires(ingredient);
+        }
+        if (!group.isEmpty()) {
+            builder.group(group);
+        }
+        applyCriteria(builder);
+        builder.save(output, state.id.toString());
+    }
+
+    private void saveCooking(RecipeOutput output, HolderLookup.Provider registries, boolean smelting, boolean blasting, boolean smoking, boolean campfire) {
+        CookingBookCategory bookCategory = CookingBookCategory.MISC;
+        SimpleCookingRecipeBuilder builder;
+        if (smelting) {
+            builder = SimpleCookingRecipeBuilder.smelting(cookingIngredient, category, bookCategory, result, experience, cookingTime);
+        } else if (blasting) {
+            builder = SimpleCookingRecipeBuilder.blasting(cookingIngredient, category, bookCategory, result, experience, cookingTime);
+        } else if (smoking) {
+            builder = SimpleCookingRecipeBuilder.smoking(cookingIngredient, category, result, experience, cookingTime);
+        } else if (campfire) {
+            builder = SimpleCookingRecipeBuilder.campfireCooking(cookingIngredient, category, result, experience, cookingTime);
+        } else {
+            throw new IllegalStateException("Unknown cooking type");
+        }
+        if (!group.isEmpty()) {
+            builder.group(group);
+        }
+        applyCriteria(builder);
+        builder.save(output, state.id.toString());
+    }
+
+    private void saveStonecutting(RecipeOutput output, HolderLookup.Provider registries) {
+        SingleItemRecipeBuilder builder = SingleItemRecipeBuilder.stonecutting(cookingIngredient, category, result, resultCount);
+        applyCriteria(builder);
+        builder.save(output, state.id.toString());
+    }
+
+    private void saveSmithingTransform(RecipeOutput output, HolderLookup.Provider registries) {
+        SmithingTransformRecipeBuilder builder = SmithingTransformRecipeBuilder.smithing(
+                smithingTemplate != null ? smithingTemplate : Ingredient.of(),
+                smithingBase != null ? smithingBase : Ingredient.of(),
+                smithingAddition != null ? smithingAddition : Ingredient.of(),
+                category,
+                result.asItem()
+        );
+        applyCriteria(builder);
+        builder.save(output, state.id.toString());
+    }
+
+    private void saveSmithingTrim(RecipeOutput output, HolderLookup.Provider registries) {
+        throw new UnsupportedOperationException("Smithing trim recipes require specifying a trim pattern, which is not yet supported by this API");
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private void applyCriteria(Object recipeBuilder) {
+        if (!criteria.isEmpty()) {
+            for (Map.Entry<String, Criterion<?>> entry : criteria.entrySet()) {
+                switch (recipeBuilder) {
+                    case ShapedRecipeBuilder shaped -> shaped.unlockedBy(entry.getKey(), entry.getValue());
+                    case ShapelessRecipeBuilder shapeless ->
+                            shapeless.unlockedBy(entry.getKey(), entry.getValue());
+                    case SimpleCookingRecipeBuilder cooking ->
+                            cooking.unlockedBy(entry.getKey(), entry.getValue());
+                    case SingleItemRecipeBuilder single ->
+                            single.unlockedBy(entry.getKey(), entry.getValue());
+                    case SmithingTransformRecipeBuilder smithing ->
+                            smithing.unlocks(entry.getKey(), entry.getValue());
+                    case SmithingTrimRecipeBuilder smithingTrim ->
+                            smithingTrim.unlocks(entry.getKey(), entry.getValue());
+                    default -> {
+                    }
+                }
+            }
+        } else if (result != null) {
+            Criterion<?> criterion = InventoryChangeTrigger.TriggerInstance.hasItems(result);
+            String name = "has_" + state.id.getPath().replace('/', '_');
+            if (recipeBuilder instanceof ShapedRecipeBuilder shaped) {
+                shaped.unlockedBy(name, criterion);
+            } else if (recipeBuilder instanceof ShapelessRecipeBuilder shapeless) {
+                shapeless.unlockedBy(name, criterion);
+            } else if (recipeBuilder instanceof SimpleCookingRecipeBuilder cooking) {
+                cooking.unlockedBy(name, criterion);
+            } else if (recipeBuilder instanceof SingleItemRecipeBuilder single) {
+                single.unlockedBy(name, criterion);
+            } else if (recipeBuilder instanceof SmithingTransformRecipeBuilder smithing) {
+                smithing.unlocks(name, criterion);
+            } else if (recipeBuilder instanceof SmithingTrimRecipeBuilder smithingTrim) {
+                smithingTrim.unlocks(name, criterion);
             }
         }
     }
