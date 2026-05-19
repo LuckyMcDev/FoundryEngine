@@ -48,184 +48,195 @@ public class TestCommand implements EngineCommand {
         toRemove.forEach(Entity::discard);
     }
 
+    private static int spawnBlockDisplay(ServerLevel level, CommandSourceStack source) {
+        killExisting(level);
+        EntitySpawner.spawnServer(level, EngineEntities.BLOCK_DISPLAY.get(),
+                new Vec3(-5, 100, 0), display -> {
+                    display.setBlockState(Blocks.STONE.defaultBlockState());
+                    display.setTransformation(new Transformation(
+                            new Vector3f(0f, 0.5f, 0f),
+                            new Quaternionf().rotateY((float) Math.toRadians(45)),
+                            new Vector3f(2f, 2f, 2f),
+                            new Quaternionf().rotateX((float) Math.toRadians(45))
+                    ));
+                    display.setInteractionCommand("engine eval tellPlayer(\"Hello!\")");
+                    display.setOffhandInteractionCommand("say [BlockDisplay] Offhand clicked!");
+                    display.setAttackCommand("say [BlockDisplay] attacked!");
+                });
+        source.sendSuccess(() -> Component.literal("Spawned block display entity."), false);
+        return 1;
+    }
+
+    private static int spawnItemDisplay(ServerLevel level, CommandSourceStack source) {
+        killExisting(level);
+        EntitySpawner.spawnServer(level, EngineEntities.ITEM_DISPLAY.get(),
+                new Vec3(0, 100, 0), display -> {
+                    display.setPickable(true);
+                    display.setGlowColorOverride(Color.ORANGE.argb());
+                    display.setItemStack(Items.DIAMOND_SWORD.getDefaultInstance());
+                    display.setTransformation(new Transformation(
+                            new Vector3f(0f, 0.5f, 0f),
+                            new Quaternionf().rotateY((float) Math.toRadians(45)),
+                            new Vector3f(2f, 2f, 2f),
+                            new Quaternionf()
+                    ));
+                    display.setInteractionCommand("say [ItemDisplay] Mainhand clicked!");
+                    display.setOffhandInteractionCommand("say [ItemDisplay] Offhand clicked!");
+                    display.setAttackCommand("say [ItemDisplay] attacked!");
+                });
+        source.sendSuccess(() -> Component.literal("Spawned item display entity."), false);
+        return 1;
+    }
+
+    private static int spawnTextDisplay(ServerLevel level, CommandSourceStack source) {
+        killExisting(level);
+        EntitySpawner.spawnServer(level, EngineEntities.TEXT_DISPLAY.get(),
+                new Vec3(3, 100, 0), display -> {
+                    display.setText(ChatIcons.CAMERA);
+                    display.setAlignment(Display.TextDisplay.Align.CENTER);
+                    display.setBillboardConstraints(Display.BillboardConstraints.CENTER);
+                    display.setInteractionCommand("say [TextDisplay] Mainhand clicked!");
+                    display.setOffhandInteractionCommand("say [TextDisplay] Offhand clicked!");
+                    display.setAttackCommand("say [TextDisplay] attacked!");
+                });
+        source.sendSuccess(() -> Component.literal("Spawned text display entity."), false);
+        return 1;
+    }
+
+    private static int spawnAllDisplays(ServerLevel level, CommandSourceStack source) {
+        spawnBlockDisplay(level, source);
+        spawnItemDisplay(level, source);
+        spawnTextDisplay(level, source);
+        source.sendSuccess(() -> ChatIcons.ENERGY, false);
+        return 1;
+    }
+
     @Override
     public LiteralArgumentBuilder<CommandSourceStack> build(CommandBuildContext buildContext) {
-        var testRoot = Commands.literal("test")
-                .requires(this::isAdmin)
-                // Original /engine test command – spawns display entities
-                .executes(context -> {
-                    ServerLevel level = context.getSource().getLevel();
+        var root = Commands.literal("test").requires(this::isAdmin);
 
-                    killExisting(level);
+        root.then(Commands.literal("display")
+                .then(Commands.literal("block")
+                        .executes(ctx -> spawnBlockDisplay(ctx.getSource().getLevel(), ctx.getSource())))
+                .then(Commands.literal("item")
+                        .executes(ctx -> spawnItemDisplay(ctx.getSource().getLevel(), ctx.getSource())))
+                .then(Commands.literal("text")
+                        .executes(ctx -> spawnTextDisplay(ctx.getSource().getLevel(), ctx.getSource())))
+                .then(Commands.literal("all")
+                        .executes(ctx -> spawnAllDisplays(ctx.getSource().getLevel(), ctx.getSource())))
+                .then(Commands.literal("kill")
+                        .executes(ctx -> {
+                            killExisting(ctx.getSource().getLevel());
+                            ctx.getSource().sendSuccess(
+                                    () -> Component.literal("All display entities removed."), false);
+                            return 1;
+                        }))
+        );
 
-                    EntitySpawner.spawnServer(level, EngineEntities.BLOCK_DISPLAY.get(),
-                            new Vec3(-5, 100, 0), display -> {
-
-                                display.setBlockState(Blocks.STONE.defaultBlockState());
-                                display.setTransformation(new Transformation(
-                                        new Vector3f(0f, 0.5f, 0f),
-                                        new Quaternionf().rotateY((float) Math.toRadians(45)),
-                                        new Vector3f(2f, 2f, 2f),
-                                        new Quaternionf().rotateX((float) Math.toRadians(45))
-                                ));
-                                display.setInteractionCommand(
-                                        "engine eval tellPlayer(\"Hello!\")"
-                                );
-                                display.setOffhandInteractionCommand("say [BlockDisplay] Offhand clicked!");
-                                display.setAttackCommand("say [BlockDisplay] attacked!");
-                            });
-
-                    EntitySpawner.spawnServer(level, EngineEntities.ITEM_DISPLAY.get(),
-                            new Vec3(0, 100, 0), display -> {
-                                display.setPickable(true);
-                                display.setGlowColorOverride(Color.ORANGE.argb());
-                                display.setItemStack(Items.DIAMOND_SWORD.getDefaultInstance());
-                                display.setTransformation(new Transformation(
-                                        new Vector3f(0f, 0.5f, 0f),
-                                        new Quaternionf().rotateY((float) Math.toRadians(45)),
-                                        new Vector3f(2f, 2f, 2f),
-                                        new Quaternionf()
-                                ));
-
-                                display.setInteractionCommand("say [ItemDisplay] Mainhand clicked!");
-                                display.setOffhandInteractionCommand("say [ItemDisplay] Offhand clicked!");
-                                display.setAttackCommand("say [ItemDisplay] attacked!");
-                            });
-
-                    EntitySpawner.spawnServer(level, EngineEntities.TEXT_DISPLAY.get(),
-                            new Vec3(3, 100, 0), display -> {
-
-                                display.setText(Component.literal("Hello World!"));
-                                display.setAlignment(Display.TextDisplay.Align.CENTER);
-                                display.setTransformation(new Transformation(
-                                        new Vector3f(0f, 0.5f, 0f),
-                                        new Quaternionf().rotateY((float) Math.toRadians(45)),
-                                        new Vector3f(2f, 2f, 2f),
-                                        new Quaternionf()
-                                ));
-
-                                display.setInteractionCommand("say [TextDisplay] Mainhand clicked!");
-                                display.setOffhandInteractionCommand("say [TextDisplay] Offhand clicked!");
-                                display.setAttackCommand("say [TextDisplay] attacked!");
-                            });
-
-                    context.getSource().sendSuccess(
-                            () -> Component.literal("Spawned 3 engine display entities (block / item / text)."), false);
-
-                    context.getSource().sendSuccess(() -> ChatIcons.ENERGY, false);
-                    return 1;
-                });
-
-        // -----------------------------------------------------------------------
-        // /engine test world open <name> <temp>
-        // -----------------------------------------------------------------------
-        testRoot.then(Commands.literal("world")
-                .then(Commands.literal("open")
-                        .then(Commands.argument("name", IdentifierArgument.id())
-                                .then(Commands.argument("temp", BoolArgumentType.bool())
-                                        .executes(context -> {
-                                            var source = context.getSource();
-                                            try {
-                                                var temp = BoolArgumentType.getBool(context, "temp");
-                                                final long[] ref = {System.currentTimeMillis()};
-
-                                                var id = IdentifierArgument.getId(context, "name");
-                                                var server = source.getServer();
-                                                var config = new RuntimeLevelConfig()
-                                                        .setGenerator(server.overworld().getChunkSource().getGenerator())
-                                                        .setGameRule(GameRules.BLOCK_DROPS, false)
-                                                        .setSeed(id.hashCode());
-
-                                                RuntimeLevelHandle handle;
-                                                if (temp) {
-                                                    handle = EngineLevels.get(server).openTemporaryLevel(id, config);
-                                                } else {
-                                                    handle = EngineLevels.get(server).getOrOpenPersistentLevel(id, config);
-                                                }
-
-                                                source.sendSuccess(
-                                                        () -> Component.literal("LevelCreate: " + (System.currentTimeMillis() - ref[0])),
-                                                        false);
-
-                                                worlds.put(id, handle);
-
-                                                ref[0] = System.currentTimeMillis();
-                                                if (source.getEntity() != null) {
-                                                    source.getEntity().teleport(
-                                                            new TeleportTransition(
-                                                                    handle.asLevel(),
-                                                                    new Vec3(0, 100, 0),
-                                                                    Vec3.ZERO,
-                                                                    0, 0,
-                                                                    TeleportTransition.DO_NOTHING));
-                                                }
-
-                                                source.sendSuccess(
-                                                        () -> Component.literal("Teleport: " + (System.currentTimeMillis() - ref[0])),
-                                                        false);
-
-                                                return 1;
-                                            } catch (Throwable e) {
-                                                source.sendFailure(Component.literal("Failed to open world"));
-                                                return 0;
-                                            }
-                                        }))
-                        )
-                )
-                // -----------------------------------------------------------------------
-                // /engine test world delete <name>
-                // -----------------------------------------------------------------------
-                .then(Commands.literal("delete")
-                        .then(Commands.argument("name", IdentifierArgument.id())
-                                .executes(context -> {
-                                    var source = context.getSource();
+        var world = Commands.literal("world");
+        world.then(Commands.literal("open")
+                .then(Commands.argument("name", IdentifierArgument.id())
+                        .then(Commands.argument("temp", BoolArgumentType.bool())
+                                .executes(ctx -> {
+                                    var source = ctx.getSource();
                                     try {
-                                        var id = IdentifierArgument.getId(context, "name");
-                                        var handle = worlds.get(id);
-                                        if (handle == null) {
-                                            source.sendFailure(Component.literal("This world does not exist"));
-                                            return 0;
+                                        boolean temp = BoolArgumentType.getBool(ctx, "temp");
+                                        long[] ref = {System.currentTimeMillis()};
+
+                                        var id = IdentifierArgument.getId(ctx, "name");
+                                        var server = source.getServer();
+                                        var config = new RuntimeLevelConfig()
+                                                .setGenerator(server.overworld().getChunkSource().getGenerator())
+                                                .setGameRule(GameRules.BLOCK_DROPS, false)
+                                                .setSeed(id.hashCode());
+
+                                        RuntimeLevelHandle handle;
+                                        if (temp) {
+                                            handle = EngineLevels.get(server).openTemporaryLevel(id, config);
+                                        } else {
+                                            handle = EngineLevels.get(server).getOrOpenPersistentLevel(id, config);
                                         }
-                                        handle.delete();
-                                        worlds.remove(id);
+
                                         source.sendSuccess(
-                                                () -> Component.literal("World \"" + id + "\" deleted"),
-                                                true);
-                                    } catch (Throwable e) {
-                                        source.sendFailure(Component.literal("Failed to delete world"));
-                                    }
-                                    return 1;
-                                })
-                        )
-                )
-                // -----------------------------------------------------------------------
-                // /engine test world unload <name>
-                // -----------------------------------------------------------------------
-                .then(Commands.literal("unload")
-                        .then(Commands.argument("name", IdentifierArgument.id())
-                                .executes(context -> {
-                                    var source = context.getSource();
-                                    try {
-                                        var id = IdentifierArgument.getId(context, "name");
-                                        RuntimeLevelHandle handle = worlds.get(id);
-                                        if (handle == null) {
-                                            source.sendFailure(Component.literal("This world does not exist"));
-                                            return 0;
+                                                () -> Component.literal("LevelCreate: " + (System.currentTimeMillis() - ref[0])),
+                                                false);
+
+                                        worlds.put(id, handle);
+
+                                        ref[0] = System.currentTimeMillis();
+                                        if (source.getEntity() != null) {
+                                            source.getEntity().teleport(
+                                                    new TeleportTransition(
+                                                            handle.asLevel(),
+                                                            new Vec3(0, 100, 0),
+                                                            Vec3.ZERO,
+                                                            0, 0,
+                                                            TeleportTransition.DO_NOTHING));
                                         }
-                                        handle.unload();
-                                        worlds.remove(id);
+
                                         source.sendSuccess(
-                                                () -> Component.literal("World \"" + id + "\" unloaded"),
-                                                true);
+                                                () -> Component.literal("Teleport: " + (System.currentTimeMillis() - ref[0])),
+                                                false);
+
+                                        return 1;
                                     } catch (Throwable e) {
-                                        source.sendFailure(Component.literal("Failed to unload world"));
+                                        source.sendFailure(Component.literal("Failed to open world"));
+                                        return 0;
                                     }
-                                    return 1;
                                 })
                         )
                 )
         );
 
-        return testRoot;
+        world.then(Commands.literal("delete")
+                .then(Commands.argument("name", IdentifierArgument.id())
+                        .executes(ctx -> {
+                            var source = ctx.getSource();
+                            try {
+                                var id = IdentifierArgument.getId(ctx, "name");
+                                var handle = worlds.get(id);
+                                if (handle == null) {
+                                    source.sendFailure(Component.literal("This world does not exist"));
+                                    return 0;
+                                }
+                                handle.delete();
+                                worlds.remove(id);
+                                source.sendSuccess(
+                                        () -> Component.literal("World \"" + id + "\" deleted"),
+                                        true);
+                            } catch (Throwable e) {
+                                source.sendFailure(Component.literal("Failed to delete world"));
+                            }
+                            return 1;
+                        })
+                )
+        );
+
+        world.then(Commands.literal("unload")
+                .then(Commands.argument("name", IdentifierArgument.id())
+                        .executes(ctx -> {
+                            var source = ctx.getSource();
+                            try {
+                                var id = IdentifierArgument.getId(ctx, "name");
+                                RuntimeLevelHandle handle = worlds.get(id);
+                                if (handle == null) {
+                                    source.sendFailure(Component.literal("This world does not exist"));
+                                    return 0;
+                                }
+                                handle.unload();
+                                worlds.remove(id);
+                                source.sendSuccess(
+                                        () -> Component.literal("World \"" + id + "\" unloaded"),
+                                        true);
+                            } catch (Throwable e) {
+                                source.sendFailure(Component.literal("Failed to unload world"));
+                            }
+                            return 1;
+                        })
+                )
+        );
+
+        root.then(world);
+        return root;
     }
 }
