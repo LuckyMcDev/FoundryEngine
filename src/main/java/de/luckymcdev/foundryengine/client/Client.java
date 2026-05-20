@@ -38,6 +38,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import org.joml.Matrix4f;
@@ -170,6 +171,14 @@ public abstract class Client {
         Objects.requireNonNull(getConnection()).send(packet);
     }
 
+    public static @Nullable RecipeManager getRecipeManager() {
+        Minecraft mc = getMc();
+        if (mc.getSingleplayerServer() != null) {
+            return mc.getSingleplayerServer().getRecipeManager();
+        }
+        return null;
+    }
+
     public static EngineImGui getImGuiManager() {
         return IMGUI_MANAGER;
     }
@@ -251,7 +260,6 @@ public abstract class Client {
         if (hit != null && hit.getType() == (HitResult.Type.BLOCK)) {
             BlockHitResult blockHit = (BlockHitResult) hit;
             return blockHit.getBlockPos();
-
         }
         return null;
     }

@@ -1,4 +1,4 @@
-package de.luckymcdev.foundryengine.server.command.builtin;
+package de.luckymcdev.foundryengine.client.command.builtin;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;

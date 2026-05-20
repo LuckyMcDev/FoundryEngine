@@ -1,6 +1,7 @@
-package de.luckymcdev.foundryengine.client;
+package de.luckymcdev.foundryengine;
 
 import com.mojang.logging.LogUtils;
+import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.command.FoundryCommandsClient;
 import de.luckymcdev.foundryengine.client.debug.screen.BundleDebugEntry;
 import de.luckymcdev.foundryengine.client.debug.screen.GameStagesDebugEntry;

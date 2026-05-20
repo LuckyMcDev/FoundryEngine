@@ -2,8 +2,8 @@ package de.luckymcdev.foundryengine.client.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import de.luckymcdev.foundryengine.client.command.builtin.GenerateIconsCommand;
 import de.luckymcdev.foundryengine.server.command.EngineCommand;
-import de.luckymcdev.foundryengine.server.command.builtin.GenerateIconsCommand;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;

@@ -8,6 +8,7 @@ import de.luckymcdev.foundryengine.client.editor.panel.files.TextureViewerPanel;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.common.Common;
+import de.luckymcdev.foundryengine.server.Server;
 import imgui.ImGui;
 import imgui.flag.ImGuiKey;
 import imgui.flag.ImGuiMouseButton;
@@ -149,7 +150,7 @@ public class ResourceExplorerPanel extends AbstractExplorerPanel {
         if (reloadInProgress) return;
         reloadInProgress = true;
 
-        Common.reloadServerResources()
+        Server.reloadResources()
                 .thenRun(() -> {
                     reloadInProgress = false;
                     refresh();

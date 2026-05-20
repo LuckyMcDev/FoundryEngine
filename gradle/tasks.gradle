@@ -12,6 +12,52 @@ tasks.register('preCommit') {
     }
 }
 
+def sourceDirs = sourceSets.main.java.srcDirs.findAll { it.directory }
+
+tasks.register('generatePackageInfo') {
+    group = 'foundryengine'
+    description = 'Generates missing package-info.java files for all Java source directories.'
+
+    doLast {
+        sourceDirs.each { srcDir ->
+            def srcPath = srcDir.toPath()
+
+            def dirs = []
+            srcDir.eachDirRecurse { dirs << it }
+
+            dirs.each { dir ->
+                if (!dir.listFiles()?.any { it.name.endsWith('.java') }) return
+
+                def pkgFile = new File(dir, 'package-info.java')
+                if (pkgFile.exists()) return
+
+                def pkg = srcPath.relativize(dir.toPath()).toString()
+                        .replace(File.separator, '.')
+                def segments = pkg.split('\\.') as List
+                def foundryIdx = segments.indexOf('foundryengine')
+                def relevant = foundryIdx >= 0 ? segments.drop(foundryIdx + 1) : segments
+                def desc = relevant.isEmpty() ? pkg : relevant.collect { seg ->
+                    seg.replaceAll(/([a-z])([A-Z])/, '$1 $2')
+                       .split(' ')
+                       .collect { it.capitalize() }
+                       .join(' ')
+                }.join(' - ')
+
+                pkgFile.text = """\
+/**
+ * ${desc}
+ */
+@NullMarked
+package ${pkg};
+
+import org.jspecify.annotations.NullMarked;
+"""
+                logger.lifecycle("Generated: {}", pkgFile)
+            }
+        }
+    }
+}
+
 tasks.register("copyExampleBundles") {
     group = 'foundryengine'
     description = 'Copies the Example Bundles to the run directories for testing.'

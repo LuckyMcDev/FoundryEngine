@@ -37,6 +37,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.util.Util;
+import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModLoader;
@@ -47,8 +48,10 @@ import net.neoforged.neoforge.common.NeoForgeVersion;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
@@ -95,23 +98,10 @@ public class FoundryEngineMod {
         BUS.addListener(Common.getAreaManager()::onLevelLoad);
         BUS.addListener(Common.getAreaManager()::onServerStopping);
         BUS.addListener(Common.getCutsceneManager()::onLevelLoad);
-        BUS.addListener((net.neoforged.neoforge.event.level.LevelEvent.Load event) -> {
-            if (event.getLevel() instanceof net.minecraft.world.level.Level level) {
-                Common.getWaypointManager().onLevelLoad(level);
-            }
-        });
-        BUS.addListener((net.neoforged.neoforge.event.server.ServerStoppingEvent event) ->
-                Common.getWaypointManager().onServerStopping(event));
-        BUS.addListener((PlayerEvent.PlayerLoggedInEvent event) -> {
-            if (event.getEntity() instanceof ServerPlayer player) {
-                Common.getSavedDataManager().syncToPlayer(player);
-            }
-        });
-        BUS.addListener((PlayerEvent.PlayerChangedDimensionEvent event) -> {
-            if (event.getEntity() instanceof ServerPlayer player) {
-                Common.getSavedDataManager().syncToPlayer(player);
-            }
-        });
+        BUS.addListener(this::onWaypointLevelLoad);
+        BUS.addListener(this::onWaypointServerStopping);
+        BUS.addListener(this::onPlayerLoggedIn);
+        BUS.addListener(this::onPlayerChangedDimension);
 
         registerSavedDataTypes();
 
@@ -141,6 +131,28 @@ public class FoundryEngineMod {
         Common.getGameStageHandler().register(modBus);
         EngineRegistries.register(modBus);
         EngineEntities.register(modBus);
+    }
+
+    private void onWaypointLevelLoad(LevelEvent.Load event) {
+        if (event.getLevel() instanceof Level level) {
+            Common.getWaypointManager().onLevelLoad(level);
+        }
+    }
+
+    private void onWaypointServerStopping(ServerStoppingEvent event) {
+        Common.getWaypointManager().onServerStopping(event);
+    }
+
+    private void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            Common.getSavedDataManager().syncToPlayer(player);
+        }
+    }
+
+    private void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            Common.getSavedDataManager().syncToPlayer(player);
+        }
     }
 
     private void registerSavedDataTypes() {

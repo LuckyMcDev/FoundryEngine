@@ -49,7 +49,6 @@ public class TestCommand implements EngineCommand {
     }
 
     private static int spawnBlockDisplay(ServerLevel level, CommandSourceStack source) {
-        killExisting(level);
         EntitySpawner.spawnServer(level, EngineEntities.BLOCK_DISPLAY.get(),
                 new Vec3(-5, 100, 0), display -> {
                     display.setBlockState(Blocks.STONE.defaultBlockState());
@@ -68,7 +67,6 @@ public class TestCommand implements EngineCommand {
     }
 
     private static int spawnItemDisplay(ServerLevel level, CommandSourceStack source) {
-        killExisting(level);
         EntitySpawner.spawnServer(level, EngineEntities.ITEM_DISPLAY.get(),
                 new Vec3(0, 100, 0), display -> {
                     display.setPickable(true);
@@ -89,7 +87,6 @@ public class TestCommand implements EngineCommand {
     }
 
     private static int spawnTextDisplay(ServerLevel level, CommandSourceStack source) {
-        killExisting(level);
         EntitySpawner.spawnServer(level, EngineEntities.TEXT_DISPLAY.get(),
                 new Vec3(3, 100, 0), display -> {
                     display.setText(ChatIcons.CAMERA);

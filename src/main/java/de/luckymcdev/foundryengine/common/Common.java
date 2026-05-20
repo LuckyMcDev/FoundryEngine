@@ -17,18 +17,14 @@ import de.luckymcdev.foundryengine.common.util.FirstRun;
 import de.luckymcdev.foundryengine.common.util.ini.IniFile;
 import de.luckymcdev.foundryengine.common.util.ini.IniFileManager;
 import de.luckymcdev.foundryengine.common.waypoint.WaypointManager;
-import net.minecraft.client.Minecraft;
+import de.luckymcdev.foundryengine.server.Server;
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.world.item.crafting.RecipeManager;
-import net.minecraft.world.level.storage.WorldData;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.apache.commons.lang3.SystemProperties;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
@@ -37,9 +33,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
 /**
@@ -133,15 +126,9 @@ public abstract class Common {
 
     public static @Nullable RecipeManager getRecipeManager() {
         if (FMLEnvironment.getDist().isClient()) {
-            Minecraft mc = Client.getMc();
-            if (mc.getSingleplayerServer() != null) {
-                return mc.getSingleplayerServer().getRecipeManager();
-            }
-        } else {
-            var server = ServerLifecycleHooks.getCurrentServer();
-            return server != null ? server.getRecipeManager() : null;
+            return Client.getRecipeManager();
         }
-        return null;
+        return Server.getRecipeManager();
     }
 
     public static String getFileContent(Path file) {
@@ -159,25 +146,6 @@ public abstract class Common {
 
     public static <T extends Event> T post(EventPriority priority, T event) {
         return NeoForge.EVENT_BUS.post(priority, event);
-    }
-
-    public static CompletableFuture<Void> reloadServerResources() {
-        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-        if (server == null) return CompletableFuture.completedFuture(null);
-
-        PackRepository repo = server.getPackRepository();
-        WorldData worldData = server.getWorldData();
-        Collection<String> selected = new ArrayList<>(repo.getSelectedIds());
-
-        repo.reload();
-        for (String pack : repo.getAvailableIds()) {
-            if (!worldData.getDataConfiguration().dataPacks().getDisabled().contains(pack)
-                    && !selected.contains(pack)) {
-                selected.add(pack);
-            }
-        }
-
-        return server.reloadResources(selected);
     }
 
     static Path file(Path path) {

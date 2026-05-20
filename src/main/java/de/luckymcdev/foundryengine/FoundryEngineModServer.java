@@ -1,4 +1,4 @@
-package de.luckymcdev.foundryengine.server;
+package de.luckymcdev.foundryengine;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.common.Common;
