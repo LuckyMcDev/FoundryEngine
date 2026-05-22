@@ -31,11 +31,22 @@ public class AreaEvents {
 
     @ApiStatus.Internal
     public static class Internal {
+        public static void postAreaEnter(AreaEvent.AreaEnterEvent e) {
+            AREA_ENTER.post(e);
+        }
+
+        public static void postAreaLeave(AreaEvent.AreaLeaveEvent e) {
+            AREA_LEAVE.post(e);
+        }
+
+        public static void postAreaTick(AreaEvent.AreaTickEvent e) {
+            AREA_TICK.post(e);
+        }
 
         public static void register(IEventBus bus) {
-            bus.addListener(AREA_ENTER::post);
-            bus.addListener(AREA_LEAVE::post);
-            bus.addListener(AREA_TICK::post);
+            bus.addListener(Internal::postAreaEnter);
+            bus.addListener(Internal::postAreaLeave);
+            bus.addListener(Internal::postAreaTick);
         }
 
         public static void clear() {

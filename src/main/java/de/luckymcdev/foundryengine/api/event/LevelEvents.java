@@ -50,14 +50,37 @@ public class LevelEvents {
 
     @ApiStatus.Internal
     public static class Internal {
+        public static void postLoad(LevelEvent.Load e) {
+            LOAD.post(e);
+        }
+
+        public static void postUnload(LevelEvent.Unload e) {
+            UNLOAD.post(e);
+        }
+
+        public static void postSave(LevelEvent.Save e) {
+            SAVE.post(e);
+        }
+
+        public static void postTick(LevelTickEvent.Post e) {
+            TICK.post(e);
+        }
+
+        public static void postBeforeExplosion(ExplosionEvent.Start e) {
+            BEFORE_EXPLOSION.post(e);
+        }
+
+        public static void postAfterExplosion(ExplosionEvent.Detonate e) {
+            AFTER_EXPLOSION.post(e);
+        }
 
         public static void register(IEventBus bus) {
-            bus.addListener(LOAD::post);
-            bus.addListener(UNLOAD::post);
-            bus.addListener(SAVE::post);
-            bus.addListener(TICK::post);
-            bus.addListener(BEFORE_EXPLOSION::post);
-            bus.addListener(AFTER_EXPLOSION::post);
+            bus.addListener(Internal::postLoad);
+            bus.addListener(Internal::postUnload);
+            bus.addListener(Internal::postSave);
+            bus.addListener(Internal::postTick);
+            bus.addListener(Internal::postBeforeExplosion);
+            bus.addListener(Internal::postAfterExplosion);
         }
 
         public static void clear() {

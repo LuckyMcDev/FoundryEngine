@@ -45,14 +45,37 @@ public class EntityEvents {
 
     @ApiStatus.Internal
     public static class Internal {
+        public static void postJoinLevel(EntityJoinLevelEvent e) {
+            JOIN_LEVEL.post(e);
+        }
+
+        public static void postDeath(LivingDeathEvent e) {
+            DEATH.post(e);
+        }
+
+        public static void postDrops(LivingDropsEvent e) {
+            DROPS.post(e);
+        }
+
+        public static void postHurt(LivingDamageEvent.Post e) {
+            HURT.post(e);
+        }
+
+        public static void postSpawned(EntityJoinLevelEvent e) {
+            SPAWNED.post(e);
+        }
+
+        public static void postCheckSpawn(EntityJoinLevelEvent e) {
+            CHECK_SPAWN.post(e);
+        }
 
         public static void register(IEventBus bus) {
-            bus.addListener(JOIN_LEVEL::post);
-            bus.addListener(DEATH::post);
-            bus.addListener(DROPS::post);
-            bus.addListener(HURT::post);
-            bus.addListener(SPAWNED::post);
-            bus.addListener(CHECK_SPAWN::post);
+            bus.addListener(Internal::postJoinLevel);
+            bus.addListener(Internal::postDeath);
+            bus.addListener(Internal::postDrops);
+            bus.addListener(Internal::postHurt);
+            bus.addListener(Internal::postSpawned);
+            bus.addListener(Internal::postCheckSpawn);
         }
 
         public static void clear() {

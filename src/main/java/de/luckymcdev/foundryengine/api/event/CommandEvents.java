@@ -23,10 +23,17 @@ public class CommandEvents {
 
     @ApiStatus.Internal
     public static class Internal {
+        public static void post(RegisterCommandsEvent event) {
+            COMMANDS.post(event);
+        }
+
+        public static void postClient(RegisterClientCommandsEvent event) {
+            COMMANDS_CLIENT.post(event);
+        }
 
         public static void register(IEventBus bus) {
-            bus.addListener(COMMANDS::post);
-            bus.addListener(COMMANDS_CLIENT::post);
+            bus.addListener(Internal::post);
+            bus.addListener(Internal::postClient);
         }
 
         public static void clear() {

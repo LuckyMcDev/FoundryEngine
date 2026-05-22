@@ -44,13 +44,32 @@ public class BlockEvents {
 
     @ApiStatus.Internal
     public static class Internal {
+        public static void postBroken(BreakBlockEvent e) {
+            BROKEN.post(e);
+        }
+
+        public static void postPlaced(BlockEvent.EntityPlaceEvent e) {
+            PLACED.post(e);
+        }
+
+        public static void postLeftClicked(PlayerInteractEvent.LeftClickBlock e) {
+            LEFT_CLICKED.post(e);
+        }
+
+        public static void postRightClicked(PlayerInteractEvent.RightClickBlock e) {
+            RIGHT_CLICKED.post(e);
+        }
+
+        public static void postFarmlandTrampled(BlockEvent.FarmlandTrampleEvent e) {
+            FARMLAND_TRAMPLED.post(e);
+        }
 
         public static void register(IEventBus bus) {
-            bus.addListener(BROKEN::post);
-            bus.addListener(PLACED::post);
-            bus.addListener(LEFT_CLICKED::post);
-            bus.addListener(RIGHT_CLICKED::post);
-            bus.addListener(FARMLAND_TRAMPLED::post);
+            bus.addListener(Internal::postBroken);
+            bus.addListener(Internal::postPlaced);
+            bus.addListener(Internal::postLeftClicked);
+            bus.addListener(Internal::postRightClicked);
+            bus.addListener(Internal::postFarmlandTrampled);
         }
 
         public static void clear() {

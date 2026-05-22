@@ -69,18 +69,57 @@ public class ClientEvents {
 
     @ApiStatus.Internal
     public static class Internal {
+        public static void postTick(ClientTickEvent.Post e) {
+            TICK.post(e);
+        }
+
+        public static void postStopped(ClientStoppedEvent e) {
+            STOPPED.post(e);
+        }
+
+        public static void postStopping(ClientStoppingEvent e) {
+            STOPPING.post(e);
+        }
+
+        public static void postChat(ClientChatEvent e) {
+            CHAT.post(e);
+        }
+
+        public static void postRenderGui(RenderGuiEvent.Post e) {
+            RENDER_GUI.post(e);
+        }
+
+        public static void postRenderGuiLayer(RenderGuiLayerEvent.Post e) {
+            RENDER_GUI_LAYER.post(e);
+        }
+
+        public static void postRenderHand(RenderHandEvent e) {
+            RENDER_HAND.post(e);
+        }
+
+        public static void postRenderAfterLevel(RenderLevelStageEvent.AfterLevel e) {
+            RENDER_AFTER_LEVEL.post(e);
+        }
+
+        public static void postLoggedIn(ClientPlayerNetworkEvent.LoggingIn e) {
+            LOGGED_IN.post(e);
+        }
+
+        public static void postLoggedOut(ClientPlayerNetworkEvent.LoggingOut e) {
+            LOGGED_OUT.post(e);
+        }
 
         public static void register(IEventBus bus) {
-            bus.addListener(TICK::post);
-            bus.addListener(STOPPED::post);
-            bus.addListener(STOPPING::post);
-            bus.addListener(CHAT::post);
-            bus.addListener(RENDER_GUI::post);
-            bus.addListener(RENDER_GUI_LAYER::post);
-            bus.addListener(RENDER_HAND::post);
-            bus.addListener(RENDER_AFTER_LEVEL::post);
-            bus.addListener(LOGGED_IN::post);
-            bus.addListener(LOGGED_OUT::post);
+            bus.addListener(Internal::postTick);
+            bus.addListener(Internal::postStopped);
+            bus.addListener(Internal::postStopping);
+            bus.addListener(Internal::postChat);
+            bus.addListener(Internal::postRenderGui);
+            bus.addListener(Internal::postRenderGuiLayer);
+            bus.addListener(Internal::postRenderHand);
+            bus.addListener(Internal::postRenderAfterLevel);
+            bus.addListener(Internal::postLoggedIn);
+            bus.addListener(Internal::postLoggedOut);
         }
 
         public static void clear() {

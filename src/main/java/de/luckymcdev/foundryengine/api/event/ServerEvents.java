@@ -56,15 +56,42 @@ public class ServerEvents {
 
     @ApiStatus.Internal
     public static class Internal {
+        public static void postAboutToStart(ServerAboutToStartEvent e) {
+            ABOUT_TO_START.post(e);
+        }
+
+        public static void postStarted(ServerStartedEvent e) {
+            STARTED.post(e);
+        }
+
+        public static void postStarting(ServerStartingEvent e) {
+            STARTING.post(e);
+        }
+
+        public static void postStopped(ServerStoppedEvent e) {
+            STOPPED.post(e);
+        }
+
+        public static void postStopping(ServerStoppingEvent e) {
+            STOPPING.post(e);
+        }
+
+        public static void postTick(ServerTickEvent.Post e) {
+            TICK.post(e);
+        }
+
+        public static void postTags(TagsUpdatedEvent e) {
+            TAGS.post(e);
+        }
 
         public static void register(IEventBus bus) {
-            bus.addListener(ABOUT_TO_START::post);
-            bus.addListener(STARTED::post);
-            bus.addListener(STARTING::post);
-            bus.addListener(STOPPED::post);
-            bus.addListener(STOPPING::post);
-            bus.addListener(TICK::post);
-            bus.addListener(TAGS::post);
+            bus.addListener(Internal::postAboutToStart);
+            bus.addListener(Internal::postStarted);
+            bus.addListener(Internal::postStarting);
+            bus.addListener(Internal::postStopped);
+            bus.addListener(Internal::postStopping);
+            bus.addListener(Internal::postTick);
+            bus.addListener(Internal::postTags);
         }
 
         public static void clear() {

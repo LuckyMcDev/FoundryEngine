@@ -71,17 +71,52 @@ public class PlayerEvents {
 
     @ApiStatus.Internal
     public static class Internal {
+        public static void postLoggedIn(PlayerEvent.PlayerLoggedInEvent e) {
+            LOGGED_IN.post(e);
+        }
+
+        public static void postLoggedOut(PlayerEvent.PlayerLoggedOutEvent e) {
+            LOGGED_OUT.post(e);
+        }
+
+        public static void postTick(PlayerTickEvent.Post e) {
+            TICK.post(e);
+        }
+
+        public static void postChat(ServerChatEvent e) {
+            CHAT.post(e);
+        }
+
+        public static void postAdvancement(AdvancementEvent.AdvancementEarnEvent e) {
+            ADVANCEMENT.post(e);
+        }
+
+        public static void postChestClosed(PlayerContainerEvent.Close e) {
+            CHEST_CLOSED.post(e);
+        }
+
+        public static void postChestOpened(PlayerContainerEvent.Open e) {
+            CHEST_OPENED.post(e);
+        }
+
+        public static void postRespawned(PlayerEvent.PlayerRespawnEvent e) {
+            RESPAWNED.post(e);
+        }
+
+        public static void postDecorateChat(ClientChatReceivedEvent e) {
+            DECORATE_CHAT.post(e);
+        }
 
         public static void register(IEventBus bus) {
-            bus.addListener(LOGGED_IN::post);
-            bus.addListener(LOGGED_OUT::post);
-            bus.addListener(TICK::post);
-            bus.addListener(CHAT::post);
-            bus.addListener(ADVANCEMENT::post);
-            bus.addListener(CHEST_CLOSED::post);
-            bus.addListener(CHEST_OPENED::post);
-            bus.addListener(RESPAWNED::post);
-            bus.addListener(DECORATE_CHAT::post);
+            bus.addListener(Internal::postLoggedIn);
+            bus.addListener(Internal::postLoggedOut);
+            bus.addListener(Internal::postTick);
+            bus.addListener(Internal::postChat);
+            bus.addListener(Internal::postAdvancement);
+            bus.addListener(Internal::postChestClosed);
+            bus.addListener(Internal::postChestOpened);
+            bus.addListener(Internal::postRespawned);
+            bus.addListener(Internal::postDecorateChat);
         }
 
         public static void clear() {

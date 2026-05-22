@@ -24,10 +24,17 @@ public class NetworkEvents {
 
     @ApiStatus.Internal
     public static class Internal {
+        public static void postLogin(PlayerEvent.PlayerLoggedInEvent e) {
+            LOGIN.post(e);
+        }
+
+        public static void postLogout(PlayerEvent.PlayerLoggedOutEvent e) {
+            LOGOUT.post(e);
+        }
 
         public static void register(IEventBus bus) {
-            bus.addListener(LOGIN::post);
-            bus.addListener(LOGOUT::post);
+            bus.addListener(Internal::postLogin);
+            bus.addListener(Internal::postLogout);
         }
 
         public static void clear() {

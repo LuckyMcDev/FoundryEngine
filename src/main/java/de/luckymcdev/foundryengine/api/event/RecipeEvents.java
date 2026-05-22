@@ -26,10 +26,17 @@ public class RecipeEvents {
 
     @ApiStatus.Internal
     public static class Internal {
+        public static void postRecipesReceived(RecipesReceivedEvent e) {
+            RECIPES_UPDATED.post(e);
+        }
+
+        public static void postModifyRecipes(ModifyRecipeJsonsEvent e) {
+            MODIFY_RECIPES.post(e);
+        }
 
         public static void register(IEventBus bus) {
-            bus.addListener(RECIPES_UPDATED::post);
-            bus.addListener(MODIFY_RECIPES::post);
+            bus.addListener(Internal::postRecipesReceived);
+            bus.addListener(Internal::postModifyRecipes);
         }
 
         public static void clear() {
