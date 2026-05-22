@@ -1,7 +1,6 @@
 package de.luckymcdev.foundryengine.common.builder.item;
 
 import de.luckymcdev.foundryengine.api.builder.item.ItemBuilder;
-import de.luckymcdev.foundryengine.common.builder.BuilderState;
 import de.luckymcdev.foundryengine.common.world.item.EngineItem;
 import de.luckymcdev.foundryengine.common.wrapper.DataComponentWrapper;
 import net.minecraft.core.component.DataComponentType;
@@ -11,25 +10,22 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
-/**
- * An Item Builder, which allows for Item registering in a Builder format.
- * Inspired by KubeJs
- */
 public class ItemBuilderImpl implements ItemBuilder {
-    private final BuilderState<Item> state;
+    private final Identifier id;
     private final Map<EngineItem.CallbackType, Object> callbacks = new EnumMap<>(EngineItem.CallbackType.class);
     private Item.Properties properties;
     private Function<Item.Properties, Item> factory;
+    private @Nullable Item object;
 
     public ItemBuilderImpl(Identifier id) {
-        this.state = new BuilderState<>(id);
-        this.state.registryKey = Registries.ITEM;
+        this.id = id;
         this.properties = new Item.Properties();
         this.factory = EngineItem::new;
     }
@@ -134,14 +130,14 @@ public class ItemBuilderImpl implements ItemBuilder {
     @Override
     public Item register(RegisterEvent.RegisterHelper<Item> helper) {
         Item item = build();
-        helper.register(state.id, item);
-        state.setObject(item);
+        helper.register(id, item);
+        this.object = item;
         return item;
     }
 
     @Override
     public Item build() {
-        this.properties.setId(ResourceKey.create(Registries.ITEM, state.id));
+        this.properties.setId(ResourceKey.create(Registries.ITEM, id));
 
         if (!callbacks.isEmpty()) {
             EngineItem engineItem = new EngineItem(this.properties);
@@ -167,16 +163,30 @@ public class ItemBuilderImpl implements ItemBuilder {
 
     @Override
     public Item get() {
-        return state.get();
+        if (object == null) {
+            throw new IllegalStateException("Item " + id + " has not been registered yet");
+        }
+        return object;
     }
 
     @Override
     public Item getOrCreate() {
-        return state.getOrCreate();
+        if (object == null) {
+            object = build();
+        }
+        return object;
+    }
+
+    @Override
+    public Identifier getId() {
+        return id;
     }
 
     @Override
     public Identifier newID(String pre, String post) {
-        return state.newID(pre, post);
+        if (pre.isEmpty() && post.isEmpty()) {
+            return id;
+        }
+        return id.withPath(pre + id.getPath() + post);
     }
 }

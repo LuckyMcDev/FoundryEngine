@@ -25,7 +25,10 @@ import java.util.function.Consumer;
 
 public class RegistryEvent extends Event implements IModBusEvent {
     static final Map<Identifier, ParticleBuilderImpl> PARTICLE_BUILDERS = new LinkedHashMap<>();
-    static final Map<Identifier, SoundBuilderImpl> SOUND_BUILDERS = new LinkedHashMap<>(); // Added for sound metadata tracking
+    static final Map<Identifier, SoundBuilderImpl> SOUND_BUILDERS = new LinkedHashMap<>();
+    static final Map<Identifier, ItemBuilder> ITEM_BUILDERS = new LinkedHashMap<>();
+    static final Map<Identifier, BlockBuilder> BLOCK_BUILDERS = new LinkedHashMap<>();
+    static final Map<Identifier, RecipeBuilder> RECIPE_BUILDERS = new LinkedHashMap<>();
     private static final Set<IEventBus> PROVIDER_LISTENERS = Collections.newSetFromMap(new IdentityHashMap<>());
 
     private final RegisterEvent inner;
@@ -44,13 +47,19 @@ public class RegistryEvent extends Event implements IModBusEvent {
 
     public void items(ItemBuilder... builders) {
         inner.register(BuiltInRegistries.ITEM.key(), registry -> {
-            for (ItemBuilder builder : builders) builder.register(registry);
+            for (ItemBuilder builder : builders) {
+                builder.register(registry);
+                ITEM_BUILDERS.put(builder.getId(), builder);
+            }
         });
     }
 
     public void blocks(BlockBuilder... builders) {
         inner.register(BuiltInRegistries.BLOCK.key(), registry -> {
-            for (BlockBuilder builder : builders) builder.registerBlock(registry);
+            for (BlockBuilder builder : builders) {
+                builder.registerBlock(registry);
+                BLOCK_BUILDERS.put(builder.getId(), builder);
+            }
         });
         inner.register(BuiltInRegistries.ITEM.key(), registry -> {
             for (BlockBuilder builder : builders) {
@@ -61,7 +70,10 @@ public class RegistryEvent extends Event implements IModBusEvent {
 
     public void recipes(RecipeBuilder... builders) {
         inner.register(EngineRegistries.RECIPES.key(), registry -> {
-            for (RecipeBuilder builder : builders) builder.register(registry);
+            for (RecipeBuilder builder : builders) {
+                builder.register(registry);
+                RECIPE_BUILDERS.put(builder.getId(), builder);
+            }
         });
     }
 
@@ -70,7 +82,7 @@ public class RegistryEvent extends Event implements IModBusEvent {
             for (ParticleBuilder builder : builders) {
                 builder.register(registry);
                 if (builder instanceof ParticleBuilderImpl impl) {
-                    PARTICLE_BUILDERS.put(impl.state.id, impl);
+                    PARTICLE_BUILDERS.put(impl.getId(), impl);
                 }
             }
         });
@@ -83,7 +95,7 @@ public class RegistryEvent extends Event implements IModBusEvent {
             for (SoundBuilder builder : builders) {
                 builder.register(registry);
                 var impl = (SoundBuilderImpl) builder;
-                SOUND_BUILDERS.put(impl.state.id, impl);
+                SOUND_BUILDERS.put(impl.getId(), impl);
             }
         });
     }
@@ -93,9 +105,6 @@ public class RegistryEvent extends Event implements IModBusEvent {
             return;
         }
         PROVIDER_LISTENERS.add(modBus);
-
-        // RegistryEventClient must never be referenced directly here as an import —
-        // we load it by name so the server classloader never touches the client class.
         if (FMLEnvironment.getDist().isClient()) {
             RegistryEventClient.registerListener(modBus);
         }

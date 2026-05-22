@@ -7,7 +7,6 @@ import java.util.function.Supplier;
 /**
  * Base interface for all builders in the Foundry Engine API.
  * Provides common methods for state management.
- * Use composition (delegate to BuilderState) instead of inheritance.
  *
  * @param <T> The type of object this builder creates
  */
@@ -43,4 +42,11 @@ public interface BuilderBase<T> extends Supplier<T> {
      * @return A new identifier
      */
     Identifier newID(String pre, String post);
+
+    /**
+     * Gets the identifier of this builder.
+     *
+     * @return The builder's identifier
+     */
+    Identifier getId();
 }

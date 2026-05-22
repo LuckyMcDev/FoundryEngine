@@ -2,8 +2,6 @@ package de.luckymcdev.foundryengine.common.builder.recipe;
 
 import de.luckymcdev.foundryengine.api.builder.recipe.RecipeBuilder;
 import de.luckymcdev.foundryengine.api.builder.recipe.RecipeResult;
-import de.luckymcdev.foundryengine.common.builder.BuilderState;
-import de.luckymcdev.foundryengine.common.registry.EngineRegistries;
 import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.criterion.InventoryChangeTrigger;
 import net.minecraft.core.HolderGetter;
@@ -21,7 +19,7 @@ import org.jspecify.annotations.Nullable;
 import java.util.*;
 
 public class RecipeBuilderImpl implements RecipeBuilder {
-    private final BuilderState<RecipeResult> state;
+    private final Identifier id;
     private final RecipeType type;
     private final ItemLike result;
     private final List<String> pattern = new ArrayList<>();
@@ -38,10 +36,10 @@ public class RecipeBuilderImpl implements RecipeBuilder {
     private float experience = 0.1f;
     private int cookingTime = 200;
     private String group = "";
+    private @Nullable RecipeResult object;
 
     private RecipeBuilderImpl(Identifier id, RecipeType type, @Nullable ItemLike result) {
-        this.state = new BuilderState<>(id);
-        this.state.registryKey = EngineRegistries.Keys.RECIPES;
+        this.id = id;
         this.type = type;
         this.result = result;
     }
@@ -114,7 +112,7 @@ public class RecipeBuilderImpl implements RecipeBuilder {
 
     @Override
     public Identifier getRecipeId() {
-        return state.id;
+        return id;
     }
 
     public RecipeType getRecipeType() {
@@ -268,36 +266,36 @@ public class RecipeBuilderImpl implements RecipeBuilder {
     @Override
     public RecipeResult build() {
         ensureValid();
-        return new RecipeResult(state.id, this::saveTo);
+        return new RecipeResult(id, this::saveTo);
     }
 
     @Override
     public RecipeResult register(RegisterEvent.RegisterHelper<RecipeResult> helper) {
         RecipeResult result = build();
-        helper.register(state.id, result);
-        state.setObject(result);
+        helper.register(id, result);
+        this.object = result;
         return result;
     }
 
     private void ensureValid() {
         if (type == RecipeType.SHAPED) {
             if (pattern.isEmpty()) {
-                throw new IllegalStateException("Shaped recipe " + state.id + " must have a pattern");
+                throw new IllegalStateException("Shaped recipe " + id + " must have a pattern");
             }
             if (keys.isEmpty()) {
-                throw new IllegalStateException("Shaped recipe " + state.id + " must define ingredients");
+                throw new IllegalStateException("Shaped recipe " + id + " must define ingredients");
             }
         } else if (type == RecipeType.SHAPELESS) {
             if (ingredients.isEmpty()) {
-                throw new IllegalStateException("Shapeless recipe " + state.id + " must have ingredients");
+                throw new IllegalStateException("Shapeless recipe " + id + " must have ingredients");
             }
         } else if (isCookingRecipe() || type == RecipeType.STONECUTTING) {
             if (cookingIngredient == null) {
-                throw new IllegalStateException(type + " recipe " + state.id + " must have an ingredient");
+                throw new IllegalStateException(type + " recipe " + id + " must have an ingredient");
             }
         } else if (isSmithingRecipe()) {
             if (smithingTemplate == null && smithingBase == null && smithingAddition == null) {
-                throw new IllegalStateException("Smithing recipe " + state.id + " must have template, base, and/or addition");
+                throw new IllegalStateException("Smithing recipe " + id + " must have template, base, and/or addition");
             }
         }
     }
@@ -329,7 +327,7 @@ public class RecipeBuilderImpl implements RecipeBuilder {
             builder.group(group);
         }
         applyCriteria(builder);
-        builder.save(output, state.id.toString());
+        builder.save(output, id.toString());
     }
 
     private void saveShapeless(RecipeOutput output, HolderLookup.Provider registries) {
@@ -342,7 +340,7 @@ public class RecipeBuilderImpl implements RecipeBuilder {
             builder.group(group);
         }
         applyCriteria(builder);
-        builder.save(output, state.id.toString());
+        builder.save(output, id.toString());
     }
 
     private void saveCooking(RecipeOutput output, HolderLookup.Provider registries, boolean smelting, boolean blasting, boolean smoking, boolean campfire) {
@@ -363,13 +361,13 @@ public class RecipeBuilderImpl implements RecipeBuilder {
             builder.group(group);
         }
         applyCriteria(builder);
-        builder.save(output, state.id.toString());
+        builder.save(output, id.toString());
     }
 
     private void saveStonecutting(RecipeOutput output, HolderLookup.Provider registries) {
         SingleItemRecipeBuilder builder = SingleItemRecipeBuilder.stonecutting(cookingIngredient, category, result, resultCount);
         applyCriteria(builder);
-        builder.save(output, state.id.toString());
+        builder.save(output, id.toString());
     }
 
     private void saveSmithingTransform(RecipeOutput output, HolderLookup.Provider registries) {
@@ -381,7 +379,7 @@ public class RecipeBuilderImpl implements RecipeBuilder {
                 result.asItem()
         );
         applyCriteria(builder);
-        builder.save(output, state.id.toString());
+        builder.save(output, id.toString());
     }
 
     private void saveSmithingTrim(RecipeOutput output, HolderLookup.Provider registries) {
@@ -410,7 +408,7 @@ public class RecipeBuilderImpl implements RecipeBuilder {
             }
         } else if (result != null) {
             Criterion<?> criterion = InventoryChangeTrigger.TriggerInstance.hasItems(result);
-            String name = "has_" + state.id.getPath().replace('/', '_');
+            String name = "has_" + id.getPath().replace('/', '_');
             if (recipeBuilder instanceof ShapedRecipeBuilder shaped) {
                 shaped.unlockedBy(name, criterion);
             } else if (recipeBuilder instanceof ShapelessRecipeBuilder shapeless) {
@@ -429,17 +427,31 @@ public class RecipeBuilderImpl implements RecipeBuilder {
 
     @Override
     public RecipeResult get() {
-        return state.get();
+        if (object == null) {
+            throw new IllegalStateException("Recipe " + id + " has not been registered yet");
+        }
+        return object;
     }
 
     @Override
     public RecipeResult getOrCreate() {
-        return state.getOrCreate();
+        if (object == null) {
+            object = build();
+        }
+        return object;
+    }
+
+    @Override
+    public Identifier getId() {
+        return id;
     }
 
     @Override
     public Identifier newID(String pre, String post) {
-        return state.newID(pre, post);
+        if (pre.isEmpty() && post.isEmpty()) {
+            return id;
+        }
+        return id.withPath(pre + id.getPath() + post);
     }
 
     public enum RecipeType {

@@ -1,7 +1,6 @@
 package de.luckymcdev.foundryengine.common.builder.block;
 
 import de.luckymcdev.foundryengine.api.builder.block.BlockBuilder;
-import de.luckymcdev.foundryengine.common.builder.BuilderState;
 import de.luckymcdev.foundryengine.common.builder.item.ItemBuilderImpl;
 import de.luckymcdev.foundryengine.common.world.block.EngineBlock;
 import de.luckymcdev.foundryengine.common.world.item.EngineItem;
@@ -13,6 +12,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.neoforged.neoforge.registries.RegisterEvent;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -20,12 +20,8 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
-/**
- * Block Builder using composition instead of inheritance.
- * Much cleaner and allows for better code organization.
- */
 public class BlockBuilderImpl implements BlockBuilder {
-    private final BuilderState<Block> state;
+    private final Identifier id;
     private final BiFunction<Block, Item.Properties, Item> itemFactory;
     private final Map<EngineBlock.CallbackType, Object> blockCallbacks = new EnumMap<>(EngineBlock.CallbackType.class);
     private final Map<EngineItem.CallbackType, Object> itemCallbacks = new EnumMap<>(EngineItem.CallbackType.class);
@@ -33,10 +29,10 @@ public class BlockBuilderImpl implements BlockBuilder {
     private Function<BlockBehaviour.Properties, Block> blockFactory;
     private boolean hasItem = true;
     private UnaryOperator<Item.Properties> itemPropertyModifier = p -> p;
+    private @Nullable Block object;
 
     public BlockBuilderImpl(Identifier id) {
-        this.state = new BuilderState<>(id);
-        this.state.registryKey = Registries.BLOCK;
+        this.id = id;
         this.properties = BlockBehaviour.Properties.of();
         this.blockFactory = EngineBlock::new;
         this.itemFactory = BlockItem::new;
@@ -176,29 +172,28 @@ public class BlockBuilderImpl implements BlockBuilder {
     @Override
     public Block registerBlock(RegisterEvent.RegisterHelper<Block> helper) {
         Block block = build();
-        helper.register(state.id, block);
-        state.setObject(block);
+        helper.register(id, block);
+        this.object = block;
         return block;
     }
 
     @Override
     public Item registerItem(RegisterEvent.RegisterHelper<Item> helper) {
         if (!hasItem) {
-            throw new IllegalStateException("Cannot register item for block " + state.id + " because noItem() was called.");
+            throw new IllegalStateException("Cannot register item for block " + id + " because noItem() was called.");
         }
 
-        ItemBuilderImpl itemBuilder = (ItemBuilderImpl) new ItemBuilderImpl(state.id)
-                .factory(props -> itemFactory.apply(state.object, props))
+        ItemBuilderImpl itemBuilder = (ItemBuilderImpl) new ItemBuilderImpl(id)
+                .factory(props -> itemFactory.apply(object, props))
                 .properties(itemPropertyModifier);
 
         itemCallbacks.forEach(itemBuilder::callback);
-
         return itemBuilder.register(helper);
     }
 
     @Override
     public Block build() {
-        this.properties.setId(ResourceKey.create(Registries.BLOCK, state.id));
+        this.properties.setId(ResourceKey.create(Registries.BLOCK, id));
 
         if (!blockCallbacks.isEmpty()) {
             EngineBlock block = new EngineBlock(this.properties);
@@ -224,17 +219,31 @@ public class BlockBuilderImpl implements BlockBuilder {
 
     @Override
     public Block get() {
-        return state.get();
+        if (object == null) {
+            throw new IllegalStateException("Block " + id + " has not been registered yet");
+        }
+        return object;
     }
 
     @Override
     public Block getOrCreate() {
-        return state.getOrCreate();
+        if (object == null) {
+            object = build();
+        }
+        return object;
+    }
+
+    @Override
+    public Identifier getId() {
+        return id;
     }
 
     @Override
     public Identifier newID(String pre, String post) {
-        return state.newID(pre, post);
+        if (pre.isEmpty() && post.isEmpty()) {
+            return id;
+        }
+        return id.withPath(pre + id.getPath() + post);
     }
 
     /**

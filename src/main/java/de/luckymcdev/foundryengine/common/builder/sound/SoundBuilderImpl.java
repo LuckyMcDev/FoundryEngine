@@ -1,25 +1,24 @@
 package de.luckymcdev.foundryengine.common.builder.sound;
 
 import de.luckymcdev.foundryengine.api.builder.sound.SoundBuilder;
-import de.luckymcdev.foundryengine.common.builder.BuilderState;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SoundBuilderImpl implements SoundBuilder {
-    public final BuilderState<SoundEvent> state;
+    private final Identifier id;
     private final List<SoundFileEntry> soundFiles = new ArrayList<>();
     private float fixedRange = -1f;
     private String subtitle = null;
     private boolean replace = false;
+    private @Nullable SoundEvent object;
 
     public SoundBuilderImpl(Identifier id) {
-        this.state = new BuilderState<>(id);
-        this.state.registryKey = Registries.SOUND_EVENT;
+        this.id = id;
     }
 
     @Override
@@ -46,6 +45,11 @@ public class SoundBuilderImpl implements SoundBuilder {
         return this;
     }
 
+    @Override
+    public Identifier getId() {
+        return id;
+    }
+
     public List<SoundFileEntry> getSoundFiles() {
         return soundFiles;
     }
@@ -60,30 +64,39 @@ public class SoundBuilderImpl implements SoundBuilder {
 
     @Override
     public SoundEvent build() {
-        return fixedRange > 0f ? SoundEvent.createFixedRangeEvent(state.id, fixedRange)
-                : SoundEvent.createVariableRangeEvent(state.id);
+        return fixedRange > 0f ? SoundEvent.createFixedRangeEvent(id, fixedRange)
+                : SoundEvent.createVariableRangeEvent(id);
     }
 
     @Override
     public SoundEvent get() {
-        return state.get();
+        if (object == null) {
+            throw new IllegalStateException("Sound " + id + " has not been registered yet");
+        }
+        return object;
     }
 
     @Override
     public SoundEvent getOrCreate() {
-        return state.getOrCreate();
+        if (object == null) {
+            object = build();
+        }
+        return object;
     }
 
     @Override
     public Identifier newID(String pre, String post) {
-        return state.newID(pre, post);
+        if (pre.isEmpty() && post.isEmpty()) {
+            return id;
+        }
+        return id.withPath(pre + id.getPath() + post);
     }
 
     @Override
     public SoundEvent register(RegisterEvent.RegisterHelper<SoundEvent> h) {
         SoundEvent e = build();
-        h.register(state.id, e);
-        state.setObject(e);
+        h.register(id, e);
+        this.object = e;
         return e;
     }
 }
