@@ -5,6 +5,7 @@ import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintEngine;
 import de.luckymcdev.foundryengine.common.event.BlueprintContexts;
 import de.luckymcdev.foundryengine.common.event.EventCallback;
 import de.luckymcdev.foundryengine.common.event.EventGroupHolder;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
@@ -52,32 +53,16 @@ public class BundleEvents {
 
     @ApiStatus.Internal
     public static class Internal {
-        public static void postRegistry(RegistryEvent event) {
-            REGISTRY.post(event);
-        }
 
-        public static void postVanillaGame(VanillaGameEvent event) {
-            VANILLA_GAME.post(event);
-        }
+        public static void postRegistry(RegistryEvent event) { REGISTRY.post(event); }
+        public static void postCommonSetup(FMLCommonSetupEvent event) { COMMON_SETUP.post(event); }
+        public static void postClientSetup(FMLClientSetupEvent event) { CLIENT_SETUP.post(event); }
+        public static void postDedicatedServerSetup(FMLDedicatedServerSetupEvent event) { DEDICATED_SERVER_SETUP.post(event); }
+        public static void postPostInit(InterModProcessEvent event) { POST_INIT.post(event); }
 
-        public static void postCommonSetup(FMLCommonSetupEvent event) {
-            COMMON_SETUP.post(event);
-        }
-
-        public static void postClientSetup(FMLClientSetupEvent event) {
-            CLIENT_SETUP.post(event);
-        }
-
-        public static void postDedicatedServerSetup(FMLDedicatedServerSetupEvent event) {
-            DEDICATED_SERVER_SETUP.post(event);
-        }
-
-        public static void postPostInit(InterModProcessEvent event) {
-            POST_INIT.post(event);
-        }
-
-        public static void postServerAboutToStart(ServerAboutToStartEvent event) {
-            SERVER_ABOUT_TO_START.post(event);
+        public static void register(IEventBus bus) {
+            bus.addListener(VANILLA_GAME::post);
+            bus.addListener(SERVER_ABOUT_TO_START::post);
         }
 
         public static void clear() {

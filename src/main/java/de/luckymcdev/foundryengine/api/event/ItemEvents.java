@@ -4,6 +4,7 @@ import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintEngine;
 import de.luckymcdev.foundryengine.common.event.BlueprintContexts;
 import de.luckymcdev.foundryengine.common.event.EventCallback;
 import de.luckymcdev.foundryengine.common.event.EventGroupHolder;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.event.entity.item.ItemTossEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 import net.neoforged.neoforge.event.entity.player.*;
@@ -79,48 +80,19 @@ public class ItemEvents {
 
     @ApiStatus.Internal
     public static class Internal {
-        public static void postPickedUp(ItemEntityPickupEvent.Post e) {
-            PICKED_UP.post(e);
-        }
 
-        public static void postDestroyed(PlayerDestroyItemEvent e) {
-            DESTROYED.post(e);
-        }
-
-        public static void postRightClicked(PlayerInteractEvent.RightClickItem e) {
-            RIGHT_CLICKED.post(e);
-        }
-
-        public static void postCrafted(PlayerEvent.ItemCraftedEvent e) {
-            CRAFTED.post(e);
-        }
-
-        public static void postDropped(ItemTossEvent e) {
-            DROPPED.post(e);
-        }
-
-        public static void postFoodEaten(LivingEntityUseItemEvent.Finish e) {
-            FOOD_EATEN.post(e);
-        }
-
-        public static void postSmelted(PlayerEvent.ItemSmeltedEvent e) {
-            SMELTED.post(e);
-        }
-
-        public static void postDynamicTooltips(ItemTooltipEvent e) {
-            DYNAMIC_TOOLTIPS.post(e);
-        }
-
-        public static void postEntityInteracted(PlayerInteractEvent.EntityInteract e) {
-            ENTITY_INTERACTED.post(e);
-        }
-
-        public static void postFirstLeftClicked(PlayerInteractEvent.LeftClickEmpty e) {
-            FIRST_LEFT_CLICKED.post(e);
-        }
-
-        public static void postFirstRightClicked(PlayerInteractEvent.RightClickEmpty e) {
-            FIRST_RIGHT_CLICKED.post(e);
+        public static void register(IEventBus bus) {
+            bus.addListener(PICKED_UP::post);
+            bus.addListener(DESTROYED::post);
+            bus.addListener(RIGHT_CLICKED::post);
+            bus.addListener(CRAFTED::post);
+            bus.addListener(DROPPED::post);
+            bus.addListener(FOOD_EATEN::post);
+            bus.addListener(SMELTED::post);
+            bus.addListener(DYNAMIC_TOOLTIPS::post);
+            bus.addListener(ENTITY_INTERACTED::post);
+            bus.addListener(FIRST_LEFT_CLICKED::post);
+            bus.addListener(FIRST_RIGHT_CLICKED::post);
         }
 
         public static void clear() {

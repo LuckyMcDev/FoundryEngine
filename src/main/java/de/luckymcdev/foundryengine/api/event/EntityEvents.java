@@ -4,6 +4,7 @@ import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintEngine;
 import de.luckymcdev.foundryengine.common.event.BlueprintContexts;
 import de.luckymcdev.foundryengine.common.event.EventCallback;
 import de.luckymcdev.foundryengine.common.event.EventGroupHolder;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
@@ -44,28 +45,14 @@ public class EntityEvents {
 
     @ApiStatus.Internal
     public static class Internal {
-        public static void postJoinLevel(EntityJoinLevelEvent e) {
-            JOIN_LEVEL.post(e);
-        }
 
-        public static void postDeath(LivingDeathEvent e) {
-            DEATH.post(e);
-        }
-
-        public static void postDrops(LivingDropsEvent e) {
-            DROPS.post(e);
-        }
-
-        public static void postHurt(LivingDamageEvent.Post e) {
-            HURT.post(e);
-        }
-
-        public static void postSpawned(EntityJoinLevelEvent e) {
-            SPAWNED.post(e);
-        }
-
-        public static void postCheckSpawn(EntityJoinLevelEvent e) {
-            CHECK_SPAWN.post(e);
+        public static void register(IEventBus bus) {
+            bus.addListener(JOIN_LEVEL::post);
+            bus.addListener(DEATH::post);
+            bus.addListener(DROPS::post);
+            bus.addListener(HURT::post);
+            bus.addListener(SPAWNED::post);
+            bus.addListener(CHECK_SPAWN::post);
         }
 
         public static void clear() {

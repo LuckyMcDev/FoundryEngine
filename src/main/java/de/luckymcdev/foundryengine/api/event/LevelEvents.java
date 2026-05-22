@@ -4,6 +4,7 @@ import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintEngine;
 import de.luckymcdev.foundryengine.common.event.BlueprintContexts;
 import de.luckymcdev.foundryengine.common.event.EventCallback;
 import de.luckymcdev.foundryengine.common.event.EventGroupHolder;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.event.level.ExplosionEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
@@ -49,28 +50,14 @@ public class LevelEvents {
 
     @ApiStatus.Internal
     public static class Internal {
-        public static void postLoad(LevelEvent.Load e) {
-            LOAD.post(e);
-        }
 
-        public static void postUnload(LevelEvent.Unload e) {
-            UNLOAD.post(e);
-        }
-
-        public static void postSave(LevelEvent.Save e) {
-            SAVE.post(e);
-        }
-
-        public static void postTick(LevelTickEvent.Post e) {
-            TICK.post(e);
-        }
-
-        public static void postBeforeExplosion(ExplosionEvent.Start e) {
-            BEFORE_EXPLOSION.post(e);
-        }
-
-        public static void postAfterExplosion(ExplosionEvent.Detonate e) {
-            AFTER_EXPLOSION.post(e);
+        public static void register(IEventBus bus) {
+            bus.addListener(LOAD::post);
+            bus.addListener(UNLOAD::post);
+            bus.addListener(SAVE::post);
+            bus.addListener(TICK::post);
+            bus.addListener(BEFORE_EXPLOSION::post);
+            bus.addListener(AFTER_EXPLOSION::post);
         }
 
         public static void clear() {

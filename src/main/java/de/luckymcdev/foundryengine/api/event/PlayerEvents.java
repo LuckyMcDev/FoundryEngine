@@ -4,6 +4,7 @@ import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintEngine;
 import de.luckymcdev.foundryengine.common.event.BlueprintContexts;
 import de.luckymcdev.foundryengine.common.event.EventCallback;
 import de.luckymcdev.foundryengine.common.event.EventGroupHolder;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.client.event.ClientChatReceivedEvent;
 import net.neoforged.neoforge.event.ServerChatEvent;
 import net.neoforged.neoforge.event.entity.player.AdvancementEvent;
@@ -70,40 +71,17 @@ public class PlayerEvents {
 
     @ApiStatus.Internal
     public static class Internal {
-        public static void postLoggedIn(PlayerEvent.PlayerLoggedInEvent e) {
-            LOGGED_IN.post(e);
-        }
 
-        public static void postLoggedOut(PlayerEvent.PlayerLoggedOutEvent e) {
-            LOGGED_OUT.post(e);
-        }
-
-        public static void postTick(PlayerTickEvent.Post e) {
-            TICK.post(e);
-        }
-
-        public static void postChat(ServerChatEvent e) {
-            CHAT.post(e);
-        }
-
-        public static void postAdvancement(AdvancementEvent.AdvancementEarnEvent e) {
-            ADVANCEMENT.post(e);
-        }
-
-        public static void postChestClosed(PlayerContainerEvent.Close e) {
-            CHEST_CLOSED.post(e);
-        }
-
-        public static void postChestOpened(PlayerContainerEvent.Open e) {
-            CHEST_OPENED.post(e);
-        }
-
-        public static void postRespawned(PlayerEvent.PlayerRespawnEvent e) {
-            RESPAWNED.post(e);
-        }
-
-        public static void postDecorateChat(ClientChatReceivedEvent e) {
-            DECORATE_CHAT.post(e);
+        public static void register(IEventBus bus) {
+            bus.addListener(LOGGED_IN::post);
+            bus.addListener(LOGGED_OUT::post);
+            bus.addListener(TICK::post);
+            bus.addListener(CHAT::post);
+            bus.addListener(ADVANCEMENT::post);
+            bus.addListener(CHEST_CLOSED::post);
+            bus.addListener(CHEST_OPENED::post);
+            bus.addListener(RESPAWNED::post);
+            bus.addListener(DECORATE_CHAT::post);
         }
 
         public static void clear() {

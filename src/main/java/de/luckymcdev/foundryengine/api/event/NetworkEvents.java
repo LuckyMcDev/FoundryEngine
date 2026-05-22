@@ -4,6 +4,7 @@ import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintEngine;
 import de.luckymcdev.foundryengine.common.event.BlueprintContexts;
 import de.luckymcdev.foundryengine.common.event.EventCallback;
 import de.luckymcdev.foundryengine.common.event.EventGroupHolder;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -23,12 +24,10 @@ public class NetworkEvents {
 
     @ApiStatus.Internal
     public static class Internal {
-        public static void postLogin(PlayerEvent.PlayerLoggedInEvent e) {
-            LOGIN.post(e);
-        }
 
-        public static void postLogout(PlayerEvent.PlayerLoggedOutEvent e) {
-            LOGOUT.post(e);
+        public static void register(IEventBus bus) {
+            bus.addListener(LOGIN::post);
+            bus.addListener(LOGOUT::post);
         }
 
         public static void clear() {

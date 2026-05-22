@@ -4,6 +4,7 @@ import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintEngine;
 import de.luckymcdev.foundryengine.common.event.BlueprintContexts;
 import de.luckymcdev.foundryengine.common.event.EventCallback;
 import de.luckymcdev.foundryengine.common.event.EventGroupHolder;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
@@ -43,28 +44,13 @@ public class BlockEvents {
 
     @ApiStatus.Internal
     public static class Internal {
-        public static void postBroken(BreakBlockEvent e) {
-            BROKEN.post(e);
-        }
 
-        public static void postPlaced(BlockEvent.EntityPlaceEvent e) {
-            PLACED.post(e);
-        }
-
-        public static void postNeighborNotify(BlockEvent.NeighborNotifyEvent e) {
-            NEIGHBOR_NOTIFY.post(e);
-        }
-
-        public static void postLeftClicked(PlayerInteractEvent.LeftClickBlock e) {
-            LEFT_CLICKED.post(e);
-        }
-
-        public static void postRightClicked(PlayerInteractEvent.RightClickBlock e) {
-            RIGHT_CLICKED.post(e);
-        }
-
-        public static void postFarmlandTrampled(BlockEvent.FarmlandTrampleEvent e) {
-            FARMLAND_TRAMPLED.post(e);
+        public static void register(IEventBus bus) {
+            bus.addListener(BROKEN::post);
+            bus.addListener(PLACED::post);
+            bus.addListener(LEFT_CLICKED::post);
+            bus.addListener(RIGHT_CLICKED::post);
+            bus.addListener(FARMLAND_TRAMPLED::post);
         }
 
         public static void clear() {

@@ -4,6 +4,7 @@ import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintEngine;
 import de.luckymcdev.foundryengine.common.event.BlueprintContexts;
 import de.luckymcdev.foundryengine.common.event.EventCallback;
 import de.luckymcdev.foundryengine.common.event.EventGroupHolder;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import org.jetbrains.annotations.ApiStatus;
@@ -22,12 +23,10 @@ public class CommandEvents {
 
     @ApiStatus.Internal
     public static class Internal {
-        public static void post(RegisterCommandsEvent event) {
-            COMMANDS.post(event);
-        }
 
-        public static void postClient(RegisterClientCommandsEvent event) {
-            COMMANDS_CLIENT.post(event);
+        public static void register(IEventBus bus) {
+            bus.addListener(COMMANDS::post);
+            bus.addListener(COMMANDS_CLIENT::post);
         }
 
         public static void clear() {

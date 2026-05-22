@@ -282,81 +282,17 @@ public class FoundryEngineMod {
     }
 
     private void registerInternalEvents() {
-        BUS.addListener(BlockEvents.Internal::postBroken);
-        BUS.addListener(BlockEvents.Internal::postPlaced);
-        BUS.addListener(BlockEvents.Internal::postLeftClicked);
-        BUS.addListener(BlockEvents.Internal::postRightClicked);
-        BUS.addListener(BlockEvents.Internal::postFarmlandTrampled);
-
-        BUS.addListener(BundleEvents.Internal::postVanillaGame);
-        BUS.addListener(BundleEvents.Internal::postServerAboutToStart);
-
-        BUS.addListener(ClientEvents.Internal::postTick);
-        BUS.addListener(ClientEvents.Internal::postStopped);
-        BUS.addListener(ClientEvents.Internal::postStopping);
-        BUS.addListener(ClientEvents.Internal::postChat);
-        BUS.addListener(ClientEvents.Internal::postRenderGui);
-        BUS.addListener(ClientEvents.Internal::postRenderGuiLayer);
-        BUS.addListener(ClientEvents.Internal::postRenderHand);
-        BUS.addListener(ClientEvents.Internal::postRenderAfterLevel);
-        BUS.addListener(ClientEvents.Internal::postLoggedIn);
-        BUS.addListener(ClientEvents.Internal::postLoggedOut);
-
-        BUS.addListener(CommandEvents.Internal::post);
-        BUS.addListener(CommandEvents.Internal::postClient);
-
-        BUS.addListener(EntityEvents.Internal::postJoinLevel);
-        BUS.addListener(EntityEvents.Internal::postDeath);
-        BUS.addListener(EntityEvents.Internal::postDrops);
-        BUS.addListener(EntityEvents.Internal::postHurt);
-        BUS.addListener(EntityEvents.Internal::postSpawned);
-        BUS.addListener(EntityEvents.Internal::postCheckSpawn);
-
-        BUS.addListener(ItemEvents.Internal::postPickedUp);
-        BUS.addListener(ItemEvents.Internal::postDestroyed);
-        BUS.addListener(ItemEvents.Internal::postRightClicked);
-        BUS.addListener(ItemEvents.Internal::postCrafted);
-        BUS.addListener(ItemEvents.Internal::postDropped);
-        BUS.addListener(ItemEvents.Internal::postFoodEaten);
-        BUS.addListener(ItemEvents.Internal::postSmelted);
-        BUS.addListener(ItemEvents.Internal::postDynamicTooltips);
-        BUS.addListener(ItemEvents.Internal::postEntityInteracted);
-        BUS.addListener(ItemEvents.Internal::postFirstLeftClicked);
-        BUS.addListener(ItemEvents.Internal::postFirstRightClicked);
-
-        BUS.addListener(LevelEvents.Internal::postLoad);
-        BUS.addListener(LevelEvents.Internal::postUnload);
-        BUS.addListener(LevelEvents.Internal::postSave);
-        BUS.addListener(LevelEvents.Internal::postTick);
-        BUS.addListener(LevelEvents.Internal::postBeforeExplosion);
-        BUS.addListener(LevelEvents.Internal::postAfterExplosion);
-
-        BUS.addListener(NetworkEvents.Internal::postLogin);
-        BUS.addListener(NetworkEvents.Internal::postLogout);
-
-        BUS.addListener(PlayerEvents.Internal::postLoggedIn);
-        BUS.addListener(PlayerEvents.Internal::postLoggedOut);
-        BUS.addListener(PlayerEvents.Internal::postTick);
-        BUS.addListener(PlayerEvents.Internal::postChat);
-        BUS.addListener(PlayerEvents.Internal::postAdvancement);
-        BUS.addListener(PlayerEvents.Internal::postChestClosed);
-        BUS.addListener(PlayerEvents.Internal::postChestOpened);
-        BUS.addListener(PlayerEvents.Internal::postRespawned);
-        BUS.addListener(PlayerEvents.Internal::postDecorateChat);
-
-        BUS.addListener(RecipeEvents.Internal::postRecipesReceived);
-        BUS.addListener(RecipeEvents.Internal::postModifyRecipes);
-
-        BUS.addListener(ServerEvents.Internal::postAboutToStart);
-        BUS.addListener(ServerEvents.Internal::postStarted);
-        BUS.addListener(ServerEvents.Internal::postStarting);
-        BUS.addListener(ServerEvents.Internal::postStopped);
-        BUS.addListener(ServerEvents.Internal::postStopping);
-        BUS.addListener(ServerEvents.Internal::postTick);
-        BUS.addListener(ServerEvents.Internal::postTags);
-
-        BUS.addListener(AreaEvents.Internal::postAreaEnter);
-        BUS.addListener(AreaEvents.Internal::postAreaLeave);
-        BUS.addListener(AreaEvents.Internal::postAreaTick);
+        AreaEvents.Internal.register(BUS);
+        BlockEvents.Internal.register(BUS);
+        BundleEvents.Internal.register(BUS);
+        ClientEvents.Internal.register(BUS);
+        CommandEvents.Internal.register(BUS);
+        EntityEvents.Internal.register(BUS);
+        ItemEvents.Internal.register(BUS);
+        LevelEvents.Internal.register(BUS);
+        NetworkEvents.Internal.register(BUS);
+        PlayerEvents.Internal.register(BUS);
+        RecipeEvents.Internal.register(BUS);
+        ServerEvents.Internal.register(BUS);
     }
 }

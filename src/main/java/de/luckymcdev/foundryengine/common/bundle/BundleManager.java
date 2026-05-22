@@ -1,8 +1,7 @@
 package de.luckymcdev.foundryengine.common.bundle;
 
 import com.mojang.logging.LogUtils;
-import de.luckymcdev.foundryengine.api.event.ClientEvents;
-import de.luckymcdev.foundryengine.api.event.ServerEvents;
+import de.luckymcdev.foundryengine.api.event.*;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.registry.GenericRegistry;
 import de.luckymcdev.foundryengine.common.script.BundleScriptLoader;
@@ -100,16 +99,24 @@ public class BundleManager implements ResourceManagerReloadListener {
     }
 
     /**
-     * Reloads all bundles by unloading current bundles and rediscovering them.
-     * Common scripts are reloaded here; dist-specific scripts will be reloaded
-     * when the respective dist reload listeners fire.
+     * Reloads all bundles by clearing all script event callbacks, unloading current
+     * bundles, rediscovering them from disk, and re-loading common + server scripts.
      */
     public void reload() {
         LOGGER.info("Reloading FoundryEngine Bundles...");
 
+        AreaEvents.Internal.clear();
+        BlockEvents.Internal.clear();
+        BundleEvents.Internal.clear();
         ClientEvents.Internal.clear();
+        CommandEvents.Internal.clear();
+        EntityEvents.Internal.clear();
+        ItemEvents.Internal.clear();
+        LevelEvents.Internal.clear();
+        NetworkEvents.Internal.clear();
+        PlayerEvents.Internal.clear();
+        RecipeEvents.Internal.clear();
         ServerEvents.Internal.clear();
-        //BundleEvents._clear(); // I Guess this doesnt have to be cleared? bc its a registry
 
         unloadAllBundles();
         bundles.clear();
@@ -119,11 +126,14 @@ public class BundleManager implements ResourceManagerReloadListener {
         } catch (IOException e) {
             LOGGER.error("Failed to reload bundles", e);
         }
+
+        loadServerScripts();
     }
 
     private void unloadAllBundles() {
         for (Bundle bundle : bundles.values()) {
             unloadBundle(bundle);
+            Common.getBlueprintManager().unloadBlueprintsForBundle(bundle);
         }
     }
 

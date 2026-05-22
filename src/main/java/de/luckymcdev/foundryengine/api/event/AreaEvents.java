@@ -3,6 +3,7 @@ package de.luckymcdev.foundryengine.api.event;
 import de.luckymcdev.foundryengine.common.area.AreaEvent;
 import de.luckymcdev.foundryengine.common.event.EventCallback;
 import de.luckymcdev.foundryengine.common.event.EventGroupHolder;
+import net.neoforged.bus.api.IEventBus;
 import org.jetbrains.annotations.ApiStatus;
 
 public class AreaEvents {
@@ -31,16 +32,10 @@ public class AreaEvents {
     @ApiStatus.Internal
     public static class Internal {
 
-        public static void postAreaEnter(AreaEvent.AreaEnterEvent e) {
-            AREA_ENTER.post(e);
-        }
-
-        public static void postAreaLeave(AreaEvent.AreaLeaveEvent e) {
-            AREA_LEAVE.post(e);
-        }
-
-        public static void postAreaTick(AreaEvent.AreaTickEvent e) {
-            AREA_TICK.post(e);
+        public static void register(IEventBus bus) {
+            bus.addListener(AREA_ENTER::post);
+            bus.addListener(AREA_LEAVE::post);
+            bus.addListener(AREA_TICK::post);
         }
 
         public static void clear() {
