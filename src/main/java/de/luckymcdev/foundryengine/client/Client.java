@@ -41,6 +41,7 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
+import org.apache.commons.lang3.mutable.MutableFloat;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 import org.jspecify.annotations.Nullable;
@@ -60,6 +61,8 @@ public abstract class Client {
     public static final Matrix4f INVERSE_WORLD = new Matrix4f();
     public static final Matrix4f PERSPECTIVE = new Matrix4f();
     public static final Matrix4f FRUSTUM = new Matrix4f();
+    public static final MutableFloat DEPTH_FAR = new MutableFloat(65536F);
+    public static final MutableFloat DEPTH_NEAR = new MutableFloat(0.05F);
 
     public static final KeyMapping.Category EDITOR_CATEGORY = new KeyMapping.Category(Common.id("editor"));
     public static final KeyBinding EDITOR_KEY = new KeyBinding(

@@ -1,6 +1,5 @@
 package de.luckymcdev.foundryengine.config;
 
-import net.minecraft.client.Minecraft;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.event.config.ModConfigEvent;
@@ -31,19 +30,10 @@ public final class Config {
     }
 
     @SubscribeEvent
-    static void onLoad(final ModConfigEvent.Loading event) {
+    public static void onLoad(final ModConfigEvent.Loading event) {
     }
 
     @SubscribeEvent
-    static void onReload(final ModConfigEvent.Reloading event) {
-        int effectiveRdBlocks = Minecraft.getInstance().options.getEffectiveRenderDistance() * 16;
-        if (event.getConfig().getSpec() == CLIENT.spec()) {
-            String val = ClientConfig.BLOCK_ENTITY_RENDER_DISTANCE.get();
-            ClientConfig.COMPUTED_BLOCK_ENTITY_RENDER_DISTANCE = switch (val) {
-                case "full" -> effectiveRdBlocks;
-                case "half" -> effectiveRdBlocks / 2;
-                default -> 64;
-            };
-        }
+    public static void onReload(final ModConfigEvent.Reloading event) {
     }
 }

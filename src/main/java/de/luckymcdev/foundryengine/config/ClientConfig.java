@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.config;
 
 import de.luckymcdev.foundryengine.client.editor.styles.ImThemes;
+import net.minecraft.client.Minecraft;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
@@ -40,10 +41,16 @@ public final class ClientConfig extends EngineConfig {
                     .comment("full -> Uses your render distance.",
                             "half -> Uses Half your render distance",
                             "vanilla -> Uses the vanilla 64 blocks")
-                    .define("BLOCK_ENTITY_RENDER_DISTANCE", "literal");
+                    .define("BLOCK_ENTITY_RENDER_DISTANCE", "vanilla");
 
-    public static int COMPUTED_BLOCK_ENTITY_RENDER_DISTANCE = 8 * 16;
-
+    public static int getComputedBlockEntityRenderDistance() {
+        int effectiveRdBlocks = Minecraft.getInstance().options.getEffectiveRenderDistance() * 16;
+        return switch (BLOCK_ENTITY_RENDER_DISTANCE.get()) {
+            case "full" -> effectiveRdBlocks;
+            case "half" -> effectiveRdBlocks / 2;
+            default     -> 64;
+        };
+    }
     @Override
     public ModConfigSpec spec() {
         return BUILDER.build();

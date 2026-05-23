@@ -88,12 +88,13 @@ public class FoundryEngineMod {
         modBus.addListener(this::clientSetup);
         modBus.addListener(this::dedicatedServerSetup);
         modBus.addListener(this::postInit);
+        modBus.addListener(Config::onLoad);
+        modBus.addListener(Config::onReload);
 
         BUS.addListener(this::onRegisterCommands);
         BUS.addListener(this::onServerAboutToStart);
         BUS.addListener(this::onServerStarted);
         BUS.addListener(this::onServerTick);
-
         BUS.addListener(Common.getAreaManager()::onLevelTick);
         BUS.addListener(Common.getAreaManager()::onLevelLoad);
         BUS.addListener(Common.getAreaManager()::onServerStopping);

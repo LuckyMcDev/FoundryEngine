@@ -1,21 +1,19 @@
 package de.luckymcdev.foundryengine.mixin.render;
 
+import de.luckymcdev.foundryengine.config.ClientConfig;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
 
 @Mixin(BlockEntityRenderer.class)
 public interface BlockEntityRendererMixin {
 
-    /*
-
-    This is currently borked for some reason.
-
     /**
      * @author LuckyMcDev
      * @reason To change the distance Block Entities are rendered.
+     */
     @Overwrite
     default int getViewDistance() {
-        return ClientConfig.COMPUTED_BLOCK_ENTITY_RENDER_DISTANCE;
+        return ClientConfig.getComputedBlockEntityRenderDistance();
     }
-    */
 }
