@@ -23,6 +23,8 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.decoration.Mannequin;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.gamerules.GameRules;
@@ -108,11 +110,8 @@ public class TestCommand implements EngineCommand {
         return 1;
     }
 
-    @Override
-    public LiteralArgumentBuilder<CommandSourceStack> build(CommandBuildContext buildContext) {
-        var root = Commands.literal("test").requires(this::isAdmin);
-
-        root.then(Commands.literal("display")
+    private static LiteralArgumentBuilder<CommandSourceStack> displaySection() {
+        return Commands.literal("display")
                 .then(Commands.literal("block")
                         .executes(ctx -> spawnBlockDisplay(ctx.getSource().getLevel(), ctx.getSource())))
                 .then(Commands.literal("item")
@@ -127,10 +126,12 @@ public class TestCommand implements EngineCommand {
                             ctx.getSource().sendSuccess(
                                     () -> Component.literal("All display entities removed."), false);
                             return 1;
-                        }))
-        );
+                        }));
+    }
 
+    private LiteralArgumentBuilder<CommandSourceStack> worldSection() {
         var world = Commands.literal("world");
+
         world.then(Commands.literal("open")
                 .then(Commands.argument("name", IdentifierArgument.id())
                         .then(Commands.argument("temp", BoolArgumentType.bool())
@@ -233,7 +234,28 @@ public class TestCommand implements EngineCommand {
                 )
         );
 
-        root.then(world);
-        return root;
+        return world;
+    }
+
+    private LiteralArgumentBuilder<CommandSourceStack> fakeSection() {
+        var fake = Commands.literal("fake");
+
+        fake.then(Commands.literal("spawn")
+                .executes(context -> {
+                    Mannequin test = EntitySpawner.spawnServer(context.getSource().getLevel(), EntityType.MANNEQUIN, new Vec3(0, 100,0));
+                    test.setCustomName(Component.literal("supertest"));
+                    return 1;
+                })
+        );
+
+        return fake;
+    }
+
+    @Override
+    public LiteralArgumentBuilder<CommandSourceStack> build(CommandBuildContext buildContext) {
+        return Commands.literal("test").requires(this::isAdmin)
+                .then(displaySection())
+                .then(worldSection())
+                .then(fakeSection());
     }
 }
