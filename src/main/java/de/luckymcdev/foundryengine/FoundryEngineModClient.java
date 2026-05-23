@@ -20,7 +20,6 @@ import de.luckymcdev.foundryengine.client.editor.panel.view.ThemeSelectorPanel;
 import de.luckymcdev.foundryengine.client.event.RegisterRenderingStuffEvent;
 import de.luckymcdev.foundryengine.client.ext.ModPathBroadcaster;
 import de.luckymcdev.foundryengine.client.icons.ScreenIconExporter;
-import de.luckymcdev.foundryengine.client.render.EngineRenderPipelines;
 import de.luckymcdev.foundryengine.client.render.WorldViewMatrix;
 import de.luckymcdev.foundryengine.client.render.entity.EngineEntityRenderers;
 import de.luckymcdev.foundryengine.client.render.obj.ObjModel;
@@ -182,7 +181,7 @@ public class FoundryEngineModClient {
         Client.getWaypointRenderer().renderWaypoints(event);
 
         Matrix4f modelView = WorldViewMatrix.from(event).at(0, 110, 0).scale(2).buildModelView();
-        SUZANNE.renderModel(modelView, EngineRenderPipelines.POSITION_COLOR_NORMAL);
+        //SUZANNE.renderModel(modelView, EngineRenderPipelines.POSITION_COLOR_NORMAL);
     }
 
     private void onClientTick(ClientTickEvent.Post event) {
