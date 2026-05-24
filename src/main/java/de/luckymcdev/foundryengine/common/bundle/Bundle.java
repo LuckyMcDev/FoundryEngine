@@ -37,15 +37,15 @@ public class Bundle {
     }
 
     public void loadCommon(BundleScriptLoader loader) {
-        commonEntrypoints.addAll(loader.loadCommon(bundleFiles, scriptEngineRegistry));
+        commonEntrypoints.addAll(loader.loadCommon(bundleFiles, scriptEngineRegistry, info.id()));
     }
 
     public void loadClient(BundleScriptLoader loader) {
-        clientEntrypoints.addAll(loader.loadClient(bundleFiles, scriptEngineRegistry));
+        clientEntrypoints.addAll(loader.loadClient(bundleFiles, scriptEngineRegistry, info.id()));
     }
 
     public void loadServer(BundleScriptLoader loader) {
-        serverEntrypoints.addAll(loader.loadServer(bundleFiles, scriptEngineRegistry));
+        serverEntrypoints.addAll(loader.loadServer(bundleFiles, scriptEngineRegistry, info.id()));
     }
 
     public List<BundleEntrypoint> entrypoints() {

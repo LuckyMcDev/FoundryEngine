@@ -4,6 +4,8 @@ import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.common.bundle.info.BundleFiles;
 import de.luckymcdev.foundryengine.common.priority.Priority;
 import de.luckymcdev.foundryengine.config.StartupConfig;
+import net.neoforged.fml.ModLoader;
+import net.neoforged.fml.ModLoadingIssue;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -15,20 +17,20 @@ import java.util.function.Function;
 public class BundleScriptLoader {
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    public List<BundleEntrypoint> loadCommon(BundleFiles files, BundleScriptEngineRegistry registry) {
-        return load(files, registry, BundleFiles.ScriptFiles::common, "common");
+    public List<BundleEntrypoint> loadCommon(BundleFiles files, BundleScriptEngineRegistry registry, String bundleId) {
+        return load(files, registry, BundleFiles.ScriptFiles::common, "common", bundleId);
     }
 
-    public List<BundleEntrypoint> loadClient(BundleFiles files, BundleScriptEngineRegistry registry) {
-        return load(files, registry, BundleFiles.ScriptFiles::client, "client");
+    public List<BundleEntrypoint> loadClient(BundleFiles files, BundleScriptEngineRegistry registry, String bundleId) {
+        return load(files, registry, BundleFiles.ScriptFiles::client, "client", bundleId);
     }
 
-    public List<BundleEntrypoint> loadServer(BundleFiles files, BundleScriptEngineRegistry registry) {
-        return load(files, registry, BundleFiles.ScriptFiles::server, "server");
+    public List<BundleEntrypoint> loadServer(BundleFiles files, BundleScriptEngineRegistry registry, String bundleId) {
+        return load(files, registry, BundleFiles.ScriptFiles::server, "server", bundleId);
     }
 
     private List<BundleEntrypoint> load(BundleFiles files, BundleScriptEngineRegistry registry,
-                                        Function<BundleFiles.ScriptFiles, Path> pathGetter, String envName) {
+                                        Function<BundleFiles.ScriptFiles, Path> pathGetter, String envName, String bundleId) {
         List<BundleEntrypoint> entrypoints = new ArrayList<>();
 
         if (!StartupConfig.SCRIPTING_ENABLED.get()) {
@@ -44,14 +46,28 @@ public class BundleScriptLoader {
                 .toList();
 
         for (Path scriptPath : scriptPaths) {
+            BundleEntrypoint entrypoint = null;
+            String filename = scriptPath.getFileName().toString();
+
             try {
-                BundleEntrypoint entrypoint = loadScriptClass(scriptPath, files, registry);
-                if (entrypoint != null) {
-                    entrypoints.add(entrypoint);
-                    entrypoint.onLoad();
-                }
+                entrypoint = loadScriptClass(scriptPath, files, registry);
             } catch (Exception e) {
-                LOGGER.error("Failed to load {} script '{}'", envName, scriptPath.getFileName(), e);
+                LOGGER.error("Failed to compile {} script '{}' for bundle '{}'", envName, filename, bundleId, e);
+                ModLoadingIssue issue = ModLoadingIssue.error(String.format(
+                        "Failed to compile %s script '%s' for bundle '%s': %s", envName, filename, bundleId, e.getMessage()));
+                ModLoader.addLoadingIssue(issue);
+            }
+
+            if (entrypoint != null) {
+                entrypoints.add(entrypoint);
+                try {
+                    entrypoint.onLoad();
+                } catch (Exception e) {
+                    LOGGER.error("Failed to run onLoad for {} script '{}' in bundle '{}'", envName, filename, bundleId, e);
+                    ModLoadingIssue issue = ModLoadingIssue.error(String.format(
+                            "Failed to run onLoad for %s script '%s' in bundle '%s': %s", envName, filename, bundleId, e.getMessage()));
+                    ModLoader.addLoadingIssue(issue);
+                }
             }
         }
 

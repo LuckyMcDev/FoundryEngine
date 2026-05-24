@@ -56,6 +56,9 @@ public class BundleDiscovery {
                     }
                 } catch (Exception e) {
                     LOGGER.error("Failed to scan bundle path: {}", path, e);
+                    ModLoadingIssue issue = ModLoadingIssue.error(String.format(
+                            "Failed to scan bundle path '%s': %s", path.getFileName(), e.getMessage()));
+                    ModLoader.addLoadingIssue(issue);
                 }
             }
         }
@@ -173,8 +176,11 @@ public class BundleDiscovery {
             Bundle bundle = bundleFactory.createBundle(info, bundleDir, zipFs);
             discoveredBundles.put(info.id(), info);
             bundleConsumer.accept(bundle);
-        } catch (IOException e) {
+        } catch (Exception e) {
             LOGGER.error("Failed to create bundle '{}': {}", info.id(), e.getMessage(), e);
+            ModLoadingIssue issue = ModLoadingIssue.error(String.format(
+                    "Failed to create bundle '%s': %s", info.id(), e.getMessage()));
+            ModLoader.addLoadingIssue(issue);
         }
     }
 

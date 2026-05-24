@@ -8,6 +8,8 @@ import de.luckymcdev.foundryengine.common.script.BundleScriptLoader;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModLoader;
+import net.neoforged.fml.ModLoadingIssue;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -54,7 +56,14 @@ public class BundleManager implements ResourceManagerReloadListener {
      */
     public void loadClientScripts() {
         for (Bundle bundle : bundles.values()) {
-            bundle.loadClient(scriptLoader);
+            try {
+                bundle.loadClient(scriptLoader);
+            } catch (Exception e) {
+                LOGGER.error("Failed to load client scripts for bundle '{}'", bundle.info().id(), e);
+                ModLoadingIssue issue = ModLoadingIssue.error(String.format(
+                        "Failed to load client scripts for bundle '%s': %s", bundle.info().id(), e.getMessage()));
+                ModLoader.addLoadingIssue(issue);
+            }
         }
     }
 
@@ -64,7 +73,14 @@ public class BundleManager implements ResourceManagerReloadListener {
      */
     public void loadServerScripts() {
         for (Bundle bundle : bundles.values()) {
-            bundle.loadServer(scriptLoader);
+            try {
+                bundle.loadServer(scriptLoader);
+            } catch (Exception e) {
+                LOGGER.error("Failed to load server scripts for bundle '{}'", bundle.info().id(), e);
+                ModLoadingIssue issue = ModLoadingIssue.error(String.format(
+                        "Failed to load server scripts for bundle '%s': %s", bundle.info().id(), e.getMessage()));
+                ModLoader.addLoadingIssue(issue);
+            }
         }
     }
 
@@ -125,6 +141,8 @@ public class BundleManager implements ResourceManagerReloadListener {
             discover(Common.BUNDLES);
         } catch (IOException e) {
             LOGGER.error("Failed to reload bundles", e);
+            ModLoadingIssue issue = ModLoadingIssue.error("Failed to reload bundles: " + e.getMessage());
+            ModLoader.addLoadingIssue(issue);
         }
 
         loadServerScripts();
