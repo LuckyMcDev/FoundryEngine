@@ -1,8 +1,10 @@
 package de.luckymcdev.foundryengine.common.event;
 
 import com.mojang.logging.LogUtils;
+import net.minecraft.network.chat.Component;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.ModLoadingIssue;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.slf4j.Logger;
 
 import java.util.List;
@@ -23,9 +25,15 @@ public class EventGroup<T> {
                 listener.execute(event);
             } catch (Exception e) {
                 LOGGER.error("Uncaught error in event callback", e);
-                ModLoadingIssue issue = ModLoadingIssue.error(
-                        "Uncaught error in event callback: " + e.getMessage());
-                ModLoader.addLoadingIssue(issue);
+                var server = ServerLifecycleHooks.getCurrentServer();
+                if (server != null) {
+                    server.getPlayerList().broadcastSystemMessage(
+                            Component.literal("§c[Script Error] Event callback: " + e), false);
+                } else {
+                    ModLoadingIssue issue = ModLoadingIssue.error(
+                            "Uncaught error in event callback: " + e);
+                    ModLoader.addLoadingIssue(issue);
+                }
             }
         }
     }

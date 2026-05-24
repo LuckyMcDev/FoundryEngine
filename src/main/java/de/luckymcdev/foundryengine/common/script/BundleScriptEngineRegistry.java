@@ -2,6 +2,8 @@ package de.luckymcdev.foundryengine.common.script;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.common.bundle.info.BundleFiles;
+import de.luckymcdev.foundryengine.server.Server;
+import net.minecraft.network.chat.Component;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.ModLoadingIssue;
 import org.slf4j.Logger;
@@ -34,6 +36,9 @@ public class BundleScriptEngineRegistry {
                 ModLoadingIssue issue = ModLoadingIssue.error(String.format(
                         "Failed to initialize %s script engine: %s", engine.fileExtension(), e.getMessage()));
                 ModLoader.addLoadingIssue(issue);
+                if (Server.getServer() != null) {
+                    Server.getServer().getPlayerList().broadcastSystemMessage(Component.literal("§c[Script Error] Engine '" + engine.fileExtension() + "' initialization: " + e), false);
+                }
             }
         }
     }

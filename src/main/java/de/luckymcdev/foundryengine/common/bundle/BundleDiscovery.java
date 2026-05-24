@@ -5,6 +5,8 @@ import de.luckymcdev.foundryengine.common.bundle.info.BundleDependency;
 import de.luckymcdev.foundryengine.common.bundle.info.BundleInfo;
 import de.luckymcdev.foundryengine.common.bundle.toml.BundleTomlParser;
 import de.luckymcdev.foundryengine.common.exceptions.EngineException;
+import de.luckymcdev.foundryengine.server.Server;
+import net.minecraft.network.chat.Component;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.ModLoadingIssue;
@@ -59,6 +61,9 @@ public class BundleDiscovery {
                     ModLoadingIssue issue = ModLoadingIssue.error(String.format(
                             "Failed to scan bundle path '%s': %s", path.getFileName(), e.getMessage()));
                     ModLoader.addLoadingIssue(issue);
+                    if (Server.getServer() != null) {
+                        Server.getServer().getPlayerList().broadcastSystemMessage(Component.literal("§c[Script Error] Bundle discovery '" + path.getFileName() + "': " + e), false);
+                    }
                 }
             }
         }
@@ -180,7 +185,7 @@ public class BundleDiscovery {
             LOGGER.error("Failed to create bundle '{}': {}", info.id(), e.getMessage(), e);
             ModLoadingIssue issue = ModLoadingIssue.error(String.format(
                     "Failed to create bundle '%s': %s", info.id(), e.getMessage()));
-            ModLoader.addLoadingIssue(issue);
+            Server.getServer().getPlayerList().broadcastSystemMessage(Component.literal("§c[Script Error] " + issue), false);
         }
     }
 
@@ -212,9 +217,8 @@ public class BundleDiscovery {
                         dep.version(),
                         currentVersionStr.equals("missing") ? "missing" : "version " + currentVersionStr
                 );
-
                 ModLoadingIssue issue = ModLoadingIssue.error(errorMsg);
-                ModLoader.addLoadingIssue(issue);
+                Server.getServer().getPlayerList().broadcastSystemMessage(Component.literal("§c[Script Error] " + issue), false);
             }
         }
     }

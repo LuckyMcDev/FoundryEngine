@@ -5,6 +5,8 @@ import de.luckymcdev.foundryengine.api.event.*;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.registry.GenericRegistry;
 import de.luckymcdev.foundryengine.common.script.BundleScriptLoader;
+import de.luckymcdev.foundryengine.server.Server;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.neoforged.bus.api.IEventBus;
@@ -63,6 +65,9 @@ public class BundleManager implements ResourceManagerReloadListener {
                 ModLoadingIssue issue = ModLoadingIssue.error(String.format(
                         "Failed to load client scripts for bundle '%s': %s", bundle.info().id(), e.getMessage()));
                 ModLoader.addLoadingIssue(issue);
+                if (Server.getServer() != null) {
+                    Server.getServer().getPlayerList().broadcastSystemMessage(Component.literal("§c[Script Error] Bundle '" + bundle.info().id() + "' client scripts: " + e), false);
+                }
             }
         }
     }
@@ -80,6 +85,9 @@ public class BundleManager implements ResourceManagerReloadListener {
                 ModLoadingIssue issue = ModLoadingIssue.error(String.format(
                         "Failed to load server scripts for bundle '%s': %s", bundle.info().id(), e.getMessage()));
                 ModLoader.addLoadingIssue(issue);
+                if (Server.getServer() != null) {
+                    Server.getServer().getPlayerList().broadcastSystemMessage(Component.literal("§c[Script Error] Bundle '" + bundle.info().id() + "' server scripts: " + e), false);
+                }
             }
         }
     }
@@ -143,6 +151,9 @@ public class BundleManager implements ResourceManagerReloadListener {
             LOGGER.error("Failed to reload bundles", e);
             ModLoadingIssue issue = ModLoadingIssue.error("Failed to reload bundles: " + e.getMessage());
             ModLoader.addLoadingIssue(issue);
+            if (Server.getServer() != null) {
+                Server.getServer().getPlayerList().broadcastSystemMessage(Component.literal("§c[Script Error] Bundle reload: " + e), false);
+            }
         }
 
         loadServerScripts();

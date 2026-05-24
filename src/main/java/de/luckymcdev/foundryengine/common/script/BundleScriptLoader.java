@@ -4,6 +4,8 @@ import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.common.bundle.info.BundleFiles;
 import de.luckymcdev.foundryengine.common.priority.Priority;
 import de.luckymcdev.foundryengine.config.StartupConfig;
+import de.luckymcdev.foundryengine.server.Server;
+import net.minecraft.network.chat.Component;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.ModLoadingIssue;
 import org.jetbrains.annotations.Nullable;
@@ -56,6 +58,9 @@ public class BundleScriptLoader {
                 ModLoadingIssue issue = ModLoadingIssue.error(String.format(
                         "Failed to compile %s script '%s' for bundle '%s': %s", envName, filename, bundleId, e.getMessage()));
                 ModLoader.addLoadingIssue(issue);
+                if (Server.getServer() != null) {
+                    Server.getServer().getPlayerList().broadcastSystemMessage(Component.literal("§c[Script Error] Compile " + envName + " script '" + filename + "' for bundle '" + bundleId + "': " + e), false);
+                }
             }
 
             if (entrypoint != null) {
@@ -67,6 +72,9 @@ public class BundleScriptLoader {
                     ModLoadingIssue issue = ModLoadingIssue.error(String.format(
                             "Failed to run onLoad for %s script '%s' in bundle '%s': %s", envName, filename, bundleId, e.getMessage()));
                     ModLoader.addLoadingIssue(issue);
+                    if (Server.getServer() != null) {
+                        Server.getServer().getPlayerList().broadcastSystemMessage(Component.literal("§c[Script Error] onLoad " + envName + " script '" + filename + "' for bundle '" + bundleId + "': " + e), false);
+                    }
                 }
             }
         }
