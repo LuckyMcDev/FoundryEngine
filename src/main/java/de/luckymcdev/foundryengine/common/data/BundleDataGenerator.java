@@ -62,11 +62,11 @@ public class BundleDataGenerator {
 
     public static void runAll() {
         for (Bundle bundle : Common.getBundleManager().getBundles()) {
-            run(bundle.info().id());
+            run(bundle);
         }
     }
 
-    public static void run(String bundleId) {
+    public static void run(Bundle bundle) {
         EngineDataGenerator gen = new EngineDataGenerator(Common.TEMP_DIR.resolve("bundles"));
 
         LayeredRegistryAccess<RegistryLayer> layeredAccess = RegistryLayer.createRegistryAccess();
@@ -85,33 +85,35 @@ public class BundleDataGenerator {
                     pOut,
                     lookupProvider,
                     List.of(
-                            new EngineAdvancementSubProvider()
-                    )
+                            new EngineAdvancementSubProvider(bundle)
+                    ),
+                    bundle
             ));
             gen.addProvider(new EngineLootTableProvider(
                     pOut,
                     Set.of(),
                     List.of(
                             new LootTableProvider.SubProviderEntry(
-                                    EngineLootTableSubProvider::new,
+                                    registries -> new EngineLootTableSubProvider(bundle, registries),
                                     LootContextParamSets.BLOCK
                             )
                     ),
-                    lookupProvider
+                    lookupProvider,
+                    bundle
             ));
-            gen.addProvider(new EngineRecipeProvider.Runner(pOut, lookupProvider, bundleId));
-            gen.addProvider(new EngineRecipePrioritiesProvider(pOut, lookupProvider, bundleId));
-            gen.addProvider(new EngineBlockTagsProvider(pOut, lookupProvider, bundleId));
-            gen.addProvider(new EngineItemTagsProvider(pOut, lookupProvider, bundleId));
-            gen.addProvider(new EngineGlobalLootModifierProvider(pOut, lookupProvider, bundleId));
+            gen.addProvider(new EngineRecipeProvider.Runner(pOut, lookupProvider, bundle));
+            gen.addProvider(new EngineRecipePrioritiesProvider(pOut, lookupProvider, bundle));
+            gen.addProvider(new EngineBlockTagsProvider(pOut, lookupProvider, bundle));
+            gen.addProvider(new EngineItemTagsProvider(pOut, lookupProvider, bundle));
+            gen.addProvider(new EngineGlobalLootModifierProvider(pOut, lookupProvider, bundle));
 
 
             // Client
-            gen.addProvider(new EngineLanguageProvider(pOut, bundleId, "en_us"));
-            gen.addProvider(new EngineModelProvider(pOut, bundleId));
-            gen.addProvider(new EngineEquipmentAssetProvider(pOut));
-            gen.addProvider(new EngineParticleDescriptionProvider(pOut));
-            gen.addProvider(new EngineSoundDefinitionsProvider(pOut, bundleId));
+            gen.addProvider(new EngineLanguageProvider(pOut,"en_us", bundle));
+            gen.addProvider(new EngineModelProvider(pOut, bundle));
+            gen.addProvider(new EngineEquipmentAssetProvider(pOut, bundle));
+            gen.addProvider(new EngineParticleDescriptionProvider(pOut, bundle));
+            gen.addProvider(new EngineSoundDefinitionsProvider(pOut, bundle));
 
 
             gen.run();

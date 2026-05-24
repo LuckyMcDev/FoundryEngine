@@ -1,8 +1,8 @@
 package de.luckymcdev.foundryengine.common.data.providers.client;
 
-import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.bundle.Bundle;
 import de.luckymcdev.foundryengine.common.bundle.registry.BundleRegistryQuery;
+import de.luckymcdev.foundryengine.common.data.providers.EngineProviderExtension;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.Identifier;
@@ -10,12 +10,12 @@ import net.neoforged.neoforge.common.data.LanguageProvider;
 
 import java.util.Locale;
 
-public class EngineLanguageProvider extends LanguageProvider {
-    private final String bundleId;
+public class EngineLanguageProvider extends LanguageProvider implements EngineProviderExtension {
+    private final Bundle bundle;
 
-    public EngineLanguageProvider(PackOutput output, String modid, String locale) {
-        super(output, modid, locale);
-        this.bundleId = modid;
+    public EngineLanguageProvider(PackOutput output, String locale, Bundle bundle) {
+        super(output, bundle.info().id(), locale);
+        this.bundle = bundle;
     }
 
     private static String formatTitleCase(String input) {
@@ -33,8 +33,12 @@ public class EngineLanguageProvider extends LanguageProvider {
     }
 
     @Override
+    public Bundle bundle() {
+        return bundle;
+    }
+
+    @Override
     protected void addTranslations() {
-        Bundle bundle = Common.getBundleManager().getBundle(bundleId);
         BundleRegistryQuery query = bundle.registryQuery();
 
         query.getBlocks().forEach(block -> {

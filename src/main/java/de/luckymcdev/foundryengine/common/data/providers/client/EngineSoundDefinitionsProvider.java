@@ -1,26 +1,30 @@
 package de.luckymcdev.foundryengine.common.data.providers.client;
 
 import de.luckymcdev.foundryengine.api.event.registry.RegistryEvent;
-import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.builder.sound.SoundBuilderImpl;
 import de.luckymcdev.foundryengine.common.bundle.Bundle;
 import de.luckymcdev.foundryengine.common.bundle.registry.BundleRegistryQuery;
+import de.luckymcdev.foundryengine.common.data.providers.EngineProviderExtension;
 import net.minecraft.data.PackOutput;
 import net.minecraft.sounds.SoundEvent;
 import net.neoforged.neoforge.common.data.SoundDefinition;
 import net.neoforged.neoforge.common.data.SoundDefinitionsProvider;
 
-public class EngineSoundDefinitionsProvider extends SoundDefinitionsProvider {
-    private final String bundleId;
+public class EngineSoundDefinitionsProvider extends SoundDefinitionsProvider implements EngineProviderExtension {
+    private final Bundle bundle;
 
-    public EngineSoundDefinitionsProvider(PackOutput output, String modId) {
-        super(output, modId);
-        this.bundleId = modId;
+    public EngineSoundDefinitionsProvider(PackOutput output, Bundle bundle) {
+        super(output, bundle.info().id());
+        this.bundle = bundle;
+    }
+
+    @Override
+    public Bundle bundle() {
+        return bundle;
     }
 
     @Override
     public void registerSounds() {
-        Bundle bundle = Common.getBundleManager().getBundle(bundleId);
         BundleRegistryQuery query = bundle.registryQuery();
 
         for (SoundEvent sound : query.getSoundEvents()) {

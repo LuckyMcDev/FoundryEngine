@@ -1,8 +1,8 @@
 package de.luckymcdev.foundryengine.common.data.providers.client;
 
-import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.bundle.Bundle;
 import de.luckymcdev.foundryengine.common.bundle.registry.BundleRegistryQuery;
+import de.luckymcdev.foundryengine.common.data.providers.EngineProviderExtension;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.client.data.models.ModelProvider;
@@ -12,17 +12,21 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 
-public class EngineModelProvider extends ModelProvider {
-    private final String bundleId;
+public class EngineModelProvider extends ModelProvider implements EngineProviderExtension {
+    private final Bundle bundle;
 
-    public EngineModelProvider(PackOutput output, String modId) {
-        super(output, modId);
-        this.bundleId = modId;
+    public EngineModelProvider(PackOutput output, Bundle bundle) {
+        super(output, bundle.info().id());
+        this.bundle = bundle;
+    }
+
+    @Override
+    public Bundle bundle() {
+        return bundle;
     }
 
     @Override
     public void registerModels(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
-        Bundle bundle = Common.getBundleManager().getBundle(bundleId);
         BundleRegistryQuery query = bundle.registryQuery();
 
         for (Block block : query.getBlocks()) {
