@@ -37,7 +37,8 @@ public class BundleScriptEngineRegistry {
                         "Failed to initialize %s script engine: %s", engine.fileExtension(), e.getMessage()));
                 ModLoader.addLoadingIssue(issue);
                 if (Server.getServer() != null) {
-                    Server.getServer().getPlayerList().broadcastSystemMessage(Component.literal("§c[Script Error] Engine '" + engine.fileExtension() + "' initialization: " + e), false);
+                    String loc = e.getStackTrace().length > 0 ? " (" + e.getStackTrace()[0].getFileName() + ":" + e.getStackTrace()[0].getLineNumber() + ")" : "";
+                    Server.getServer().getPlayerList().broadcastSystemMessage(Component.literal("§c[Script Error] Engine '" + engine.fileExtension() + "' initialization: " + e + loc), false);
                 }
             }
         }

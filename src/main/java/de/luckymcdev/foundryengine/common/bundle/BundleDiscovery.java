@@ -62,7 +62,8 @@ public class BundleDiscovery {
                             "Failed to scan bundle path '%s': %s", path.getFileName(), e.getMessage()));
                     ModLoader.addLoadingIssue(issue);
                     if (Server.getServer() != null) {
-                        Server.getServer().getPlayerList().broadcastSystemMessage(Component.literal("§c[Script Error] Bundle discovery '" + path.getFileName() + "': " + e), false);
+                        String loc = e.getStackTrace().length > 0 ? " (" + e.getStackTrace()[0].getFileName() + ":" + e.getStackTrace()[0].getLineNumber() + ")" : "";
+                        Server.getServer().getPlayerList().broadcastSystemMessage(Component.literal("§c[Script Error] Bundle discovery '" + path.getFileName() + "': " + e + loc), false);
                     }
                 }
             }

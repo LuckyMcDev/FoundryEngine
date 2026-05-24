@@ -66,7 +66,8 @@ public class BundleManager implements ResourceManagerReloadListener {
                         "Failed to load client scripts for bundle '%s': %s", bundle.info().id(), e.getMessage()));
                 ModLoader.addLoadingIssue(issue);
                 if (Server.getServer() != null) {
-                    Server.getServer().getPlayerList().broadcastSystemMessage(Component.literal("§c[Script Error] Bundle '" + bundle.info().id() + "' client scripts: " + e), false);
+                    String loc = e.getStackTrace().length > 0 ? " (" + e.getStackTrace()[0].getFileName() + ":" + e.getStackTrace()[0].getLineNumber() + ")" : "";
+                    Server.getServer().getPlayerList().broadcastSystemMessage(Component.literal("§c[Script Error] Bundle '" + bundle.info().id() + "' client scripts: " + e + loc), false);
                 }
             }
         }
@@ -86,7 +87,8 @@ public class BundleManager implements ResourceManagerReloadListener {
                         "Failed to load server scripts for bundle '%s': %s", bundle.info().id(), e.getMessage()));
                 ModLoader.addLoadingIssue(issue);
                 if (Server.getServer() != null) {
-                    Server.getServer().getPlayerList().broadcastSystemMessage(Component.literal("§c[Script Error] Bundle '" + bundle.info().id() + "' server scripts: " + e), false);
+                    String loc = e.getStackTrace().length > 0 ? " (" + e.getStackTrace()[0].getFileName() + ":" + e.getStackTrace()[0].getLineNumber() + ")" : "";
+                    Server.getServer().getPlayerList().broadcastSystemMessage(Component.literal("§c[Script Error] Bundle '" + bundle.info().id() + "' server scripts: " + e + loc), false);
                 }
             }
         }
@@ -152,7 +154,8 @@ public class BundleManager implements ResourceManagerReloadListener {
             ModLoadingIssue issue = ModLoadingIssue.error("Failed to reload bundles: " + e.getMessage());
             ModLoader.addLoadingIssue(issue);
             if (Server.getServer() != null) {
-                Server.getServer().getPlayerList().broadcastSystemMessage(Component.literal("§c[Script Error] Bundle reload: " + e), false);
+                String loc = e.getStackTrace().length > 0 ? " (" + e.getStackTrace()[0].getFileName() + ":" + e.getStackTrace()[0].getLineNumber() + ")" : "";
+                Server.getServer().getPlayerList().broadcastSystemMessage(Component.literal("§c[Script Error] Bundle reload: " + e + loc), false);
             }
         }
 
