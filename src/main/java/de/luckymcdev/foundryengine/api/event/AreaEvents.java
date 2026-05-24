@@ -7,15 +7,9 @@ import net.neoforged.bus.api.IEventBus;
 import org.jetbrains.annotations.ApiStatus;
 
 public class AreaEvents {
-
-    private static final EventGroupHolder<AreaEvent.AreaEnterEvent> AREA_ENTER =
-            new EventGroupHolder<>();
-
-    private static final EventGroupHolder<AreaEvent.AreaLeaveEvent> AREA_LEAVE =
-            new EventGroupHolder<>();
-
-    private static final EventGroupHolder<AreaEvent.AreaTickEvent> AREA_TICK =
-            new EventGroupHolder<>();
+    private static final EventGroupHolder<AreaEvent.AreaEnterEvent> AREA_ENTER = new EventGroupHolder<>();
+    private static final EventGroupHolder<AreaEvent.AreaLeaveEvent> AREA_LEAVE = new EventGroupHolder<>();
+    private static final EventGroupHolder<AreaEvent.AreaTickEvent> AREA_TICK = new EventGroupHolder<>();
 
     public static void areaEnter(EventCallback<AreaEvent.AreaEnterEvent> cb) {
         AREA_ENTER.register(cb);
