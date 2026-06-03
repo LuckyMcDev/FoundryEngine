@@ -28,6 +28,7 @@ public class BlockBuilderImpl implements BlockBuilder {
     private BlockBehaviour.Properties properties;
     private Function<BlockBehaviour.Properties, Block> blockFactory;
     private boolean hasItem = true;
+    private boolean generateData = true;
     private UnaryOperator<Item.Properties> itemPropertyModifier = p -> p;
     private @Nullable Block object;
 
@@ -251,6 +252,17 @@ public class BlockBuilderImpl implements BlockBuilder {
      */
     <C> BlockBuilder callback(EngineItem.CallbackType type, C cb) {
         itemCallbacks.put(type, cb);
+        return this;
+    }
+
+    @Override
+    public boolean shouldGenerateData() {
+        return generateData;
+    }
+
+    @Override
+    public BlockBuilder generateData(boolean generate) {
+        this.generateData = generate;
         return this;
     }
 }

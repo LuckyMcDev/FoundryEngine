@@ -1,21 +1,29 @@
 package de.luckymcdev.foundryengine.common.data.providers.client;
 
-import de.luckymcdev.foundryengine.common.bundle.Bundle;
-import de.luckymcdev.foundryengine.common.bundle.registry.BundleRegistryQuery;
-import de.luckymcdev.foundryengine.common.data.providers.EngineProviderExtension;
+import de.luckymcdev.foundryengine.api.builder.block.BlockBuilder;
+import de.luckymcdev.foundryengine.api.builder.item.ItemBuilder;
+import de.luckymcdev.foundryengine.common.builder.sound.SoundBuilderImpl;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.BlockItem;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 
+import java.util.List;
 import java.util.Locale;
 
-public class EngineLanguageProvider extends LanguageProvider implements EngineProviderExtension {
-    private final Bundle bundle;
+public class EngineLanguageProvider extends LanguageProvider {
+    private final String namespace;
+    private final List<BlockBuilder> blockBuilders;
+    private final List<ItemBuilder> itemBuilders;
+    private final List<SoundBuilderImpl> soundBuilders;
 
-    public EngineLanguageProvider(PackOutput output, String locale, Bundle bundle) {
-        super(output, bundle.info().id(), locale);
-        this.bundle = bundle;
+    public EngineLanguageProvider(PackOutput output, String locale, String namespace, List<BlockBuilder> blockBuilders, List<ItemBuilder> itemBuilders, List<SoundBuilderImpl> soundBuilders) {
+        super(output, namespace, locale);
+        this.namespace = namespace;
+        this.blockBuilders = blockBuilders;
+        this.itemBuilders = itemBuilders;
+        this.soundBuilders = soundBuilders;
     }
 
     private static String formatTitleCase(String input) {
@@ -33,56 +41,57 @@ public class EngineLanguageProvider extends LanguageProvider implements EnginePr
     }
 
     @Override
-    public Bundle bundle() {
-        return bundle;
-    }
-
-    @Override
     protected void addTranslations() {
-        BundleRegistryQuery query = bundle.registryQuery();
+        for (BlockBuilder builder : blockBuilders) {
+            add(builder.get(), formatTitleCase(builder.getId().getPath()));
+            if (builder.hasItem()) {
+                add(builder.get().asItem(), formatTitleCase(builder.getId().getPath()));
+            }
+        }
 
-        query.getBlocks().forEach(block -> {
-            Identifier id = BuiltInRegistries.BLOCK.getKey(block);
-            add(block, formatTitleCase(id.getPath()));
-        });
+        for (ItemBuilder builder : itemBuilders) {
+            var item = builder.get();
+            if (item instanceof BlockItem) continue;
+            add(item, formatTitleCase(builder.getId().getPath()));
+        }
 
-        query.getItems().forEach(item -> {
-            Identifier id = BuiltInRegistries.ITEM.getKey(item);
-            add(item, formatTitleCase(id.getPath()));
-        });
+        for (var type : BuiltInRegistries.ENTITY_TYPE) {
+            Identifier id = BuiltInRegistries.ENTITY_TYPE.getKey(type);
+            if (!id.getNamespace().equals(namespace)) continue;
+            add(type, formatTitleCase(id.getPath()));
+        }
 
-        query.getEntityTypes().forEach(entityType -> {
-            Identifier id = BuiltInRegistries.ENTITY_TYPE.getKey(entityType);
-            add(entityType, formatTitleCase(id.getPath()));
-        });
-
-        query.getMobEffects().forEach(effect -> {
+        for (var effect : BuiltInRegistries.MOB_EFFECT) {
             Identifier id = BuiltInRegistries.MOB_EFFECT.getKey(effect);
+            if (!id.getNamespace().equals(namespace)) continue;
             add(effect, formatTitleCase(id.getPath()));
-        });
+        }
 
-        query.creativeModeTabs().forEach(tab -> {
+        for (var tab : BuiltInRegistries.CREATIVE_MODE_TAB) {
             Identifier id = BuiltInRegistries.CREATIVE_MODE_TAB.getKey(tab);
+            if (!id.getNamespace().equals(namespace)) continue;
             add("itemGroup." + id.getNamespace() + "." + id.getPath(), formatTitleCase(id.getPath()));
-        });
+        }
 
-        query.getFluids().forEach(fluid -> {
+        for (var fluid : BuiltInRegistries.FLUID) {
             Identifier id = BuiltInRegistries.FLUID.getKey(fluid);
+            if (!id.getNamespace().equals(namespace)) continue;
             add("fluid." + id.getNamespace() + "." + id.getPath(), formatTitleCase(id.getPath()));
-        });
+        }
 
-        query.getPotions().forEach(potion -> {
+        for (var potion : BuiltInRegistries.POTION) {
             Identifier id = BuiltInRegistries.POTION.getKey(potion);
+            if (!id.getNamespace().equals(namespace)) continue;
             String name = formatTitleCase(id.getPath());
             add("item.minecraft.potion.effect." + id.getPath(), name);
             add("item.minecraft.splash_potion.effect." + id.getPath(), name);
             add("item.minecraft.lingering_potion.effect." + id.getPath(), name);
             add("item.minecraft.tipped_arrow.effect." + id.getPath(), name);
-        });
+        }
 
-        query.getSoundEvents().forEach(sound -> {
-            Identifier id = sound.location();
+        for (SoundBuilderImpl builder : soundBuilders) {
+            Identifier id = builder.getId();
             add("sound_event." + id.getNamespace() + "." + id.getPath(), formatTitleCase(id.getPath()));
-        });
+        }
     }
 }

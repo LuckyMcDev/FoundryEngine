@@ -17,7 +17,6 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.registries.RegisterEvent;
-import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 
 import java.util.*;
@@ -40,9 +39,28 @@ public class RegistryEvent extends Event implements IModBusEvent {
     }
 
     @Nullable
-    @ApiStatus.Internal
     public static SoundBuilderImpl getSoundBuilder(Identifier id) {
         return SOUND_BUILDERS.get(id);
+    }
+
+    public static Collection<ItemBuilder> getItemBuilders() {
+        return Collections.unmodifiableCollection(ITEM_BUILDERS.values());
+    }
+
+    public static Collection<BlockBuilder> getBlockBuilders() {
+        return Collections.unmodifiableCollection(BLOCK_BUILDERS.values());
+    }
+
+    public static Collection<RecipeBuilder> getRecipeBuilders() {
+        return Collections.unmodifiableCollection(RECIPE_BUILDERS.values());
+    }
+
+    public static Collection<ParticleBuilderImpl> getParticleBuilders() {
+        return Collections.unmodifiableCollection(PARTICLE_BUILDERS.values());
+    }
+
+    public static Collection<SoundBuilderImpl> getSoundBuilders() {
+        return Collections.unmodifiableCollection(SOUND_BUILDERS.values());
     }
 
     public void items(ItemBuilder... builders) {

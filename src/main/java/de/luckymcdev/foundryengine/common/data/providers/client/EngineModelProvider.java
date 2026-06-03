@@ -1,42 +1,37 @@
 package de.luckymcdev.foundryengine.common.data.providers.client;
 
-import de.luckymcdev.foundryengine.common.bundle.Bundle;
-import de.luckymcdev.foundryengine.common.bundle.registry.BundleRegistryQuery;
-import de.luckymcdev.foundryengine.common.data.providers.EngineProviderExtension;
+import de.luckymcdev.foundryengine.api.builder.block.BlockBuilder;
+import de.luckymcdev.foundryengine.api.builder.item.ItemBuilder;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.client.data.models.ModelProvider;
 import net.minecraft.client.data.models.model.ModelTemplates;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.Block;
 
-public class EngineModelProvider extends ModelProvider implements EngineProviderExtension {
-    private final Bundle bundle;
+import java.util.List;
 
-    public EngineModelProvider(PackOutput output, Bundle bundle) {
-        super(output, bundle.info().id());
-        this.bundle = bundle;
-    }
+public class EngineModelProvider extends ModelProvider {
+    private final String namespace;
+    private final List<BlockBuilder> blockBuilders;
+    private final List<ItemBuilder> itemBuilders;
 
-    @Override
-    public Bundle bundle() {
-        return bundle;
+    public EngineModelProvider(PackOutput output, String namespace, List<BlockBuilder> blockBuilders, List<ItemBuilder> itemBuilders) {
+        super(output, namespace);
+        this.namespace = namespace;
+        this.blockBuilders = blockBuilders;
+        this.itemBuilders = itemBuilders;
     }
 
     @Override
     public void registerModels(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
-        BundleRegistryQuery query = bundle.registryQuery();
-
-        for (Block block : query.getBlocks()) {
-            blockModels.createTrivialCube(block);
+        for (BlockBuilder builder : blockBuilders) {
+            blockModels.createTrivialCube(builder.get());
         }
 
-        for (Item item : query.getItems()) {
-            if (item instanceof BlockItem bi && query.getBlocks().contains(bi.getBlock())) {
-                continue;
-            }
+        for (ItemBuilder builder : itemBuilders) {
+            var item = builder.get();
+            if (item instanceof BlockItem) continue;
             itemModels.generateFlatItem(item, ModelTemplates.FLAT_ITEM);
         }
     }

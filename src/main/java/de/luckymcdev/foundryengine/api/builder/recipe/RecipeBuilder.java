@@ -341,6 +341,14 @@ public interface RecipeBuilder extends BuilderBase<RecipeResult> {
     RecipeBuilder template(Ingredient ingredient);
 
     /**
+     * Sets whether data should be auto-generated for this builder.
+     *
+     * @param generate true to generate data, false to skip
+     * @return This builder for chaining
+     */
+    RecipeBuilder generateData(boolean generate);
+
+    /**
      * Registers this recipe using the provided helper.
      *
      * @param helper The register event helper

@@ -1,7 +1,12 @@
 package de.luckymcdev.foundryengine.common.data;
 
 import com.mojang.logging.LogUtils;
+import de.luckymcdev.foundryengine.api.builder.block.BlockBuilder;
+import de.luckymcdev.foundryengine.api.builder.item.ItemBuilder;
+import de.luckymcdev.foundryengine.api.builder.recipe.RecipeBuilder;
+import de.luckymcdev.foundryengine.api.event.registry.RegistryEvent;
 import de.luckymcdev.foundryengine.common.Common;
+import de.luckymcdev.foundryengine.common.builder.sound.SoundBuilderImpl;
 import de.luckymcdev.foundryengine.common.bundle.Bundle;
 import de.luckymcdev.foundryengine.common.data.providers.client.*;
 import de.luckymcdev.foundryengine.common.data.providers.server.EngineGlobalLootModifierProvider;
@@ -31,26 +36,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 
-/**
- *
- * Server:
- * {@link net.minecraft.data.advancements.AdvancementProvider} / {@link net.minecraft.data.advancements.AdvancementSubProvider}
- * {@link net.minecraft.data.loot.LootTableProvider} / {@link net.minecraft.data.loot.LootTableSubProvider}
- * {@link net.minecraft.data.recipes.RecipeProvider}
- * {@link net.neoforged.neoforge.common.data.RecipePrioritiesProvider}
- * {@link net.neoforged.neoforge.common.data.BlockTagsProvider} {@link net.neoforged.neoforge.common.data.ItemTagsProvider} {@link net.minecraft.data.tags.IntrinsicHolderTagsProvider}
- * {@link net.neoforged.neoforge.common.data.GlobalLootModifierProvider}
- * {@link net.neoforged.neoforge.common.data.JsonCodecProvider}
- * <p>
- * Client:
- * {@link net.neoforged.neoforge.common.data.LanguageProvider}
- * {@link net.minecraft.client.data.models.ModelProvider}
- * {@link net.minecraft.client.data.models.EquipmentAssetProvider}
- * {@link net.neoforged.neoforge.client.data.ParticleDescriptionProvider}
- * {@link net.neoforged.neoforge.common.data.SoundDefinitionsProvider}
- */
 public class BundleDataGenerator {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final Path OUTPUT_ROOT = Common.TEMP_DIR.resolve("instances").resolve(instanceKey()).resolve("bundles");
@@ -84,6 +72,23 @@ public class BundleDataGenerator {
 
         PackOutput pOut = gen.getGenerator().getPackOutput();
         Path outputRoot = gen.getOutput();
+        String namespace = bundle.info().id();
+
+        List<BlockBuilder> blockBuilders = RegistryEvent.getBlockBuilders().stream()
+                .filter(b -> b.getId().getNamespace().equals(namespace) && b.shouldGenerateData())
+                .collect(Collectors.toList());
+
+        List<ItemBuilder> itemBuilders = RegistryEvent.getItemBuilders().stream()
+                .filter(b -> b.getId().getNamespace().equals(namespace) && b.shouldGenerateData())
+                .collect(Collectors.toList());
+
+        List<RecipeBuilder> recipeBuilders = RegistryEvent.getRecipeBuilders().stream()
+                .filter(b -> b.getId().getNamespace().equals(namespace) && b.shouldGenerateData())
+                .collect(Collectors.toList());
+
+        List<SoundBuilderImpl> soundBuilders = RegistryEvent.getSoundBuilders().stream()
+                .filter(b -> b.getId().getNamespace().equals(namespace) && b.shouldGenerateData())
+                .collect(Collectors.toList());
 
         try {
             LOGGER.info(outputRoot.toAbsolutePath().toString());
@@ -93,36 +98,32 @@ public class BundleDataGenerator {
                     pOut,
                     lookupProvider,
                     List.of(
-                            new EngineAdvancementSubProvider(bundle)
-                    ),
-                    bundle
+                            new EngineAdvancementSubProvider()
+                    )
             ));
             gen.addProvider(new EngineLootTableProvider(
                     pOut,
                     Set.of(),
                     List.of(
                             new LootTableProvider.SubProviderEntry(
-                                    registries -> new EngineLootTableSubProvider(bundle, registries),
+                                    registries -> new EngineLootTableSubProvider(registries),
                                     LootContextParamSets.BLOCK
                             )
                     ),
-                    lookupProvider,
-                    bundle
+                    lookupProvider
             ));
-            gen.addProvider(new EngineRecipeProvider.Runner(pOut, lookupProvider, bundle));
-            gen.addProvider(new EngineRecipePrioritiesProvider(pOut, lookupProvider, bundle));
-            gen.addProvider(new EngineBlockTagsProvider(pOut, lookupProvider, bundle));
-            gen.addProvider(new EngineItemTagsProvider(pOut, lookupProvider, bundle));
-            gen.addProvider(new EngineGlobalLootModifierProvider(pOut, lookupProvider, bundle));
-
+            gen.addProvider(new EngineRecipeProvider.Runner(pOut, lookupProvider, namespace, recipeBuilders));
+            gen.addProvider(new EngineRecipePrioritiesProvider(pOut, lookupProvider, namespace));
+            gen.addProvider(new EngineBlockTagsProvider(pOut, lookupProvider, namespace));
+            gen.addProvider(new EngineItemTagsProvider(pOut, lookupProvider, namespace));
+            gen.addProvider(new EngineGlobalLootModifierProvider(pOut, lookupProvider, namespace));
 
             // Client
-            gen.addProvider(new EngineLanguageProvider(pOut,"en_us", bundle));
-            gen.addProvider(new EngineModelProvider(pOut, bundle));
-            gen.addProvider(new EngineEquipmentAssetProvider(pOut, bundle));
-            gen.addProvider(new EngineParticleDescriptionProvider(pOut, bundle));
-            gen.addProvider(new EngineSoundDefinitionsProvider(pOut, bundle));
-
+            gen.addProvider(new EngineLanguageProvider(pOut, "en_us", namespace, blockBuilders, itemBuilders, soundBuilders));
+            gen.addProvider(new EngineModelProvider(pOut, namespace, blockBuilders, itemBuilders));
+            gen.addProvider(new EngineEquipmentAssetProvider(pOut));
+            gen.addProvider(new EngineParticleDescriptionProvider(pOut));
+            gen.addProvider(new EngineSoundDefinitionsProvider(pOut, namespace, soundBuilders));
 
             gen.run();
         } catch (IOException e) {

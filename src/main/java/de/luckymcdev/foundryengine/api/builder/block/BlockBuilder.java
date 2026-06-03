@@ -206,6 +206,14 @@ public interface BlockBuilder extends BuilderBase<Block> {
     BlockBuilder itemOnCraftedPostProcess(EngineItem.OnCraftedPostProcessCallback cb);
 
     /**
+     * Sets whether data should be auto-generated for this builder.
+     *
+     * @param generate true to generate data, false to skip
+     * @return This builder for chaining
+     */
+    BlockBuilder generateData(boolean generate);
+
+    /**
      * Registers the Block into the block registry.
      * Must be called before {@link #registerItem(RegisterEvent.RegisterHelper)} if you want a BlockItem.
      *

@@ -49,4 +49,13 @@ public interface BuilderBase<T> extends Supplier<T> {
      * @return The builder's identifier
      */
     Identifier getId();
+
+    /**
+     * Whether data should be auto-generated for this builder.
+     *
+     * @return true if data should be auto-generated
+     */
+    default boolean shouldGenerateData() {
+        return true;
+    }
 }

@@ -1,51 +1,48 @@
 package de.luckymcdev.foundryengine.common.data.providers.server.recipe;
 
-import de.luckymcdev.foundryengine.api.builder.recipe.RecipeResult;
-import de.luckymcdev.foundryengine.common.bundle.Bundle;
-import de.luckymcdev.foundryengine.common.data.providers.EngineProviderExtension;
+import de.luckymcdev.foundryengine.api.builder.recipe.RecipeBuilder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class EngineRecipeProvider extends RecipeProvider implements EngineProviderExtension {
-    private final Bundle bundle;
+public class EngineRecipeProvider extends RecipeProvider {
+    private final List<RecipeBuilder> recipeBuilders;
 
-    public EngineRecipeProvider(HolderLookup.Provider registries, RecipeOutput output, Bundle bundle) {
+    public EngineRecipeProvider(HolderLookup.Provider registries, RecipeOutput output, List<RecipeBuilder> recipeBuilders) {
         super(registries, output);
-        this.bundle = bundle;
-    }
-
-    @Override
-    public Bundle bundle() {
-        return bundle;
+        this.recipeBuilders = recipeBuilders;
     }
 
     @Override
     protected void buildRecipes() {
-        for (RecipeResult recipe : bundle.registryQuery().getRecipes()) {
+        for (RecipeBuilder builder : recipeBuilders) {
+            var recipe = builder.build();
             recipe.save().accept(output, registries);
         }
     }
 
     public static class Runner extends RecipeProvider.Runner {
-        private final Bundle bundle;
+        private final String namespace;
+        private final List<RecipeBuilder> recipeBuilders;
 
-        public Runner(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> registries, Bundle bundle) {
+        public Runner(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> registries, String namespace, List<RecipeBuilder> recipeBuilders) {
             super(packOutput, registries);
-            this.bundle = bundle;
+            this.namespace = namespace;
+            this.recipeBuilders = recipeBuilders;
         }
 
         @Override
         protected RecipeProvider createRecipeProvider(HolderLookup.Provider registries, RecipeOutput output) {
-            return new EngineRecipeProvider(registries, output, bundle);
+            return new EngineRecipeProvider(registries, output, recipeBuilders);
         }
 
         @Override
         public String getName() {
-            return "EngineRecipeProvider: " + bundle.info().id();
+            return "EngineRecipeProvider: " + namespace;
         }
     }
 }

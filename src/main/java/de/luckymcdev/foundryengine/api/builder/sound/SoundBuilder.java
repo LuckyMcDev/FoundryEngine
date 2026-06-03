@@ -51,6 +51,14 @@ public interface SoundBuilder extends BuilderBase<SoundEvent> {
         return addSound(location, 1.0f, 1.0f, 1, false, 16, false);
     }
 
+    /**
+     * Sets whether data should be auto-generated for this builder.
+     *
+     * @param generate true to generate data, false to skip
+     * @return This builder for chaining
+     */
+    SoundBuilder generateData(boolean generate);
+
     @ApiStatus.Internal
     SoundEvent register(RegisterEvent.RegisterHelper<SoundEvent> helper);
 }

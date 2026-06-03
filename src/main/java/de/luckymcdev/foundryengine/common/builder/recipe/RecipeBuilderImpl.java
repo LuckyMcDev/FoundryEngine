@@ -36,6 +36,7 @@ public class RecipeBuilderImpl implements RecipeBuilder {
     private float experience = 0.1f;
     private int cookingTime = 200;
     private String group = "";
+    private boolean generateData = true;
     private @Nullable RecipeResult object;
 
     private RecipeBuilderImpl(Identifier id, RecipeType type, @Nullable ItemLike result) {
@@ -452,6 +453,17 @@ public class RecipeBuilderImpl implements RecipeBuilder {
             return id;
         }
         return id.withPath(pre + id.getPath() + post);
+    }
+
+    @Override
+    public boolean shouldGenerateData() {
+        return generateData;
+    }
+
+    @Override
+    public RecipeBuilder generateData(boolean generate) {
+        this.generateData = generate;
+        return this;
     }
 
     public enum RecipeType {

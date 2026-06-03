@@ -15,6 +15,7 @@ public class SoundBuilderImpl implements SoundBuilder {
     private float fixedRange = -1f;
     private String subtitle = null;
     private boolean replace = false;
+    private boolean generateData = true;
     private @Nullable SoundEvent object;
 
     public SoundBuilderImpl(Identifier id) {
@@ -98,5 +99,16 @@ public class SoundBuilderImpl implements SoundBuilder {
         h.register(id, e);
         this.object = e;
         return e;
+    }
+
+    @Override
+    public boolean shouldGenerateData() {
+        return generateData;
+    }
+
+    @Override
+    public SoundBuilder generateData(boolean generate) {
+        this.generateData = generate;
+        return this;
     }
 }

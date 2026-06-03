@@ -21,6 +21,7 @@ public class ParticleBuilderImpl implements ParticleBuilder {
     private ParticlePositionData positionData;
     private ParticleRotationData rotationData;
     private boolean alwaysShow = false;
+    private boolean generateData = true;
     private Function<Boolean, ParticleType<?>> factory = SimpleParticleType::new;
     private int lifetime = 20;
     private ParticleLayer layer = ParticleLayer.OPAQUE;
@@ -165,5 +166,16 @@ public class ParticleBuilderImpl implements ParticleBuilder {
             return id;
         }
         return id.withPath(pre + id.getPath() + post);
+    }
+
+    @Override
+    public boolean shouldGenerateData() {
+        return generateData;
+    }
+
+    @Override
+    public ParticleBuilder generateData(boolean generate) {
+        this.generateData = generate;
+        return this;
     }
 }

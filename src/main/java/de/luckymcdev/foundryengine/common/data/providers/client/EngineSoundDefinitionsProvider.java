@@ -1,36 +1,25 @@
 package de.luckymcdev.foundryengine.common.data.providers.client;
 
-import de.luckymcdev.foundryengine.api.event.registry.RegistryEvent;
 import de.luckymcdev.foundryengine.common.builder.sound.SoundBuilderImpl;
-import de.luckymcdev.foundryengine.common.bundle.Bundle;
-import de.luckymcdev.foundryengine.common.bundle.registry.BundleRegistryQuery;
-import de.luckymcdev.foundryengine.common.data.providers.EngineProviderExtension;
 import net.minecraft.data.PackOutput;
 import net.minecraft.sounds.SoundEvent;
 import net.neoforged.neoforge.common.data.SoundDefinition;
 import net.neoforged.neoforge.common.data.SoundDefinitionsProvider;
 
-public class EngineSoundDefinitionsProvider extends SoundDefinitionsProvider implements EngineProviderExtension {
-    private final Bundle bundle;
+import java.util.List;
 
-    public EngineSoundDefinitionsProvider(PackOutput output, Bundle bundle) {
-        super(output, bundle.info().id());
-        this.bundle = bundle;
-    }
+public class EngineSoundDefinitionsProvider extends SoundDefinitionsProvider {
+    private final List<SoundBuilderImpl> soundBuilders;
 
-    @Override
-    public Bundle bundle() {
-        return bundle;
+    public EngineSoundDefinitionsProvider(PackOutput output, String namespace, List<SoundBuilderImpl> soundBuilders) {
+        super(output, namespace);
+        this.soundBuilders = soundBuilders;
     }
 
     @Override
     public void registerSounds() {
-        BundleRegistryQuery query = bundle.registryQuery();
-
-        for (SoundEvent sound : query.getSoundEvents()) {
-            SoundBuilderImpl builder = RegistryEvent.getSoundBuilder(sound.location());
-            if (builder == null) continue;
-
+        for (SoundBuilderImpl builder : soundBuilders) {
+            SoundEvent sound = builder.get();
             SoundDefinition def = definition();
             if (builder.getSubtitle() != null) {
                 def.subtitle(builder.getSubtitle());

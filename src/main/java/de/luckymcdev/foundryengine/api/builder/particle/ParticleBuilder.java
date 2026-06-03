@@ -131,6 +131,14 @@ public interface ParticleBuilder extends BuilderBase<ParticleType<?>> {
                 .add(end, 1, easing)));
     }
 
+    /**
+     * Sets whether data should be auto-generated for this builder.
+     *
+     * @param generate true to generate data, false to skip
+     * @return This builder for chaining
+     */
+    ParticleBuilder generateData(boolean generate);
+
     @ApiStatus.Internal
     ParticleType<?> register(RegisterEvent.RegisterHelper<ParticleType<?>> helper);
 }

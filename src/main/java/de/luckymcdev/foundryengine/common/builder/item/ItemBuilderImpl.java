@@ -22,6 +22,7 @@ public class ItemBuilderImpl implements ItemBuilder {
     private final Map<EngineItem.CallbackType, Object> callbacks = new EnumMap<>(EngineItem.CallbackType.class);
     private Item.Properties properties;
     private Function<Item.Properties, Item> factory;
+    private boolean generateData = true;
     private @Nullable Item object;
 
     public ItemBuilderImpl(Identifier id) {
@@ -188,5 +189,16 @@ public class ItemBuilderImpl implements ItemBuilder {
             return id;
         }
         return id.withPath(pre + id.getPath() + post);
+    }
+
+    @Override
+    public boolean shouldGenerateData() {
+        return generateData;
+    }
+
+    @Override
+    public ItemBuilder generateData(boolean generate) {
+        this.generateData = generate;
+        return this;
     }
 }
