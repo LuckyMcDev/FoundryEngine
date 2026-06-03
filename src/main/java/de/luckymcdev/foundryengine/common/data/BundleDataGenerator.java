@@ -22,8 +22,13 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import org.slf4j.Logger;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
@@ -48,9 +53,10 @@ import java.util.concurrent.CompletableFuture;
  */
 public class BundleDataGenerator {
     private static final Logger LOGGER = LogUtils.getLogger();
+    private static final Path OUTPUT_ROOT = Common.TEMP_DIR.resolve("instances").resolve(instanceKey()).resolve("bundles");
 
-    private static Path generatedDataPath;
-    private static Path generatedAssetsPath;
+    private static final Path generatedDataPath = OUTPUT_ROOT.resolve("data");
+    private static final Path generatedAssetsPath = OUTPUT_ROOT.resolve("assets");
 
     public static Path getGeneratedDataPath() {
         return generatedDataPath;
@@ -61,13 +67,15 @@ public class BundleDataGenerator {
     }
 
     public static void runAll() {
+        prepareOutputDirectories();
         for (Bundle bundle : Common.getBundleManager().getBundles()) {
             run(bundle);
         }
     }
 
     public static void run(Bundle bundle) {
-        EngineDataGenerator gen = new EngineDataGenerator(Common.TEMP_DIR.resolve("bundles"));
+        prepareOutputDirectories();
+        EngineDataGenerator gen = new EngineDataGenerator(OUTPUT_ROOT);
 
         LayeredRegistryAccess<RegistryLayer> layeredAccess = RegistryLayer.createRegistryAccess();
         CompletableFuture<HolderLookup.Provider> lookupProvider = CompletableFuture.completedFuture(
@@ -117,11 +125,31 @@ public class BundleDataGenerator {
 
 
             gen.run();
-
-            generatedDataPath = outputRoot.resolve("data");
-            generatedAssetsPath = outputRoot.resolve("assets");
         } catch (IOException e) {
             LOGGER.error("Failed to run data generator: {}", e.getMessage());
+        }
+    }
+
+    private static void prepareOutputDirectories() {
+        try {
+            Files.createDirectories(generatedDataPath);
+            Files.createDirectories(generatedAssetsPath);
+        } catch (IOException e) {
+            LOGGER.error("Failed to create generated pack directories: {}", e.getMessage());
+        }
+    }
+
+    private static String instanceKey() {
+        String gameDir = Common.GAMEDIR.toString().toLowerCase(Locale.ROOT);
+        try {
+            byte[] digest = MessageDigest.getInstance("SHA-256").digest(gameDir.getBytes(StandardCharsets.UTF_8));
+            StringBuilder key = new StringBuilder("game-");
+            for (int i = 0; i < 8; i++) {
+                key.append(String.format(Locale.ROOT, "%02x", digest[i]));
+            }
+            return key.toString();
+        } catch (NoSuchAlgorithmException e) {
+            return "game-" + Integer.toUnsignedString(gameDir.hashCode(), 16);
         }
     }
 }

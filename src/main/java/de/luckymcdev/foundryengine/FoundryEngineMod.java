@@ -36,6 +36,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.util.Util;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.IEventBus;
@@ -230,28 +231,33 @@ public class FoundryEngineMod {
 
     private void onAddPackFinders(AddPackFindersEvent event) {
         PackType type = event.getPackType();
-        event.addRepositorySource(new DynamicPackRepository(
+        var bundlesRepo = new DynamicPackRepository(
                 type,
-                "foundry/bundles",
+                "foundry_bundles",
                 "FoundryEngine: Bundles",
                 () -> Common.getBundleManager().getBundles().stream()
                         .map(b -> type == PackType.CLIENT_RESOURCES
                                 ? b.bundleFiles().assets()
                                 : b.bundleFiles().data())
                         .filter(Files::exists)
-                        .toList()
-        ));
-        event.addRepositorySource(new DynamicPackRepository(
+                        .toList(),
+                Pack.Position.TOP
+        );
+        var bundlesGeneratedRepo = new DynamicPackRepository(
                 type,
-                "foundry/bundles_generated",
+                "foundry_bundles_generated",
                 "FoundryEngine: Generated",
                 () -> {
                     Path path = type == PackType.CLIENT_RESOURCES
                             ? BundleDataGenerator.getGeneratedAssetsPath()
                             : BundleDataGenerator.getGeneratedDataPath();
-                    return path != null && Files.exists(path) ? List.of(path) : List.of();
-                }
-        ));
+                    return Files.exists(path) ? List.of(path) : List.of();
+                },
+                Pack.Position.BOTTOM,
+                true
+        );
+        event.addRepositorySource(bundlesRepo);
+        event.addRepositorySource(bundlesGeneratedRepo);
     }
 
     private void onRegisterPayloadHandlers(RegisterPayloadHandlersEvent event) {
