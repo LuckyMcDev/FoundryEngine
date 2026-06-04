@@ -30,6 +30,7 @@ import de.luckymcdev.foundryengine.common.world.level.test.CustomLevel;
 import de.luckymcdev.foundryengine.common.world.level.util.TransientChunkGenerator;
 import de.luckymcdev.foundryengine.common.world.level.util.VoidChunkGenerator;
 import de.luckymcdev.foundryengine.config.Config;
+import de.luckymcdev.foundryengine.config.StartupConfig;
 import de.luckymcdev.foundryengine.server.command.FoundryCommands;
 import de.luckymcdev.foundryengine.server.packs.DynamicPackRepository;
 import net.minecraft.SharedConstants;
@@ -56,6 +57,7 @@ import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
+import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
@@ -109,6 +111,15 @@ public class FoundryEngineMod {
 
         Config.registerCommon(modContainer);
         Config.registerStartup(modContainer);
+
+        if(StartupConfig.CLEAR_DATA_CACHE.get()) {
+            try {
+                FileUtils.deleteDirectory(BundleDataGenerator.OUTPUT_ROOT.toFile());
+            } catch (IOException e) {
+                LOGGER.error("Could not clear Data Cache.");
+            }
+            StartupConfig.CLEAR_DATA_CACHE.set(false);
+        }
 
         LOGGER.info("""
                         
@@ -218,6 +229,7 @@ public class FoundryEngineMod {
                     RegistryEvent registryEvent = new RegistryEvent(ev, modBus);
                     ModLoader.postEvent(registryEvent);
                     BundleEvents.Internal.postRegistry(registryEvent);
+                    BundleDataGenerator.runAll();
                 });
             }
         } catch (IOException e) {

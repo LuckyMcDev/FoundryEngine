@@ -22,6 +22,10 @@ public final class StartupConfig extends EngineConfig {
             .comment("Permission level required to use /engine eval (0–4).")
             .defineInRange("EVAL_COMMAND_PERMISSION", 4, 0, 4);
 
+    public static final ModConfigSpec.BooleanValue CLEAR_DATA_CACHE = BUILDER
+            .comment("If in the next run the data cache should be cleared.")
+            .define("CLEAR_DATA_CACHE", false);
+
     @Override
     public ModConfigSpec spec() {
         return BUILDER.build();

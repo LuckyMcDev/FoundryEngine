@@ -24,6 +24,7 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.server.RegistryLayer;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -41,8 +42,7 @@ import java.util.stream.Collectors;
 
 public class BundleDataGenerator {
     private static final Logger LOGGER = LogUtils.getLogger();
-    private static final Path OUTPUT_ROOT = Common.TEMP_DIR.resolve("instances").resolve(instanceKey()).resolve("bundles");
-
+    public static final Path OUTPUT_ROOT = Common.TEMP_DIR.resolve("instances").resolve(instanceKey()).resolve("bundles");
     private static final Path generatedDataPath = OUTPUT_ROOT.resolve("data");
     private static final Path generatedAssetsPath = OUTPUT_ROOT.resolve("assets");
 
@@ -133,6 +133,11 @@ public class BundleDataGenerator {
 
     private static void prepareOutputDirectories() {
         try {
+            try {
+                FileUtils.deleteDirectory(BundleDataGenerator.OUTPUT_ROOT.toFile());
+            } catch (IOException e) {
+                LOGGER.error("Could not clear Data Cache.");
+            }
             Files.createDirectories(generatedDataPath);
             Files.createDirectories(generatedAssetsPath);
         } catch (IOException e) {
