@@ -229,9 +229,9 @@ public class FoundryEngineMod {
                     RegistryEvent registryEvent = new RegistryEvent(ev, modBus);
                     ModLoader.postEvent(registryEvent);
                     BundleEvents.Internal.postRegistry(registryEvent);
-                    BundleDataGenerator.runAll();
                 });
             }
+            BundleDataGenerator.runAll();
         } catch (IOException e) {
             LOGGER.error("Error while loading bundles: {}", e.getLocalizedMessage());
         }
