@@ -34,6 +34,7 @@ import de.luckymcdev.foundryengine.config.StartupConfig;
 import de.luckymcdev.foundryengine.server.command.FoundryCommands;
 import de.luckymcdev.foundryengine.server.packs.DynamicPackRepository;
 import net.minecraft.SharedConstants;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.PackType;
@@ -45,6 +46,7 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.*;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeVersion;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
@@ -182,6 +184,10 @@ public class FoundryEngineMod {
         BundleEvents.Internal.postCommonSetup(event);
         BundleDataGenerator.runAll();
 
+        if (FMLEnvironment.getDist().isClient()) {
+            event.enqueueWork(() -> Minecraft.getInstance().reloadResourcePacks());
+        }
+    
         var network = Common.getNetworkManager();
         network.register(TestPacket.DEFINITION);
         network.register(ServerBoundSetTimePacket.DEFINITION);
