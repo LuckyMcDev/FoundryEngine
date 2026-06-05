@@ -100,7 +100,7 @@ public class LevelStorageSourceMixin implements EngineLevelStorageSource {
     @Inject(method = "<init>", at = @At("RETURN"))
     private void engine$onConstruct(Path baseDir, Path backupDir, DirectoryValidator validator,
                                     com.mojang.datafixers.DataFixer fixerUpper, CallbackInfo ci) {
-        LOGGER.info("LevelStorageSource initialized");
+        engine$additionalBaseDirs.addAll(EngineLevelStorageSource.GLOBAL_ADDITIONAL_PATHS);
     }
 
     @ModifyReturnValue(method = "getLevelPath", at = @At("RETURN"))

@@ -5,6 +5,7 @@ import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintEngine;
 import de.luckymcdev.foundryengine.common.blueprint.graph.BlueprintGraph;
 import de.luckymcdev.foundryengine.common.blueprint.serial.BlueprintSerializer;
 import de.luckymcdev.foundryengine.common.bundle.Bundle;
+import de.luckymcdev.foundryengine.common.bundle.BundleLifecycleListener;
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -13,9 +14,19 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class BlueprintManager {
+public class BlueprintManager implements BundleLifecycleListener {
     private static final Logger LOGGER = LogUtils.getLogger();
     private final Map<String, BundleBlueprints> bundleBlueprints = new LinkedHashMap<>();
+
+    @Override
+    public void onBundleLoaded(Bundle bundle) {
+        loadBlueprintsForBundle(bundle);
+    }
+
+    @Override
+    public void onBundleUnloaded(Bundle bundle) {
+        unloadBlueprintsForBundle(bundle);
+    }
 
     public void loadBlueprintsForBundle(Bundle bundle) {
         File blueprintsDir = bundle.bundleFiles().blueprints().toFile();

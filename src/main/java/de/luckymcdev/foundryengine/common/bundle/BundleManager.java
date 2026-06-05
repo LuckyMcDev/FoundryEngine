@@ -5,13 +5,9 @@ import de.luckymcdev.foundryengine.api.event.*;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.registry.GenericRegistry;
 import de.luckymcdev.foundryengine.common.script.BundleScriptLoader;
-import de.luckymcdev.foundryengine.server.Server;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.ModLoader;
-import net.neoforged.fml.ModLoadingIssue;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -31,10 +27,10 @@ import java.util.Collection;
  */
 public class BundleManager implements ResourceManagerReloadListener {
     private static final Logger LOGGER = LogUtils.getLogger();
-
     private final GenericRegistry<String, Bundle> bundles = new GenericRegistry<>();
     private final BundleDiscovery bundleDiscovery;
     private final BundleScriptLoader scriptLoader;
+    private final BundleLifecycleDispatcher lifecycleDispatcher = new BundleLifecycleDispatcher();
 
     public BundleManager(IEventBus modBus, Path configDirectory) {
         BundleFactory bundleFactory = new BundleFactory(modBus, configDirectory);
@@ -47,8 +43,13 @@ public class BundleManager implements ResourceManagerReloadListener {
      */
     public void register(Bundle bundle) {
         bundles.register(bundle.info().id(), bundle);
-        bundle.loadCommon(scriptLoader);
-        Common.getBlueprintManager().loadBlueprintsForBundle(bundle);
+        try {
+            bundle.loadCommon(scriptLoader);
+        } catch (Exception e) {
+            BundleExceptionHandler.handle(
+                    "Failed to load common scripts for bundle '" + bundle.info().id() + "'", e);
+        }
+        lifecycleDispatcher.fireLoaded(bundle);
         LOGGER.debug("Registered Bundle: {} with Info: {}", bundle.info().id(), bundle.info());
     }
 
@@ -61,14 +62,8 @@ public class BundleManager implements ResourceManagerReloadListener {
             try {
                 bundle.loadClient(scriptLoader);
             } catch (Exception e) {
-                LOGGER.error("Failed to load client scripts for bundle '{}'", bundle.info().id(), e);
-                ModLoadingIssue issue = ModLoadingIssue.error(String.format(
-                        "Failed to load client scripts for bundle '%s': %s", bundle.info().id(), e.getMessage()));
-                ModLoader.addLoadingIssue(issue);
-                if (Server.getServer() != null) {
-                    String loc = e.getStackTrace().length > 0 ? " (" + e.getStackTrace()[0].getFileName() + ":" + e.getStackTrace()[0].getLineNumber() + ")" : "";
-                    Server.getServer().getPlayerList().broadcastSystemMessage(Component.literal("§c[Script Error] Bundle '" + bundle.info().id() + "' client scripts: " + e + loc), false);
-                }
+                BundleExceptionHandler.handle(
+                        "Failed to load client scripts for bundle '" + bundle.info().id() + "'", e);
             }
         }
     }
@@ -82,14 +77,8 @@ public class BundleManager implements ResourceManagerReloadListener {
             try {
                 bundle.loadServer(scriptLoader);
             } catch (Exception e) {
-                LOGGER.error("Failed to load server scripts for bundle '{}'", bundle.info().id(), e);
-                ModLoadingIssue issue = ModLoadingIssue.error(String.format(
-                        "Failed to load server scripts for bundle '%s': %s", bundle.info().id(), e.getMessage()));
-                ModLoader.addLoadingIssue(issue);
-                if (Server.getServer() != null) {
-                    String loc = e.getStackTrace().length > 0 ? " (" + e.getStackTrace()[0].getFileName() + ":" + e.getStackTrace()[0].getLineNumber() + ")" : "";
-                    Server.getServer().getPlayerList().broadcastSystemMessage(Component.literal("§c[Script Error] Bundle '" + bundle.info().id() + "' server scripts: " + e + loc), false);
-                }
+                BundleExceptionHandler.handle(
+                        "Failed to load server scripts for bundle '" + bundle.info().id() + "'", e);
             }
         }
     }
@@ -100,7 +89,6 @@ public class BundleManager implements ResourceManagerReloadListener {
     public void remove(Bundle bundle) {
         bundles.remove(bundle.info().id());
         unloadBundle(bundle);
-        Common.getBlueprintManager().unloadBlueprintsForBundle(bundle);
     }
 
     /**
@@ -130,6 +118,7 @@ public class BundleManager implements ResourceManagerReloadListener {
      */
     public void reload() {
         LOGGER.info("Reloading FoundryEngine Bundles...");
+        lifecycleDispatcher.fireReloadStarted();
 
         AreaEvents.Internal.clear();
         BlockEvents.Internal.clear();
@@ -142,7 +131,6 @@ public class BundleManager implements ResourceManagerReloadListener {
         NetworkEvents.Internal.clear();
         PlayerEvents.Internal.clear();
         RecipeEvents.Internal.clear();
-        ServerEvents.Internal.clear();
 
         unloadAllBundles();
         bundles.clear();
@@ -150,22 +138,16 @@ public class BundleManager implements ResourceManagerReloadListener {
         try {
             discover(Common.BUNDLES);
         } catch (IOException e) {
-            LOGGER.error("Failed to reload bundles", e);
-            ModLoadingIssue issue = ModLoadingIssue.error("Failed to reload bundles: " + e.getMessage());
-            ModLoader.addLoadingIssue(issue);
-            if (Server.getServer() != null) {
-                String loc = e.getStackTrace().length > 0 ? " (" + e.getStackTrace()[0].getFileName() + ":" + e.getStackTrace()[0].getLineNumber() + ")" : "";
-                Server.getServer().getPlayerList().broadcastSystemMessage(Component.literal("§c[Script Error] Bundle reload: " + e + loc), false);
-            }
+            BundleExceptionHandler.handle("Failed to reload bundles", e);
         }
 
         loadServerScripts();
+        lifecycleDispatcher.fireReloadCompleted();
     }
 
     private void unloadAllBundles() {
         for (Bundle bundle : bundles.values()) {
             unloadBundle(bundle);
-            Common.getBlueprintManager().unloadBlueprintsForBundle(bundle);
         }
     }
 
@@ -174,6 +156,8 @@ public class BundleManager implements ResourceManagerReloadListener {
      * and closes the ZIP FileSystem if present.
      */
     private void unloadBundle(Bundle bundle) {
+        lifecycleDispatcher.firePreUnload(bundle);
+
         if (bundle.bundleConfig().isLoaded()) {
             bundle.bundleConfig().save();
         }
@@ -181,6 +165,7 @@ public class BundleManager implements ResourceManagerReloadListener {
         bundle.unload();
 
         closeFileSystem(bundle);
+        lifecycleDispatcher.fireUnloaded(bundle);
     }
 
     private void closeFileSystem(Bundle bundle) {
@@ -193,6 +178,10 @@ public class BundleManager implements ResourceManagerReloadListener {
                         bundle.info().id(), e.getLocalizedMessage());
             }
         }
+    }
+
+    public BundleLifecycleDispatcher getLifecycleDispatcher() {
+        return lifecycleDispatcher;
     }
 
     public BundleDiscovery getBundleDiscovery() {

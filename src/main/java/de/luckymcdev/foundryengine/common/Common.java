@@ -6,6 +6,7 @@ import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.common.area.AreaManager;
 import de.luckymcdev.foundryengine.common.blueprint.BlueprintManager;
 import de.luckymcdev.foundryengine.common.bundle.BundleManager;
+import de.luckymcdev.foundryengine.common.bundle.BundleSavePathListener;
 import de.luckymcdev.foundryengine.common.cutscene.CutsceneManager;
 import de.luckymcdev.foundryengine.common.cutscene.CutsceneSessionManager;
 import de.luckymcdev.foundryengine.common.exceptions.EngineException;
@@ -71,6 +72,8 @@ public abstract class Common {
         } catch (IOException e) {
             throw new EngineException(e);
         }
+        BUNDLE_MANAGER.getLifecycleDispatcher().register(BLUEPRINT_MANAGER);
+        BUNDLE_MANAGER.getLifecycleDispatcher().register(new BundleSavePathListener());
     }
 
     private Common() {

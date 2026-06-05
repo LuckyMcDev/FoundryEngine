@@ -8,7 +8,6 @@ import de.luckymcdev.foundryengine.common.exceptions.EngineException;
 import de.luckymcdev.foundryengine.server.Server;
 import net.minecraft.network.chat.Component;
 import net.neoforged.fml.ModList;
-import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.ModLoadingIssue;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
@@ -57,14 +56,7 @@ public class BundleDiscovery {
                         scanZip(path);
                     }
                 } catch (Exception e) {
-                    LOGGER.error("Failed to scan bundle path: {}", path, e);
-                    ModLoadingIssue issue = ModLoadingIssue.error(String.format(
-                            "Failed to scan bundle path '%s': %s", path.getFileName(), e.getMessage()));
-                    ModLoader.addLoadingIssue(issue);
-                    if (Server.getServer() != null) {
-                        String loc = e.getStackTrace().length > 0 ? " (" + e.getStackTrace()[0].getFileName() + ":" + e.getStackTrace()[0].getLineNumber() + ")" : "";
-                        Server.getServer().getPlayerList().broadcastSystemMessage(Component.literal("§c[Script Error] Bundle discovery '" + path.getFileName() + "': " + e + loc), false);
-                    }
+                    BundleExceptionHandler.handle("Failed to scan bundle path '" + path.getFileName() + "'", e);
                 }
             }
         }
@@ -183,10 +175,7 @@ public class BundleDiscovery {
             discoveredBundles.put(info.id(), info);
             bundleConsumer.accept(bundle);
         } catch (Exception e) {
-            LOGGER.error("Failed to create bundle '{}': {}", info.id(), e.getMessage(), e);
-            ModLoadingIssue issue = ModLoadingIssue.error(String.format(
-                    "Failed to create bundle '%s': %s", info.id(), e.getMessage()));
-            Server.getServer().getPlayerList().broadcastSystemMessage(Component.literal("§c[Script Error] " + issue), false);
+            BundleExceptionHandler.handle("Failed to create bundle '" + info.id() + "'", e);
         }
     }
 
@@ -219,7 +208,9 @@ public class BundleDiscovery {
                         currentVersionStr.equals("missing") ? "missing" : "version " + currentVersionStr
                 );
                 ModLoadingIssue issue = ModLoadingIssue.error(errorMsg);
-                Server.getServer().getPlayerList().broadcastSystemMessage(Component.literal("§c[Script Error] " + issue), false);
+                if (Server.getServer() != null) {
+                    Server.getServer().getPlayerList().broadcastSystemMessage(Component.literal("§c[Script Error] " + issue), false);
+                }
             }
         }
     }
