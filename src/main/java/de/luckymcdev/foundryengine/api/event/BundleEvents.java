@@ -1,5 +1,6 @@
 package de.luckymcdev.foundryengine.api.event;
 
+import de.luckymcdev.foundryengine.api.event.data.BundleDataGenEvent;
 import de.luckymcdev.foundryengine.api.event.registry.RegistryEvent;
 import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintEngine;
 import de.luckymcdev.foundryengine.common.event.BlueprintContexts;
@@ -22,6 +23,7 @@ public class BundleEvents {
     public static final EventGroupHolder<FMLDedicatedServerSetupEvent> DEDICATED_SERVER_SETUP = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_DEDICATED_SERVER_SETUP, BlueprintContexts::dedicatedServerSetup);
     public static final EventGroupHolder<InterModProcessEvent> POST_INIT = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_POST_INIT, BlueprintContexts::postInit);
     public static final EventGroupHolder<ServerAboutToStartEvent> SERVER_ABOUT_TO_START = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_SERVER_ABOUT_TO_START, BlueprintContexts::serverAboutToStart);
+    public static final EventGroupHolder<BundleDataGenEvent> DATA_GEN = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_DATA_GEN);
 
     public static void registry(EventCallback<RegistryEvent> callback) {
         REGISTRY.register(callback);
@@ -49,6 +51,10 @@ public class BundleEvents {
 
     public static void serverAboutToStart(EventCallback<ServerAboutToStartEvent> callback) {
         SERVER_ABOUT_TO_START.register(callback);
+    }
+
+    public static void dataGen(EventCallback<BundleDataGenEvent> callback) {
+        DATA_GEN.register(callback);
     }
 
     @ApiStatus.Internal
@@ -81,6 +87,10 @@ public class BundleEvents {
             SERVER_ABOUT_TO_START.post(event);
         }
 
+        public static void postDataGen(BundleDataGenEvent event) {
+            DATA_GEN.post(event);
+        }
+
         public static void register(IEventBus bus) {
             bus.addListener(Internal::postVanillaGame);
             bus.addListener(Internal::postServerAboutToStart);
@@ -93,6 +103,7 @@ public class BundleEvents {
             CLIENT_SETUP.clear();
             DEDICATED_SERVER_SETUP.clear();
             POST_INIT.clear();
+            DATA_GEN.clear();
             SERVER_ABOUT_TO_START.clear();
         }
     }

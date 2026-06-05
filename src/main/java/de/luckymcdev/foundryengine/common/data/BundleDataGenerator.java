@@ -4,6 +4,8 @@ import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.api.builder.block.BlockBuilder;
 import de.luckymcdev.foundryengine.api.builder.item.ItemBuilder;
 import de.luckymcdev.foundryengine.api.builder.recipe.RecipeBuilder;
+import de.luckymcdev.foundryengine.api.event.BundleEvents;
+import de.luckymcdev.foundryengine.api.event.data.BundleDataGenEvent;
 import de.luckymcdev.foundryengine.api.event.registry.RegistryEvent;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.builder.sound.SoundBuilderImpl;
@@ -89,6 +91,8 @@ public class BundleDataGenerator {
         List<SoundBuilderImpl> soundBuilders = RegistryEvent.getSoundBuilders().stream()
                 .filter(b -> b.getId().getNamespace().equals(namespace) && b.shouldGenerateData())
                 .collect(Collectors.toList());
+
+        BundleEvents.Internal.postDataGen(new BundleDataGenEvent(gen, namespace));
 
         try {
             LOGGER.info(outputRoot.toAbsolutePath().toString());

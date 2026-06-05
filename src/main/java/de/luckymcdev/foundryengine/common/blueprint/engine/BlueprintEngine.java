@@ -162,6 +162,7 @@ public class BlueprintEngine {
         EVENT_COMMANDS("event.commands", "Commands"),
         EVENT_COMMANDS_CLIENT("event.commands_client", "Client Commands"),
         EVENT_RECIPE_VIEWER_UPDATED("event.recipe_viewer_updated", "Recipe Viewer Updated"),
+        EVENT_DATA_GEN("event.data_gen", "Data Gen"),
         COMMENT("editor.comment", "Comment"),
         REROUTE_EXEC("logic.reroute_exec", "Reroute (Exec)"),
         REROUTE_ANY("logic.reroute_any", "Reroute (Any)");
