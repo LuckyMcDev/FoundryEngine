@@ -94,6 +94,7 @@ public class BundleEvents {
         public static void register(IEventBus bus) {
             bus.addListener(Internal::postVanillaGame);
             bus.addListener(Internal::postServerAboutToStart);
+            bus.addListener(Internal::postDataGen);
         }
 
         public static void clear() {

@@ -1,5 +1,6 @@
 package de.luckymcdev.foundryengine.api.event;
 
+import de.luckymcdev.foundryengine.api.event.modification.BlockModificationEvent;
 import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintEngine;
 import de.luckymcdev.foundryengine.common.event.BlueprintContexts;
 import de.luckymcdev.foundryengine.common.event.EventCallback;
@@ -17,6 +18,7 @@ public class BlockEvents {
     public static final EventGroupHolder<PlayerInteractEvent.LeftClickBlock> LEFT_CLICKED = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_BLOCK_LEFT_CLICKED, BlueprintContexts::blockLeftClicked);
     public static final EventGroupHolder<PlayerInteractEvent.RightClickBlock> RIGHT_CLICKED = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_BLOCK_RIGHT_CLICKED, BlueprintContexts::blockRightClicked);
     public static final EventGroupHolder<BlockEvent.FarmlandTrampleEvent> FARMLAND_TRAMPLED = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_FARMLAND_TRAMPLED, BlueprintContexts::blockFarmlandTrampled);
+    public static final EventGroupHolder<BlockModificationEvent> BLOCK_MODIFICATION = new EventGroupHolder<>();
 
     public static void broken(EventCallback<BreakBlockEvent> cb) {
         BROKEN.register(cb);
@@ -42,6 +44,10 @@ public class BlockEvents {
         FARMLAND_TRAMPLED.register(cb);
     }
 
+    public static void modification(EventCallback<BlockModificationEvent> callback) {
+        BLOCK_MODIFICATION.register(callback);
+    }
+
     @ApiStatus.Internal
     public static class Internal {
         public static void postBroken(BreakBlockEvent e) {
@@ -64,12 +70,17 @@ public class BlockEvents {
             FARMLAND_TRAMPLED.post(e);
         }
 
+        public static void postBlockModification(BlockModificationEvent event) {
+            BLOCK_MODIFICATION.post(event);
+        }
+
         public static void register(IEventBus bus) {
             bus.addListener(Internal::postBroken);
             bus.addListener(Internal::postPlaced);
             bus.addListener(Internal::postLeftClicked);
             bus.addListener(Internal::postRightClicked);
             bus.addListener(Internal::postFarmlandTrampled);
+            bus.addListener(Internal::postBlockModification);
         }
 
         public static void clear() {
@@ -79,6 +90,7 @@ public class BlockEvents {
             LEFT_CLICKED.clear();
             RIGHT_CLICKED.clear();
             FARMLAND_TRAMPLED.clear();
+            BLOCK_MODIFICATION.clear();
         }
     }
 }

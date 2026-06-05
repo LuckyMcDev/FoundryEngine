@@ -4,7 +4,6 @@ import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.api.builder.block.BlockBuilder;
 import de.luckymcdev.foundryengine.api.builder.item.ItemBuilder;
 import de.luckymcdev.foundryengine.api.builder.recipe.RecipeBuilder;
-import de.luckymcdev.foundryengine.api.event.BundleEvents;
 import de.luckymcdev.foundryengine.api.event.data.BundleDataGenEvent;
 import de.luckymcdev.foundryengine.api.event.registry.RegistryEvent;
 import de.luckymcdev.foundryengine.common.Common;
@@ -26,6 +25,7 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.server.RegistryLayer;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.neoforged.neoforge.common.NeoForge;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 
@@ -92,7 +92,7 @@ public class BundleDataGenerator {
                 .filter(b -> b.getId().getNamespace().equals(namespace) && b.shouldGenerateData())
                 .collect(Collectors.toList());
 
-        BundleEvents.Internal.postDataGen(new BundleDataGenEvent(gen, namespace));
+        NeoForge.EVENT_BUS.post(new BundleDataGenEvent(gen, namespace));
 
         try {
             LOGGER.info(outputRoot.toAbsolutePath().toString());

@@ -1,5 +1,6 @@
 package de.luckymcdev.foundryengine.api.event;
 
+import de.luckymcdev.foundryengine.api.event.modification.ItemModificationEvent;
 import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintEngine;
 import de.luckymcdev.foundryengine.common.event.BlueprintContexts;
 import de.luckymcdev.foundryengine.common.event.EventCallback;
@@ -33,6 +34,7 @@ public class ItemEvents {
             new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_ITEM_FIRST_LEFT_CLICK, BlueprintContexts::firstLeftClicked);
     public static final EventGroupHolder<PlayerInteractEvent.RightClickEmpty> FIRST_RIGHT_CLICKED =
             new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_ITEM_FIRST_RIGHT_CLICK, BlueprintContexts::firstRightClicked);
+    public static final EventGroupHolder<ItemModificationEvent> ITEM_MODIFICATION = new EventGroupHolder<>();
 
     public static void pickedUp(EventCallback<ItemEntityPickupEvent.Post> cb) {
         PICKED_UP.register(cb);
@@ -76,6 +78,10 @@ public class ItemEvents {
 
     public static void firstRightClicked(EventCallback<PlayerInteractEvent.RightClickEmpty> cb) {
         FIRST_RIGHT_CLICKED.register(cb);
+    }
+
+    public static void modification(EventCallback<ItemModificationEvent> callback) {
+        ITEM_MODIFICATION.register(callback);
     }
 
     @ApiStatus.Internal
@@ -124,6 +130,10 @@ public class ItemEvents {
             FIRST_RIGHT_CLICKED.post(e);
         }
 
+        public static void postItemModification(ItemModificationEvent e) {
+            ITEM_MODIFICATION.post(e);
+        }
+
         public static void register(IEventBus bus) {
             bus.addListener(Internal::postPickedUp);
             bus.addListener(Internal::postDestroyed);
@@ -136,6 +146,7 @@ public class ItemEvents {
             bus.addListener(Internal::postEntityInteracted);
             bus.addListener(Internal::postFirstLeftClicked);
             bus.addListener(Internal::postFirstRightClicked);
+            bus.addListener(Internal::postItemModification);
         }
 
         public static void clear() {
@@ -150,6 +161,7 @@ public class ItemEvents {
             ENTITY_INTERACTED.clear();
             FIRST_LEFT_CLICKED.clear();
             FIRST_RIGHT_CLICKED.clear();
+            ITEM_MODIFICATION.clear();
         }
     }
 }

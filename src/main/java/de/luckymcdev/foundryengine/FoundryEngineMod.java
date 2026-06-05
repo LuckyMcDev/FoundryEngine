@@ -2,6 +2,8 @@ package de.luckymcdev.foundryengine;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.api.event.*;
+import de.luckymcdev.foundryengine.api.event.modification.BlockModificationEvent;
+import de.luckymcdev.foundryengine.api.event.modification.ItemModificationEvent;
 import de.luckymcdev.foundryengine.api.event.registry.RegistryEvent;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintEngine;
@@ -35,12 +37,16 @@ import de.luckymcdev.foundryengine.server.command.FoundryCommands;
 import de.luckymcdev.foundryengine.server.packs.DynamicPackRepository;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.util.Util;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModLoader;
@@ -84,7 +90,7 @@ public class FoundryEngineMod {
         registerModBus(modBus);
         registerInternalEvents();
 
-        modBus.addListener(this::onRegisterEvent);
+        modBus.addListener(EventPriority.LOWEST, this::onRegisterEvent);
         modBus.addListener(this::commonSetup);
         modBus.addListener(this::onConstruct);
         modBus.addListener(this::onAddPackFinders);
@@ -114,7 +120,7 @@ public class FoundryEngineMod {
         Config.registerCommon(modContainer);
         Config.registerStartup(modContainer);
 
-        if(StartupConfig.CLEAR_DATA_CACHE.get()) {
+        if (StartupConfig.CLEAR_DATA_CACHE.get()) {
             try {
                 FileUtils.deleteDirectory(BundleDataGenerator.OUTPUT_ROOT.toFile());
             } catch (IOException e) {
@@ -187,7 +193,7 @@ public class FoundryEngineMod {
         if (FMLEnvironment.getDist().isClient()) {
             event.enqueueWork(() -> Minecraft.getInstance().reloadResourcePacks());
         }
-    
+
         var network = Common.getNetworkManager();
         network.register(TestPacket.DEFINITION);
         network.register(ServerBoundSetTimePacket.DEFINITION);
@@ -206,6 +212,15 @@ public class FoundryEngineMod {
         network.register(AreaPacket.DEFINITION);
         network.register(WaypointPacket.DEFINITION);
         network.register(SavedDataSyncPacket.DEFINITION);
+
+        event.enqueueWork(() -> {
+            for (Block block : BuiltInRegistries.BLOCK) {
+                BUS.post(new BlockModificationEvent(block));
+            }
+            for (Item block : BuiltInRegistries.ITEM) {
+                BUS.post(new ItemModificationEvent(block));
+            }
+        });
     }
 
     private void clientSetup(FMLClientSetupEvent event) {
