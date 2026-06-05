@@ -61,6 +61,8 @@ public class BundleDataGenerator {
         for (Bundle bundle : Common.getBundleManager().getBundles()) {
             run(bundle);
         }
+        EngineDataGenerator customGen = new EngineDataGenerator(OUTPUT_ROOT);
+        NeoForge.EVENT_BUS.post(new BundleDataGenEvent(customGen));
     }
 
     public static void run(Bundle bundle) {
@@ -91,8 +93,6 @@ public class BundleDataGenerator {
         List<SoundBuilderImpl> soundBuilders = RegistryEvent.getSoundBuilders().stream()
                 .filter(b -> b.getId().getNamespace().equals(namespace) && b.shouldGenerateData())
                 .collect(Collectors.toList());
-
-        NeoForge.EVENT_BUS.post(new BundleDataGenEvent(gen, namespace));
 
         try {
             LOGGER.info(outputRoot.toAbsolutePath().toString());

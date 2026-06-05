@@ -84,6 +84,10 @@ public abstract class Common {
         return Identifier.fromNamespaceAndPath(MODID, path);
     }
 
+    public static Identifier id(String namespace, String path) {
+        return Identifier.fromNamespaceAndPath(namespace, path);
+    }
+
     public static <V> Supplier<V> supOf(V value) {
         return () -> value;
     }

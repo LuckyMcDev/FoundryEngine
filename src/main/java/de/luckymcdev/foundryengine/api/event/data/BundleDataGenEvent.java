@@ -6,22 +6,15 @@ import net.neoforged.bus.api.Event;
 
 public class BundleDataGenEvent extends Event {
     private final EngineDataGenerator generator;
-    private final String namespace;
 
     public BundleDataGenEvent(
-            EngineDataGenerator generator,
-            String namespace
+            EngineDataGenerator generator
     ) {
         this.generator = generator;
-        this.namespace = namespace;
     }
 
     public EngineDataGenerator getGenerator() {
         return generator;
-    }
-
-    public String getNamespace() {
-        return namespace;
     }
 
     public void addProvider(DataProvider provider) {
