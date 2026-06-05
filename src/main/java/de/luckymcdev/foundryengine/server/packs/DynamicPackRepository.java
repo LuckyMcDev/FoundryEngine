@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.server.packs;
 
 import com.mojang.logging.LogUtils;
+import net.minecraft.SharedConstants;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.*;
@@ -13,6 +14,7 @@ import net.minecraft.world.flag.FeatureFlagSet;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -69,6 +71,12 @@ public class DynamicPackRepository implements RepositorySource {
         this.fixedPosition = fixedPosition;
     }
 
+    private static byte[] buildPackMeta(PackType packType) {
+        return "{\"pack\":{\"description\":\"\",\"pack_format\":%d}}"
+                .formatted(SharedConstants.getCurrentVersion().packVersion(packType).major())
+                .getBytes();
+    }
+
     @Override
     public void loadPacks(@NonNull Consumer<Pack> consumer) {
         List<Path> paths = pathsSupplier.get().stream()
@@ -81,31 +89,19 @@ public class DynamicPackRepository implements RepositorySource {
         }
 
         var info = new PackLocationInfo(packId, Component.literal(packTitle), PackSource.BUILT_IN, Optional.empty());
-
-        List<PackResources> children = paths.stream()
-                .map(path -> new PathPackResources(info, path, packType))
-                .map(PackResources.class::cast)
-                .toList();
-
-        Pack pack = getPack(info, children);
-
-        consumer.accept(pack);
-    }
-
-    private @NonNull Pack getPack(PackLocationInfo info, List<PackResources> children) {
-        PackResources composite = new CompositePackResources(info, children, packType);
+        byte[] packMeta = buildPackMeta(packType);
 
         Pack pack = new Pack(
                 info,
                 new Pack.ResourcesSupplier() {
                     @Override
-                    public PackResources openPrimary(PackLocationInfo info) {
-                        return composite;
+                    public @NonNull PackResources openPrimary(PackLocationInfo info) {
+                        return new Resources(info, paths, packType, packMeta);
                     }
 
                     @Override
                     public PackResources openFull(PackLocationInfo info, Pack.Metadata metadata) {
-                        return composite;
+                        return new Resources(info, paths, packType, packMeta);
                     }
                 },
                 new Pack.Metadata(
@@ -116,36 +112,47 @@ public class DynamicPackRepository implements RepositorySource {
                 ),
                 new PackSelectionConfig(true, position, fixedPosition)
         );
-        return pack;
+
+        consumer.accept(pack);
     }
 
-    private static final class PathPackResources extends AbstractPackResources {
-        private final Path root;
+    private static final class Resources extends AbstractPackResources {
+        private final List<Path> roots;
         private final PackType packType;
+        private final byte[] packMeta;
 
-        private PathPackResources(PackLocationInfo info, Path root, PackType packType) {
+        private Resources(PackLocationInfo info, List<Path> roots, PackType packType, byte[] packMeta) {
             super(info);
-            this.root = root;
+            this.roots = roots;
             this.packType = packType;
+            this.packMeta = packMeta;
         }
 
         @Override
-        public IoSupplier<InputStream> getRootResource(String... paths) {
+        public IoSupplier<@NonNull InputStream> getRootResource(String... paths) {
+            if (paths.length == 1 && "pack.mcmeta".equals(paths[0])) {
+                return () -> new ByteArrayInputStream(packMeta);
+            }
+
             String relative = String.join("/", paths);
-            Path file = root.resolve(relative);
-            if (Files.exists(file)) {
-                return () -> Files.newInputStream(file);
+            for (Path root : roots) {
+                Path file = root.resolve(relative);
+                if (Files.exists(file)) {
+                    return () -> Files.newInputStream(file);
+                }
             }
             return null;
         }
 
         @Override
-        public IoSupplier<InputStream> getResource(@NonNull PackType type, @NonNull Identifier location) {
+        public IoSupplier<@NonNull InputStream> getResource(@NonNull PackType type, @NonNull Identifier location) {
             if (type != packType) return null;
 
-            Path file = root.resolve(location.getNamespace()).resolve(location.getPath());
-            if (Files.exists(file)) {
-                return IoSupplier.create(file);
+            for (Path root : roots) {
+                Path path = root.resolve(location.getNamespace()).resolve(location.getPath());
+                if (Files.exists(path)) {
+                    return IoSupplier.create(path);
+                }
             }
             return null;
         }
@@ -154,20 +161,22 @@ public class DynamicPackRepository implements RepositorySource {
         public void listResources(@NonNull PackType type, @NonNull String namespace, @NonNull String prefix, @NonNull ResourceOutput output) {
             if (type != packType) return;
 
-            Path namespacePath = root.resolve(namespace);
-            if (!Files.isDirectory(namespacePath)) return;
+            for (Path root : roots) {
+                Path namespacePath = root.resolve(namespace);
+                if (!Files.isDirectory(namespacePath)) continue;
 
-            try (var files = Files.walk(namespacePath)) {
-                files.filter(Files::isRegularFile).forEach(file -> {
-                    String relative = namespacePath.relativize(file).toString().replace('\\', '/');
-                    if (relative.startsWith(prefix)) {
-                        output.accept(
-                                Identifier.fromNamespaceAndPath(namespace, relative),
-                                () -> Files.newInputStream(file)
-                        );
-                    }
-                });
-            } catch (IOException ignored) {
+                try (var files = Files.walk(namespacePath)) {
+                    files.filter(Files::isRegularFile).forEach(file -> {
+                        String relative = namespacePath.relativize(file).toString().replace('\\', '/');
+                        if (relative.startsWith(prefix)) {
+                            output.accept(
+                                    Identifier.fromNamespaceAndPath(namespace, relative),
+                                    () -> Files.newInputStream(file)
+                            );
+                        }
+                    });
+                } catch (IOException ignored) {
+                }
             }
         }
 
@@ -176,12 +185,14 @@ public class DynamicPackRepository implements RepositorySource {
             if (type != packType) return Set.of();
 
             Set<String> namespaces = new HashSet<>();
-            if (!Files.isDirectory(root)) return namespaces;
-            try (var stream = Files.list(root)) {
-                stream.filter(Files::isDirectory)
-                        .map(p -> p.getFileName().toString())
-                        .forEach(namespaces::add);
-            } catch (IOException ignored) {
+            for (Path root : roots) {
+                if (!Files.isDirectory(root)) continue;
+                try (var stream = Files.list(root)) {
+                    stream.filter(Files::isDirectory)
+                            .map(p -> p.getFileName().toString())
+                            .forEach(namespaces::add);
+                } catch (IOException ignored) {
+                }
             }
             return namespaces;
         }
