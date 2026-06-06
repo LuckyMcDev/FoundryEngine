@@ -266,20 +266,23 @@ public class FoundryEngineMod {
         PackType type = event.getPackType();
         var bundlesRepo = new DynamicPackRepository(
                 type,
-                "foundry_bundles",
+                "foundryengine/bundles",
                 "FoundryEngine: Bundles",
+                "Foundry Engine Bundle Resource Files",
                 () -> Common.getBundleManager().getBundles().stream()
                         .map(b -> type == PackType.CLIENT_RESOURCES
                                 ? b.bundleFiles().assets()
                                 : b.bundleFiles().data())
                         .filter(Files::exists)
                         .toList(),
-                Pack.Position.TOP
+                Pack.Position.TOP,
+                false
         );
         var bundlesGeneratedRepo = new DynamicPackRepository(
                 type,
-                "foundry_bundles_generated",
+                "foundryengine/bundles_generated",
                 "FoundryEngine: Generated",
+                "Foundry Engine Generated Resource Files",
                 () -> {
                     Path path = type == PackType.CLIENT_RESOURCES
                             ? BundleDataGenerator.getGeneratedAssetsPath()

@@ -43,7 +43,7 @@ public class DynamicPackRepository implements RepositorySource {
             String packTitle,
             Supplier<List<Path>> pathsSupplier
     ) {
-        this(packType, packId, packTitle, packTitle, pathsSupplier, Pack.Position.BOTTOM);
+        this(packType, packId, packTitle, packTitle, pathsSupplier, Pack.Position.BOTTOM, false);
     }
 
     public DynamicPackRepository(
