@@ -10,6 +10,10 @@ public final class CommonConfig extends EngineConfig {
             BUILDER.comment("This is just info for where you temp directory is if you need it.")
                     .define("DUMP_PACKS", Common.TEMP_DIR.toString());
 
+    public static final ModConfigSpec.ConfigValue<String> PACK_MODE =
+            BUILDER.comment("The current pack mode. Set to \"dev\" (case-insensitive) to load bundle saves directly without instancing.")
+                    .define("PACK_MODE", "");
+
     public static final ModConfigSpec.BooleanValue FILE_NAME_HASH_COMPONENTS =
             BUILDER.comment("For the Icon Exporter, If components should be MD5-hashed in file names (and an auxiliary .txt file written with the full components string).")
                     .define("FILENAME_HASH_COMPONENTS", true);

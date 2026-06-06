@@ -146,6 +146,7 @@ public class FoundryEngineModClient {
         event.register(ConsolePanel.INSTANCE);
         event.register(MainEditor.INSTANCE);
         event.register(MinecraftToolsPanel.INSTANCE);
+        event.register(DevToolsPanel.INSTANCE);
         event.register(StopwatchPanel.INSTANCE);
         event.register(InfoPanel.INSTANCE);
         event.register(CataloguePanel.INSTANCE);
