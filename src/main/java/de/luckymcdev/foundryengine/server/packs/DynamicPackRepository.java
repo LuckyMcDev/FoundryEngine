@@ -32,6 +32,7 @@ public class DynamicPackRepository implements RepositorySource {
     private final PackType packType;
     private final String packId;
     private final String packTitle;
+    private final String description;
     private final Supplier<List<Path>> pathsSupplier;
     private final Pack.Position position;
     private final boolean fixedPosition;
@@ -42,7 +43,7 @@ public class DynamicPackRepository implements RepositorySource {
             String packTitle,
             Supplier<List<Path>> pathsSupplier
     ) {
-        this(packType, packId, packTitle, pathsSupplier, Pack.Position.BOTTOM);
+        this(packType, packId, packTitle, packTitle, pathsSupplier, Pack.Position.BOTTOM);
     }
 
     public DynamicPackRepository(
@@ -52,7 +53,7 @@ public class DynamicPackRepository implements RepositorySource {
             Supplier<List<Path>> pathsSupplier,
             Pack.Position position
     ) {
-        this(packType, packId, packTitle, pathsSupplier, position, false);
+        this(packType, packId, packTitle, packTitle, pathsSupplier, position, false);
     }
 
     public DynamicPackRepository(
@@ -63,17 +64,33 @@ public class DynamicPackRepository implements RepositorySource {
             Pack.Position position,
             boolean fixedPosition
     ) {
+        this(packType, packId, packTitle, packTitle, pathsSupplier, position, fixedPosition);
+    }
+
+    public DynamicPackRepository(
+            PackType packType,
+            String packId,
+            String packTitle,
+            String description,
+            Supplier<List<Path>> pathsSupplier,
+            Pack.Position position,
+            boolean fixedPosition
+    ) {
         this.packType = packType;
         this.packId = packId;
         this.packTitle = packTitle;
+        this.description = description;
         this.pathsSupplier = pathsSupplier;
         this.position = position;
         this.fixedPosition = fixedPosition;
     }
 
-    private static byte[] buildPackMeta(PackType packType) {
-        return "{\"pack\":{\"description\":\"\",\"pack_format\":%d}}"
-                .formatted(SharedConstants.getCurrentVersion().packVersion(packType).major())
+    private static byte[] buildPackMeta(PackType packType, String description) {
+        String escaped = description
+                .replace("\\", "\\\\")
+                .replace("\"", "\\\"");
+        return "{\"pack\":{\"description\":\"%s\",\"pack_format\":%d}}"
+                .formatted(escaped, SharedConstants.getCurrentVersion().packVersion(packType).major())
                 .getBytes();
     }
 
@@ -89,7 +106,7 @@ public class DynamicPackRepository implements RepositorySource {
         }
 
         var info = new PackLocationInfo(packId, Component.literal(packTitle), PackSource.BUILT_IN, Optional.empty());
-        byte[] packMeta = buildPackMeta(packType);
+        byte[] packMeta = buildPackMeta(packType, description);
 
         Pack pack = new Pack(
                 info,
@@ -105,7 +122,7 @@ public class DynamicPackRepository implements RepositorySource {
                     }
                 },
                 new Pack.Metadata(
-                        Component.literal(packTitle),
+                        Component.literal(description),
                         PackCompatibility.COMPATIBLE,
                         FeatureFlagSet.of(),
                         List.of()

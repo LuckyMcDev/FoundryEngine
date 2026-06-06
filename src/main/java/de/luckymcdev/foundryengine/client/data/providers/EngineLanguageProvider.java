@@ -1,4 +1,4 @@
-package de.luckymcdev.foundryengine.common.data.providers.client;
+package de.luckymcdev.foundryengine.client.data.providers;
 
 import de.luckymcdev.foundryengine.api.builder.block.BlockBuilder;
 import de.luckymcdev.foundryengine.api.builder.item.ItemBuilder;

@@ -7,9 +7,7 @@ import net.neoforged.bus.api.Event;
 public class BundleDataGenEvent extends Event {
     private final EngineDataGenerator generator;
 
-    public BundleDataGenEvent(
-            EngineDataGenerator generator
-    ) {
+    public BundleDataGenEvent(EngineDataGenerator generator) {
         this.generator = generator;
     }
 

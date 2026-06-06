@@ -1,4 +1,4 @@
-package de.luckymcdev.foundryengine.common.data.providers.server.adv;
+package de.luckymcdev.foundryengine.server.data.providers.adv;
 
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.core.HolderLookup;

@@ -1,4 +1,4 @@
-package de.luckymcdev.foundryengine.common.data.providers.client;
+package de.luckymcdev.foundryengine.client.data.providers;
 
 import de.luckymcdev.foundryengine.common.builder.sound.SoundBuilderImpl;
 import net.minecraft.data.PackOutput;

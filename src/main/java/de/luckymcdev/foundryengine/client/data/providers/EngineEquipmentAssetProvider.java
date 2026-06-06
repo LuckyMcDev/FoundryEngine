@@ -1,4 +1,4 @@
-package de.luckymcdev.foundryengine.common.data.providers.client;
+package de.luckymcdev.foundryengine.client.data.providers;
 
 import net.minecraft.client.data.models.EquipmentAssetProvider;
 import net.minecraft.client.resources.model.EquipmentClientInfo;

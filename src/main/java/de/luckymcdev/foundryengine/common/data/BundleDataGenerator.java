@@ -6,25 +6,27 @@ import de.luckymcdev.foundryengine.api.builder.item.ItemBuilder;
 import de.luckymcdev.foundryengine.api.builder.recipe.RecipeBuilder;
 import de.luckymcdev.foundryengine.api.event.data.BundleDataGenEvent;
 import de.luckymcdev.foundryengine.api.event.registry.RegistryEvent;
+import de.luckymcdev.foundryengine.client.data.providers.*;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.builder.sound.SoundBuilderImpl;
 import de.luckymcdev.foundryengine.common.bundle.Bundle;
-import de.luckymcdev.foundryengine.common.data.providers.client.*;
-import de.luckymcdev.foundryengine.common.data.providers.server.EngineGlobalLootModifierProvider;
-import de.luckymcdev.foundryengine.common.data.providers.server.adv.EngineAdvancementProvider;
-import de.luckymcdev.foundryengine.common.data.providers.server.adv.EngineAdvancementSubProvider;
-import de.luckymcdev.foundryengine.common.data.providers.server.loot.EngineLootTableProvider;
-import de.luckymcdev.foundryengine.common.data.providers.server.loot.EngineLootTableSubProvider;
-import de.luckymcdev.foundryengine.common.data.providers.server.recipe.EngineRecipePrioritiesProvider;
-import de.luckymcdev.foundryengine.common.data.providers.server.recipe.EngineRecipeProvider;
-import de.luckymcdev.foundryengine.common.data.providers.server.tags.EngineBlockTagsProvider;
-import de.luckymcdev.foundryengine.common.data.providers.server.tags.EngineItemTagsProvider;
+import de.luckymcdev.foundryengine.common.bundle.BundleExceptionHandler;
+import de.luckymcdev.foundryengine.server.data.providers.EngineGlobalLootModifierProvider;
+import de.luckymcdev.foundryengine.server.data.providers.adv.EngineAdvancementProvider;
+import de.luckymcdev.foundryengine.server.data.providers.adv.EngineAdvancementSubProvider;
+import de.luckymcdev.foundryengine.server.data.providers.loot.EngineLootTableProvider;
+import de.luckymcdev.foundryengine.server.data.providers.loot.EngineLootTableSubProvider;
+import de.luckymcdev.foundryengine.server.data.providers.recipe.EngineRecipePrioritiesProvider;
+import de.luckymcdev.foundryengine.server.data.providers.recipe.EngineRecipeProvider;
+import de.luckymcdev.foundryengine.server.data.providers.tags.EngineBlockTagsProvider;
+import de.luckymcdev.foundryengine.server.data.providers.tags.EngineItemTagsProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.LayeredRegistryAccess;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.server.RegistryLayer;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.NeoForge;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
@@ -63,6 +65,12 @@ public class BundleDataGenerator {
         }
         EngineDataGenerator customGen = new EngineDataGenerator(OUTPUT_ROOT);
         NeoForge.EVENT_BUS.post(new BundleDataGenEvent(customGen));
+        try {
+            LOGGER.info("Custom data generator is run");
+            customGen.run();
+        } catch (IOException e) {
+            BundleExceptionHandler.handle("Custom Data Generator Crashed.", e);
+        }
     }
 
     public static void run(Bundle bundle) {
@@ -123,11 +131,13 @@ public class BundleDataGenerator {
             gen.addProvider(new EngineGlobalLootModifierProvider(pOut, lookupProvider, namespace));
 
             // Client
-            gen.addProvider(new EngineLanguageProvider(pOut, "en_us", namespace, blockBuilders, itemBuilders, soundBuilders));
-            gen.addProvider(new EngineModelProvider(pOut, namespace, blockBuilders, itemBuilders));
-            gen.addProvider(new EngineEquipmentAssetProvider(pOut));
-            gen.addProvider(new EngineParticleDescriptionProvider(pOut));
-            gen.addProvider(new EngineSoundDefinitionsProvider(pOut, namespace, soundBuilders));
+            if (FMLEnvironment.getDist().isClient()) {
+                gen.addProvider(new EngineLanguageProvider(pOut, "en_us", namespace, blockBuilders, itemBuilders, soundBuilders));
+                gen.addProvider(new EngineModelProvider(pOut, namespace, blockBuilders, itemBuilders));
+                gen.addProvider(new EngineEquipmentAssetProvider(pOut));
+                gen.addProvider(new EngineParticleDescriptionProvider(pOut));
+                gen.addProvider(new EngineSoundDefinitionsProvider(pOut, namespace, soundBuilders));
+            }
 
             gen.run();
         } catch (IOException e) {

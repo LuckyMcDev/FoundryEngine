@@ -1,4 +1,4 @@
-package de.luckymcdev.foundryengine.common.data.providers.server.recipe;
+package de.luckymcdev.foundryengine.server.data.providers.recipe;
 
 import de.luckymcdev.foundryengine.api.builder.recipe.RecipeBuilder;
 import net.minecraft.core.HolderLookup;

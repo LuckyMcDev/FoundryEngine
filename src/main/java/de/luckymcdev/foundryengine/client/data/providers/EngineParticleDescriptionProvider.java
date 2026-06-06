@@ -1,4 +1,4 @@
-package de.luckymcdev.foundryengine.common.data.providers.client;
+package de.luckymcdev.foundryengine.client.data.providers;
 
 import net.minecraft.data.PackOutput;
 import net.neoforged.neoforge.client.data.ParticleDescriptionProvider;

@@ -1,4 +1,4 @@
-package de.luckymcdev.foundryengine.common.data.providers.server.tags;
+package de.luckymcdev.foundryengine.server.data.providers.tags;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;

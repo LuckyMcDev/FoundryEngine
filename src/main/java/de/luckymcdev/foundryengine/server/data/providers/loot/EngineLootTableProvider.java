@@ -1,4 +1,4 @@
-package de.luckymcdev.foundryengine.common.data.providers.server.loot;
+package de.luckymcdev.foundryengine.server.data.providers.loot;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
