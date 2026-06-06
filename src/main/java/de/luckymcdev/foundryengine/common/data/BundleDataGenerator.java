@@ -63,10 +63,14 @@ public class BundleDataGenerator {
         for (Bundle bundle : Common.getBundleManager().getBundles()) {
             run(bundle);
         }
-        EngineDataGenerator customGen = new EngineDataGenerator(OUTPUT_ROOT);
-        NeoForge.EVENT_BUS.post(new BundleDataGenEvent(customGen));
         try {
-            LOGGER.info("Custom data generator is run");
+            LOGGER.info("Custom data generator running");
+            EngineDataGenerator customGen = new EngineDataGenerator(OUTPUT_ROOT);
+            LayeredRegistryAccess<RegistryLayer> layeredAccess = RegistryLayer.createRegistryAccess();
+            CompletableFuture<HolderLookup.Provider> lookupProvider = CompletableFuture.completedFuture(
+                    layeredAccess.compositeAccess()
+            );
+            NeoForge.EVENT_BUS.post(new BundleDataGenEvent(customGen, lookupProvider));
             customGen.run();
         } catch (IOException e) {
             BundleExceptionHandler.handle("Custom Data Generator Crashed.", e);
