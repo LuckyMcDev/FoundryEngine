@@ -282,6 +282,25 @@ public class CutsceneTimelinePanel extends EditorPanel {
         }
 
         ImGui.separator();
+        ImGui.text("Per-Node Hold Ticks");
+        var holdTicks = c.getAnchorHoldTicks();
+        if (holdTicks.size() != nodes) {
+            // ensureAnchorRotations was called; sync
+        }
+        for (int ni = 0; ni < nodes && ni < holdTicks.size(); ni++) {
+            ImGui.pushID("hold_" + ni);
+            ImGui.setNextItemWidth(80);
+            int ht = holdTicks.get(ni);
+            ImInt htInput = new ImInt(ht);
+            String label = "Node " + ni + " Hold##hold";
+            if (ImGui.inputInt(label, htInput)) {
+                c.setAnchorHoldTicks(ni, Math.max(0, htInput.get()));
+                markDirty();
+            }
+            ImGui.popID();
+        }
+
+        ImGui.separator();
         if (mc.player != null && ModItems.EDITOR_ITEM != null) {
             boolean hasItem = mc.player.getMainHandItem().getItem() == ModItems.EDITOR_ITEM
                     || mc.player.getOffhandItem().getItem() == ModItems.EDITOR_ITEM;
@@ -346,18 +365,48 @@ public class CutsceneTimelinePanel extends EditorPanel {
             int anchors = c.getAnchorPointCount();
             int len = Math.max(1, c.getDefaultLength());
             int hs = Math.max(0, c.getDefaultHoldStart());
+            var holdTicks = c.getAnchorHoldTicks();
             int nodeCol = (new Color(c.getColorArgb()).argb() & 0x00FFFFFF) | 0xB0000000;
+            int holdCol = (new Color(c.getColorArgb()).argb() & 0x00FFFFFF) | 0x30000000;
+
+            // Compute anchor tick positions accounting for prior holds and segment durations
+            double[] keys = c.getAnchorDistanceKeys();
+            int[] anchorTicks = new int[anchors];
+            anchorTicks[0] = 0;
+            if (anchors > 1) {
+                double totalWeight = 0;
+                for (int i = 0; i < anchors - 1; i++) {
+                    totalWeight += keys[i + 1] - keys[i];
+                }
+                if (totalWeight <= 0) totalWeight = 1;
+
+                int cursor = hs;
+                for (int seg = 0; seg < anchors - 1; seg++) {
+                    double segWeight = keys[seg + 1] - keys[seg];
+                    cursor += Math.round((segWeight / totalWeight) * len);
+                    anchorTicks[seg + 1] = cursor;
+                    cursor += holdTicks.get(seg + 1);
+                }
+            }
+
             for (int i = 0; i < anchors; i++) {
-                double distKey = getAnchorDistanceKey(c, i, anchors);
-                int tick = Mth.clamp(hs + (int) Math.round(distKey * len), 0, totalTicks);
+                int tick = Mth.clamp(anchorTicks[i], 0, totalTicks);
                 float x = minX + padding + (tick * zoomPxPerTick);
                 draw.addLine(x, minY + 18f, x, baseY, nodeCol, 2f);
+
+                // Draw hold zone after interior anchors
+                if (i > 0 && i < anchors - 1) {
+                    int holdEndTick = Mth.clamp(anchorTicks[i] + holdTicks.get(i), 0, totalTicks);
+                    float hx1 = x;
+                    float hx2 = minX + padding + (holdEndTick * zoomPxPerTick);
+                    draw.addRectFilled(hx1, minY + 18f, hx2, baseY, holdCol);
+                }
             }
 
             var attachments = c.getAttachments();
             for (int i = 0; i < attachments.size(); i++) {
                 var att = attachments.get(i);
-                int startTick = hs + Math.round(att.getAt() * len);
+                int startTick = computeTickForT(c, Math.clamp(att.getAt(), 0f, 1f), len, hs);
                 float duration = att.getDuration();
                 int durationTicks = Math.max(1, Math.round(duration * len));
                 float x = minX + padding + (startTick * zoomPxPerTick);
@@ -398,7 +447,7 @@ public class CutsceneTimelinePanel extends EditorPanel {
                 int picked = -1;
                 for (int i = 0; i < attachments.size(); i++) {
                     var att = attachments.get(i);
-                    int et = hs + Math.round(Mth.clamp(att.getAt(), 0f, 1f) * len);
+                    int et = computeTickForT(c, Mth.clamp(att.getAt(), 0f, 1f), len, hs);
                     float ex = minX + padding + (Mth.clamp(et, 0, totalTicks) * zoomPxPerTick);
                     float dur = att.getDuration();
                     float exEnd = ex + Math.max(zoomPxPerTick, (dur * len * zoomPxPerTick));
@@ -416,7 +465,9 @@ public class CutsceneTimelinePanel extends EditorPanel {
             ImGui.endChild();
         }
 
-        ImGui.textDisabled("Playhead: " + previewTick.get() + " ticks");
+        int ah = c.getTotalAnchorHoldTicks();
+        String holdInfo = ah > 0 ? "  |  Anchor holds: " + ah + "t" : "";
+        ImGui.textDisabled("Playhead: " + previewTick.get() + " ticks / " + totalTicks + " total" + holdInfo);
     }
 
     private void renderEffectsEditor(Cutscene c, int totalTicks) {
@@ -667,7 +718,7 @@ public class CutsceneTimelinePanel extends EditorPanel {
         int len = Math.max(1, c.getDefaultLength());
         int hs = Math.max(0, c.getDefaultHoldStart());
         int he = Math.max(0, c.getDefaultHoldEnd());
-        return len + hs + he;
+        return len + hs + he + c.getTotalAnchorHoldTicks();
     }
 
     private void applyPreviewCamera(Cutscene c, int totalTicks) {
@@ -678,23 +729,66 @@ public class CutsceneTimelinePanel extends EditorPanel {
 
         int len = Math.max(1, c.getDefaultLength());
         int hs = Math.max(0, c.getDefaultHoldStart());
+        int he = Math.max(0, c.getDefaultHoldEnd());
         int tick = Math.min(previewTick.get(), totalTicks);
 
-        float t;
-        if (tick <= hs) t = 0f;
-        else if (tick >= hs + len) t = 1f;
-        else t = (tick - hs) / (float) len;
-
+        float t = c.computeProgress(tick, len, hs, he);
         Client.getCutsceneManager().setPreview(c, t);
     }
 
     private float computeAtFromPlayhead(Cutscene c, int totalTicks) {
         int len = Math.max(1, c.getDefaultLength());
         int hs = Math.max(0, c.getDefaultHoldStart());
+        int he = Math.max(0, c.getDefaultHoldEnd());
         int tick = Math.max(0, Math.min(previewTick.get(), totalTicks));
-        if (tick <= hs) return 0f;
-        if (tick >= hs + len) return 1f;
-        return (tick - hs) / (float) len;
+        return c.computeProgress(tick, len, hs, he);
+    }
+
+    /**
+     * Converts a path progress t (0..1) to a timeline tick position, accounting for per-anchor holds.
+     */
+    private int computeTickForT(Cutscene c, float t, int len, int hs) {
+        if (t <= 0) return 0;
+        int totalTicks = getTotalTicks(c);
+        if (t >= 1) return totalTicks;
+
+        double[] keys = c.getAnchorDistanceKeys();
+        var holdTicks = c.getAnchorHoldTicks();
+        int anchorCount = holdTicks.size();
+        int segmentCount = anchorCount - 1;
+
+        if (segmentCount <= 0) return hs;
+
+        // Find which segment t falls into
+        int seg = segmentCount - 1;
+        for (int i = 0; i < segmentCount; i++) {
+            if (t >= keys[i] && t <= keys[i + 1]) {
+                seg = i;
+                break;
+            }
+        }
+
+        double totalWeight = 0;
+        for (int i = 0; i < segmentCount; i++) {
+            totalWeight += keys[i + 1] - keys[i];
+        }
+        if (totalWeight <= 0) totalWeight = 1;
+
+        int tick = hs;
+        for (int s = 0; s < seg; s++) {
+            double sw = keys[s + 1] - keys[s];
+            tick += Math.round((sw / totalWeight) * len);
+            tick += holdTicks.get(s + 1);
+        }
+
+        double sw = keys[seg + 1] - keys[seg];
+        int segDuration = Math.round((float) (sw / totalWeight) * len);
+        if (segDuration > 0 && keys[seg + 1] > keys[seg]) {
+            double localT = (t - keys[seg]) / (keys[seg + 1] - keys[seg]);
+            tick += Math.round(localT * segDuration);
+        }
+
+        return Math.min(tick, totalTicks);
     }
 
     private double getAnchorDistanceKey(Cutscene c, int anchorIndex, int anchors) {

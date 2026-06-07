@@ -90,7 +90,8 @@ public class ClientCutsceneManager {
             setCutscene(cutsceneQueue.getFirst());
         }
 
-        float total = currentLengthInTicks + holdTimeStart + holdTimeEnd;
+        float total = currentLengthInTicks + holdTimeStart + holdTimeEnd
+                + (currentCutscene != null ? currentCutscene.cutscene.getTotalAnchorHoldTicks() : 0);
         if (currentAgeInTicks >= total) {
             if (cutsceneQueue.isEmpty()) {
                 currentCutscene = null;
@@ -105,7 +106,7 @@ public class ClientCutsceneManager {
         currentAgeInTicks += deltaTicks;
         if (currentCutscene == null) return;
 
-        float t = net.minecraft.util.Mth.clamp((currentAgeInTicks - holdTimeStart) / currentLengthInTicks, 0f, 1f);
+        float t = currentCutscene.cutscene.computeProgress(currentAgeInTicks, currentLengthInTicks, holdTimeStart, holdTimeEnd);
         float eased = currentLerpType.compute(t);
 
         float partial = mc.getDeltaTracker().getGameTimeDeltaPartialTick(true);

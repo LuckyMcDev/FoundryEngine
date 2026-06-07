@@ -90,7 +90,8 @@ public class CutsceneRenderer {
     private static void renderCutscene(Cutscene cutscene) {
         var anchors = cutscene.path.getAnchorPoints();
         var rots = cutscene.getAnchorRotations();
-        int count = Math.min(anchors.size(), rots.size());
+        var holdTicks = cutscene.getAnchorHoldTicks();
+        int count = Math.min(Math.min(anchors.size(), rots.size()), holdTicks.size());
 
         for (int i = 0; i < count; i++) {
             Vec3 pos = anchors.get(i).getPos();
@@ -102,6 +103,13 @@ public class CutsceneRenderer {
             else color = new Color(base.r(), base.g(), base.b(), 0.439f);
 
             renderPointsRelative(pos, i == 0 || i == count - 1 ? ENDPOINT_RELATIVE_POINTS : NODE_RELATIVE_POINTS, rot, color);
+
+            // Draw a larger ring around anchors with hold ticks
+            int hold = holdTicks.get(i);
+            if (hold > 0) {
+                Color holdColor = new Color(0xFFFFCC00);
+                HandleRenderer.renderHandle(pos, POINT_SIZE * 2.5, holdColor);
+            }
         }
 
         renderBezierPath(cutscene);

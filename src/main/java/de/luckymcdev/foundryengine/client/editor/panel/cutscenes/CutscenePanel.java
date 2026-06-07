@@ -233,6 +233,18 @@ public class CutscenePanel extends EditorPanel {
             ClientPacketDistributor.sendToServer(new CutscenePacket(Client.getCutsceneEditor().toNbt()));
             setStatus("Rotation updated for node " + selectedNodeIndex.get() + ".");
         }
+
+        ImGui.spacing();
+        ImGui.separator();
+        ImGui.text("Hold at Node");
+        int holdAtNode = c.getAnchorHoldTicks(selectedNodeIndex.get());
+        ImInt holdInput = new ImInt(holdAtNode);
+        ImGui.setNextItemWidth(100);
+        if (ImGui.inputInt("Hold (ticks)##cs_node_hold", holdInput)) {
+            c.setAnchorHoldTicks(selectedNodeIndex.get(), Math.max(0, holdInput.get()));
+            ClientPacketDistributor.sendToServer(new CutscenePacket(Client.getCutsceneEditor().toNbt()));
+            setStatus("Hold set to " + holdInput.get() + " ticks for node " + selectedNodeIndex.get() + ".");
+        }
     }
 
     private void renderPlaybackControls(Cutscene c) {
