@@ -1,5 +1,6 @@
 package de.luckymcdev.foundryengine.common.easing;
 
+import de.luckymcdev.foundryengine.common.util.color.Color;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
@@ -79,9 +80,9 @@ public class BezierPoint {
         return this.path;
     }
 
-    private int getColor() {
-        int red = 0xFFFFFF00;
-        int blue = 0xFF0000FF;
+    private Color getColor() {
+        Color red = new Color(0xFFFFFF00);
+        Color blue = new Color(0xFF0000FF);
         if (this.isTangent) {
             if (this.getRoot().isFirst())
                 return red;
@@ -93,7 +94,7 @@ public class BezierPoint {
             if (this.isLast())
                 return blue;
         }
-        return 0xFF808080;
+        return new Color(0xFF808080);
     }
 
     public boolean isEnd() {

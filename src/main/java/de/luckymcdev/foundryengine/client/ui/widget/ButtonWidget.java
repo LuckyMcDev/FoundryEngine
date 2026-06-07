@@ -8,37 +8,37 @@ import net.minecraft.client.renderer.RenderPipelines;
 
 public class ButtonWidget extends PanelWidget {
     private final ClickEvent clickEvent;
-    private int hoverColor = Color.GRAY.rgb();
+    private Color hoverColor = Color.GRAY;
 
     public ButtonWidget(UIVec position, UIVec size, ClickEvent clickEvent) {
         super(position, size);
         this.clickEvent = clickEvent;
     }
 
-    public int getHoverColor() {
+    public Color getHoverColor() {
         return this.hoverColor;
     }
 
     public <T extends ButtonWidget> T setHoverColor(int hoverColor) {
-        this.hoverColor = hoverColor;
+        this.hoverColor = new Color(hoverColor);
         return (T) this;
     }
 
     public <T extends ButtonWidget> T setHoverColor(Color hoverColor) {
-        this.hoverColor = hoverColor.rgb();
+        this.hoverColor = hoverColor;
         return (T) this;
     }
 
     @Override
     void renderBackground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float tickDelta, boolean debug) {
         UIArea drawArea = this.getRenderArea(tickDelta);
-        int drawColor = this.contains(mouseX, mouseY) ? hoverColor : backgroundColor;
+        Color drawColor = this.contains(mouseX, mouseY) ? hoverColor : backgroundColor;
         if (borderThickness > 0) {
-            guiGraphics.fill(RenderPipelines.GUI, drawArea.x, drawArea.y, drawArea.x + drawArea.width, drawArea.y + drawArea.height, borderColor);
+            guiGraphics.fill(RenderPipelines.GUI, drawArea.x, drawArea.y, drawArea.x + drawArea.width, drawArea.y + drawArea.height, borderColor.argb());
             UIArea inner = drawArea.shrink(borderThickness);
-            guiGraphics.fill(RenderPipelines.GUI, inner.x, inner.y, inner.x + inner.width, inner.y + inner.height, drawColor);
+            guiGraphics.fill(RenderPipelines.GUI, inner.x, inner.y, inner.x + inner.width, inner.y + inner.height, drawColor.argb());
         } else {
-            guiGraphics.fill(RenderPipelines.GUI, drawArea.x, drawArea.y, drawArea.x + drawArea.width, drawArea.y + drawArea.height, drawColor);
+            guiGraphics.fill(RenderPipelines.GUI, drawArea.x, drawArea.y, drawArea.x + drawArea.width, drawArea.y + drawArea.height, drawColor.argb());
         }
     }
 

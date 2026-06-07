@@ -1,9 +1,9 @@
 package de.luckymcdev.foundryengine.common.blueprint.graph;
 
 import de.luckymcdev.foundryengine.common.blueprint.nodes.PinRenderer;
+import de.luckymcdev.foundryengine.common.util.color.Color;
 import org.jetbrains.annotations.Nullable;
 
-import java.awt.*;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -11,14 +11,14 @@ import java.util.Set;
 public class NodePinType<T> {
     public final String displayName;
     public final NodePinShape defaultShape;
-    public final int color;
+    public final Color color;
     public final List<NodePin> singleOutput;
     public final List<NodePin> singleRequiredInput;
     public final @Nullable List<String> enumValues;
     public final @Nullable PinRenderer renderer;
     private final Set<String> compatibleNames;
 
-    public NodePinType(String displayName, NodePinShape defaultShape, int color,
+    public NodePinType(String displayName, NodePinShape defaultShape, Color color,
                        @Nullable List<String> enumValues, @Nullable PinRenderer renderer,
                        String... compatibleWith) {
         this.displayName = displayName;
@@ -62,7 +62,7 @@ public class NodePinType<T> {
     /**
      * Explicit color + renderer.
      */
-    public NodePinType(String displayName, NodePinShape defaultShape, int color,
+    public NodePinType(String displayName, NodePinShape defaultShape, Color color,
                        @Nullable PinRenderer renderer, String... compatibleWith) {
         this(displayName, defaultShape, color, null, renderer, compatibleWith);
     }
@@ -75,9 +75,9 @@ public class NodePinType<T> {
         this(displayName, defaultShape, deriveColor(displayName), null, renderer, compatibleWith);
     }
 
-    private static int deriveColor(String name) {
+    private static Color deriveColor(String name) {
         float hue = (name.hashCode() & 0x7FFF) / 32767f;
-        return 0xFF000000 | Color.HSBtoRGB(hue, 0.75f, 0.9f);
+        return new Color(0xFF000000 | java.awt.Color.HSBtoRGB(hue, 0.75f, 0.9f));
     }
 
     public NodePin output(String label) {
@@ -100,16 +100,16 @@ public class NodePinType<T> {
     }
 
     public float r() {
-        return ((color >> 16) & 0xFF) / 255f;
+        return color.r();
     }
 
     public float g() {
-        return ((color >> 8) & 0xFF) / 255f;
+        return color.g();
     }
 
     public float b() {
-        return (color & 0xFF) / 255f;
+        return color.b();
     }
 
-    public float a() { return ((color >> 24) & 0xFF) / 255f; }
+    public float a() { return color.a(); }
 }

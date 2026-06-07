@@ -16,6 +16,7 @@ import de.luckymcdev.foundryengine.common.cutscene.util.LerpType;
 import de.luckymcdev.foundryengine.common.cutscene.util.ScreenEffectType;
 import de.luckymcdev.foundryengine.common.item.ModItems;
 import de.luckymcdev.foundryengine.common.network.packets.editor.CutscenePacket;
+import de.luckymcdev.foundryengine.common.util.color.Color;
 import imgui.ImGui;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiSelectableFlags;
@@ -92,12 +93,9 @@ public class CutsceneTimelinePanel extends EditorPanel {
                     boolean sel = selectedName != null && selectedName.equals(c.getName());
 
                     ImGui.pushID(i);
-                    int argb = c.getColorArgb();
+                    Color color = new Color(c.getColorArgb());
                     ImGui.colorButton("##cs_color",
-                            ((argb >> 16) & 0xFF) / 255f,
-                            ((argb >> 8) & 0xFF) / 255f,
-                            (argb & 0xFF) / 255f,
-                            ((argb >> 24) & 0xFF) / 255f,
+                            color.r(), color.g(), color.b(), color.a(),
                             0, 12, 12);
                     ImGui.sameLine();
 
@@ -348,7 +346,7 @@ public class CutsceneTimelinePanel extends EditorPanel {
             int anchors = c.getAnchorPointCount();
             int len = Math.max(1, c.getDefaultLength());
             int hs = Math.max(0, c.getDefaultHoldStart());
-            int nodeCol = 0xB0000000 | (c.getColorArgb() & 0x00FFFFFF);
+            int nodeCol = (new Color(c.getColorArgb()).argb() & 0x00FFFFFF) | 0xB0000000;
             for (int i = 0; i < anchors; i++) {
                 double distKey = getAnchorDistanceKey(c, i, anchors);
                 int tick = Mth.clamp(hs + (int) Math.round(distKey * len), 0, totalTicks);

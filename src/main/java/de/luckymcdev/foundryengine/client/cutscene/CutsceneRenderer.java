@@ -5,6 +5,7 @@ import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.cutscene.model.Cutscene;
 import de.luckymcdev.foundryengine.common.easing.BezierPoint;
 import de.luckymcdev.foundryengine.common.easing.BezierSpline;
+import de.luckymcdev.foundryengine.common.util.color.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
@@ -95,11 +96,10 @@ public class CutsceneRenderer {
             Vec3 pos = anchors.get(i).getPos();
             Vec2 rot = rots.get(i);
 
-            int base = cutscene.getColorArgb();
-            int color;
-            if (i == 0) color = (0xA0000000) | (base & 0x00FFFFFF);
-            else if (i == count - 1) color = (0xA0000000) | (base & 0x00FFFFFF);
-            else color = (0x70000000) | (base & 0x00FFFFFF);
+            Color base = cutscene.getColor();
+            Color color;
+            if (i == 0 || i == count - 1) color = new Color(base.r(), base.g(), base.b(), 0.627f);
+            else color = new Color(base.r(), base.g(), base.b(), 0.439f);
 
             renderPointsRelative(pos, i == 0 || i == count - 1 ? ENDPOINT_RELATIVE_POINTS : NODE_RELATIVE_POINTS, rot, color);
         }
@@ -108,7 +108,7 @@ public class CutsceneRenderer {
     }
 
     private static void renderBezierPath(Cutscene cutscene) {
-        int lineColor = cutscene.getColorArgb();
+        Color lineColor = cutscene.getColor();
         for (BezierSpline spline : cutscene.path.splines) {
             double delta = 0.01;
             for (double d = 0.00; d < 1; d += delta) {
@@ -127,9 +127,9 @@ public class CutsceneRenderer {
     private static void renderBezierPoint(LivingEntity viewer, BezierPoint point) {
         if (viewer.getEyePosition().distanceTo(point.getPos()) < 0.1) return;
 
-        int color = getBezierPointColor(point);
-        if (point.isHovered(viewer)) color = 0xFFFFFFFF;
-        if (point.getPath().isSinglePoint()) color = 0xFFFF00FF;
+        Color color = getBezierPointColor(point);
+        if (point.isHovered(viewer)) color = Color.WHITE;
+        if (point.getPath().isSinglePoint()) color = new Color(0xFFFF00FF);
 
         if (point.isTangent()) {
             BezierPoint root = point.getRoot();
@@ -141,9 +141,9 @@ public class CutsceneRenderer {
         HandleRenderer.renderHandle(point.getPos(), POINT_SIZE, color);
     }
 
-    private static int getBezierPointColor(BezierPoint point) {
-        int red = 0xFFFFFF00;
-        int blue = 0xFF0000FF;
+    private static Color getBezierPointColor(BezierPoint point) {
+        Color red = new Color(0xFFFFFF00);
+        Color blue = new Color(0xFF0000FF);
         if (point.isTangent()) {
             BezierPoint root = point.getRoot();
             if (root != null) {
@@ -154,18 +154,14 @@ public class CutsceneRenderer {
             if (point.isFirst()) return red;
             if (point.isLast()) return blue;
         }
-        return 0xFF808080;
+        return new Color(0xFF808080);
     }
 
-    private static int scaleAlpha(int color, float alpha) {
-        int a = (int) ((color >> 24 & 0xFF) * alpha);
-        int r = (color >> 16) & 0xFF;
-        int g = (color >> 8) & 0xFF;
-        int b = color & 0xFF;
-        return (a << 24) | (r << 16) | (g << 8) | b;
+    private static Color scaleAlpha(Color color, float alpha) {
+        return new Color(color.r(), color.g(), color.b(), color.a() * alpha);
     }
 
-    private static void renderPointsRelative(Vec3 origin, List<Vec3> relativePoints, Vec2 rot, int color) {
+    private static void renderPointsRelative(Vec3 origin, List<Vec3> relativePoints, Vec2 rot, Color color) {
         ArrayList<Vec3> translatedPoints = new ArrayList<>();
         for (Vec3 point : relativePoints) {
             translatedPoints.add(rotatePointRelative(origin, point, rot));

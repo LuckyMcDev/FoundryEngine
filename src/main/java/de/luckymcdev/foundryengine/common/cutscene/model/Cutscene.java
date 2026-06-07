@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.common.cutscene.model;
 
 import de.luckymcdev.foundryengine.common.easing.BezierPath;
 import de.luckymcdev.foundryengine.common.easing.BezierPoint;
+import de.luckymcdev.foundryengine.common.util.color.Color;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.util.Mth;
@@ -17,7 +18,7 @@ public class Cutscene {
     private final String name;
     private final ArrayList<Vec2> anchorRotations = new ArrayList<>();
     private final ArrayList<CutsceneAttachment> attachments = new ArrayList<>();
-    private int colorArgb;
+    private Color color;
     private int defaultLength = 60;
     private int defaultHoldStart = 0;
     private int defaultHoldEnd = 0;
@@ -26,7 +27,7 @@ public class Cutscene {
     public Cutscene(String name, Vec2 initialRot, Vec2 finalRot, BezierPath path) {
         this.name = name;
         this.path = path;
-        this.colorArgb = defaultColorFromName(name);
+        this.color = defaultColorFromName(name);
         initAnchorRotationsFromEndpoints(initialRot, finalRot);
     }
 
@@ -47,7 +48,7 @@ public class Cutscene {
         Vec2 finalRot = new Vec2(tag.getFloatOr("FinalPitch", 0f), tag.getFloatOr("FinalYaw", 0f));
 
         Cutscene cutscene = new Cutscene(name, initRot, finalRot, path);
-        cutscene.colorArgb = tag.getIntOr("Color", defaultColorFromName(name));
+        cutscene.color = new Color(tag.getIntOr("Color", defaultColorFromName(name).argb()));
         if (!rots.isEmpty()) {
             cutscene.anchorRotations.clear();
             cutscene.anchorRotations.addAll(rots);
@@ -89,13 +90,13 @@ public class Cutscene {
         return cutscene;
     }
 
-    private static int defaultColorFromName(String name) {
+    private static Color defaultColorFromName(String name) {
         if (name == null) name = "cutscene";
         int h = name.hashCode();
         // Stable, high-contrast-ish palette via HSV.
         float hue = ((h >>> 1) & 0xFFFF) / 65535f;
         int rgb = Mth.hsvToRgb(hue, 0.65f, 0.95f); // 0xRRGGBB
-        return 0xFF000000 | rgb;
+        return new Color(0xFF000000 | rgb);
     }
 
     /**
@@ -192,7 +193,7 @@ public class Cutscene {
 
         CompoundTag tag = new CompoundTag();
         tag.putString("Name", this.name);
-        tag.putInt("Color", this.colorArgb);
+        tag.putInt("Color", this.color.argb());
         tag.putInt("DefaultLength", this.defaultLength);
         tag.putInt("DefaultHoldStart", this.defaultHoldStart);
         tag.putInt("DefaultHoldEnd", this.defaultHoldEnd);
@@ -225,12 +226,20 @@ public class Cutscene {
         return this.path.getAnchorPointCount();
     }
 
+    public Color getColor() {
+        return this.color;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
+    }
+
     public int getColorArgb() {
-        return this.colorArgb;
+        return this.color.argb();
     }
 
     public void setColorArgb(int argb) {
-        this.colorArgb = argb;
+        this.color = new Color(argb);
     }
 
     public ArrayList<Vec2> getAnchorRotations() {

@@ -29,7 +29,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class ScreenIconExporter extends Screen {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final int BACKGROUND_COLOR = new Color(230, 230, 230, 255).argb();
+    private static final Color BACKGROUND_COLOR = new Color(230, 230, 230, 255);
     private final HolderLookup.Provider lookupProvider;
     private final int imageSize;
     private final double guiScale;
@@ -123,7 +123,7 @@ public class ScreenIconExporter extends Screen {
             currentBatch.add(pendingItems.removeFirst());
         }
 
-        guiGraphics.fill(0, 0, guiGraphics.guiWidth(), guiGraphics.guiHeight(), BACKGROUND_COLOR);
+        guiGraphics.fill(0, 0, guiGraphics.guiWidth(), guiGraphics.guiHeight(), BACKGROUND_COLOR.argb());
 
         for (int i = 0; i < currentBatch.size(); i++) {
             ImageExportUtil.ItemExportData data = currentBatch.get(i);
@@ -148,7 +148,7 @@ public class ScreenIconExporter extends Screen {
                     File fullImg = new File(debugFolder, "screen_" + System.currentTimeMillis() + ".png");
                     nativeImage.writeToFile(fullImg);
 
-                    ImageExportUtil.processBatchAsync(nativeImage, currentBatch, columns, imageSize, BACKGROUND_COLOR);
+                    ImageExportUtil.processBatchAsync(nativeImage, currentBatch, columns, imageSize, BACKGROUND_COLOR.argb());
                 } catch (IOException e) {
                     LOGGER.error("Failed to save debug screenshot", e);
                     nativeImage.close();

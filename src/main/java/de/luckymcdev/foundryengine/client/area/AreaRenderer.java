@@ -4,6 +4,7 @@ import de.luckymcdev.foundryengine.client.editor.feature.AreaFeature;
 import de.luckymcdev.foundryengine.client.render.HandleRenderer;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.area.Area;
+import de.luckymcdev.foundryengine.common.util.color.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.phys.Vec3;
@@ -41,8 +42,8 @@ public class AreaRenderer {
             boolean hoverMin = HandleRenderer.isHovered(min, eye, look, threshold);
             boolean hoverMax = HandleRenderer.isHovered(max, eye, look, threshold);
 
-            int minColor = (isSelected && draggingMin) || hoverMin ? 0xFFFFFFFF : 0x88FFFFFF;
-            int maxColor = (isSelected && !draggingMin) || hoverMax ? 0xFFFFFFFF : 0x88FFFFFF;
+            Color minColor = (isSelected && draggingMin) || hoverMin ? Color.WHITE : new Color(0x88FFFFFF);
+            Color maxColor = (isSelected && !draggingMin) || hoverMax ? Color.WHITE : new Color(0x88FFFFFF);
 
             HandleRenderer.renderHandle(min, HANDLE_SIZE, minColor);
             HandleRenderer.renderHandle(max, HANDLE_SIZE, maxColor);

@@ -2,11 +2,12 @@ package de.luckymcdev.foundryengine.client.ui.widget;
 
 import de.luckymcdev.foundryengine.client.ui.UIArea;
 import de.luckymcdev.foundryengine.client.ui.UIVec;
+import de.luckymcdev.foundryengine.common.util.color.Color;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 
 public class ToggleButtonWidget extends ButtonWidget {
-    private int toggledColor;
+    private Color toggledColor;
 
     private boolean pressed;
 
@@ -14,11 +15,16 @@ public class ToggleButtonWidget extends ButtonWidget {
         super(position, size, clickEvent);
     }
 
-    public int getToggledColor() {
+    public Color getToggledColor() {
         return this.toggledColor;
     }
 
     public <T extends ToggleButtonWidget> T setToggledColor(int toggledColor) {
+        this.toggledColor = new Color(toggledColor);
+        return (T) this;
+    }
+
+    public <T extends ToggleButtonWidget> T setToggledColor(Color toggledColor) {
         this.toggledColor = toggledColor;
         return (T) this;
     }
@@ -41,15 +47,15 @@ public class ToggleButtonWidget extends ButtonWidget {
     @Override
     void renderBackground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float tickDelta, boolean debug) {
         UIArea drawArea = this.getRenderArea(tickDelta);
-        int drawColor = backgroundColor;
+        Color drawColor = backgroundColor;
         if (this.isPressed()) drawColor = this.getToggledColor();
-        if (this.getHoverColor() != -1 && this.contains(mouseX, mouseY)) drawColor = this.getHoverColor();
+        if (this.contains(mouseX, mouseY)) drawColor = this.getHoverColor();
         if (borderThickness > 0) {
-            guiGraphics.fill(RenderPipelines.GUI, drawArea.x, drawArea.y, drawArea.x + drawArea.width, drawArea.y + drawArea.height, borderColor);
+            guiGraphics.fill(RenderPipelines.GUI, drawArea.x, drawArea.y, drawArea.x + drawArea.width, drawArea.y + drawArea.height, borderColor.argb());
             UIArea inner = drawArea.shrink(2);
-            guiGraphics.fill(RenderPipelines.GUI, inner.x, inner.y, inner.x + inner.width, inner.y + inner.height, drawColor);
+            guiGraphics.fill(RenderPipelines.GUI, inner.x, inner.y, inner.x + inner.width, inner.y + inner.height, drawColor.argb());
         } else {
-            guiGraphics.fill(RenderPipelines.GUI, drawArea.x, drawArea.y, drawArea.x + drawArea.width, drawArea.y + drawArea.height, drawColor);
+            guiGraphics.fill(RenderPipelines.GUI, drawArea.x, drawArea.y, drawArea.x + drawArea.width, drawArea.y + drawArea.height, drawColor.argb());
         }
     }
 }

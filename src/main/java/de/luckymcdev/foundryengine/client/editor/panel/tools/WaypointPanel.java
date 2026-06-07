@@ -35,7 +35,7 @@ public class WaypointPanel extends EditorPanel {
 
     private final ImString newName = new ImString(64);
     private final ImInt selectedIconIndex = new ImInt(0);
-    private int newColor = Color.TURQUOISE.argb();
+    private Color newColor = Color.TURQUOISE;
     private boolean showNewForm = false;
     private Waypoint selectedWaypoint = null;
     private WaypointPanel() {
@@ -113,9 +113,9 @@ public class WaypointPanel extends EditorPanel {
     }
 
     private void renderWaypointEntry(Waypoint wp) {
-        float colorR = ((wp.color() >> 16) & 0xFF) / 255.0f;
-        float colorG = ((wp.color() >> 8) & 0xFF) / 255.0f;
-        float colorB = (wp.color() & 0xFF) / 255.0f;
+        float colorR = wp.color().r();
+        float colorG = wp.color().g();
+        float colorB = wp.color().b();
 
         ImGui.colorButton("##color_" + wp.x() + "_" + wp.y() + "_" + wp.z(),
                 colorR, colorG, colorB, 1.0f);
@@ -178,27 +178,20 @@ public class WaypointPanel extends EditorPanel {
     }
 
     private void renderNewColorPicker() {
-        float[] col = {
-                ((newColor >> 16) & 0xFF) / 255.0f,
-                ((newColor >> 8) & 0xFF) / 255.0f,
-                (newColor & 0xFF) / 255.0f
-        };
+        float[] col = { newColor.r(), newColor.g(), newColor.b() };
 
         ImGui.colorButton("##color_preview", col[0], col[1], col[2], 1.0f, 0, 20, 20);
         ImGui.sameLine();
         ImGui.setNextItemWidth(200);
         if (ImGui.colorEdit3("##newcolorpicker", col, ImGuiColorEditFlags.NoInputs)) {
-            newColor = (0xFF << 24)
-                    | ((int) (col[0] * 255) << 16)
-                    | ((int) (col[1] * 255) << 8)
-                    | (int) (col[2] * 255);
+            newColor = new Color(col[0], col[1], col[2], 1.0f);
         }
 
         ImGui.sameLine();
         for (Color preset : PRESET_COLORS) {
             if (ImGui.colorButton("##preset_" + (int) (preset.r() * 255) + "_" + (int) (preset.g() * 255),
                     preset.r(), preset.g(), preset.b(), 1.0f)) {
-                newColor = preset.argb();
+                newColor = preset;
             }
             ImGui.sameLine();
         }
@@ -211,9 +204,9 @@ public class WaypointPanel extends EditorPanel {
         ImGui.text("Waypoint Details: " + wp.name());
         ImGui.separator();
 
-        float r = ((wp.color() >> 16) & 0xFF) / 255.0f;
-        float g = ((wp.color() >> 8) & 0xFF) / 255.0f;
-        float b = (wp.color() & 0xFF) / 255.0f;
+        float r = wp.color().r();
+        float g = wp.color().g();
+        float b = wp.color().b();
 
         ImGui.colorButton("##detail_color", r, g, b, 1.0f, 0, 32, 32);
         ImGui.sameLine();

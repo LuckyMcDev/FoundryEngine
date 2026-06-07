@@ -50,15 +50,14 @@ public class AreaPanel extends EditorPanel {
         colorToFloats(Area.DEFAULT_COLOR, newAreaColor);
     }
 
-    private static void colorToFloats(int argb, float[] out) {
-        Color c = new Color(argb);
-        out[0] = c.r();
-        out[1] = c.g();
-        out[2] = c.b();
+    private static void colorToFloats(Color color, float[] out) {
+        out[0] = color.r();
+        out[1] = color.g();
+        out[2] = color.b();
     }
 
-    private static int floatsToColor(float[] rgb) {
-        return new Color(rgb[0], rgb[1], rgb[2], 1.0f).argb();
+    private static Color floatsToColor(float[] rgb) {
+        return new Color(rgb[0], rgb[1], rgb[2], 1.0f);
     }
 
     @Override
@@ -294,7 +293,7 @@ public class AreaPanel extends EditorPanel {
         Vec3 min = new Vec3(editMinX.get(), editMinY.get(), editMinZ.get());
         Vec3 max = new Vec3(editMaxX.get(), editMaxY.get(), editMaxZ.get());
 
-        int color = floatsToColor(editColor);
+        Color color = floatsToColor(editColor);
         Area updatedArea = Area.of(selectedArea.id(), min, max, selectedArea.dimension(), color);
 
         var packet = AreaPacket.update(updatedArea);
@@ -326,7 +325,7 @@ public class AreaPanel extends EditorPanel {
                 playerPos.z + sizeZ / 2.0
         );
 
-        int color = floatsToColor(newAreaColor);
+        Color color = floatsToColor(newAreaColor);
         Area newArea = Area.of(name, min, max, mc.level.dimension(), color);
 
         var packet = AreaPacket.create(newArea);

@@ -11,6 +11,7 @@ import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.cutscene.model.Cutscene;
 import de.luckymcdev.foundryengine.common.cutscene.util.LerpType;
 import de.luckymcdev.foundryengine.common.network.packets.editor.CutscenePacket;
+import de.luckymcdev.foundryengine.common.util.color.Color;
 import imgui.ImGui;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiColorEditFlags;
@@ -100,12 +101,9 @@ public class CutscenePanel extends EditorPanel {
                 boolean sel = (i == selectedIndex);
 
                 ImGui.pushID(i);
-                int argb = c.getColorArgb();
+                Color color = new Color(c.getColorArgb());
                 ImGui.colorButton("##cs_color",
-                        ((argb >> 16) & 0xFF) / 255f,
-                        ((argb >> 8) & 0xFF) / 255f,
-                        (argb & 0xFF) / 255f,
-                        ((argb >> 24) & 0xFF) / 255f,
+                        color.r(), color.g(), color.b(), color.a(),
                         0, 12, 12);
                 ImGui.sameLine();
 
@@ -170,22 +168,13 @@ public class CutscenePanel extends EditorPanel {
     }
 
     private void renderCutsceneColorPicker(Cutscene c) {
-        int argb = c.getColorArgb();
-        float[] col = {
-                ((argb >> 16) & 0xFF) / 255f,
-                ((argb >> 8) & 0xFF) / 255f,
-                (argb & 0xFF) / 255f,
-                ((argb >> 24) & 0xFF) / 255f
-        };
+        Color color = new Color(c.getColorArgb());
+        float[] col = { color.r(), color.g(), color.b(), color.a() };
 
         ImGui.sameLine();
         ImGui.setNextItemWidth(120);
         if (ImGui.colorEdit4("##cs_track_color", col, ImGuiColorEditFlags.NoInputs)) {
-            int a = Math.clamp(Math.round(col[3] * 255f), 0, 255);
-            int r = Math.clamp(Math.round(col[0] * 255f), 0, 255);
-            int g = Math.clamp(Math.round(col[1] * 255f), 0, 255);
-            int b = Math.clamp(Math.round(col[2] * 255f), 0, 255);
-            c.setColorArgb((a << 24) | (r << 16) | (g << 8) | b);
+            c.setColorArgb(new Color(col[0], col[1], col[2], col[3]).argb());
             ClientPacketDistributor.sendToServer(new CutscenePacket(Client.getCutsceneEditor().toNbt()));
         }
         if (ImGui.isItemHovered()) ImGui.setTooltip("Track color");

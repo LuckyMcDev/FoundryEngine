@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.common.waypoint.storage;
 
 import de.luckymcdev.foundryengine.common.Common;
+import de.luckymcdev.foundryengine.common.util.color.Color;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.server.level.ServerLevel;
@@ -56,7 +57,7 @@ public class WaypointSavedData extends SavedData {
         return result;
     }
 
-    public void addWaypoint(int x, int y, int z, String name, String icon, int color) {
+    public void addWaypoint(int x, int y, int z, String name, String icon, Color color) {
         ListTag list = data.getListOrEmpty("Waypoints");
         CompoundTag tag = new CompoundTag();
         tag.putInt("x", x);
@@ -64,7 +65,7 @@ public class WaypointSavedData extends SavedData {
         tag.putInt("z", z);
         tag.putString("name", name);
         tag.putString("icon", icon);
-        tag.putInt("color", color);
+        tag.putInt("color", color.argb());
         list.add(tag);
         data.put("Waypoints", list);
         setDirty();

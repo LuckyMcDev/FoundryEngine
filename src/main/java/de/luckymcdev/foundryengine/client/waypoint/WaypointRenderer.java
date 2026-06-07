@@ -38,13 +38,13 @@ public class WaypointRenderer {
                     .scale(finalScale, -finalScale, finalScale)
                     .buildModelView();
 
-            int color = new Color(w.color()).argb();
+            Color color = w.color();
             float prefixWidth = font.width(icon);
 
             font.drawInBatch(
                     icon,
                     -prefixWidth / 2f, -10f,
-                    color,
+                    color.argb(),
                     false,
                     iconMv,
                     bufferSource,

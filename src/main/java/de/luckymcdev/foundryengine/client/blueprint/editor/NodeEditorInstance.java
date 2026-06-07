@@ -6,6 +6,7 @@ import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintEngine;
 import de.luckymcdev.foundryengine.common.blueprint.graph.*;
 import de.luckymcdev.foundryengine.common.blueprint.nodes.BuiltinNode;
 import de.luckymcdev.foundryengine.common.blueprint.serial.BlueprintSerializer;
+import de.luckymcdev.foundryengine.common.util.color.Color;
 import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.extension.imnodes.ImNodes;
@@ -55,16 +56,11 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
         };
     }
 
-    private static int lighten(int argb, float amount) {
-        int a = (argb >>> 24) & 0xFF;
-        int r = (argb >>> 16) & 0xFF;
-        int g = (argb >>> 8) & 0xFF;
-        int b = argb & 0xFF;
-
-        r = Math.min(255, (int) (r + (255 - r) * amount));
-        g = Math.min(255, (int) (g + (255 - g) * amount));
-        b = Math.min(255, (int) (b + (255 - b) * amount));
-        return (a << 24) | (r << 16) | (g << 8) | b;
+    private static Color lighten(Color color, float amount) {
+        float r = Math.min(1, color.r() + (1 - color.r()) * amount);
+        float g = Math.min(1, color.g() + (1 - color.g()) * amount);
+        float b = Math.min(1, color.b() + (1 - color.b()) * amount);
+        return new Color(r, g, b, color.a());
     }
 
     @Override
@@ -484,24 +480,22 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
     }
 
     private void pushNodeColors(BlueprintNode node) {
-        int title = engine.getCategoryColor(node.category);
-        int titleHovered = lighten(title, 0.12f);
-        int titleSelected = lighten(title, 0.20f);
+        Color title = engine.getCategoryColor(node.category);
+        Color titleHovered = lighten(title, 0.12f);
+        Color titleSelected = lighten(title, 0.20f);
 
-        // Slightly transparent title so the body feels integrated.
-        int titleBar = (title & 0x00FFFFFF) | 0xF0_000000;
+        Color titleBar = new Color(title.r(), title.g(), title.b(), 0xF0 / 255f);
 
-        // Node body – dark but with a hint of the category tint.
-        float tr = ((title >> 16) & 0xFF) / 255f;
-        float tg = ((title >> 8) & 0xFF) / 255f;
-        float tb = (title & 0xFF) / 255f;
+        float tr = title.r();
+        float tg = title.g();
+        float tb = title.b();
         int bgTint = ((int) (tr * 16f) << 16) | ((int) (tg * 16f) << 8) | (int) (tb * 16f);
         int bg = 0xFF_1E1E1E | bgTint;
         int bgHover = 0xFF_262626 | bgTint;
         int bgSel = 0xFF_2C2C2C | (bgTint * 2 & 0xFF_FFFFFF);
-        ImNodes.pushColorStyle(ImNodesCol.TitleBar, titleBar);
-        ImNodes.pushColorStyle(ImNodesCol.TitleBarHovered, lighten(titleBar, 0.12f));
-        ImNodes.pushColorStyle(ImNodesCol.TitleBarSelected, lighten(titleBar, 0.20f));
+        ImNodes.pushColorStyle(ImNodesCol.TitleBar, titleBar.argb());
+        ImNodes.pushColorStyle(ImNodesCol.TitleBarHovered, lighten(titleBar, 0.12f).argb());
+        ImNodes.pushColorStyle(ImNodesCol.TitleBarSelected, lighten(titleBar, 0.20f).argb());
         ImNodes.pushColorStyle(ImNodesCol.NodeBackground, bg);
         ImNodes.pushColorStyle(ImNodesCol.NodeBackgroundHovered, bgHover);
         ImNodes.pushColorStyle(ImNodesCol.NodeBackgroundSelected, bgSel);

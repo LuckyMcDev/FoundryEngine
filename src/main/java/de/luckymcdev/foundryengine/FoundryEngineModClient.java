@@ -220,7 +220,7 @@ public class FoundryEngineModClient {
             if (targetedCoords != null) {
                 ClientPacketDistributor.sendToServer(WaypointPacket.add(
                         targetedCoords.getX(), targetedCoords.getY(), targetedCoords.getZ(),
-                        "Info", "I", Color.TURQUOISE.argb()
+                        "Info", "I", Color.TURQUOISE
                 ));
             }
         }
@@ -229,7 +229,7 @@ public class FoundryEngineModClient {
             if (targetedCoords != null) {
                 ClientPacketDistributor.sendToServer(WaypointPacket.add(
                         targetedCoords.getX(), targetedCoords.getY(), targetedCoords.getZ(),
-                        "Warn", "W", Color.ORANGE.argb()
+                        "Warn", "W", Color.ORANGE
                 ));
             }
         }
