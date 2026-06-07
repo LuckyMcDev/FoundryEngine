@@ -3,6 +3,8 @@
 Blueprints in Foundry Engine are serialized as JSON files with the `.febp` extension. This document describes the
 complete JSON schema for blueprint files.
 
+You should not make blueprints via this json format. use the ingame editor.
+
 ## Schema Overview
 
 A blueprint file consists of three top-level arrays:

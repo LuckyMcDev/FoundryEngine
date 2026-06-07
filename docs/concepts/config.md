@@ -1,5 +1,7 @@
 # Bundle Configuration
 
+Bundle Configuration is currently messed up.
+
 Bundles can define their own configuration with typed values, persisted as TOML files in `FoundryEngine/config/<bundleId>.toml`.
 
 ## Defining Configuration
@@ -44,21 +46,21 @@ class Entrypoint implements BundleEntrypoint {
 
 ## ConfigValue Methods
 
-| Method | Description |
-|--------|-------------|
-| `get()` | Get the current value |
-| `set(raw)` | Set a new value |
-| `resetToDefault()` | Reset to default |
+| Method             | Description           |
+|--------------------|-----------------------|
+| `get()`            | Get the current value |
+| `set(raw)`         | Set a new value       |
+| `resetToDefault()` | Reset to default      |
 
 ## BundleConfigSpec Methods
 
-| Method | Description |
-|--------|-------------|
-| `defineBoolean(key, defaultValue, comment)` | Define a boolean config value |
-| `defineInt(key, defaultValue, comment)` | Define an integer config value |
-| `defineDouble(key, defaultValue, comment)` | Define a double config value |
-| `defineString(key, defaultValue, comment)` | Define a string config value |
-| `build()` | Finalize spec and load values from disk |
+| Method                                      | Description                             |
+|---------------------------------------------|-----------------------------------------|
+| `defineBoolean(key, defaultValue, comment)` | Define a boolean config value           |
+| `defineInt(key, defaultValue, comment)`     | Define an integer config value          |
+| `defineDouble(key, defaultValue, comment)`  | Define a double config value            |
+| `defineString(key, defaultValue, comment)`  | Define a string config value            |
+| `build()`                                   | Finalize spec and load values from disk |
 
 ## Generated TOML
 

@@ -17,11 +17,11 @@ scripts/
 
 ### What Goes Where
 
-| Folder | What you can do |
-|--------|-----------------|
+| Folder    | What you can do                                                                                                                                                                     |
+|-----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `common/` | Register items, blocks, recipes, sounds, particles. Use `BundleEvents`, `BlockEvents`, `ItemEvents`, `PlayerEvents`, `ServerEvents`, `LevelEvents`, `EntityEvents`, `CommandEvents` |
-| `client/` | Rendering, GUI, key bindings, client ticks. Use `ClientEvents`, editor panels |
-| `server/` | Server-only commands, data management. Use `ServerEvents` |
+| `client/` | Rendering, GUI, key bindings, client ticks. Use `ClientEvents`, editor panels                                                                                                       |
+| `server/` | Server-only commands, data management. Use `ServerEvents`                                                                                                                           |
 
 Each folder can have its own entrypoint implementing `BundleEntrypoint`. You don't
 need one for every folder — only the sides your bundle needs.

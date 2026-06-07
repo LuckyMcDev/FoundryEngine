@@ -96,6 +96,8 @@ Switch themes from the **Theme Selector Panel**.
 
 ## Extending the Editor
 
+There will be a way for bundles to easily add panels soon
+
 Java addon developers can register custom panels:
 
 ```java

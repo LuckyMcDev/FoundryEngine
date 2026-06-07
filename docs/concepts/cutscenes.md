@@ -2,6 +2,8 @@
 
 The cutscene system lets you create Bezier-curve camera animations with timeline-based screen effects and server commands. Cutscenes are defined per-dimension, edited in-world with visual handles, and played back with full player control locking.
 
+You should make cutscenes with the in game menu.
+
 ## Architecture
 
 ```
@@ -106,15 +108,15 @@ The in-world renderer draws:
 
 ## Cutscene Commands
 
-| Command | Description |
-|---------|-------------|
-| `/engine cutscene list` | List all cutscenes in the current dimension |
-| `/engine cutscene add <name>` | Create a new cutscene at your position |
-| `/engine cutscene remove <name>` | Remove a cutscene |
-| `/engine cutscene linearize <name>` | Make a 2-node cutscene a straight line |
-| `/engine cutscene play <player> <name> [length] [easing] [holdStart] [holdEnd]` | Play a cutscene |
-| `/engine cutscene cancel <player>` | Cancel a player's active cutscene |
-| `/engine cutscene resetAll confirm` | Remove all cutscenes |
+| Command                                                                         | Description                                 |
+|---------------------------------------------------------------------------------|---------------------------------------------|
+| `/engine cutscene list`                                                         | List all cutscenes in the current dimension |
+| `/engine cutscene add <name>`                                                   | Create a new cutscene at your position      |
+| `/engine cutscene remove <name>`                                                | Remove a cutscene                           |
+| `/engine cutscene linearize <name>`                                             | Make a 2-node cutscene a straight line      |
+| `/engine cutscene play <player> <name> [length] [easing] [holdStart] [holdEnd]` | Play a cutscene                             |
+| `/engine cutscene cancel <player>`                                              | Cancel a player's active cutscene           |
+| `/engine cutscene resetAll confirm`                                             | Remove all cutscenes                        |
 
 ## Using Cutscenes from Scripts
 

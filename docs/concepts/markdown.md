@@ -30,21 +30,21 @@ Minecraft.getInstance().setScreen(new MdScreen(
 
 ## Supported Markdown Features
 
-| Element | Markdown | Rendering |
-|---------|----------|-----------|
-| Heading H1-H6 | `# Title` | Bold with decreasing brightness |
-| Bold | `**text**` | Bold styling |
-| Italic | `*text*` | Italic styling |
-| Strikethrough | `~~text~~` | Strikethrough |
-| Inline Code | `` `code` `` | Gray color `0xE6E6E6` |
-| Code Blocks | ` ``` ` | Gray color, monospace |
-| Links | `[text](url)` | Underlined blue, clickable |
-| Images | `![alt](url)` | `[Image: alt]` with clickable URL |
-| Block Quotes | `> text` | Prefixed with `│` in gray |
-| Unordered Lists | `- item` | `•` bullet markers |
-| Ordered Lists | `1. item` | Numbered markers |
-| Tables | `\| col \|` | `│` separators, bold headers |
-| Thematic Break | `---` | `─` repeated 50 times |
+| Element         | Markdown      | Rendering                         |
+|-----------------|---------------|-----------------------------------|
+| Heading H1-H6   | `# Title`     | Bold with decreasing brightness   |
+| Bold            | `**text**`    | Bold styling                      |
+| Italic          | `*text*`      | Italic styling                    |
+| Strikethrough   | `~~text~~`    | Strikethrough                     |
+| Inline Code     | `` `code` ``  | Gray color `0xE6E6E6`             |
+| Code Blocks     | ` ``` `       | Gray color, monospace             |
+| Links           | `[text](url)` | Underlined blue, clickable        |
+| Images          | `![alt](url)` | `[Image: alt]` with clickable URL |
+| Block Quotes    | `> text`      | Prefixed with `│` in gray         |
+| Unordered Lists | `- item`      | `•` bullet markers                |
+| Ordered Lists   | `1. item`     | Numbered markers                  |
+| Tables          | `\| col \|`   | `│` separators, bold headers      |
+| Thematic Break  | `---`         | `─` repeated 50 times             |
 
 ## Use Cases
 

@@ -47,10 +47,10 @@ ParticleBuilder.create(Common.id("complex_fx"))
 
 The `KeyframeSequence<T>` class stores animation keyframes:
 
-| Method | Description |
-|--------|-------------|
-| `add(T value, float timepoint, Easing easing)` | Add a keyframe at normalized time (0–1) |
-| `getInterpolation(float progress)` | Get interpolated value at progress point |
+| Method                                         | Description                              |
+|------------------------------------------------|------------------------------------------|
+| `add(T value, float timepoint, Easing easing)` | Add a keyframe at normalized time (0–1)  |
+| `getInterpolation(float progress)`             | Get interpolated value at progress point |
 
 Each keyframe has:
 - **Value** — the keyframe value (Color, Float, Vector3d, etc.)
@@ -59,14 +59,14 @@ Each keyframe has:
 
 ### KeyframedParticleData Types
 
-| Class | Generic Type | What it controls |
-|-------|-------------|------------------|
-| `ParticleColorData` | `Color` | Color over lifetime |
-| `ParticleScaleData` | `Float` | Scale over lifetime |
-| `ParticleSpeedData` | `Float` | Speed over lifetime |
-| `ParticleVelocityData` | `Vector3d` | Velocity vector over lifetime |
-| `ParticlePositionData` | `Vector3d` | Position offset over lifetime |
-| `ParticleRotationData` | `Float` | Rotation over lifetime |
+| Class                  | Generic Type | What it controls              |
+|------------------------|--------------|-------------------------------|
+| `ParticleColorData`    | `Color`      | Color over lifetime           |
+| `ParticleScaleData`    | `Float`      | Scale over lifetime           |
+| `ParticleSpeedData`    | `Float`      | Speed over lifetime           |
+| `ParticleVelocityData` | `Vector3d`   | Velocity vector over lifetime |
+| `ParticlePositionData` | `Vector3d`   | Position offset over lifetime |
+| `ParticleRotationData` | `Float`      | Rotation over lifetime        |
 
 ## Spawning Particles
 

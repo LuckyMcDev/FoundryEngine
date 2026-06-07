@@ -75,11 +75,11 @@ Package: `de.luckymcdev.foundryengine.api.event.AreaEvents`
 
 Fires when entities interact with custom **Area** zones.
 
-| Method | Event Type | Description | Blueprint Node |
-|--------|-----------|-------------|----------------|
-| `areaEnter(cb)` | `AreaEvent.AreaEnterEvent` | Entity enters an area | `EVENT_AREA_ENTER` |
-| `areaLeave(cb)` | `AreaEvent.AreaLeaveEvent` | Entity leaves an area | `EVENT_AREA_LEAVE` |
-| `areaTick(cb)` | `AreaEvent.AreaTickEvent` | Tick while entity is inside area | `EVENT_AREA_TICK` |
+| Method          | Event Type                 | Description                      | Blueprint Node     |
+|-----------------|----------------------------|----------------------------------|--------------------|
+| `areaEnter(cb)` | `AreaEvent.AreaEnterEvent` | Entity enters an area            | `EVENT_AREA_ENTER` |
+| `areaLeave(cb)` | `AreaEvent.AreaLeaveEvent` | Entity leaves an area            | `EVENT_AREA_LEAVE` |
+| `areaTick(cb)`  | `AreaEvent.AreaTickEvent`  | Tick while entity is inside area | `EVENT_AREA_TICK`  |
 
 **Context available (common to all three):**
 - `area` (`Area`) — The area zone
@@ -142,16 +142,16 @@ Package: `de.luckymcdev.foundryengine.api.event.BundleEvents`
 
 Core lifecycle events for the mod and bundles. **This is the most important event class for bundle developers.**
 
-| Method | Event Type | Description | Blueprint Node |
-|--------|-----------|-------------|----------------|
-| `registry(cb)` | `RegistryEvent` | Register items, blocks, recipes, sounds, particles | `EVENT_REGISTRY` |
-| `vanillaGame(cb)` | `VanillaGameEvent` | Vanilla game events (e.g. advancement) | `EVENT_VANILLA_GAME` |
-| `commonSetup(cb)` | `FMLCommonSetupEvent` | FML common setup phase | `EVENT_COMMON_SETUP` |
-| `clientSetup(cb)` | `FMLClientSetupEvent` | FML client-only setup | `EVENT_CLIENT_SETUP` |
-| `dedicatedServerSetup(cb)` | `FMLDedicatedServerSetupEvent` | Dedicated server setup | `EVENT_DEDICATED_SERVER_SETUP` |
-| `postInit(cb)` | `InterModProcessEvent` | After all mods initialize | `EVENT_POST_INIT` |
-| `serverAboutToStart(cb)` | `ServerAboutToStartEvent` | Server about to start | `EVENT_SERVER_ABOUT_TO_START` |
-| `dataGen(cb)` | `BundleDataGenEvent` | Bundle data generation | `EVENT_DATA_GEN` |
+| Method                     | Event Type                     | Description                                        | Blueprint Node                 |
+|----------------------------|--------------------------------|----------------------------------------------------|--------------------------------|
+| `registry(cb)`             | `RegistryEvent`                | Register items, blocks, recipes, sounds, particles | `EVENT_REGISTRY`               |
+| `vanillaGame(cb)`          | `VanillaGameEvent`             | Vanilla game events (e.g. advancement)             | `EVENT_VANILLA_GAME`           |
+| `commonSetup(cb)`          | `FMLCommonSetupEvent`          | FML common setup phase                             | `EVENT_COMMON_SETUP`           |
+| `clientSetup(cb)`          | `FMLClientSetupEvent`          | FML client-only setup                              | `EVENT_CLIENT_SETUP`           |
+| `dedicatedServerSetup(cb)` | `FMLDedicatedServerSetupEvent` | Dedicated server setup                             | `EVENT_DEDICATED_SERVER_SETUP` |
+| `postInit(cb)`             | `InterModProcessEvent`         | After all mods initialize                          | `EVENT_POST_INIT`              |
+| `serverAboutToStart(cb)`   | `ServerAboutToStartEvent`      | Server about to start                              | `EVENT_SERVER_ABOUT_TO_START`  |
+| `dataGen(cb)`              | `BundleDataGenEvent`           | Bundle data generation                             | `EVENT_DATA_GEN`               |
 
 **What you can do:**
 
@@ -191,19 +191,19 @@ Package: `de.luckymcdev.foundryengine.api.event.ClientEvents`
 
 Only fires on the **client side**.
 
-| Method | Event Type | Description | Blueprint Node |
-|--------|-----------|-------------|----------------|
-| `tick(cb)` | `ClientTickEvent.Post` | End of client tick | `EVENT_CLIENT_TICK` |
-| `stopped(cb)` | `ClientStoppedEvent` | Client fully stopped | `EVENT_CLIENT_STOPPED` |
-| `stopping(cb)` | `ClientStoppingEvent` | Client is stopping | `EVENT_CLIENT_STOPPING` |
-| `chat(cb)` | `ClientChatEvent` | Client sending a chat message | `EVENT_CHAT_MESSAGE` |
-| `keyMappings(cb)` | `RegisterKeyMappingsEvent` | Register key mappings | - |
-| `renderGui(cb)` | `RenderGuiEvent.Post` | After GUI is rendered | `EVENT_RENDER_GUI` |
-| `renderGuiLayer(cb)` | `RenderGuiLayerEvent.Post` | After a GUI layer is rendered | - |
-| `renderHand(cb)` | `RenderHandEvent` | Hand rendering | - |
-| `renderAfterLevel(cb)` | `RenderLevelStageEvent.AfterLevel` | After level rendering | - |
-| `loggedIn(cb)` | `ClientPlayerNetworkEvent.LoggingIn` | Client logged into a server | `EVENT_CLIENT_LOGGED_IN` |
-| `loggedOut(cb)` | `ClientPlayerNetworkEvent.LoggingOut` | Client logged out | `EVENT_CLIENT_LOGGED_OUT` |
+| Method                 | Event Type                            | Description                   | Blueprint Node            |
+|------------------------|---------------------------------------|-------------------------------|---------------------------|
+| `tick(cb)`             | `ClientTickEvent.Post`                | End of client tick            | `EVENT_CLIENT_TICK`       |
+| `stopped(cb)`          | `ClientStoppedEvent`                  | Client fully stopped          | `EVENT_CLIENT_STOPPED`    |
+| `stopping(cb)`         | `ClientStoppingEvent`                 | Client is stopping            | `EVENT_CLIENT_STOPPING`   |
+| `chat(cb)`             | `ClientChatEvent`                     | Client sending a chat message | `EVENT_CHAT_MESSAGE`      |
+| `keyMappings(cb)`      | `RegisterKeyMappingsEvent`            | Register key mappings         | -                         |
+| `renderGui(cb)`        | `RenderGuiEvent.Post`                 | After GUI is rendered         | `EVENT_RENDER_GUI`        |
+| `renderGuiLayer(cb)`   | `RenderGuiLayerEvent.Post`            | After a GUI layer is rendered | -                         |
+| `renderHand(cb)`       | `RenderHandEvent`                     | Hand rendering                | -                         |
+| `renderAfterLevel(cb)` | `RenderLevelStageEvent.AfterLevel`    | After level rendering         | -                         |
+| `loggedIn(cb)`         | `ClientPlayerNetworkEvent.LoggingIn`  | Client logged into a server   | `EVENT_CLIENT_LOGGED_IN`  |
+| `loggedOut(cb)`        | `ClientPlayerNetworkEvent.LoggingOut` | Client logged out             | `EVENT_CLIENT_LOGGED_OUT` |
 
 **What you can do:**
 - Render custom overlays / HUD elements via `renderGui`
@@ -218,9 +218,9 @@ Only fires on the **client side**.
 
 Package: `de.luckymcdev.foundryengine.api.event.CommandEvents`
 
-| Method | Event Type | Description | Blueprint Node |
-|--------|-----------|-------------|----------------|
-| `register(cb)` | `RegisterCommandsEvent` | Register server commands | `EVENT_COMMANDS` |
+| Method               | Event Type                    | Description                   | Blueprint Node          |
+|----------------------|-------------------------------|-------------------------------|-------------------------|
+| `register(cb)`       | `RegisterCommandsEvent`       | Register server commands      | `EVENT_COMMANDS`        |
 | `registerClient(cb)` | `RegisterClientCommandsEvent` | Register client-side commands | `EVENT_COMMANDS_CLIENT` |
 
 **What you can do:**
@@ -243,14 +243,14 @@ CommandEvents.register {
 
 Package: `de.luckymcdev.foundryengine.api.event.EntityEvents`
 
-| Method | Event Type | Description | Blueprint Node |
-|--------|-----------|-------------|----------------|
-| `joinLevel(cb)` | `EntityJoinLevelEvent` | Entity enters a level | `EVENT_ENTITY_JOIN_LEVEL` |
-| `death(cb)` | `LivingDeathEvent` | Living entity dies | `EVENT_LIVING_DEATH` |
-| `drops(cb)` | `LivingDropsEvent` | Entity drops items on death | `EVENT_LIVING_DROPS` |
-| `hurt(cb)` | `LivingDamageEvent.Post` | Entity takes damage (post) | `EVENT_LIVING_HURT` |
-| `spawned(cb)` | `EntityJoinLevelEvent` | Entity spawned into world | `EVENT_ENTITY_JOIN_LEVEL` |
-| `checkSpawn(cb)` | `EntityJoinLevelEvent` | Check entity spawn conditions | `EVENT_ENTITY_JOIN_LEVEL` |
+| Method           | Event Type               | Description                   | Blueprint Node            |
+|------------------|--------------------------|-------------------------------|---------------------------|
+| `joinLevel(cb)`  | `EntityJoinLevelEvent`   | Entity enters a level         | `EVENT_ENTITY_JOIN_LEVEL` |
+| `death(cb)`      | `LivingDeathEvent`       | Living entity dies            | `EVENT_LIVING_DEATH`      |
+| `drops(cb)`      | `LivingDropsEvent`       | Entity drops items on death   | `EVENT_LIVING_DROPS`      |
+| `hurt(cb)`       | `LivingDamageEvent.Post` | Entity takes damage (post)    | `EVENT_LIVING_HURT`       |
+| `spawned(cb)`    | `EntityJoinLevelEvent`   | Entity spawned into world     | `EVENT_ENTITY_JOIN_LEVEL` |
+| `checkSpawn(cb)` | `EntityJoinLevelEvent`   | Check entity spawn conditions | `EVENT_ENTITY_JOIN_LEVEL` |
 
 **What you can do:**
 - Custom death messages and effects
@@ -265,20 +265,20 @@ Package: `de.luckymcdev.foundryengine.api.event.EntityEvents`
 
 Package: `de.luckymcdev.foundryengine.api.event.ItemEvents`
 
-| Method | Event Type | Description | Blueprint Node |
-|--------|-----------|-------------|----------------|
-| `pickedUp(cb)` | `ItemEntityPickupEvent.Post` | Item picked up by player | `EVENT_ITEM_PICKUP` |
-| `destroyed(cb)` | `PlayerDestroyItemEvent` | Item is destroyed (used up) | `EVENT_ITEM_DESTROY` |
-| `rightClicked(cb)` | `PlayerInteractEvent.RightClickItem` | Player right-clicks with item | `EVENT_ITEM_RIGHT_CLICK` |
-| `crafted(cb)` | `PlayerEvent.ItemCraftedEvent` | Item crafted | `EVENT_ITEM_CRAFTED` |
-| `dropped(cb)` | `ItemTossEvent` | Item thrown/dropped | `EVENT_ITEM_DROPPED` |
-| `foodEaten(cb)` | `LivingEntityUseItemEvent.Finish` | Food consumption finished | `EVENT_ITEM_FOOD_EATEN` |
-| `smelted(cb)` | `PlayerEvent.ItemSmeltedEvent` | Item smelted in furnace | `EVENT_ITEM_SMELTED` |
-| `dynamicTooltips(cb)` | `ItemTooltipEvent` | Item tooltip rendering | `EVENT_ITEM_TOOLTIP` |
-| `entityInteracted(cb)` | `PlayerInteractEvent.EntityInteract` | Player interacts entity with item | `EVENT_ITEM_ENTITY_INTERACT` |
-| `firstLeftClicked(cb)` | `PlayerInteractEvent.LeftClickEmpty` | Left-click on empty space | `EVENT_ITEM_FIRST_LEFT_CLICK` |
-| `firstRightClicked(cb)` | `PlayerInteractEvent.RightClickEmpty` | Right-click on empty space | `EVENT_ITEM_FIRST_RIGHT_CLICK` |
-| `modification(cb)` | `ItemModificationEvent` | Modify item behavior post-registration | - |
+| Method                  | Event Type                            | Description                            | Blueprint Node                 |
+|-------------------------|---------------------------------------|----------------------------------------|--------------------------------|
+| `pickedUp(cb)`          | `ItemEntityPickupEvent.Post`          | Item picked up by player               | `EVENT_ITEM_PICKUP`            |
+| `destroyed(cb)`         | `PlayerDestroyItemEvent`              | Item is destroyed (used up)            | `EVENT_ITEM_DESTROY`           |
+| `rightClicked(cb)`      | `PlayerInteractEvent.RightClickItem`  | Player right-clicks with item          | `EVENT_ITEM_RIGHT_CLICK`       |
+| `crafted(cb)`           | `PlayerEvent.ItemCraftedEvent`        | Item crafted                           | `EVENT_ITEM_CRAFTED`           |
+| `dropped(cb)`           | `ItemTossEvent`                       | Item thrown/dropped                    | `EVENT_ITEM_DROPPED`           |
+| `foodEaten(cb)`         | `LivingEntityUseItemEvent.Finish`     | Food consumption finished              | `EVENT_ITEM_FOOD_EATEN`        |
+| `smelted(cb)`           | `PlayerEvent.ItemSmeltedEvent`        | Item smelted in furnace                | `EVENT_ITEM_SMELTED`           |
+| `dynamicTooltips(cb)`   | `ItemTooltipEvent`                    | Item tooltip rendering                 | `EVENT_ITEM_TOOLTIP`           |
+| `entityInteracted(cb)`  | `PlayerInteractEvent.EntityInteract`  | Player interacts entity with item      | `EVENT_ITEM_ENTITY_INTERACT`   |
+| `firstLeftClicked(cb)`  | `PlayerInteractEvent.LeftClickEmpty`  | Left-click on empty space              | `EVENT_ITEM_FIRST_LEFT_CLICK`  |
+| `firstRightClicked(cb)` | `PlayerInteractEvent.RightClickEmpty` | Right-click on empty space             | `EVENT_ITEM_FIRST_RIGHT_CLICK` |
+| `modification(cb)`      | `ItemModificationEvent`               | Modify item behavior post-registration | -                              |
 
 **What you can do:**
 - Custom item behavior on right-click (throwable items, wands, etc.)
@@ -293,14 +293,14 @@ Package: `de.luckymcdev.foundryengine.api.event.ItemEvents`
 
 Package: `de.luckymcdev.foundryengine.api.event.LevelEvents`
 
-| Method | Event Type | Description | Blueprint Node |
-|--------|-----------|-------------|----------------|
-| `load(cb)` | `LevelEvent.Load` | Level/dimension is loaded | `EVENT_LEVEL_LOAD` |
-| `unload(cb)` | `LevelEvent.Unload` | Level/dimension is unloaded | `EVENT_LEVEL_UNLOAD` |
-| `save(cb)` | `LevelEvent.Save` | Level data is saved | `EVENT_LEVEL_SAVE` |
-| `tick(cb)` | `LevelTickEvent.Post` | End of level tick | `EVENT_LEVEL_TICK` |
-| `beforeExplosion(cb)` | `ExplosionEvent.Start` | Before an explosion detonates | `EVENT_BEFORE_EXPLOSION` |
-| `afterExplosion(cb)` | `ExplosionEvent.Detonate` | After an explosion detonates | `EVENT_AFTER_EXPLOSION` |
+| Method                | Event Type                | Description                   | Blueprint Node           |
+|-----------------------|---------------------------|-------------------------------|--------------------------|
+| `load(cb)`            | `LevelEvent.Load`         | Level/dimension is loaded     | `EVENT_LEVEL_LOAD`       |
+| `unload(cb)`          | `LevelEvent.Unload`       | Level/dimension is unloaded   | `EVENT_LEVEL_UNLOAD`     |
+| `save(cb)`            | `LevelEvent.Save`         | Level data is saved           | `EVENT_LEVEL_SAVE`       |
+| `tick(cb)`            | `LevelTickEvent.Post`     | End of level tick             | `EVENT_LEVEL_TICK`       |
+| `beforeExplosion(cb)` | `ExplosionEvent.Start`    | Before an explosion detonates | `EVENT_BEFORE_EXPLOSION` |
+| `afterExplosion(cb)`  | `ExplosionEvent.Detonate` | After an explosion detonates  | `EVENT_AFTER_EXPLOSION`  |
 
 **What you can do:**
 - Per-dimension game rules
@@ -315,9 +315,9 @@ Package: `de.luckymcdev.foundryengine.api.event.LevelEvents`
 
 Package: `de.luckymcdev.foundryengine.api.event.NetworkEvents`
 
-| Method | Event Type | Description | Blueprint Node |
-|--------|-----------|-------------|----------------|
-| `login(cb)` | `PlayerEvent.PlayerLoggedInEvent` | Player network login | `EVENT_NETWORK_LOGIN` |
+| Method       | Event Type                         | Description           | Blueprint Node         |
+|--------------|------------------------------------|-----------------------|------------------------|
+| `login(cb)`  | `PlayerEvent.PlayerLoggedInEvent`  | Player network login  | `EVENT_NETWORK_LOGIN`  |
 | `logout(cb)` | `PlayerEvent.PlayerLoggedOutEvent` | Player network logout | `EVENT_NETWORK_LOGOUT` |
 
 **What you can do:**
@@ -331,17 +331,17 @@ Package: `de.luckymcdev.foundryengine.api.event.NetworkEvents`
 
 Package: `de.luckymcdev.foundryengine.api.event.PlayerEvents`
 
-| Method | Event Type | Description | Blueprint Node |
-|--------|-----------|-------------|----------------|
-| `loggedIn(cb)` | `PlayerEvent.PlayerLoggedInEvent` | Player logged in | `EVENT_PLAYER_LOGGED_IN` |
-| `loggedOut(cb)` | `PlayerEvent.PlayerLoggedOutEvent` | Player logged out | `EVENT_PLAYER_LOGGED_OUT` |
-| `tick(cb)` | `PlayerTickEvent.Post` | End of player tick | `EVENT_PLAYER_TICK` |
-| `chat(cb)` | `ServerChatEvent` | Player sends chat message | `EVENT_PLAYER_CHAT` |
-| `advancement(cb)` | `AdvancementEvent.AdvancementEarnEvent` | Player earns advancement | `EVENT_PLAYER_ADVANCEMENT` |
-| `chestClosed(cb)` | `PlayerContainerEvent.Close` | Player closes a container | `EVENT_CHEST_CLOSED` |
-| `chestOpened(cb)` | `PlayerContainerEvent.Open` | Player opens a container | `EVENT_CHEST_OPENED` |
-| `respawned(cb)` | `PlayerEvent.PlayerRespawnEvent` | Player respawns | `EVENT_PLAYER_RESPAWNED` |
-| `decorateChat(cb)` | `ClientChatReceivedEvent` | Decorate received chat messages | `EVENT_DECORATE_CHAT` |
+| Method             | Event Type                              | Description                     | Blueprint Node             |
+|--------------------|-----------------------------------------|---------------------------------|----------------------------|
+| `loggedIn(cb)`     | `PlayerEvent.PlayerLoggedInEvent`       | Player logged in                | `EVENT_PLAYER_LOGGED_IN`   |
+| `loggedOut(cb)`    | `PlayerEvent.PlayerLoggedOutEvent`      | Player logged out               | `EVENT_PLAYER_LOGGED_OUT`  |
+| `tick(cb)`         | `PlayerTickEvent.Post`                  | End of player tick              | `EVENT_PLAYER_TICK`        |
+| `chat(cb)`         | `ServerChatEvent`                       | Player sends chat message       | `EVENT_PLAYER_CHAT`        |
+| `advancement(cb)`  | `AdvancementEvent.AdvancementEarnEvent` | Player earns advancement        | `EVENT_PLAYER_ADVANCEMENT` |
+| `chestClosed(cb)`  | `PlayerContainerEvent.Close`            | Player closes a container       | `EVENT_CHEST_CLOSED`       |
+| `chestOpened(cb)`  | `PlayerContainerEvent.Open`             | Player opens a container        | `EVENT_CHEST_OPENED`       |
+| `respawned(cb)`    | `PlayerEvent.PlayerRespawnEvent`        | Player respawns                 | `EVENT_PLAYER_RESPAWNED`   |
+| `decorateChat(cb)` | `ClientChatReceivedEvent`               | Decorate received chat messages | `EVENT_DECORATE_CHAT`      |
 
 **What you can do:**
 - Per-player tick logic (mana regen, aura effects, flight checks)
@@ -356,10 +356,10 @@ Package: `de.luckymcdev.foundryengine.api.event.PlayerEvents`
 
 Package: `de.luckymcdev.foundryengine.api.event.RecipeEvents`
 
-| Method | Event Type | Description | Blueprint Node |
-|--------|-----------|-------------|----------------|
-| `recipesReceived(cb)` | `RecipesReceivedEvent` | Client received recipe list | `EVENT_RECIPE_VIEWER_UPDATED` |
-| `modifyRecipes(cb)` | `ModifyRecipeJsonsEvent` | Modify recipe JSONs at reload | - |
+| Method                | Event Type               | Description                   | Blueprint Node                |
+|-----------------------|--------------------------|-------------------------------|-------------------------------|
+| `recipesReceived(cb)` | `RecipesReceivedEvent`   | Client received recipe list   | `EVENT_RECIPE_VIEWER_UPDATED` |
+| `modifyRecipes(cb)`   | `ModifyRecipeJsonsEvent` | Modify recipe JSONs at reload | -                             |
 
 **What you can do:**
 - Dynamically add or remove recipes
@@ -372,15 +372,15 @@ Package: `de.luckymcdev.foundryengine.api.event.RecipeEvents`
 
 Package: `de.luckymcdev.foundryengine.api.event.ServerEvents`
 
-| Method | Event Type | Description | Blueprint Node |
-|--------|-----------|-------------|----------------|
-| `aboutToStart(cb)` | `ServerAboutToStartEvent` | Server about to start | `EVENT_SERVER_ABOUT_TO_START` |
-| `started(cb)` | `ServerStartedEvent` | Server has started | `EVENT_SERVER_STARTED` |
-| `starting(cb)` | `ServerStartingEvent` | Server is starting | `EVENT_SERVER_STARTING` |
-| `stopped(cb)` | `ServerStoppedEvent` | Server has stopped | `EVENT_SERVER_STOPPED` |
-| `stopping(cb)` | `ServerStoppingEvent` | Server is stopping | `EVENT_SERVER_STOPPING` |
-| `tick(cb)` | `ServerTickEvent.Post` | End of server tick | `EVENT_SERVER_TICK` |
-| `tags(cb)` | `TagsUpdatedEvent` | Game tags were updated/reloaded | `EVENT_SERVER_TAGS` |
+| Method             | Event Type                | Description                     | Blueprint Node                |
+|--------------------|---------------------------|---------------------------------|-------------------------------|
+| `aboutToStart(cb)` | `ServerAboutToStartEvent` | Server about to start           | `EVENT_SERVER_ABOUT_TO_START` |
+| `started(cb)`      | `ServerStartedEvent`      | Server has started              | `EVENT_SERVER_STARTED`        |
+| `starting(cb)`     | `ServerStartingEvent`     | Server is starting              | `EVENT_SERVER_STARTING`       |
+| `stopped(cb)`      | `ServerStoppedEvent`      | Server has stopped              | `EVENT_SERVER_STOPPED`        |
+| `stopping(cb)`     | `ServerStoppingEvent`     | Server is stopping              | `EVENT_SERVER_STOPPING`       |
+| `tick(cb)`         | `ServerTickEvent.Post`    | End of server tick              | `EVENT_SERVER_TICK`           |
+| `tags(cb)`         | `TagsUpdatedEvent`        | Game tags were updated/reloaded | `EVENT_SERVER_TAGS`           |
 
 **What you can do:**
 - Initialize server-wide systems on startup
@@ -456,12 +456,12 @@ Package: `de.luckymcdev.foundryengine.common.game.stage.GameStageEvent`
 
 Abstract event — listen to subclasses:
 
-| Subclass | Cancellable | Description |
-|----------|-------------|-------------|
-| `GameStageEvent.Add` | Yes | Before a stage is added to a player |
-| `GameStageEvent.Remove` | Yes | Before a stage is removed from a player |
-| `GameStageEvent.Added` | No | After a stage has been added |
-| `GameStageEvent.Removed` | No | After a stage has been removed |
+| Subclass                 | Cancellable | Description                             |
+|--------------------------|-------------|-----------------------------------------|
+| `GameStageEvent.Add`     | Yes         | Before a stage is added to a player     |
+| `GameStageEvent.Remove`  | Yes         | Before a stage is removed from a player |
+| `GameStageEvent.Added`   | No          | After a stage has been added            |
+| `GameStageEvent.Removed` | No          | After a stage has been removed          |
 
 All four expose:
 - `getStageName()` — the stage string

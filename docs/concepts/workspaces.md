@@ -33,10 +33,10 @@ then `gradlew runClient` to launch.
 
 ## Which to Choose?
 
-| Approach | Pros | Cons |
-|----------|------|------|
-| In-game folder | No build setup, instant reload | No version control built in |
-| Template project | Version control, build tasks, deploy automation | Requires Gradle setup |
+| Approach         | Pros                                            | Cons                        |
+|------------------|-------------------------------------------------|-----------------------------|
+| In-game folder   | No build setup, instant reload                  | No version control built in |
+| Template project | Version control, build tasks, deploy automation | Requires Gradle setup       |
 
 ## See Also
 

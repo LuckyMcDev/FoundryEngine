@@ -36,11 +36,11 @@ class Entrypoint implements BundleEntrypoint {
 
 You can have separate entrypoints for each [side](sides.md):
 
-| Location | Purpose |
-|----------|---------|
+| Location             | Purpose                                       |
+|----------------------|-----------------------------------------------|
 | `scripts/common/...` | Shared logic (items, blocks, recipes, events) |
-| `scripts/client/...` | Client-only logic (rendering, keybinds, GUI) |
-| `scripts/server/...` | Server-only logic (commands, data) |
+| `scripts/client/...` | Client-only logic (rendering, keybinds, GUI)  |
+| `scripts/server/...` | Server-only logic (commands, data)            |
 
 Each side's entrypoint is loaded independently by the engine.
 

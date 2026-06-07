@@ -20,14 +20,14 @@ Gated content is now accessible
 
 Access via `Common.getGameStageHandler()`:
 
-| Method | Description |
-|--------|-------------|
-| `addStage(Player, String)` | Add a stage. Returns false if already has it. |
-| `removeStage(Player, String)` | Remove a stage. Returns false if missing. |
-| `clearStages(Player)` | Remove all stages from a player. |
-| `hasStage(Player, String)` | Check if player has a stage. |
-| `getStages(Player)` | Get all stages as a Set. |
-| `addStageIf(StageAdditionCondition, String)` | Deferred addition — checked on player tick. |
+| Method                                       | Description                                   |
+|----------------------------------------------|-----------------------------------------------|
+| `addStage(Player, String)`                   | Add a stage. Returns false if already has it. |
+| `removeStage(Player, String)`                | Remove a stage. Returns false if missing.     |
+| `clearStages(Player)`                        | Remove all stages from a player.              |
+| `hasStage(Player, String)`                   | Check if player has a stage.                  |
+| `getStages(Player)`                          | Get all stages as a Set.                      |
+| `addStageIf(StageAdditionCondition, String)` | Deferred addition — checked on player tick.   |
 
 ### Stage Addons
 
@@ -122,12 +122,12 @@ void onStageAdded(GameStageEvent.Added event) {
 }
 ```
 
-| Event | Cancellable | When |
-|-------|-------------|------|
-| `GameStageEvent.Add` | Yes | Before a stage is added |
-| `GameStageEvent.Remove` | Yes | Before a stage is removed |
-| `GameStageEvent.Added` | No | After stage is added |
-| `GameStageEvent.Removed` | No | After stage is removed |
+| Event                    | Cancellable | When                      |
+|--------------------------|-------------|---------------------------|
+| `GameStageEvent.Add`     | Yes         | Before a stage is added   |
+| `GameStageEvent.Remove`  | Yes         | Before a stage is removed |
+| `GameStageEvent.Added`   | No          | After stage is added      |
+| `GameStageEvent.Removed` | No          | After stage is removed    |
 
 ## Deferred Stage Addition
 
