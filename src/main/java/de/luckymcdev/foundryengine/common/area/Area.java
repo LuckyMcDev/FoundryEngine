@@ -1,5 +1,6 @@
 package de.luckymcdev.foundryengine.common.area;
 
+import de.luckymcdev.foundryengine.common.util.color.Color;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gizmos.GizmoStyle;
@@ -11,10 +12,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
-public record Area(String id, AABB bounds, ResourceKey<Level> dimension, int color) {
-    public static final int DEFAULT_COLOR = 0xFFFF4444;
+public record Area(String id, AABB bounds, ResourceKey<Level> dimension, Color color) {
+    public static final Color DEFAULT_COLOR = new Color(255, 68, 68);
 
-    public static Area of(String id, Vec3 min, Vec3 max, ResourceKey<Level> dimension, int color) {
+    public static Area of(String id, Vec3 min, Vec3 max, ResourceKey<Level> dimension, Color color) {
         return new Area(id, new AABB(min, max), dimension, color);
     }
 
@@ -34,7 +35,7 @@ public record Area(String id, AABB bounds, ResourceKey<Level> dimension, int col
         tag.putDouble("maxX", b.maxX);
         tag.putDouble("maxY", b.maxY);
         tag.putDouble("maxZ", b.maxZ);
-        tag.putInt("color", area.color());
+        tag.putInt("color", area.color().argb());
         return tag;
     }
 
@@ -54,11 +55,11 @@ public record Area(String id, AABB bounds, ResourceKey<Level> dimension, int col
                 tag.getDouble("maxY").orElse(0D),
                 tag.getDouble("maxZ").orElse(0D)
         );
-        int color = tag.getInt("color").orElse(DEFAULT_COLOR);
+        Color color = new Color(tag.getInt("color").orElse(DEFAULT_COLOR.argb()));
         return new Area(id, new AABB(min, max), dimension, color);
     }
 
     public void drawDebugOutline() {
-        Gizmos.cuboid(bounds, GizmoStyle.stroke(color));
+        Gizmos.cuboid(bounds, GizmoStyle.stroke(color.argb()));
     }
 }

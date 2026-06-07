@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.common.bbmodel.data.animation;
 
 import com.google.gson.annotations.SerializedName;
+import de.luckymcdev.foundryengine.common.util.color.Color;
 
 import java.util.List;
 
@@ -11,7 +12,7 @@ public class Keyframe {
     private List<DataPoint> dataPoints;
     private String uuid;
     private Float time;
-    private int color;
+    private Color color;
     private String interpolation;
     private String easing;
     private Object[] easingArgs;
@@ -40,7 +41,7 @@ public class Keyframe {
         return time;
     }
 
-    public int getColor() {
+    public Color getColor() {
         return color;
     }
 

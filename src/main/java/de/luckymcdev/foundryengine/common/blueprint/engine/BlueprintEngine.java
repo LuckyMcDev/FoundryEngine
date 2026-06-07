@@ -5,6 +5,7 @@ import de.luckymcdev.foundryengine.common.blueprint.graph.BlueprintGraph;
 import de.luckymcdev.foundryengine.common.blueprint.graph.BlueprintNode;
 import de.luckymcdev.foundryengine.common.blueprint.graph.NodePinInfo;
 import de.luckymcdev.foundryengine.common.blueprint.nodes.BuiltinNode;
+import de.luckymcdev.foundryengine.common.util.color.Color;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -21,7 +22,7 @@ public class BlueprintEngine {
         builtinById.put(node.identifier, node);
     }
 
-    public int getCategoryColor(@Nullable String category) {
+    public Color getCategoryColor(@Nullable String category) {
         return Categories.color(category);
     }
 
@@ -185,24 +186,24 @@ public class BlueprintEngine {
     }
 
     public static final class Categories {
-        private static final Map<String, Integer> COLORS = new LinkedHashMap<>();
+        private static final Map<String, Color> COLORS = new LinkedHashMap<>();
 
         private Categories() {
         }
 
-        public static String define(String path, int color) {
+        public static String define(String path, Color color) {
             COLORS.put(path, color);
             return path;
         }
 
-        public static int color(@Nullable String path) {
-            if (path == null) return 0xFF_404040;
-            Integer c = COLORS.get(path);
+        public static Color color(@Nullable String path) {
+            if (path == null) return new Color(0xFF_404040);
+            Color c = COLORS.get(path);
             if (c != null) return c;
             int slash = path.indexOf('/');
             String key = slash == -1 ? path : path.substring(0, slash);
             c = COLORS.get(key);
-            return c != null ? c : 0xFF_404040;
+            return c != null ? c : new Color(0xFF_404040);
         }
     }
 

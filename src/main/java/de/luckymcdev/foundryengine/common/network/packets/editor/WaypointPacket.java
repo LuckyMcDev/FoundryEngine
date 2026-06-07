@@ -3,6 +3,7 @@ package de.luckymcdev.foundryengine.common.network.packets.editor;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.network.AbstractPacket;
 import de.luckymcdev.foundryengine.common.network.PacketBounds;
+import de.luckymcdev.foundryengine.common.util.color.Color;
 import de.luckymcdev.foundryengine.common.waypoint.Waypoint;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -12,7 +13,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record WaypointPacket(String action, int x, int y, int z, String icon, String name,
-                             int color) implements AbstractPacket<WaypointPacket> {
+                             Color color) implements AbstractPacket<WaypointPacket> {
 
     public static final Type<WaypointPacket> TYPE = AbstractPacket.createType(Common.id("waypoint_packet"));
 
@@ -23,7 +24,7 @@ public record WaypointPacket(String action, int x, int y, int z, String icon, St
             ByteBufCodecs.INT, WaypointPacket::z,
             ByteBufCodecs.STRING_UTF8, WaypointPacket::icon,
             ByteBufCodecs.STRING_UTF8, WaypointPacket::name,
-            ByteBufCodecs.INT, WaypointPacket::color,
+            ByteBufCodecs.INT.map(Color::new, Color::argb), WaypointPacket::color,
             WaypointPacket::new
     );
 
@@ -55,16 +56,16 @@ public record WaypointPacket(String action, int x, int y, int z, String icon, St
         });
     }
 
-    public static WaypointPacket add(int x, int y, int z, String name, String icon, int color) {
+    public static WaypointPacket add(int x, int y, int z, String name, String icon, Color color) {
         return new WaypointPacket("ADD", x, y, z, icon, name, color);
     }
 
     public static WaypointPacket remove(int x, int y, int z) {
-        return new WaypointPacket("REMOVE", x, y, z, "", "", 0);
+        return new WaypointPacket("REMOVE", x, y, z, "", "", new Color(0));
     }
 
     public static WaypointPacket clear() {
-        return new WaypointPacket("CLEAR", 0, 0, 0, "", "", 0);
+        return new WaypointPacket("CLEAR", 0, 0, 0, "", "", new Color(0));
     }
 
     @Override

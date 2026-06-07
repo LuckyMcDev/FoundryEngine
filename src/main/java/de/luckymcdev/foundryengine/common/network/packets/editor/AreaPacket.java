@@ -6,6 +6,7 @@ import de.luckymcdev.foundryengine.common.network.AbstractPacket;
 import de.luckymcdev.foundryengine.common.network.PacketBounds;
 import de.luckymcdev.foundryengine.common.network.codecs.AABBCodec;
 import de.luckymcdev.foundryengine.common.util.PermissionChecks;
+import de.luckymcdev.foundryengine.common.util.color.Color;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -20,7 +21,7 @@ public record AreaPacket(
         Identifier dimensionId,
         boolean isRemoval,
         boolean isUpdate,
-        int color
+        Color color
 ) implements AbstractPacket<AreaPacket> {
 
     public static final Type<AreaPacket> TYPE = AbstractPacket.createType(Common.id("area_packet"));
@@ -31,7 +32,7 @@ public record AreaPacket(
             Identifier.STREAM_CODEC, AreaPacket::dimensionId,
             ByteBufCodecs.BOOL, AreaPacket::isRemoval,
             ByteBufCodecs.BOOL, AreaPacket::isUpdate,
-            ByteBufCodecs.INT, AreaPacket::color,
+            ByteBufCodecs.INT.map(Color::new, Color::argb), AreaPacket::color,
             AreaPacket::new
     );
 
@@ -100,11 +101,11 @@ public record AreaPacket(
     }
 
     public static AreaPacket remove(String areaId, Identifier dimensionId) {
-        return new AreaPacket(areaId, new AABB(0, 0, 0, 0, 0, 0), dimensionId, true, false, 0);
+        return new AreaPacket(areaId, new AABB(0, 0, 0, 0, 0, 0), dimensionId, true, false, new Color(0));
     }
 
     public static AreaPacket requestSync(Identifier dimensionId) {
-        return new AreaPacket("REQUEST_SYNC", new AABB(0, 0, 0, 0, 0, 0), dimensionId, false, false, 0);
+        return new AreaPacket("REQUEST_SYNC", new AABB(0, 0, 0, 0, 0, 0), dimensionId, false, false, new Color(0));
     }
 
     @Override

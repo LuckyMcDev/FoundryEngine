@@ -136,7 +136,7 @@ public class ImGuiUtils {
      */
     public static void identifier(Identifier loc) {
         ImGui.beginGroup();
-        ImGui.textColored(colorOf(loc.getNamespace()), loc.getNamespace() + ":");
+        ImGui.textColored(colorOf(loc.getNamespace()).argb(), loc.getNamespace() + ":");
 
         ImGui.pushStyleVar(ImGuiStyleVar.ItemSpacing, 0, 0);
         ImGui.sameLine();
@@ -193,12 +193,12 @@ public class ImGuiUtils {
      * @param modid The modid to get the color of
      * @return color The color based on the hash of the modid
      */
-    public static int colorOf(String modid) {
+    public static Color colorOf(String modid) {
         if (modid == null) {
-            return Color.WHITE.argb();
+            return Color.WHITE;
         }
         int hash = modid.hashCode();
-        return 0xFF000000 | (hash & 0x00FFFFFF);
+        return new Color(0xFF000000 | (hash & 0x00FFFFFF));
     }
 
     /**

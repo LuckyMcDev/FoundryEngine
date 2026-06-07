@@ -6,6 +6,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import de.luckymcdev.foundryengine.common.Common;
+import de.luckymcdev.foundryengine.common.util.color.Color;
 import de.luckymcdev.foundryengine.common.waypoint.Waypoint;
 import de.luckymcdev.foundryengine.server.command.EngineCommand;
 import net.minecraft.commands.CommandBuildContext;
@@ -26,13 +27,13 @@ public class WaypointCommand implements EngineCommand {
                 .then(Commands.literal("add")
                         .then(Commands.argument("pos", BlockPosArgument.blockPos())
                                 .then(Commands.argument("name", StringArgumentType.word())
-                                        .executes(ctx -> addWaypoint(ctx, "I", 0xFF40C0C0))
+                                        .executes(ctx -> addWaypoint(ctx, "I", new Color(0xFF40C0C0)))
                                         .then(Commands.argument("icon", StringArgumentType.word())
-                                                .executes(ctx -> addWaypoint(ctx, StringArgumentType.getString(ctx, "icon"), 0xFF40C0C0))
+                                                .executes(ctx -> addWaypoint(ctx, StringArgumentType.getString(ctx, "icon"), new Color(0xFF40C0C0)))
                                                 .then(Commands.argument("color", IntegerArgumentType.integer())
                                                         .executes(ctx -> addWaypoint(ctx,
                                                                 StringArgumentType.getString(ctx, "icon"),
-                                                                IntegerArgumentType.getInteger(ctx, "color"))))))))
+                                                                new Color(IntegerArgumentType.getInteger(ctx, "color")))))))))
                 .then(Commands.literal("remove")
                         .then(Commands.argument("pos", BlockPosArgument.blockPos())
                                 .executes(this::removeWaypoint)))
@@ -42,7 +43,7 @@ public class WaypointCommand implements EngineCommand {
                         .executes(this::listWaypoints));
     }
 
-    private int addWaypoint(CommandContext<CommandSourceStack> ctx, String icon, int color) throws CommandSyntaxException {
+    private int addWaypoint(CommandContext<CommandSourceStack> ctx, String icon, Color color) throws CommandSyntaxException {
         CommandSourceStack source = ctx.getSource();
         ServerLevel level = source.getLevel();
         BlockPos pos = BlockPosArgument.getBlockPos(ctx, "pos");
