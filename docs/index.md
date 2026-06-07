@@ -6,7 +6,7 @@ hero:
   text: "Turn Minecraft into a Game Engine"
   tagline: An in-game editor, visual scripting, custom dimensions, cutscenes, and more — all without writing a single line of Java.
   image:
-    src: /FoundryEngine/logo.svg
+    src: /FoundryEngine/logo.png
     alt: FoundryEngine Logo
   actions:
     - theme: brand

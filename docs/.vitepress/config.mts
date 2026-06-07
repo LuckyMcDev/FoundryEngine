@@ -12,7 +12,7 @@ export default defineConfig({
     ],
 
     themeConfig: {
-        logo: '/FoundryEngine/logo.svg',
+        logo: '/FoundryEngine/logo.png',
 
         nav: [
             { text: 'Guide', link: '/guide' },
