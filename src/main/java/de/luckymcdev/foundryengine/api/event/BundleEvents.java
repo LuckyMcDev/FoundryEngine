@@ -6,6 +6,7 @@ import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintEngine;
 import de.luckymcdev.foundryengine.common.event.BlueprintContexts;
 import de.luckymcdev.foundryengine.common.event.EventCallback;
 import de.luckymcdev.foundryengine.common.event.EventGroupHolder;
+import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -14,6 +15,12 @@ import net.neoforged.fml.event.lifecycle.InterModProcessEvent;
 import net.neoforged.neoforge.event.VanillaGameEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.Nullable;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class BundleEvents {
     public static final EventGroupHolder<RegistryEvent> REGISTRY = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_REGISTRY, BlueprintContexts::bundleRegistry);
@@ -24,6 +31,34 @@ public class BundleEvents {
     public static final EventGroupHolder<InterModProcessEvent> POST_INIT = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_POST_INIT, BlueprintContexts::postInit);
     public static final EventGroupHolder<ServerAboutToStartEvent> SERVER_ABOUT_TO_START = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_SERVER_ABOUT_TO_START, BlueprintContexts::serverAboutToStart);
     public static final EventGroupHolder<BundleDataGenEvent> DATA_GEN = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_DATA_GEN);
+    private static final Map<Class<?>, EventGroupHolder<?>> CUSTOM_EVENTS = new ConcurrentHashMap<>();
+    private static @Nullable IEventBus eventBus;
+
+    public static <T extends Event> void custom(Class<T> eventClass, EventCallback<T> callback) {
+        custom(eventClass, callback, event -> Map.of());
+    }
+
+    public static <T extends Event> void custom(Class<T> eventClass, EventCallback<T> callback, Function<T, Map<String, Object>> contextMapper) {
+        @SuppressWarnings("unchecked")
+        EventGroupHolder<T> holder = (EventGroupHolder<T>) CUSTOM_EVENTS.computeIfAbsent(eventClass, clazz -> {
+            String nodeId = "event.custom_" + clazz.getSimpleName();
+            if (eventBus != null) {
+                registerCustomOnBus(eventBus, clazz);
+            }
+            return new EventGroupHolder<>(nodeId, contextMapper);
+        });
+        holder.register(callback);
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static void registerCustomOnBus(IEventBus bus, Class<?> eventClass) {
+        bus.addListener((Class) eventClass, (Consumer) event -> {
+            EventGroupHolder holder = CUSTOM_EVENTS.get(eventClass);
+            if (holder != null) {
+                holder.post(event);
+            }
+        });
+    }
 
     public static void registry(EventCallback<RegistryEvent> callback) {
         REGISTRY.register(callback);
@@ -92,9 +127,20 @@ public class BundleEvents {
         }
 
         public static void register(IEventBus bus) {
+            eventBus = bus;
             bus.addListener(Internal::postVanillaGame);
             bus.addListener(Internal::postServerAboutToStart);
             bus.addListener(Internal::postDataGen);
+            CUSTOM_EVENTS.forEach((eventClass, holder) -> registerCustomOnBus(bus, eventClass));
+        }
+
+        @SuppressWarnings("unchecked")
+        public static <T extends Event> void postCustom(T event) {
+            Class<T> eventClass = (Class<T>) event.getClass();
+            EventGroupHolder<T> holder = (EventGroupHolder<T>) CUSTOM_EVENTS.get(eventClass);
+            if (holder != null) {
+                holder.post(event);
+            }
         }
 
         public static void clear() {
@@ -106,6 +152,7 @@ public class BundleEvents {
             POST_INIT.clear();
             DATA_GEN.clear();
             SERVER_ABOUT_TO_START.clear();
+            CUSTOM_EVENTS.clear();
         }
     }
 }
