@@ -4,15 +4,15 @@ FoundryEngine includes a priority-based shader effect system that lets you apply
 
 ## Built-in Effects
 
-| Effect | Priority | Description |
-|--------|----------|-------------|
-| `bloom` | 10 | Bloom/glow effect |
-| `blur` | 100 | Screen blur |
-| `grayscale` | 55 | Desaturate the screen |
-| `invert` | 50 | Invert colors |
-| `creeper` | 10 | Creeper-vision green tint |
-| `spider` | 10 | Spider-vision tint |
-| `depth_vis` | 40 | Depth buffer visualization |
+| Effect      | Priority | Description                |
+|-------------|----------|----------------------------|
+| `bloom`     | 10       | Bloom/glow effect          |
+| `blur`      | 100      | Screen blur                |
+| `grayscale` | 55       | Desaturate the screen      |
+| `invert`    | 50       | Invert colors              |
+| `creeper`   | 10       | Creeper-vision green tint  |
+| `spider`    | 10       | Spider-vision tint         |
+| `depth_vis` | 40       | Depth buffer visualization |
 
 ## Managing Effects
 

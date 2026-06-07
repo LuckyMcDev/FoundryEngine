@@ -38,21 +38,21 @@ manager.clearWaypoints(level)
 
 ## Waypoint Commands
 
-| Command | Description |
-|---------|-------------|
-| `/engine waypoint add <pos> <name> [icon] [color]` | Add a waypoint |
-| `/engine waypoint remove <pos>` | Remove waypoint at position |
-| `/engine waypoint clear` | Clear all waypoints |
-| `/engine waypoint list` | List all waypoints |
+| Command                                            | Description                 |
+|----------------------------------------------------|-----------------------------|
+| `/engine waypoint add <pos> <name> [icon] [color]` | Add a waypoint              |
+| `/engine waypoint remove <pos>`                    | Remove waypoint at position |
+| `/engine waypoint clear`                           | Clear all waypoints         |
+| `/engine waypoint list`                            | List all waypoints          |
 
 ## Waypoint Properties
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `name` | `String` | Display name |
-| `icon` | `String` | Icon identifier (e.g., `"star"`, `"house"`) |
-| `x`, `y`, `z` | `int` | Block position |
-| `color` | `int` | ARGB hex color |
+| Property      | Type     | Description                                 |
+|---------------|----------|---------------------------------------------|
+| `name`        | `String` | Display name                                |
+| `icon`        | `String` | Icon identifier (e.g., `"star"`, `"house"`) |
+| `x`, `y`, `z` | `int`    | Block position                              |
+| `color`       | `int`    | ARGB hex color                              |
 
 ## See Also
 
