@@ -12,6 +12,7 @@ import de.luckymcdev.foundryengine.client.editor.panel.cutscenes.CutsceneTimelin
 import de.luckymcdev.foundryengine.client.editor.panel.editor.AreaPanel;
 import de.luckymcdev.foundryengine.client.editor.panel.editor.BlueprintsPanel;
 import de.luckymcdev.foundryengine.client.editor.panel.editor.MainEditor;
+import de.luckymcdev.foundryengine.client.editor.panel.editor.RecipeEditorPanel;
 import de.luckymcdev.foundryengine.client.editor.panel.explorer.FileExplorerPanel;
 import de.luckymcdev.foundryengine.client.editor.panel.explorer.ResourceExplorerPanel;
 import de.luckymcdev.foundryengine.client.editor.panel.tools.*;
@@ -154,6 +155,7 @@ public class FoundryEngineModClient {
         event.register(EffectPanel.INSTANCE);
         event.register(BlueprintsPanel.INSTANCE);
         event.register(AreaPanel.INSTANCE);
+        event.register(RecipeEditorPanel.INSTANCE);
         event.register(CutscenePanel.INSTANCE);
         event.register(CutsceneTimelinePanel.INSTANCE);
         event.register(WaypointPanel.INSTANCE);
