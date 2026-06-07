@@ -1,61 +1,103 @@
-# Getting Started with Foundry Engine.
+# Getting Started
 
-This Section guides you through setting up Your workspace and how to test
-and run your Bundles.
+This page walks you through setting up a bundle development workspace and creating your first bundle.
 
-If you do not know what is meant by Bundle, please read [This Article](concepts/bundles.md)
+If you haven't read about [Bundles](concepts/bundles) yet, start there — they're the core concept.
 
-## Prerequisites
+## Choose a Workspace
 
-If you want to start developing a Bundle, it is recommended to read everything in the "Concepts"
-tab, to get a feel for how Foundry Engine works. You can find that [Here](concepts/index.md)
+You have two options. See [Workspaces](concepts/workspaces) for a full comparison.
 
-## Setting Up the Workspace
+### Option 1: In-Game Folder (Quick Start)
 
-For setting up a Workspace, id firstly recommend you to read up on [This](concepts/workspaces.md)
-And then deciding which way you want to go, since there are two main Ways to go about this.
+Create a folder directly in your Minecraft directory:
 
-1. Copy the TemplateBundle found on GitHub. You can do this either by downloading the Zip file or cloning the project,
-   or just using the template on GitHub.
-2. Raw-Dog it and create a new folder in your .minecraft folder. This is a lot harder and does not give you some ease of
-   use features of the TemplateBundle.
+```
+.minecraft/FoundryEngine/bundles/my-bundle/
+```
 
-## Customizing your Bundles information
+Add your files (scripts, assets, data) and run `/engine reload` to see changes instantly. No build step required.
 
-To change the bundles Information, you need to change
-the [Toml File](concepts/workspaces.md#location-of-the-bundlenamebundlestoml-file).
+### Option 2: Template Project (Recommended)
 
-The contents of this File should look similar to this:
+Clone or generate from the [FoundryEngine Bundle Template](https://github.com/LuckyMcDev/FoundryEngineBundleTemplate):
 
-````toml
+```bash
+git clone https://github.com/LuckyMcDev/FoundryEngineBundleTemplate my-bundle
+cd my-bundle
+```
+
+This gives you Gradle build tasks, version control, and deployment automation.
+
+## Configure Your Bundle
+
+Edit the `.bundles.toml` manifest:
+
+```toml
 [[bundles]]
-bundleId = "templatebundle"
+bundleId = "mybundle"
 version = "0.0.1"
-displayName = "Template Bundle"
-displayURL = "change to your website URL"
+displayName = "My Bundle"
+displayURL = "https://example.com"
 authors = "YourName"
-description = '''This is a Template Bundle'''
+description = "My first FoundryEngine bundle!"
 dependencies = [
    "mod:neoforge@26.1.0.1-beta"
 ]
-````
+```
 
-Most of the data is just for the "Mods" menu to be displayed visually.
+## Create an Entrypoint
 
-But the dependencies block is not only visual, it also stops the bundle from loading, if the specified
-dependency is not present at load times. That means, you can depend on a library you created which is also a bundle, and
-of that, a specific version.
+Create `scripts/common/Entrypoint.groovy`:
 
-## Building and Testing Your Bundle
+```groovy
+package mybundle
 
-Depending on your choice in [Workspace](concepts/workspaces.md), you either just run the game with the bundle in the
-`.minecraft/FoundryEngine/bundles` folder,
+import de.luckymcdev.foundryengine.common.script.BundleEntrypoint
+import de.luckymcdev.foundryengine.api.event.BundleEvents
+import de.luckymcdev.foundryengine.api.event.ServerEvents
+import de.luckymcdev.foundryengine.api.builder.item.ItemBuilder
+import net.minecraft.world.item.Rarity
+import net.minecraft.core.component.DataComponents
+import net.minecraft.world.item.component.ItemLore
+import net.minecraft.network.chat.Component
 
-Or you run the Gradle task `gradlew deployBundle` and afterward `gradlew runClient` / the Client task.
+class Entrypoint implements BundleEntrypoint {
 
-## Distributing your Bundle
+    @Override
+    void onLoad() {
+        println "My bundle loaded!"
 
-To distribute, you either just copy the folder in the `.minecraft/FoundryEngine/bundles` folder
-And distribute that,
+        BundleEvents.registry {
+            it.items(myItem)
+        }
 
-Or you run the Gradle task `gradlew deployBundle` and copy the folder inside `build/bundles`.
+        ServerEvents.started {
+            println "Server is ready!"
+        }
+    }
+
+    @Override
+    void onUnload() {
+        println "My bundle unloaded!"
+    }
+}
+```
+
+## Build and Test
+
+- **In-game folder**: Save files, run `/engine reload`, and test immediately
+- **Template project**: Run `gradlew deployBundle` then `gradlew runClient`
+
+## Distribute Your Bundle
+
+Share the entire bundle folder. Users place it in `.minecraft/FoundryEngine/bundles/`.
+
+With the template project, run `gradlew deployBundle` and copy the output from `build/bundles/`.
+
+## Next Steps
+
+- [Builders](concepts/builders) — Register items, blocks, recipes, sounds, and particles
+- [Events](concepts/events) — React to game events
+- [Blueprints](concepts/blueprints) — Visual scripting without code
+- [Examples](examples) — Complete working examples
