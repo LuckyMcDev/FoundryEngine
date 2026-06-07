@@ -56,6 +56,7 @@ import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeVersion;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
+import net.neoforged.neoforge.event.ModifyDefaultComponentsEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
@@ -99,6 +100,8 @@ public class FoundryEngineMod {
         modBus.addListener(this::clientSetup);
         modBus.addListener(this::dedicatedServerSetup);
         modBus.addListener(this::postInit);
+        modBus.addListener(EventPriority.LOWEST, this::onLoadComplete);
+        modBus.addListener(this::onItemModification);
         modBus.addListener(Config::onLoad);
         modBus.addListener(Config::onReload);
 
@@ -212,15 +215,6 @@ public class FoundryEngineMod {
         network.register(AreaPacket.DEFINITION);
         network.register(WaypointPacket.DEFINITION);
         network.register(SavedDataSyncPacket.DEFINITION);
-
-        event.enqueueWork(() -> {
-            for (Block block : BuiltInRegistries.BLOCK) {
-                BUS.post(new BlockModificationEvent(block));
-            }
-            for (Item block : BuiltInRegistries.ITEM) {
-                BUS.post(new ItemModificationEvent(block));
-            }
-        });
     }
 
     private void clientSetup(FMLClientSetupEvent event) {
@@ -240,6 +234,24 @@ public class FoundryEngineMod {
             helper.register(Common.id("void"), VoidChunkGenerator.CODEC);
             helper.register(Common.id("transient"), TransientChunkGenerator.CODEC);
         });
+    }
+
+    private void onLoadComplete(FMLLoadCompleteEvent event) {
+        event.enqueueWork(() -> {
+            for (Block block : BuiltInRegistries.BLOCK) {
+                var e = new BlockModificationEvent(block);
+                BUS.post(e);
+            }
+        });
+    }
+
+    private void onItemModification(ModifyDefaultComponentsEvent event) {
+        ItemModificationEvent.bind(event);
+        for (Item item : BuiltInRegistries.ITEM) {
+            var e = new ItemModificationEvent(item);
+            BUS.post(e);
+        }
+        ItemModificationEvent.flush();
     }
 
     private void onConstruct(FMLConstructModEvent event) {
