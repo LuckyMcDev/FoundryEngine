@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.api.event.modification;
 
 import de.luckymcdev.foundryengine.interfaces.EngineBlockBehavior;
+import de.luckymcdev.foundryengine.interfaces.EngineBlockStateBehavior;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.neoforged.bus.api.Event;
@@ -53,8 +54,24 @@ public class BlockModificationEvent extends Event {
         return this;
     }
 
+    public BlockModificationEvent setDestroySpeed(float speed) {
+        for (var state : block.getStateDefinition().getPossibleStates()) {
+            ((EngineBlockStateBehavior) state).engine$setDestroySpeed(speed);
+        }
+        return this;
+    }
+
+    public BlockModificationEvent setRequiresTool(boolean requiresTool) {
+        for (var state : block.getStateDefinition().getPossibleStates()) {
+            ((EngineBlockStateBehavior) state).engine$setRequiresTool(requiresTool);
+        }
+        return this;
+    }
+
     public BlockModificationEvent lightEmission(int emission) {
-        behavior.engine$setLightEmission(emission);
+        for (var state : block.getStateDefinition().getPossibleStates()) {
+            ((EngineBlockStateBehavior) state).engine$setLightEmission(emission);
+        }
         return this;
     }
 }

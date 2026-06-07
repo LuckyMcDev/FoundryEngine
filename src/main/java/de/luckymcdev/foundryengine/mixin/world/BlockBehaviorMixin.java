@@ -9,8 +9,6 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(BlockBehaviour.class)
 public abstract class BlockBehaviorMixin implements EngineBlockBehavior {
     @Shadow
-    public BlockBehaviour.Properties properties;
-    @Shadow
     public float explosionResistance;
     @Shadow
     public boolean isRandomlyTicking;
@@ -58,10 +56,5 @@ public abstract class BlockBehaviorMixin implements EngineBlockBehavior {
     @Override
     public void engine$setJumpFactor(float nJumpFactor) {
         jumpFactor = nJumpFactor;
-    }
-
-    @Override
-    public void engine$setLightEmission(int emission) {
-        properties.lightLevel(_ -> emission);
     }
 }

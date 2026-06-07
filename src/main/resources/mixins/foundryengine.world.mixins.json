@@ -4,7 +4,8 @@
   "package": "de.luckymcdev.foundryengine.mixin.world",
   "compatibilityLevel": "JAVA_25",
   "mixins": [
-    "BlockBehaviorMixin"
+    "BlockBehaviorMixin",
+    "BlockStateBaseMixin"
   ],
   "client": [
   ],

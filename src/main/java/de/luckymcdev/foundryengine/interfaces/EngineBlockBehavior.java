@@ -12,5 +12,4 @@ public interface EngineBlockBehavior extends EngineInterface<BlockBehaviour> {
     void engine$setSpeedFactor(float speedFactor);
     void engine$setJumpFactor(float jumpFactor);
 
-    void engine$setLightEmission(int emission);
 }
