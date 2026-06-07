@@ -17,6 +17,7 @@ public class Cutscene {
     public final BezierPath path;
     private final String name;
     private final ArrayList<Vec2> anchorRotations = new ArrayList<>();
+    private final ArrayList<Integer> anchorHoldTicks = new ArrayList<>();
     private final ArrayList<CutsceneAttachment> attachments = new ArrayList<>();
     private Color color;
     private int defaultLength = 60;
@@ -58,6 +59,13 @@ public class Cutscene {
         cutscene.defaultHoldStart = tag.getIntOr("DefaultHoldStart", 0);
         cutscene.defaultHoldEnd = tag.getIntOr("DefaultHoldEnd", 0);
         cutscene.defaultEasing = tag.getStringOr("DefaultEasing", "LINEAR");
+
+        cutscene.anchorHoldTicks.clear();
+        tag.getIntArray("AnchorHoldTicks").ifPresentOrElse(holdArr -> {
+            for (int h : holdArr) {
+                cutscene.anchorHoldTicks.add(h);
+            }
+        }, () -> {});
 
         // Attachments (with backward compatibility for old ScreenEffects)
         cutscene.attachments.clear();
@@ -173,6 +181,8 @@ public class Cutscene {
         Cutscene c = new Cutscene(name, getInitialRot(), getFinalRot(), newPath);
         c.anchorRotations.clear();
         c.anchorRotations.addAll(this.anchorRotations);
+        c.anchorHoldTicks.clear();
+        c.anchorHoldTicks.addAll(this.anchorHoldTicks);
         c.ensureAnchorRotations();
         c.setInitRot(new Vec2(player.getXRot(), player.getYRot()));
         return c;
@@ -183,6 +193,8 @@ public class Cutscene {
         Cutscene c = new Cutscene(name, getInitialRot(), getFinalRot(), newPath);
         c.anchorRotations.clear();
         c.anchorRotations.addAll(this.anchorRotations);
+        c.anchorHoldTicks.clear();
+        c.anchorHoldTicks.addAll(this.anchorHoldTicks);
         c.ensureAnchorRotations();
         c.setFinalRot(new Vec2(player.getXRot(), player.getYRot()));
         return c;
@@ -211,6 +223,13 @@ public class Cutscene {
             rotList.add(rt);
         }
         tag.put("Rotations", rotList);
+
+        int[] holdArr = new int[this.anchorHoldTicks.size()];
+        for (int i = 0; i < holdArr.length; i++) {
+            holdArr[i] = this.anchorHoldTicks.get(i);
+        }
+        tag.putIntArray("AnchorHoldTicks", holdArr);
+
         tag.put("BezierPath", this.path.toNbt());
 
         ListTag attachmentList = new ListTag();
@@ -392,6 +411,7 @@ public class Cutscene {
         int anchors = getAnchorPointCount();
         if (anchors <= 0) {
             anchorRotations.clear();
+            anchorHoldTicks.clear();
             return;
         }
 
@@ -404,24 +424,28 @@ public class Cutscene {
             Vec2 a = anchorRotations.getFirst();
             Vec2 b = anchorRotations.getLast();
             initAnchorRotationsFromEndpoints(a, b);
-            return;
+            // Don't return - still need to sync anchorHoldTicks below
+        } else {
+            if (anchorRotations.size() < anchors) {
+                Vec2 last = anchorRotations.getLast();
+                while (anchorRotations.size() < anchors) anchorRotations.add(last);
+            } else if (anchorRotations.size() > anchors) {
+                while (anchorRotations.size() > anchors) anchorRotations.removeLast();
+            }
+
+            if (anchors == 1 && anchorRotations.size() > 1) {
+                Vec2 only = anchorRotations.getFirst();
+                anchorRotations.clear();
+                anchorRotations.add(only);
+            }
         }
 
-        if (anchorRotations.size() < anchors) {
-            Vec2 last = anchorRotations.getLast();
-            while (anchorRotations.size() < anchors) anchorRotations.add(last);
-        } else if (anchorRotations.size() > anchors) {
-            while (anchorRotations.size() > anchors) anchorRotations.removeLast();
-        }
-
-        if (anchors == 1 && anchorRotations.size() > 1) {
-            Vec2 only = anchorRotations.getFirst();
-            anchorRotations.clear();
-            anchorRotations.add(only);
-        }
+        // Sync anchorHoldTicks to match anchor count
+        while (anchorHoldTicks.size() < anchors) anchorHoldTicks.add(0);
+        while (anchorHoldTicks.size() > anchors) anchorHoldTicks.removeLast();
     }
 
-    private double[] getAnchorDistanceKeys() {
+    public double[] getAnchorDistanceKeys() {
         int anchors = getAnchorPointCount();
         double[] keys = new double[anchors];
         if (anchors <= 0) return keys;
@@ -435,6 +459,93 @@ public class Cutscene {
         }
         keys[anchors - 1] = 1.0;
         return keys;
+    }
+
+    /**
+     * Computes the effective progress t (0..1) for a given tick position in the playback timeline,
+     * accounting for per-anchor hold times, holdStart, and holdEnd.
+     */
+    public float computeProgress(float ageTicks, float motionLengthTicks, float holdStartTicks, float holdEndTicks) {
+        int anchorCount = anchorHoldTicks.size();
+        if (anchorCount <= 1) {
+            return anchorCount == 0 ? 0f : (ageTicks < holdStartTicks ? 0f : 1f);
+        }
+
+        double[] keys = getAnchorDistanceKeys();
+        int segmentCount = anchorCount - 1;
+
+        float totalAnchorHolds = 0;
+        for (int h : anchorHoldTicks) totalAnchorHolds += h;
+
+        float total = holdStartTicks + motionLengthTicks + totalAnchorHolds + holdEndTicks;
+        if (total <= 0) return 0f;
+
+        if (ageTicks <= 0) return 0f;
+        if (ageTicks >= total) return 1f;
+
+        float elapsed = ageTicks;
+
+        // Phase: holdStart
+        if (elapsed < holdStartTicks) return 0f;
+        elapsed -= holdStartTicks;
+
+        // Compute total weight for distributing motion length across segments
+        double totalWeight = 0;
+        for (int i = 0; i < segmentCount; i++) {
+            totalWeight += keys[i + 1] - keys[i];
+        }
+        if (totalWeight <= 0) totalWeight = 1;
+
+        // Walk through segments
+        for (int seg = 0; seg < segmentCount; seg++) {
+            double segWeight = keys[seg + 1] - keys[seg];
+            float segDuration = (float) (segWeight / totalWeight) * motionLengthTicks;
+
+            // Motion in this segment
+            if (elapsed < segDuration) {
+                float localT = segDuration > 0 ? elapsed / segDuration : 0f;
+                return (float) (keys[seg] + localT * (keys[seg + 1] - keys[seg]));
+            }
+            elapsed -= segDuration;
+
+            // Hold at the destination anchor
+            int anchorIdx = seg + 1;
+            float holdTicks = anchorHoldTicks.get(anchorIdx);
+            if (holdTicks > 0) {
+                if (elapsed < holdTicks) {
+                    return (float) keys[anchorIdx];
+                }
+                elapsed -= holdTicks;
+            }
+        }
+
+        return 1f;
+    }
+
+    public ArrayList<Integer> getAnchorHoldTicks() {
+        ensureAnchorRotations();
+        return this.anchorHoldTicks;
+    }
+
+    public int getAnchorHoldTicks(int anchorIndex) {
+        ensureAnchorRotations();
+        if (anchorIndex < 0 || anchorIndex >= anchorHoldTicks.size()) return 0;
+        return anchorHoldTicks.get(anchorIndex);
+    }
+
+    public void setAnchorHoldTicks(int anchorIndex, int ticks) {
+        ensureAnchorRotations();
+        if (anchorIndex < 0 || anchorIndex >= anchorHoldTicks.size()) return;
+        anchorHoldTicks.set(anchorIndex, Math.max(0, ticks));
+    }
+
+    /**
+     * Returns the total number of hold ticks across all anchors (sum of anchorHoldTicks).
+     */
+    public int getTotalAnchorHoldTicks() {
+        int sum = 0;
+        for (int h : anchorHoldTicks) sum += h;
+        return sum;
     }
 
     public int getDefaultHoldEnd() {

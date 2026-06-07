@@ -146,7 +146,7 @@ public record CutscenePacket(CompoundTag nbt) implements AbstractPacket<Cutscene
                 playTag.putInt("holdEnd", holdEnd);
 
                 cutsceneManager.syncToPlayer(target);
-                int total = length + holdStart + holdEnd;
+                int total = length + holdStart + holdEnd + cutscene.getTotalAnchorHoldTicks();
                 Common.getCutsceneSessionManager().addInstance(target, total);
                 PacketDistributor.sendToPlayer(target, new CutscenePacket(playTag));
             }
