@@ -1,78 +1,111 @@
 import {defineConfig} from 'vitepress'
 
-const nav = (text: string, link: string) => ({text, link})
-const sidebar = (text: string, link: string) => ({text, link})
-const social = (icon: string, link: string) => ({icon, link})
-
-const sidebarGroup = (text: string, items: Array<any>, collapsed: boolean = false) => ({
-    text,
-    items,
-    collapsed
-})
-
 export default defineConfig({
     title: "FoundryEngine",
-    description: "Foundry Engine Docs",
+    description: "A Minecraft mod that turns the game into a game engine — with an in-game editor, visual scripting, custom dimensions, cutscenes, and more.",
     base: '/FoundryEngine/',
 
-    // Exclude javadoc from the Vite build process entirely
     srcExclude: ['**/javadoc/**'],
 
+    head: [
+        ['link', { rel: 'icon', href: '/FoundryEngine/favicon.ico' }]
+    ],
+
     themeConfig: {
+        logo: '/FoundryEngine/logo.svg',
+
         nav: [
-//        nav('Guide', '/guide/'),
-//        nav('API Reference', '/api/'),
-//        nav('Javadoc', '/javadoc/index.html')
-            nav("Guide", "guide.md"),
-            nav("Getting Started", "getting_started.md"),
+            { text: 'Guide', link: '/guide' },
+            { text: 'Getting Started', link: '/getting_started' },
+            { text: 'Examples', link: '/examples' },
+            { text: 'GitHub', link: 'https://github.com/LuckyMcDev/FoundryEngine' }
         ],
 
-        sidebar: [
-            sidebarGroup("Guide", [
-                sidebar("Overview", "guide.md")
-            ]),
-            sidebarGroup("Getting Started", [
-                sidebar("Overview", "getting_started.md")
-            ]),
-            sidebarGroup("Concepts", [
-                sidebar("Blueprints", "concepts/blueprints.md"),
-                sidebar("Builders", "concepts/builders.md"),
-                sidebar("Bundles", "concepts/bundles.md"),
-                sidebar("Dependencies", "concepts/dependencies.md"),
-                sidebar("Entrypoints", "concepts/entrypoint.md"),
-                sidebar("Events", "concepts/events.md"),
-                sidebar("Registries", "concepts/registries.md"),
-                sidebar("Scripts", "concepts/scripts.md"),
-                sidebar("Sides", "concepts/sides.md"),
-                sidebar("Workspaces", "concepts/workspaces.md")
-            ])
-//      sidebarGroup('Guide', [
-//        sidebar('Overview', '/guide/'),
-//        sidebarGroup("Developer", [
-//            sidebar("Getting Started", '/guide/developer/getting-started'),
-//            sidebar("Project Structure", '/guide/developer/project-structure'),
-//            sidebar("Configuration", '/guide/developer/configuration'),
-//            sidebar("Minecraft Code", "/guide/developer/minecraft-code")
-//        ]),
-//        sidebarGroup("User", [
-//            sidebar("Overview", '/guide/user/'),
-//            sidebar("Bundle Installation", '/guide/user/bundle-installation'),
-//            sidebar("Minecraft Installation", '/guide/user/mc-installation')
-//        ])
-//      ]),
-//
-//      sidebarGroup('API Reference', [
-//          sidebar("Overview", "/api/"),
-//          sidebarGroup("Builders", [
-//            sidebar("Item Builder", "/api/builder/item-builder"),
-//            sidebar("Block Builder", "/api/builder/block-builder"),
-//            sidebar("Recipe Builder", "/api/builder/recipe-builder")
-//          ])
-//      ]),
-        ],
+        sidebar: {
+            '/guide': [
+                {
+                    text: 'User Guide',
+                    items: [
+                        { text: 'Installation', link: '/guide' },
+                        { text: 'Getting Started', link: '/getting_started' }
+                    ]
+                }
+            ],
+            '/getting_started': [
+                {
+                    text: 'Getting Started',
+                    items: [
+                        { text: 'Overview', link: '/getting_started' },
+                        { text: 'Workspaces', link: '/concepts/workspaces' }
+                    ]
+                }
+            ],
+            '/concepts/': [
+                {
+                    text: 'Core Concepts',
+                    items: [
+                        { text: 'Overview', link: '/concepts/index' },
+                        { text: 'Bundles', link: '/concepts/bundles' },
+                        { text: 'Builders', link: '/concepts/builders' },
+                        { text: 'Registries', link: '/concepts/registries' },
+                        { text: 'Scripts', link: '/concepts/scripts' },
+                        { text: 'Entrypoints', link: '/concepts/entrypoint' },
+                        { text: 'Events', link: '/concepts/events' },
+                        { text: 'Blueprints', link: '/concepts/blueprints' },
+                        { text: 'Dependencies', link: '/concepts/dependencies' },
+                        { text: 'Sides', link: '/concepts/sides' },
+                        { text: 'Bundle Config', link: '/concepts/config' },
+                        { text: 'Easing Functions', link: '/concepts/easing' },
+                        { text: 'Markdown Rendering', link: '/concepts/markdown' }
+                    ]
+                },
+                {
+                    text: 'Systems',
+                    items: [
+                        { text: 'In-Game Editor', link: '/concepts/editor' },
+                        { text: 'Cutscene System', link: '/concepts/cutscenes' },
+                        { text: 'Instanced Worlds', link: '/concepts/instanced-worlds' },
+                        { text: 'Game Stages', link: '/concepts/stages' },
+                        { text: 'Areas', link: '/concepts/areas' },
+                        { text: 'Waypoints', link: '/concepts/waypoints' },
+                        { text: 'Custom Particles', link: '/concepts/particles' },
+                        { text: 'Post-Processing', link: '/concepts/post-processing' }
+                    ]
+                },
+                {
+                    text: 'Reference',
+                    items: [
+                        { text: 'Commands', link: '/concepts/commands' }
+                    ]
+                }
+            ],
+            '/examples': [
+                {
+                    text: 'Examples',
+                    items: [
+                        { text: 'Overview', link: '/examples' }
+                    ]
+                }
+            ]
+        },
 
         socialLinks: [
-            social('github', 'https://github.com/LuckyMcDev/FoundryEngine'),
-        ]
+            { icon: 'github', link: 'https://github.com/LuckyMcDev/FoundryEngine' }
+        ],
+
+        footer: {
+            message: 'FoundryEngine is a work-in-progress. Documentation may change.',
+            copyright: 'Copyright © 2025 LuckyMcDev'
+        },
+
+        editLink: {
+            pattern: 'https://github.com/LuckyMcDev/FoundryEngine/edit/main/docs/:path',
+            text: 'Edit this page on GitHub'
+        }
+    },
+
+    markdown: {
+        lineNumbers: true,
+        theme: 'github-dark'
     }
 })

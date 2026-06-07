@@ -1,53 +1,43 @@
-# Foundry Engine User Guide
+# FoundryEngine User Guide
 
-This Guide is for you, if you are intending to prepare your computer to run Foundry Engine,
-as well as answer some frequently asked Questions.
+This guide covers installing Minecraft, NeoForge, and FoundryEngine so you can start using bundles.
 
-This guide is aimed at an installation for 3rd Party Launchers like [Prism Launcher](https://prismlauncher.org/).
+## Prerequisites
 
----
+### Java
 
-## Java
+FoundryEngine requires **Java 25+**. We recommend [Adoptium Temurin](https://adoptium.net/).
 
-In order to run Minecraft / Foundry Engine, you need to have java installed.
+**Verify your installation:**
 
-### Testing For Java
+```bash
+java -version
+```
 
-If you are not sure if you have Java installed,
+If you see a version number, you're good. If not, download and install from [Adoptium](https://adoptium.net/).
 
-1. Open a Terminal
-2. Type the following command: `java -version`
-3. If java is installed, you should see a Version number, if not, see [Installing Java](guide.md#installing-java)
+### NeoForge
 
-### Installing Java
+FoundryEngine runs on **NeoForge 26.1.x** for Minecraft 1.21.5.
 
-Java has a few vendors. A Vendor is a provider of the Java language.
-There are many possible ones, I would recommend you to install [Adoptium](https://adoptium.net/)
-Follow their Installation Instructions.
+**Using a custom launcher (Prism, MultiMC, etc.):**
+1. Create a new instance
+2. Select Minecraft 1.21.5
+3. Select NeoForge as the mod loader
 
-Afterward, please go back to [Testing For Java](guide.md#testing-for-java)
+**Using the vanilla launcher:**
+Follow the [NeoForge client installation guide](https://docs.neoforged.net/user/docs/client).
 
-## NeoForge
+## Installing FoundryEngine
 
-Once you have installed Java, you need to install NeoForge.
-When using a custom Launcher, this is quite easy. You just create a new Instance and select "NeoForge"
-as the Mod Loader.
+1. Download the latest FoundryEngine `.jar` from the [releases page](https://github.com/LuckyMcDev/FoundryEngine/releases)
+2. Place it in your `mods/` folder
+3. Launch the game
 
-For the Vanilla Launcher, Please follow the NeoForge instructions [Here](https://docs.neoforged.net/user/docs/client)
+The first launch will create the `FoundryEngine/` folder inside your Minecraft directory, ready for bundles.
 
-## Foundry Engine
+## Where to Go Next
 
-Download the mod jar file from one of the trusted sources (Dont know what those are yet)
-And place it into your `.minecraft/mods` directory.
-
-That's it!
-
-Up Next: [Getting Started](getting_started.md)
-
-
-
-
-
-
-
-
+- [Getting Started](getting_started) — Set up a workspace and create your first bundle
+- [Concepts Overview](concepts/index) — Understand bundles, scripts, events, and more
+- [Examples](examples) — See working code for items, blocks, recipes, and events
