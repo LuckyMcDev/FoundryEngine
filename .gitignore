@@ -3,6 +3,10 @@
 *.iml
 *.ipr
 *.iws
+.project
+.classpath
+.settings/
+*.prefs
 out/
 .DS_Store
 Thumbs.db
