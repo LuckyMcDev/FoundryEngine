@@ -2,18 +2,43 @@
 
 ## General Info
 
-A Workspace is in the Foundry Engine context:
+A workspace is where you develop your bundle. There are two approaches:
 
-1. Either the folder inside the `.minecraft/FoundryEngine/bundles/bundleName` in this case called bundleName,
-2. Or when using the TemplateBundle, the `src/main/groovy` & `src/main/resources` folders.
+1. **In-game folder** — Create a folder directly in `.minecraft/FoundryEngine/bundles/`
+2. **Template project** — Use the Foundry Engine template (GitHub template or Gradle project)
 
-If I referer to "scripts directory", that can mean either one.
-Same with Resource- and Data-Pack.
+## In-Game Folder
 
-## Location of the `bundleName.bundles.toml` File
+Create a folder in `.minecraft/FoundryEngine/bundles/your-bundle/` with the
+[bundle structure](bundles.md). Scripts, assets, and data go directly into this
+folder. No build step needed — just `/engine reload` after changes.
 
-I will refer to the `bundleName.bundles.toml` as toml file.
+**Location of `.bundles.toml`**: `.minecraft/FoundryEngine/bundles/your-bundle/your-bundle.bundles.toml`
 
-When using The TemplateBundle way, the toml file is located in `src/main/resources/tomlFile`.
+## Template Project
 
-When using the `.minecraft` way, the toml file is located in `.minecraft/FoundryEngine/bundles/bundleName/tomlFile`.
+Clone or generate from the Foundry Engine template. The source structure is:
+
+```
+src/
+├── main/
+│   ├── groovy/       # Scripts (server/, client/, common/)
+│   └── resources/    # Assets and data (assets/, data/, .bundles.toml)
+```
+
+Run `gradlew deployBundle` to copy the built bundle into Minecraft's run directory,
+then `gradlew runClient` to launch.
+
+**Location of `.bundles.toml`**: `src/main/resources/your-bundle.bundles.toml`
+
+## Which to Choose?
+
+| Approach | Pros | Cons |
+|----------|------|------|
+| In-game folder | No build setup, instant reload | No version control built in |
+| Template project | Version control, build tasks, deploy automation | Requires Gradle setup |
+
+## See Also
+
+- [Bundles](bundles.md) — Bundle structure and manifest
+- [Getting Started](../getting_started.md) — Step-by-step workspace setup

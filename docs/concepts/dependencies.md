@@ -1,23 +1,33 @@
 # Concepts: Dependencies
 
-A Dependency allows you to say:
+A dependency tells Foundry Engine: "I need this mod or bundle to run, and if it's
+missing, don't load me."
 
-Hey, I need this mod / bundle when running, and if I don't have it. Don't let the game run.
+Dependencies are declared in your bundle's `.bundles.toml` file. They can reference
+either other bundles or NeoForge mods.
 
-A Dependency can be either A mod, or a bundle.
-
-Bundles are noted in this syntax:
+## Bundle Dependency
 
 ```toml
-dependecies = [
-    "bundle:bundlename@version"
+dependencies = [
+    "bundle:my-library@1.0.0"
 ]
 ```
 
-Mods are noted in this syntax:
+## Mod Dependency
 
 ```toml
-dependecies = [
-    "mod:modname@version"
+dependencies = [
+    "mod:neoforge@26.1.0.1-beta"
 ]
 ```
+
+## Version Syntax
+
+Dependencies use `@` to separate the name from the version requirement.
+Version strings follow semantic versioning. If a dependency is not met,
+the bundle will not load and an error is shown in the mods menu.
+
+## See Also
+
+- [Bundles](bundles.md) — More about the bundle manifest format

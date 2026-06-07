@@ -35,9 +35,15 @@ export default defineConfig({
                 sidebar("Overview", "getting_started.md")
             ]),
             sidebarGroup("Concepts", [
+                sidebar("Blueprints", "concepts/blueprints.md"),
+                sidebar("Builders", "concepts/builders.md"),
                 sidebar("Bundles", "concepts/bundles.md"),
-                sidebar("Scripts", "concepts/scripts.md"),
+                sidebar("Dependencies", "concepts/dependencies.md"),
+                sidebar("Entrypoints", "concepts/entrypoint.md"),
+                sidebar("Events", "concepts/events.md"),
                 sidebar("Registries", "concepts/registries.md"),
+                sidebar("Scripts", "concepts/scripts.md"),
+                sidebar("Sides", "concepts/sides.md"),
                 sidebar("Workspaces", "concepts/workspaces.md")
             ])
 //      sidebarGroup('Guide', [
