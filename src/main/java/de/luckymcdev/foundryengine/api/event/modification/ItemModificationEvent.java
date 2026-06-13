@@ -24,10 +24,6 @@ public class ItemModificationEvent extends Event {
         this.item = item;
     }
 
-    public Item getItem() {
-        return item;
-    }
-
     @ApiStatus.Internal
     public static void bind(ModifyDefaultComponentsEvent event) {
         currentEvent = event;
@@ -35,7 +31,7 @@ public class ItemModificationEvent extends Event {
     }
 
     @ApiStatus.Internal
-    public  static void flush() {
+    public static void flush() {
         if (currentEvent == null) return;
         OVERRIDES.forEach((item, overrides) -> {
             currentEvent.modify(item, builder -> {
@@ -48,6 +44,10 @@ public class ItemModificationEvent extends Event {
         });
         OVERRIDES.clear();
         currentEvent = null;
+    }
+
+    public Item getItem() {
+        return item;
     }
 
     public ItemModificationEvent setMaxStackSize(int size) {

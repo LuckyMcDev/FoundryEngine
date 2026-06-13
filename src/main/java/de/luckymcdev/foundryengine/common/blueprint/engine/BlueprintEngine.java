@@ -21,6 +21,13 @@ public class BlueprintEngine {
     private final GenericRegistryList<BuiltinNode> builtinNodes = new GenericRegistryList<>();
     private final GenericRegistry<String, BuiltinNode> builtinById = new GenericRegistry<>();
 
+    private static boolean hasExecInput(BlueprintNode node) {
+        for (var p : node.inputPins) {
+            if (p.pin.type() == BlueprintTypes.EXEC) return true;
+        }
+        return false;
+    }
+
     public void register(BuiltinNode node) {
         builtinNodes.add(node);
         builtinById.register(node.identifier, node);
@@ -69,13 +76,6 @@ public class BlueprintEngine {
                 executeNext(node, graph, ctx);
             }
         }
-    }
-
-    private static boolean hasExecInput(BlueprintNode node) {
-        for (var p : node.inputPins) {
-            if (p.pin.type() == BlueprintTypes.EXEC) return true;
-        }
-        return false;
     }
 
     public void executeNext(BlueprintNode node, BlueprintGraph graph, BlueprintContext ctx) {

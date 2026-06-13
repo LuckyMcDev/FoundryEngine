@@ -1,4 +1,3 @@
-
 /**
  * Events that are going to be supported:
  * <p>

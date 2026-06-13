@@ -39,14 +39,14 @@ public class BundleManager implements ResourceManagerReloadListener {
     private final BundleLifecycleDispatcher lifecycleDispatcher = new BundleLifecycleDispatcher();
     private MinecraftServer server;
 
-    public void setServer(MinecraftServer server) {
-        this.server = server;
-    }
-
     public BundleManager(IEventBus modBus, Path configDirectory) {
         BundleFactory bundleFactory = new BundleFactory(modBus, configDirectory);
         this.scriptLoader = bundleFactory.getScriptLoader();
         this.bundleDiscovery = new BundleDiscovery(bundleFactory, this::register);
+    }
+
+    public void setServer(MinecraftServer server) {
+        this.server = server;
     }
 
     /**

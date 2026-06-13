@@ -13,8 +13,7 @@ public enum PanelCategory {
 
     EDITOR_EXPLORER("Explorer", ImIcons.FA.FA_FOLDER, EDITOR),
     EDITOR_FILES("Files", ImIcons.FA.FA_FILE, EDITOR),
-    EDITOR_CUTSCENES("Cutscenes", ImIcons.FA.FA_FILM, EDITOR)
-    ;
+    EDITOR_CUTSCENES("Cutscenes", ImIcons.FA.FA_FILM, EDITOR);
 
 
     public final String displayName;

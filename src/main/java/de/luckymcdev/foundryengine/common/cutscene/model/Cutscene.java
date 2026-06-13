@@ -65,7 +65,8 @@ public class Cutscene {
             for (int h : holdArr) {
                 cutscene.anchorHoldTicks.add(h);
             }
-        }, () -> {});
+        }, () -> {
+        });
 
         // Attachments (with backward compatibility for old ScreenEffects)
         cutscene.attachments.clear();

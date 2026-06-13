@@ -45,8 +45,8 @@ import java.util.stream.Collectors;
 
 
 public class BundleDataGenerator {
-    private static final Logger LOGGER = LogUtils.getLogger();
     public static final Path OUTPUT_ROOT = Common.TEMP_DIR.resolve("instances").resolve(instanceKey()).resolve("bundles");
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final Path generatedDataPath = OUTPUT_ROOT.resolve("data");
     private static final Path generatedAssetsPath = OUTPUT_ROOT.resolve("assets");
 

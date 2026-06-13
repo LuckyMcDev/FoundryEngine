@@ -111,5 +111,7 @@ public class NodePinType<T> {
         return color.b();
     }
 
-    public float a() { return color.a(); }
+    public float a() {
+        return color.a();
+    }
 }

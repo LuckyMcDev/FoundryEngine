@@ -169,7 +169,7 @@ public class CutscenePanel extends EditorPanel {
 
     private void renderCutsceneColorPicker(Cutscene c) {
         Color color = new Color(c.getColorArgb());
-        float[] col = { color.r(), color.g(), color.b(), color.a() };
+        float[] col = {color.r(), color.g(), color.b(), color.a()};
 
         ImGui.sameLine();
         ImGui.setNextItemWidth(120);
