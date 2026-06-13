@@ -132,5 +132,6 @@ public class GameManager implements BundleLifecycleListener {
     @Override
     public void onBundleReloadStarted() {
         stopAll();
+        sessions.clear();
     }
 }

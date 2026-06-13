@@ -5,6 +5,7 @@
 *.iws
 .project
 .classpath
+/.eclipse/
 .settings/
 *.prefs
 out/
