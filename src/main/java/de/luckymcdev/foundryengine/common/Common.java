@@ -34,12 +34,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.function.Supplier;
 
 /**
  * Shared constants and singleton managers for FoundryEngine.
  */
-public abstract class Common {
+public final class Common {
     public static final String MODID = "foundryengine";
     public static final String MODNAME = "FoundryEngine";
     public static final Logger LOGGER = LogUtils.getLogger();
@@ -89,10 +88,6 @@ public abstract class Common {
 
     public static Identifier id(String namespace, String path) {
         return Identifier.fromNamespaceAndPath(namespace, path);
-    }
-
-    public static <V> Supplier<V> supOf(V value) {
-        return () -> value;
     }
 
     public static BundleManager getBundleManager() {

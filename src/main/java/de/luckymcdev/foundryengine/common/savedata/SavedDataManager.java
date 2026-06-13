@@ -25,6 +25,10 @@ public class SavedDataManager {
         }
     }
 
+    public void register(Identifier id, Function<ServerLevel, CompoundTag> collector) {
+        collectors.put(id, collector);
+    }
+
     public void registerClientHandler(Identifier id, Consumer<CompoundTag> handler) {
         clientHandlers.put(id, handler);
     }

@@ -181,12 +181,9 @@ public class FoundryEngineMod {
 
     private void registerSavedDataTypes() {
         var manager = Common.getSavedDataManager();
-        manager.register(Common.id("waypoints"), level -> Common.getWaypointManager().toNbt(level),
-                null);
-        manager.register(Common.id("areas"), level -> Common.getAreaManager().toNbt(level),
-                null);
-        manager.register(Common.id("cutscene_manager"), level -> Common.getCutsceneManager().toNbt(level),
-                null);
+        manager.register(Common.id("waypoints"), level -> Common.getWaypointManager().toNbt(level));
+        manager.register(Common.id("areas"), level -> Common.getAreaManager().toNbt(level));
+        manager.register(Common.id("cutscene_manager"), level -> Common.getCutsceneManager().toNbt(level));
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {

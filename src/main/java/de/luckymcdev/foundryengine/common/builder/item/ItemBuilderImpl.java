@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.common.builder.item;
 
 import de.luckymcdev.foundryengine.api.builder.item.ItemBuilder;
+import de.luckymcdev.foundryengine.common.builder.AbstractBuilder;
 import de.luckymcdev.foundryengine.common.world.item.EngineItem;
 import de.luckymcdev.foundryengine.common.wrapper.DataComponentWrapper;
 import net.minecraft.core.component.DataComponentType;
@@ -10,23 +11,19 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
-public class ItemBuilderImpl implements ItemBuilder {
-    private final Identifier id;
+public class ItemBuilderImpl extends AbstractBuilder<Item> implements ItemBuilder {
     private final Map<EngineItem.CallbackType, Object> callbacks = new EnumMap<>(EngineItem.CallbackType.class);
     private Item.Properties properties;
     private Function<Item.Properties, Item> factory;
-    private boolean generateData = true;
-    private @Nullable Item object;
 
     public ItemBuilderImpl(Identifier id) {
-        this.id = id;
+        super(id);
         this.properties = new Item.Properties();
         this.factory = EngineItem::new;
     }
@@ -132,7 +129,7 @@ public class ItemBuilderImpl implements ItemBuilder {
     public Item register(RegisterEvent.RegisterHelper<Item> helper) {
         Item item = build();
         helper.register(id, item);
-        this.object = item;
+        setObject(item);
         return item;
     }
 
@@ -160,40 +157,6 @@ public class ItemBuilderImpl implements ItemBuilder {
         }
 
         return factory.apply(this.properties);
-    }
-
-    @Override
-    public Item get() {
-        if (object == null) {
-            throw new IllegalStateException("Item " + id + " has not been registered yet");
-        }
-        return object;
-    }
-
-    @Override
-    public Item getOrCreate() {
-        if (object == null) {
-            object = build();
-        }
-        return object;
-    }
-
-    @Override
-    public Identifier getId() {
-        return id;
-    }
-
-    @Override
-    public Identifier newID(String pre, String post) {
-        if (pre.isEmpty() && post.isEmpty()) {
-            return id;
-        }
-        return id.withPath(pre + id.getPath() + post);
-    }
-
-    @Override
-    public boolean shouldGenerateData() {
-        return generateData;
     }
 
     @Override
