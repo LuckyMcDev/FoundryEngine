@@ -14,17 +14,15 @@ public class TextureViewerPanel extends EditorPanel {
     private final String sourcePath;
 
     public TextureViewerPanel(Identifier id, String title, Identifier identifier) {
-        super(id, title, ImIcons.FA.FA_IMAGES);
+        super(id, title, ImIcons.FA.FA_IMAGES, PanelCategory.EDITOR_FILES);
         this.image = ImGuiUtils.getTexture(identifier);
         this.sourcePath = identifier.toString();
-        this.category = PanelCategory.EDITOR_FILES;
     }
 
     public TextureViewerPanel(Identifier id, String title, File file) {
-        super(id, title, ImIcons.FA.FA_IMAGES);
+        super(id, title, ImIcons.FA.FA_IMAGES, PanelCategory.EDITOR_FILES);
         this.image = ImGuiUtils.getTexture(file);
         this.sourcePath = file.getAbsolutePath();
-        this.category = PanelCategory.EDITOR_FILES;
     }
 
     @Override

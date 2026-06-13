@@ -11,6 +11,7 @@ import imgui.ImGui;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImBoolean;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.permissions.PermissionLevel;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -94,6 +95,63 @@ public class Panel {
      */
     protected Panel(Identifier id, String label) {
         this(id, label, null, Shortcut.empty());
+    }
+
+    protected Panel(Identifier id, String label, ImIcon icon, Shortcut shortcut, PanelCategory category) {
+        this(id, label, icon, shortcut);
+        this.category = category;
+    }
+
+    protected Panel(Identifier id, String label, ImIcon icon, PanelCategory category) {
+        this(id, label, icon);
+        this.category = category;
+    }
+
+    protected Panel(Identifier id, String label, PanelCategory category) {
+        this(id, label);
+        this.category = category;
+    }
+
+    /**
+     * Delegates to {@link PanelRequirements#requireWorld()}.
+     */
+    protected static boolean requireWorld() {
+        return PanelRequirements.requireWorld();
+    }
+
+    /**
+     * Delegates to {@link PanelRequirements#requireWorld(String)}.
+     */
+    protected static boolean requireWorld(String message) {
+        return PanelRequirements.requireWorld(message);
+    }
+
+    /**
+     * Delegates to {@link PanelRequirements#requireLevel(PermissionLevel)}.
+     */
+    protected static boolean requireLevel(PermissionLevel level) {
+        return PanelRequirements.requireLevel(level);
+    }
+
+    /**
+     * Delegates to {@link PanelRequirements#requireLevel(PermissionLevel, String)}.
+     */
+    protected static boolean requireLevel(PermissionLevel level, String message) {
+        return PanelRequirements.requireLevel(level, message);
+    }
+
+    /**
+     * Delegates to {@link PanelRequirements#requireLevelOnServer(PermissionLevel)}.
+     */
+    protected static boolean requireLevelOnServer(PermissionLevel level) {
+        return PanelRequirements.requireLevelOnServer(level);
+    }
+
+    /**
+     * Delegates to {@link PanelRequirements#requireLocal()}.
+     */
+    protected static boolean requireLocal() {
+        return PanelRequirements.requireLocal();
     }
 
     /**
@@ -284,4 +342,13 @@ public class Panel {
     public void tick() {
     }
 
+    /**
+     * Wraps {@link imgui.ImGui#beginMenuBar()} / {@link imgui.ImGui#endMenuBar()}.
+     */
+    protected void menuBar(Runnable body) {
+        if (ImGui.beginMenuBar()) {
+            body.run();
+            ImGui.endMenuBar();
+        }
+    }
 }

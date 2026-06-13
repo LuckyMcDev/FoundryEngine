@@ -1,7 +1,6 @@
 package de.luckymcdev.foundryengine.client.editor.panel.files;
 
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
-import de.luckymcdev.foundryengine.client.editor.panel.PanelRequirements;
 import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.client.util.key.Shortcut;
@@ -19,6 +18,7 @@ import imgui.type.ImString;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.permissions.PermissionLevel;
 
 import java.util.Collections;
 
@@ -56,7 +56,7 @@ public class CodeEditor extends EditorPanel {
      */
     public CodeEditor(Identifier id, String fileName, String source) {
         var label = " Editor: " + fileName;
-        super(id, label, ImIcons.FA.FA_EDIT, Shortcut.empty());
+        super(id, label, ImIcons.FA.FA_EDIT, Shortcut.empty(), PanelCategory.EDITOR_FILES);
         this.menuBar = true;
         this.fileName = fileName;
         this.oldSource = source;
@@ -66,8 +66,6 @@ public class CodeEditor extends EditorPanel {
         this.textEditor.setShowWhitespaces(false);
         this.textEditor.setText(source);
         this.textEditor.setPalette(textEditor.getDarkPalette());
-
-        this.category = PanelCategory.EDITOR_FILES;
 
         if (!customLangOverride) {
             this.textEditor.setLanguageDefinition(TextEditorLanguageDefinition.GLSL());
@@ -118,7 +116,7 @@ public class CodeEditor extends EditorPanel {
 
     @Override
     public void content() {
-        if (!PanelRequirements.requireLevelOnServer(net.minecraft.server.permissions.PermissionLevel.OWNERS)) return;
+        if (!requireLevelOnServer(PermissionLevel.OWNERS)) return;
         this.unsaved = isDirty() && !forceReadOnly;
 
         renderMenuBar();
@@ -149,76 +147,68 @@ public class CodeEditor extends EditorPanel {
     }
 
     private void renderMenuBar() {
-        if (!ImGui.beginMenuBar()) return;
-
-        // --- File ---
-        if (ImGui.beginMenu("File")) {
-            if (ImGui.menuItem("Save", "Ctrl+S", false, isDirty() && !forceReadOnly)) save();
-            ImGui.separator();
-            if (ImGui.menuItem("Close")) this.close();
-            ImGui.endMenu();
-        }
-
-        // --- Edit ---
-        if (ImGui.beginMenu("Edit")) {
-            boolean ro = textEditor.isReadOnly();
-
-            // Disable read-only toggle if forceReadOnly is true
-            if (ImGui.menuItem("Read-only mode", "", ro, !forceReadOnly)) {
-                textEditor.setReadOnly(!ro);
+        menuBar(() -> {
+            if (ImGui.beginMenu("File")) {
+                if (ImGui.menuItem("Save", "Ctrl+S", false, isDirty() && !forceReadOnly)) save();
+                ImGui.separator();
+                if (ImGui.menuItem("Close")) this.close();
+                ImGui.endMenu();
             }
-            if (ImGui.menuItem("Show Whitespace", "", textEditor.isShowingWhitespaces()))
-                textEditor.setShowWhitespaces(!textEditor.isShowingWhitespaces());
+
+            if (ImGui.beginMenu("Edit")) {
+                boolean ro = textEditor.isReadOnly();
+
+                if (ImGui.menuItem("Read-only mode", "", ro, !forceReadOnly)) {
+                    textEditor.setReadOnly(!ro);
+                }
+                if (ImGui.menuItem("Show Whitespace", "", textEditor.isShowingWhitespaces()))
+                    textEditor.setShowWhitespaces(!textEditor.isShowingWhitespaces());
+
+                ImGui.separator();
+
+                ImGui.beginDisabled(ro);
+                if (ImGui.menuItem("Undo", "Ctrl+Z", false, textEditor.canUndo())) textEditor.undo();
+                if (ImGui.menuItem("Redo", "Ctrl+Y", false, textEditor.canRedo())) textEditor.redo();
+                ImGui.endDisabled();
+
+                ImGui.separator();
+
+                if (ImGui.menuItem("Copy", "Ctrl+C", false, textEditor.hasSelection())) textEditor.copy();
+                ImGui.beginDisabled(ro);
+                if (ImGui.menuItem("Cut", "Ctrl+X", false, textEditor.hasSelection())) textEditor.cut();
+                if (ImGui.menuItem("Paste", "Ctrl+V", false, ImGui.getClipboardText() != null)) textEditor.paste();
+                if (ImGui.menuItem("Delete", "Del", false, textEditor.hasSelection())) textEditor.delete();
+                if (ImGui.menuItem("Select All", "Ctrl+A", false, textEditor.getTotalLines() > 0))
+                    textEditor.setSelection(0, 0, textEditor.getTotalLines(), 0);
+                ImGui.endDisabled();
+
+                ImGui.endMenu();
+            }
+
+            if (ImGui.beginMenu("View")) {
+                if (ImGui.menuItem("Dark Palette")) textEditor.setPalette(textEditor.getDarkPalette());
+                if (ImGui.menuItem("Light Palette")) textEditor.setPalette(textEditor.getLightPalette());
+                if (ImGui.menuItem("Retro Blue Palette")) textEditor.setPalette(textEditor.getRetroBluePalette());
+
+                ImGui.separator();
+
+                if (ImGui.menuItem("Zoom In", "Ctrl+Mup")) adjustFontScale(+FONT_SCALE_STEP);
+                if (ImGui.menuItem("Zoom Out", "Ctrl+MDown")) adjustFontScale(-FONT_SCALE_STEP);
+                if (ImGui.menuItem("Reset Zoom")) fontScale = 1.0f;
+
+                ImGui.endMenu();
+            }
+
+            if (ImGui.beginMenu("Search")) {
+                if (ImGui.menuItem("Find", "Ctrl+F")) toggleFind(false);
+                if (ImGui.menuItem("Find/Replace", "Ctrl+H")) toggleFind(true);
+                if (ImGui.menuItem("Go to Line…", "Ctrl+G")) openGotoLine();
+                ImGui.endMenu();
+            }
 
             ImGui.separator();
-
-            ImGui.beginDisabled(ro);
-            if (ImGui.menuItem("Undo", "Ctrl+Z", false, textEditor.canUndo())) textEditor.undo();
-            if (ImGui.menuItem("Redo", "Ctrl+Y", false, textEditor.canRedo())) textEditor.redo();
-            ImGui.endDisabled();
-
-            ImGui.separator();
-
-            if (ImGui.menuItem("Copy", "Ctrl+C", false, textEditor.hasSelection())) textEditor.copy();
-            ImGui.beginDisabled(ro);
-            if (ImGui.menuItem("Cut", "Ctrl+X", false, textEditor.hasSelection())) textEditor.cut();
-            if (ImGui.menuItem("Paste", "Ctrl+V", false, ImGui.getClipboardText() != null)) textEditor.paste();
-            if (ImGui.menuItem("Delete", "Del", false, textEditor.hasSelection())) textEditor.delete();
-            if (ImGui.menuItem("Select All", "Ctrl+A", false, textEditor.getTotalLines() > 0))
-                textEditor.setSelection(0, 0, textEditor.getTotalLines(), 0);
-            ImGui.endDisabled();
-
-            ImGui.endMenu();
-        }
-
-        // --- View ---
-        if (ImGui.beginMenu("View")) {
-            if (ImGui.menuItem("Dark Palette")) textEditor.setPalette(textEditor.getDarkPalette());
-            if (ImGui.menuItem("Light Palette")) textEditor.setPalette(textEditor.getLightPalette());
-            if (ImGui.menuItem("Retro Blue Palette")) textEditor.setPalette(textEditor.getRetroBluePalette());
-
-            ImGui.separator();
-
-            if (ImGui.menuItem("Zoom In", "Ctrl+Mup")) adjustFontScale(+FONT_SCALE_STEP);
-            if (ImGui.menuItem("Zoom Out", "Ctrl+MDown")) adjustFontScale(-FONT_SCALE_STEP);
-            if (ImGui.menuItem("Reset Zoom")) fontScale = 1.0f;
-
-            ImGui.endMenu();
-        }
-
-        // --- Search ---
-        if (ImGui.beginMenu("Search")) {
-            if (ImGui.menuItem("Find", "Ctrl+F")) toggleFind(false);
-            if (ImGui.menuItem("Find/Replace", "Ctrl+H")) toggleFind(true);
-            if (ImGui.menuItem("Go to Line…", "Ctrl+G")) openGotoLine();
-            ImGui.endMenu();
-        }
-
-        // File name hint on the right side of the menu bar
-        ImGui.separator();
-        ImGui.textDisabled(fileName);
-
-        ImGui.endMenuBar();
+            ImGui.textDisabled(fileName);
+        });
     }
 
     /**

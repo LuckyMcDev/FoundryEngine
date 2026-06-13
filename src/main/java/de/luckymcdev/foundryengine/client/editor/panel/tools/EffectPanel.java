@@ -3,6 +3,7 @@ package de.luckymcdev.foundryengine.client.editor.panel.tools;
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
+import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.client.post.PrioritizedEffect;
 import de.luckymcdev.foundryengine.common.Common;
@@ -12,22 +13,18 @@ import net.minecraft.resources.Identifier;
 
 import java.util.Locale;
 
-/**
- * Panel to display all effects from {@link de.luckymcdev.foundryengine.client.post.EffectManager}
- */
 public class EffectPanel extends EditorPanel {
     public static final EffectPanel INSTANCE = new EffectPanel();
 
     public EffectPanel() {
-        super(Common.id("effect_panel"), "Effects", ImIcons.FA.FA_VIDEO_CAMERA);
-        this.category = PanelCategory.TOOLS;
+        super(Common.id("effect_panel"), "Effects", ImIcons.FA.FA_VIDEO_CAMERA, PanelCategory.TOOLS);
     }
 
     @Override
     public void content() {
-        ImGui.text("Post Processing Effects");
+        ImGuiUtils.section("Post Processing Effects");
 
-        if (ImGui.button(ImIcons.FA.FA_ARROW_ROTATE_RIGHT + " Relaod")) {
+        if (ImGui.button(ImIcons.FA.FA_ARROW_ROTATE_RIGHT + " Reload")) {
             Client.getEffectManager().reload();
         }
 
@@ -40,10 +37,6 @@ public class EffectPanel extends EditorPanel {
         }
     }
 
-
-    /**
-     * Helper to render a checkbox that communicates with the EffectManager
-     */
     private void renderEffectToggle(String label, Identifier id, int priority) {
         boolean active = Client.getEffectManager().getActiveEffects().contains(id);
         ImBoolean check = new ImBoolean(active);

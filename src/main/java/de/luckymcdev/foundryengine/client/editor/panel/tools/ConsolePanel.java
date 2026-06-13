@@ -3,6 +3,7 @@ package de.luckymcdev.foundryengine.client.editor.panel.tools;
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
+import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.log.EngineLogAppender;
@@ -34,9 +35,8 @@ public class ConsolePanel extends EditorPanel {
     private boolean autoScroll = true;
 
     private ConsolePanel() {
-        super(Common.id("console"), "Console", ImIcons.FA.FA_TERMINAL);
+        super(Common.id("console"), "Console", ImIcons.FA.FA_TERMINAL, PanelCategory.TOOLS);
         menuBar = true;
-        this.category = PanelCategory.TOOLS;
     }
 
     private List<LogEntry> getFilteredLogs() {
@@ -61,31 +61,28 @@ public class ConsolePanel extends EditorPanel {
 
     @Override
     public void content() {
-        //if(EngineImGuiUtils.requirePermissions()) return; Console doesnt require permissons? It only shows client logs anyway.
         renderControls();
-        ImGui.separator();
 
         List<LogEntry> logsToRender = getFilteredLogs();
 
-        ImGui.beginChild("##scrollingRegion", 0, -ImGui.getFrameHeightWithSpacing(), false);
-        for (LogEntry entry : logsToRender) {
-            boolean hasColor = pushLevelColor(entry.level());
-            ImGui.textUnformatted(entry.format());
-            if (hasColor) ImGui.popStyleColor();
-        }
+        ImGuiUtils.scrollableRegion("##scrollingRegion", 0, -ImGui.getFrameHeightWithSpacing(), false, () -> {
+            for (LogEntry entry : logsToRender) {
+                boolean hasColor = pushLevelColor(entry.level());
+                ImGui.textUnformatted(entry.format());
+                if (hasColor) ImGui.popStyleColor();
+            }
 
-        if (autoScroll && ImGui.getScrollY() >= ImGui.getScrollMaxY()) {
-            ImGui.setScrollHereY(1.0f);
-        }
-
-        ImGui.endChild();
+            if (autoScroll && ImGui.getScrollY() >= ImGui.getScrollMaxY()) {
+                ImGui.setScrollHereY(1.0f);
+            }
+        });
 
         ImGui.separator();
         renderCommandInput();
     }
 
     private void renderControls() {
-        if (ImGui.beginMenuBar()) {
+        menuBar(() -> {
             ImGui.setNextItemWidth(200);
             ImGui.inputTextWithHint("##Filter", "Filter...", filter);
 
@@ -110,9 +107,7 @@ public class ConsolePanel extends EditorPanel {
                 }
                 ImGui.setClipboardText(sb.toString());
             }
-
-            ImGui.endMenuBar();
-        }
+        });
     }
 
     private void renderCommandInput() {

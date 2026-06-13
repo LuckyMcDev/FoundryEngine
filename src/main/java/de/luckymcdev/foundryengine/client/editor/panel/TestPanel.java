@@ -7,7 +7,6 @@ import de.luckymcdev.foundryengine.client.editor.panel.tools.CataloguePanel;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.client.ui.ExampleScreen;
-import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.font.BuiltInFonts;
 import de.luckymcdev.foundryengine.common.network.packets.TestPacket;
@@ -28,13 +27,12 @@ public class TestPanel extends Panel {
     private CataloguePanel.CataloguePayload cataloguePayload;
 
     private TestPanel() {
-        super(Common.id("test_panel"), "My Panel", ImIcons.FAE.FAE_BACTERIA, Shortcut.empty());
-        this.category = PanelCategory.OPEN;
+        super(Common.id("test_panel"), "My Panel", ImIcons.FAE.FAE_BACTERIA, PanelCategory.OPEN);
     }
 
     @Override
     public void content() {
-        if (!PanelRequirements.requireLocal()) return;
+        if (!requireLocal()) return;
 
         ImGui.text("Hello, World!");
         ImGui.separator();
@@ -42,30 +40,13 @@ public class TestPanel extends Panel {
         ImGui.text("You dont know what i do? Hover it.");
         ImGuiUtils.helpTooltip("BOO!");
 
-
-        var fonts = Client.getImGuiManager().getFontManager();
-
-        fonts.pushFont(BuiltInFonts.LIGHT);
-        ImGui.text("Hello World (Light)");
-        fonts.popFont();
-        fonts.pushFont(BuiltInFonts.REGULAR);
-        ImGui.text("Hello World (Regular)");
-        fonts.popFont();
-        fonts.pushFont(BuiltInFonts.MEDIUM);
-        ImGui.text("Hello World (Medium)");
-        fonts.popFont();
-        fonts.pushFont(BuiltInFonts.SEMIBOLD);
-        ImGui.text("Hello World (SemiBold)");
-        fonts.popFont();
-        fonts.pushFont(BuiltInFonts.BOLD);
-        ImGui.text("Hello World (Bold)");
-        fonts.popFont();
-        fonts.pushFont(BuiltInFonts.ITALIC);
-        ImGui.text("Hello World (Italic)");
-        fonts.popFont();
-        fonts.pushFont(BuiltInFonts.BOLD_ITALIC);
-        ImGui.text("Hello World (Bold Italic)");
-        fonts.popFont();
+        ImGuiUtils.withFont(BuiltInFonts.LIGHT, () -> ImGui.text("Hello World (Light)"));
+        ImGuiUtils.withFont(BuiltInFonts.REGULAR, () -> ImGui.text("Hello World (Regular)"));
+        ImGuiUtils.withFont(BuiltInFonts.MEDIUM, () -> ImGui.text("Hello World (Medium)"));
+        ImGuiUtils.withFont(BuiltInFonts.SEMIBOLD, () -> ImGui.text("Hello World (SemiBold)"));
+        ImGuiUtils.withFont(BuiltInFonts.BOLD, () -> ImGui.text("Hello World (Bold)"));
+        ImGuiUtils.withFont(BuiltInFonts.ITALIC, () -> ImGui.text("Hello World (Italic)"));
+        ImGuiUtils.withFont(BuiltInFonts.BOLD_ITALIC, () -> ImGui.text("Hello World (Bold Italic)"));
 
         ImGuiUtils.textCentered("center center", ImGui.getWindowWidth());
         ImGuiUtils.identifier(Common.id("imguiiscool"));

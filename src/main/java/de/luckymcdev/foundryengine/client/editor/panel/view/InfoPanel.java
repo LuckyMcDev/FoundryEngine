@@ -3,6 +3,7 @@ package de.luckymcdev.foundryengine.client.editor.panel.view;
 import de.luckymcdev.foundryengine.FoundryEngineMod;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
+import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.common.Common;
 import imgui.ImGui;
@@ -16,32 +17,18 @@ public class InfoPanel extends EditorPanel {
     public static final InfoPanel INSTANCE = new InfoPanel();
 
     protected InfoPanel() {
-        super(Common.id("info"), "Info", ImIcons.FA.FA_INFO);
-        this.category = PanelCategory.VIEW;
+        super(Common.id("info"), "Info", ImIcons.FA.FA_INFO, PanelCategory.VIEW);
     }
 
     @Override
     public void content() {
-        ImGui.textColored(0xFF00AAFF, "Foundry Engine");
-        ImGui.sameLine();
-        ImGui.textDisabled(FoundryEngineMod.modVersion.toString());
+        ImGuiUtils.labeledValue("Foundry Engine", FoundryEngineMod.modVersion.toString());
         ImGui.separator();
 
-        if (ImGui.collapsingHeader(ImIcons.FA.FA_MINUS_SQUARE + "  System", ImGuiTreeNodeFlags.DefaultOpen)) {
-            renderSystemInfo();
-        }
-
-        if (ImGui.collapsingHeader(ImIcons.FA.FA_JAVA + "  Java & Memory")) {
-            renderJavaMemoryInfo();
-        }
-
-        if (ImGui.collapsingHeader(ImIcons.FA.FA_MICROCHIP + "  Graphics")) {
-            renderGraphicsInfo();
-        }
-
-        if (ImGui.collapsingHeader(ImIcons.FA.FA_FILE_CONTRACT + "  Licenses")) {
-            renderLicenses();
-        }
+        ImGuiUtils.collapse(ImIcons.FA.FA_MINUS_SQUARE + "  System", ImGuiTreeNodeFlags.DefaultOpen, this::renderSystemInfo);
+        ImGuiUtils.collapse(ImIcons.FA.FA_JAVA + "  Java & Memory", this::renderJavaMemoryInfo);
+        ImGuiUtils.collapse(ImIcons.FA.FA_MICROCHIP + "  Graphics", this::renderGraphicsInfo);
+        ImGuiUtils.collapse(ImIcons.FA.FA_FILE_CONTRACT + "  Licenses", this::renderLicenses);
     }
 
     private void renderSystemInfo() {

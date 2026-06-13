@@ -2,12 +2,11 @@ package de.luckymcdev.foundryengine.client.editor.panel.explorer;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.client.Client;
-import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
-import de.luckymcdev.foundryengine.client.editor.panel.PanelRequirements;
 import de.luckymcdev.foundryengine.client.editor.panel.files.CodeEditor;
 import de.luckymcdev.foundryengine.client.editor.panel.files.TextureViewerPanel;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
+import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.exceptions.EngineException;
 import de.luckymcdev.foundryengine.common.network.packets.explorer.ClientBoundFileListPacket;
@@ -23,6 +22,7 @@ import imgui.flag.ImGuiMouseButton;
 import imgui.flag.ImGuiTreeNodeFlags;
 import imgui.type.ImString;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.permissions.PermissionLevel;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
@@ -60,9 +60,8 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
     private boolean remoteLoading = false;
 
     public FileExplorerPanel(File rootDir) {
-        super(Common.id("file_explorer"), "File Explorer", ImIcons.FA.FA_FILES_O);
+        super(Common.id("file_explorer"), "File Explorer", ImIcons.FA.FA_FILES_O, Shortcut.empty());
         this.rootDir = rootDir;
-        this.category = PanelCategory.EDITOR_EXPLORER;
     }
 
     private static boolean isMultiplayer() {
@@ -188,7 +187,7 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
 
     @Override
     protected void renderBrowser() {
-        if (!PanelRequirements.requireLevelOnServer(net.minecraft.server.permissions.PermissionLevel.OWNERS)) return;
+        if (!requireLevelOnServer(PermissionLevel.OWNERS)) return;
 
         renderToolbar();
         renderErrorBanner();

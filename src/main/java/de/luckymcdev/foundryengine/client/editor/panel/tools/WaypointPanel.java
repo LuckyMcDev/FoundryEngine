@@ -2,8 +2,8 @@ package de.luckymcdev.foundryengine.client.editor.panel.tools;
 
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
-import de.luckymcdev.foundryengine.client.editor.panel.PanelRequirements;
 import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
+import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.network.packets.editor.WaypointPacket;
@@ -40,8 +40,7 @@ public class WaypointPanel extends EditorPanel {
     private Waypoint selectedWaypoint = null;
 
     private WaypointPanel() {
-        super(Common.id("waypoint_panel"), "Waypoints", ImIcons.FA.FA_MAP_PIN);
-        this.category = PanelCategory.TOOLS;
+        super(Common.id("waypoint_panel"), "Waypoints", ImIcons.FA.FA_MAP_PIN, PanelCategory.TOOLS);
         this.menuBar = true;
     }
 
@@ -55,12 +54,11 @@ public class WaypointPanel extends EditorPanel {
 
     @Override
     public void content() {
-        if (!PanelRequirements.requireWorld("You need to join a world to manage waypoints.")) {
+        if (!requireWorld("You need to join a world to manage waypoints.")) {
             return;
         }
 
         renderMenuBar();
-        ImGui.separator();
 
         beginContent();
         renderWaypointList();
@@ -68,49 +66,45 @@ public class WaypointPanel extends EditorPanel {
     }
 
     private void renderMenuBar() {
-        if (!ImGui.beginMenuBar()) return;
+        menuBar(() -> {
+            if (ImGui.menuItem(ImIcons.FA.FA_PLUS + " Create at Player Pos")) {
+                showNewForm = !showNewForm;
+            }
 
-        if (ImGui.menuItem(ImIcons.FA.FA_PLUS + " Create at Player Pos")) {
-            showNewForm = !showNewForm;
-        }
-
-        if (ImGui.menuItem(ImIcons.FA.FA_TRASH + " Clear All")) {
-            ClientPacketDistributor.sendToServer(WaypointPacket.clear());
-            setStatus("Cleared all waypoints");
-        }
-
-        ImGui.endMenuBar();
+            if (ImGui.menuItem(ImIcons.FA.FA_TRASH + " Clear All")) {
+                ClientPacketDistributor.sendToServer(WaypointPacket.clear());
+                setStatus("Cleared all waypoints");
+            }
+        });
     }
 
     private void renderWaypointList() {
-        ImGui.beginChild("##waypoint_list", 0, 0, true);
-
-        if (showNewForm) {
-            renderNewWaypointForm();
-            ImGui.separator();
-        }
-
-        Minecraft mc = Minecraft.getInstance();
-        ClientLevel level = mc.level;
-        List<Waypoint> waypoints = Common.getWaypointManager().getWaypoints(level.dimension());
-
-        if (waypoints.isEmpty()) {
-            ImGui.textDisabled("No waypoints in current dimension");
-        } else {
-            ImGui.text("Waypoints in " + level.dimension().identifier() + ":");
-            ImGui.separator();
-
-            for (Waypoint wp : waypoints) {
-                renderWaypointEntry(wp);
+        ImGuiUtils.scrollableRegion("##waypoint_list", () -> {
+            if (showNewForm) {
+                renderNewWaypointForm();
+                ImGui.separator();
             }
-        }
 
-        if (selectedWaypoint != null) {
-            ImGui.separator();
-            renderWaypointDetails();
-        }
+            Minecraft mc = Minecraft.getInstance();
+            ClientLevel level = mc.level;
+            List<Waypoint> waypoints = Common.getWaypointManager().getWaypoints(level.dimension());
 
-        ImGui.endChild();
+            if (waypoints.isEmpty()) {
+                ImGui.textDisabled("No waypoints in current dimension");
+            } else {
+                ImGui.text("Waypoints in " + level.dimension().identifier() + ":");
+                ImGui.separator();
+
+                for (Waypoint wp : waypoints) {
+                    renderWaypointEntry(wp);
+                }
+            }
+
+            if (selectedWaypoint != null) {
+                ImGui.separator();
+                renderWaypointDetails();
+            }
+        });
     }
 
     private void renderWaypointEntry(Waypoint wp) {
@@ -181,9 +175,7 @@ public class WaypointPanel extends EditorPanel {
     private void renderNewColorPicker() {
         float[] col = {newColor.r(), newColor.g(), newColor.b()};
 
-        ImGui.colorButton("##color_preview", col[0], col[1], col[2], 1.0f, 0, 20, 20);
-        ImGui.sameLine();
-        ImGui.setNextItemWidth(200);
+        ImGui.setNextItemWidth(400);
         if (ImGui.colorEdit3("##newcolorpicker", col, ImGuiColorEditFlags.NoInputs)) {
             newColor = new Color(col[0], col[1], col[2], 1.0f);
         }

@@ -27,13 +27,11 @@ public abstract class AbstractExplorerPanel extends EditorPanel {
     protected boolean initialized = false;
 
     protected AbstractExplorerPanel(Identifier id, String displayName, ImIcon icon) {
-        super(id, displayName, icon);
-        this.category = PanelCategory.EDITOR_EXPLORER;
+        super(id, displayName, icon, PanelCategory.EDITOR_EXPLORER);
     }
 
     protected AbstractExplorerPanel(Identifier id, String displayName, ImIcon icon, Shortcut shortcut) {
-        super(id, displayName, icon, shortcut);
-        this.category = PanelCategory.EDITOR_EXPLORER;
+        super(id, displayName, icon, shortcut, PanelCategory.EDITOR_EXPLORER);
     }
 
     /**

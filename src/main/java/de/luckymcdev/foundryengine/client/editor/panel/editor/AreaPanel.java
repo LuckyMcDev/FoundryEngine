@@ -2,7 +2,6 @@ package de.luckymcdev.foundryengine.client.editor.panel.editor;
 
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
-import de.luckymcdev.foundryengine.client.editor.panel.PanelRequirements;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.area.Area;
@@ -44,8 +43,7 @@ public class AreaPanel extends EditorPanel {
     private String selectedAreaId = null;
 
     private AreaPanel() {
-        super(Common.id("area_panel"), "Areas", ImIcons.FA.FA_MAP);
-        this.category = PanelCategory.EDITOR;
+        super(Common.id("area_panel"), "Areas", ImIcons.FA.FA_MAP, PanelCategory.EDITOR);
         this.menuBar = true;
         colorToFloats(Area.DEFAULT_COLOR, newAreaColor);
     }
@@ -62,12 +60,11 @@ public class AreaPanel extends EditorPanel {
 
     @Override
     public void content() {
-        if (!PanelRequirements.requireWorld("You need to join a world to manage areas.")) {
+        if (!requireWorld("You need to join a world to manage areas.")) {
             return;
         }
 
         renderMenuBar();
-        ImGui.separator();
 
         beginContent();
         renderAreaList();
@@ -75,17 +72,15 @@ public class AreaPanel extends EditorPanel {
     }
 
     private void renderMenuBar() {
-        if (!ImGui.beginMenuBar()) return;
+        menuBar(() -> {
+            if (ImGui.menuItem(ImIcons.FA.FA_ARROW_ROTATE_RIGHT + " Refresh")) {
+                refreshAreas();
+            }
 
-        if (ImGui.menuItem(ImIcons.FA.FA_ARROW_ROTATE_RIGHT + " Refresh")) {
-            refreshAreas();
-        }
-
-        if (ImGui.menuItem("Create Area")) {
-            showNewForm = !showNewForm;
-        }
-
-        ImGui.endMenuBar();
+            if (ImGui.menuItem("Create Area")) {
+                showNewForm = !showNewForm;
+            }
+        });
     }
 
     private void renderAreaList() {

@@ -4,7 +4,6 @@ import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.cutscene.CutsceneRenderer;
 import de.luckymcdev.foundryengine.client.cutscene.CutsceneUiState;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
-import de.luckymcdev.foundryengine.client.editor.panel.PanelRequirements;
 import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.common.Common;
@@ -42,14 +41,13 @@ public class CutscenePanel extends EditorPanel {
     private boolean showNewForm = false;
 
     private CutscenePanel() {
-        super(Common.id("cutscene_panel"), "Cutscenes", ImIcons.FA.FA_FILM);
-        this.category = PanelCategory.EDITOR_CUTSCENES;
+        super(Common.id("cutscene_panel"), "Cutscenes", ImIcons.FA.FA_FILM, PanelCategory.EDITOR_CUTSCENES);
         this.menuBar = true;
     }
 
     @Override
     public void content() {
-        if (!PanelRequirements.requireWorld()) {
+        if (!requireWorld()) {
             return;
         }
 
@@ -70,19 +68,17 @@ public class CutscenePanel extends EditorPanel {
     }
 
     private void renderMenuBar() {
-        if (!ImGui.beginMenuBar()) return;
+        menuBar(() -> {
+            if (ImGui.menuItem(ImIcons.FA.FA_PLUS + " New")) {
+                showNewForm = !showNewForm;
+                newName.set("");
+            }
 
-        if (ImGui.menuItem(ImIcons.FA.FA_PLUS + " New")) {
-            showNewForm = !showNewForm;
-            newName.set("");
-        }
-
-        if (ImGui.menuItem(ImIcons.FA.FA_ROTATE_RIGHT + " Sync")) {
-            requestSync();
-            setStatus("Sync requested.");
-        }
-
-        ImGui.endMenuBar();
+            if (ImGui.menuItem(ImIcons.FA.FA_ROTATE_RIGHT + " Sync")) {
+                requestSync();
+                setStatus("Sync requested.");
+            }
+        });
     }
 
     private void renderLeftPanel(List<Cutscene> cutscenes) {

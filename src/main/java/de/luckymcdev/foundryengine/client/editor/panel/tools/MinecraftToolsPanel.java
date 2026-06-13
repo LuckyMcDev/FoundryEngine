@@ -2,7 +2,6 @@ package de.luckymcdev.foundryengine.client.editor.panel.tools;
 
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
-import de.luckymcdev.foundryengine.client.editor.panel.PanelRequirements;
 import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
@@ -22,33 +21,34 @@ public class MinecraftToolsPanel extends EditorPanel {
     public static final MinecraftToolsPanel INSTANCE = new MinecraftToolsPanel();
 
     private MinecraftToolsPanel() {
-        super(Common.id("minecraft_tools"), "Mincraft Tools", ImIcons.FA.FA_TOOLBOX);
-        this.category = PanelCategory.TOOLS;
+        super(Common.id("minecraft_tools"), "Minecraft Tools", ImIcons.FA.FA_TOOLBOX, PanelCategory.TOOLS);
     }
 
     @Override
     public void content() {
-        if (!PanelRequirements.requireWorld()) {
+        if (!requireWorld()) {
             return;
         }
 
-        ImGui.text("A collection of Minecraft Tools");
-        ImGui.separator();
+        ImGuiUtils.section("Permissions");
         PermissionSet pSet = Client.getPlayer().permissions();
         if (pSet instanceof LevelBasedPermissionSet levelSet) {
             ImGui.text("Access Level: " + levelSet.level().name());
         } else {
             ImGui.text("Permissions: Custom/Unknown Set");
         }
-        ImGui.separator();
+
+        ImGuiUtils.section("Game Mode");
         gameModeSelector();
-        ImGui.separator();
+
+        ImGuiUtils.section("Time");
         timeSelector();
-        ImGui.separator();
+
+        ImGuiUtils.section("Weather");
         weatherSelector();
-        ImGui.separator();
+
+        ImGuiUtils.section("Metrics");
         metrics();
-        ImGui.separator();
     }
 
     private void metrics() {

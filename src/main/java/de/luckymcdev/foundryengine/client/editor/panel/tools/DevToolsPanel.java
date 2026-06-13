@@ -4,7 +4,6 @@ import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.panel.Panel;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
-import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.world.StorageSourceManager;
 import de.luckymcdev.foundryengine.config.CommonConfig;
@@ -14,14 +13,12 @@ public class DevToolsPanel extends Panel {
     public static final DevToolsPanel INSTANCE = new DevToolsPanel();
 
     private DevToolsPanel() {
-        super(Common.id("dev_tools"), "Dev Tools", ImIcons.FA.FA_FLASK, Shortcut.empty());
-        this.category = PanelCategory.TOOLS;
+        super(Common.id("dev_tools"), "Dev Tools", ImIcons.FA.FA_FLASK, PanelCategory.TOOLS);
     }
 
     @Override
     public void content() {
-        ImGui.textColored(0xFF00AAFF, "Pack Mode");
-        ImGui.separator();
+        ImGuiUtils.section("Pack Mode");
 
         String current = CommonConfig.PACK_MODE.get();
         boolean isDev = current.equalsIgnoreCase("dev");
@@ -32,7 +29,6 @@ public class DevToolsPanel extends Panel {
         }
         ImGuiUtils.helpTooltip("When enabled, bundle saves are loaded directly without instancing. Changes will modify the original files.");
 
-        ImGui.separator();
         ImGui.text("Current pack mode: " + (current.isEmpty() ? "(none)" : current));
 
         if (isDev) {
@@ -40,8 +36,7 @@ public class DevToolsPanel extends Panel {
         }
 
         ImGui.dummy(0, 8);
-        ImGui.textColored(0xFF00AAFF, "Instancing");
-        ImGui.separator();
+        ImGuiUtils.section("Instancing");
 
         if (ImGui.button("Clear Instances Cache")) {
             StorageSourceManager.clearInstanced();

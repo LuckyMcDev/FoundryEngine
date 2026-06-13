@@ -4,7 +4,6 @@ import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.cutscene.CutsceneRenderer;
 import de.luckymcdev.foundryengine.client.cutscene.CutsceneUiState;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
-import de.luckymcdev.foundryengine.client.editor.panel.PanelRequirements;
 import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.common.Common;
@@ -61,8 +60,7 @@ public class CutsceneTimelinePanel extends EditorPanel {
     private float zoomPxPerTick = 6.0f;
 
     private CutsceneTimelinePanel() {
-        super(Common.id("cutscene_timeline"), "Cutscene Timeline", ImIcons.FA.FA_SLIDERS);
-        this.category = PanelCategory.EDITOR_CUTSCENES;
+        super(Common.id("cutscene_timeline"), "Cutscene Timeline", ImIcons.FA.FA_SLIDERS, PanelCategory.EDITOR_CUTSCENES);
         this.menuBar = true;
     }
 
@@ -74,7 +72,7 @@ public class CutsceneTimelinePanel extends EditorPanel {
 
     @Override
     public void content() {
-        if (!PanelRequirements.requireWorld()) {
+        if (!requireWorld()) {
             return;
         }
 
@@ -139,13 +137,13 @@ public class CutsceneTimelinePanel extends EditorPanel {
     }
 
     private void renderMenuBar() {
-        if (!ImGui.beginMenuBar()) return;
-        if (ImGui.menuItem(ImIcons.FA.FA_ROTATE_RIGHT + " Sync")) {
-            CompoundTag tag = new CompoundTag();
-            tag.putBoolean("Request", true);
-            ClientPacketDistributor.sendToServer(new CutscenePacket(tag));
-        }
-        ImGui.endMenuBar();
+        menuBar(() -> {
+            if (ImGui.menuItem(ImIcons.FA.FA_ROTATE_RIGHT + " Sync")) {
+                CompoundTag tag = new CompoundTag();
+                tag.putBoolean("Request", true);
+                ClientPacketDistributor.sendToServer(new CutscenePacket(tag));
+            }
+        });
     }
 
     private void renderPreviewSettings(Cutscene c) {
