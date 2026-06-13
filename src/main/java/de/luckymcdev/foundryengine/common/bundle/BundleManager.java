@@ -5,9 +5,14 @@ import de.luckymcdev.foundryengine.api.event.*;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.registry.GenericRegistry;
 import de.luckymcdev.foundryengine.common.script.BundleScriptLoader;
+import net.minecraft.commands.CommandBuildContext;
+import net.minecraft.commands.Commands;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -31,6 +36,11 @@ public class BundleManager implements ResourceManagerReloadListener {
     private final BundleDiscovery bundleDiscovery;
     private final BundleScriptLoader scriptLoader;
     private final BundleLifecycleDispatcher lifecycleDispatcher = new BundleLifecycleDispatcher();
+    private MinecraftServer server;
+
+    public void setServer(MinecraftServer server) {
+        this.server = server;
+    }
 
     public BundleManager(IEventBus modBus, Path configDirectory) {
         BundleFactory bundleFactory = new BundleFactory(modBus, configDirectory);
@@ -142,6 +152,14 @@ public class BundleManager implements ResourceManagerReloadListener {
         }
 
         loadServerScripts();
+
+        if (server != null) {
+            var dispatcher = server.getCommands().getDispatcher();
+            var selection = Commands.CommandSelection.ALL;
+            var buildContext = CommandBuildContext.simple(server.registryAccess(), server.getWorldData().enabledFeatures());
+            NeoForge.EVENT_BUS.post(new RegisterCommandsEvent(dispatcher, selection, buildContext));
+        }
+
         lifecycleDispatcher.fireReloadCompleted();
     }
 
