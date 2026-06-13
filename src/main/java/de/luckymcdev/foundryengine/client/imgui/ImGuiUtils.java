@@ -12,6 +12,7 @@ import de.luckymcdev.foundryengine.common.util.color.Color;
 import imgui.ImGui;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiStyleVar;
+import imgui.flag.ImGuiTreeNodeFlags;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.StringSplitter;
 import net.minecraft.client.renderer.texture.AbstractTexture;
@@ -291,5 +292,100 @@ public class ImGuiUtils {
     }
 
     public record Image(int glId, int width, int height) {
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Layout / structural helpers
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /**
+     * Renders a section header with colored text and a separator below it.
+     */
+    public static void section(String title) {
+        ImGui.textColored(0xFF00AAFF, title);
+        ImGui.separator();
+    }
+
+    /**
+     * Renders a scrollable child region at full available width/height with a border.
+     */
+    public static void scrollableRegion(String id, Runnable content) {
+        scrollableRegion(id, 0, 0, true, content);
+    }
+
+    /**
+     * Renders a scrollable child region with explicit dimensions.
+     * Pass 0 for width or height to use the full available space.
+     */
+    public static void scrollableRegion(String id, float width, float height, boolean border, Runnable content) {
+        if (ImGui.beginChild(id, width, height, border)) {
+            content.run();
+        }
+        ImGui.endChild();
+    }
+
+    /**
+     * Collapsible section header. Only runs {@code content} when the header is open.
+     */
+    public static boolean collapse(String label, Runnable content) {
+        return collapse(label, ImGuiTreeNodeFlags.None, content);
+    }
+
+    /**
+     * Collapsible section header with custom tree-node flags.
+     */
+    public static boolean collapse(String label, int flags, Runnable content) {
+        if (ImGui.collapsingHeader(label, flags)) {
+            content.run();
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Renders a colored label followed by a dimmed value on the same line.
+     */
+    public static void labeledValue(String label, String value) {
+        ImGui.textColored(0xFF00AAFF, label);
+        ImGui.sameLine();
+        ImGui.textDisabled(value);
+    }
+
+    /**
+     * Runs {@code body} while the given font is pushed, then pops it.
+     */
+    public static void withFont(Identifier font, Runnable body) {
+        var fonts = Client.getImGuiManager().getFontManager();
+        fonts.pushFont(font);
+        body.run();
+        fonts.popFont();
+    }
+
+    /**
+     * Runs {@code body} inside a framed, default-open tree node.
+     */
+    public static void treeSection(String label, Runnable body) {
+        int flags = ImGuiTreeNodeFlags.SpanAvailWidth
+                | ImGuiTreeNodeFlags.DefaultOpen
+                | ImGuiTreeNodeFlags.Framed;
+        if (ImGui.treeNodeEx(label, flags, label)) {
+            body.run();
+            ImGui.treePop();
+        }
+    }
+
+    /**
+     * Renders a small icon button.
+     */
+    public static boolean iconButton(ImIcon icon, String id) {
+        return ImGui.smallButton(icon(icon) + id);
+    }
+
+    /**
+     * Returns a colored string formatted with the given arguments, using the
+     * standard bright-blue tint for labels.
+     */
+    public static String formatColored(String text, Object... args) {
+        return String.format(text, args);
     }
 }

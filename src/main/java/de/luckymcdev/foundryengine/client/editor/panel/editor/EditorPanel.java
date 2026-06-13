@@ -15,18 +15,20 @@ public class EditorPanel extends Panel {
     private String statusMessage = "";
     private long statusExpiry = 0L;
 
-    protected EditorPanel(Identifier id, String label) {
-        super(id, label);
+    protected EditorPanel(Identifier id, String label, ImIcon icon, Shortcut shortcut, PanelCategory category) {
+        super(id, label, icon, shortcut, category);
+    }
+
+    protected EditorPanel(Identifier id, String label, ImIcon icon, PanelCategory category) {
+        super(id, label, icon, category);
     }
 
     protected EditorPanel(Identifier id, String label, ImIcon icon) {
-        super(id, label, icon);
-        this.category = PanelCategory.EDITOR;
+        this(id, label, icon, PanelCategory.EDITOR);
     }
 
     protected EditorPanel(Identifier id, String label, ImIcon icon, Shortcut shortcut) {
-        super(id, label, icon, shortcut);
-        this.category = PanelCategory.EDITOR;
+        this(id, label, icon, shortcut, PanelCategory.EDITOR);
     }
 
     protected void setStatus(String message) {

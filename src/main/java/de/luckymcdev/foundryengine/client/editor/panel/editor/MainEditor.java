@@ -24,8 +24,7 @@ public class MainEditor extends EditorPanel {
     private boolean wantsNew = false;
 
     private MainEditor() {
-        super(Common.id("main_editor"), "Main Editor", ImIcons.FA.FA_EDIT);
-        this.category = PanelCategory.EDITOR;
+        super(Common.id("main_editor"), "Main Editor", ImIcons.FA.FA_EDIT, PanelCategory.EDITOR);
         this.menuBar = true;
     }
 
@@ -36,15 +35,14 @@ public class MainEditor extends EditorPanel {
     }
 
     private void renderMenuBar() {
-        if (ImGui.beginMenuBar()) {
+        menuBar(() -> {
             if (ImGui.beginMenu("Files")) {
                 if (ImGui.menuItem("Create New")) {
                     wantsNew = true;
                 }
                 ImGui.endMenu();
             }
-            ImGui.endMenuBar();
-        }
+        });
     }
 
     private void renderCreateMenu() {
