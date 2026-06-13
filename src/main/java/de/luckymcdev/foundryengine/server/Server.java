@@ -15,7 +15,9 @@ import java.util.concurrent.CompletableFuture;
  * Shared server-side utilities and helpers for FoundryEngine.
  * Only use this class from dedicated server or logical server contexts.
  */
-public abstract class Server {
+public final class Server {
+    private Server() {
+    }
 
     /**
      * Returns the current {@link MinecraftServer}, or {@code null} if none is running.

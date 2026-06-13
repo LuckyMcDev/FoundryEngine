@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.common.builder.recipe;
 
 import de.luckymcdev.foundryengine.api.builder.recipe.RecipeBuilder;
 import de.luckymcdev.foundryengine.api.builder.recipe.RecipeResult;
+import de.luckymcdev.foundryengine.common.builder.AbstractBuilder;
 import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.criterion.InventoryChangeTrigger;
 import net.minecraft.core.HolderGetter;
@@ -18,8 +19,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.*;
 
-public class RecipeBuilderImpl implements RecipeBuilder {
-    private final Identifier id;
+public class RecipeBuilderImpl extends AbstractBuilder<RecipeResult> implements RecipeBuilder {
     private final RecipeType type;
     private final ItemLike result;
     private final List<String> pattern = new ArrayList<>();
@@ -36,11 +36,9 @@ public class RecipeBuilderImpl implements RecipeBuilder {
     private float experience = 0.1f;
     private int cookingTime = 200;
     private String group = "";
-    private boolean generateData = true;
-    private @Nullable RecipeResult object;
 
     private RecipeBuilderImpl(Identifier id, RecipeType type, @Nullable ItemLike result) {
-        this.id = id;
+        super(id);
         this.type = type;
         this.result = result;
     }
@@ -274,7 +272,7 @@ public class RecipeBuilderImpl implements RecipeBuilder {
     public RecipeResult register(RegisterEvent.RegisterHelper<RecipeResult> helper) {
         RecipeResult result = build();
         helper.register(id, result);
-        this.object = result;
+        setObject(result);
         return result;
     }
 
@@ -424,40 +422,6 @@ public class RecipeBuilderImpl implements RecipeBuilder {
                 smithingTrim.unlocks(name, criterion);
             }
         }
-    }
-
-    @Override
-    public RecipeResult get() {
-        if (object == null) {
-            throw new IllegalStateException("Recipe " + id + " has not been registered yet");
-        }
-        return object;
-    }
-
-    @Override
-    public RecipeResult getOrCreate() {
-        if (object == null) {
-            object = build();
-        }
-        return object;
-    }
-
-    @Override
-    public Identifier getId() {
-        return id;
-    }
-
-    @Override
-    public Identifier newID(String pre, String post) {
-        if (pre.isEmpty() && post.isEmpty()) {
-            return id;
-        }
-        return id.withPath(pre + id.getPath() + post);
-    }
-
-    @Override
-    public boolean shouldGenerateData() {
-        return generateData;
     }
 
     @Override

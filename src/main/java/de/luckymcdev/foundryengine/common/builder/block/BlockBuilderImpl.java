@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.common.builder.block;
 
 import de.luckymcdev.foundryengine.api.builder.block.BlockBuilder;
+import de.luckymcdev.foundryengine.common.builder.AbstractBuilder;
 import de.luckymcdev.foundryengine.common.builder.item.ItemBuilderImpl;
 import de.luckymcdev.foundryengine.common.world.block.EngineBlock;
 import de.luckymcdev.foundryengine.common.world.item.EngineItem;
@@ -12,7 +13,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.neoforged.neoforge.registries.RegisterEvent;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -20,20 +20,17 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
-public class BlockBuilderImpl implements BlockBuilder {
-    private final Identifier id;
+public class BlockBuilderImpl extends AbstractBuilder<Block> implements BlockBuilder {
     private final BiFunction<Block, Item.Properties, Item> itemFactory;
     private final Map<EngineBlock.CallbackType, Object> blockCallbacks = new EnumMap<>(EngineBlock.CallbackType.class);
     private final Map<EngineItem.CallbackType, Object> itemCallbacks = new EnumMap<>(EngineItem.CallbackType.class);
     private BlockBehaviour.Properties properties;
     private Function<BlockBehaviour.Properties, Block> blockFactory;
     private boolean hasItem = true;
-    private boolean generateData = true;
     private UnaryOperator<Item.Properties> itemPropertyModifier = p -> p;
-    private @Nullable Block object;
 
     public BlockBuilderImpl(Identifier id) {
-        this.id = id;
+        super(id);
         this.properties = BlockBehaviour.Properties.of();
         this.blockFactory = EngineBlock::new;
         this.itemFactory = BlockItem::new;
@@ -174,7 +171,7 @@ public class BlockBuilderImpl implements BlockBuilder {
     public Block registerBlock(RegisterEvent.RegisterHelper<Block> helper) {
         Block block = build();
         helper.register(id, block);
-        this.object = block;
+        setObject(block);
         return block;
     }
 
@@ -218,46 +215,9 @@ public class BlockBuilderImpl implements BlockBuilder {
         return blockFactory.apply(this.properties);
     }
 
-    @Override
-    public Block get() {
-        if (object == null) {
-            throw new IllegalStateException("Block " + id + " has not been registered yet");
-        }
-        return object;
-    }
-
-    @Override
-    public Block getOrCreate() {
-        if (object == null) {
-            object = build();
-        }
-        return object;
-    }
-
-    @Override
-    public Identifier getId() {
-        return id;
-    }
-
-    @Override
-    public Identifier newID(String pre, String post) {
-        if (pre.isEmpty() && post.isEmpty()) {
-            return id;
-        }
-        return id.withPath(pre + id.getPath() + post);
-    }
-
-    /**
-     * Internal method for ItemBuilderImpl to register callbacks
-     */
     <C> BlockBuilder callback(EngineItem.CallbackType type, C cb) {
         itemCallbacks.put(type, cb);
         return this;
-    }
-
-    @Override
-    public boolean shouldGenerateData() {
-        return generateData;
     }
 
     @Override

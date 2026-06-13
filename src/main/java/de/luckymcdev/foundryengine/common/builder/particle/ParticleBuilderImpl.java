@@ -3,32 +3,29 @@ package de.luckymcdev.foundryengine.common.builder.particle;
 import de.luckymcdev.foundryengine.api.builder.particle.ParticleBuilder;
 import de.luckymcdev.foundryengine.api.builder.particle.ParticleLayer;
 import de.luckymcdev.foundryengine.client.particle.data.*;
+import de.luckymcdev.foundryengine.common.builder.AbstractBuilder;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.registries.RegisterEvent;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-public class ParticleBuilderImpl implements ParticleBuilder {
-    private final Identifier id;
+public class ParticleBuilderImpl extends AbstractBuilder<ParticleType<?>> implements ParticleBuilder {
     private ParticleColorData colorData;
     private ParticleScaleData scaleData;
     private ParticleVelocityData velocityData;
     private ParticlePositionData positionData;
     private ParticleRotationData rotationData;
     private boolean alwaysShow = false;
-    private boolean generateData = true;
     private Function<Boolean, ParticleType<?>> factory = SimpleParticleType::new;
     private int lifetime = 20;
     private ParticleLayer layer = ParticleLayer.OPAQUE;
-    private @Nullable ParticleType<?> object;
 
     public ParticleBuilderImpl(Identifier id) {
-        this.id = id;
+        super(id);
     }
 
     @Override
@@ -130,47 +127,13 @@ public class ParticleBuilderImpl implements ParticleBuilder {
     public ParticleType<?> register(RegisterEvent.RegisterHelper<ParticleType<?>> helper) {
         ParticleType<?> type = build();
         helper.register(id, type);
-        this.object = type;
+        setObject(type);
         return type;
     }
 
     @Override
     public ParticleType<?> build() {
         return factory.apply(alwaysShow);
-    }
-
-    @Override
-    public ParticleType<?> get() {
-        if (object == null) {
-            throw new IllegalStateException("Particle " + id + " has not been registered yet");
-        }
-        return object;
-    }
-
-    @Override
-    public ParticleType<?> getOrCreate() {
-        if (object == null) {
-            object = build();
-        }
-        return object;
-    }
-
-    @Override
-    public Identifier getId() {
-        return id;
-    }
-
-    @Override
-    public Identifier newID(String pre, String post) {
-        if (pre.isEmpty() && post.isEmpty()) {
-            return id;
-        }
-        return id.withPath(pre + id.getPath() + post);
-    }
-
-    @Override
-    public boolean shouldGenerateData() {
-        return generateData;
     }
 
     @Override

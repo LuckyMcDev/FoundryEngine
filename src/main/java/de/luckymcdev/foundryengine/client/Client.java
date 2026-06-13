@@ -23,7 +23,7 @@ import de.luckymcdev.foundryengine.client.util.key.KeyBinding;
 import de.luckymcdev.foundryengine.client.util.key.KeyBindingManager;
 import de.luckymcdev.foundryengine.client.waypoint.WaypointRenderer;
 import de.luckymcdev.foundryengine.common.Common;
-import de.luckymcdev.foundryengine.common.exceptions.EngineException;
+import de.luckymcdev.foundryengine.common.exceptions.UtilityClassException;
 import de.luckymcdev.foundryengine.interfaces.EngineGpuDevice;
 import de.luckymcdev.foundryengine.interfaces.EngineMinecraft;
 import net.minecraft.client.Camera;
@@ -54,7 +54,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
-public abstract class Client {
+public final class Client {
     public static final Matrix4f MODEL_VIEW = new Matrix4f();
     public static final Matrix4f PROJECTION = new Matrix4f();
     public static final Matrix4f WORLD = new Matrix4f();
@@ -127,7 +127,7 @@ public abstract class Client {
     private static final CutsceneEditor CUTSCENE_EDITOR = EDITOR_CONTROLLER.getCutsceneEditor();
 
     private Client() {
-        throw new EngineException();
+        throw new UtilityClassException();
     }
 
     public static Minecraft getMc() {

@@ -1,25 +1,22 @@
 package de.luckymcdev.foundryengine.common.builder.sound;
 
 import de.luckymcdev.foundryengine.api.builder.sound.SoundBuilder;
+import de.luckymcdev.foundryengine.common.builder.AbstractBuilder;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SoundBuilderImpl implements SoundBuilder {
-    private final Identifier id;
+public class SoundBuilderImpl extends AbstractBuilder<SoundEvent> implements SoundBuilder {
     private final List<SoundFileEntry> soundFiles = new ArrayList<>();
     private float fixedRange = -1f;
     private String subtitle = null;
     private boolean replace = false;
-    private boolean generateData = true;
-    private @Nullable SoundEvent object;
 
     public SoundBuilderImpl(Identifier id) {
-        this.id = id;
+        super(id);
     }
 
     @Override
@@ -46,11 +43,6 @@ public class SoundBuilderImpl implements SoundBuilder {
         return this;
     }
 
-    @Override
-    public Identifier getId() {
-        return id;
-    }
-
     public List<SoundFileEntry> getSoundFiles() {
         return soundFiles;
     }
@@ -70,40 +62,11 @@ public class SoundBuilderImpl implements SoundBuilder {
     }
 
     @Override
-    public SoundEvent get() {
-        if (object == null) {
-            throw new IllegalStateException("Sound " + id + " has not been registered yet");
-        }
-        return object;
-    }
-
-    @Override
-    public SoundEvent getOrCreate() {
-        if (object == null) {
-            object = build();
-        }
-        return object;
-    }
-
-    @Override
-    public Identifier newID(String pre, String post) {
-        if (pre.isEmpty() && post.isEmpty()) {
-            return id;
-        }
-        return id.withPath(pre + id.getPath() + post);
-    }
-
-    @Override
     public SoundEvent register(RegisterEvent.RegisterHelper<SoundEvent> h) {
         SoundEvent e = build();
         h.register(id, e);
-        this.object = e;
+        setObject(e);
         return e;
-    }
-
-    @Override
-    public boolean shouldGenerateData() {
-        return generateData;
     }
 
     @Override

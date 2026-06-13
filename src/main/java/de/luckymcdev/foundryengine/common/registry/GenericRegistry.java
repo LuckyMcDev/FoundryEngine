@@ -158,11 +158,7 @@ public class GenericRegistry<K, V> implements Registry<K, V> {
     }
 
     @Override
-    public void clear() throws IllegalStateException {
-        if (frozen) {
-            throw new IllegalStateException("Registry is frozen and cannot be modified.");
-        }
-
+    public void clear() {
         lock.lock();
         try {
             primaryLookup.clear();
