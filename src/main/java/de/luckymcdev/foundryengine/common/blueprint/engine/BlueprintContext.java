@@ -5,6 +5,7 @@ import de.luckymcdev.foundryengine.common.blueprint.graph.BlueprintGraph;
 import de.luckymcdev.foundryengine.common.blueprint.graph.BlueprintNode;
 import de.luckymcdev.foundryengine.common.blueprint.graph.NodePinInfo;
 import de.luckymcdev.foundryengine.common.blueprint.nodes.BuiltinNode;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
@@ -13,20 +14,37 @@ import org.slf4j.Logger;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Runtime context passed to every {@link BuiltinNode#execute}
- * during graph execution.
- */
 public class BlueprintContext {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final int MAX_DEPTH = 512;
 
     private final BlueprintGraph graph;
+    private final BlueprintEngine engine;
     private final Map<String, Object> variables = new HashMap<>();
+    private final CommandSourceStack commandSource;
     private int depth = 0;
 
-    public BlueprintContext(BlueprintGraph graph) {
+    public BlueprintContext(BlueprintGraph graph, BlueprintEngine engine) {
         this.graph = graph;
+        this.engine = engine;
+        this.commandSource = null;
+    }
+
+    public BlueprintContext(BlueprintGraph graph, BlueprintEngine engine, CommandSourceStack commandSource) {
+        this.graph = graph;
+        this.engine = engine;
+        this.commandSource = commandSource;
+    }
+
+    public @Nullable CommandSourceStack commandSource() {
+        return commandSource;
+    }
+
+    public BlueprintContext withCommandSource(CommandSourceStack commandSource) {
+        BlueprintContext c = new BlueprintContext(graph, engine, commandSource);
+        c.variables.putAll(this.variables);
+        c.depth = this.depth;
+        return c;
     }
 
     public void setVar(String name, @Nullable Object value) {
@@ -63,12 +81,9 @@ public class BlueprintContext {
             }
 
             BlueprintNode source = pin.inputLink.node;
-            BlueprintEngine eng = graph instanceof EngineAwareGraph eag ? eag.getEngine() : null;
-            if (eng != null) {
-                BuiltinNode builtin = eng.getById(source.identifier);
-                if (builtin != null) {
-                    builtin.execute(source, eng, graph, this);
-                }
+            BuiltinNode builtin = engine.getById(source.identifier);
+            if (builtin != null) {
+                builtin.execute(source, engine, graph, this);
             }
 
             depth--;
@@ -106,13 +121,5 @@ public class BlueprintContext {
         if (type == String.class) return (V) v.toString();
 
         return fallback;
-    }
-
-    /**
-     * Marker interface so {@link BlueprintContext} can reach back to the engine
-     * without a hard dependency on the editor or any specific graph subclass.
-     */
-    public interface EngineAwareGraph {
-        BlueprintEngine getEngine();
     }
 }

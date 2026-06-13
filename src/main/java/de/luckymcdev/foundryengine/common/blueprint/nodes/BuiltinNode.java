@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import static de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintTypes.EXEC;
 
@@ -36,7 +37,7 @@ public abstract class BuiltinNode {
         initPins();
     }
 
-    protected BuiltinNode(String identifier, String name, String category, boolean skipInit) {
+    BuiltinNode(String identifier, String name, String category, boolean skipInit) {
         this.identifier = identifier;
         this.name = name;
         this.category = category;
@@ -49,30 +50,35 @@ public abstract class BuiltinNode {
     protected void initPins() {
     }
 
-    protected final ExecInputHandle execInput(String label) {
+    public static BuiltinNode create(String identifier, String name, String category,
+                                      Consumer<BuiltinNode> pinDefiner,
+                                      NodeExecutor executor) {
+        BuiltinNode node = new BuiltinNode(identifier, name, category, true) {
+            @Override
+            public void execute(BlueprintNode n, BlueprintEngine e,
+                                BlueprintGraph g, BlueprintContext c) {
+                executor.execute(n, e, g, c);
+            }
+        };
+        pinDefiner.accept(node);
+        return node;
+    }
+
+    protected final void execInput(String label) {
         declaredInputs.add(EXEC.required(label));
-        return new ExecInputHandle(label);
     }
 
-    protected final ExecOutputHandle execOutput(String label) {
+    protected final void execOutput(String label) {
         declaredOutputs.add(EXEC.output(label));
-        return new ExecOutputHandle(label);
     }
 
-    protected final <T> InputHandle<T> input(NodePinType<T> type, String label) {
+    protected final <T> void input(NodePinType<T> type, String label) {
         declaredInputs.add(type.required(label));
-        return new InputHandle<>(label, type);
     }
 
-    protected final <T> InputHandle<T> input(NodePinType<T> type, String label, T defaultValue) {
+    protected final <T> void input(NodePinType<T> type, String label, T defaultValue) {
         declaredInputs.add(type.required(label));
         pinDefaults.put(label, defaultValue);
-        return new InputHandle<>(label, type);
-    }
-
-    protected final <T> OutputHandle<T> output(NodePinType<T> type, String label) {
-        declaredOutputs.add(type.output(label));
-        return new OutputHandle<>(label, type);
     }
 
     public BlueprintNode createNode() {
@@ -89,4 +95,8 @@ public abstract class BuiltinNode {
     }
 
     public abstract void execute(BlueprintNode node, BlueprintEngine engine, BlueprintGraph graph, BlueprintContext ctx);
+
+    protected final <T> void output(NodePinType<T> type, String label) {
+        declaredOutputs.add(type.output(label));
+    }
 }

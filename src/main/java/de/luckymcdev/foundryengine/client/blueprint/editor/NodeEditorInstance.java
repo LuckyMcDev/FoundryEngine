@@ -1,7 +1,6 @@
 package de.luckymcdev.foundryengine.client.blueprint.editor;
 
 import de.luckymcdev.foundryengine.client.editor.panel.tools.CataloguePanel;
-import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintContext;
 import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintEngine;
 import de.luckymcdev.foundryengine.common.blueprint.graph.*;
 import de.luckymcdev.foundryengine.common.blueprint.nodes.BuiltinNode;
@@ -24,11 +23,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 
-/**
- * Client-only node editor canvas backed by ImGui-Node-Editor.
- */
-public class NodeEditorInstance extends BlueprintGraph implements BlueprintContext.EngineAwareGraph {
+public class NodeEditorInstance {
     private static final int UNDO_LIMIT = 100;
+    public final BlueprintGraph graph = new BlueprintGraph();
     private final BlueprintEngine engine;
     private final ImInt tempSrc = new ImInt();
     private final ImInt tempDst = new ImInt();
@@ -63,31 +60,16 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
         return new Color(r, g, b, color.a());
     }
 
-    @Override
-    public BlueprintEngine getEngine() {
-        return engine;
-    }
-
     public void addNode(BuiltinNode builtin) {
         pushUndoState();
         captureSpawnPos();
         BlueprintNode node = builtin.createNode();
-        addNode(node, true);
+        graph.addNode(node, true);
     }
 
-    @Override
     public void addNode(BlueprintNode node, boolean positionAtCursor) {
-        super.addNode(node, positionAtCursor);
+        graph.addNode(node, positionAtCursor);
         if (positionAtCursor) pendingSpawnId = node.id;
-    }
-
-    public void render(Consumer<BlueprintNode> onContextMenu) {
-        render(onContextMenu, null);
-    }
-
-    @Override
-    public void removeNode(BlueprintNode node) {
-        super.removeNode(node);
     }
 
     public float[] getNodeGridPos(int nodeId) {
@@ -110,8 +92,8 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
 
     private void handleLinkCreation() {
         if (ImNodes.isLinkCreated(tempSrc, tempDst)) {
-            var src = pins.get(tempSrc.get());
-            var dst = pins.get(tempDst.get());
+            var src = graph.pins.get(tempSrc.get());
+            var dst = graph.pins.get(tempDst.get());
             if (src != null && dst != null) {
                 var in = src.pin.connectionType() == NodePinConnectionType.OUTPUT ? dst : src;
                 var out = src.pin.connectionType() == NodePinConnectionType.OUTPUT ? src : dst;
@@ -125,7 +107,7 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
 
     private void handleLinkDeletion() {
         if (ImNodes.isLinkDestroyed(tempSrc)) {
-            var pin = pins.get(tempSrc.get());
+            var pin = graph.pins.get(tempSrc.get());
             if (pin != null && pin.inputLink != null) {
                 pushUndoState();
                 pin.inputLink = null;
@@ -135,7 +117,7 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
 
     private void handleLinkDrop(Consumer<BlueprintNode> onContextMenu) {
         if (ImNodes.isLinkDropped(tempSrc, false)) {
-            lastDroppedPin = pins.get(tempSrc.get());
+            lastDroppedPin = graph.pins.get(tempSrc.get());
             captureSpawnPos();
             ImGui.openPopup("###context-menu");
         }
@@ -148,7 +130,6 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
             ImGui.openPopup("###context-menu");
         }
 
-        // Clamp popup to viewport so the search menu never goes off-screen.
         if (ImGui.isPopupOpen("###context-menu")) {
             float mx = Math.min(spawnX, ImGui.getIO().getDisplaySizeX() - 320f);
             float my = Math.min(spawnY, ImGui.getIO().getDisplaySizeY() - 400f);
@@ -166,8 +147,8 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
     }
 
     private void handleNodeAndLinkSelection() {
-        for (var node : nodes.values()) node.selected = ImNodes.isNodeSelected(node.id);
-        for (var pin : pins.values())
+        for (var node : graph.nodes.values()) node.selected = ImNodes.isNodeSelected(node.id);
+        for (var pin : graph.pins.values())
             pin.inputLinkSelected = pin.inputLink != null && ImNodes.isLinkSelected(pin.id);
     }
 
@@ -176,7 +157,7 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
 
         pushUndoState();
 
-        for (var pin : pins.values()) {
+        for (var pin : graph.pins.values()) {
             if (pin.inputLinkSelected) {
                 pin.inputLinkSelected = false;
                 pin.inputLink = null;
@@ -184,8 +165,8 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
         }
 
         var toRemove = new ArrayList<BlueprintNode>();
-        for (var node : nodes.values()) if (node.selected) toRemove.add(node);
-        toRemove.forEach(this::removeNode);
+        for (var node : graph.nodes.values()) if (node.selected) toRemove.add(node);
+        toRemove.forEach(graph::removeNode);
     }
 
     private void captureSpawnPos() {
@@ -210,26 +191,25 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
     }
 
     private void pushUndoState() {
-        // Avoid snapshotting during bulk loads.
         redoStack.clear();
-        undoStack.addLast(serializer.serialize(this, this::getNodeGridPos));
+        undoStack.addLast(serializer.serialize(graph, this::getNodeGridPos));
         while (undoStack.size() > UNDO_LIMIT) undoStack.removeFirst();
     }
 
     private void undo() {
         if (undoStack.isEmpty()) return;
-        redoStack.addLast(serializer.serialize(this, this::getNodeGridPos));
+        redoStack.addLast(serializer.serialize(graph, this::getNodeGridPos));
         applyState(undoStack.removeLast());
     }
 
     private void redo() {
         if (redoStack.isEmpty()) return;
-        undoStack.addLast(serializer.serialize(this, this::getNodeGridPos));
+        undoStack.addLast(serializer.serialize(graph, this::getNodeGridPos));
         applyState(redoStack.removeLast());
     }
 
     private void applyState(String json) {
-        var pos = serializer.deserialize(json, this);
+        var pos = serializer.deserialize(json, graph);
         pos.forEach((id, p) -> setNodeGridPos(id, p[0], p[1]));
     }
 
@@ -240,7 +220,7 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
         Map<Integer, BlueprintNode> nodeClones = new HashMap<>();
         Map<Integer, NodePinInfo> pinClonesById = new HashMap<>();
 
-        for (var node : nodes.values()) {
+        for (var node : graph.nodes.values()) {
             if (!node.selected) continue;
 
             List<NodePin> pins = new ArrayList<>();
@@ -267,6 +247,7 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
                 NodePinInfo cp = clone.outputPin(op.pin.label());
                 if (cp != null) {
                     cp.id = op.id;
+                    cp.defaultValue = op.defaultValue;
                     pinClonesById.put(cp.id, cp);
                 }
             }
@@ -278,7 +259,7 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
 
         if (nodeClones.isEmpty()) return;
 
-        for (var pin : pins.values()) {
+        for (var pin : graph.pins.values()) {
             if (pin.inputLink == null) continue;
             if (!pin.node.selected) continue;
             if (!pin.inputLink.node.selected) continue;
@@ -308,7 +289,6 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
 
         pushUndoState();
 
-        // Compute a stable offset based on the top-left of the copied selection.
         float minX = Float.POSITIVE_INFINITY, minY = Float.POSITIVE_INFINITY;
         for (float[] p : pos.values()) {
             minX = Math.min(minX, p[0]);
@@ -322,7 +302,6 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
 
         Map<Integer, NodePinInfo> newPinsByOldPinId = new HashMap<>();
 
-        // Create nodes with fresh ids.
         for (var oldNode : temp.nodes.values()) {
             List<NodePin> pins = new ArrayList<>();
             for (var p : oldNode.inputPins)
@@ -334,7 +313,7 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
             nn.identifier = oldNode.identifier;
             nn.data.putAll(oldNode.data);
 
-            super.addNode(nn, false);
+            graph.addNode(nn, false);
 
             for (var op : oldNode.inputPins) {
                 NodePinInfo np = nn.inputPin(op.pin.label());
@@ -354,7 +333,6 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
             ImNodes.setNodeScreenSpacePos(nn.id, mouseX + dx, mouseY + dy);
         }
 
-        // Recreate links among pasted nodes.
         for (var oldPin : temp.pins.values()) {
             if (oldPin.inputLink == null) continue;
             NodePinInfo newDst = newPinsByOldPinId.get(oldPin.id);
@@ -366,6 +344,10 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
     private void duplicateSelection() {
         copySelectionToClipboard();
         pasteClipboardAtCursor();
+    }
+
+    public void render(Consumer<BlueprintNode> onContextMenu) {
+        render(onContextMenu, null);
     }
 
     public void render(Consumer<BlueprintNode> onContextMenu,
@@ -395,7 +377,7 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
         ImNodes.pushColorStyle(ImNodesCol.GridLine, 0xFF_2A2A2A);
         ImNodes.pushColorStyle(ImNodesCol.GridLinePrimary, 0xFF_333333);
 
-        for (var node : nodes.values()) {
+        for (var node : graph.nodes.values()) {
             pushNodeColors(node);
             ImNodes.beginNode(node.id);
 
@@ -440,12 +422,11 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
             popNodeColors();
         }
 
-        ImNodes.popColorStyle(); // GridLinePrimary
-        ImNodes.popColorStyle(); // GridLine
-        ImNodes.popColorStyle(); // GridBackground
+        ImNodes.popColorStyle();
+        ImNodes.popColorStyle();
+        ImNodes.popColorStyle();
 
-        // ── Links ─────────────────────────────────────────────────────
-        for (var pin : pins.values()) {
+        for (var pin : graph.pins.values()) {
             if (pin.inputLink != null) {
                 pushLinkColor(pin.pin.type());
                 ImNodes.link(pin.id, pin.inputLink.id, pin.id);
@@ -457,13 +438,13 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
 
         ImNodes.endNodeEditor();
 
-        ImNodes.popStyleVar(); // LinkThickness
-        ImNodes.popStyleVar(); // PinLineThickness
-        ImNodes.popStyleVar(); // PinTriangleSideLength
-        ImNodes.popStyleVar(); // PinQuadSideLength
-        ImNodes.popStyleVar(); // PinCircleRadius
-        ImNodes.popStyleVar(); // NodeBorderThickness
-        ImNodes.popStyleVar(); // NodePadding
+        ImNodes.popStyleVar();
+        ImNodes.popStyleVar();
+        ImNodes.popStyleVar();
+        ImNodes.popStyleVar();
+        ImNodes.popStyleVar();
+        ImNodes.popStyleVar();
+        ImNodes.popStyleVar();
 
         if (pendingSpawnId != -1) {
             ImNodes.setNodeScreenSpacePos(pendingSpawnId, spawnX, spawnY);
@@ -481,9 +462,6 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
 
     private void pushNodeColors(BlueprintNode node) {
         Color title = engine.getCategoryColor(node.category);
-        Color titleHovered = lighten(title, 0.12f);
-        Color titleSelected = lighten(title, 0.20f);
-
         Color titleBar = new Color(title.r(), title.g(), title.b(), 0xF0 / 255f);
 
         float tr = title.r();
@@ -502,12 +480,12 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
     }
 
     private void popNodeColors() {
-        ImNodes.popColorStyle(); // NodeBackgroundSelected
-        ImNodes.popColorStyle(); // NodeBackgroundHovered
-        ImNodes.popColorStyle(); // NodeBackground
-        ImNodes.popColorStyle(); // TitleBarSelected
-        ImNodes.popColorStyle(); // TitleBarHovered
-        ImNodes.popColorStyle(); // TitleBar
+        ImNodes.popColorStyle();
+        ImNodes.popColorStyle();
+        ImNodes.popColorStyle();
+        ImNodes.popColorStyle();
+        ImNodes.popColorStyle();
+        ImNodes.popColorStyle();
     }
 
     private void pushPinColor(NodePinType<?> t) {
@@ -542,7 +520,6 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
     }
 
     private void renderInlineDefault(NodePinInfo pin) {
-        // If the pin's type has a dedicated renderer, use it.
         var renderer = pin.pin.type().renderer;
         if (renderer != null) {
             renderer.render(pin, this::pushUndoState);
@@ -550,7 +527,6 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
             return;
         }
 
-        // Fallback: render by Java type
         String id = "##dv_" + pin.id;
         Object v = pin.defaultValue;
 
@@ -591,7 +567,6 @@ public class NodeEditorInstance extends BlueprintGraph implements BlueprintConte
             default -> ImGui.textUnformatted(pin.pin.label() + ": " + v);
         }
 
-        // Catalogue drag-drop target for registry-based pins
         if (!pin.isConnected()) {
             acceptCatalogueDrop(pin);
         }

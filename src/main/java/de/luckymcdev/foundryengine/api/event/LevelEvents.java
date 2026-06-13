@@ -1,6 +1,6 @@
 package de.luckymcdev.foundryengine.api.event;
 
-import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintEngine;
+import de.luckymcdev.foundryengine.common.blueprint.event.BuiltinNodes;
 import de.luckymcdev.foundryengine.common.event.BlueprintContexts;
 import de.luckymcdev.foundryengine.common.event.EventCallback;
 import de.luckymcdev.foundryengine.common.event.EventGroupHolder;
@@ -12,17 +12,17 @@ import org.jetbrains.annotations.ApiStatus;
 
 public class LevelEvents {
     public static final EventGroupHolder<LevelEvent.Load> LOAD =
-            new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_LEVEL_LOAD, BlueprintContexts::levelLoad);
+            new EventGroupHolder<>(BuiltinNodes.EVENT_LEVEL_LOAD, BlueprintContexts::levelLoad);
     public static final EventGroupHolder<LevelEvent.Unload> UNLOAD =
-            new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_LEVEL_UNLOAD, BlueprintContexts::levelUnload);
+            new EventGroupHolder<>(BuiltinNodes.EVENT_LEVEL_UNLOAD, BlueprintContexts::levelUnload);
     public static final EventGroupHolder<LevelEvent.Save> SAVE =
-            new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_LEVEL_SAVE, BlueprintContexts::levelSave);
+            new EventGroupHolder<>(BuiltinNodes.EVENT_LEVEL_SAVE, BlueprintContexts::levelSave);
     public static final EventGroupHolder<LevelTickEvent.Post> TICK =
-            new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_LEVEL_TICK, BlueprintContexts::levelTick);
+            new EventGroupHolder<>(BuiltinNodes.EVENT_LEVEL_TICK, BlueprintContexts::levelTick);
     public static final EventGroupHolder<ExplosionEvent.Start> BEFORE_EXPLOSION =
-            new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_BEFORE_EXPLOSION, BlueprintContexts::beforeExplosion);
+            new EventGroupHolder<>(BuiltinNodes.EVENT_BEFORE_EXPLOSION, BlueprintContexts::beforeExplosion);
     public static final EventGroupHolder<ExplosionEvent.Detonate> AFTER_EXPLOSION =
-            new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_AFTER_EXPLOSION, BlueprintContexts::afterExplosion);
+            new EventGroupHolder<>(BuiltinNodes.EVENT_AFTER_EXPLOSION, BlueprintContexts::afterExplosion);
 
     public static void load(EventCallback<LevelEvent.Load> cb) {
         LOAD.register(cb);

@@ -1,7 +1,7 @@
 package de.luckymcdev.foundryengine.common.event;
 
 import de.luckymcdev.foundryengine.common.Common;
-import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintEngine;
+import de.luckymcdev.foundryengine.common.blueprint.event.BuiltinNodes;
 import de.luckymcdev.foundryengine.common.util.ErrorHandler;
 
 import java.util.Map;
@@ -13,11 +13,11 @@ public class EventGroupHolder<T> {
     private final String blueprintNodeId;
     private final Function<T, Map<String, Object>> contextMapper;
 
-    public EventGroupHolder(BlueprintEngine.BuiltinNodes blueprintNode) {
+    public EventGroupHolder(BuiltinNodes blueprintNode) {
         this(blueprintNode.id, event -> Map.of());
     }
 
-    public EventGroupHolder(BlueprintEngine.BuiltinNodes blueprintNode,
+    public EventGroupHolder(BuiltinNodes blueprintNode,
                             Function<T, Map<String, Object>> contextMapper) {
         this(blueprintNode.id, contextMapper);
     }
