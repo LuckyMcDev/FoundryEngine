@@ -33,6 +33,7 @@ import de.luckymcdev.foundryengine.common.util.color.Color;
 import de.luckymcdev.foundryengine.config.ClientConfig;
 import de.luckymcdev.foundryengine.config.Config;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.Vec3i;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.neoforged.api.distmarker.Dist;
@@ -192,6 +193,10 @@ public class FoundryEngineModClient {
         Client.getCutsceneManager().clientTick();
         Client.getEditorController().clientTick();
         handleWaypointKeys();
+
+        if (Minecraft.getInstance().level instanceof ClientLevel clientLevel) {
+            Common.getGameManager().tickClient(Minecraft.getInstance(), clientLevel);
+        }
 
         if (!hasIconAutoExported && ClientConfig.AUTO_EXPORT.get()) {
             Minecraft mc = Minecraft.getInstance();

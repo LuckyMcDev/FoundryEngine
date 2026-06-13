@@ -11,6 +11,7 @@ import de.luckymcdev.foundryengine.common.cutscene.CutsceneManager;
 import de.luckymcdev.foundryengine.common.cutscene.CutsceneSessionManager;
 import de.luckymcdev.foundryengine.common.exceptions.EngineException;
 import de.luckymcdev.foundryengine.common.exceptions.UtilityClassException;
+import de.luckymcdev.foundryengine.common.game.GameManager;
 import de.luckymcdev.foundryengine.common.game.stage.GameStageHandler;
 import de.luckymcdev.foundryengine.common.network.NetworkManager;
 import de.luckymcdev.foundryengine.common.savedata.SavedDataManager;
@@ -51,6 +52,7 @@ public final class Common {
     public static final Path BUNDLES = dir(DIRECTORY.resolve("bundles"));
     public static final Path CACHE = dir(DIRECTORY.resolve(".cache"));
     public static final Path DUMPS = dir(CACHE.resolve("dumps"));
+    public static final Path GAME = dir(CACHE.resolve("game"));
     public static final Path CONFIG_FE = dir(DIRECTORY.resolve("config"));
     private static final BundleManager BUNDLE_MANAGER = new BundleManager(FoundryEngineMod.getModBus(), CONFIG_FE);
     public static final Path INIFILEPATH = file(DIRECTORY.resolve("foundryengine.ini"));
@@ -62,6 +64,7 @@ public final class Common {
     private static final CutsceneSessionManager CUTSCENE_SESSION_MANAGER = new CutsceneSessionManager();
     private static final SavedDataManager SAVED_DATA_MANAGER = new SavedDataManager();
     private static final WaypointManager WAYPOINT_MANAGER = new WaypointManager();
+    private static final GameManager GAME_MANAGER = new GameManager();
     private static final IniFileManager INI_FILE_MANAGER;
 
     static {
@@ -73,6 +76,7 @@ public final class Common {
         }
         BUNDLE_MANAGER.getLifecycleDispatcher().register(BLUEPRINT_MANAGER);
         BUNDLE_MANAGER.getLifecycleDispatcher().register(new BundleSavePathListener());
+        BUNDLE_MANAGER.getLifecycleDispatcher().register(GAME_MANAGER);
     }
 
     private Common() {
@@ -124,6 +128,10 @@ public final class Common {
 
     public static WaypointManager getWaypointManager() {
         return WAYPOINT_MANAGER;
+    }
+
+    public static GameManager getGameManager() {
+        return GAME_MANAGER;
     }
 
     public static @Nullable RecipeManager getRecipeManager() {
