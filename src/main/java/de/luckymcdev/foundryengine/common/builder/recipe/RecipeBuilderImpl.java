@@ -391,14 +391,10 @@ public class RecipeBuilderImpl extends AbstractBuilder<RecipeResult> implements 
             for (Map.Entry<String, Criterion<?>> entry : criteria.entrySet()) {
                 switch (recipeBuilder) {
                     case ShapedRecipeBuilder shaped -> shaped.unlockedBy(entry.getKey(), entry.getValue());
-                    case ShapelessRecipeBuilder shapeless ->
-                            shapeless.unlockedBy(entry.getKey(), entry.getValue());
-                    case SimpleCookingRecipeBuilder cooking ->
-                            cooking.unlockedBy(entry.getKey(), entry.getValue());
-                    case SingleItemRecipeBuilder single ->
-                            single.unlockedBy(entry.getKey(), entry.getValue());
-                    case SmithingTransformRecipeBuilder smithing ->
-                            smithing.unlocks(entry.getKey(), entry.getValue());
+                    case ShapelessRecipeBuilder shapeless -> shapeless.unlockedBy(entry.getKey(), entry.getValue());
+                    case SimpleCookingRecipeBuilder cooking -> cooking.unlockedBy(entry.getKey(), entry.getValue());
+                    case SingleItemRecipeBuilder single -> single.unlockedBy(entry.getKey(), entry.getValue());
+                    case SmithingTransformRecipeBuilder smithing -> smithing.unlocks(entry.getKey(), entry.getValue());
                     case SmithingTrimRecipeBuilder smithingTrim ->
                             smithingTrim.unlocks(entry.getKey(), entry.getValue());
                     default -> {

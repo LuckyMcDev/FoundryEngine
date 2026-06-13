@@ -54,7 +54,10 @@ public abstract class DragEditorFeature implements EditorFeature {
     }
 
     protected abstract void onDragStart();
+
     protected abstract void onDragTick(Minecraft mc);
+
     protected abstract void onDragEnd();
+
     protected abstract void onDistanceChanged();
 }

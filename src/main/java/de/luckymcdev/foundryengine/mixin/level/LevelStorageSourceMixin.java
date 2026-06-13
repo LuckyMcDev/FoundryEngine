@@ -22,8 +22,12 @@ import java.util.List;
 
 @Mixin(LevelStorageSource.class)
 public class LevelStorageSourceMixin implements EngineLevelStorageSource {
-    @Shadow @Final private static Logger LOGGER;
-    @Shadow @Final private Path baseDir;
+    @Shadow
+    @Final
+    private static Logger LOGGER;
+    @Shadow
+    @Final
+    private Path baseDir;
 
     @Override
     public void engine$addAdditionalPath(Path path) {

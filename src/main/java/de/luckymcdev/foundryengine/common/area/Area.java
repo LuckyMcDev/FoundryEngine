@@ -19,11 +19,6 @@ public record Area(String id, AABB bounds, ResourceKey<Level> dimension, Color c
         return new Area(id, new AABB(min, max), dimension, color);
     }
 
-    public boolean contains(GlobalPos position) {
-        return position.dimension() == dimension &&
-                bounds.contains(position.pos().getX(), position.pos().getY(), position.pos().getZ());
-    }
-
     public static CompoundTag writeToNbt(Area area) {
         CompoundTag tag = new CompoundTag();
         tag.putString("id", area.id());
@@ -57,6 +52,11 @@ public record Area(String id, AABB bounds, ResourceKey<Level> dimension, Color c
         );
         Color color = new Color(tag.getInt("color").orElse(DEFAULT_COLOR.argb()));
         return new Area(id, new AABB(min, max), dimension, color);
+    }
+
+    public boolean contains(GlobalPos position) {
+        return position.dimension() == dimension &&
+                bounds.contains(position.pos().getX(), position.pos().getY(), position.pos().getZ());
     }
 
     public void drawDebugOutline() {

@@ -38,6 +38,7 @@ public class WaypointPanel extends EditorPanel {
     private Color newColor = Color.TURQUOISE;
     private boolean showNewForm = false;
     private Waypoint selectedWaypoint = null;
+
     private WaypointPanel() {
         super(Common.id("waypoint_panel"), "Waypoints", ImIcons.FA.FA_MAP_PIN);
         this.category = PanelCategory.TOOLS;
@@ -178,7 +179,7 @@ public class WaypointPanel extends EditorPanel {
     }
 
     private void renderNewColorPicker() {
-        float[] col = { newColor.r(), newColor.g(), newColor.b() };
+        float[] col = {newColor.r(), newColor.g(), newColor.b()};
 
         ImGui.colorButton("##color_preview", col[0], col[1], col[2], 1.0f, 0, 20, 20);
         ImGui.sameLine();

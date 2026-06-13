@@ -16,11 +16,16 @@ public class GameSession {
     private final Identifier id;
     private GameState state = GameState.STOPPED;
 
-    private Consumer<Level> commonTickHandler = level -> {};
-    private BiConsumer<Minecraft, ClientLevel> clientTickHandler = (mc, level) -> {};
-    private BiConsumer<MinecraftServer, ServerLevel> serverTickHandler = (server, level) -> {};
-    private Runnable startingHandler = () -> {};
-    private Runnable stoppingHandler = () -> {};
+    private Consumer<Level> commonTickHandler = level -> {
+    };
+    private BiConsumer<Minecraft, ClientLevel> clientTickHandler = (mc, level) -> {
+    };
+    private BiConsumer<MinecraftServer, ServerLevel> serverTickHandler = (server, level) -> {
+    };
+    private Runnable startingHandler = () -> {
+    };
+    private Runnable stoppingHandler = () -> {
+    };
 
     public GameSession(Identifier id, GameData data) {
         this.id = id;

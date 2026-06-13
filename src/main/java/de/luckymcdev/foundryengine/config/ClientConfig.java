@@ -8,14 +8,11 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 import java.util.Arrays;
 
 public final class ClientConfig extends EngineConfig {
+    public static final String[] FONT_OPTION_VALUES = {"MINIMAL", "NORMAL", "DISABLED"};
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
-
     public static final ModConfigSpec.ConfigValue<String> SELECTED_THEME =
             BUILDER.comment("The currently selected ImGui theme. Available themes: " + ImThemes.getAvailableThemeNames())
                     .define("SELECTED_THEME", ImThemes.BESS_DARK_IM_THEME.getName());
-
-    public static final String[] FONT_OPTION_VALUES = {"MINIMAL", "NORMAL", "DISABLED"};
-
     public static final ModConfigSpec.ConfigValue<String> FONT_OPTION =
             BUILDER.comment("What should happen with fonts.")
                     .comment("Can be: " + Arrays.toString(FONT_OPTION_VALUES))
@@ -48,9 +45,10 @@ public final class ClientConfig extends EngineConfig {
         return switch (BLOCK_ENTITY_RENDER_DISTANCE.get()) {
             case "full" -> effectiveRdBlocks;
             case "half" -> effectiveRdBlocks / 2;
-            default     -> 64;
+            default -> 64;
         };
     }
+
     @Override
     public ModConfigSpec spec() {
         return BUILDER.build();

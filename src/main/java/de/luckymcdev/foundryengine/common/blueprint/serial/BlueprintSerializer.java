@@ -41,6 +41,64 @@ public class BlueprintSerializer {
                 .create();
     }
 
+    private static @Nullable NodePinType<?> resolvePinType(String typeName) {
+        return switch (typeName) {
+            case "Exec" -> BlueprintTypes.EXEC;
+            case "Bool" -> BlueprintTypes.BOOL;
+            case "Int" -> BlueprintTypes.INT;
+            case "Float" -> BlueprintTypes.FLOAT;
+            case "String" -> BlueprintTypes.STRING;
+            case "Object" -> BlueprintTypes.OBJECT;
+            case "Any" -> BlueprintTypes.ANY;
+            case "Entity" -> BlueprintTypes.ENTITY;
+            case "Player" -> BlueprintTypes.PLAYER;
+            case "LivingEntity" -> BlueprintTypes.LIVING_ENTITY;
+            case "BlockPos" -> BlueprintTypes.VEC3;
+            case "Vec3" -> BlueprintTypes.VEC3;
+            case "Level" -> BlueprintTypes.LEVEL;
+            case "ItemStack" -> BlueprintTypes.ITEM_STACK;
+            case "BlockState" -> BlueprintTypes.BLOCK_STATE;
+            case "Direction" -> BlueprintTypes.DIRECTION;
+            case "ItemEntity" -> BlueprintTypes.ITEM_ENTITY;
+            case "EntityType" -> BlueprintTypes.ENTITY_TYPE;
+            case "Component" -> BlueprintTypes.COMPONENT;
+            case "Advancement" -> BlueprintTypes.ADVANCEMENT;
+            case "Container" -> BlueprintTypes.CONTAINER;
+            case "Explosion" -> BlueprintTypes.EXPLOSION;
+            case "DamageSource" -> BlueprintTypes.DAMAGE_SOURCE;
+            case "Connection" -> BlueprintTypes.CONNECTION;
+            case "InteractionHand" -> BlueprintTypes.INTERACTION_HAND;
+            case "PlayerAction" -> BlueprintTypes.PLAYER_ACTION;
+            case "UpdateCause" -> BlueprintTypes.UPDATE_CAUSE;
+            case "LookupProvider" -> BlueprintTypes.LOOKUP_PROVIDER;
+            case "TooltipFlag" -> BlueprintTypes.TOOLTIP_FLAG;
+            case "CommandDispatcher" -> BlueprintTypes.COMMAND_DISPATCHER;
+            case "Effect" -> BlueprintTypes.EFFECT;
+            case "Enchantment" -> BlueprintTypes.ENCHANTMENT;
+            case "Particle" -> BlueprintTypes.PARTICLE;
+            case "SoundEvent" -> BlueprintTypes.SOUND_EVENT;
+            case "Recipe" -> BlueprintTypes.RECIPE;
+            case "MinecraftServer" -> BlueprintTypes.MINECRAFT_SERVER;
+            case "Minecraft" -> BlueprintTypes.MINECRAFT;
+            case "Selector" -> BlueprintTypes.SELECTOR;
+            case "Coordinate" -> BlueprintTypes.COORD;
+            case "NBT" -> BlueprintTypes.NBT;
+            case "GameMode" -> BlueprintTypes.GAMEMODE;
+            case "Anchor" -> BlueprintTypes.ANCHOR;
+            case "Fill Mode" -> BlueprintTypes.FILL_MODE;
+            case "Clone Mode" -> BlueprintTypes.CLONE_MODE;
+            case "Title Type" -> BlueprintTypes.TITLE_TYPE;
+            case "Difficulty" -> BlueprintTypes.DIFFICULTY;
+            case "Sound Source" -> BlueprintTypes.SOUND_SOURCE;
+            case "Time Type" -> BlueprintTypes.TIME_TYPE;
+            case "Weather" -> BlueprintTypes.WEATHER;
+            case "Sort Mode" -> BlueprintTypes.SORT_MODE;
+            case "Time Unit" -> BlueprintTypes.TIME_UNIT;
+            case "CommandContext" -> BlueprintTypes.COMMAND_CONTEXT;
+            default -> null;
+        };
+    }
+
     /**
      * Serializes {@code graph} to a JSON string.
      * <p>
@@ -203,64 +261,6 @@ public class BlueprintSerializer {
     public Map<Integer, float[]> loadFromFile(Path file, BlueprintGraph graph) throws IOException {
         String json = Files.readString(file);
         return deserialize(json, graph);
-    }
-
-    private static @Nullable NodePinType<?> resolvePinType(String typeName) {
-        return switch (typeName) {
-            case "Exec" -> BlueprintTypes.EXEC;
-            case "Bool" -> BlueprintTypes.BOOL;
-            case "Int" -> BlueprintTypes.INT;
-            case "Float" -> BlueprintTypes.FLOAT;
-            case "String" -> BlueprintTypes.STRING;
-            case "Object" -> BlueprintTypes.OBJECT;
-            case "Any" -> BlueprintTypes.ANY;
-            case "Entity" -> BlueprintTypes.ENTITY;
-            case "Player" -> BlueprintTypes.PLAYER;
-            case "LivingEntity" -> BlueprintTypes.LIVING_ENTITY;
-            case "BlockPos" -> BlueprintTypes.VEC3;
-            case "Vec3" -> BlueprintTypes.VEC3;
-            case "Level" -> BlueprintTypes.LEVEL;
-            case "ItemStack" -> BlueprintTypes.ITEM_STACK;
-            case "BlockState" -> BlueprintTypes.BLOCK_STATE;
-            case "Direction" -> BlueprintTypes.DIRECTION;
-            case "ItemEntity" -> BlueprintTypes.ITEM_ENTITY;
-            case "EntityType" -> BlueprintTypes.ENTITY_TYPE;
-            case "Component" -> BlueprintTypes.COMPONENT;
-            case "Advancement" -> BlueprintTypes.ADVANCEMENT;
-            case "Container" -> BlueprintTypes.CONTAINER;
-            case "Explosion" -> BlueprintTypes.EXPLOSION;
-            case "DamageSource" -> BlueprintTypes.DAMAGE_SOURCE;
-            case "Connection" -> BlueprintTypes.CONNECTION;
-            case "InteractionHand" -> BlueprintTypes.INTERACTION_HAND;
-            case "PlayerAction" -> BlueprintTypes.PLAYER_ACTION;
-            case "UpdateCause" -> BlueprintTypes.UPDATE_CAUSE;
-            case "LookupProvider" -> BlueprintTypes.LOOKUP_PROVIDER;
-            case "TooltipFlag" -> BlueprintTypes.TOOLTIP_FLAG;
-            case "CommandDispatcher" -> BlueprintTypes.COMMAND_DISPATCHER;
-            case "Effect" -> BlueprintTypes.EFFECT;
-            case "Enchantment" -> BlueprintTypes.ENCHANTMENT;
-            case "Particle" -> BlueprintTypes.PARTICLE;
-            case "SoundEvent" -> BlueprintTypes.SOUND_EVENT;
-            case "Recipe" -> BlueprintTypes.RECIPE;
-            case "MinecraftServer" -> BlueprintTypes.MINECRAFT_SERVER;
-            case "Minecraft" -> BlueprintTypes.MINECRAFT;
-            case "Selector" -> BlueprintTypes.SELECTOR;
-            case "Coordinate" -> BlueprintTypes.COORD;
-            case "NBT" -> BlueprintTypes.NBT;
-            case "GameMode" -> BlueprintTypes.GAMEMODE;
-            case "Anchor" -> BlueprintTypes.ANCHOR;
-            case "Fill Mode" -> BlueprintTypes.FILL_MODE;
-            case "Clone Mode" -> BlueprintTypes.CLONE_MODE;
-            case "Title Type" -> BlueprintTypes.TITLE_TYPE;
-            case "Difficulty" -> BlueprintTypes.DIFFICULTY;
-            case "Sound Source" -> BlueprintTypes.SOUND_SOURCE;
-            case "Time Type" -> BlueprintTypes.TIME_TYPE;
-            case "Weather" -> BlueprintTypes.WEATHER;
-            case "Sort Mode" -> BlueprintTypes.SORT_MODE;
-            case "Time Unit" -> BlueprintTypes.TIME_UNIT;
-            case "CommandContext" -> BlueprintTypes.COMMAND_CONTEXT;
-            default -> null;
-        };
     }
 
     /**

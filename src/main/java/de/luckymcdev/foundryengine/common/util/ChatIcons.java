@@ -69,5 +69,6 @@ public interface ChatIcons {
         };
     }
 
-    record Entry(char character, String name, Component component) {}
+    record Entry(char character, String name, Component component) {
+    }
 }

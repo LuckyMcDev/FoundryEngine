@@ -242,7 +242,7 @@ public class TestCommand implements EngineCommand {
 
         fake.then(Commands.literal("spawn")
                 .executes(context -> {
-                    Mannequin test = EntitySpawner.spawnServer(context.getSource().getLevel(), EntityType.MANNEQUIN, new Vec3(0, 100,0));
+                    Mannequin test = EntitySpawner.spawnServer(context.getSource().getLevel(), EntityType.MANNEQUIN, new Vec3(0, 100, 0));
                     test.setCustomName(Component.literal("supertest"));
                     return 1;
                 })

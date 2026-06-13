@@ -118,7 +118,7 @@ public class CutsceneTimelinePanel extends EditorPanel {
             Cutscene selected = CutsceneUiState.getSelectedCutscene();
             if (selected == null) {
                 ImGui.textDisabled("Select a cutscene on the left (or in the Cutscenes panel).");
-                    Client.getCutsceneManager().clearPreview();
+                Client.getCutsceneManager().clearPreview();
                 return;
             }
 
@@ -209,7 +209,7 @@ public class CutsceneTimelinePanel extends EditorPanel {
             ImGui.textDisabled("Disabled while a cutscene is playing.");
             if (previewEnabled.get()) {
                 previewEnabled.set(false);
-                    Client.getCutsceneManager().clearPreview();
+                Client.getCutsceneManager().clearPreview();
             }
         } else {
             ImGui.checkbox("Enable Preview##cs_tl_preview", previewEnabled);
