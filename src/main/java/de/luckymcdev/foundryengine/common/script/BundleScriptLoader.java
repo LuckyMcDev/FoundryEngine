@@ -53,8 +53,8 @@ public class BundleScriptLoader {
 
             try {
                 entrypoint = loadScriptClass(scriptPath, files, registry);
-            } catch (Throwable e) {
-                LOGGER.error("Failed to compile {} script '{}' for bundle '{}'", envName, filename, bundleId, e);
+            } catch (Exception e) {
+                LOGGER.warn("Failed to compile {} script '{}' for bundle '{}'", envName, filename, bundleId, e);
                 ModLoadingIssue issue = ModLoadingIssue.error(String.format(
                         "Failed to compile %s script '%s' for bundle '%s': %s", envName, filename, bundleId, e.getMessage()));
                 ModLoader.addLoadingIssue(issue);
@@ -68,8 +68,8 @@ public class BundleScriptLoader {
                 entrypoints.add(entrypoint);
                 try {
                     entrypoint.onLoad();
-                } catch (Throwable e) {
-                    LOGGER.error("Failed to run onLoad for {} script '{}' in bundle '{}'", envName, filename, bundleId, e);
+                } catch (Exception e) {
+                    LOGGER.warn("Failed to run onLoad for {} script '{}' in bundle '{}'", envName, filename, bundleId, e);
                     ModLoadingIssue issue = ModLoadingIssue.error(String.format(
                             "Failed to run onLoad for %s script '%s' in bundle '%s': %s", envName, filename, bundleId, e.getMessage()));
                     ModLoader.addLoadingIssue(issue);

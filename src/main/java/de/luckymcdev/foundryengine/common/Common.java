@@ -2,33 +2,25 @@ package de.luckymcdev.foundryengine.common;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.FoundryEngineMod;
-import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.common.area.AreaManager;
 import de.luckymcdev.foundryengine.common.blueprint.BlueprintManager;
 import de.luckymcdev.foundryengine.common.bundle.BundleManager;
 import de.luckymcdev.foundryengine.common.bundle.BundleSavePathListener;
 import de.luckymcdev.foundryengine.common.cutscene.CutsceneManager;
 import de.luckymcdev.foundryengine.common.cutscene.CutsceneSessionManager;
-import de.luckymcdev.foundryengine.common.exceptions.EngineException;
 import de.luckymcdev.foundryengine.common.exceptions.UtilityClassException;
 import de.luckymcdev.foundryengine.common.game.GameManager;
 import de.luckymcdev.foundryengine.common.game.stage.GameStageHandler;
 import de.luckymcdev.foundryengine.common.network.NetworkManager;
 import de.luckymcdev.foundryengine.common.savedata.SavedDataManager;
 import de.luckymcdev.foundryengine.common.util.FirstRun;
-import de.luckymcdev.foundryengine.common.util.ini.IniFile;
-import de.luckymcdev.foundryengine.common.util.ini.IniFileManager;
 import de.luckymcdev.foundryengine.common.waypoint.WaypointManager;
-import de.luckymcdev.foundryengine.server.Server;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.item.crafting.RecipeManager;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.EventPriority;
-import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.NeoForge;
 import org.apache.commons.lang3.SystemProperties;
-import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -46,7 +38,6 @@ public final class Common {
     public static final Path GAMEDIR = FMLPaths.GAMEDIR.get().normalize().toAbsolutePath();
     public static final Path CONFIG = FMLPaths.CONFIGDIR.get();
     public static final Path TEMP_DIR = Path.of(SystemProperties.getProperty("java.io.tmpdir")).resolve(MODID);
-    public static final IniFile INI_FILE;
     private static final boolean FIRST_RUN = FirstRun.isFor(MODID);
     public static final Path DIRECTORY = dir(GAMEDIR.resolve(MODNAME));
     public static final Path BUNDLES = dir(DIRECTORY.resolve("bundles"));
@@ -55,7 +46,6 @@ public final class Common {
     public static final Path GAME = dir(CACHE.resolve("game"));
     public static final Path CONFIG_FE = dir(DIRECTORY.resolve("config"));
     private static final BundleManager BUNDLE_MANAGER = new BundleManager(FoundryEngineMod.getModBus(), CONFIG_FE);
-    public static final Path INIFILEPATH = file(DIRECTORY.resolve("foundryengine.ini"));
     private static final GameStageHandler GAME_STAGE_HANDLER = new GameStageHandler();
     private static final NetworkManager NETWORK_MANAGER = new NetworkManager();
     private static final BlueprintManager BLUEPRINT_MANAGER = new BlueprintManager();
@@ -65,15 +55,8 @@ public final class Common {
     private static final SavedDataManager SAVED_DATA_MANAGER = new SavedDataManager();
     private static final WaypointManager WAYPOINT_MANAGER = new WaypointManager();
     private static final GameManager GAME_MANAGER = new GameManager();
-    private static final IniFileManager INI_FILE_MANAGER;
 
     static {
-        try {
-            INI_FILE = new IniFile(INIFILEPATH);
-            INI_FILE_MANAGER = new IniFileManager(INI_FILE);
-        } catch (IOException e) {
-            throw new EngineException(e);
-        }
         BUNDLE_MANAGER.getLifecycleDispatcher().register(BLUEPRINT_MANAGER);
         BUNDLE_MANAGER.getLifecycleDispatcher().register(new BundleSavePathListener());
         BUNDLE_MANAGER.getLifecycleDispatcher().register(GAME_MANAGER);
@@ -134,17 +117,10 @@ public final class Common {
         return GAME_MANAGER;
     }
 
-    public static @Nullable RecipeManager getRecipeManager() {
-        if (FMLEnvironment.getDist().isClient()) {
-            return Client.getRecipeManager();
-        }
-        return Server.getRecipeManager();
-    }
-
     public static String getFileContent(Path file) {
         try (InputStream is = Files.newInputStream(file)) {
             return new String(is.readAllBytes());
-        } catch (Exception e) {
+        } catch (IOException e) {
             LOGGER.error("Failed to read file: {}", file, e);
             return "";
         }
@@ -158,22 +134,11 @@ public final class Common {
         return NeoForge.EVENT_BUS.post(priority, event);
     }
 
-    static Path file(Path path) {
-        if (Files.notExists(path) && FIRST_RUN) {
-            try {
-                Files.createFile(path);
-            } catch (Exception e) {
-                LOGGER.error(e.getLocalizedMessage());
-            }
-        }
-        return path;
-    }
-
     static Path dir(Path path) {
         if (Files.notExists(path) && FIRST_RUN) {
             try {
                 Files.createDirectories(path);
-            } catch (Exception e) {
+            } catch (IOException e) {
                 LOGGER.error(e.getLocalizedMessage());
             }
         }

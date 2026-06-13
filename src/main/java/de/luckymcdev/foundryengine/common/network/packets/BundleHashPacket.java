@@ -11,6 +11,8 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
 
 /**
@@ -55,7 +57,7 @@ public record BundleHashPacket(String clientHash) implements AbstractPacket<Bund
                 } else {
                     Common.LOGGER.info("Bundle hash verified on server");
                 }
-            } catch (Exception e) {
+            } catch (IOException | NoSuchAlgorithmException e) {
                 Common.LOGGER.error("Failed to verify bundle hash on server", e);
             }
         });

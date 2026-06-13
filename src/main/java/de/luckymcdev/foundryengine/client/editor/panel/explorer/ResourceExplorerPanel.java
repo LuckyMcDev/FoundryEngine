@@ -22,6 +22,7 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import org.slf4j.Logger;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -277,7 +278,7 @@ public class ResourceExplorerPanel extends AbstractExplorerPanel {
 
                 Client.getEditorManager().register(editor);
                 editor.open();
-            } catch (Exception e) {
+            } catch (IOException e) {
                 LOGGER.error("Failed to open resource '{}': {}", id, e);
             }
         });

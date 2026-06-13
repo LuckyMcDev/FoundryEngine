@@ -5,6 +5,8 @@ import de.luckymcdev.foundryengine.common.exceptions.EngineException;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 
+import java.io.IOException;
+
 public record TTFFile(Identifier id, Identifier resource, FontVariant variant, short[] glyphRanges) {
     public static final short[] DEFAULT_GLYPH_RANGES = {
             0x0020, 0x00FF,             // Basic Latin
@@ -75,7 +77,7 @@ public record TTFFile(Identifier id, Identifier resource, FontVariant variant, s
     public byte[] load(ResourceManager resourceManager) {
         try (var in = resourceManager.getResource(resource).orElseThrow().open()) {
             return in.readAllBytes();
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new EngineException("Failed to read TTF file: " + id, e);
         }
     }

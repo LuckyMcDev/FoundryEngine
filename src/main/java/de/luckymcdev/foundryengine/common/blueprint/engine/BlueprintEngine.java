@@ -5,29 +5,33 @@ import de.luckymcdev.foundryengine.common.blueprint.graph.BlueprintGraph;
 import de.luckymcdev.foundryengine.common.blueprint.graph.BlueprintNode;
 import de.luckymcdev.foundryengine.common.blueprint.graph.NodePinInfo;
 import de.luckymcdev.foundryengine.common.blueprint.nodes.BuiltinNode;
+import de.luckymcdev.foundryengine.common.registry.GenericRegistry;
+import de.luckymcdev.foundryengine.common.registry.GenericRegistryList;
 import de.luckymcdev.foundryengine.common.util.color.Color;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class BlueprintEngine {
     public static final String CTX_REGISTRY_EVENT = "_registry_event";
     private static final Logger LOGGER = LogUtils.getLogger();
-    private final List<BuiltinNode> builtinNodes = new ArrayList<>();
-    private final Map<String, BuiltinNode> builtinById = new HashMap<>();
+    private final GenericRegistryList<BuiltinNode> builtinNodes = new GenericRegistryList<>();
+    private final GenericRegistry<String, BuiltinNode> builtinById = new GenericRegistry<>();
 
     public void register(BuiltinNode node) {
         builtinNodes.add(node);
-        builtinById.put(node.identifier, node);
+        builtinById.register(node.identifier, node);
     }
 
     public Color getCategoryColor(@Nullable String category) {
         return Categories.color(category);
     }
 
-    public List<BuiltinNode> getBuiltinNodes() {
-        return Collections.unmodifiableList(builtinNodes);
+    public GenericRegistryList<BuiltinNode> getBuiltinNodes() {
+        return builtinNodes;
     }
 
     public @Nullable BuiltinNode getById(String identifier) {

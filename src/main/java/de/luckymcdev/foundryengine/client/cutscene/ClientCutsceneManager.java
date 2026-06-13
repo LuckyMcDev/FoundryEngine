@@ -24,6 +24,7 @@ import java.util.UUID;
  * Owned by {@link Client} as a singleton instance (not static state).
  */
 public class ClientCutsceneManager {
+    /** Maximum distance in blocks from the player for cutscene camera override to be active. */
     public static final double RENDER_PLAYER_RANGE = 1.0;
 
     private final ArrayList<QueuedCutscene> cutsceneQueue = new ArrayList<>();

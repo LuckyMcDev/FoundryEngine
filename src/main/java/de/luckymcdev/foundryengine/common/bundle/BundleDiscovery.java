@@ -55,7 +55,7 @@ public class BundleDiscovery {
                     } else if (path.toString().endsWith(".zip")) {
                         scanZip(path);
                     }
-                } catch (Exception e) {
+                } catch (IOException e) {
                     BundleExceptionHandler.handle("Failed to scan bundle path '" + path.getFileName() + "'", e);
                 }
             }
@@ -79,7 +79,7 @@ public class BundleDiscovery {
                 return;
             }
             loadBundlesInDirectory(root, zipFs);
-        } catch (Exception e) {
+        } catch (IOException e) {
             // If we fail before creating a Bundle, close the FileSystem
             try {
                 zipFs.close();
@@ -174,7 +174,7 @@ public class BundleDiscovery {
             Bundle bundle = bundleFactory.createBundle(info, bundleDir, zipFs);
             discoveredBundles.put(info.id(), info);
             bundleConsumer.accept(bundle);
-        } catch (Exception e) {
+        } catch (IOException | RuntimeException e) {
             BundleExceptionHandler.handle("Failed to create bundle '" + info.id() + "'", e);
         }
     }
@@ -228,7 +228,7 @@ public class BundleDiscovery {
             }
             VersionRange range = VersionRange.createFromVersionSpec(rangeSpec);
             return range.containsVersion(current);
-        } catch (Exception e) {
+        } catch (RuntimeException | org.apache.maven.artifact.versioning.InvalidVersionSpecificationException e) {
             LOGGER.error("Failed to parse version range '{}' or version '{}'", rangeSpec, currentVersion);
             return false;
         }
