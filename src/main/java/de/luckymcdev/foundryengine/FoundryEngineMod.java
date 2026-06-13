@@ -6,7 +6,7 @@ import de.luckymcdev.foundryengine.api.event.modification.BlockModificationEvent
 import de.luckymcdev.foundryengine.api.event.modification.ItemModificationEvent;
 import de.luckymcdev.foundryengine.api.event.registry.RegistryEvent;
 import de.luckymcdev.foundryengine.common.Common;
-import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintEngine;
+import de.luckymcdev.foundryengine.common.blueprint.event.BuiltinNodes;
 import de.luckymcdev.foundryengine.common.cutscene.util.ServerScreenEffectManager;
 import de.luckymcdev.foundryengine.common.data.BundleDataGenerator;
 import de.luckymcdev.foundryengine.common.item.ModItems;
@@ -273,7 +273,7 @@ public class FoundryEngineMod {
             LOGGER.error("Error while loading bundles: {}", e.getLocalizedMessage());
         }
 
-        Common.getBlueprintManager().executeCommonEvent(BlueprintEngine.BuiltinNodes.EVENT_BEGIN_PLAY.id);
+        Common.getBlueprintManager().executeCommonEvent(BuiltinNodes.EVENT_BEGIN_PLAY.id);
 
         EngineLogAppender.Holder.addAppender();
     }

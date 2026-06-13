@@ -1,6 +1,6 @@
 package de.luckymcdev.foundryengine.api.event;
 
-import de.luckymcdev.foundryengine.common.blueprint.engine.BlueprintEngine;
+import de.luckymcdev.foundryengine.common.blueprint.event.BuiltinNodes;
 import de.luckymcdev.foundryengine.common.event.BlueprintContexts;
 import de.luckymcdev.foundryengine.common.event.EventCallback;
 import de.luckymcdev.foundryengine.common.event.EventGroupHolder;
@@ -10,8 +10,8 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import org.jetbrains.annotations.ApiStatus;
 
 public class CommandEvents {
-    public static final EventGroupHolder<RegisterCommandsEvent> COMMANDS = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_COMMANDS, BlueprintContexts::registerCommands);
-    public static final EventGroupHolder<RegisterClientCommandsEvent> COMMANDS_CLIENT = new EventGroupHolder<>(BlueprintEngine.BuiltinNodes.EVENT_COMMANDS_CLIENT, BlueprintContexts::registerClientCommands);
+    public static final EventGroupHolder<RegisterCommandsEvent> COMMANDS = new EventGroupHolder<>(BuiltinNodes.EVENT_COMMANDS, BlueprintContexts::registerCommands);
+    public static final EventGroupHolder<RegisterClientCommandsEvent> COMMANDS_CLIENT = new EventGroupHolder<>(BuiltinNodes.EVENT_COMMANDS_CLIENT, BlueprintContexts::registerClientCommands);
 
     public static void register(EventCallback<RegisterCommandsEvent> callback) {
         COMMANDS.register(callback);

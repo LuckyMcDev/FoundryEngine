@@ -22,9 +22,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Editor panel hosting the Blueprint node editor canvas.
- */
 public class BlueprintsPanel extends EditorPanel {
     public static final BlueprintsPanel INSTANCE = new BlueprintsPanel();
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -52,7 +49,7 @@ public class BlueprintsPanel extends EditorPanel {
         }
 
         ClientEvents.tick(event -> {
-            engine.executeEvent(BlueprintEngine.BuiltinNodes.EVENT_CLIENT_TICK.id, this.editor);
+            engine.executeEvent("event.client_tick", editor.graph);
         });
     }
 
@@ -78,11 +75,11 @@ public class BlueprintsPanel extends EditorPanel {
     @Override
     public void content() {
         if (ImGui.button(ImIcons.FA.FA_PLAY + " Run")) {
-            engine.executeGraph(editor);
+            engine.executeGraph(editor.graph);
         }
         ImGui.sameLine();
         if (ImGui.button(ImIcons.FA.FA_TRASH + " Clear")) {
-            editor.clear();
+            editor.graph.clear();
         }
         ImGui.sameLine();
         if (ImGui.button(ImIcons.FA.FA_SAVE + " Save")) {
@@ -93,7 +90,7 @@ public class BlueprintsPanel extends EditorPanel {
             ImGui.openPopup("###load-blueprint");
         }
         ImGui.sameLine();
-        ImGui.textDisabled("Nodes: " + editor.nodes.size());
+        ImGui.textDisabled("Nodes: " + editor.graph.nodes.size());
         ImGui.separator();
 
         renderSaveDialog();
@@ -173,7 +170,7 @@ public class BlueprintsPanel extends EditorPanel {
 
         Path filePath = blueprintsDirectory.resolve(fileName);
         try {
-            serializer.saveToFile(editor, editor::getNodeGridPos, filePath);
+            serializer.saveToFile(editor.graph, editor::getNodeGridPos, filePath);
         } catch (IOException e) {
             LOGGER.error("Failed to save blueprint to {}", filePath, e);
         }
@@ -181,7 +178,7 @@ public class BlueprintsPanel extends EditorPanel {
 
     private void loadBlueprint(Path filePath) {
         try {
-            Map<Integer, float[]> positions = serializer.loadFromFile(filePath, editor);
+            Map<Integer, float[]> positions = serializer.loadFromFile(filePath, editor.graph);
             positions.forEach((nodeId, pos) -> editor.setNodeGridPos(nodeId, pos[0], pos[1]));
         } catch (IOException e) {
             LOGGER.error("Failed to load blueprint from {}", filePath, e);
@@ -230,7 +227,7 @@ public class BlueprintsPanel extends EditorPanel {
 
         ImGui.separator();
         if (ImGui.menuItem("Clear All")) {
-            editor.clear();
+            editor.graph.clear();
         }
     }
 
