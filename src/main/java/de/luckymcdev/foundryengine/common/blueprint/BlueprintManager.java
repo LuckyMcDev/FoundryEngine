@@ -6,17 +6,16 @@ import de.luckymcdev.foundryengine.common.blueprint.graph.BlueprintGraph;
 import de.luckymcdev.foundryengine.common.blueprint.serial.BlueprintSerializer;
 import de.luckymcdev.foundryengine.common.bundle.Bundle;
 import de.luckymcdev.foundryengine.common.bundle.BundleLifecycleListener;
+import de.luckymcdev.foundryengine.common.registry.GenericRegistry;
 import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class BlueprintManager implements BundleLifecycleListener {
     private static final Logger LOGGER = LogUtils.getLogger();
-    private final Map<String, BundleBlueprints> bundleBlueprints = new LinkedHashMap<>();
+    private final GenericRegistry<String, BundleBlueprints> bundleBlueprints = new GenericRegistry<>();
 
     @Override
     public void onBundleLoaded(Bundle bundle) {
@@ -54,7 +53,7 @@ public class BlueprintManager implements BundleLifecycleListener {
             }
         }
 
-        bundleBlueprints.put(bundle.info().id(), new BundleBlueprints(engine, graph));
+        bundleBlueprints.register(bundle.info().id(), new BundleBlueprints(engine, graph));
     }
 
     public void unloadBlueprintsForBundle(Bundle bundle) {
@@ -62,14 +61,14 @@ public class BlueprintManager implements BundleLifecycleListener {
     }
 
     public void executeCommonEvent(String eventName) {
-        bundleBlueprints.values().forEach(bp -> bp.engine().executeEvent(eventName, bp.graph()));
+        bundleBlueprints.forEach(bp -> bp.engine().executeEvent(eventName, bp.graph()));
     }
 
     /**
      * Internal: execute an event with an additional runtime context payload.
      */
     public void executeCommonEvent(String eventName, Map<String, Object> payload) {
-        bundleBlueprints.values().forEach(bp -> bp.engine().executeEvent(eventName, bp.graph(), payload));
+        bundleBlueprints.forEach(bp -> bp.engine().executeEvent(eventName, bp.graph(), payload));
     }
 
     public void executeEventForBundle(String bundleId, String eventName) {
@@ -77,8 +76,8 @@ public class BlueprintManager implements BundleLifecycleListener {
         if (bp != null) bp.engine().executeEvent(eventName, bp.graph());
     }
 
-    public Map<String, BundleBlueprints> getBundleBlueprints() {
-        return Collections.unmodifiableMap(bundleBlueprints);
+    public GenericRegistry<String, BundleBlueprints> getBundleBlueprints() {
+        return bundleBlueprints;
     }
 
     public BundleBlueprints getBlueprintsFor(Bundle bundle) {

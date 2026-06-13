@@ -29,21 +29,21 @@ public record CutscenePacket(CompoundTag nbt) implements AbstractPacket<Cutscene
 
     public static CutscenePacket addAction(String name) {
         CompoundTag tag = new CompoundTag();
-        tag.putString("Action", "ADD");
+        tag.putString("Action", CutsceneAction.ADD.name());
         tag.putString("Name", name);
         return new CutscenePacket(tag);
     }
 
     public static CutscenePacket removeAction(String name) {
         CompoundTag tag = new CompoundTag();
-        tag.putString("Action", "REMOVE");
+        tag.putString("Action", CutsceneAction.REMOVE.name());
         tag.putString("Name", name);
         return new CutscenePacket(tag);
     }
 
     public static CutscenePacket playAction(String targetPlayer, String name, int length, String lerpType, int holdStart, int holdEnd) {
         CompoundTag tag = new CompoundTag();
-        tag.putString("Action", "PLAY");
+        tag.putString("Action", CutsceneAction.PLAY.name());
         tag.putString("TargetPlayer", targetPlayer);
         tag.putString("Name", name);
         tag.putInt("Length", length);
@@ -55,7 +55,7 @@ public record CutscenePacket(CompoundTag nbt) implements AbstractPacket<Cutscene
 
     public static CutscenePacket cancelAction(String targetPlayer) {
         CompoundTag tag = new CompoundTag();
-        tag.putString("Action", "CANCEL");
+        tag.putString("Action", CutsceneAction.CANCEL.name());
         tag.putString("TargetPlayer", targetPlayer);
         return new CutscenePacket(tag);
     }
@@ -108,9 +108,15 @@ public record CutscenePacket(CompoundTag nbt) implements AbstractPacket<Cutscene
             return;
         }
 
-        String action = this.nbt.getStringOr("Action", "");
+        String actionStr = this.nbt.getStringOr("Action", "");
+        CutsceneAction action = actionStr.isEmpty() ? null : CutsceneAction.valueOf(actionStr);
+        if (action == null) {
+            cutsceneManager.applyFullNbt(level, this.nbt);
+            cutsceneManager.syncToDimension(level);
+            return;
+        }
         switch (action) {
-            case "ADD" -> {
+            case ADD -> {
                 String name = this.nbt.getStringOr("Name", "");
                 if (name.isBlank()) return;
                 BezierPath path = new BezierPath(player.getEyePosition());
@@ -118,13 +124,13 @@ public record CutscenePacket(CompoundTag nbt) implements AbstractPacket<Cutscene
                 boolean added = cutsceneManager.add(level, new Cutscene(name, rot, rot, path));
                 if (added) cutsceneManager.syncToDimension(level);
             }
-            case "REMOVE" -> {
+            case REMOVE -> {
                 String name = this.nbt.getStringOr("Name", "");
                 if (name.isBlank()) return;
                 boolean removed = cutsceneManager.remove(level, name);
                 if (removed) cutsceneManager.syncToDimension(level);
             }
-            case "PLAY" -> {
+            case PLAY -> {
                 String targetName = this.nbt.getStringOr("TargetPlayer", "");
                 String cutsceneName = this.nbt.getStringOr("Name", "");
                 if (targetName.isBlank() || cutsceneName.isBlank()) return;
@@ -150,17 +156,13 @@ public record CutscenePacket(CompoundTag nbt) implements AbstractPacket<Cutscene
                 Common.getCutsceneSessionManager().addInstance(target, total);
                 PacketDistributor.sendToPlayer(target, new CutscenePacket(playTag));
             }
-            case "CANCEL" -> {
+            case CANCEL -> {
                 String targetName = this.nbt.getStringOr("TargetPlayer", "");
                 if (targetName.isBlank()) return;
                 ServerPlayer target = level.getServer().getPlayerList().getPlayerByName(targetName);
                 if (target == null) return;
                 PacketDistributor.sendToPlayer(target, cancelPacket());
                 Common.getCutsceneSessionManager().cancelCutscene(target);
-            }
-            default -> {
-                cutsceneManager.applyFullNbt(level, this.nbt);
-                cutsceneManager.syncToDimension(level);
             }
         }
     }

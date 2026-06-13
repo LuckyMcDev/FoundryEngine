@@ -90,8 +90,6 @@ public class BundleConfig {
 
             fileConfig.save();
             LOGGER.debug("Saved config for bundle '{}'", bundleId);
-        } catch (Exception e) {
-            LOGGER.error("Failed to save config for bundle '{}'", bundleId, e);
         }
     }
 
@@ -101,7 +99,7 @@ public class BundleConfig {
             if (raw != null) {
                 try {
                     value.set(raw);
-                } catch (Exception e) {
+                } catch (ClassCastException e) {
                     LOGGER.warn("Invalid value for key '{}' in bundle '{}', using default: {}",
                             value.getKey(), bundleId, value.getDefault());
                 }

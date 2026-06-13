@@ -66,7 +66,7 @@ public class CataloguePanel extends EditorPanel {
                         .sorted(Comparator.comparing(Identifier::getPath)).toList();
                 renderRegistryGrid("items", list, id -> id, false, id -> {
                     if (Minecraft.getInstance().level == null) return;
-                    Minecraft.getInstance().player.connection.sendCommand("give @s " + id.toString());
+                    Minecraft.getInstance().player.connection.sendCommand("give @s " + id);
                 });
                 ImGui.endTabItem();
             }
@@ -150,7 +150,7 @@ public class CataloguePanel extends EditorPanel {
             }
 
             if (ImGui.beginTabItem(ImIcons.FA.FA_BOOK + " Recipes")) {
-                RecipeManager recipeManager = Common.getRecipeManager();
+                RecipeManager recipeManager = Client.getRecipeManager();
                 if (recipeManager == null) {
                     ImGui.textDisabled("No recipe manager available (join a world)");
                 } else {

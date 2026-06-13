@@ -62,6 +62,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
@@ -110,6 +111,7 @@ public class FoundryEngineMod {
         BUS.addListener(this::onServerAboutToStart);
         BUS.addListener(this::onServerStarted);
         BUS.addListener((ServerAboutToStartEvent event) -> Common.getBundleManager().setServer(event.getServer()));
+        BUS.addListener(this::onServerStarting);
         BUS.addListener((ServerStoppingEvent event) -> Common.getBundleManager().setServer(null));
         BUS.addListener(this::onServerTick);
         BUS.addListener(Common.getAreaManager()::onLevelTick);
@@ -319,6 +321,9 @@ public class FoundryEngineMod {
     }
 
     private void onServerAboutToStart(ServerAboutToStartEvent event) {
+    }
+
+    private void onServerStarting(ServerStartingEvent event) {
         Common.getBundleManager().loadServerScripts();
     }
 

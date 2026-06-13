@@ -32,6 +32,7 @@ import java.util.Collection;
  */
 public class BundleManager implements ResourceManagerReloadListener {
     private static final Logger LOGGER = LogUtils.getLogger();
+    private final Object reloadLock = new Object();
     private final GenericRegistry<String, Bundle> bundles = new GenericRegistry<>();
     private final BundleDiscovery bundleDiscovery;
     private final BundleScriptLoader scriptLoader;
@@ -127,40 +128,42 @@ public class BundleManager implements ResourceManagerReloadListener {
      * bundles, rediscovering them from disk, and re-loading common + server scripts.
      */
     public void reload() {
-        LOGGER.info("Reloading FoundryEngine Bundles...");
-        lifecycleDispatcher.fireReloadStarted();
+        synchronized (reloadLock) {
+            LOGGER.info("Reloading FoundryEngine Bundles...");
+            lifecycleDispatcher.fireReloadStarted();
 
-        AreaEvents.Internal.clear();
-        BlockEvents.Internal.clear();
-        BundleEvents.Internal.clear();
-        ClientEvents.Internal.clear();
-        CommandEvents.Internal.clear();
-        EntityEvents.Internal.clear();
-        ItemEvents.Internal.clear();
-        LevelEvents.Internal.clear();
-        NetworkEvents.Internal.clear();
-        PlayerEvents.Internal.clear();
-        RecipeEvents.Internal.clear();
+            AreaEvents.Internal.clear();
+            BlockEvents.Internal.clear();
+            BundleEvents.Internal.clear();
+            ClientEvents.Internal.clear();
+            CommandEvents.Internal.clear();
+            EntityEvents.Internal.clear();
+            ItemEvents.Internal.clear();
+            LevelEvents.Internal.clear();
+            NetworkEvents.Internal.clear();
+            PlayerEvents.Internal.clear();
+            RecipeEvents.Internal.clear();
 
-        unloadAllBundles();
-        bundles.clear();
+            unloadAllBundles();
+            bundles.clear();
 
-        try {
-            discover(Common.BUNDLES);
-        } catch (IOException e) {
-            BundleExceptionHandler.handle("Failed to reload bundles", e);
+            try {
+                discover(Common.BUNDLES);
+            } catch (IOException e) {
+                BundleExceptionHandler.handle("Failed to reload bundles", e);
+            }
+
+            loadServerScripts();
+
+            if (server != null) {
+                var dispatcher = server.getCommands().getDispatcher();
+                var selection = Commands.CommandSelection.ALL;
+                var buildContext = CommandBuildContext.simple(server.registryAccess(), server.getWorldData().enabledFeatures());
+                NeoForge.EVENT_BUS.post(new RegisterCommandsEvent(dispatcher, selection, buildContext));
+            }
+
+            lifecycleDispatcher.fireReloadCompleted();
         }
-
-        loadServerScripts();
-
-        if (server != null) {
-            var dispatcher = server.getCommands().getDispatcher();
-            var selection = Commands.CommandSelection.ALL;
-            var buildContext = CommandBuildContext.simple(server.registryAccess(), server.getWorldData().enabledFeatures());
-            NeoForge.EVENT_BUS.post(new RegisterCommandsEvent(dispatcher, selection, buildContext));
-        }
-
-        lifecycleDispatcher.fireReloadCompleted();
     }
 
     private void unloadAllBundles() {
@@ -174,16 +177,18 @@ public class BundleManager implements ResourceManagerReloadListener {
      * and closes the ZIP FileSystem if present.
      */
     private void unloadBundle(Bundle bundle) {
-        lifecycleDispatcher.firePreUnload(bundle);
+        try {
+            lifecycleDispatcher.firePreUnload(bundle);
 
-        if (bundle.bundleConfig().isLoaded()) {
-            bundle.bundleConfig().save();
+            if (bundle.bundleConfig().isLoaded()) {
+                bundle.bundleConfig().save();
+            }
+
+            bundle.unload();
+        } finally {
+            closeFileSystem(bundle);
+            lifecycleDispatcher.fireUnloaded(bundle);
         }
-
-        bundle.unload();
-
-        closeFileSystem(bundle);
-        lifecycleDispatcher.fireUnloaded(bundle);
     }
 
     private void closeFileSystem(Bundle bundle) {

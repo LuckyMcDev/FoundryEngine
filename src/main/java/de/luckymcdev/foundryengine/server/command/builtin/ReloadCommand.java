@@ -23,7 +23,7 @@ public class ReloadCommand implements EngineCommand {
                         Common.getBundleManager().reload();
                         source.sendSuccess(() -> Component.literal("Scripts reloaded successfully!"), true);
                         return 1;
-                    } catch (Exception e) {
+                    } catch (RuntimeException e) {
                         source.sendFailure(Component.literal("Failed to reload scripts: " + e.getMessage()));
                         return 0;
                     }
