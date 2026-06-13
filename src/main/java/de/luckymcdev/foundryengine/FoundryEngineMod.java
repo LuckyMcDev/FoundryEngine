@@ -63,6 +63,7 @@ import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
@@ -113,6 +114,7 @@ public class FoundryEngineMod {
         BUS.addListener(Common.getAreaManager()::onLevelLoad);
         BUS.addListener(Common.getAreaManager()::onServerStopping);
         BUS.addListener(Common.getCutsceneManager()::onLevelLoad);
+        BUS.addListener(this::onLevelTick);
         BUS.addListener(this::onWaypointLevelLoad);
         BUS.addListener(this::onWaypointServerStopping);
         BUS.addListener(this::onPlayerLoggedIn);
@@ -329,8 +331,16 @@ public class FoundryEngineMod {
     }
 
     private void onServerTick(ServerTickEvent.Post event) {
-        Common.getCutsceneSessionManager().tick(event.getServer());
+        var server = event.getServer();
+        Common.getCutsceneSessionManager().tick(server);
         ServerScreenEffectManager.tick();
+        for (var level : server.getAllLevels()) {
+            Common.getGameManager().tickServer(server, level);
+        }
+    }
+
+    private void onLevelTick(LevelTickEvent.Post event) {
+        Common.getGameManager().tickCommon(event.getLevel());
     }
 
     private void registerInternalEvents() {
@@ -347,5 +357,6 @@ public class FoundryEngineMod {
         RecipeEvents.Internal.register(BUS);
         ServerEvents.Internal.register(BUS);
         StageEvents.Internal.register(BUS);
+        GameEvents.Internal.register(BUS);
     }
 }
