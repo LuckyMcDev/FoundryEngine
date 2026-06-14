@@ -23,6 +23,8 @@ public class BlueprintContext {
     private final Map<String, Object> variables = new HashMap<>();
     private final CommandSourceStack commandSource;
     private int depth = 0;
+    private boolean cancelled = false;
+    private Object result = null;
 
     public BlueprintContext(BlueprintGraph graph, BlueprintEngine engine) {
         this.graph = graph;
@@ -45,6 +47,35 @@ public class BlueprintContext {
         c.variables.putAll(this.variables);
         c.depth = this.depth;
         return c;
+    }
+
+    public boolean isCancelled() {
+        return cancelled;
+    }
+
+    public void setCancelled(boolean cancelled) {
+        this.cancelled = cancelled;
+    }
+
+    /**
+     * Increments execution depth and returns {@code false} if the maximum
+     * has been exceeded (cycle / runaway loop guard).
+     * Every call to {@code tickDepth()} must be paired with {@code untickDepth()}.
+     */
+    public boolean tickDepth() {
+        return ++depth <= MAX_DEPTH;
+    }
+
+    public void untickDepth() {
+        depth--;
+    }
+
+    public @Nullable Object getResult() {
+        return result;
+    }
+
+    public void setResult(@Nullable Object result) {
+        this.result = result;
     }
 
     public void setVar(String name, @Nullable Object value) {

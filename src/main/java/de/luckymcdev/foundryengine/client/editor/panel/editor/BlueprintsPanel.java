@@ -221,7 +221,7 @@ public class BlueprintsPanel extends EditorPanel {
 
         int flags = filter.isEmpty() ? ImGuiTreeNodeFlags.None : ImGuiTreeNodeFlags.DefaultOpen;
         renderCategoryTree(root, "", flags, builtin -> {
-            editor.addNode(builtin);
+            editor.addNodeAtOrigin(builtin);
             searchFilter.set("");
         });
 

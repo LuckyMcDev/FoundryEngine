@@ -67,6 +67,43 @@ public class NodeEditorInstance {
         graph.addNode(node, true);
     }
 
+    public void addNodeAtOrigin(BuiltinNode builtin) {
+        pushUndoState();
+        spawnX = 0f;
+        spawnY = 0f;
+        BlueprintNode node = builtin.createNode();
+        graph.addNode(node, true);
+    }
+
+    public void addNode(BuiltinNode builtin, Map<String, Object> presetValues) {
+        pushUndoState();
+        captureSpawnPos();
+        BlueprintNode node = builtin.createNode();
+        if (presetValues != null) {
+            node.data.putAll(presetValues);
+            for (var entry : presetValues.entrySet()) {
+                var pin = node.inputPin(entry.getKey());
+                if (pin != null) pin.defaultValue = entry.getValue();
+            }
+        }
+        graph.addNode(node, true);
+    }
+
+    public void addNodeAtOrigin(BuiltinNode builtin, Map<String, Object> presetValues) {
+        pushUndoState();
+        spawnX = 0f;
+        spawnY = 0f;
+        BlueprintNode node = builtin.createNode();
+        if (presetValues != null) {
+            node.data.putAll(presetValues);
+            for (var entry : presetValues.entrySet()) {
+                var pin = node.inputPin(entry.getKey());
+                if (pin != null) pin.defaultValue = entry.getValue();
+            }
+        }
+        graph.addNode(node, true);
+    }
+
     public void addNode(BlueprintNode node, boolean positionAtCursor) {
         graph.addNode(node, positionAtCursor);
         if (positionAtCursor) pendingSpawnId = node.id;
@@ -458,6 +495,31 @@ public class NodeEditorInstance {
         handleNodeAndLinkSelection();
         handleShortcuts(editorHovered);
         handleDeleteKey();
+        handleClassMemberDrop();
+    }
+
+    private void handleClassMemberDrop() {
+        if (ImGui.beginDragDropTarget()) {
+            Object payload = ImGui.acceptDragDropPayload("CLASS_MEMBER");
+            if (payload instanceof CataloguePanel.ClassMemberPayload member) {
+                if (member.isMethod()) {
+                    var builtin = engine.getById("reflect.call_method");
+                    if (builtin != null) {
+                        var preset = new HashMap<String, Object>();
+                        preset.put("MethodName", member.memberName());
+                        addNodeAtOrigin(builtin, preset);
+                    }
+                } else if (member.isField()) {
+                    var builtin = engine.getById("reflect.get_field");
+                    if (builtin != null) {
+                        var preset = new HashMap<String, Object>();
+                        preset.put("FieldName", member.memberName());
+                        addNodeAtOrigin(builtin, preset);
+                    }
+                }
+            }
+            ImGui.endDragDropTarget();
+        }
     }
 
     private void pushNodeColors(BlueprintNode node) {
@@ -579,14 +641,25 @@ public class NodeEditorInstance {
                  "Particle", "SoundEvent", "Recipe" -> true;
             default -> false;
         };
-        if (!compatible) return;
 
         if (ImGui.beginDragDropTarget()) {
-            Object payload = ImGui.acceptDragDropPayload("CATALOGUE_ENTRY");
-            if (payload instanceof CataloguePanel.CataloguePayload data) {
-                pushUndoState();
-                pin.defaultValue = data.id().toString();
+            if (compatible) {
+                Object payload = ImGui.acceptDragDropPayload("CATALOGUE_ENTRY");
+                if (payload instanceof CataloguePanel.CataloguePayload data) {
+                    pushUndoState();
+                    pin.defaultValue = data.id().toString();
+                }
             }
+
+            Object memberPayload = ImGui.acceptDragDropPayload("CLASS_MEMBER");
+            if (memberPayload instanceof CataloguePanel.ClassMemberPayload member) {
+                String label = pin.pin.label();
+                if ("MethodName".equals(label) || "FieldName".equals(label)) {
+                    pushUndoState();
+                    pin.defaultValue = member.memberName();
+                }
+            }
+
             ImGui.endDragDropTarget();
         }
     }
