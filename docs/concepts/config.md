@@ -1,6 +1,10 @@
 # Bundle Configuration
 
 Bundle Configuration is currently messed up.
+:::warn
+Do Not use in its current state. Documentation is also VERY outdated.
+Will be replaced at some point
+:::
 
 Bundles can define their own configuration with typed values, persisted as TOML files in `FoundryEngine/config/<bundleId>.toml`.
 
