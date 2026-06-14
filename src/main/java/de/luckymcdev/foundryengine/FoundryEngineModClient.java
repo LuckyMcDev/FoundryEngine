@@ -21,6 +21,7 @@ import de.luckymcdev.foundryengine.client.editor.panel.view.ThemeSelectorPanel;
 import de.luckymcdev.foundryengine.client.event.RegisterRenderingStuffEvent;
 import de.luckymcdev.foundryengine.client.ext.ModPathBroadcaster;
 import de.luckymcdev.foundryengine.client.icons.ScreenIconExporter;
+import de.luckymcdev.foundryengine.client.render.EngineSceneDepth;
 import de.luckymcdev.foundryengine.client.render.WorldViewMatrix;
 import de.luckymcdev.foundryengine.client.render.entity.EngineEntityRenderers;
 import de.luckymcdev.foundryengine.client.render.obj.ObjModel;
@@ -68,6 +69,7 @@ public class FoundryEngineModClient {
         BUS.addListener(this::onRegisterPanels);
         BUS.addListener(this::onClientTick);
         BUS.addListener(this::onRenderLevel);
+        BUS.addListener(this::onAfterOpaqueFeatures);
         BUS.addListener(this::onRegisterCommands);
         BUS.addListener(this::onLoggingIn);
 
@@ -173,6 +175,10 @@ public class FoundryEngineModClient {
                                 gameExecutor
                         )
         );
+    }
+
+    private void onAfterOpaqueFeatures(RenderLevelStageEvent.AfterOpaqueFeatures event) {
+        EngineSceneDepth.update();
     }
 
     private void onRenderLevel(RenderLevelStageEvent.AfterLevel event) {
