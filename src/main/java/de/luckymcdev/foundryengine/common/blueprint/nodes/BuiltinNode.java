@@ -64,19 +64,19 @@ public abstract class BuiltinNode {
         return node;
     }
 
-    protected final void execInput(String label) {
+    public final void execInput(String label) {
         declaredInputs.add(EXEC.required(label));
     }
 
-    protected final void execOutput(String label) {
+    public final void execOutput(String label) {
         declaredOutputs.add(EXEC.output(label));
     }
 
-    protected final <T> void input(NodePinType<T> type, String label) {
+    public final <T> void input(NodePinType<T> type, String label) {
         declaredInputs.add(type.required(label));
     }
 
-    protected final <T> void input(NodePinType<T> type, String label, T defaultValue) {
+    public final <T> void input(NodePinType<T> type, String label, T defaultValue) {
         declaredInputs.add(type.required(label));
         pinDefaults.put(label, defaultValue);
     }
@@ -96,7 +96,7 @@ public abstract class BuiltinNode {
 
     public abstract void execute(BlueprintNode node, BlueprintEngine engine, BlueprintGraph graph, BlueprintContext ctx);
 
-    protected final <T> void output(NodePinType<T> type, String label) {
+    public final <T> void output(NodePinType<T> type, String label) {
         declaredOutputs.add(type.output(label));
     }
 }

@@ -16,16 +16,18 @@ public class NodePinType<T> {
     public final List<NodePin> singleRequiredInput;
     public final @Nullable List<String> enumValues;
     public final @Nullable PinRenderer renderer;
+    public final @Nullable Class<?> runtimeType;
     private final Set<String> compatibleNames;
 
     public NodePinType(String displayName, NodePinShape defaultShape, Color color,
                        @Nullable List<String> enumValues, @Nullable PinRenderer renderer,
-                       String... compatibleWith) {
+                       @Nullable Class<?> runtimeType, String... compatibleWith) {
         this.displayName = displayName;
         this.defaultShape = defaultShape;
         this.color = color;
         this.enumValues = enumValues;
         this.renderer = renderer;
+        this.runtimeType = runtimeType;
         this.singleOutput = List.of(output("Out"));
         this.singleRequiredInput = List.of(required("In"));
         this.compatibleNames = new LinkedHashSet<>();
@@ -39,7 +41,7 @@ public class NodePinType<T> {
      * Auto color, no enum, no renderer.
      */
     public NodePinType(String displayName, NodePinShape defaultShape, String... compatibleWith) {
-        this(displayName, defaultShape, deriveColor(displayName), null, null, compatibleWith);
+        this(displayName, defaultShape, deriveColor(displayName), null, null, null, compatibleWith);
     }
 
     /**
@@ -49,7 +51,7 @@ public class NodePinType<T> {
                        List<String> enumValues, String... compatibleWith) {
         this(displayName, defaultShape, deriveColor(displayName), enumValues,
                 enumValues != null && !enumValues.isEmpty() ? PinRenderer.enumPin(enumValues) : null,
-                compatibleWith);
+                null, compatibleWith);
     }
 
     /**
@@ -64,7 +66,7 @@ public class NodePinType<T> {
      */
     public NodePinType(String displayName, NodePinShape defaultShape, Color color,
                        @Nullable PinRenderer renderer, String... compatibleWith) {
-        this(displayName, defaultShape, color, null, renderer, compatibleWith);
+        this(displayName, defaultShape, color, null, renderer, null, compatibleWith);
     }
 
     /**
@@ -72,7 +74,15 @@ public class NodePinType<T> {
      */
     public NodePinType(String displayName, NodePinShape defaultShape,
                        @Nullable PinRenderer renderer, String... compatibleWith) {
-        this(displayName, defaultShape, deriveColor(displayName), null, renderer, compatibleWith);
+        this(displayName, defaultShape, deriveColor(displayName), null, renderer, null, compatibleWith);
+    }
+
+    /**
+     * Auto color, no enum, no renderer, with runtime Class.
+     */
+    public NodePinType(String displayName, NodePinShape defaultShape,
+                       Class<?> runtimeType, String... compatibleWith) {
+        this(displayName, defaultShape, deriveColor(displayName), null, null, runtimeType, compatibleWith);
     }
 
     private static Color deriveColor(String name) {

@@ -35,6 +35,8 @@ public final class BlueprintTypes {
     public static final NodePinType<Object> LIVING_ENTITY = reg("LivingEntity", NodePinShape.FILLED_SQUARE, "Entity", "Selector");
     public static final NodePinType<Object> LEVEL = reg("Level");
     public static final NodePinType<Object> VEC3 = reg("Vec3", NodePinShape.FILLED_SQUARE, "Position", "Coordinate");
+    public static final NodePinType<Object> VEC2 = reg("Vec2", NodePinShape.FILLED_SQUARE, "Position2D", "Coordinate2D");
+    public static final NodePinType<Object> COMMAND_SOURCE = reg("CommandSource", NodePinShape.FILLED_SQUARE);
     public static final NodePinType<Object> BLOCK_STATE = reg("BlockState");
     public static final NodePinType<Object> DIRECTION = reg("Direction");
     public static final NodePinType<Object> ITEM_STACK = reg("ItemStack", NodePinShape.FILLED_SQUARE, "ItemEntity");
@@ -58,6 +60,19 @@ public final class BlueprintTypes {
     public static final NodePinType<Object> RECIPE = reg("Recipe");
     public static final NodePinType<Object> COMMAND_CONTEXT = reg("CommandContext");
     public static final NodePinType<Object> ITEM_ENTITY = reg("ItemEntity", NodePinShape.FILLED_SQUARE, "ItemStack");
+
+    // ======================== Groovy-Oriented Types ========================
+    public static final NodePinType<Object> GSTRING = reg("GString",
+            NodePinShape.FILLED_CIRCLE,
+            PinRenderer.stringPin(4096), "GString", "String");
+    public static final NodePinType<Object> CLOSURE = reg("Closure",
+            NodePinShape.FILLED_SQUARE);
+    public static final NodePinType<Object> LIST = reg("List",
+            NodePinShape.FILLED_SQUARE);
+    public static final NodePinType<Object> MAP = reg("Map",
+            NodePinShape.FILLED_SQUARE);
+    public static final NodePinType<Object> RANGE = reg("Range",
+            NodePinShape.FILLED_CIRCLE, "Int", "Float");
 
     // ======================== Command Parameter Types ========================
     public static final NodePinType<String> SELECTOR = reg("Selector",
@@ -122,6 +137,13 @@ public final class BlueprintTypes {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
+    private static <T> NodePinType<T> reg(String name, NodePinShape shape, PinRenderer renderer, String... compatibleWith) {
+        NodePinType<?> type = new NodePinType<>(name, shape, renderer, compatibleWith);
+        addToRegistry(type, compatibleWith);
+        return (NodePinType<T>) type;
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private static <T> NodePinType<T> reg(String name, NodePinShape shape, List<String> enumValues, String... compatibleWith) {
         NodePinType<?> type = new NodePinType<>(name, shape, enumValues, compatibleWith);
         addToRegistry(type);
@@ -138,5 +160,9 @@ public final class BlueprintTypes {
 
     public static @Nullable NodePinType<?> byName(String name) {
         return TYPE_REGISTRY.get(name);
+    }
+
+    public static Map<String, NodePinType<?>> getRegisteredTypes() {
+        return TYPE_REGISTRY;
     }
 }

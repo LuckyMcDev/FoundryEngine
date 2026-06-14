@@ -2,6 +2,9 @@ package de.luckymcdev.foundryengine.common.event;
 
 import de.luckymcdev.foundryengine.api.event.registry.RegistryEvent;
 import net.minecraft.client.Minecraft;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -43,36 +46,42 @@ public class BlueprintContexts {
     public static Map<String, Object> serverTick(ServerTickEvent.Post event) {
         var ctx = new HashMap<String, Object>();
         ctx.put("Server", event.getServer());
+        ctx.put("CommandSource", event.getServer().createCommandSourceStack());
         return ctx;
     }
 
     public static Map<String, Object> serverAboutToStart(ServerAboutToStartEvent event) {
         var ctx = new HashMap<String, Object>();
         ctx.put("Server", event.getServer());
+        ctx.put("CommandSource", event.getServer().createCommandSourceStack());
         return ctx;
     }
 
     public static Map<String, Object> serverStarted(ServerStartedEvent event) {
         var ctx = new HashMap<String, Object>();
         ctx.put("Server", event.getServer());
+        ctx.put("CommandSource", event.getServer().createCommandSourceStack());
         return ctx;
     }
 
     public static Map<String, Object> serverStarting(ServerStartingEvent event) {
         var ctx = new HashMap<String, Object>();
         ctx.put("Server", event.getServer());
+        ctx.put("CommandSource", event.getServer().createCommandSourceStack());
         return ctx;
     }
 
     public static Map<String, Object> serverStopped(ServerStoppedEvent event) {
         var ctx = new HashMap<String, Object>();
         ctx.put("Server", event.getServer());
+        ctx.put("CommandSource", event.getServer().createCommandSourceStack());
         return ctx;
     }
 
     public static Map<String, Object> serverStopping(ServerStoppingEvent event) {
         var ctx = new HashMap<String, Object>();
         ctx.put("Server", event.getServer());
+        ctx.put("CommandSource", event.getServer().createCommandSourceStack());
         return ctx;
     }
 
@@ -133,6 +142,8 @@ public class BlueprintContexts {
         ctx.put("Player", event.getPlayer());
         ctx.put("Pos", Vec3.atCenterOf(event.getPos()));
         ctx.put("BlockState", event.getState());
+        if (event.getPlayer() instanceof ServerPlayer sp)
+            ctx.put("CommandSource", sp.createCommandSourceStack());
         return ctx;
     }
 
@@ -142,6 +153,8 @@ public class BlueprintContexts {
         ctx.put("Entity", event.getEntity());
         ctx.put("Pos", Vec3.atCenterOf(event.getPos()));
         ctx.put("BlockState", event.getState());
+        if (event.getEntity() instanceof ServerPlayer sp)
+            ctx.put("CommandSource", sp.createCommandSourceStack());
         return ctx;
     }
 
@@ -152,6 +165,8 @@ public class BlueprintContexts {
         ctx.put("Pos", Vec3.atCenterOf(event.getPos()));
         ctx.put("Direction", event.getFace());
         ctx.put("Action", event.getAction());
+        if (event.getEntity() instanceof ServerPlayer sp)
+            ctx.put("CommandSource", sp.createCommandSourceStack());
         return ctx;
     }
 
@@ -161,6 +176,8 @@ public class BlueprintContexts {
         ctx.put("Entity", event.getEntity());
         ctx.put("Pos", Vec3.atCenterOf(event.getPos()));
         ctx.put("Direction", event.getFace());
+        if (event.getEntity() instanceof ServerPlayer sp)
+            ctx.put("CommandSource", sp.createCommandSourceStack());
         return ctx;
     }
 
@@ -170,24 +187,32 @@ public class BlueprintContexts {
         ctx.put("Entity", event.getEntity());
         ctx.put("Pos", Vec3.atCenterOf(event.getPos()));
         ctx.put("FallDistance", event.getFallDistance());
+        if (event.getEntity() instanceof ServerPlayer sp)
+            ctx.put("CommandSource", sp.createCommandSourceStack());
         return ctx;
     }
 
     public static Map<String, Object> playerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         var ctx = new HashMap<String, Object>();
         ctx.put("Player", event.getEntity());
+        if (event.getEntity() instanceof ServerPlayer sp)
+            ctx.put("CommandSource", sp.createCommandSourceStack());
         return ctx;
     }
 
     public static Map<String, Object> playerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
         var ctx = new HashMap<String, Object>();
         ctx.put("Player", event.getEntity());
+        if (event.getEntity() instanceof ServerPlayer sp)
+            ctx.put("CommandSource", sp.createCommandSourceStack());
         return ctx;
     }
 
     public static Map<String, Object> playerTick(PlayerTickEvent.Post event) {
         var ctx = new HashMap<String, Object>();
         ctx.put("Player", event.getEntity());
+        if (event.getEntity() instanceof ServerPlayer sp)
+            ctx.put("CommandSource", sp.createCommandSourceStack());
         return ctx;
     }
 
@@ -197,6 +222,7 @@ public class BlueprintContexts {
         ctx.put("Username", event.getUsername());
         ctx.put("Message", event.getMessage());
         ctx.put("RawText", event.getRawText());
+        ctx.put("CommandSource", event.getPlayer().createCommandSourceStack());
         return ctx;
     }
 
@@ -204,6 +230,8 @@ public class BlueprintContexts {
         var ctx = new HashMap<String, Object>();
         ctx.put("Player", event.getEntity());
         ctx.put("Advancement", event.getAdvancement());
+        if (event.getEntity() instanceof ServerPlayer sp)
+            ctx.put("CommandSource", sp.createCommandSourceStack());
         return ctx;
     }
 
@@ -211,6 +239,8 @@ public class BlueprintContexts {
         var ctx = new HashMap<String, Object>();
         ctx.put("Player", event.getEntity());
         ctx.put("Container", event.getContainer());
+        if (event.getEntity() instanceof ServerPlayer sp)
+            ctx.put("CommandSource", sp.createCommandSourceStack());
         return ctx;
     }
 
@@ -218,12 +248,16 @@ public class BlueprintContexts {
         var ctx = new HashMap<String, Object>();
         ctx.put("Player", event.getEntity());
         ctx.put("Container", event.getContainer());
+        if (event.getEntity() instanceof ServerPlayer sp)
+            ctx.put("CommandSource", sp.createCommandSourceStack());
         return ctx;
     }
 
     public static Map<String, Object> playerRespawned(PlayerEvent.PlayerRespawnEvent event) {
         var ctx = new HashMap<String, Object>();
         ctx.put("Player", event.getEntity());
+        if (event.getEntity() instanceof ServerPlayer sp)
+            ctx.put("CommandSource", sp.createCommandSourceStack());
         return ctx;
     }
 
@@ -277,6 +311,9 @@ public class BlueprintContexts {
         ctx.put("CurrentStack", event.getCurrentStack());
         ctx.put("OriginalStack", event.getOriginalStack());
         ctx.put("ItemEntity", event.getItemEntity());
+        if (event.getPlayer() instanceof ServerPlayer player) {
+            ctx.put("CommandSource", player.createCommandSourceStack());
+        }
         return ctx;
     }
 
@@ -285,6 +322,8 @@ public class BlueprintContexts {
         ctx.put("Player", event.getEntity());
         ctx.put("ItemStack", event.getOriginal());
         ctx.put("Hand", event.getHand());
+        if (event.getEntity() instanceof ServerPlayer sp)
+            ctx.put("CommandSource", sp.createCommandSourceStack());
         return ctx;
     }
 
@@ -295,13 +334,17 @@ public class BlueprintContexts {
         ctx.put("Pos", Vec3.atCenterOf(event.getPos()));
         ctx.put("Hand", event.getHand());
         ctx.put("ItemStack", event.getItemStack());
+        if (event.getEntity() instanceof ServerPlayer sp)
+            ctx.put("CommandSource", sp.createCommandSourceStack());
         return ctx;
     }
 
     public static Map<String, Object> itemCrafted(PlayerEvent.ItemCraftedEvent event) {
         var ctx = new HashMap<String, Object>();
         ctx.put("Player", event.getEntity());
-        ctx.put("Crafting", event.getCrafting()); //ItemStack
+        ctx.put("Crafting", event.getCrafting());
+        if (event.getEntity() instanceof ServerPlayer sp)
+            ctx.put("CommandSource", sp.createCommandSourceStack());
         return ctx;
     }
 
@@ -309,6 +352,9 @@ public class BlueprintContexts {
         var ctx = new HashMap<String, Object>();
         ctx.put("Player", event.getPlayer());
         ctx.put("ItemEntity", event.getEntity());
+        if (event.getPlayer() instanceof ServerPlayer player) {
+            ctx.put("CommandSource", player.createCommandSourceStack());
+        }
         return ctx;
     }
 
@@ -318,6 +364,8 @@ public class BlueprintContexts {
         ctx.put("OriginalStack", event.getItem());
         ctx.put("ResultStack", event.getResultStack());
         ctx.put("Duration", event.getDuration());
+        if (event.getEntity() instanceof ServerPlayer sp)
+            ctx.put("CommandSource", sp.createCommandSourceStack());
         return ctx;
     }
 
@@ -326,6 +374,8 @@ public class BlueprintContexts {
         ctx.put("LivingEntity", event.getEntity());
         ctx.put("ItemStack", event.getSmelting());
         ctx.put("AmountRemoved", event.getAmountRemoved());
+        if (event.getEntity() instanceof ServerPlayer sp)
+            ctx.put("CommandSource", sp.createCommandSourceStack());
         return ctx;
     }
 
@@ -335,6 +385,8 @@ public class BlueprintContexts {
         ctx.put("TooltipContext", event.getToolTip());
         ctx.put("TooltipFlags", event.getFlags());
         ctx.put("ItemStack", event.getItemStack());
+        if (event.getEntity() instanceof ServerPlayer sp)
+            ctx.put("CommandSource", sp.createCommandSourceStack());
         return ctx;
     }
 
@@ -344,6 +396,8 @@ public class BlueprintContexts {
         ctx.put("Target", event.getTarget());
         ctx.put("Level", event.getLevel());
         ctx.put("ItemStack", event.getItemStack());
+        if (event.getEntity() instanceof ServerPlayer sp)
+            ctx.put("CommandSource", sp.createCommandSourceStack());
         return ctx;
     }
 
@@ -353,6 +407,8 @@ public class BlueprintContexts {
         ctx.put("Level", event.getLevel());
         ctx.put("Hand", event.getHand());
         ctx.put("ItemStack", event.getItemStack());
+        if (event.getEntity() instanceof ServerPlayer sp)
+            ctx.put("CommandSource", sp.createCommandSourceStack());
         return ctx;
     }
 
@@ -362,6 +418,8 @@ public class BlueprintContexts {
         ctx.put("Level", event.getLevel());
         ctx.put("Hand", event.getHand());
         ctx.put("ItemStack", event.getItemStack());
+        if (event.getEntity() instanceof ServerPlayer sp)
+            ctx.put("CommandSource", sp.createCommandSourceStack());
         return ctx;
     }
 
@@ -369,6 +427,11 @@ public class BlueprintContexts {
         var ctx = new HashMap<String, Object>();
         ctx.put("Entity", event.getEntity());
         ctx.put("Level", event.getLevel());
+        if (event.getEntity() instanceof ServerPlayer sp)
+            ctx.put("CommandSource", sp.createCommandSourceStack());
+        else if (event.getLevel() instanceof ServerLevel sl && event.getEntity() instanceof LivingEntity le)
+            ctx.put("CommandSource", sl.getServer().createCommandSourceStack()
+                    .withEntity(le).withPosition(le.position()).withRotation(le.getRotationVector()));
         return ctx;
     }
 
@@ -376,6 +439,11 @@ public class BlueprintContexts {
         var ctx = new HashMap<String, Object>();
         ctx.put("Entity", event.getEntity());
         ctx.put("DamageSource", event.getSource());
+        if (event.getEntity() instanceof ServerPlayer sp)
+            ctx.put("CommandSource", sp.createCommandSourceStack());
+        else if (event.getEntity().level() instanceof ServerLevel sl && event.getEntity() instanceof LivingEntity le)
+            ctx.put("CommandSource", sl.getServer().createCommandSourceStack()
+                    .withEntity(le).withPosition(le.position()).withRotation(le.getRotationVector()));
         return ctx;
     }
 
@@ -383,6 +451,11 @@ public class BlueprintContexts {
         var ctx = new HashMap<String, Object>();
         ctx.put("Entity", event.getEntity());
         ctx.put("DamageSource", event.getSource());
+        if (event.getEntity() instanceof ServerPlayer sp)
+            ctx.put("CommandSource", sp.createCommandSourceStack());
+        else if (event.getEntity().level() instanceof ServerLevel sl && event.getEntity() instanceof LivingEntity le)
+            ctx.put("CommandSource", sl.getServer().createCommandSourceStack()
+                    .withEntity(le).withPosition(le.position()).withRotation(le.getRotationVector()));
         return ctx;
     }
 
@@ -390,6 +463,11 @@ public class BlueprintContexts {
         var ctx = new HashMap<String, Object>();
         ctx.put("Entity", event.getEntity());
         ctx.put("DamageSource", event.getSource());
+        if (event.getEntity() instanceof ServerPlayer sp)
+            ctx.put("CommandSource", sp.createCommandSourceStack());
+        else if (event.getEntity().level() instanceof ServerLevel sl && event.getEntity() instanceof LivingEntity le)
+            ctx.put("CommandSource", sl.getServer().createCommandSourceStack()
+                    .withEntity(le).withPosition(le.position()).withRotation(le.getRotationVector()));
         return ctx;
     }
 
