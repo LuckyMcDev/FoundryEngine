@@ -14,8 +14,7 @@
     "ItemInHandRendererMixin",
     "LevelRendererMixin",
     "PostChainMixin",
-    "PostPassProgressMixin",
-    "RenderTypeAccessor"
+    "PostPassProgressMixin"
   ],
   "injectors": {
     "defaultRequire": 1

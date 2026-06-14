@@ -28,7 +28,7 @@
           {
             "name": "Far",
             "type": "float",
-            "value": 32.0
+            "value": 65536.0
           }
         ]
       }
