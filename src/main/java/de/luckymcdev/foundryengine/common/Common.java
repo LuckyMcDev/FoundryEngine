@@ -3,7 +3,6 @@ package de.luckymcdev.foundryengine.common;
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.FoundryEngineMod;
 import de.luckymcdev.foundryengine.common.area.AreaManager;
-import de.luckymcdev.foundryengine.common.blueprint.BlueprintManager;
 import de.luckymcdev.foundryengine.common.bundle.BundleManager;
 import de.luckymcdev.foundryengine.common.bundle.BundleSavePathListener;
 import de.luckymcdev.foundryengine.common.cutscene.CutsceneManager;
@@ -48,7 +47,6 @@ public final class Common {
     private static final BundleManager BUNDLE_MANAGER = new BundleManager(FoundryEngineMod.getModBus(), CONFIG_FE);
     private static final GameStageHandler GAME_STAGE_HANDLER = new GameStageHandler();
     private static final NetworkManager NETWORK_MANAGER = new NetworkManager();
-    private static final BlueprintManager BLUEPRINT_MANAGER = new BlueprintManager();
     private static final AreaManager AREA_MANAGER = new AreaManager();
     private static final CutsceneManager CUTSCENE_MANAGER = new CutsceneManager();
     private static final CutsceneSessionManager CUTSCENE_SESSION_MANAGER = new CutsceneSessionManager();
@@ -57,7 +55,6 @@ public final class Common {
     private static final GameManager GAME_MANAGER = new GameManager();
 
     static {
-        BUNDLE_MANAGER.getLifecycleDispatcher().register(BLUEPRINT_MANAGER);
         BUNDLE_MANAGER.getLifecycleDispatcher().register(new BundleSavePathListener());
         BUNDLE_MANAGER.getLifecycleDispatcher().register(GAME_MANAGER);
     }
@@ -87,10 +84,6 @@ public final class Common {
 
     public static NetworkManager getNetworkManager() {
         return NETWORK_MANAGER;
-    }
-
-    public static BlueprintManager getBlueprintManager() {
-        return BLUEPRINT_MANAGER;
     }
 
     public static AreaManager getAreaManager() {

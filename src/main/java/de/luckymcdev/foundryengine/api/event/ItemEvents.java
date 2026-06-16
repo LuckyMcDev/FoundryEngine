@@ -1,8 +1,6 @@
 package de.luckymcdev.foundryengine.api.event;
 
 import de.luckymcdev.foundryengine.api.event.modification.ItemModificationEvent;
-import de.luckymcdev.foundryengine.common.blueprint.event.BuiltinNodes;
-import de.luckymcdev.foundryengine.common.event.BlueprintContexts;
 import de.luckymcdev.foundryengine.common.event.EventCallback;
 import de.luckymcdev.foundryengine.common.event.EventGroupHolder;
 import net.neoforged.bus.api.IEventBus;
@@ -12,28 +10,17 @@ import net.neoforged.neoforge.event.entity.player.*;
 import org.jetbrains.annotations.ApiStatus;
 
 public class ItemEvents {
-    public static final EventGroupHolder<ItemEntityPickupEvent.Post> PICKED_UP =
-            new EventGroupHolder<>(BuiltinNodes.EVENT_ITEM_PICKUP, BlueprintContexts::itemPickedUp);
-    public static final EventGroupHolder<PlayerDestroyItemEvent> DESTROYED =
-            new EventGroupHolder<>(BuiltinNodes.EVENT_ITEM_DESTROY, BlueprintContexts::itemDestroyed);
-    public static final EventGroupHolder<PlayerInteractEvent.RightClickItem> RIGHT_CLICKED =
-            new EventGroupHolder<>(BuiltinNodes.EVENT_ITEM_RIGHT_CLICK, BlueprintContexts::itemRightClicked);
-    public static final EventGroupHolder<PlayerEvent.ItemCraftedEvent> CRAFTED =
-            new EventGroupHolder<>(BuiltinNodes.EVENT_ITEM_CRAFTED, BlueprintContexts::itemCrafted);
-    public static final EventGroupHolder<ItemTossEvent> DROPPED =
-            new EventGroupHolder<>(BuiltinNodes.EVENT_ITEM_DROPPED, BlueprintContexts::itemDropped);
-    public static final EventGroupHolder<LivingEntityUseItemEvent.Finish> FOOD_EATEN =
-            new EventGroupHolder<>(BuiltinNodes.EVENT_ITEM_FOOD_EATEN, BlueprintContexts::foodEaten);
-    public static final EventGroupHolder<PlayerEvent.ItemSmeltedEvent> SMELTED =
-            new EventGroupHolder<>(BuiltinNodes.EVENT_ITEM_SMELTED, BlueprintContexts::itemSmelted);
-    public static final EventGroupHolder<ItemTooltipEvent> DYNAMIC_TOOLTIPS =
-            new EventGroupHolder<>(BuiltinNodes.EVENT_ITEM_TOOLTIP, BlueprintContexts::itemTooltip);
-    public static final EventGroupHolder<PlayerInteractEvent.EntityInteract> ENTITY_INTERACTED =
-            new EventGroupHolder<>(BuiltinNodes.EVENT_ITEM_ENTITY_INTERACT, BlueprintContexts::itemEntityInteract);
-    public static final EventGroupHolder<PlayerInteractEvent.LeftClickEmpty> FIRST_LEFT_CLICKED =
-            new EventGroupHolder<>(BuiltinNodes.EVENT_ITEM_FIRST_LEFT_CLICK, BlueprintContexts::firstLeftClicked);
-    public static final EventGroupHolder<PlayerInteractEvent.RightClickEmpty> FIRST_RIGHT_CLICKED =
-            new EventGroupHolder<>(BuiltinNodes.EVENT_ITEM_FIRST_RIGHT_CLICK, BlueprintContexts::firstRightClicked);
+    public static final EventGroupHolder<ItemEntityPickupEvent.Post> PICKED_UP = new EventGroupHolder<>();
+    public static final EventGroupHolder<PlayerDestroyItemEvent> DESTROYED = new EventGroupHolder<>();
+    public static final EventGroupHolder<PlayerInteractEvent.RightClickItem> RIGHT_CLICKED = new EventGroupHolder<>();
+    public static final EventGroupHolder<PlayerEvent.ItemCraftedEvent> CRAFTED = new EventGroupHolder<>();
+    public static final EventGroupHolder<ItemTossEvent> DROPPED = new EventGroupHolder<>();
+    public static final EventGroupHolder<LivingEntityUseItemEvent.Finish> FOOD_EATEN = new EventGroupHolder<>();
+    public static final EventGroupHolder<PlayerEvent.ItemSmeltedEvent> SMELTED = new EventGroupHolder<>();
+    public static final EventGroupHolder<ItemTooltipEvent> DYNAMIC_TOOLTIPS = new EventGroupHolder<>();
+    public static final EventGroupHolder<PlayerInteractEvent.EntityInteract> ENTITY_INTERACTED = new EventGroupHolder<>();
+    public static final EventGroupHolder<PlayerInteractEvent.LeftClickEmpty> FIRST_LEFT_CLICKED = new EventGroupHolder<>();
+    public static final EventGroupHolder<PlayerInteractEvent.RightClickEmpty> FIRST_RIGHT_CLICKED = new EventGroupHolder<>();
     public static final EventGroupHolder<ItemModificationEvent> ITEM_MODIFICATION = new EventGroupHolder<>();
 
     public static void pickedUp(EventCallback<ItemEntityPickupEvent.Post> cb) {

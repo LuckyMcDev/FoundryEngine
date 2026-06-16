@@ -1,8 +1,6 @@
 package de.luckymcdev.foundryengine.api.event;
 
 import de.luckymcdev.foundryengine.api.event.modification.BlockModificationEvent;
-import de.luckymcdev.foundryengine.common.blueprint.event.BuiltinNodes;
-import de.luckymcdev.foundryengine.common.event.BlueprintContexts;
 import de.luckymcdev.foundryengine.common.event.EventCallback;
 import de.luckymcdev.foundryengine.common.event.EventGroupHolder;
 import net.neoforged.bus.api.IEventBus;
@@ -12,12 +10,12 @@ import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
 import org.jetbrains.annotations.ApiStatus;
 
 public class BlockEvents {
-    public static final EventGroupHolder<BreakBlockEvent> BROKEN = new EventGroupHolder<>(BuiltinNodes.EVENT_BLOCK_BROKEN, BlueprintContexts::blockBroken);
-    public static final EventGroupHolder<BlockEvent.EntityPlaceEvent> PLACED = new EventGroupHolder<>(BuiltinNodes.EVENT_BLOCK_PLACED, BlueprintContexts::blockPlaced);
+    public static final EventGroupHolder<BreakBlockEvent> BROKEN = new EventGroupHolder<>();
+    public static final EventGroupHolder<BlockEvent.EntityPlaceEvent> PLACED = new EventGroupHolder<>();
     public static final EventGroupHolder<BlockEvent.NeighborNotifyEvent> NEIGHBOR_NOTIFY = new EventGroupHolder<>();
-    public static final EventGroupHolder<PlayerInteractEvent.LeftClickBlock> LEFT_CLICKED = new EventGroupHolder<>(BuiltinNodes.EVENT_BLOCK_LEFT_CLICKED, BlueprintContexts::blockLeftClicked);
-    public static final EventGroupHolder<PlayerInteractEvent.RightClickBlock> RIGHT_CLICKED = new EventGroupHolder<>(BuiltinNodes.EVENT_BLOCK_RIGHT_CLICKED, BlueprintContexts::blockRightClicked);
-    public static final EventGroupHolder<BlockEvent.FarmlandTrampleEvent> FARMLAND_TRAMPLED = new EventGroupHolder<>(BuiltinNodes.EVENT_FARMLAND_TRAMPLED, BlueprintContexts::blockFarmlandTrampled);
+    public static final EventGroupHolder<PlayerInteractEvent.LeftClickBlock> LEFT_CLICKED = new EventGroupHolder<>();
+    public static final EventGroupHolder<PlayerInteractEvent.RightClickBlock> RIGHT_CLICKED = new EventGroupHolder<>();
+    public static final EventGroupHolder<BlockEvent.FarmlandTrampleEvent> FARMLAND_TRAMPLED = new EventGroupHolder<>();
     public static final EventGroupHolder<BlockModificationEvent> BLOCK_MODIFICATION = new EventGroupHolder<>();
 
     public static void broken(EventCallback<BreakBlockEvent> cb) {

@@ -2,8 +2,6 @@ package de.luckymcdev.foundryengine.api.event;
 
 import de.luckymcdev.foundryengine.api.event.data.BundleDataGenEvent;
 import de.luckymcdev.foundryengine.api.event.registry.RegistryEvent;
-import de.luckymcdev.foundryengine.common.blueprint.event.BuiltinNodes;
-import de.luckymcdev.foundryengine.common.event.BlueprintContexts;
 import de.luckymcdev.foundryengine.common.event.EventCallback;
 import de.luckymcdev.foundryengine.common.event.EventGroupHolder;
 import net.neoforged.bus.api.Event;
@@ -20,32 +18,26 @@ import org.jspecify.annotations.Nullable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class BundleEvents {
-    public static final EventGroupHolder<RegistryEvent> REGISTRY = new EventGroupHolder<>(BuiltinNodes.EVENT_REGISTRY, BlueprintContexts::bundleRegistry);
-    public static final EventGroupHolder<VanillaGameEvent> VANILLA_GAME = new EventGroupHolder<>(BuiltinNodes.EVENT_VANILLA_GAME, BlueprintContexts::vanillaGame);
-    public static final EventGroupHolder<FMLCommonSetupEvent> COMMON_SETUP = new EventGroupHolder<>(BuiltinNodes.EVENT_COMMON_SETUP, BlueprintContexts::commonSetup);
-    public static final EventGroupHolder<FMLClientSetupEvent> CLIENT_SETUP = new EventGroupHolder<>(BuiltinNodes.EVENT_CLIENT_SETUP, BlueprintContexts::clientSetup);
-    public static final EventGroupHolder<FMLDedicatedServerSetupEvent> DEDICATED_SERVER_SETUP = new EventGroupHolder<>(BuiltinNodes.EVENT_DEDICATED_SERVER_SETUP, BlueprintContexts::dedicatedServerSetup);
-    public static final EventGroupHolder<InterModProcessEvent> POST_INIT = new EventGroupHolder<>(BuiltinNodes.EVENT_POST_INIT, BlueprintContexts::postInit);
-    public static final EventGroupHolder<ServerAboutToStartEvent> SERVER_ABOUT_TO_START = new EventGroupHolder<>(BuiltinNodes.EVENT_SERVER_ABOUT_TO_START, BlueprintContexts::serverAboutToStart);
-    public static final EventGroupHolder<BundleDataGenEvent> DATA_GEN = new EventGroupHolder<>(BuiltinNodes.EVENT_DATA_GEN);
+    public static final EventGroupHolder<RegistryEvent> REGISTRY = new EventGroupHolder<>();
+    public static final EventGroupHolder<VanillaGameEvent> VANILLA_GAME = new EventGroupHolder<>();
+    public static final EventGroupHolder<FMLCommonSetupEvent> COMMON_SETUP = new EventGroupHolder<>();
+    public static final EventGroupHolder<FMLClientSetupEvent> CLIENT_SETUP = new EventGroupHolder<>();
+    public static final EventGroupHolder<FMLDedicatedServerSetupEvent> DEDICATED_SERVER_SETUP = new EventGroupHolder<>();
+    public static final EventGroupHolder<InterModProcessEvent> POST_INIT = new EventGroupHolder<>();
+    public static final EventGroupHolder<ServerAboutToStartEvent> SERVER_ABOUT_TO_START = new EventGroupHolder<>();
+    public static final EventGroupHolder<BundleDataGenEvent> DATA_GEN = new EventGroupHolder<>();
     private static final Map<Class<?>, EventGroupHolder<?>> CUSTOM_EVENTS = new ConcurrentHashMap<>();
     private static @Nullable IEventBus eventBus;
 
     public static <T extends Event> void custom(Class<T> eventClass, EventCallback<T> callback) {
-        custom(eventClass, callback, event -> Map.of());
-    }
-
-    public static <T extends Event> void custom(Class<T> eventClass, EventCallback<T> callback, Function<T, Map<String, Object>> contextMapper) {
         @SuppressWarnings("unchecked")
         EventGroupHolder<T> holder = (EventGroupHolder<T>) CUSTOM_EVENTS.computeIfAbsent(eventClass, clazz -> {
-            String nodeId = "event.custom_" + clazz.getSimpleName();
             if (eventBus != null) {
                 registerCustomOnBus(eventBus, clazz);
             }
-            return new EventGroupHolder<>(nodeId, contextMapper);
+            return new EventGroupHolder<>();
         });
         holder.register(callback);
     }

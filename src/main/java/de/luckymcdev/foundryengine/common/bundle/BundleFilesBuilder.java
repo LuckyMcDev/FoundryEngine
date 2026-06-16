@@ -42,10 +42,9 @@ public class BundleFilesBuilder {
                 List.copyOf(scriptCollection)
         );
 
-        Path blueprints = root.resolve("blueprints");
         Path saves = root.resolve("saves");
 
-        return new BundleFiles(root, assets, data, scriptFiles, blueprints, saves, zipFs);
+        return new BundleFiles(root, assets, data, scriptFiles, saves, zipFs);
     }
 
     private List<Path> findScripts(final Path directory) {

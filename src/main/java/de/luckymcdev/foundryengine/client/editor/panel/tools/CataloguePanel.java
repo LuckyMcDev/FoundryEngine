@@ -7,12 +7,10 @@ import de.luckymcdev.foundryengine.client.icons.ImageExportUtil;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.common.Common;
-import de.luckymcdev.foundryengine.common.blueprint.reflect.ClassInspector;
 import de.luckymcdev.foundryengine.config.ClientConfig;
 import imgui.ImGui;
 import imgui.flag.ImGuiMouseButton;
 import imgui.flag.ImGuiStyleVar;
-import imgui.flag.ImGuiTreeNodeFlags;
 import imgui.type.ImString;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -187,7 +185,7 @@ public class CataloguePanel extends EditorPanel {
             }
 
             if (ImGui.beginTabItem(ImIcons.FA.FA_CODE + " Classes")) {
-                renderClassesTab();
+                ImGui.textDisabled("Class browser has been removed.");
                 ImGui.endTabItem();
             }
 
@@ -196,123 +194,7 @@ public class CataloguePanel extends EditorPanel {
     }
 
     private void renderClassesTab() {
-        String filter = searchBuffer.get().toLowerCase();
-        boolean hasFilter = !filter.isEmpty();
-
-        ImGui.beginChild("##class_browser", 0, 0, false);
-        try {
-            for (Class<?> clazz : ClassInspector.getCommonClasses()) {
-                String className = clazz.getSimpleName();
-                String fullName = clazz.getName();
-                ClassInspector.ClassInfo info = ClassInspector.inspect(clazz);
-
-                boolean classMatches = className.toLowerCase().contains(filter)
-                        || fullName.toLowerCase().contains(filter);
-                boolean anyMethodMatches = false;
-                boolean anyFieldMatches = false;
-
-                if (!classMatches && hasFilter) {
-                    for (var m : info.methods()) {
-                        if (m.name().toLowerCase().contains(filter)
-                                || m.displayName().toLowerCase().contains(filter)) {
-                            anyMethodMatches = true;
-                            break;
-                        }
-                    }
-                    if (!anyMethodMatches) {
-                        for (var f : info.fields()) {
-                            if (f.name().toLowerCase().contains(filter)
-                                    || f.displayName().toLowerCase().contains(filter)) {
-                                anyFieldMatches = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                if (hasFilter && !classMatches && !anyMethodMatches && !anyFieldMatches) continue;
-
-                ImGui.pushID(fullName);
-
-                int flags = hasFilter && !classMatches ? ImGuiTreeNodeFlags.DefaultOpen : ImGuiTreeNodeFlags.None;
-                boolean open = ImGui.treeNodeEx(className, flags);
-                if (ImGui.isItemHovered()) ImGui.setTooltip(fullName);
-
-                if (open) {
-                    if (info.methods().length > 0) {
-                        int mFlags = hasFilter ? ImGuiTreeNodeFlags.DefaultOpen : ImGuiTreeNodeFlags.None;
-                        if (ImGui.treeNodeEx("Methods (" + info.methods().length + ")##" + fullName, mFlags)) {
-                            for (var method : info.methods()) {
-                                if (hasFilter && !classMatches && !method.name().toLowerCase().contains(filter)
-                                        && !method.displayName().toLowerCase().contains(filter)) continue;
-
-                                ClassMemberPayload payload = new ClassMemberPayload(
-                                        fullName, method.name(), "method",
-                                        method.paramTypes(), method.returnType()
-                                );
-                                String label = method.displayName();
-                                ImGui.pushID(label + method.name());
-
-                                if (ImGui.selectable(label)) {
-                                }
-                                if (ImGui.beginDragDropSource()) {
-                                    ImGui.setDragDropPayload("CLASS_MEMBER", payload);
-                                    ImGui.text("Method: " + className + "." + label);
-                                    ImGui.endDragDropSource();
-                                }
-                                if (ImGui.isItemHovered()) {
-                                    String ret = method.returnType().contains(".")
-                                            ? method.returnType().substring(method.returnType().lastIndexOf('.') + 1)
-                                            : method.returnType();
-                                    ImGui.setTooltip("Returns: " + ret);
-                                }
-                                ImGui.popID();
-                            }
-                            ImGui.treePop();
-                        }
-                    }
-
-                    if (info.fields().length > 0) {
-                        int fFlags = hasFilter ? ImGuiTreeNodeFlags.DefaultOpen : ImGuiTreeNodeFlags.None;
-                        if (ImGui.treeNodeEx("Fields (" + info.fields().length + ")##" + fullName, fFlags)) {
-                            for (var field : info.fields()) {
-                                if (hasFilter && !classMatches && !field.name().toLowerCase().contains(filter)
-                                        && !field.displayName().toLowerCase().contains(filter)) continue;
-
-                                ClassMemberPayload payload = new ClassMemberPayload(
-                                        fullName, field.name(), "field",
-                                        new String[0], field.type()
-                                );
-                                String label = field.displayName();
-                                ImGui.pushID(label);
-
-                                if (ImGui.selectable(label)) {
-                                }
-                                if (ImGui.beginDragDropSource()) {
-                                    ImGui.setDragDropPayload("CLASS_MEMBER", payload);
-                                    ImGui.text("Field: " + className + "." + field.name());
-                                    ImGui.endDragDropSource();
-                                }
-                                if (ImGui.isItemHovered()) {
-                                    String ft = field.type().contains(".")
-                                            ? field.type().substring(field.type().lastIndexOf('.') + 1)
-                                            : field.type();
-                                    ImGui.setTooltip("Type: " + ft);
-                                }
-                                ImGui.popID();
-                            }
-                            ImGui.treePop();
-                        }
-                    }
-
-                    ImGui.treePop();
-                }
-
-                ImGui.popID();
-            }
-        } finally {
-            ImGui.endChild();
-        }
+        ImGui.textDisabled("Class browser has been removed.");
     }
 
     private void renderSearchHeader() {

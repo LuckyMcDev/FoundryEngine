@@ -1,7 +1,5 @@
 package de.luckymcdev.foundryengine.api.event;
 
-import de.luckymcdev.foundryengine.common.blueprint.event.BuiltinNodes;
-import de.luckymcdev.foundryengine.common.event.BlueprintContexts;
 import de.luckymcdev.foundryengine.common.event.EventCallback;
 import de.luckymcdev.foundryengine.common.event.EventGroupHolder;
 import net.neoforged.bus.api.IEventBus;
@@ -11,20 +9,13 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.jetbrains.annotations.ApiStatus;
 
 public class ServerEvents {
-    public static final EventGroupHolder<ServerAboutToStartEvent> ABOUT_TO_START =
-            new EventGroupHolder<>(BuiltinNodes.EVENT_SERVER_ABOUT_TO_START, BlueprintContexts::serverAboutToStart);
-    public static final EventGroupHolder<ServerStartedEvent> STARTED =
-            new EventGroupHolder<>(BuiltinNodes.EVENT_SERVER_STARTED, BlueprintContexts::serverStarted);
-    public static final EventGroupHolder<ServerStartingEvent> STARTING =
-            new EventGroupHolder<>(BuiltinNodes.EVENT_SERVER_STARTING, BlueprintContexts::serverStarting);
-    public static final EventGroupHolder<ServerStoppedEvent> STOPPED =
-            new EventGroupHolder<>(BuiltinNodes.EVENT_SERVER_STOPPED, BlueprintContexts::serverStopped);
-    public static final EventGroupHolder<ServerStoppingEvent> STOPPING =
-            new EventGroupHolder<>(BuiltinNodes.EVENT_SERVER_STOPPING, BlueprintContexts::serverStopping);
-    public static final EventGroupHolder<ServerTickEvent.Post> TICK =
-            new EventGroupHolder<>(BuiltinNodes.EVENT_SERVER_TICK, BlueprintContexts::serverTick);
-    public static final EventGroupHolder<TagsUpdatedEvent> TAGS =
-            new EventGroupHolder<>(BuiltinNodes.EVENT_SERVER_TAGS, BlueprintContexts::serverTags);
+    public static final EventGroupHolder<ServerAboutToStartEvent> ABOUT_TO_START = new EventGroupHolder<>();
+    public static final EventGroupHolder<ServerStartedEvent> STARTED = new EventGroupHolder<>();
+    public static final EventGroupHolder<ServerStartingEvent> STARTING = new EventGroupHolder<>();
+    public static final EventGroupHolder<ServerStoppedEvent> STOPPED = new EventGroupHolder<>();
+    public static final EventGroupHolder<ServerStoppingEvent> STOPPING = new EventGroupHolder<>();
+    public static final EventGroupHolder<ServerTickEvent.Post> TICK = new EventGroupHolder<>();
+    public static final EventGroupHolder<TagsUpdatedEvent> TAGS = new EventGroupHolder<>();
 
     public static void aboutToStart(EventCallback<ServerAboutToStartEvent> cb) {
         ABOUT_TO_START.register(cb);
