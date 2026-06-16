@@ -130,6 +130,16 @@ public class ImGuiUtils {
         runnable.run();
     }
 
+    public static void redTextIf(String text, boolean condition) {
+        if (condition) {
+            ImGui.pushStyleColor(ImGuiCol.Text, 1.0f, 0.2f, 0.2f, 1.0f);
+        }
+        ImGui.text(text);
+        if (condition) {
+            ImGui.popStyleColor();
+        }
+    }
+
     /**
      * Displays an identifier with a dimmed namespace
      *
