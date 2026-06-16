@@ -10,7 +10,6 @@ import de.luckymcdev.foundryengine.client.editor.panel.TestPanel;
 import de.luckymcdev.foundryengine.client.editor.panel.cutscenes.CutscenePanel;
 import de.luckymcdev.foundryengine.client.editor.panel.cutscenes.CutsceneTimelinePanel;
 import de.luckymcdev.foundryengine.client.editor.panel.editor.AreaPanel;
-import de.luckymcdev.foundryengine.client.editor.panel.editor.BlueprintsPanel;
 import de.luckymcdev.foundryengine.client.editor.panel.editor.MainEditor;
 import de.luckymcdev.foundryengine.client.editor.panel.editor.RecipeEditorPanel;
 import de.luckymcdev.foundryengine.client.editor.panel.explorer.FileExplorerPanel;
@@ -156,7 +155,6 @@ public class FoundryEngineModClient {
         event.register(CataloguePanel.INSTANCE);
         event.register(ThemeSelectorPanel.INSTANCE);
         event.register(EffectPanel.INSTANCE);
-        event.register(BlueprintsPanel.INSTANCE);
         event.register(AreaPanel.INSTANCE);
         event.register(RecipeEditorPanel.INSTANCE);
         event.register(CutscenePanel.INSTANCE);

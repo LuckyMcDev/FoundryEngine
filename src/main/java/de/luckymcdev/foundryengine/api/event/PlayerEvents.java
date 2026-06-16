@@ -1,7 +1,5 @@
 package de.luckymcdev.foundryengine.api.event;
 
-import de.luckymcdev.foundryengine.common.blueprint.event.BuiltinNodes;
-import de.luckymcdev.foundryengine.common.event.BlueprintContexts;
 import de.luckymcdev.foundryengine.common.event.EventCallback;
 import de.luckymcdev.foundryengine.common.event.EventGroupHolder;
 import net.neoforged.bus.api.IEventBus;
@@ -14,24 +12,15 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import org.jetbrains.annotations.ApiStatus;
 
 public class PlayerEvents {
-    public static final EventGroupHolder<PlayerEvent.PlayerLoggedInEvent> LOGGED_IN =
-            new EventGroupHolder<>(BuiltinNodes.EVENT_PLAYER_LOGGED_IN, BlueprintContexts::playerLoggedIn);
-    public static final EventGroupHolder<PlayerEvent.PlayerLoggedOutEvent> LOGGED_OUT =
-            new EventGroupHolder<>(BuiltinNodes.EVENT_PLAYER_LOGGED_OUT, BlueprintContexts::playerLoggedOut);
-    public static final EventGroupHolder<PlayerTickEvent.Post> TICK =
-            new EventGroupHolder<>(BuiltinNodes.EVENT_PLAYER_TICK, BlueprintContexts::playerTick);
-    public static final EventGroupHolder<ServerChatEvent> CHAT =
-            new EventGroupHolder<>(BuiltinNodes.EVENT_PLAYER_CHAT, BlueprintContexts::playerChat);
-    public static final EventGroupHolder<AdvancementEvent.AdvancementEarnEvent> ADVANCEMENT =
-            new EventGroupHolder<>(BuiltinNodes.EVENT_PLAYER_ADVANCEMENT, BlueprintContexts::playerAdvancement);
-    public static final EventGroupHolder<PlayerContainerEvent.Close> CHEST_CLOSED =
-            new EventGroupHolder<>(BuiltinNodes.EVENT_CHEST_CLOSED, BlueprintContexts::chestClosed);
-    public static final EventGroupHolder<PlayerContainerEvent.Open> CHEST_OPENED =
-            new EventGroupHolder<>(BuiltinNodes.EVENT_CHEST_OPENED, BlueprintContexts::chestOpened);
-    public static final EventGroupHolder<PlayerEvent.PlayerRespawnEvent> RESPAWNED =
-            new EventGroupHolder<>(BuiltinNodes.EVENT_PLAYER_RESPAWNED, BlueprintContexts::playerRespawned);
-    public static final EventGroupHolder<ClientChatReceivedEvent> DECORATE_CHAT =
-            new EventGroupHolder<>(BuiltinNodes.EVENT_DECORATE_CHAT, BlueprintContexts::decorateChat);
+    public static final EventGroupHolder<PlayerEvent.PlayerLoggedInEvent> LOGGED_IN = new EventGroupHolder<>();
+    public static final EventGroupHolder<PlayerEvent.PlayerLoggedOutEvent> LOGGED_OUT = new EventGroupHolder<>();
+    public static final EventGroupHolder<PlayerTickEvent.Post> TICK = new EventGroupHolder<>();
+    public static final EventGroupHolder<ServerChatEvent> CHAT = new EventGroupHolder<>();
+    public static final EventGroupHolder<AdvancementEvent.AdvancementEarnEvent> ADVANCEMENT = new EventGroupHolder<>();
+    public static final EventGroupHolder<PlayerContainerEvent.Close> CHEST_CLOSED = new EventGroupHolder<>();
+    public static final EventGroupHolder<PlayerContainerEvent.Open> CHEST_OPENED = new EventGroupHolder<>();
+    public static final EventGroupHolder<PlayerEvent.PlayerRespawnEvent> RESPAWNED = new EventGroupHolder<>();
+    public static final EventGroupHolder<ClientChatReceivedEvent> DECORATE_CHAT = new EventGroupHolder<>();
 
     public static void loggedIn(EventCallback<PlayerEvent.PlayerLoggedInEvent> cb) {
         LOGGED_IN.register(cb);

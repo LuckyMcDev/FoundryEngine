@@ -1,7 +1,5 @@
 package de.luckymcdev.foundryengine.api.event;
 
-import de.luckymcdev.foundryengine.common.blueprint.event.BuiltinNodes;
-import de.luckymcdev.foundryengine.common.event.BlueprintContexts;
 import de.luckymcdev.foundryengine.common.event.EventCallback;
 import de.luckymcdev.foundryengine.common.event.EventGroupHolder;
 import net.neoforged.bus.api.IEventBus;
@@ -9,10 +7,8 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import org.jetbrains.annotations.ApiStatus;
 
 public class NetworkEvents {
-    public static final EventGroupHolder<PlayerEvent.PlayerLoggedInEvent> LOGIN =
-            new EventGroupHolder<>(BuiltinNodes.EVENT_NETWORK_LOGIN, BlueprintContexts::playerLoggedIn);
-    public static final EventGroupHolder<PlayerEvent.PlayerLoggedOutEvent> LOGOUT =
-            new EventGroupHolder<>(BuiltinNodes.EVENT_NETWORK_LOGOUT, BlueprintContexts::playerLoggedOut);
+    public static final EventGroupHolder<PlayerEvent.PlayerLoggedInEvent> LOGIN = new EventGroupHolder<>();
+    public static final EventGroupHolder<PlayerEvent.PlayerLoggedOutEvent> LOGOUT = new EventGroupHolder<>();
 
     public static void login(EventCallback<PlayerEvent.PlayerLoggedInEvent> cb) {
         LOGIN.register(cb);

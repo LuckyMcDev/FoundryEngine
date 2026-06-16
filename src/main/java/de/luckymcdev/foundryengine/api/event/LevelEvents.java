@@ -1,7 +1,5 @@
 package de.luckymcdev.foundryengine.api.event;
 
-import de.luckymcdev.foundryengine.common.blueprint.event.BuiltinNodes;
-import de.luckymcdev.foundryengine.common.event.BlueprintContexts;
 import de.luckymcdev.foundryengine.common.event.EventCallback;
 import de.luckymcdev.foundryengine.common.event.EventGroupHolder;
 import net.neoforged.bus.api.IEventBus;
@@ -11,18 +9,12 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import org.jetbrains.annotations.ApiStatus;
 
 public class LevelEvents {
-    public static final EventGroupHolder<LevelEvent.Load> LOAD =
-            new EventGroupHolder<>(BuiltinNodes.EVENT_LEVEL_LOAD, BlueprintContexts::levelLoad);
-    public static final EventGroupHolder<LevelEvent.Unload> UNLOAD =
-            new EventGroupHolder<>(BuiltinNodes.EVENT_LEVEL_UNLOAD, BlueprintContexts::levelUnload);
-    public static final EventGroupHolder<LevelEvent.Save> SAVE =
-            new EventGroupHolder<>(BuiltinNodes.EVENT_LEVEL_SAVE, BlueprintContexts::levelSave);
-    public static final EventGroupHolder<LevelTickEvent.Post> TICK =
-            new EventGroupHolder<>(BuiltinNodes.EVENT_LEVEL_TICK, BlueprintContexts::levelTick);
-    public static final EventGroupHolder<ExplosionEvent.Start> BEFORE_EXPLOSION =
-            new EventGroupHolder<>(BuiltinNodes.EVENT_BEFORE_EXPLOSION, BlueprintContexts::beforeExplosion);
-    public static final EventGroupHolder<ExplosionEvent.Detonate> AFTER_EXPLOSION =
-            new EventGroupHolder<>(BuiltinNodes.EVENT_AFTER_EXPLOSION, BlueprintContexts::afterExplosion);
+    public static final EventGroupHolder<LevelEvent.Load> LOAD = new EventGroupHolder<>();
+    public static final EventGroupHolder<LevelEvent.Unload> UNLOAD = new EventGroupHolder<>();
+    public static final EventGroupHolder<LevelEvent.Save> SAVE = new EventGroupHolder<>();
+    public static final EventGroupHolder<LevelTickEvent.Post> TICK = new EventGroupHolder<>();
+    public static final EventGroupHolder<ExplosionEvent.Start> BEFORE_EXPLOSION = new EventGroupHolder<>();
+    public static final EventGroupHolder<ExplosionEvent.Detonate> AFTER_EXPLOSION = new EventGroupHolder<>();
 
     public static void load(EventCallback<LevelEvent.Load> cb) {
         LOAD.register(cb);
