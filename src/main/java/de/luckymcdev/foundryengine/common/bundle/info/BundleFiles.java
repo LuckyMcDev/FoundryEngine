@@ -17,9 +17,10 @@ import java.util.List;
  * @param assets        the assets path of a bundle
  * @param data          the data path of a bundle
  * @param scripts       the ScriptFiles data of a bundle
+ * @param graphs        the GraphFiles data of a bundle
  * @param zipFileSystem the file system used to open a bundle if its a zip file.
  */
-public record BundleFiles(Path root, Path assets, Path data, ScriptFiles scripts, Path saves,
+public record BundleFiles(Path root, Path assets, Path data, ScriptFiles scripts, Path saves, GraphFiles graphs,
                           @Nullable FileSystem zipFileSystem) {
     private static final Codec<Path> PATH_CODEC = Codec.STRING.xmap(Paths::get, Path::toString);
     public static final Codec<BundleFiles> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -27,8 +28,9 @@ public record BundleFiles(Path root, Path assets, Path data, ScriptFiles scripts
             PATH_CODEC.fieldOf("assets").forGetter(BundleFiles::assets),
             PATH_CODEC.fieldOf("data").forGetter(BundleFiles::data),
             ScriptFiles.CODEC.fieldOf("scripts").forGetter(BundleFiles::scripts),
-            PATH_CODEC.fieldOf("saves").forGetter(BundleFiles::saves)
-    ).apply(instance, (root, assets, data, scripts, saves) -> new BundleFiles(root, assets, data, scripts, saves, null)));
+            PATH_CODEC.fieldOf("saves").forGetter(BundleFiles::saves),
+            GraphFiles.CODEC.fieldOf("graphs").forGetter(BundleFiles::graphs)
+    ).apply(instance, (root, assets, data, scripts, saves, graphs) -> new BundleFiles(root, assets, data, scripts, saves, graphs, null)));
 
     public static BundleFilesBuilder builder() {
         return new BundleFilesBuilder();
@@ -42,6 +44,10 @@ public record BundleFiles(Path root, Path assets, Path data, ScriptFiles scripts
         return scripts.collection().size();
     }
 
+    public int graphCount() {
+        return graphs.collection().size();
+    }
+
     public record ScriptFiles(Path root, Path client, Path common, Path server, List<Path> collection) {
         public static final Codec<ScriptFiles> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 PATH_CODEC.fieldOf("root").forGetter(ScriptFiles::root),
@@ -50,5 +56,12 @@ public record BundleFiles(Path root, Path assets, Path data, ScriptFiles scripts
                 PATH_CODEC.fieldOf("server").forGetter(ScriptFiles::server),
                 PATH_CODEC.listOf().fieldOf("collection").forGetter(ScriptFiles::collection)
         ).apply(instance, ScriptFiles::new));
+    }
+
+    public record GraphFiles(Path root, List<Path> collection) {
+        public static final Codec<GraphFiles> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                PATH_CODEC.fieldOf("root").forGetter(GraphFiles::root),
+                PATH_CODEC.listOf().fieldOf("collection").forGetter(GraphFiles::collection)
+        ).apply(instance, GraphFiles::new));
     }
 }

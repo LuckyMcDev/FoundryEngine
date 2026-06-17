@@ -42,9 +42,16 @@ public class BundleFilesBuilder {
                 List.copyOf(scriptCollection)
         );
 
+        Path graphsRoot = root.resolve("graphs");
+        List<Path> graphCollection = findGraphs(graphsRoot);
+        BundleFiles.GraphFiles graphFiles = new BundleFiles.GraphFiles(
+                graphsRoot,
+                List.copyOf(graphCollection)
+        );
+
         Path saves = root.resolve("saves");
 
-        return new BundleFiles(root, assets, data, scriptFiles, saves, zipFs);
+        return new BundleFiles(root, assets, data, scriptFiles, saves, graphFiles, zipFs);
     }
 
     private List<Path> findScripts(final Path directory) {
@@ -59,6 +66,22 @@ public class BundleFilesBuilder {
                     .toList();
         } catch (IOException e) {
             LOGGER.error("Failed to find scripts in: {}", directory, e);
+            return Collections.emptyList();
+        }
+    }
+
+    private List<Path> findGraphs(final Path directory) {
+        if (!Files.exists(directory) || !Files.isDirectory(directory)) {
+            return Collections.emptyList();
+        }
+
+        try (Stream<Path> files = Files.walk(directory)) {
+            return files
+                    .filter(Files::isRegularFile)
+                    .filter(f -> f.getFileName().toString().endsWith(".fgraph"))
+                    .toList();
+        } catch (IOException e) {
+            LOGGER.error("Failed to find graphs in: {}", directory, e);
             return Collections.emptyList();
         }
     }

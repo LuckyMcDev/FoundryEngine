@@ -12,21 +12,17 @@ import java.util.List;
 public class NodeTestPanel extends EditorPanel {
     public static final NodeTestPanel INSTANCE = new NodeTestPanel();
 
-    private final NodeEditorInstance<Double> editor;
-    private final NodeBuilder<Double> rootEvalBuilder;
+    private final NodeEditorInstance editor;
+    private final NodeBuilder rootEvalBuilder;
 
     protected NodeTestPanel() {
         super(Common.id("node_test_panel"), "Node Test Panel", ImIcons.FA.FA_BLUETOOTH, PanelCategory.EDITOR);
 
-        // Use the predefined DOUBLE type
-        NodePinType<Double> doubleType = NodeTypes.DOUBLE;
+        editor = new NodeEditorInstance(NodeTypes.DOUBLE);
 
-        editor = new NodeEditorInstance<>(doubleType);
-
-        // Root evaluator – simply evaluates the root's input link
-        rootEvalBuilder = new NodeBuilder<>() {
+        rootEvalBuilder = new NodeBuilder() {
             @Override
-            public List<NodePin<Double>> getPins() {
+            public List<NodePin> getPins() {
                 return List.of();
             }
 
@@ -36,7 +32,7 @@ public class NodeTestPanel extends EditorPanel {
             }
 
             @Override
-            public Double evaluate() {
+            public Object evaluate() {
                 var rootInput = editor.root.inputPins.get(0);
                 if (rootInput.inputLink != null) {
                     return rootInput.inputLink.node.builder.evaluate();
@@ -50,7 +46,7 @@ public class NodeTestPanel extends EditorPanel {
             }
 
             @Override
-            public void setNode(Node<Double> node) {}
+            public void setNode(Node node) {}
         };
 
         editor.rootBuilder = rootEvalBuilder;
@@ -60,10 +56,8 @@ public class NodeTestPanel extends EditorPanel {
     public void content() {
         beginContent();
 
-        // Render the node editor
         editor.content();
 
-        // Show final result
         ImGui.separator();
         ImGui.text("Final value: " + editor.rootBuilder.evaluate());
 

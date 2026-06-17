@@ -3,18 +3,18 @@ package de.luckymcdev.foundryengine.client.node;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Node<T> {
-    public final List<NodePinInfo<T>> inputPins;
-    public final List<NodePinInfo<T>> outputPins;
+public class Node {
+    public final List<NodePinInfo> inputPins;
+    public final List<NodePinInfo> outputPins;
     public int id;
     public boolean selected;
-    public NodeBuilder<T> builder;
+    public NodeBuilder builder;
 
-    public Node(List<NodePin<T>> pins) {
+    public Node(List<NodePin> pins) {
         this.inputPins = new ArrayList<>(1);
         this.outputPins = new ArrayList<>(1);
         for (var pin : pins) {
-            var pinInfo = new NodePinInfo<>(this, pin);
+            var pinInfo = new NodePinInfo(this, pin);
             if (pin.connectionType() == NodePinConnectionType.OUTPUT) {
                 outputPins.add(pinInfo);
             } else {
@@ -23,10 +23,7 @@ public class Node<T> {
         }
     }
 
-    /**
-     * Set builder and give it a back-reference.
-     */
-    public void setBuilder(NodeBuilder<T> builder) {
+    public void setBuilder(NodeBuilder builder) {
         this.builder = builder;
         builder.setNode(this);
     }

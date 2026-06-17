@@ -4,37 +4,26 @@ import de.luckymcdev.foundryengine.client.node.*;
 import imgui.ImGui;
 import java.util.List;
 
-public class ConstantBuilder implements NodeBuilder<Double> {
-    private double value = 0.0;
-    private Node<Double> node;
+public class ConstantBuilder implements NodeBuilder {
+    private final float[] value = {0F};
 
     @Override
-    public List<NodePin<Double>> getPins() {
-        return List.of(
-                new NodePin<>(NodeTypes.DOUBLE, "Out", NodePinConnectionType.OUTPUT, NodePinShape.FILLED_CIRCLE)
-        );
+    public List<NodePin> getPins() {
+        return List.of(NodeTypes.DOUBLE.output("Out").withShape(NodePinShape.FILLED_CIRCLE));
     }
 
     @Override
     public boolean render() {
-        float[] val = {(float) value};
-        boolean changed = ImGui.sliderFloat("Value", val, -10f, 10f);
-        if (changed) value = val[0];
-        return changed;
+        return ImGui.sliderFloat("Value", value, -10F, 10F);
     }
 
     @Override
-    public Double evaluate() {
-        return value;
+    public Object evaluate() {
+        return (double) value[0];
     }
 
     @Override
     public String getDisplayName() {
         return "Constant";
-    }
-
-    @Override
-    public void setNode(Node<Double> node) {
-        this.node = node;
     }
 }

@@ -6,6 +6,7 @@ import de.luckymcdev.foundryengine.client.command.FoundryCommandsClient;
 import de.luckymcdev.foundryengine.client.debug.screen.BundleDebugEntry;
 import de.luckymcdev.foundryengine.client.debug.screen.GameStagesDebugEntry;
 import de.luckymcdev.foundryengine.client.editor.event.RegisterPanelEvent;
+import de.luckymcdev.foundryengine.client.editor.panel.GraphEditorPanel;
 import de.luckymcdev.foundryengine.client.editor.panel.NodeTestPanel;
 import de.luckymcdev.foundryengine.client.editor.panel.TestPanel;
 import de.luckymcdev.foundryengine.client.editor.panel.cutscenes.CutscenePanel;
@@ -162,6 +163,7 @@ public class FoundryEngineModClient {
         event.register(CutsceneTimelinePanel.INSTANCE);
         event.register(WaypointPanel.INSTANCE);
         event.register(NodeTestPanel.INSTANCE);
+        event.register(new GraphEditorPanel());
     }
 
     private void addClientReloadListener(AddClientReloadListenersEvent event) {

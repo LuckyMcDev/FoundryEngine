@@ -4,15 +4,15 @@ import de.luckymcdev.foundryengine.client.node.*;
 import imgui.ImGui;
 import java.util.List;
 
-public class AddBuilder implements NodeBuilder<Double> {
-    private Node<Double> node;
+public class AddBuilder implements NodeBuilder {
+    private Node node;
 
     @Override
-    public List<NodePin<Double>> getPins() {
+    public List<NodePin> getPins() {
         return List.of(
-                new NodePin<>(NodeTypes.DOUBLE, "A", NodePinConnectionType.REQUIRED_INPUT, NodePinShape.TRIANGLE),
-                new NodePin<>(NodeTypes.DOUBLE, "B", NodePinConnectionType.REQUIRED_INPUT, NodePinShape.TRIANGLE),
-                new NodePin<>(NodeTypes.DOUBLE, "Out", NodePinConnectionType.OUTPUT, NodePinShape.FILLED_TRIANGLE)
+                new NodePin(NodeTypes.DOUBLE.type, "A", NodePinConnectionType.REQUIRED_INPUT, NodePinShape.TRIANGLE),
+                new NodePin(NodeTypes.DOUBLE.type, "B", NodePinConnectionType.REQUIRED_INPUT, NodePinShape.TRIANGLE),
+                new NodePin(NodeTypes.DOUBLE.type, "Out", NodePinConnectionType.OUTPUT, NodePinShape.FILLED_TRIANGLE)
         );
     }
 
@@ -23,14 +23,14 @@ public class AddBuilder implements NodeBuilder<Double> {
     }
 
     @Override
-    public Double evaluate() {
+    public Object evaluate() {
         var inputs = node.inputPins;
         if (inputs.size() < 2) return 0.0;
         var leftLink = inputs.get(0).inputLink;
         var rightLink = inputs.get(1).inputLink;
         if (leftLink == null || rightLink == null) return 0.0;
-        Double leftVal = leftLink.node.builder.evaluate();
-        Double rightVal = rightLink.node.builder.evaluate();
+        var leftVal = (Double) leftLink.node.builder.evaluate();
+        var rightVal = (Double) rightLink.node.builder.evaluate();
         return leftVal + rightVal;
     }
 
@@ -40,7 +40,7 @@ public class AddBuilder implements NodeBuilder<Double> {
     }
 
     @Override
-    public void setNode(Node<Double> node) {
+    public void setNode(Node node) {
         this.node = node;
     }
 }
