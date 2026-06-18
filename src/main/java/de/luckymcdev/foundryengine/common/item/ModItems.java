@@ -1,7 +1,7 @@
 package de.luckymcdev.foundryengine.common.item;
 
-import de.luckymcdev.foundryengine.api.builder.item.ItemBuilder;
 import de.luckymcdev.foundryengine.common.Common;
+import de.luckymcdev.foundryengine.common.builder.item.ItemBuilder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.registries.RegisterEvent;

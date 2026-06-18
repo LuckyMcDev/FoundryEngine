@@ -1,16 +1,16 @@
 package de.luckymcdev.foundryengine.common.data;
 
 import com.mojang.logging.LogUtils;
-import de.luckymcdev.foundryengine.api.builder.block.BlockBuilder;
-import de.luckymcdev.foundryengine.api.builder.item.ItemBuilder;
-import de.luckymcdev.foundryengine.api.builder.recipe.RecipeBuilder;
-import de.luckymcdev.foundryengine.api.event.data.BundleDataGenEvent;
-import de.luckymcdev.foundryengine.api.event.registry.RegistryEvent;
 import de.luckymcdev.foundryengine.client.data.providers.*;
 import de.luckymcdev.foundryengine.common.Common;
-import de.luckymcdev.foundryengine.common.builder.sound.SoundBuilderImpl;
+import de.luckymcdev.foundryengine.common.builder.block.BlockBuilder;
+import de.luckymcdev.foundryengine.common.builder.item.ItemBuilder;
+import de.luckymcdev.foundryengine.common.builder.recipe.RecipeBuilder;
+import de.luckymcdev.foundryengine.common.builder.sound.SoundBuilder;
 import de.luckymcdev.foundryengine.common.bundle.Bundle;
 import de.luckymcdev.foundryengine.common.bundle.BundleExceptionHandler;
+import de.luckymcdev.foundryengine.common.event.data.BundleDataGenEvent;
+import de.luckymcdev.foundryengine.common.event.registry.RegistryEvent;
 import de.luckymcdev.foundryengine.server.data.providers.EngineGlobalLootModifierProvider;
 import de.luckymcdev.foundryengine.server.data.providers.adv.EngineAdvancementProvider;
 import de.luckymcdev.foundryengine.server.data.providers.adv.EngineAdvancementSubProvider;
@@ -102,7 +102,7 @@ public class BundleDataGenerator {
                 .filter(b -> b.getId().getNamespace().equals(namespace) && b.shouldGenerateData())
                 .collect(Collectors.toList());
 
-        List<SoundBuilderImpl> soundBuilders = RegistryEvent.getSoundBuilders().stream()
+        List<SoundBuilder> soundBuilders = RegistryEvent.getSoundBuilders().stream()
                 .filter(b -> b.getId().getNamespace().equals(namespace) && b.shouldGenerateData())
                 .collect(Collectors.toList());
 

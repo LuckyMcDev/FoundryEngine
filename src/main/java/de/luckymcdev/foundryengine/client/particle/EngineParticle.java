@@ -1,6 +1,5 @@
 package de.luckymcdev.foundryengine.client.particle;
 
-import de.luckymcdev.foundryengine.api.builder.particle.ParticleLayer;
 import de.luckymcdev.foundryengine.client.particle.data.GenericParticleData;
 import de.luckymcdev.foundryengine.client.particle.data.ParticleContext;
 import de.luckymcdev.foundryengine.common.util.color.Color;

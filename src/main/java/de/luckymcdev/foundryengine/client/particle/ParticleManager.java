@@ -1,8 +1,7 @@
 package de.luckymcdev.foundryengine.client.particle;
 
-import de.luckymcdev.foundryengine.api.builder.particle.ParticleBuilder;
 import de.luckymcdev.foundryengine.client.Client;
-import de.luckymcdev.foundryengine.common.builder.particle.ParticleBuilderImpl;
+import de.luckymcdev.foundryengine.common.builder.particle.ParticleBuilder;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.core.particles.SimpleParticleType;
 import org.joml.Vector3d;
@@ -13,10 +12,8 @@ public class ParticleManager {
      * Spawns a particle at the position provided by the first keyframe of the position data.
      */
     public void spawn(ParticleBuilder builder) {
-        ParticleBuilderImpl impl = (ParticleBuilderImpl) builder;
-
-        Vector3d startPos = impl.getPositionData().getSequence().getFirstValue();
-        Vector3d startVel = impl.getVelocityData().getSequence().getFirstValue();
+        Vector3d startPos = builder.getPositionData().getSequence().getFirstValue();
+        Vector3d startVel = builder.getVelocityData().getSequence().getFirstValue();
 
         if (startPos == null) startPos = new Vector3d(0, 0, 0);
         if (startVel == null) startVel = new Vector3d(0, 0, 0);
@@ -29,11 +26,10 @@ public class ParticleManager {
     }
 
     public void spawn(ParticleBuilder builder, double x, double y, double z, double vx, double vy, double vz) {
-        ParticleBuilderImpl impl = (ParticleBuilderImpl) builder;
 
         // Use the Minecraft particle engine to create the instance
         Particle particle = Client.getMc().particleEngine.createParticle(
-                (SimpleParticleType) impl.get(),
+                (SimpleParticleType) builder.get(),
                 x, y, z,
                 vx, vy, vz
         );

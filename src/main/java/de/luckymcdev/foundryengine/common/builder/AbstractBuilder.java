@@ -1,10 +1,9 @@
 package de.luckymcdev.foundryengine.common.builder;
 
-import de.luckymcdev.foundryengine.api.builder.BuilderBase;
 import net.minecraft.resources.Identifier;
 import org.jspecify.annotations.Nullable;
 
-public abstract class AbstractBuilder<T> implements BuilderBase<T> {
+public abstract class AbstractBuilder<T> {
     protected final Identifier id;
     protected boolean generateData = true;
     protected @Nullable T object;
@@ -13,7 +12,6 @@ public abstract class AbstractBuilder<T> implements BuilderBase<T> {
         this.id = id;
     }
 
-    @Override
     public T get() {
         if (object == null) {
             throw new IllegalStateException(id + " has not been registered yet");
@@ -21,7 +19,8 @@ public abstract class AbstractBuilder<T> implements BuilderBase<T> {
         return object;
     }
 
-    @Override
+    protected abstract T build();
+
     public T getOrCreate() {
         if (object == null) {
             object = build();
@@ -29,12 +28,10 @@ public abstract class AbstractBuilder<T> implements BuilderBase<T> {
         return object;
     }
 
-    @Override
     public Identifier getId() {
         return id;
     }
 
-    @Override
     public Identifier newID(String pre, String post) {
         if (pre.isEmpty() && post.isEmpty()) {
             return id;
@@ -42,7 +39,6 @@ public abstract class AbstractBuilder<T> implements BuilderBase<T> {
         return id.withPath(pre + id.getPath() + post);
     }
 
-    @Override
     public boolean shouldGenerateData() {
         return generateData;
     }

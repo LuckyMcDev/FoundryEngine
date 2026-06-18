@@ -1,8 +1,8 @@
 package de.luckymcdev.foundryengine.common.bundle;
 
 import com.mojang.logging.LogUtils;
-import de.luckymcdev.foundryengine.api.event.*;
 import de.luckymcdev.foundryengine.common.Common;
+import de.luckymcdev.foundryengine.common.event.*;
 import de.luckymcdev.foundryengine.common.registry.GenericRegistry;
 import de.luckymcdev.foundryengine.common.script.BundleScriptLoader;
 import net.minecraft.commands.CommandBuildContext;

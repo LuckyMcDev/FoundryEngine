@@ -1,13 +1,13 @@
 package de.luckymcdev.foundryengine;
 
 import com.mojang.logging.LogUtils;
-import de.luckymcdev.foundryengine.api.event.*;
-import de.luckymcdev.foundryengine.api.event.modification.BlockModificationEvent;
-import de.luckymcdev.foundryengine.api.event.modification.ItemModificationEvent;
-import de.luckymcdev.foundryengine.api.event.registry.RegistryEvent;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.cutscene.util.ServerScreenEffectManager;
 import de.luckymcdev.foundryengine.common.data.BundleDataGenerator;
+import de.luckymcdev.foundryengine.common.event.*;
+import de.luckymcdev.foundryengine.common.event.modification.BlockModificationEvent;
+import de.luckymcdev.foundryengine.common.event.modification.ItemModificationEvent;
+import de.luckymcdev.foundryengine.common.event.registry.RegistryEvent;
 import de.luckymcdev.foundryengine.common.item.ModItems;
 import de.luckymcdev.foundryengine.common.log.EngineLogAppender;
 import de.luckymcdev.foundryengine.common.network.packets.BundleHashPacket;

@@ -1,6 +1,6 @@
 package de.luckymcdev.foundryengine.server.data.providers.recipe;
 
-import de.luckymcdev.foundryengine.api.builder.recipe.RecipeBuilder;
+import de.luckymcdev.foundryengine.common.builder.recipe.RecipeBuilder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.RecipeOutput;

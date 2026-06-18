@@ -1,8 +1,8 @@
 package de.luckymcdev.foundryengine.client.data.providers;
 
-import de.luckymcdev.foundryengine.api.builder.block.BlockBuilder;
-import de.luckymcdev.foundryengine.api.builder.item.ItemBuilder;
-import de.luckymcdev.foundryengine.common.builder.sound.SoundBuilderImpl;
+import de.luckymcdev.foundryengine.common.builder.block.BlockBuilder;
+import de.luckymcdev.foundryengine.common.builder.item.ItemBuilder;
+import de.luckymcdev.foundryengine.common.builder.sound.SoundBuilder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.Identifier;
@@ -16,9 +16,9 @@ public class EngineLanguageProvider extends LanguageProvider {
     private final String namespace;
     private final List<BlockBuilder> blockBuilders;
     private final List<ItemBuilder> itemBuilders;
-    private final List<SoundBuilderImpl> soundBuilders;
+    private final List<SoundBuilder> soundBuilders;
 
-    public EngineLanguageProvider(PackOutput output, String locale, String namespace, List<BlockBuilder> blockBuilders, List<ItemBuilder> itemBuilders, List<SoundBuilderImpl> soundBuilders) {
+    public EngineLanguageProvider(PackOutput output, String locale, String namespace, List<BlockBuilder> blockBuilders, List<ItemBuilder> itemBuilders, List<SoundBuilder> soundBuilders) {
         super(output, namespace, locale);
         this.namespace = namespace;
         this.blockBuilders = blockBuilders;
@@ -89,7 +89,7 @@ public class EngineLanguageProvider extends LanguageProvider {
             add("item.minecraft.tipped_arrow.effect." + id.getPath(), name);
         }
 
-        for (SoundBuilderImpl builder : soundBuilders) {
+        for (SoundBuilder builder : soundBuilders) {
             Identifier id = builder.getId();
             add("sound_event." + id.getNamespace() + "." + id.getPath(), formatTitleCase(id.getPath()));
         }

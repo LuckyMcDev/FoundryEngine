@@ -1,6 +1,6 @@
 package de.luckymcdev.foundryengine.common.bundle.registry;
 
-import de.luckymcdev.foundryengine.api.builder.recipe.RecipeResult;
+import de.luckymcdev.foundryengine.common.builder.recipe.RecipeResult;
 import de.luckymcdev.foundryengine.common.registry.EngineRegistries;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleType;
