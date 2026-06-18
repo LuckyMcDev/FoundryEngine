@@ -1,7 +1,7 @@
 package de.luckymcdev.foundryengine.client.data.providers;
 
-import de.luckymcdev.foundryengine.api.builder.block.BlockBuilder;
-import de.luckymcdev.foundryengine.api.builder.item.ItemBuilder;
+import de.luckymcdev.foundryengine.common.builder.block.BlockBuilder;
+import de.luckymcdev.foundryengine.common.builder.item.ItemBuilder;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.client.data.models.ItemModelOutput;
