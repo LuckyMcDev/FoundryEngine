@@ -32,6 +32,10 @@ public final class ClientConfig extends EngineConfig {
                     .comment("If they are larger, the game takes longer to create them.")
                     .defineInRange("ICON_SIZE", 64, 16, 256);
 
+    public static final ModConfigSpec.BooleanValue SHOW_SLOT_TOOLTIP =
+            BUILDER.comment("If slot tooltips are shown")
+                    .define("SHOW_SLOT_TOOLTIP", true);
+
     public static final ModConfigSpec.ConfigValue<String> BLOCK_ENTITY_RENDER_DISTANCE =
             BUILDER.comment("From how far away Block entities are rendered.")
                     .comment("There are 3 modes. full, half, vanilla")

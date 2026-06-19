@@ -363,5 +363,6 @@ public class FoundryEngineMod {
         ServerEvents.Internal.register(BUS);
         StageEvents.Internal.register(BUS);
         GameEvents.Internal.register(BUS);
+        SlotEvents.Internal.register(BUS);
     }
 }

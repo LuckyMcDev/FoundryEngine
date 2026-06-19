@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Shared constants and singleton managers for FoundryEngine.
@@ -53,6 +55,7 @@ public final class Common {
     private static final SavedDataManager SAVED_DATA_MANAGER = new SavedDataManager();
     private static final WaypointManager WAYPOINT_MANAGER = new WaypointManager();
     private static final GameManager GAME_MANAGER = new GameManager();
+    private static final List<Runnable> EVENT_CLEARERS = new ArrayList<>();
 
     static {
         BUNDLE_MANAGER.getLifecycleDispatcher().register(new BundleSavePathListener());
@@ -125,6 +128,16 @@ public final class Common {
 
     public static <T extends Event> T post(EventPriority priority, T event) {
         return NeoForge.EVENT_BUS.post(priority, event);
+    }
+
+    public static void registerEventClear(Runnable clearer) {
+        EVENT_CLEARERS.add(clearer);
+    }
+
+    public static void clearEvents() {
+        for (var clearer : EVENT_CLEARERS) {
+            clearer.run();
+        }
     }
 
     static Path dir(Path path) {
