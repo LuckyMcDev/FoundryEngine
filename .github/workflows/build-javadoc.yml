@@ -2,6 +2,7 @@ name: Build Javadoc
 
 on:
   workflow_call:
+  workflow_dispatch:
 
 jobs:
   build:
