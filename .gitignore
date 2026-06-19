@@ -14,10 +14,6 @@ Thumbs.db
 [Dd]esktop.ini
 $RECYCLE.BIN/
 
-# Other
-/.opencode/
-/AGENTS.md
-
 # Gradle & Java
 .gradle/
 build/
