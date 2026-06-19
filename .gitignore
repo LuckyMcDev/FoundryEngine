@@ -58,3 +58,4 @@ docs/.vitepress/cache/
 *.zip
 *.tar.gz
 *.rar
+opencode.json
