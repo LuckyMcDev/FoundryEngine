@@ -19,13 +19,24 @@ src/main/java/de/luckymcdev/foundryengine/
 - Two event buses: `NeoForge.EVENT_BUS` + mod event bus
 - Identifiers via `Common.id("path")`
 
-## Navigation protocol (IMPORTANT — read first)
-Use **IntelliJ MCP tools** for all code navigation. Do not grep/read JARs or search the filesystem for class definitions.
+## Navigation protocol ⚠️ (MUST READ FIRST — strict ordering)
 
-- **Mixin-prefixed tools are most accurate** — prefer them for symbol resolution: `mixinReferences`, `mixinImplementations`, `mixinSuperCall`, `mixinUsages`
-- Other preferred tools: `references`, `implementations`, `superCall`, `usages`, `hierarchy`
-- Only use text search (grep/glob) as a last resort
-- MCP calls are precious — batch reads, don't re-read files you already have
+### 1. ALWAYS use IntelliJ tools first (in this order):
+- `intellij_search_symbol` — symbol lookup (classes, methods, fields)
+- `intellij_search_in_files_by_text` / `intellij_search_in_files_by_regex` — text/symbol search across files
+- `intellij_read_file` — read file contents
+- `intellij_get_symbol_info` — quick documentation / declaration at cursor
+- `intellij_find_files_by_glob` / `intellij_find_files_by_name_keyword` — file discovery
+- `intellij_get_file_problems` — error checking after edits
+- `intellij_build_project` — compile/verify after edits
+
+### 2. ONLY fall back to grep/glob/read if:
+- IntelliJ tools are unavailable or fail
+
+**Banned shortcuts**: Do NOT jump to grep/glob/read filesystem tools for Java code before trying IntelliJ tools first.
+
+### 3. Other rules
+- Batch reads — don't re-read files you already have
 - If you need info the user can provide quickly, ask instead of burning calls
 - Always pass the `project` parameter where tools require it
 
@@ -45,8 +56,6 @@ Use **IntelliJ MCP tools** for all code navigation. Do not grep/read JARs or sea
 | `./gradlew.bat gameTestServer`      | Game test server                     |
 | `./gradlew.bat test`                | JUnit 5 tests                        |
 | `./gradlew.bat runData`             | Generate resources                   |
-| `./gradlew.bat publish`             | Local Maven publish                  |
-| `./gradlew.bat publishMods`         | CurseForge/Modrinth (ALPHA, dry-run) |
 | `npm run docs:dev/docs:build`       | VitePress docs                       |
 
 ## Generated code
