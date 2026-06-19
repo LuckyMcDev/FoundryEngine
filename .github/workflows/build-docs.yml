@@ -1,0 +1,38 @@
+name: Build and Deploy Docs
+
+on:
+  workflow_call:
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run docs:build
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+      - uses: gradle/actions/setup-gradle@v5
+      - run: chmod +x gradlew
+      - run: ./gradlew javadoc
+
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: |
+            docs/.vitepress/dist
+            build/docs
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

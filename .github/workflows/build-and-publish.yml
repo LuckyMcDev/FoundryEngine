@@ -1,0 +1,70 @@
+name: Build and Publish Mod
+
+on:
+  workflow_call:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+      - uses: gradle/actions/setup-gradle@v5
+      - run: chmod +x gradlew
+
+      - name: Install git-cliff
+        run: |
+          curl -sL https://github.com/orhun/git-cliff/releases/latest/download/git-cliff-x86_64-unknown-linux-gnu.tar.gz | tar xz
+          sudo mv git-cliff /usr/local/bin/
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          PREV_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          if [ -z "$PREV_TAG" ]; then
+            git-cliff --unreleased -o CHANGELOG.md
+          else
+            git-cliff "$PREV_TAG..HEAD" -o CHANGELOG.md
+          fi
+
+      - name: Bump patch version
+        run: ./gradlew bumpVersion
+
+      - name: Read bumped version
+        id: version
+        run: echo "version=${NEW_VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Add version title
+        run: |
+          echo -e "# Version ${{ steps.version.outputs.version }}\n$(cat CHANGELOG.md)" > CHANGELOG.md
+
+      - name: Commit version bump
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add gradle.properties
+          git commit -m "chore: bump version to ${{ steps.version.outputs.version }} [skip ci]"
+          git tag "v${{ steps.version.outputs.version }}"
+          git push origin HEAD:master
+          git push origin "v${{ steps.version.outputs.version }}"
+
+      - name: Set changelog env
+        run: |
+          echo "CHANGELOG<<EOF" >> "$GITHUB_ENV"
+          cat CHANGELOG.md >> "$GITHUB_ENV"
+          echo "EOF" >> "$GITHUB_ENV"
+
+      - name: Build project
+        run: ./gradlew build
+
+      - name: Publish to GitHub
+        run: ./gradlew publishMods
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
