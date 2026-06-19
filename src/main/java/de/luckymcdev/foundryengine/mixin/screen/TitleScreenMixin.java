@@ -1,6 +1,6 @@
 package de.luckymcdev.foundryengine.mixin.screen;
 
-import de.luckymcdev.foundryengine.common.event.TitleScreenModifyEvent;
+import de.luckymcdev.foundryengine.common.event.modification.TitleScreenModificationEvent;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.neoforged.neoforge.common.NeoForge;
@@ -21,7 +21,7 @@ public abstract class TitleScreenMixin {
     )
     private Button.OnPress wrapSingleplayerCallback(Button.OnPress original) {
         return button -> {
-            TitleScreenModifyEvent event = new TitleScreenModifyEvent(TitleScreenModifyEvent.ButtonType.SINGLEPLAYER);
+            TitleScreenModificationEvent event = new TitleScreenModificationEvent(TitleScreenModificationEvent.ButtonType.SINGLEPLAYER);
             NeoForge.EVENT_BUS.post(event);
             if (event.isCanceled()) return;
             original.onPress(button);
@@ -39,7 +39,7 @@ public abstract class TitleScreenMixin {
     )
     private Button.OnPress wrapMultiplayerCallback(Button.OnPress original) {
         return button -> {
-            TitleScreenModifyEvent event = new TitleScreenModifyEvent(TitleScreenModifyEvent.ButtonType.MULTIPLAYER);
+            TitleScreenModificationEvent event = new TitleScreenModificationEvent(TitleScreenModificationEvent.ButtonType.MULTIPLAYER);
             NeoForge.EVENT_BUS.post(event);
             if (event.isCanceled()) return;
             original.onPress(button);
@@ -57,7 +57,7 @@ public abstract class TitleScreenMixin {
     )
     private Button.OnPress wrapRealmsCallback(Button.OnPress original) {
         return button -> {
-            TitleScreenModifyEvent event = new TitleScreenModifyEvent(TitleScreenModifyEvent.ButtonType.REALMS);
+            TitleScreenModificationEvent event = new TitleScreenModificationEvent(TitleScreenModificationEvent.ButtonType.REALMS);
             NeoForge.EVENT_BUS.post(event);
             if (event.isCanceled()) return;
             original.onPress(button);

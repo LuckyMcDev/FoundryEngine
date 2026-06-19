@@ -437,7 +437,7 @@ public void onRegisterKeyBindings(RegisterKeyBindingEvent event) {
 
 ### TitleScreenModifyEvent
 
-Package: `de.luckymcdev.foundryengine.common.event.TitleScreenModifyEvent`
+Package: `de.luckymcdev.foundryengine.common.event.modification.TitleScreenModifyEvent`
 
 `ICancellableEvent` — Fired when title screen buttons are being created. Can cancel `SINGLEPLAYER`, `MULTIPLAYER`, or `REALMS` buttons.
 
