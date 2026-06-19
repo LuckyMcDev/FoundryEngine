@@ -25,14 +25,24 @@ tasks.register('javadocJar', Jar) {
 }
 
 publishMods {
-    changelog = "PLACEHOLDER CHANGELOG"
+    changelog = providers.environmentVariable("CHANGELOG").orElse("No changelog provided.")
     type = ALPHA
     modLoaders.add("neoforge")
+
+    version = mod_version
+    displayName = "${mod_name} ${mod_version}"
 
     file = jar.archiveFile
     additionalFiles.from(javadocJar.archiveFile)
 
-    dryRun = true
+    // dryRun = true
+
+    github {
+        accessToken = providers.environmentVariable("GITHUB_TOKEN")
+        repository = "LuckyMcDev/FoundryEngine"
+        commitish = "master"
+        tagName = "v${mod_version}"
+    }
 }
 
 // Publishing configuration

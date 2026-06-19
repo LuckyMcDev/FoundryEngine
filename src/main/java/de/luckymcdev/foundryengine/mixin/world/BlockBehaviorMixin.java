@@ -44,13 +44,13 @@ public abstract class BlockBehaviorMixin implements EngineBlockBehavior {
     }
 
     @Override
-    public void engine$setFriction(float nfriction) {
-        friction = nfriction;
+    public void engine$setFriction(float friction) {
+        this.friction = friction;
     }
 
     @Override
-    public void engine$setSpeedFactor(float nSpeedFactor) {
-        speedFactor = nSpeedFactor;
+    public void engine$setSpeedFactor(float speedFactor) {
+        this.speedFactor = speedFactor;
     }
 
     @Override

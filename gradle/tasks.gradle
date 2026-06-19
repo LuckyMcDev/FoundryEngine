@@ -1,3 +1,41 @@
+// Bumps the patch segment of mod_version in gradle.properties (x.y.z -> x.y.(z+1))
+tasks.register('bumpVersion') {
+    group = 'foundryengine'
+    description = 'Bumps the patch version in gradle.properties and writes the new version to GITHUB_OUTPUT/GITHUB_ENV if running in CI.'
+
+    doLast {
+        def propsFile = file('gradle.properties')
+        def lines = propsFile.readLines()
+
+        def currentVersion = mod_version
+        def parts = currentVersion.split('\\.')
+        if (parts.length != 3) {
+            throw new GradleException("mod_version '${currentVersion}' is not in x.y.z format, cannot bump")
+        }
+
+        def newPatch = (parts[2] as Integer) + 1
+        def newVersion = "${parts[0]}.${parts[1]}.${newPatch}"
+
+        def newLines = lines.collect { line ->
+            line.startsWith('mod_version=') ? "mod_version=${newVersion}" : line
+        }
+
+        propsFile.text = newLines.join('\n') + '\n'
+
+        logger.lifecycle("Bumped mod_version: {} -> {}", currentVersion, newVersion)
+
+        def githubOutput = System.getenv('GITHUB_OUTPUT')
+        if (githubOutput) {
+            new File(githubOutput).append("new_version=${newVersion}\n")
+        }
+
+        def githubEnv = System.getenv('GITHUB_ENV')
+        if (githubEnv) {
+            new File(githubEnv).append("NEW_VERSION=${newVersion}\n")
+        }
+    }
+}
+
 // Pre-commit verification task
 tasks.register('preCommit') {
     group = 'foundryengine'
@@ -38,9 +76,9 @@ tasks.register('generatePackageInfo') {
                 def relevant = foundryIdx >= 0 ? segments.drop(foundryIdx + 1) : segments
                 def desc = relevant.isEmpty() ? pkg : relevant.collect { seg ->
                     seg.replaceAll(/([a-z])([A-Z])/, '$1 $2')
-                       .split(' ')
-                       .collect { it.capitalize() }
-                       .join(' ')
+                            .split(' ')
+                            .collect { it.capitalize() }
+                            .join(' ')
                 }.join(' - ')
 
                 pkgFile.text = """\

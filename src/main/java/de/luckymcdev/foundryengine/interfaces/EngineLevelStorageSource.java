@@ -1,9 +1,10 @@
 package de.luckymcdev.foundryengine.interfaces;
 
+import net.minecraft.world.level.storage.LevelStorageSource;
 import java.nio.file.Path;
 import java.util.List;
 
-public interface EngineLevelStorageSource {
+public interface EngineLevelStorageSource extends EngineInterface<LevelStorageSource> {
     void engine$addAdditionalPath(Path path);
 
     List<Path> engine$getAdditionalPaths();
