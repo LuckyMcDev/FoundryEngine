@@ -39,6 +39,46 @@ tasks.register('bumpVersion') {
     }
 }
 
+tasks.register('generateFullChangelog') {
+    group = 'foundryengine'
+    description = 'Generates a full changelog from the last release tag (or a given tag) to HEAD.'
+
+    doLast {
+        def tag = project.hasProperty('fromTag') ? project.fromTag : null
+        if (tag == null) {
+            // Auto-detect the last tag that is NOT a patch (i.e., ends with .0, or use a regex)
+            // For simplicity, we'll just get the previous tag that does not have a patch segment > 0.
+            def allTags = "git tag -l 'v*' --sort=-v:refname".execute().text.trim().split('\n')
+            def releaseTags = allTags.findAll { tagName ->
+                // Assume patch tags are like v0.0.65, release tags like v1.0.0 or v0.1.0
+                // We'll treat tags ending with .0 as release tags (major/minor)
+                tagName =~ /v\d+\.\d+\.0$/
+            }
+            if (releaseTags.isEmpty()) {
+                throw new GradleException("No previous release tag found.")
+            }
+            tag = releaseTags[0] // newest release tag
+        }
+
+        // Run git-cliff to generate changelog from that tag to HEAD
+        def changelogFile = file("CHANGELOG_RELEASE.md")
+        def cmd = "git-cliff ${tag}..HEAD -o ${changelogFile.absolutePath} --config cliff.toml"
+        def process = cmd.execute()
+        process.waitFor()
+        if (process.exitValue() != 0) {
+            throw new GradleException("git-cliff failed: ${process.err.text}")
+        }
+
+        println "Changelog generated in ${changelogFile.absolutePath}"
+        // Optionally prepend the new version title
+        if (project.hasProperty('newVersion')) {
+            def version = project.newVersion
+            def content = changelogFile.text
+            changelogFile.text = "# Version ${version}\n${content}"
+        }
+    }
+}
+
 // Pre-commit verification task
 tasks.register('preCommit') {
     group = 'foundryengine'

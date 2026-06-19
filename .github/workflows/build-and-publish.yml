@@ -19,31 +19,12 @@ jobs:
       - uses: gradle/actions/setup-gradle@v5
       - run: chmod +x gradlew
 
-      - name: Install git-cliff
-        run: |
-          curl -sL https://github.com/orhun/git-cliff/releases/latest/download/git-cliff-x86_64-unknown-linux-gnu.tar.gz | tar xz
-          sudo mv git-cliff /usr/local/bin/
-
-      - name: Generate changelog
-        id: changelog
-        run: |
-          PREV_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-          if [ -z "$PREV_TAG" ]; then
-            git-cliff --unreleased -o CHANGELOG.md
-          else
-            git-cliff "$PREV_TAG..HEAD" -o CHANGELOG.md
-          fi
-
       - name: Bump patch version
         run: ./gradlew bumpVersion
 
       - name: Read bumped version
         id: version
         run: echo "version=${NEW_VERSION}" >> "$GITHUB_OUTPUT"
-
-      - name: Add version title
-        run: |
-          echo -e "# Version ${{ steps.version.outputs.version }}\n$(cat CHANGELOG.md)" > CHANGELOG.md
 
       - name: Commit version bump
         run: |
@@ -55,11 +36,8 @@ jobs:
           git push origin HEAD:master
           git push origin "v${{ steps.version.outputs.version }}"
 
-      - name: Set changelog env
-        run: |
-          echo "CHANGELOG<<EOF" >> "$GITHUB_ENV"
-          cat CHANGELOG.md >> "$GITHUB_ENV"
-          echo "EOF" >> "$GITHUB_ENV"
+      - name: Set changelog
+        run: echo "CHANGELOG=Automated patch release" >> "$GITHUB_ENV"
 
       - name: Build project
         run: ./gradlew build
