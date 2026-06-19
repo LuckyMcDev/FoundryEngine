@@ -1,7 +1,7 @@
 package client.example
 
 
-import de.luckymcdev.foundryengine.api.event.ClientEvents
+import de.luckymcdev.foundryengine.common.event.ClientEvents
 import de.luckymcdev.foundryengine.common.script.BundleEntrypoint
 import net.minecraft.client.Minecraft
 

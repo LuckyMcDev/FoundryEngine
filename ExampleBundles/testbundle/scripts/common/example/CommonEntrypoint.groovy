@@ -1,13 +1,13 @@
 package common.example
 
 import com.mojang.brigadier.CommandDispatcher
-import de.luckymcdev.foundryengine.api.builder.block.BlockBuilder
-import de.luckymcdev.foundryengine.api.builder.item.ItemBuilder
-import de.luckymcdev.foundryengine.api.builder.recipe.RecipeBuilder
-import de.luckymcdev.foundryengine.api.builder.sound.SoundBuilder
-import de.luckymcdev.foundryengine.api.event.AreaEvents
-import de.luckymcdev.foundryengine.api.event.BundleEvents
-import de.luckymcdev.foundryengine.api.event.CommandEvents
+import de.luckymcdev.foundryengine.common.builder.block.BlockBuilder
+import de.luckymcdev.foundryengine.common.builder.item.ItemBuilder
+import de.luckymcdev.foundryengine.common.builder.recipe.RecipeBuilder
+import de.luckymcdev.foundryengine.common.builder.sound.SoundBuilder
+import de.luckymcdev.foundryengine.common.event.AreaEvents
+import de.luckymcdev.foundryengine.common.event.BundleEvents
+import de.luckymcdev.foundryengine.common.event.CommandEvents
 import de.luckymcdev.foundryengine.client.Client
 import de.luckymcdev.foundryengine.common.script.BundleEntrypoint
 import net.minecraft.advancements.criterion.InventoryChangeTrigger

@@ -1,6 +1,6 @@
 package server.example
 
-import de.luckymcdev.foundryengine.api.event.ServerEvents
+import de.luckymcdev.foundryengine.common.event.ServerEvents
 import de.luckymcdev.foundryengine.common.script.BundleEntrypoint
 
 class ServerEntrypoint implements BundleEntrypoint {
