@@ -1,0 +1,27 @@
+[changelog]
+header = "# Changelog\n"
+body = """
+{% for group, commits in commits | group_by(attribute="group") %}
+### {{ group | upper_first }}
+{% for commit in commits %}
+- {{ commit.message | upper_first }}
+{%- endfor %}
+{% endfor %}
+"""
+footer = ""
+
+[git]
+commit_parsers = [
+    { pattern = "^feat", group = "Features" },
+    { pattern = "^fix", group = "Bug Fixes" },
+    { pattern = "^docs", group = "Documentation" },
+    { pattern = "^style", group = "Style" },
+    { pattern = "^refactor", group = "Refactoring" },
+    { pattern = "^perf", group = "Performance" },
+    { pattern = "^test", group = "Testing" },
+    { pattern = "^build", group = "Build" },
+    { pattern = "^ci", group = "CI" },
+    { pattern = "^chore.*[skip ci]", skip = true },   # skip bump commits
+    { pattern = "^chore", group = "Chores" },
+]
+fallback_parsers = [{ pattern = ".*", group = "Other Changes" }]
