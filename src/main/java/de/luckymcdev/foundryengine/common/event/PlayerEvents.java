@@ -7,6 +7,7 @@ import net.neoforged.neoforge.event.entity.player.AdvancementEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import de.luckymcdev.foundryengine.common.Common;
 import org.jetbrains.annotations.ApiStatus;
 
 public class PlayerEvents {
@@ -116,6 +117,10 @@ public class PlayerEvents {
             CHEST_OPENED.clear();
             RESPAWNED.clear();
             DECORATE_CHAT.clear();
+        }
+
+        static {
+            Common.registerEventClear(Internal::clear);
         }
     }
 }

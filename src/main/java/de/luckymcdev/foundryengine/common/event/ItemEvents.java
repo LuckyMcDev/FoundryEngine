@@ -1,5 +1,6 @@
 package de.luckymcdev.foundryengine.common.event;
 
+import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.event.modification.ItemModificationEvent;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.event.entity.item.ItemTossEvent;
@@ -147,6 +148,10 @@ public class ItemEvents {
             FIRST_LEFT_CLICKED.clear();
             FIRST_RIGHT_CLICKED.clear();
             ITEM_MODIFICATION.clear();
+        }
+
+        static {
+            Common.registerEventClear(Internal::clear);
         }
     }
 }

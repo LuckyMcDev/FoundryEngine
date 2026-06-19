@@ -1,5 +1,6 @@
 package de.luckymcdev.foundryengine.common.event;
 
+import de.luckymcdev.foundryengine.common.Common;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.client.event.RecipesReceivedEvent;
 import net.neoforged.neoforge.event.ModifyRecipeJsonsEvent;
@@ -36,6 +37,10 @@ public class RecipeEvents {
         public static void clear() {
             RECIPES_UPDATED.clear();
             MODIFY_RECIPES.clear();
+        }
+
+        static {
+            Common.registerEventClear(Internal::clear);
         }
     }
 }

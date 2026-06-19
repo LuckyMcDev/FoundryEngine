@@ -1,5 +1,6 @@
 package de.luckymcdev.foundryengine.common.event;
 
+import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.event.modification.BlockModificationEvent;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
@@ -87,6 +88,10 @@ public class BlockEvents {
             RIGHT_CLICKED.clear();
             FARMLAND_TRAMPLED.clear();
             BLOCK_MODIFICATION.clear();
+        }
+
+        static {
+            Common.registerEventClear(Internal::clear);
         }
     }
 }

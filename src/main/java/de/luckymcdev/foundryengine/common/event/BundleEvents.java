@@ -1,5 +1,6 @@
 package de.luckymcdev.foundryengine.common.event;
 
+import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.event.data.BundleDataGenEvent;
 import de.luckymcdev.foundryengine.common.event.registry.RegistryEvent;
 import net.neoforged.bus.api.Event;
@@ -143,6 +144,10 @@ public class BundleEvents {
             DATA_GEN.clear();
             SERVER_ABOUT_TO_START.clear();
             CUSTOM_EVENTS.clear();
+        }
+
+        static {
+            Common.registerEventClear(Internal::clear);
         }
     }
 }
