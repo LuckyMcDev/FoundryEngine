@@ -39,8 +39,7 @@ jobs:
       needs.changes.outputs.src == 'true' &&
       !contains(github.event.head_commit.message, '[skip ci]')
     uses: ./.github/workflows/build-and-publish.yml
-    secrets:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    secrets: inherit
     permissions:
       contents: write
       packages: write
@@ -51,8 +50,7 @@ jobs:
     needs: changes
     if: needs.changes.outputs.docs == 'true'
     uses: ./.github/workflows/build-docs.yml
-    secrets:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    secrets: inherit
     permissions:
       pages: write
       id-token: write
