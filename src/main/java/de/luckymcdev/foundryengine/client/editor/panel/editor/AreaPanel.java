@@ -43,8 +43,10 @@ public class AreaPanel extends EditorPanel {
     private String selectedAreaId = null;
 
     private AreaPanel() {
-        super(Common.id("area_panel"), "Areas", ImIcons.FA.FA_MAP, PanelCategory.EDITOR);
-        this.menuBar = true;
+        super(new Builder(Common.id("area_panel"), "Areas")
+                .icon(ImIcons.FA.FA_MAP)
+                .category(PanelCategory.EDITOR)
+                .menuBar(true));
         colorToFloats(Area.DEFAULT_COLOR, newAreaColor);
     }
 

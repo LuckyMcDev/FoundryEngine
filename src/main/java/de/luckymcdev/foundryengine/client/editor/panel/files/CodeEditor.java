@@ -55,9 +55,11 @@ public class CodeEditor extends EditorPanel {
      * @param source   Initial source text to populate the editor.
      */
     public CodeEditor(Identifier id, String fileName, String source) {
-        var label = " Editor: " + fileName;
-        super(id, label, ImIcons.FA.FA_EDIT, Shortcut.empty(), PanelCategory.EDITOR_FILES);
-        this.menuBar = true;
+        super(new Builder(id, " Editor: " + fileName)
+                .icon(ImIcons.FA.FA_EDIT)
+                .shortcut(Shortcut.empty())
+                .category(PanelCategory.EDITOR_FILES)
+                .menuBar(true));
         this.fileName = fileName;
         this.oldSource = source;
         this.saveCallback = (_, _) -> { /* default no-op */ };

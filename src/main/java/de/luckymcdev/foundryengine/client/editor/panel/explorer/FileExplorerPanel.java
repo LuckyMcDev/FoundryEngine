@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.client.editor.panel.explorer;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.client.Client;
+import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.panel.files.CodeEditor;
 import de.luckymcdev.foundryengine.client.editor.panel.files.TextureViewerPanel;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
@@ -60,7 +61,10 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
     private boolean remoteLoading = false;
 
     public FileExplorerPanel(File rootDir) {
-        super(Common.id("file_explorer"), "File Explorer", ImIcons.FA.FA_FILES_O, Shortcut.empty());
+        super(new Builder(Common.id("file_explorer"), "File Explorer")
+                .icon(ImIcons.FA.FA_FILES_O)
+                .shortcut(Shortcut.empty())
+                .category(PanelCategory.EDITOR_EXPLORER));
         this.rootDir = rootDir;
     }
 

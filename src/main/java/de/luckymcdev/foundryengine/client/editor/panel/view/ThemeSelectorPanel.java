@@ -14,7 +14,9 @@ public class ThemeSelectorPanel extends EditorPanel {
     public static final ThemeSelectorPanel INSTANCE = new ThemeSelectorPanel();
 
     public ThemeSelectorPanel() {
-        super(Common.id("theme_selector"), "Theme Selector", ImIcons.FA.FA_THEMECO, PanelCategory.VIEW);
+        super(new Builder(Common.id("theme_selector"), "Theme Selector")
+                .icon(ImIcons.FA.FA_THEMECO)
+                .category(PanelCategory.VIEW));
     }
 
     @Override

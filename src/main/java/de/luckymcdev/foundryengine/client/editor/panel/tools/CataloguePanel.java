@@ -40,7 +40,9 @@ public class CataloguePanel extends EditorPanel {
     private final ImString searchBuffer = new ImString(256);
 
     public CataloguePanel() {
-        super(Common.id("catalogue"), "Catalogue", ImIcons.FA.FA_LIST, PanelCategory.TOOLS);
+        super(new Builder(Common.id("catalogue"), "Catalogue")
+                .icon(ImIcons.FA.FA_LIST)
+                .category(PanelCategory.TOOLS));
     }
 
     public static void acceptDrop(Consumer<CataloguePayload> callback) {

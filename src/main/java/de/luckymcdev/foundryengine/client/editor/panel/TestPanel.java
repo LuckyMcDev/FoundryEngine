@@ -27,7 +27,9 @@ public class TestPanel extends Panel {
     private CataloguePanel.CataloguePayload cataloguePayload;
 
     private TestPanel() {
-        super(Common.id("test_panel"), "My Panel", ImIcons.FAE.FAE_BACTERIA, PanelCategory.OPEN);
+        super(new Builder(Common.id("test_panel"), "My Panel")
+                .icon(ImIcons.FAE.FAE_BACTERIA)
+                .category(PanelCategory.OPEN));
     }
 
     @Override

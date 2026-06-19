@@ -60,8 +60,10 @@ public class CutsceneTimelinePanel extends EditorPanel {
     private float zoomPxPerTick = 6.0f;
 
     private CutsceneTimelinePanel() {
-        super(Common.id("cutscene_timeline"), "Cutscene Timeline", ImIcons.FA.FA_SLIDERS, PanelCategory.EDITOR_CUTSCENES);
-        this.menuBar = true;
+        super(new Builder(Common.id("cutscene_timeline"), "Cutscene Timeline")
+                .icon(ImIcons.FA.FA_SLIDERS)
+                .category(PanelCategory.EDITOR_CUTSCENES)
+                .menuBar(true));
     }
 
     @Override

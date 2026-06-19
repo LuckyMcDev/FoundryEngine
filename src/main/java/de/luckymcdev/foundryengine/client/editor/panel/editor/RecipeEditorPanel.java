@@ -41,7 +41,9 @@ public class RecipeEditorPanel extends EditorPanel {
     private int cookingTime = 200;
 
     private RecipeEditorPanel() {
-        super(Common.id("recipe_editor"), "Recipe Editor", ImIcons.FA.FA_UTENSILS, PanelCategory.EDITOR);
+        super(new Builder(Common.id("recipe_editor"), "Recipe Editor")
+                .icon(ImIcons.FA.FA_UTENSILS)
+                .category(PanelCategory.EDITOR));
     }
 
     private static String capitalize(String s) {

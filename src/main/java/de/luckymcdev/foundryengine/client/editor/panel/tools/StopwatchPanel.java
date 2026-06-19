@@ -16,10 +16,12 @@ public class StopwatchPanel extends EditorPanel {
     private boolean running = false;
 
     public StopwatchPanel(String id) {
-        super(Common.id("stopwatch-" + id.toLowerCase().replace(" ", "_")), "Stopwatch", ImIcons.FA.FA_STOPWATCH, PanelCategory.TOOLS);
+        super(new Builder(Common.id("stopwatch-" + id.toLowerCase().replace(" ", "_")), "Stopwatch")
+                .icon(ImIcons.FA.FA_STOPWATCH)
+                .category(PanelCategory.TOOLS)
+                .temporary(true)
+                .style(PanelStyle.MINIMAL));
         this.displayThing = id;
-        this.temporary = true;
-        this.style = PanelStyle.MINIMAL;
         this.stopwatch = new Stopwatch(System.currentTimeMillis(), 0L);
     }
 

@@ -35,8 +35,10 @@ public class ConsolePanel extends EditorPanel {
     private boolean autoScroll = true;
 
     private ConsolePanel() {
-        super(Common.id("console"), "Console", ImIcons.FA.FA_TERMINAL, PanelCategory.TOOLS);
-        menuBar = true;
+        super(new Builder(Common.id("console"), "Console")
+                .icon(ImIcons.FA.FA_TERMINAL)
+                .category(PanelCategory.TOOLS)
+                .menuBar(true));
     }
 
     private List<LogEntry> getFilteredLogs() {

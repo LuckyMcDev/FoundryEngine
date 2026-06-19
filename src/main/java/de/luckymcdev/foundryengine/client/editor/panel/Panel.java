@@ -14,160 +14,120 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.permissions.PermissionLevel;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * An ImGui Panel.
- */
 public class Panel {
-    /**
-     * The Id.
-     */
     public final Identifier id;
-    /**
-     * The Label.
-     */
     public final String label;
-    /**
-     * Icon which is displayed next to the label.
-     */
     public final @Nullable ImIcon icon;
-    /**
-     * The Panels opening Shortcut.
-     */
     public final Shortcut shortcut;
-    /**
-     * If the Panel is Temporary.
-     */
     public boolean temporary;
-    /**
-     * If the Panel has a Menu Bar.
-     */
     public boolean menuBar;
-    /**
-     * If the Panel is unsaved.
-     */
     public boolean unsaved;
-    /**
-     * The Panels Style.
-     */
     public PanelStyle style;
-    /**
-     * If the Panel is Open.
-     */
     public boolean open;
-    /**
-     * The Panels Type.
-     */
     public ImGuiWindowType type;
-
     public PanelCategory category;
-
     private boolean focused;
 
-    /**
-     * Instantiates a new Panel.
-     *
-     * @param id       the id
-     * @param label    the label
-     * @param shortcut the Shortcut.
-     */
-    protected Panel(Identifier id, String label, ImIcon icon, Shortcut shortcut) {
-        this.id = id;
-        this.label = label;
-        this.icon = icon;
-        this.shortcut = shortcut;
+    private static PanelRequirements defaultRequirements = new MinecraftPanelRequirements();
+
+    protected Panel(Builder builder) {
+        this.id = builder.id;
+        this.label = builder.label;
+        this.icon = builder.icon;
+        this.shortcut = builder.shortcut;
+        this.category = builder.category;
+        this.temporary = builder.temporary;
+        this.menuBar = builder.menuBar;
+        this.unsaved = builder.unsaved;
+        this.style = builder.style;
         this.open = false;
-        this.temporary = false;
-        this.menuBar = false;
-        this.style = PanelStyle.NORMAL;
         this.type = ImGuiWindowType.WINDOW;
-        this.category = PanelCategory.OPEN;
     }
 
-    protected Panel(Identifier id, String label, ImIcon icon) {
-        this(id, label, icon, Shortcut.empty());
+    public static void setDefaultRequirements(PanelRequirements requirements) {
+        defaultRequirements = requirements;
     }
 
-    /**
-     * Instantiates a new Panel.
-     *
-     * @param id    the id
-     * @param label the label
-     */
-    protected Panel(Identifier id, String label) {
-        this(id, label, null, Shortcut.empty());
-    }
-
-    protected Panel(Identifier id, String label, ImIcon icon, Shortcut shortcut, PanelCategory category) {
-        this(id, label, icon, shortcut);
-        this.category = category;
-    }
-
-    protected Panel(Identifier id, String label, ImIcon icon, PanelCategory category) {
-        this(id, label, icon);
-        this.category = category;
-    }
-
-    protected Panel(Identifier id, String label, PanelCategory category) {
-        this(id, label);
-        this.category = category;
-    }
-
-    /**
-     * Delegates to {@link PanelRequirements#requireWorld()}.
-     */
     protected static boolean requireWorld() {
-        return PanelRequirements.requireWorld();
+        return defaultRequirements.requireWorld();
     }
 
-    /**
-     * Delegates to {@link PanelRequirements#requireWorld(String)}.
-     */
     protected static boolean requireWorld(String message) {
-        return PanelRequirements.requireWorld(message);
+        return defaultRequirements.requireWorld(message);
     }
 
-    /**
-     * Delegates to {@link PanelRequirements#requireLevel(PermissionLevel)}.
-     */
     protected static boolean requireLevel(PermissionLevel level) {
-        return PanelRequirements.requireLevel(level);
+        return defaultRequirements.requireLevel(level);
     }
 
-    /**
-     * Delegates to {@link PanelRequirements#requireLevel(PermissionLevel, String)}.
-     */
     protected static boolean requireLevel(PermissionLevel level, String message) {
-        return PanelRequirements.requireLevel(level, message);
+        return defaultRequirements.requireLevel(level, message);
     }
 
-    /**
-     * Delegates to {@link PanelRequirements#requireLevelOnServer(PermissionLevel)}.
-     */
     protected static boolean requireLevelOnServer(PermissionLevel level) {
-        return PanelRequirements.requireLevelOnServer(level);
+        return defaultRequirements.requireLevelOnServer(level);
     }
 
-    /**
-     * Delegates to {@link PanelRequirements#requireLocal()}.
-     */
     protected static boolean requireLocal() {
-        return PanelRequirements.requireLocal();
+        return defaultRequirements.requireLocal();
     }
 
-    /**
-     * Gets id.
-     *
-     * @return the id
-     */
+    public static final class Builder {
+        private final Identifier id;
+        private final String label;
+        private @Nullable ImIcon icon;
+        private Shortcut shortcut = Shortcut.empty();
+        private PanelCategory category = PanelCategory.OPEN;
+        private boolean temporary;
+        private boolean menuBar;
+        private boolean unsaved;
+        private PanelStyle style = PanelStyle.NORMAL;
+
+        public Builder(Identifier id, String label) {
+            this.id = id;
+            this.label = label;
+        }
+
+        public Builder icon(@Nullable ImIcon icon) {
+            this.icon = icon;
+            return this;
+        }
+
+        public Builder shortcut(Shortcut shortcut) {
+            this.shortcut = shortcut;
+            return this;
+        }
+
+        public Builder category(PanelCategory category) {
+            this.category = category;
+            return this;
+        }
+
+        public Builder temporary(boolean temporary) {
+            this.temporary = temporary;
+            return this;
+        }
+
+        public Builder menuBar(boolean menuBar) {
+            this.menuBar = menuBar;
+            return this;
+        }
+
+        public Builder unsaved(boolean unsaved) {
+            this.unsaved = unsaved;
+            return this;
+        }
+
+        public Builder style(PanelStyle style) {
+            this.style = style;
+            return this;
+        }
+    }
+
     public Identifier getId() {
         return this.id;
     }
 
-    /**
-     * Gets label.
-     *
-     * @return the label
-     */
     public String getLabel() {
         return this.label;
     }
@@ -204,18 +164,10 @@ public class Panel {
         return ImGuiWindowFlags.None;
     }
 
-    /**
-     * Gets Shortcut.
-     *
-     * @return the shortcut
-     */
     public Shortcut getShortcut() {
         return shortcut;
     }
 
-    /**
-     * Opens the Panel.
-     */
     public final void open() {
         if (!this.open) {
             this.open = true;
@@ -223,34 +175,18 @@ public class Panel {
         onOpened();
     }
 
-    /**
-     * Closes the Panel.
-     */
     public final void close() {
         if (this.open) {
             this.open = false;
         }
     }
 
-    /**
-     * On opened.
-     * Override for custom functionality.
-     */
     public void onOpened() {
     }
 
-    /**
-     * On closed.
-     * Override for custom functionality.
-     */
     public void onClosed() {
     }
 
-    /**
-     * Handles rendering of the Panel.
-     *
-     * @return if the window is open
-     */
     public final boolean handleRender() {
         int flags = getFlags();
         ImBoolean WINDOW = new ImBoolean(this.open);
@@ -303,48 +239,24 @@ public class Panel {
         return open;
     }
 
-    /**
-     * Is focused boolean.
-     *
-     * @return focused
-     */
     public boolean isFocused() {
         return this.focused;
     }
 
-    /**
-     * Is open boolean.
-     *
-     * @return open
-     */
     public boolean isOpen() {
         return this.open;
     }
 
-    /**
-     * Handle tick.
-     */
     public final void handleTick() {
         tick();
     }
 
-    /**
-     * Content.
-     * Overwrite for custom Functionality
-     */
     public void content() {
     }
 
-    /**
-     * Tick.
-     * Overwrite for custom Functionality
-     */
     public void tick() {
     }
 
-    /**
-     * Wraps {@link imgui.ImGui#beginMenuBar()} / {@link imgui.ImGui#endMenuBar()}.
-     */
     protected void menuBar(Runnable body) {
         if (ImGui.beginMenuBar()) {
             body.run();

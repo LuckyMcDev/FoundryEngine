@@ -13,7 +13,9 @@ public class DevToolsPanel extends Panel {
     public static final DevToolsPanel INSTANCE = new DevToolsPanel();
 
     private DevToolsPanel() {
-        super(Common.id("dev_tools"), "Dev Tools", ImIcons.FA.FA_FLASK, PanelCategory.TOOLS);
+        super(new Builder(Common.id("dev_tools"), "Dev Tools")
+                .icon(ImIcons.FA.FA_FLASK)
+                .category(PanelCategory.TOOLS));
     }
 
     @Override
