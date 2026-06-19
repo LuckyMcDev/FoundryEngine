@@ -17,7 +17,9 @@ public class EffectPanel extends EditorPanel {
     public static final EffectPanel INSTANCE = new EffectPanel();
 
     public EffectPanel() {
-        super(Common.id("effect_panel"), "Effects", ImIcons.FA.FA_VIDEO_CAMERA, PanelCategory.TOOLS);
+        super(new Builder(Common.id("effect_panel"), "Effects")
+                .icon(ImIcons.FA.FA_VIDEO_CAMERA)
+                .category(PanelCategory.TOOLS));
     }
 
     @Override

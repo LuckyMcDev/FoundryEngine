@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.client.editor.panel.explorer;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.client.Client;
+import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.panel.files.CodeEditor;
 import de.luckymcdev.foundryengine.client.editor.panel.files.TextureViewerPanel;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
@@ -46,7 +47,10 @@ public class ResourceExplorerPanel extends AbstractExplorerPanel {
     private volatile boolean reloadInProgress = false;
 
     public ResourceExplorerPanel() {
-        super(Common.id("resource_browser"), "Resource Browser", ImIcons.FA.FA_IMAGE, Shortcut.empty());
+        super(new Builder(Common.id("resource_browser"), "Resource Browser")
+                .icon(ImIcons.FA.FA_IMAGE)
+                .shortcut(Shortcut.empty())
+                .category(PanelCategory.EDITOR_EXPLORER));
     }
 
     @Override

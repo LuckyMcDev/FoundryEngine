@@ -16,7 +16,10 @@ public class NodeTestPanel extends EditorPanel {
     private final NodeBuilder<Double> rootEvalBuilder;
 
     protected NodeTestPanel() {
-        super(Common.id("node_test_panel"), "Node Test Panel", ImIcons.FA.FA_BLUETOOTH, PanelCategory.EDITOR);
+        super(new Builder(Common.id("node_test_panel"), "Node Test Panel")
+                .icon(ImIcons.FA.FA_BLUETOOTH)
+                .category(PanelCategory.EDITOR)
+        );
 
         // Use the predefined DOUBLE type
         NodePinType<Double> doubleType = NodeTypes.DOUBLE;

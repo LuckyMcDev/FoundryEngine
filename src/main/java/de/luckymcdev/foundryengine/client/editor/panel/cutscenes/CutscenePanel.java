@@ -41,8 +41,10 @@ public class CutscenePanel extends EditorPanel {
     private boolean showNewForm = false;
 
     private CutscenePanel() {
-        super(Common.id("cutscene_panel"), "Cutscenes", ImIcons.FA.FA_FILM, PanelCategory.EDITOR_CUTSCENES);
-        this.menuBar = true;
+        super(new Builder(Common.id("cutscene_panel"), "Cutscenes")
+                .icon(ImIcons.FA.FA_FILM)
+                .category(PanelCategory.EDITOR_CUTSCENES)
+                .menuBar(true));
     }
 
     @Override

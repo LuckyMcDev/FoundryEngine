@@ -40,8 +40,10 @@ public class WaypointPanel extends EditorPanel {
     private Waypoint selectedWaypoint = null;
 
     private WaypointPanel() {
-        super(Common.id("waypoint_panel"), "Waypoints", ImIcons.FA.FA_MAP_PIN, PanelCategory.TOOLS);
-        this.menuBar = true;
+        super(new Builder(Common.id("waypoint_panel"), "Waypoints")
+                .icon(ImIcons.FA.FA_MAP_PIN)
+                .category(PanelCategory.TOOLS)
+                .menuBar(true));
     }
 
     private static String[] buildIconLabels() {

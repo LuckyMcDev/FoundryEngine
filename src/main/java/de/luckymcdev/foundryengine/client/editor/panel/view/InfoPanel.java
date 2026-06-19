@@ -17,7 +17,9 @@ public class InfoPanel extends EditorPanel {
     public static final InfoPanel INSTANCE = new InfoPanel();
 
     protected InfoPanel() {
-        super(Common.id("info"), "Info", ImIcons.FA.FA_INFO, PanelCategory.VIEW);
+        super(new Builder(Common.id("info"), "Info")
+                .icon(ImIcons.FA.FA_INFO)
+                .category(PanelCategory.VIEW));
     }
 
     @Override
