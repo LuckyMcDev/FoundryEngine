@@ -1,5 +1,6 @@
 package de.luckymcdev.foundryengine.common.event;
 
+import de.luckymcdev.foundryengine.common.Common;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
@@ -35,6 +36,10 @@ public class CommandEvents {
         public static void clear() {
             COMMANDS.clear();
             COMMANDS_CLIENT.clear();
+        }
+
+        static {
+            Common.registerEventClear(Internal::clear);
         }
     }
 }

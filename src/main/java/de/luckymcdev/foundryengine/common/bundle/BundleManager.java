@@ -132,17 +132,7 @@ public class BundleManager implements ResourceManagerReloadListener {
             LOGGER.info("Reloading FoundryEngine Bundles...");
             lifecycleDispatcher.fireReloadStarted();
 
-            AreaEvents.Internal.clear();
-            BlockEvents.Internal.clear();
-            BundleEvents.Internal.clear();
-            ClientEvents.Internal.clear();
-            CommandEvents.Internal.clear();
-            EntityEvents.Internal.clear();
-            ItemEvents.Internal.clear();
-            LevelEvents.Internal.clear();
-            NetworkEvents.Internal.clear();
-            PlayerEvents.Internal.clear();
-            RecipeEvents.Internal.clear();
+            Common.clearEvents();
 
             unloadAllBundles();
             bundles.clear();

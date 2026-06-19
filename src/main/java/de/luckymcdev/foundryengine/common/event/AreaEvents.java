@@ -1,5 +1,6 @@
 package de.luckymcdev.foundryengine.common.event;
 
+import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.area.AreaEvent;
 import net.neoforged.bus.api.IEventBus;
 import org.jetbrains.annotations.ApiStatus;
@@ -45,6 +46,10 @@ public class AreaEvents {
             AREA_ENTER.clear();
             AREA_LEAVE.clear();
             AREA_TICK.clear();
+        }
+
+        static {
+            Common.registerEventClear(Internal::clear);
         }
     }
 }

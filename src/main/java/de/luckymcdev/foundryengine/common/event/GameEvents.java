@@ -1,5 +1,6 @@
 package de.luckymcdev.foundryengine.common.event;
 
+import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.game.GameSessionEvent;
 import net.neoforged.bus.api.IEventBus;
 import org.jetbrains.annotations.ApiStatus;
@@ -56,6 +57,10 @@ public class GameEvents {
             STARTED.clear();
             STOPPING.clear();
             STOPPED.clear();
+        }
+
+        static {
+            Common.registerEventClear(Internal::clear);
         }
     }
 }

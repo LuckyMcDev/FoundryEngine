@@ -1,5 +1,6 @@
 package de.luckymcdev.foundryengine.common.event;
 
+import de.luckymcdev.foundryengine.common.Common;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.event.level.ExplosionEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
@@ -80,6 +81,10 @@ public class LevelEvents {
             TICK.clear();
             BEFORE_EXPLOSION.clear();
             AFTER_EXPLOSION.clear();
+        }
+
+        static {
+            Common.registerEventClear(Internal::clear);
         }
     }
 }
