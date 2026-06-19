@@ -3,11 +3,16 @@ tasks.register('bumpVersion') {
     group = 'foundryengine'
     description = 'Bumps the patch version in gradle.properties and writes the new version to GITHUB_OUTPUT/GITHUB_ENV if running in CI.'
 
+    // Resolve everything Project-related at configuration time so the
+    // action below only touches plain Java/Groovy objects (config-cache safe).
+    def propsFile = file('gradle.properties')
+    def currentVersion = mod_version as String
+    def githubOutputPath = System.getenv('GITHUB_OUTPUT')
+    def githubEnvPath = System.getenv('GITHUB_ENV')
+
     doLast {
-        def propsFile = file('gradle.properties')
         def lines = propsFile.readLines()
 
-        def currentVersion = mod_version
         def parts = currentVersion.split('\\.')
         if (parts.length != 3) {
             throw new GradleException("mod_version '${currentVersion}' is not in x.y.z format, cannot bump")
@@ -22,16 +27,14 @@ tasks.register('bumpVersion') {
 
         propsFile.text = newLines.join('\n') + '\n'
 
-        logger.lifecycle("Bumped mod_version: {} -> {}", currentVersion, newVersion)
+        println "Bumped mod_version: ${currentVersion} -> ${newVersion}"
 
-        def githubOutput = System.getenv('GITHUB_OUTPUT')
-        if (githubOutput) {
-            new File(githubOutput).append("new_version=${newVersion}\n")
+        if (githubOutputPath) {
+            new File(githubOutputPath).append("new_version=${newVersion}\n")
         }
 
-        def githubEnv = System.getenv('GITHUB_ENV')
-        if (githubEnv) {
-            new File(githubEnv).append("NEW_VERSION=${newVersion}\n")
+        if (githubEnvPath) {
+            new File(githubEnvPath).append("NEW_VERSION=${newVersion}\n")
         }
     }
 }
