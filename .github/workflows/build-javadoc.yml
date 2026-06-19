@@ -1,0 +1,33 @@
+name: Build Javadoc
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 25
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
+      - name: Generate Javadoc
+        run: ./gradlew javadoc
+
+      - name: Upload Javadoc
+        uses: actions/upload-artifact@v7
+        with:
+          name: javadoc
+          path: build/docs

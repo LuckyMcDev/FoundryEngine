@@ -1,0 +1,63 @@
+name: Build & Deploy Docs
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+      - 'docs/**'
+      - '.github/workflows/build-vitepress.yml'
+      - '.github/workflows/build-javadoc.yml'
+      - '.github/workflows/deploy.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  vitepress:
+    uses: ./.github/workflows/build-vitepress.yml
+
+  javadoc:
+    uses: ./.github/workflows/build-javadoc.yml
+
+  deploy:
+    needs: [ vitepress, javadoc ]
+    runs-on: ubuntu-latest
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          path: site
+
+      - name: Merge artifacts
+        run: |
+          mkdir final
+          
+          # Copy VitePress if it exists
+          if [ -d "site/vitepress" ]; then
+            cp -r site/vitepress/* final/
+          fi
+          
+          # Copy Javadoc if it exists
+          if [ -d "site/javadoc" ]; then
+            mkdir -p final/javadoc
+            cp -r site/javadoc/* final/javadoc/
+          fi
+
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: final
+          retention-days: 1
+
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
