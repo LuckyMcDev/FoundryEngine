@@ -189,6 +189,7 @@ public class FoundryEngineModClient {
         Client.getCutsceneScreenEffectManager().renderTick();
         Client.getEditorController().renderFeatures();
         Client.getWaypointRenderer().renderWaypoints(event);
+        Client.getAreaRenderer().renderAreaModules(event);
 
         Matrix4f modelView = WorldViewMatrix.from(event).at(0, 110, 0).scale(2).buildModelView();
         //SUZANNE.renderModel(modelView, EngineRenderPipelines.POSITION_COLOR_NORMAL);
