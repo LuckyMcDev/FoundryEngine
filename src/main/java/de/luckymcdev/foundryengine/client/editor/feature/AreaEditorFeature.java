@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.client.editor.feature;
 
 import de.luckymcdev.foundryengine.client.Client;
+import de.luckymcdev.foundryengine.client.editor.HandlePicker;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.area.AABBArea;
 import de.luckymcdev.foundryengine.common.area.Area;
@@ -9,8 +10,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
-public class AreaFeature extends DragEditorFeature {
-    public static final double PICK_THRESHOLD = 0.8;
+public class AreaEditorFeature extends DragEditorFeature {
     private Area selectedArea;
     private boolean draggingMin = false;
 
@@ -89,16 +89,10 @@ public class AreaFeature extends DragEditorFeature {
             Vec3 maxCorner = new Vec3(bounds.maxX, bounds.maxY, bounds.maxZ);
 
             for (var entry : new Vec3[]{minCorner, maxCorner}) {
-                Vec3 toCorner = entry.subtract(eye);
-                double t = toCorner.dot(look);
-                if (t < 0) continue;
-
-                Vec3 projected = eye.add(look.scale(t));
-                double dist = projected.distanceTo(entry);
-                if (dist < PICK_THRESHOLD) {
-                    double totalDist = t;
-                    if (totalDist < closestDist) {
-                        closestDist = totalDist;
+                if (HandlePicker.isHovered(entry, eye, look)) {
+                    double dist = entry.distanceTo(eye);
+                    if (dist < closestDist) {
+                        closestDist = dist;
                         closestArea = area;
                         closestIsMin = entry == minCorner;
                     }

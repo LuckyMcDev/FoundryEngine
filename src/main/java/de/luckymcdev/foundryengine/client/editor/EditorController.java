@@ -1,33 +1,51 @@
 package de.luckymcdev.foundryengine.client.editor;
 
-import de.luckymcdev.foundryengine.client.cutscene.CutsceneEditor;
-import de.luckymcdev.foundryengine.client.editor.feature.AreaFeature;
+import de.luckymcdev.foundryengine.client.editor.feature.AreaEditorFeature;
+import de.luckymcdev.foundryengine.client.editor.feature.CutsceneEditorFeature;
 import de.luckymcdev.foundryengine.client.editor.feature.EditorFeature;
-import de.luckymcdev.foundryengine.common.item.ModItems;
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class EditorController {
+    public static final Item EDITOR_ITEM = Items.DEBUG_STICK;
     private final List<EditorFeature> features = new ArrayList<>();
-    private final CutsceneEditor cutsceneEditor = new CutsceneEditor();
+    private final CutsceneEditorFeature cutsceneEditorFeature = new CutsceneEditorFeature();
+    private final AreaEditorFeature areaEditorFeature = new AreaEditorFeature();
 
     public EditorController() {
-        features.add(cutsceneEditor);
-        features.add(new AreaFeature());
+        features.add(cutsceneEditorFeature);
+        features.add(areaEditorFeature);
+    }
+
+    public static boolean isEditorStack(ItemStack stack) {
+        return !stack.isEmpty() && stack.getItem() == EDITOR_ITEM;
     }
 
     public static boolean isHoldingEditorItem() {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.player == null || ModItems.EDITOR_ITEM == null) return false;
-        return mc.player.getMainHandItem().getItem() == ModItems.EDITOR_ITEM
-                || mc.player.getOffhandItem().getItem() == ModItems.EDITOR_ITEM;
+        if (mc.player == null) return false;
+        return isEditorStack(mc.player.getMainHandItem()) || isEditorStack(mc.player.getOffhandItem());
     }
 
-    public CutsceneEditor getCutsceneEditor() {
-        return cutsceneEditor;
+    public static boolean isUsingEditorItem() {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.screen != null || mc.player == null || mc.isPaused()) return false;
+        return isHoldingEditorItem() && mc.options.keyUse.isDown();
     }
+
+    public CutsceneEditorFeature getCutsceneEditorFeature() {
+        return cutsceneEditorFeature;
+    }
+
+    public AreaEditorFeature getAreaEditorFeature() {
+        return areaEditorFeature;
+    }
+
 
     public void clientTick() {
         Minecraft mc = Minecraft.getInstance();

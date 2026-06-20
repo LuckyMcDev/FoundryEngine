@@ -1,6 +1,7 @@
-package de.luckymcdev.foundryengine.client.cutscene;
+package de.luckymcdev.foundryengine.client.editor.feature;
 
-import de.luckymcdev.foundryengine.client.editor.feature.DragEditorFeature;
+import de.luckymcdev.foundryengine.client.cutscene.CutsceneRenderer;
+import de.luckymcdev.foundryengine.client.editor.HandlePicker;
 import de.luckymcdev.foundryengine.common.cutscene.model.Cutscene;
 import de.luckymcdev.foundryengine.common.easing.BezierPath;
 import de.luckymcdev.foundryengine.common.easing.BezierPoint;
@@ -19,7 +20,7 @@ import net.neoforged.neoforge.client.network.ClientPacketDistributor;
  * <p>
  * Owned by {@link de.luckymcdev.foundryengine.client.Client} (instance, not static state).
  */
-public class CutsceneEditor extends DragEditorFeature {
+public class CutsceneEditorFeature extends DragEditorFeature {
     private BezierPoint selectedPoint;
     private boolean changed = false;
 
@@ -27,7 +28,7 @@ public class CutsceneEditor extends DragEditorFeature {
         for (Cutscene cutscene : CutsceneRenderer.getCutscenes()) {
             for (BezierSpline spline : cutscene.path.splines) {
                 for (BezierPoint point : spline.points) {
-                    if (point.isHovered(user)) {
+                    if (HandlePicker.isHovered(point.getPos(), user)) {
                         return point;
                     }
                 }

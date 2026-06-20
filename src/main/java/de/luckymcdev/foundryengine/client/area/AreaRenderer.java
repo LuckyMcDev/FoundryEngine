@@ -1,6 +1,6 @@
 package de.luckymcdev.foundryengine.client.area;
 
-import de.luckymcdev.foundryengine.client.editor.feature.AreaFeature;
+import de.luckymcdev.foundryengine.client.editor.HandlePicker;
 import de.luckymcdev.foundryengine.client.render.HandleRenderer;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.area.AABBArea;
@@ -33,7 +33,6 @@ public class AreaRenderer {
 
         Vec3 eye = mc.player.getEyePosition();
         Vec3 look = mc.player.getViewVector(1.0f);
-        double threshold = AreaFeature.PICK_THRESHOLD;
 
         for (Area area : areas) {
             area.drawDebugOutline();
@@ -44,11 +43,11 @@ public class AreaRenderer {
                 Vec3 max = new Vec3(b.maxX, b.maxY, b.maxZ);
 
                 boolean isSelected = selectedCornerArea != null && selectedCornerArea.id().equals(area.id());
-                boolean hoverMin = HandleRenderer.isHovered(min, eye, look, threshold);
-                boolean hoverMax = HandleRenderer.isHovered(max, eye, look, threshold);
+                boolean hoverMin = HandlePicker.isHovered(min, eye, look);
+                boolean hoverMax = HandlePicker.isHovered(max, eye, look);
 
-                Color minColor = (isSelected && draggingMin) || hoverMin ? Color.WHITE : new Color(0x88FFFFFF);
-                Color maxColor = (isSelected && !draggingMin) || hoverMax ? Color.WHITE : new Color(0x88FFFFFF);
+                Color minColor = (isSelected && draggingMin) || hoverMin ? Color.ORANGE : Color.WHITE;
+                Color maxColor = (isSelected && !draggingMin) || hoverMax ? Color.ORANGE : Color.WHITE;
                 HandleRenderer.renderHandle(min, HANDLE_SIZE, minColor);
                 HandleRenderer.renderHandle(max, HANDLE_SIZE, maxColor);
             }

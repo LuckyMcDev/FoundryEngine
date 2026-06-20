@@ -1,6 +1,6 @@
 package de.luckymcdev.foundryengine.client.editor.feature;
 
-import de.luckymcdev.foundryengine.common.item.ModItems;
+import de.luckymcdev.foundryengine.client.editor.EditorController;
 import net.minecraft.client.Minecraft;
 
 public abstract class DragEditorFeature implements EditorFeature {
@@ -8,12 +8,14 @@ public abstract class DragEditorFeature implements EditorFeature {
     protected int useTicks = 0;
     protected double storedDistance = 0;
 
+    protected double getScrollSensitivity() {
+        return 0.25;
+    }
+
     @Override
     public void clientTick() {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.player == null || ModItems.EDITOR_ITEM == null) return;
-
-        boolean using = mc.player.isUsingItem() && mc.player.getUseItem().getItem() == ModItems.EDITOR_ITEM;
+        boolean using = EditorController.isUsingEditorItem();
 
         if (using && !wasUsing) {
             wasUsing = true;
@@ -37,7 +39,7 @@ public abstract class DragEditorFeature implements EditorFeature {
     @Override
     public boolean onScroll(double vertical) {
         if (!wasUsing) return false;
-        storedDistance = Math.max(storedDistance + (vertical * 0.25), 0);
+        storedDistance = Math.max(storedDistance + (vertical * getScrollSensitivity()), 0);
         onDistanceChanged();
         return true;
     }

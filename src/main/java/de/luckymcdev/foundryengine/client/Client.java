@@ -10,10 +10,10 @@ import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.client.area.AreaRenderer;
 import de.luckymcdev.foundryengine.client.cutscene.ClientCutsceneManager;
 import de.luckymcdev.foundryengine.client.cutscene.ClientScreenEffectManager;
-import de.luckymcdev.foundryengine.client.cutscene.CutsceneEditor;
 import de.luckymcdev.foundryengine.client.editor.EditorController;
 import de.luckymcdev.foundryengine.client.editor.EditorManager;
 import de.luckymcdev.foundryengine.client.editor.MainMenu;
+import de.luckymcdev.foundryengine.client.editor.feature.CutsceneEditorFeature;
 import de.luckymcdev.foundryengine.client.imgui.EngineImGui;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiManager;
 import de.luckymcdev.foundryengine.client.particle.ParticleManager;
@@ -126,7 +126,6 @@ public final class Client {
     private static final ClientCutsceneManager CUTSCENE_MANAGER = new ClientCutsceneManager();
     private static final ClientScreenEffectManager CUTSCENE_SCREEN_EFFECT_MANAGER = new ClientScreenEffectManager();
     private static final EditorController EDITOR_CONTROLLER = new EditorController();
-    private static final CutsceneEditor CUTSCENE_EDITOR = EDITOR_CONTROLLER.getCutsceneEditor();
 
     private Client() {
         throw new UtilityClassException();
@@ -260,8 +259,8 @@ public final class Client {
         return EDITOR_CONTROLLER;
     }
 
-    public static CutsceneEditor getCutsceneEditor() {
-        return CUTSCENE_EDITOR;
+    public static CutsceneEditorFeature getCutsceneEditor() {
+        return EDITOR_CONTROLLER.getCutsceneEditorFeature();
     }
 
     public static @Nullable Vec3i getHitOrNull() {

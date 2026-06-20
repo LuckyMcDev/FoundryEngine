@@ -1,5 +1,6 @@
 package de.luckymcdev.foundryengine.common.network;
 
+import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.registry.GenericRegistry;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
@@ -23,7 +24,7 @@ public class NetworkManager {
 
     @ApiStatus.Internal
     public void handleRegistration(RegisterPayloadHandlersEvent event) {
-        final PayloadRegistrar registrar = event.registrar("1").optional();
+        final PayloadRegistrar registrar = event.registrar(Common.MODID).versioned("1").optional();
 
         registrationQueue.forEach(def -> registerPacket(registrar, def));
         registrationQueue.clear();
