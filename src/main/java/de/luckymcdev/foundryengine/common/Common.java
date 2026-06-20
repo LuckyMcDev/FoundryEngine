@@ -73,6 +73,10 @@ public final class Common {
         return Identifier.fromNamespaceAndPath(MODID, path);
     }
 
+    public static Identifier mId(String path) {
+        return Identifier.withDefaultNamespace(path);
+    }
+
     public static Identifier id(String namespace, String path) {
         return Identifier.fromNamespaceAndPath(namespace, path);
     }
