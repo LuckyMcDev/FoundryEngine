@@ -40,6 +40,7 @@ public class AreaPanel extends EditorPanel {
     @Override
     public void content() {
         if (!requireWorld("You need to join a world to manage areas.")) {
+            menuBar = false;
             return;
         }
 

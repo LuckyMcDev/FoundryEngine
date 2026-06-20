@@ -1,6 +1,6 @@
 package de.luckymcdev.foundryengine.client.editor.feature;
 
-import de.luckymcdev.foundryengine.client.area.AreaRenderer;
+import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.area.Area;
 import de.luckymcdev.foundryengine.common.network.packets.editor.AreaPacket;
@@ -10,7 +10,6 @@ import net.minecraft.world.phys.Vec3;
 
 public class AreaFeature extends DragEditorFeature {
     public static final double PICK_THRESHOLD = 0.8;
-
     private Area selectedArea;
     private boolean draggingMin = false;
 
@@ -18,9 +17,9 @@ public class AreaFeature extends DragEditorFeature {
     protected void onDragStart() {
         selectedArea = null;
         draggingMin = false;
-        AreaRenderer.selectedCornerArea = null;
-        AreaRenderer.draggingMin = false;
-        AreaRenderer.storedDistance = 0;
+        Client.getAreaRenderer().selectedCornerArea = null;
+        Client.getAreaRenderer().draggingMin = false;
+        Client.getAreaRenderer().storedDistance = 0;
     }
 
     @Override
@@ -39,17 +38,17 @@ public class AreaFeature extends DragEditorFeature {
             sendAreaUpdate();
         }
         selectedArea = null;
-        AreaRenderer.selectedCornerArea = null;
+        Client.getAreaRenderer().selectedCornerArea = null;
     }
 
     @Override
     public void render() {
-        AreaRenderer.render();
+        Client.getAreaRenderer().render();
     }
 
     @Override
     protected void onDistanceChanged() {
-        AreaRenderer.storedDistance = storedDistance;
+        Client.getAreaRenderer().storedDistance = storedDistance;
     }
 
     @Override
@@ -63,7 +62,7 @@ public class AreaFeature extends DragEditorFeature {
         super.reset();
         selectedArea = null;
         draggingMin = false;
-        AreaRenderer.selectedCornerArea = null;
+        Client.getAreaRenderer().selectedCornerArea = null;
     }
 
     private void sendAreaUpdate() {
@@ -113,9 +112,9 @@ public class AreaFeature extends DragEditorFeature {
                     ? new Vec3(closestArea.bounds().minX, closestArea.bounds().minY, closestArea.bounds().minZ)
                     : new Vec3(closestArea.bounds().maxX, closestArea.bounds().maxY, closestArea.bounds().maxZ);
             storedDistance = corner.distanceTo(eye);
-            AreaRenderer.selectedCornerArea = closestArea;
-            AreaRenderer.draggingMin = closestIsMin;
-            AreaRenderer.storedDistance = storedDistance;
+            Client.getAreaRenderer().selectedCornerArea = closestArea;
+            Client.getAreaRenderer().draggingMin = closestIsMin;
+            Client.getAreaRenderer().storedDistance = storedDistance;
         }
     }
 

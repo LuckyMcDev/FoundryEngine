@@ -7,6 +7,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
+import de.luckymcdev.foundryengine.client.area.AreaRenderer;
 import de.luckymcdev.foundryengine.client.cutscene.ClientCutsceneManager;
 import de.luckymcdev.foundryengine.client.cutscene.ClientScreenEffectManager;
 import de.luckymcdev.foundryengine.client.cutscene.CutsceneEditor;
@@ -119,6 +120,7 @@ public final class Client {
     private static final ParticleManager PARTICLE_MANAGER = new ParticleManager();
     private static final EffectManager EFFECT_MANAGER = new EffectManager();
     private static final WaypointRenderer WAYPOINT_RENDERER = new WaypointRenderer();
+    private static final AreaRenderer AREA_RENDERER = new AreaRenderer();
     private static final MeshRenderer MESH_RENDERER = new MeshRenderer();
     private static final ObjModelManager OBJ_MODEL_MANAGER = new ObjModelManager();
     private static final ClientCutsceneManager CUTSCENE_MANAGER = new ClientCutsceneManager();
@@ -240,6 +242,10 @@ public final class Client {
 
     public static WaypointRenderer getWaypointRenderer() {
         return WAYPOINT_RENDERER;
+    }
+
+    public static AreaRenderer getAreaRenderer() {
+        return AREA_RENDERER;
     }
 
     public static ClientCutsceneManager getCutsceneManager() {

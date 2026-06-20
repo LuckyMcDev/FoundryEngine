@@ -4,22 +4,25 @@ import de.luckymcdev.foundryengine.client.editor.feature.AreaFeature;
 import de.luckymcdev.foundryengine.client.render.HandleRenderer;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.area.Area;
+import de.luckymcdev.foundryengine.common.area.module.AreaRenderModule;
 import de.luckymcdev.foundryengine.common.util.color.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
 public class AreaRenderer {
-    private static final double HANDLE_SIZE = 0.125;
+    private final double HANDLE_SIZE = 0.125;
 
-    public static @Nullable Area selectedCornerArea;
-    public static boolean draggingMin = false;
-    public static double storedDistance = 0;
+    public @Nullable Area selectedCornerArea;
+    public boolean draggingMin = false;
+    public double storedDistance = 0;
 
-    public static void render() {
+    public void render() {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null || mc.player == null) return;
 
@@ -46,6 +49,24 @@ public class AreaRenderer {
             Color maxColor = (isSelected && !draggingMin) || hoverMax ? Color.WHITE : new Color(0x88FFFFFF);
             HandleRenderer.renderHandle(min, HANDLE_SIZE, minColor);
             HandleRenderer.renderHandle(max, HANDLE_SIZE, maxColor);
+        }
+    }
+
+    public void renderAreaModules(RenderLevelStageEvent.AfterLevel event) {
+        var mc = Minecraft.getInstance();
+        if (!(mc.level instanceof ClientLevel level)) return;
+
+        var poseStack = event.getPoseStack();
+        var buffer = mc.renderBuffers().bufferSource();
+        float partialTick = mc.getDeltaTracker().getGameTimeDeltaPartialTick(true);
+
+        for (Area area : Common.getAreaManager().getAreasForDimension(level.dimension())) {
+            for (Identifier mid : area.moduleIds()) {
+                var module = Common.getAreaManager().getModuleType(mid);
+                if (module instanceof AreaRenderModule renderModule) {
+                    renderModule.render(level, area, poseStack, buffer, partialTick);
+                }
+            }
         }
     }
 }
