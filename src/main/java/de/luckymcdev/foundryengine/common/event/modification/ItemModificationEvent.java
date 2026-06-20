@@ -34,11 +34,11 @@ public class ItemModificationEvent extends Event {
     public static void flush() {
         if (currentEvent == null) return;
         OVERRIDES.forEach((item, overrides) -> {
-            currentEvent.modify(item, builder -> {
+            currentEvent.modify(item, (components, context, itemToModify) -> {
                 for (var entry : overrides.entrySet()) {
                     @SuppressWarnings("unchecked")
                     var type = (DataComponentType<Object>) entry.getKey();
-                    builder.set(type, entry.getValue());
+                    components.set(type, entry.getValue());
                 }
             });
         });
