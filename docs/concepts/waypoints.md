@@ -7,12 +7,13 @@ Waypoints are persistent, colored in-world markers with a name, icon, and positi
 ```groovy
 import de.luckymcdev.foundryengine.common.waypoint.Waypoint
 import de.luckymcdev.foundryengine.common.Common
+import de.luckymcdev.foundryengine.common.util.ChatIcons
 
 def waypoint = new Waypoint(
-    "Spawn Point",           // name
-    "star",                  // icon
-    100, 64, -200,           // x, y, z
-    0xFF44FF44               // ARGB color (green)
+    "Spawn Point",              // name
+    ChatIcons.PLUS.getString(), // icon
+    100, 64, -200,              // x, y, z
+    0xFF44FF44                  // ARGB color (green)
 )
 
 Common.getWaypointManager().addWaypoint(level, waypoint)
