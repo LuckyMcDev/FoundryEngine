@@ -12,10 +12,10 @@ public class EffectManager {
     private final GenericRegistry<Identifier, PrioritizedEffect> registry = new GenericRegistry<>();
 
     public EffectManager() {
-        register(new PrioritizedEffect(Identifier.withDefaultNamespace("creeper"), 10));
-        register(new PrioritizedEffect(Identifier.withDefaultNamespace("spider"), 10));
-        register(new PrioritizedEffect(Identifier.withDefaultNamespace("invert"), 50));
-        register(new PrioritizedEffect(Identifier.withDefaultNamespace("blur"), 100));
+        register(new PrioritizedEffect(Common.mId("creeper"), 10));
+        register(new PrioritizedEffect(Common.mId("spider"), 10));
+        register(new PrioritizedEffect(Common.mId("invert"), 50));
+        register(new PrioritizedEffect(Common.mId("blur"), 100));
 
         register(new PrioritizedEffect(Common.id("grayscale"), 55));
         register(new PrioritizedEffect(Common.id("depth_vis"), 40));
