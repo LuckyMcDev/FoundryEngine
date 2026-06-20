@@ -44,10 +44,8 @@ public class AreaRenderer {
 
             Color minColor = (isSelected && draggingMin) || hoverMin ? Color.WHITE : new Color(0x88FFFFFF);
             Color maxColor = (isSelected && !draggingMin) || hoverMax ? Color.WHITE : new Color(0x88FFFFFF);
-
             HandleRenderer.renderHandle(min, HANDLE_SIZE, minColor);
             HandleRenderer.renderHandle(max, HANDLE_SIZE, maxColor);
         }
     }
-
 }

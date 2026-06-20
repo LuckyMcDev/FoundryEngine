@@ -3,6 +3,7 @@ package de.luckymcdev.foundryengine.common.area;
 import de.luckymcdev.foundryengine.common.Common;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.level.saveddata.SavedData;
@@ -51,7 +52,7 @@ public class AreaSavedData extends SavedData {
         CompoundTag tag = new CompoundTag();
         ListTag list = new ListTag();
         for (Area area : areas) {
-            list.add(Area.writeToNbt(area));
+            list.add(area.writeToNbt());
         }
         tag.put("Areas", list);
         return tag;
@@ -66,7 +67,7 @@ public class AreaSavedData extends SavedData {
         setDirty();
     }
 
-    public boolean removeArea(String id) {
+    public boolean removeArea(Identifier id) {
         boolean removed = areas.removeIf(a -> a.id().equals(id));
         if (removed) {
             setDirty();
@@ -74,7 +75,7 @@ public class AreaSavedData extends SavedData {
         return removed;
     }
 
-    public boolean updateArea(String id, Area updatedArea) {
+    public boolean updateArea(Identifier id, Area updatedArea) {
         for (int i = 0; i < areas.size(); i++) {
             if (areas.get(i).id().equals(id)) {
                 areas.set(i, updatedArea);

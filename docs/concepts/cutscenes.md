@@ -122,19 +122,22 @@ The in-world renderer draws:
 
 ```groovy
 import de.luckymcdev.foundryengine.common.Common
-import de.luckymcdev.foundryengine.api.event.PlayerEvents
-import de.luckymcdev.foundryengine.api.event.AreaEvents
+import de.luckymcdev.foundryengine.common.area.module.AreaEnterModule
 
-// Play a cutscene when player enters an area
-AreaEvents.areaEnter {
-    def player = it.entities[0] as ServerPlayer
-    def manager = Common.getCutsceneManager()
-    def cutscene = manager.find(player.serverLevel(), "intro_cutscene")
-    if (cutscene != null) {
-        // Send play packet
-        manager.playCutscene(player, cutscene.getName(), 100, "SINE_IN_OUT", 10, 10)
+// Play a cutscene when player enters an area via a module
+Common.getAreaManager().registerModuleType(new AreaEnterModule() {
+    @Override
+    Identifier id() { return Common.id("play_intro") }
+
+    @Override
+    void onEnter(ServerPlayer player, Area area) {
+        def manager = Common.getCutsceneManager()
+        def cutscene = manager.find(player.serverLevel(), "intro_cutscene")
+        if (cutscene != null) {
+            manager.playCutscene(player, cutscene.getName(), 100, "SINE_IN_OUT", 10, 10)
+        }
     }
-}
+})
 ```
 
 ## See Also

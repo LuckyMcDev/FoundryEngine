@@ -66,15 +66,22 @@ ServerEvents.started {
 ## Using Areas
 
 ```groovy
-import de.luckymcdev.foundryengine.api.event.AreaEvents
+import de.luckymcdev.foundryengine.common.area.module.AreaEnterModule
+import de.luckymcdev.foundryengine.common.area.module.AreaLeaveModule
 
-AreaEvents.areaEnter {
-    println "Player entered area: ${it.area.id()}"
-}
+Common.getAreaManager().registerModuleType(new AreaEnterModule() {
+    @Override Identifier id() { return Common.id("log_enter") }
+    @Override void onEnter(ServerPlayer player, Area area) {
+        println "Player ${player.name} entered area: ${area.id()}"
+    }
+})
 
-AreaEvents.areaLeave {
-    println "Player left area: ${it.area.id()}"
-}
+Common.getAreaManager().registerModuleType(new AreaLeaveModule() {
+    @Override Identifier id() { return Common.id("log_leave") }
+    @Override void onLeave(ServerPlayer player, Area area) {
+        println "Player ${player.name} left area: ${area.id()}"
+    }
+})
 ```
 
 ## Creating a Runtime Dimension

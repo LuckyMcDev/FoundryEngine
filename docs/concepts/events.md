@@ -71,15 +71,23 @@ BundleEvents.custom(SomeEvent.class, {
 
 ### AreaEvents
 
-Package: `de.luckymcdev.foundryengine.api.event.AreaEvents`
+Package: `de.luckymcdev.foundryengine.common.event.AreaEvents`
 
-Fires when entities interact with custom **Area** zones.
+Fires when server levels load, providing a hook to create areas.
 
-| Method          | Event Type                 | Description                      | Blueprint Node     |
-|-----------------|----------------------------|----------------------------------|--------------------|
-| `areaEnter(cb)` | `AreaEvent.AreaEnterEvent` | Entity enters an area            | `EVENT_AREA_ENTER` |
-| `areaLeave(cb)` | `AreaEvent.AreaLeaveEvent` | Entity leaves an area            | `EVENT_AREA_LEAVE` |
-| `areaTick(cb)`  | `AreaEvent.AreaTickEvent`  | Tick while entity is inside area | `EVENT_AREA_TICK`  |
+| Method | Parameter | Description |
+|--------|-----------|-------------|
+| `register(cb)` | `EventCallback<ServerLevel>` | Called for every `ServerLevel` as it loads |
+
+Area behavior is no longer event‑driven; use **modules** instead:
+
+| Interface | Method | When it fires |
+|-----------|--------|---------------|
+| `AreaTickModule` | `tick(ServerLevel, Area)` | Every tick while entities are inside |
+| `AreaEnterModule` | `onEnter(ServerPlayer, Area)` | A player enters the area |
+| `AreaLeaveModule` | `onLeave(ServerPlayer, Area)` | A player leaves the area |
+| `AreaBlockModule` | `onBlockBreak/onBlockPlace` | Block break/place attempted |
+| `AreaRenderModule` | `render(...)` | Debug/effect rendering (client) |
 
 **Context available (common to all three):**
 - `area` (`Area`) — The area zone

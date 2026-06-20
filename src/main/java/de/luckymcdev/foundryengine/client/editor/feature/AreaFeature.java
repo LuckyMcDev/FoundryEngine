@@ -8,8 +8,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.List;
-
 public class AreaFeature extends DragEditorFeature {
     public static final double PICK_THRESHOLD = 0.8;
 
@@ -30,7 +28,6 @@ public class AreaFeature extends DragEditorFeature {
         if (selectedArea == null) {
             pickAreaCorner(mc);
         }
-
         if (selectedArea != null) {
             updateDraggedCorner(mc);
         }
@@ -41,7 +38,6 @@ public class AreaFeature extends DragEditorFeature {
         if (selectedArea != null && useTicks > 2) {
             sendAreaUpdate();
         }
-
         selectedArea = null;
         AreaRenderer.selectedCornerArea = null;
     }
@@ -72,9 +68,7 @@ public class AreaFeature extends DragEditorFeature {
 
     private void sendAreaUpdate() {
         if (selectedArea == null) return;
-        AABB b = selectedArea.bounds();
-        Area updated = Area.of(selectedArea.id(), new Vec3(b.minX, b.minY, b.minZ), new Vec3(b.maxX, b.maxY, b.maxZ), selectedArea.dimension(), selectedArea.color());
-        var packet = AreaPacket.update(updated);
+        var packet = AreaPacket.update(selectedArea);
         Common.getNetworkManager().sendToServer(packet);
     }
 
@@ -150,20 +144,6 @@ public class AreaFeature extends DragEditorFeature {
             );
         }
 
-        Area newArea = Area.of(selectedArea.id(),
-                new Vec3(newBounds.minX, newBounds.minY, newBounds.minZ),
-                new Vec3(newBounds.maxX, newBounds.maxY, newBounds.maxZ),
-                selectedArea.dimension(),
-                selectedArea.color());
-
-        List<Area> areas = Common.getAreaManager().getAreasForDimension(selectedArea.dimension());
-        for (int i = 0; i < areas.size(); i++) {
-            if (areas.get(i).id().equals(selectedArea.id())) {
-                areas.set(i, newArea);
-                break;
-            }
-        }
-
-        selectedArea = newArea;
+        selectedArea.setBounds(newBounds);
     }
 }

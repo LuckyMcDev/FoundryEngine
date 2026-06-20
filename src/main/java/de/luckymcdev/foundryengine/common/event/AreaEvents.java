@@ -1,51 +1,37 @@
 package de.luckymcdev.foundryengine.common.event;
 
 import de.luckymcdev.foundryengine.common.Common;
-import de.luckymcdev.foundryengine.common.area.AreaEvent;
+import net.minecraft.server.level.ServerLevel;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.event.level.LevelEvent;
 import org.jetbrains.annotations.ApiStatus;
 
 public class AreaEvents {
-    private static final EventGroupHolder<AreaEvent.AreaEnterEvent> AREA_ENTER = new EventGroupHolder<>();
-    private static final EventGroupHolder<AreaEvent.AreaLeaveEvent> AREA_LEAVE = new EventGroupHolder<>();
-    private static final EventGroupHolder<AreaEvent.AreaTickEvent> AREA_TICK = new EventGroupHolder<>();
+    public static final EventGroupHolder<ServerLevel> ON_LOAD = new EventGroupHolder<>();
 
-    public static void areaEnter(EventCallback<AreaEvent.AreaEnterEvent> cb) {
-        AREA_ENTER.register(cb);
-    }
-
-    public static void areaLeave(EventCallback<AreaEvent.AreaLeaveEvent> cb) {
-        AREA_LEAVE.register(cb);
-    }
-
-    public static void areaTick(EventCallback<AreaEvent.AreaTickEvent> cb) {
-        AREA_TICK.register(cb);
+    public static void register(EventCallback<ServerLevel> cb) {
+        ON_LOAD.register(cb);
     }
 
     @ApiStatus.Internal
     public static class Internal {
-        public static void postAreaEnter(AreaEvent.AreaEnterEvent e) {
-            AREA_ENTER.post(e);
-        }
-
-        public static void postAreaLeave(AreaEvent.AreaLeaveEvent e) {
-            AREA_LEAVE.post(e);
-        }
-
-        public static void postAreaTick(AreaEvent.AreaTickEvent e) {
-            AREA_TICK.post(e);
+        public static void postLoad(LevelEvent.Load event) {
+            if (event.getLevel() instanceof ServerLevel level) {
+                Common.getAreaManager().onLevelLoad(event);
+                ON_LOAD.post(level);
+            }
         }
 
         public static void register(IEventBus bus) {
-            bus.addListener(Internal::postAreaEnter);
-            bus.addListener(Internal::postAreaLeave);
-            bus.addListener(Internal::postAreaTick);
+            bus.addListener(Internal::postLoad);
+            bus.addListener(Common.getAreaManager()::onLevelTick);
+            bus.addListener(Common.getAreaManager()::onServerStopping);
+            bus.addListener(Common.getAreaManager()::onBlockBreak);
+            bus.addListener(Common.getAreaManager()::onBlockPlace);
         }
 
         public static void clear() {
-            AREA_ENTER.clear();
-            AREA_LEAVE.clear();
-            AREA_TICK.clear();
+            ON_LOAD.clear();
         }
 
         static {

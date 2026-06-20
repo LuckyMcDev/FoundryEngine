@@ -70,6 +70,10 @@ public class Color {
         this.b = (argb & 0xFF) / 255.0f;
     }
 
+    public Color(float[] floats) {
+        this(floats[0], floats[1], floats[2], 255);
+    }
+
     /**
      * Returns the color as an integer in RGB format (Alpha is forced to 255).
      */
@@ -100,6 +104,14 @@ public class Color {
                 b + factor * (other.b - b),
                 a + factor * (other.a - a)
         );
+    }
+
+    public float[] toFloatArray() {
+        float[] out = new float[3];
+        out[0] = this.r();
+        out[1] = this.g();
+        out[2] = this.b();
+        return out;
     }
 
     public float r() {
