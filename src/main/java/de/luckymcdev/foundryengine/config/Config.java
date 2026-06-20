@@ -2,31 +2,28 @@ package de.luckymcdev.foundryengine.config;
 
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 
 public final class Config {
-    public static final CommonConfig COMMON = new CommonConfig();
-    public static final ClientConfig CLIENT = new ClientConfig();
-    public static final ServerConfig SERVER = new ServerConfig();
-    public static final StartupConfig STARTUP = new StartupConfig();
 
     public static void registerClient(ModContainer container) {
-        container.registerConfig(CLIENT.type(), CLIENT.spec());
+        container.registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC);
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
     }
 
     public static void registerServer(ModContainer container) {
-        container.registerConfig(SERVER.type(), SERVER.spec());
+        container.registerConfig(ModConfig.Type.SERVER, ServerConfig.SPEC);
     }
 
     public static void registerCommon(ModContainer container) {
-        container.registerConfig(COMMON.type(), COMMON.spec());
+        container.registerConfig(ModConfig.Type.COMMON, CommonConfig.SPEC);
     }
 
     public static void registerStartup(ModContainer container) {
-        container.registerConfig(STARTUP.type(), STARTUP.spec());
+        container.registerConfig(ModConfig.Type.STARTUP, StartupConfig.SPEC);
     }
 
     @SubscribeEvent
