@@ -3,16 +3,21 @@ package de.luckymcdev.foundryengine.client.editor.panel.editor;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.common.Common;
+import de.luckymcdev.foundryengine.common.area.AABBArea;
 import de.luckymcdev.foundryengine.common.area.Area;
 import de.luckymcdev.foundryengine.common.area.AreaManager;
+import de.luckymcdev.foundryengine.common.area.BlockArea;
 import de.luckymcdev.foundryengine.common.network.packets.editor.AreaPacket;
 import de.luckymcdev.foundryengine.common.util.color.Color;
 import imgui.ImGui;
 import imgui.flag.ImGuiColorEditFlags;
+import imgui.type.ImBoolean;
 import imgui.type.ImInt;
 import imgui.type.ImString;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 import java.util.Map;
@@ -20,11 +25,14 @@ import java.util.Map;
 public class AreaPanel extends EditorPanel {
     public static final AreaPanel INSTANCE = new AreaPanel();
 
+    private static final float LEFT_PANEL_WIDTH = 240f;
+    private static final float CREATE_FORM_MIN_HEIGHT = 90f;
     private final ImString newAreaName = new ImString(64);
     private final ImInt areaSizeX = new ImInt(5);
     private final ImInt areaSizeY = new ImInt(4);
     private final ImInt areaSizeZ = new ImInt(5);
     private final ImInt areaOffsetY = new ImInt(0);
+    private static final float CREATE_FORM_MAX_HEIGHT = 500f;
     private float[] newAreaColor;
 
     private int selectedIndex = -1;
@@ -36,16 +44,24 @@ public class AreaPanel extends EditorPanel {
                 .menuBar(true));
         newAreaColor = Area.DEFAULT_COLOR.toFloatArray();
     }
+    private static final float SPLITTER_HEIGHT = 6f;
+    private final ImBoolean showCreateForm = new ImBoolean(false);
+    private final ImBoolean creatingBlockArea = new ImBoolean(false);
+    private float createFormHeight = 240f;
 
     @Override
     public void content() {
         if (!requireWorld("You need to join a world to manage areas.")) {
-            menuBar = false;
             return;
         }
 
         renderMenuBar();
         ImGui.separator();
+
+        if (showCreateForm.get()) {
+            renderCreateForm();
+            ImGui.separator();
+        }
 
         beginContent();
         List<Area> areas = getAreas();
@@ -53,20 +69,13 @@ public class AreaPanel extends EditorPanel {
         ImGui.sameLine();
         renderRightPanel(areas);
         endContent();
-
-        renderNewAreaModal();
     }
 
     private void renderMenuBar() {
         menuBar(() -> {
             if (ImGui.menuItem(ImIcons.FA.FA_PLUS + " New")) {
-                newAreaName.set("");
-                areaSizeX.set(5);
-                areaSizeY.set(4);
-                areaSizeZ.set(5);
-                areaOffsetY.set(0);
-                newAreaColor = Area.DEFAULT_COLOR.toFloatArray();
-                ImGui.openPopup("Create Area");
+                resetCreateForm();
+                showCreateForm.set(true);
             }
             if (ImGui.menuItem(ImIcons.FA.FA_ARROW_ROTATE_RIGHT + " Sync")) {
                 Common.getNetworkManager().sendToServer(AreaPacket.requestSync());
@@ -75,12 +84,34 @@ public class AreaPanel extends EditorPanel {
         });
     }
 
-    private void renderNewAreaModal() {
-        if (ImGui.beginPopupModal("Create Area", null)) {
-            ImGui.setNextItemWidth(-1);
-            boolean confirm = ImGui.inputTextWithHint("##newname", "area_name (or namespace:path)", newAreaName,
-                    imgui.flag.ImGuiInputTextFlags.EnterReturnsTrue);
+    private void resetCreateForm() {
+        newAreaName.set("");
+        areaSizeX.set(5);
+        areaSizeY.set(4);
+        areaSizeZ.set(5);
+        areaOffsetY.set(0);
+        creatingBlockArea.set(false);
+        newAreaColor = Area.DEFAULT_COLOR.toFloatArray();
+    }
 
+    private void renderCreateForm() {
+        ImGui.beginChild("##create_area_form", 0, createFormHeight, true);
+
+        ImGui.textColored(0.6f, 0.85f, 1.0f, 1.0f, ImIcons.FA.FA_PLUS + " Create New Area");
+        ImGui.spacing();
+
+        ImGui.setNextItemWidth(-1);
+        ImGui.inputTextWithHint("##newname", "area_name (or namespace:path)", newAreaName,
+                imgui.flag.ImGuiInputTextFlags.EnterReturnsTrue);
+
+        ImGui.checkbox("Single Block", creatingBlockArea);
+        ImGui.sameLine();
+        ImGui.textDisabled("(?)");
+        if (ImGui.isItemHovered()) {
+            ImGui.setTooltip("Creates a single-block area at your feet instead of a box area.");
+        }
+
+        if (!creatingBlockArea.get()) {
             ImGui.text("Size");
             ImGui.setNextItemWidth(80);
             ImGui.inputInt("X##sizeX", areaSizeX);
@@ -93,34 +124,61 @@ public class AreaPanel extends EditorPanel {
 
             ImGui.setNextItemWidth(80);
             ImGui.inputInt("Y-offset##offsetY", areaOffsetY);
-
-            ImGui.colorEdit3("Color##newAreaColor", newAreaColor);
-
-            ImGui.spacing();
-            if (ImGui.button("Create", 120, 0) || confirm) {
-                String name = newAreaName.get().trim();
-                if (!name.isBlank() && areaSizeX.get() > 0 && areaSizeY.get() > 0 && areaSizeZ.get() > 0) {
-                    createArea(name);
-                    newAreaName.set("");
-                    ImGui.closeCurrentPopup();
-                }
-            }
-            ImGui.sameLine();
-            if (ImGui.button("Cancel", 120, 0)) {
-                newAreaName.set("");
-                ImGui.closeCurrentPopup();
-            }
-
-            ImGui.endPopup();
         }
+
+        ImGui.colorEdit3("Color##newAreaColor", newAreaColor);
+
+        ImGui.spacing();
+        boolean validInput = !newAreaName.get().trim().isBlank()
+                && (creatingBlockArea.get() || (areaSizeX.get() > 0 && areaSizeY.get() > 0 && areaSizeZ.get() > 0));
+
+        ImGui.beginDisabled(!validInput);
+        boolean createClicked = ImGui.button("Create", 120, 0);
+        ImGui.endDisabled();
+
+        if (createClicked && validInput) {
+            createArea(newAreaName.get().trim());
+            showCreateForm.set(false);
+        }
+
+        ImGui.sameLine();
+        if (ImGui.button("Cancel", 120, 0)) {
+            showCreateForm.set(false);
+        }
+
+        ImGui.endChild();
+
+        renderCreateFormSplitter();
+    }
+
+    private void renderCreateFormSplitter() {
+        ImGui.pushStyleColor(imgui.flag.ImGuiCol.Button, 0.0f, 0.0f, 0.0f, 0.0f);
+        ImGui.pushStyleColor(imgui.flag.ImGuiCol.ButtonHovered, 1.0f, 1.0f, 1.0f, 0.15f);
+        ImGui.pushStyleColor(imgui.flag.ImGuiCol.ButtonActive, 1.0f, 1.0f, 1.0f, 0.25f);
+
+        ImGui.button("##create_form_splitter", -1, SPLITTER_HEIGHT);
+
+        if (ImGui.isItemHovered() || ImGui.isItemActive()) {
+            ImGui.setMouseCursor(imgui.flag.ImGuiMouseCursor.ResizeNS);
+        }
+        if (ImGui.isItemActive()) {
+            float deltaY = ImGui.getIO().getMouseDeltaY();
+            createFormHeight += deltaY;
+            if (createFormHeight < CREATE_FORM_MIN_HEIGHT) createFormHeight = CREATE_FORM_MIN_HEIGHT;
+            if (createFormHeight > CREATE_FORM_MAX_HEIGHT) createFormHeight = CREATE_FORM_MAX_HEIGHT;
+        }
+
+        ImGui.popStyleColor(3);
     }
 
     private void renderLeftPanel(List<Area> areas) {
-        ImGui.beginChild("##area_list", 180f, 0, true);
+        ImGui.beginChild("##area_list", LEFT_PANEL_WIDTH, 0, true);
 
         if (areas.isEmpty()) {
             ImGui.textDisabled("No areas.");
         } else {
+            float availWidth = ImGui.getContentRegionAvailX();
+
             for (int i = 0; i < areas.size(); i++) {
                 Area a = areas.get(i);
                 boolean sel = (i == selectedIndex);
@@ -133,7 +191,10 @@ public class AreaPanel extends EditorPanel {
                 ImGui.sameLine();
 
                 String label = a.id() + "##area_" + i;
-                if (ImGui.selectable(label, sel)) {
+                // Stretch the selectable to fill remaining width so long IDs
+                // get full click area and aren't visually clipped by sameLine().
+                float selectableWidth = ImGui.getContentRegionAvailX();
+                if (ImGui.selectable(label, sel, 0, selectableWidth, 0)) {
                     selectedIndex = sel ? -1 : i;
                 }
                 ImGui.popID();
@@ -154,7 +215,7 @@ public class AreaPanel extends EditorPanel {
 
         Area area = areas.get(selectedIndex);
 
-        ImGui.text(area.id().toString());
+        ImGui.textWrapped(area.id().toString());
         ImGui.separator();
 
         ImGui.text("Dimension: " + area.dimension().identifier());
@@ -180,7 +241,7 @@ public class AreaPanel extends EditorPanel {
             ImGui.text("Linked Areas:");
             ImGui.indent();
             for (var entry : links.entrySet()) {
-                ImGui.text(entry.getKey() + " -> " + entry.getValue());
+                ImGui.textWrapped(entry.getKey() + " -> " + entry.getValue());
             }
             ImGui.unindent();
             ImGui.spacing();
@@ -210,31 +271,40 @@ public class AreaPanel extends EditorPanel {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.level == null) return;
 
-        int sizeX = areaSizeX.get();
-        int sizeY = areaSizeY.get();
-        int sizeZ = areaSizeZ.get();
-        int offsetY = areaOffsetY.get();
-
-        var playerPos = mc.player.position();
-        double centerY = playerPos.y + offsetY;
-
-        var min = new net.minecraft.world.phys.Vec3(
-                playerPos.x - sizeX / 2.0,
-                centerY - sizeY / 2.0,
-                playerPos.z - sizeZ / 2.0
-        );
-        var max = new net.minecraft.world.phys.Vec3(
-                playerPos.x + sizeX / 2.0,
-                centerY + sizeY / 2.0,
-                playerPos.z + sizeZ / 2.0
-        );
-
         Color color = new Color(newAreaColor);
         int colon = name.indexOf(':');
         Identifier id = colon >= 0
                 ? Identifier.fromNamespaceAndPath(name.substring(0, colon), name.substring(colon + 1))
                 : Common.id(name);
-        Area area = Area.of(id, min, max, mc.level.dimension(), color);
+
+        Area area;
+        if (creatingBlockArea.get()) {
+            var playerPos = mc.player.blockPosition();
+            int offsetY = areaOffsetY.get();
+            area = BlockArea.of(id, new BlockPos(playerPos.getX(), playerPos.getY() + offsetY, playerPos.getZ()), mc.level.dimension(), color);
+        } else {
+            int sizeX = areaSizeX.get();
+            int sizeY = areaSizeY.get();
+            int sizeZ = areaSizeZ.get();
+            int offsetY = areaOffsetY.get();
+
+            var playerPos = mc.player.position();
+            double centerY = playerPos.y + offsetY;
+
+            var min = new Vec3(
+                    playerPos.x - sizeX / 2.0,
+                    centerY - sizeY / 2.0,
+                    playerPos.z - sizeZ / 2.0
+            );
+            var max = new Vec3(
+                    playerPos.x + sizeX / 2.0,
+                    centerY + sizeY / 2.0,
+                    playerPos.z + sizeZ / 2.0
+            );
+
+            area = AABBArea.of(id, min, max, mc.level.dimension(), color);
+        }
+
         Common.getNetworkManager().sendToServer(AreaPacket.create(area));
         setStatus("Area creation request sent: " + id);
     }

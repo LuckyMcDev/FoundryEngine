@@ -1,12 +1,15 @@
 package de.luckymcdev.foundryengine.common.network.packets.editor;
 
 import de.luckymcdev.foundryengine.common.Common;
+import de.luckymcdev.foundryengine.common.area.AABBArea;
 import de.luckymcdev.foundryengine.common.area.Area;
+import de.luckymcdev.foundryengine.common.area.BlockArea;
 import de.luckymcdev.foundryengine.common.network.AbstractPacket;
 import de.luckymcdev.foundryengine.common.network.PacketBounds;
 import de.luckymcdev.foundryengine.common.network.codecs.AABBCodec;
 import de.luckymcdev.foundryengine.common.util.PermissionChecks;
 import de.luckymcdev.foundryengine.common.util.color.Color;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -27,7 +30,8 @@ public record AreaPacket(
         Color color,
         List<Identifier> modules,
         CompoundTag moduleData,
-        CompoundTag linkedAreas
+        CompoundTag linkedAreas,
+        AreaPacket.AreaType areaType
 ) implements AbstractPacket<AreaPacket> {
 
     public static final Type<AreaPacket> TYPE = AbstractPacket.createType(Common.id("area_packet"));
@@ -41,6 +45,7 @@ public record AreaPacket(
             Identifier.STREAM_CODEC.apply(ByteBufCodecs.list()), AreaPacket::modules,
             ByteBufCodecs.COMPOUND_TAG, AreaPacket::moduleData,
             ByteBufCodecs.COMPOUND_TAG, AreaPacket::linkedAreas,
+            ByteBufCodecs.VAR_INT.map(AreaType::fromOrdinal, AreaType::ordinal), AreaPacket::areaType,
             AreaPacket::new
     );
 
@@ -62,11 +67,11 @@ public record AreaPacket(
     }
 
     public static AreaPacket remove(Identifier areaId) {
-        return new AreaPacket(Action.REMOVE, areaId, new AABB(0, 0, 0, 0, 0, 0), SENTINEL, new Color(0), List.of(), new CompoundTag(), new CompoundTag());
+        return new AreaPacket(Action.REMOVE, areaId, new AABB(0, 0, 0, 0, 0, 0), SENTINEL, new Color(0), List.of(), new CompoundTag(), new CompoundTag(), AreaType.AABB);
     }
 
     public static AreaPacket requestSync() {
-        return new AreaPacket(Action.REQUEST_SYNC, SENTINEL, new AABB(0, 0, 0, 0, 0, 0), SENTINEL, new Color(0), List.of(), new CompoundTag(), new CompoundTag());
+        return new AreaPacket(Action.REQUEST_SYNC, SENTINEL, new AABB(0, 0, 0, 0, 0, 0), SENTINEL, new Color(0), List.of(), new CompoundTag(), new CompoundTag(), AreaType.AABB);
     }
 
     private static AreaPacket ofAction(Action action, Area area) {
@@ -80,6 +85,8 @@ public record AreaPacket(
             links.putString(entry.getKey(), entry.getValue().toString());
         }
 
+        AreaType areaType = area instanceof BlockArea ? AreaType.BLOCK : AreaType.AABB;
+
         return new AreaPacket(
                 action,
                 area.id(),
@@ -88,7 +95,8 @@ public record AreaPacket(
                 area.color(),
                 List.copyOf(area.moduleIds()),
                 modData,
-                links
+                links,
+                areaType
         );
     }
 
@@ -112,15 +120,28 @@ public record AreaPacket(
                         areaManager.remove(level, area);
                     }
                 }
-                case UPDATE -> {
-                    var updated = new Area(packet.id(), packet.bounds(), level.dimension(), packet.color());
-                    applyPacketData(updated, packet);
-                    areaManager.update(level, updated);
-                }
                 case CREATE -> {
-                    var area = new Area(packet.id(), packet.bounds(), level.dimension(), packet.color());
+                    var area = switch (packet.areaType()) {
+                        case BLOCK -> {
+                            BlockPos pos = BlockPos.containing(
+                                    packet.bounds().minX + 0.5,
+                                    packet.bounds().minY,
+                                    packet.bounds().minZ + 0.5
+                            );
+                            yield new BlockArea(packet.id(), pos, level.dimension(), packet.color());
+                        }
+                        case AABB -> new AABBArea(packet.id(), packet.bounds(), level.dimension(), packet.color());
+                    };
                     applyPacketData(area, packet);
                     areaManager.register(level, area);
+                }
+                case UPDATE -> {
+                    Area existing = areaManager.getArea(packet.id());
+                    var updated = existing instanceof BlockArea
+                            ? new BlockArea(packet.id(), ((BlockArea) existing).pos(), level.dimension(), packet.color())
+                            : new AABBArea(packet.id(), packet.bounds(), level.dimension(), packet.color());
+                    applyPacketData(updated, packet);
+                    areaManager.update(level, updated);
                 }
             }
         });
@@ -144,6 +165,14 @@ public record AreaPacket(
         CREATE, UPDATE, REMOVE, REQUEST_SYNC;
 
         public static Action fromOrdinal(int ordinal) {
+            return values()[ordinal];
+        }
+    }
+
+    public enum AreaType {
+        BLOCK, AABB;
+
+        public static AreaType fromOrdinal(int ordinal) {
             return values()[ordinal];
         }
     }

@@ -83,7 +83,10 @@ public class AreaManager {
 
     public void register(@Nullable ServerLevel level, Area area) {
         areasById.put(area.id(), area);
-        areaIdsByDimension.computeIfAbsent(area.dimension(), k -> new ArrayList<>()).add(area.id());
+        var dimIds = areaIdsByDimension.computeIfAbsent(area.dimension(), k -> new ArrayList<>());
+        if (!dimIds.contains(area.id())) {
+            dimIds.add(area.id());
+        }
         if (level != null) {
             AreaSavedData.get(level).addArea(area);
             syncToDimension(level);
