@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.client.editor.feature;
 
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.common.Common;
+import de.luckymcdev.foundryengine.common.area.AABBArea;
 import de.luckymcdev.foundryengine.common.area.Area;
 import de.luckymcdev.foundryengine.common.network.packets.editor.AreaPacket;
 import net.minecraft.client.Minecraft;
@@ -119,12 +120,14 @@ public class AreaFeature extends DragEditorFeature {
     }
 
     private void updateDraggedCorner(Minecraft mc) {
+        if (!(selectedArea instanceof AABBArea aabbArea)) return;
+
         float partial = mc.getDeltaTracker().getGameTimeDeltaPartialTick(true);
         Vec3 eye = mc.player.getEyePosition(partial);
         Vec3 look = mc.player.getViewVector(partial);
         Vec3 newPos = eye.add(look.scale(storedDistance));
 
-        AABB oldBounds = selectedArea.bounds();
+        AABB oldBounds = aabbArea.bounds();
         AABB newBounds;
 
         if (draggingMin) {
@@ -143,6 +146,6 @@ public class AreaFeature extends DragEditorFeature {
             );
         }
 
-        selectedArea.setBounds(newBounds);
+        aabbArea.setBounds(newBounds);
     }
 }

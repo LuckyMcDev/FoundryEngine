@@ -1,24 +1,43 @@
 # Areas
 
-Areas are axis-aligned bounding box (AABB) zones that can be extended with **modules** — reusable stateless singletons that define behavior per zone. They replace the old event-based API with a modular, composable system.
+Areas are spatial zones that can be extended with **modules** — reusable stateless singletons that define behavior per zone. They replace the old event-based API with a modular, composable system.
 
-## Creating an Area
+## Area Shapes
+
+Areas come in two shapes:
+
+- **`AABBArea`** — an axis-aligned bounding box (min/max corners), good for rooms, regions, forests
+- **`BlockArea`** — a single block position, lighter for one‑block triggers (e.g. a tree trunk)
+
+Both share the `Area` base type, so all CRUD, module, and persistence APIs work the same way.
+
+### Creating an AABBArea
 
 ```groovy
-import de.luckymcdev.foundryengine.common.area.Area
+import de.luckymcdev.foundryengine.common.area.AABBArea
 import de.luckymcdev.foundryengine.common.Common
-import net.minecraft.resources.Identifier
 
-// Define the area bounds
-def area = Area.of(
-    Identifier.fromNamespaceAndPath("mymod", "my_zone"), // unique ID
-    new Vec3(10, 64, 10),                    // min corner
-    new Vec3(20, 80, 20),                    // max corner
-    level.dimension(),                       // dimension
-    Color.RED                               //  Color color (red)
+def area = AABBArea.of(
+    Identifier.fromNamespaceAndPath("mymod", "my_zone"),
+    new Vec3(10, 64, 10),     // min corner
+    new Vec3(20, 80, 20),     // max corner
+    level.dimension(),
+    Color.RED
 )
+Common.getAreaManager().register(level, area)
+```
 
-// Register it (server-side)
+### Creating a BlockArea
+
+```groovy
+import de.luckymcdev.foundryengine.common.area.BlockArea
+
+def area = BlockArea.of(
+    Identifier.fromNamespaceAndPath("mymod", "tree_trunk"),
+    new BlockPos(100, 64, 100),               // single block position
+    level.dimension(),
+    Color.GREEN
+)
 Common.getAreaManager().register(level, area)
 ```
 
@@ -32,7 +51,7 @@ If you need to create areas when a level loads, use `AreaEvents.register`:
 import de.luckymcdev.foundryengine.common.event.AreaEvents
 
 AreaEvents.register { ServerLevel level ->
-    def area = Area.of(Common.id("my_zone"), ...)
+    def area = AABBArea.of(Common.id("my_zone"), new Vec3(0, 64, 0), new Vec3(10, 70, 10), level.dimension(), Color.RED)
     Common.getAreaManager().register(level, area)
 }
 ```
@@ -67,7 +86,7 @@ Then create an area and assign it:
 ```groovy
 import net.minecraft.resources.Identifier
 
-def area = Area.of(Identifier.fromNamespaceAndPath("mymod", "healing_zone"), ...)
+def area = AABBArea.of(Identifier.fromNamespaceAndPath("mymod", "healing_zone"), ...)
 area.addModule(Identifier.fromNamespaceAndPath("mymod", "heal"))
 ```
 

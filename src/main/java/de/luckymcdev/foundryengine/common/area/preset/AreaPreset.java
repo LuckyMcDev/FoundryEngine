@@ -1,5 +1,6 @@
 package de.luckymcdev.foundryengine.common.area.preset;
 
+import de.luckymcdev.foundryengine.common.area.AABBArea;
 import de.luckymcdev.foundryengine.common.area.Area;
 import de.luckymcdev.foundryengine.common.util.color.Color;
 import net.minecraft.nbt.CompoundTag;
@@ -66,7 +67,7 @@ public class AreaPreset {
     }
 
     public Area create(Identifier areaId, Vec3 min, Vec3 max, ResourceKey<Level> dimension) {
-        Area area = new Area(areaId, new AABB(min, max), dimension, defaultColor);
+        AABBArea area = new AABBArea(areaId, new AABB(min, max), dimension, defaultColor);
         for (Identifier mid : moduleIds) {
             area.addModule(mid);
         }

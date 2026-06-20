@@ -63,6 +63,13 @@ public class AreaSavedData extends SavedData {
     }
 
     public void addArea(Area area) {
+        for (int i = 0; i < areas.size(); i++) {
+            if (areas.get(i).id().equals(area.id())) {
+                areas.set(i, area);
+                setDirty();
+                return;
+            }
+        }
         areas.add(area);
         setDirty();
     }
