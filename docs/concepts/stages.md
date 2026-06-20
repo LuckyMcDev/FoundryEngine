@@ -67,6 +67,7 @@ stages.recipes().requireStages(
 
 ```groovy
 import de.luckymcdev.foundryengine.common.Common
+import de.luckymcdev.foundryengine.common.area.module.AreaEnterModule
 import de.luckymcdev.foundryengine.api.event.EntityEvents
 import de.luckymcdev.foundryengine.api.event.PlayerEvents
 
@@ -90,14 +91,15 @@ PlayerEvents.tick {
     }
 }
 
-// Remove stage when entering a certain area
-AreaEvents.areaEnter {
-    if (it.area.id() == "reset_zone") {
-        it.entities.each {
-            stages.removeStage(it as Player, "dragon_slayer")
+// Remove stage when entering a certain area (via module)
+Common.getAreaManager().registerModuleType(new AreaEnterModule() {
+    @Override Identifier id() { return Common.id("reset_stage") }
+    @Override void onEnter(ServerPlayer player, Area area) {
+        if (area.id() == Common.id("reset_zone")) {
+            stages.removeStage(player, "dragon_slayer")
         }
     }
-}
+})
 ```
 
 ## Stage Events

@@ -113,9 +113,7 @@ public class FoundryEngineMod {
         BUS.addListener(this::onServerStarting);
         BUS.addListener((ServerStoppingEvent event) -> Common.getBundleManager().setServer(null));
         BUS.addListener(this::onServerTick);
-        BUS.addListener(Common.getAreaManager()::onLevelTick);
-        BUS.addListener(Common.getAreaManager()::onLevelLoad);
-        BUS.addListener(Common.getAreaManager()::onServerStopping);
+        AreaEvents.Internal.register(BUS);
         BUS.addListener((ServerStoppingEvent event) -> Common.getGameManager().stopAll());
         BUS.addListener(Common.getCutsceneManager()::onLevelLoad);
         BUS.addListener(this::onLevelTick);
@@ -349,7 +347,6 @@ public class FoundryEngineMod {
     }
 
     private void registerInternalEvents() {
-        AreaEvents.Internal.register(BUS);
         BlockEvents.Internal.register(BUS);
         BundleEvents.Internal.register(BUS);
         ClientEvents.Internal.register(BUS);

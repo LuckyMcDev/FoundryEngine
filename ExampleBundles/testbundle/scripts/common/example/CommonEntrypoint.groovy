@@ -5,10 +5,8 @@ import de.luckymcdev.foundryengine.common.builder.block.BlockBuilder
 import de.luckymcdev.foundryengine.common.builder.item.ItemBuilder
 import de.luckymcdev.foundryengine.common.builder.recipe.RecipeBuilder
 import de.luckymcdev.foundryengine.common.builder.sound.SoundBuilder
-import de.luckymcdev.foundryengine.common.event.AreaEvents
 import de.luckymcdev.foundryengine.common.event.BundleEvents
 import de.luckymcdev.foundryengine.common.event.CommandEvents
-import de.luckymcdev.foundryengine.client.Client
 import de.luckymcdev.foundryengine.common.script.BundleEntrypoint
 import net.minecraft.advancements.criterion.InventoryChangeTrigger
 import net.minecraft.client.Minecraft
@@ -133,17 +131,6 @@ class CommonEntrypoint implements BundleEntrypoint {
             it.sounds(MY_SOUND)
         }
 
-        AreaEvents.areaEnter {
-            Client.getPlayer().sendSystemMessage(Component.literal("Entered Area: "+it.area.id()))
-        }
-
-        AreaEvents.areaLeave {
-            Client.getPlayer().sendSystemMessage(Component.literal("Left Area: "+it.area.id()))
-        }
-
-        AreaEvents.areaTick {
-            Client.getPlayer().sendSystemMessage(Component.literal("Tick Area: "+it.area.id()))
-        }
     }
 
     @Override

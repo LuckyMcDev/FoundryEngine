@@ -1,15 +1,21 @@
 package de.luckymcdev.foundryengine.common.area;
 
 import de.luckymcdev.foundryengine.common.Common;
+import de.luckymcdev.foundryengine.common.area.module.*;
+import de.luckymcdev.foundryengine.common.area.preset.AreaPreset;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.common.NeoForge;
+import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
+import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import org.jspecify.annotations.Nullable;
@@ -17,58 +23,156 @@ import org.jspecify.annotations.Nullable;
 import java.util.*;
 
 public class AreaManager {
-    private final Map<ResourceKey<Level>, List<Area>> areasByDimension = new HashMap<>();
-    private final Map<ResourceKey<Level>, Map<String, Set<UUID>>> lastMembersByDimension = new HashMap<>();
+    private final Map<Identifier, AreaModule> moduleTypes = new HashMap<>();
+    private final Map<String, AreaPreset> presets = new HashMap<>();
+    private final Map<Identifier, Area> areasById = new HashMap<>();
+    private final Map<ResourceKey<Level>, List<Identifier>> areaIdsByDimension = new HashMap<>();
+    private final Map<ResourceKey<Level>, Map<Identifier, Set<UUID>>> lastMembersByDimension = new HashMap<>();
 
-    private static CompoundTag areaToNbt(Area area) {
-        return Area.writeToNbt(area);
+    // ── Module type registry ──────────────────────────────────────────
+
+    public void registerModuleType(AreaModule module) {
+        moduleTypes.put(module.id(), module);
     }
 
-    public void loadFromLevel(ServerLevel level) {
-        AreaSavedData savedData = AreaSavedData.get(level);
-        ResourceKey<Level> dimension = level.dimension();
-        areasByDimension.put(dimension, new ArrayList<>(savedData.getAreas()));
+    @Nullable
+    public AreaModule getModuleType(Identifier id) {
+        return moduleTypes.get(id);
     }
 
-    public void register(@Nullable ServerLevel level, Area area) {
-        if (level != null) {
-            AreaSavedData.get(level).addArea(area);
-        }
-        areasByDimension.computeIfAbsent(area.dimension(), k -> new ArrayList<>()).add(area);
+    public Collection<AreaModule> getRegisteredModuleTypes() {
+        return Collections.unmodifiableCollection(moduleTypes.values());
     }
 
-    public void update(@Nullable ServerLevel level, Area updatedArea) {
-        if (level != null) {
-            AreaSavedData.get(level).updateArea(updatedArea.id(), updatedArea);
-        }
-        List<Area> list = areasByDimension.get(updatedArea.dimension());
-        if (list != null) {
-            for (int i = 0; i < list.size(); i++) {
-                if (list.get(i).id().equals(updatedArea.id())) {
-                    list.set(i, updatedArea);
-                    break;
-                }
-            }
-        }
+    // ── Preset registry ──────────────────────────────────────────────
+
+    public void registerPreset(AreaPreset preset) {
+        presets.put(preset.id(), preset);
     }
 
-    public boolean isLoaded(ResourceKey<Level> dimension) {
-        return areasByDimension.containsKey(dimension);
+    @Nullable
+    public AreaPreset getPreset(String id) {
+        return presets.get(id);
     }
 
-    public void remove(@Nullable ServerLevel level, Area area) {
-        if (level != null) {
-            AreaSavedData.get(level).removeArea(area.id());
-        }
-        List<Area> list = areasByDimension.get(area.dimension());
-        if (list != null) list.remove(area);
-        var members = lastMembersByDimension.get(area.dimension());
-        if (members != null) members.remove(area.id());
+    public Collection<AreaPreset> getPresets() {
+        return Collections.unmodifiableCollection(presets.values());
+    }
+
+    // ── CRUD ─────────────────────────────────────────────────────────
+
+    @Nullable
+    public Area getArea(Identifier id) {
+        return areasById.get(id);
     }
 
     public List<Area> getAreasForDimension(ResourceKey<Level> dimension) {
-        return areasByDimension.getOrDefault(dimension, Collections.emptyList());
+        List<Identifier> ids = areaIdsByDimension.getOrDefault(dimension, Collections.emptyList());
+        if (ids.isEmpty()) return Collections.emptyList();
+        List<Area> result = new ArrayList<>(ids.size());
+        for (Identifier aid : ids) {
+            Area a = areasById.get(aid);
+            if (a != null) result.add(a);
+        }
+        return result;
     }
+
+    public boolean isLoaded(ResourceKey<Level> dimension) {
+        return areaIdsByDimension.containsKey(dimension);
+    }
+
+    public void register(@Nullable ServerLevel level, Area area) {
+        areasById.put(area.id(), area);
+        areaIdsByDimension.computeIfAbsent(area.dimension(), k -> new ArrayList<>()).add(area.id());
+        if (level != null) {
+            AreaSavedData.get(level).addArea(area);
+            syncToDimension(level);
+        }
+    }
+
+    public void update(@Nullable ServerLevel level, Area updatedArea) {
+        areasById.put(updatedArea.id(), updatedArea);
+        if (level != null) {
+            AreaSavedData.get(level).updateArea(updatedArea.id(), updatedArea);
+            syncToDimension(level);
+        }
+    }
+
+    public void remove(@Nullable ServerLevel level, Area area) {
+        areasById.remove(area.id());
+        List<Identifier> ids = areaIdsByDimension.get(area.dimension());
+        if (ids != null) ids.remove(area.id());
+        var members = lastMembersByDimension.get(area.dimension());
+        if (members != null) members.remove(area.id());
+        if (level != null) {
+            AreaSavedData.get(level).removeArea(area.id());
+            syncToDimension(level);
+        }
+    }
+
+    // ── Persistence ──────────────────────────────────────────────────
+
+    public void loadFromLevel(ServerLevel level) {
+        AreaSavedData savedData = AreaSavedData.get(level);
+        ResourceKey<Level> dim = level.dimension();
+        List<Identifier> ids = new ArrayList<>();
+        for (Area area : savedData.getAreas()) {
+            areasById.put(area.id(), area);
+            ids.add(area.id());
+        }
+        areaIdsByDimension.put(dim, ids);
+    }
+
+    public void applySync(ResourceKey<Level> dimension, CompoundTag tag) {
+        List<Identifier> ids = new ArrayList<>();
+        ListTag list = tag.getListOrEmpty("Areas");
+        for (var entry : list) {
+            if (entry instanceof CompoundTag ct) {
+                Area area = Area.readFromNbt(ct);
+                areasById.put(area.id(), area);
+                ids.add(area.id());
+            }
+        }
+        areaIdsByDimension.put(dimension, ids);
+    }
+
+    public CompoundTag toNbt(ServerLevel level) {
+        if (!isLoaded(level.dimension())) {
+            loadFromLevel(level);
+        }
+        CompoundTag tag = new CompoundTag();
+        ListTag list = new ListTag();
+        for (Area area : getAreasForDimension(level.dimension())) {
+            list.add(area.writeToNbt());
+        }
+        tag.put("Areas", list);
+        return tag;
+    }
+
+    public void syncToPlayer(ServerPlayer player) {
+        Common.getSavedDataManager().syncToPlayer(player);
+    }
+
+    public void syncToDimension(ServerLevel level) {
+        Common.getSavedDataManager().syncToDimension(level);
+    }
+
+    // ── Lifecycle hooks ──────────────────────────────────────────────
+
+    public void onLevelLoad(LevelEvent.Load event) {
+        if (event.getLevel() instanceof ServerLevel level) {
+            loadFromLevel(level);
+        }
+    }
+
+    public void onServerStopping(ServerStoppingEvent event) {
+        for (ServerLevel level : event.getServer().getAllLevels()) {
+            AreaSavedData savedData = AreaSavedData.get(level);
+            savedData.setDirty();
+        }
+    }
+
+    // ── Module dispatch: tick / enter / leave ────────────────────────
 
     public void onLevelTick(LevelTickEvent.Post event) {
         if (!(event.getLevel() instanceof ServerLevel level)) return;
@@ -84,8 +188,8 @@ public class AreaManager {
             return;
         }
 
-        Map<String, Set<UUID>> prevMembers = lastMembersByDimension.getOrDefault(dim, Collections.emptyMap());
-        Map<String, Set<UUID>> currMembers = new HashMap<>();
+        Map<Identifier, Set<UUID>> prevMembers = lastMembersByDimension.getOrDefault(dim, Collections.emptyMap());
+        Map<Identifier, Set<UUID>> currMembers = new HashMap<>();
         for (Area a : areas) {
             currMembers.put(a.id(), new HashSet<>());
         }
@@ -111,37 +215,26 @@ public class AreaManager {
             Set<UUID> curr = currMembers.getOrDefault(area.id(), Collections.emptySet());
 
             if (!curr.isEmpty()) {
-                ArrayList<Entity> inside = new ArrayList<>(curr.size());
-                for (UUID u : curr) {
-                    Entity e = entitiesByUuid.get(u);
-                    if (e != null) inside.add(e);
-                }
-                if (!inside.isEmpty()) {
-                    NeoForge.EVENT_BUS.post(new AreaEvent.AreaTickEvent(area, inside));
-                }
+                dispatchTick(area, level);
             }
 
             if (!curr.isEmpty()) {
-                ArrayList<Entity> entering = new ArrayList<>();
                 for (UUID u : curr) {
                     if (prev.contains(u)) continue;
                     Entity e = entitiesByUuid.get(u);
-                    if (e != null) entering.add(e);
-                }
-                if (!entering.isEmpty()) {
-                    NeoForge.EVENT_BUS.post(new AreaEvent.AreaEnterEvent(area, entering));
+                    if (e instanceof ServerPlayer player) {
+                        dispatchEnter(area, player);
+                    }
                 }
             }
 
             if (!prev.isEmpty()) {
-                ArrayList<Entity> leaving = new ArrayList<>();
                 for (UUID u : prev) {
                     if (curr.contains(u)) continue;
                     Entity e = entitiesByUuid.get(u);
-                    if (e != null) leaving.add(e);
-                }
-                if (!leaving.isEmpty()) {
-                    NeoForge.EVENT_BUS.post(new AreaEvent.AreaLeaveEvent(area, leaving));
+                    if (e instanceof ServerPlayer player) {
+                        dispatchLeave(area, player);
+                    }
                 }
             }
         }
@@ -149,42 +242,78 @@ public class AreaManager {
         lastMembersByDimension.put(dim, currMembers);
     }
 
-    public void applySync(ResourceKey<Level> dimension, CompoundTag tag) {
-        areasByDimension.put(dimension, new ArrayList<>(AreaSavedData.makeList(tag)));
-    }
-
-    public CompoundTag toNbt(ServerLevel level) {
-        if (!isLoaded(level.dimension())) {
-            loadFromLevel(level);
-        }
-        CompoundTag tag = new CompoundTag();
-        ListTag list = new ListTag();
-        for (Area area : getAreasForDimension(level.dimension())) {
-            list.add(areaToNbt(area));
-        }
-        tag.put("Areas", list);
-        return tag;
-    }
-
-    public void syncToPlayer(ServerPlayer player) {
-        Common.getSavedDataManager().syncToPlayer(player);
-    }
-
-    public void syncToDimension(ServerLevel level) {
-        Common.getSavedDataManager().syncToDimension(level);
-    }
-
-    public void onLevelLoad(LevelEvent.Load event) {
-        if (event.getLevel() instanceof ServerLevel level) {
-            loadFromLevel(level);
+    private void dispatchTick(Area area, ServerLevel level) {
+        for (Identifier mid : area.moduleIds()) {
+            AreaModule module = moduleTypes.get(mid);
+            if (module instanceof AreaTickModule tick) {
+                tick.tick(level, area);
+            }
         }
     }
 
-    public void onServerStopping(ServerStoppingEvent event) {
-        // Save all areas when server is stopping
-        for (ServerLevel level : event.getServer().getAllLevels()) {
-            AreaSavedData savedData = AreaSavedData.get(level);
-            savedData.setDirty(); // Ensure data is saved
+    private void dispatchEnter(Area area, ServerPlayer player) {
+        for (Identifier mid : area.moduleIds()) {
+            AreaModule module = moduleTypes.get(mid);
+            if (module instanceof AreaEnterModule enter) {
+                enter.onEnter(player, area);
+            }
         }
+    }
+
+    private void dispatchLeave(Area area, ServerPlayer player) {
+        for (Identifier mid : area.moduleIds()) {
+            AreaModule module = moduleTypes.get(mid);
+            if (module instanceof AreaLeaveModule leave) {
+                leave.onLeave(player, area);
+            }
+        }
+    }
+
+    // ── Module dispatch: block events ────────────────────────────────
+
+    public void onBlockBreak(BreakBlockEvent event) {
+        if (!(event.getLevel() instanceof ServerLevel level)) return;
+        if (!(event.getPlayer() instanceof ServerPlayer player)) return;
+        BlockPos pos = event.getPos();
+        BlockState state = event.getState();
+
+        for (Area area : areasInDimension(level.dimension())) {
+            if (!area.contains(pos)) continue;
+            for (Identifier mid : area.moduleIds()) {
+                AreaModule module = moduleTypes.get(mid);
+                if (module instanceof AreaBlockModule block) {
+                    block.onBlockBreak(event, level, area, pos, state, player);
+                }
+            }
+        }
+    }
+
+    public void onBlockPlace(BlockEvent.EntityPlaceEvent event) {
+        if (!(event.getLevel() instanceof ServerLevel level)) return;
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+
+        BlockPos pos = event.getPos();
+        BlockState state = event.getState();
+
+        for (Area area : areasInDimension(level.dimension())) {
+            if (!area.contains(pos)) continue;
+            for (Identifier mid : area.moduleIds()) {
+                AreaModule module = moduleTypes.get(mid);
+                if (module instanceof AreaBlockModule block) {
+                    block.onBlockPlace(event, level, area, pos, state, player);
+                }
+            }
+        }
+    }
+
+    private List<Area> areasInDimension(ResourceKey<Level> dimension) {
+        List<Identifier> ids = areaIdsByDimension.getOrDefault(dimension, Collections.emptyList());
+        if (ids.isEmpty()) return Collections.emptyList();
+        List<Area> result = new ArrayList<>(ids.size());
+        for (Identifier aid : ids) {
+            Area a = areasById.get(aid);
+            if (a != null) result.add(a);
+        }
+        return result;
     }
 }
