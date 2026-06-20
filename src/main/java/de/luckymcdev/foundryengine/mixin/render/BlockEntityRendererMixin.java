@@ -10,7 +10,7 @@ public interface BlockEntityRendererMixin {
 
     /**
      * @author LuckyMcDev
-     * @reason To change the distance Block Entities are rendered.
+     * @reason To change the distance, Block Entities are rendered.
      */
     @Overwrite
     default int getViewDistance() {
