@@ -1,5 +1,6 @@
 package de.luckymcdev.foundryengine.common.cutscene;
 
+import de.luckymcdev.foundryengine.client.editor.feature.CutsceneEditorFeature;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.cutscene.model.Cutscene;
 import de.luckymcdev.foundryengine.common.cutscene.storage.CutsceneSavedData;
@@ -69,7 +70,7 @@ public class CutsceneManager {
     }
 
     /**
-     * Applies a full NBT replacement (the same shape as {@link de.luckymcdev.foundryengine.client.cutscene.CutsceneEditor#toNbt()}).
+     * Applies a full NBT replacement (the same shape as {@link CutsceneEditorFeature#toNbt()}).
      */
     public void applyFullNbt(ServerLevel level, CompoundTag tag) {
         CutsceneSavedData.get(level).setData(tag);

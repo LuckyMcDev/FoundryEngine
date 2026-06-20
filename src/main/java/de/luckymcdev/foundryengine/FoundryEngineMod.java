@@ -8,7 +8,6 @@ import de.luckymcdev.foundryengine.common.event.*;
 import de.luckymcdev.foundryengine.common.event.modification.BlockModificationEvent;
 import de.luckymcdev.foundryengine.common.event.modification.ItemModificationEvent;
 import de.luckymcdev.foundryengine.common.event.registry.RegistryEvent;
-import de.luckymcdev.foundryengine.common.item.ModItems;
 import de.luckymcdev.foundryengine.common.log.EngineLogAppender;
 import de.luckymcdev.foundryengine.common.network.packets.BundleHashPacket;
 import de.luckymcdev.foundryengine.common.network.packets.TestPacket;
@@ -24,7 +23,6 @@ import de.luckymcdev.foundryengine.common.network.packets.world.ServerBoundSetTi
 import de.luckymcdev.foundryengine.common.network.packets.world.ServerBoundSpawnEntityPacket;
 import de.luckymcdev.foundryengine.common.network.packets.world.ServerBoundTeleportPacket;
 import de.luckymcdev.foundryengine.common.registry.EngineRegistries;
-import de.luckymcdev.foundryengine.common.world.entity.EngineEntities;
 import de.luckymcdev.foundryengine.common.world.level.EngineLevels;
 import de.luckymcdev.foundryengine.common.world.level.runtime.RuntimeLevelConfig;
 import de.luckymcdev.foundryengine.common.world.level.test.CustomLevel;
@@ -97,7 +95,6 @@ public class FoundryEngineMod {
         modBus.addListener(this::onConstruct);
         modBus.addListener(this::onAddPackFinders);
         modBus.addListener(this::onRegisterPayloadHandlers);
-        modBus.addListener(ModItems::onRegister);
         modBus.addListener(this::clientSetup);
         modBus.addListener(this::dedicatedServerSetup);
         modBus.addListener(this::postInit);
@@ -119,7 +116,6 @@ public class FoundryEngineMod {
         BUS.addListener(this::onLevelTick);
         BUS.addListener(this::onWaypointLevelLoad);
         BUS.addListener(this::onWaypointServerStopping);
-        BUS.addListener(this::onPlayerLoggedIn);
         BUS.addListener(this::onPlayerChangedDimension);
 
         registerSavedDataTypes();
@@ -158,7 +154,6 @@ public class FoundryEngineMod {
     private void registerModBus(IEventBus modBus) {
         Common.getGameStageHandler().register(modBus);
         EngineRegistries.register(modBus);
-        EngineEntities.register(modBus);
     }
 
     private void onWaypointLevelLoad(LevelEvent.Load event) {
@@ -169,12 +164,6 @@ public class FoundryEngineMod {
 
     private void onWaypointServerStopping(ServerStoppingEvent event) {
         Common.getWaypointManager().onServerStopping(event);
-    }
-
-    private void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-        if (event.getEntity() instanceof ServerPlayer player) {
-            Common.getSavedDataManager().syncToPlayer(player);
-        }
     }
 
     private void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
@@ -331,6 +320,10 @@ public class FoundryEngineMod {
                         .setSeed("North Carolina".hashCode())
                         .setMirrorOverworldGameRules(true)
         );
+        
+        event.getServer().getPlayerList().getPlayers().forEach(player -> {
+            Common.getSavedDataManager().syncToPlayer(player);
+        });
     }
 
     private void onServerTick(ServerTickEvent.Post event) {

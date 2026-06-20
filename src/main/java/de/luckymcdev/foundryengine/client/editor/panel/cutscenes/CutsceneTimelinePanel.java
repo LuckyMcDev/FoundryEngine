@@ -13,7 +13,6 @@ import de.luckymcdev.foundryengine.common.cutscene.model.CutsceneAttachment;
 import de.luckymcdev.foundryengine.common.cutscene.model.EffectAttachment;
 import de.luckymcdev.foundryengine.common.cutscene.util.LerpType;
 import de.luckymcdev.foundryengine.common.cutscene.util.ScreenEffectType;
-import de.luckymcdev.foundryengine.common.item.ModItems;
 import de.luckymcdev.foundryengine.common.network.packets.editor.CutscenePacket;
 import de.luckymcdev.foundryengine.common.util.color.Color;
 import imgui.ImGui;
@@ -298,24 +297,6 @@ public class CutsceneTimelinePanel extends EditorPanel {
                 markDirty();
             }
             ImGui.popID();
-        }
-
-        ImGui.separator();
-        if (mc.player != null && ModItems.EDITOR_ITEM != null) {
-            boolean hasItem = mc.player.getMainHandItem().getItem() == ModItems.EDITOR_ITEM
-                    || mc.player.getOffhandItem().getItem() == ModItems.EDITOR_ITEM;
-            if (!hasItem) {
-                if (ImGui.button(ImIcons.FA.FA_PENCIL + " Give Editor Item")) {
-                    sendCommand("give " + mc.player.getName().getString() + " foundryengine:editor 1");
-                    sendChatStatus("Editor item given. Hold RMB to drag points.");
-                }
-            } else {
-                if (ImGui.button(ImIcons.FA.FA_PENCIL + " Editor Item (active) — click to remove")) {
-                    sendCommand("clear " + mc.player.getName().getString() + " foundryengine:editor");
-                }
-                ImGui.sameLine();
-                ImGui.textDisabled("Hold RMB to drag points, scroll to push/pull.");
-            }
         }
     }
 

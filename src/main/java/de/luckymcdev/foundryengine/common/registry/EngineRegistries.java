@@ -23,7 +23,7 @@ public class EngineRegistries {
 
         static {
             EngineRegistries.RECIPES = RB_DEF.makeRegistry(builder ->
-                    new RegistryBuilder<>(Keys.RECIPES).sync(true)
+                    new RegistryBuilder<>(Keys.RECIPES).sync(false)
             );
         }
 

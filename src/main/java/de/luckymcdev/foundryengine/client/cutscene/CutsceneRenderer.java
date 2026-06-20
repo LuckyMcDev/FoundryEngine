@@ -1,5 +1,6 @@
 package de.luckymcdev.foundryengine.client.cutscene;
 
+import de.luckymcdev.foundryengine.client.editor.HandlePicker;
 import de.luckymcdev.foundryengine.client.render.HandleRenderer;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.cutscene.model.Cutscene;
@@ -136,7 +137,7 @@ public class CutsceneRenderer {
         if (viewer.getEyePosition().distanceTo(point.getPos()) < 0.1) return;
 
         Color color = getBezierPointColor(point);
-        if (point.isHovered(viewer)) color = Color.WHITE;
+        if (HandlePicker.isHovered(point.getPos(), viewer)) color = Color.WHITE;
         if (point.getPath().isSinglePoint()) color = new Color(0xFFFF00FF);
 
         if (point.isTangent()) {

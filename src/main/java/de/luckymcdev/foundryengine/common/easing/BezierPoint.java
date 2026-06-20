@@ -1,8 +1,6 @@
 package de.luckymcdev.foundryengine.common.easing;
 
 import de.luckymcdev.foundryengine.common.util.color.Color;
-import net.minecraft.util.Mth;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
@@ -109,20 +107,6 @@ public class BezierPoint {
     public boolean isLast() {
         ArrayList<BezierPoint> points = this.path.getPoints();
         return points.getLast() == this;
-    }
-
-    public boolean isHovered(LivingEntity entity) {
-        double x = this.pos.x - entity.getEyePosition().x;
-        double y = this.pos.y - entity.getEyePosition().y;
-        double z = this.pos.z - entity.getEyePosition().z;
-        double rotation = Math.toDegrees(Math.atan2(x, z)) * -1;
-        double playerRot = Mth.wrapDegrees(entity.getYRot());
-
-        double playerRot2 = Mth.wrapDegrees(entity.getXRot());
-        double hypot = Math.sqrt(Math.pow(x, 2) + Math.pow(z, 2));
-        double rotation2 = Math.toDegrees(Math.atan2(y, hypot)) * -1;
-
-        return Math.abs(playerRot - rotation) < 1 && Math.abs(playerRot2 - rotation2) < 1;
     }
 
     public BezierPoint getRoot() {
