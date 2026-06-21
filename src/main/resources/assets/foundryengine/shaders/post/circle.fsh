@@ -9,8 +9,8 @@ layout (std140) uniform SamplerInfo {
     vec2 InSize;
 };
 
-layout (std140) uniform ProgressBuffer {
-    float Progress;
+layout (std140) uniform Intensity {
+    float Value;
 };
 
 out vec4 fragColor;
@@ -20,7 +20,7 @@ void main() {
     vec2 fragCoord = texCoord * OutSize;
 
     vec2 screenCenter = OutSize * 0.5;
-    float radius = sqrt(pow(OutSize.y * 0.5, 2.0) + pow(OutSize.x * 0.5, 2.0)) * (1.0 - Progress);
+    float radius = sqrt(pow(OutSize.y * 0.5, 2.0) + pow(OutSize.x * 0.5, 2.0)) * (1.0 - Value);
 
     if (sqrt(pow(fragCoord.x - screenCenter.x, 2.0) + pow(fragCoord.y - screenCenter.y, 2.0)) > radius)
     diffuseColor = vec4(0.0, 0.0, 0.0, 1.0);

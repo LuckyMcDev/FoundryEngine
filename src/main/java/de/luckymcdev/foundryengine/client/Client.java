@@ -9,7 +9,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.client.area.AreaRenderer;
 import de.luckymcdev.foundryengine.client.cutscene.ClientCutsceneManager;
-import de.luckymcdev.foundryengine.client.cutscene.ClientScreenEffectManager;
 import de.luckymcdev.foundryengine.client.editor.EditorController;
 import de.luckymcdev.foundryengine.client.editor.EditorManager;
 import de.luckymcdev.foundryengine.client.editor.MainMenu;
@@ -17,7 +16,7 @@ import de.luckymcdev.foundryengine.client.editor.feature.CutsceneEditorFeature;
 import de.luckymcdev.foundryengine.client.imgui.EngineImGui;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiManager;
 import de.luckymcdev.foundryengine.client.particle.ParticleManager;
-import de.luckymcdev.foundryengine.client.post.EffectManager;
+import de.luckymcdev.foundryengine.client.post.PostEffectManager;
 import de.luckymcdev.foundryengine.client.render.MeshRenderer;
 import de.luckymcdev.foundryengine.client.render.obj.ObjModelManager;
 import de.luckymcdev.foundryengine.client.util.key.KeyBinding;
@@ -118,13 +117,12 @@ public final class Client {
     private static final EditorManager EDITOR_MANAGER = new EditorManager();
     private static final KeyBindingManager KEY_BINDING_MANAGER = new KeyBindingManager();
     private static final ParticleManager PARTICLE_MANAGER = new ParticleManager();
-    private static final EffectManager EFFECT_MANAGER = new EffectManager();
     private static final WaypointRenderer WAYPOINT_RENDERER = new WaypointRenderer();
     private static final AreaRenderer AREA_RENDERER = new AreaRenderer();
     private static final MeshRenderer MESH_RENDERER = new MeshRenderer();
     private static final ObjModelManager OBJ_MODEL_MANAGER = new ObjModelManager();
     private static final ClientCutsceneManager CUTSCENE_MANAGER = new ClientCutsceneManager();
-    private static final ClientScreenEffectManager CUTSCENE_SCREEN_EFFECT_MANAGER = new ClientScreenEffectManager();
+    private static final PostEffectManager POST_EFFECT_MANAGER = new PostEffectManager();
     private static final EditorController EDITOR_CONTROLLER = new EditorController();
 
     private Client() {
@@ -203,10 +201,6 @@ public final class Client {
         return PARTICLE_MANAGER;
     }
 
-    public static EffectManager getEffectManager() {
-        return EFFECT_MANAGER;
-    }
-
     public static MeshRenderer getMeshRenderer() {
         return MESH_RENDERER;
     }
@@ -251,8 +245,8 @@ public final class Client {
         return CUTSCENE_MANAGER;
     }
 
-    public static ClientScreenEffectManager getCutsceneScreenEffectManager() {
-        return CUTSCENE_SCREEN_EFFECT_MANAGER;
+    public static PostEffectManager getPostEffectManager() {
+        return POST_EFFECT_MANAGER;
     }
 
     public static EditorController getEditorController() {

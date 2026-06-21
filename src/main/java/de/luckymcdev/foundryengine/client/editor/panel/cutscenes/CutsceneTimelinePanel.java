@@ -12,7 +12,7 @@ import de.luckymcdev.foundryengine.common.cutscene.model.Cutscene;
 import de.luckymcdev.foundryengine.common.cutscene.model.CutsceneAttachment;
 import de.luckymcdev.foundryengine.common.cutscene.model.EffectAttachment;
 import de.luckymcdev.foundryengine.common.cutscene.util.LerpType;
-import de.luckymcdev.foundryengine.common.cutscene.util.ScreenEffectType;
+
 import de.luckymcdev.foundryengine.common.network.packets.editor.CutscenePacket;
 import de.luckymcdev.foundryengine.common.util.color.Color;
 import imgui.ImGui;
@@ -40,8 +40,7 @@ public class CutsceneTimelinePanel extends EditorPanel {
 
     private static final String[] EASING_NAMES =
             Arrays.stream(LerpType.values()).map(Enum::name).toArray(String[]::new);
-    private static final String[] EFFECT_TYPES =
-            Arrays.stream(ScreenEffectType.values()).map(Enum::name).toArray(String[]::new);
+    private static final String[] EFFECT_TYPES = {"none", "black", "circle", "star", "cinematic", "grayscale", "sepia", "depth_vis"};
     private static final String[] ATTACHMENT_TYPES = new String[]{"Effect", "Command"};
 
     private final ImBoolean previewEnabled = new ImBoolean(false);
@@ -471,7 +470,7 @@ public class CutsceneTimelinePanel extends EditorPanel {
             if (typeIdx == 1) { // Command
                 newAtt = new CommandAttachment(at, "", 0f);
             } else { // Effect (default)
-                newAtt = new EffectAttachment(at, ScreenEffectType.cinematic.name(), 0.1f, 0.2f, 0.1f, LerpType.LINEAR.name());
+                newAtt = new EffectAttachment(at, "cinematic", 0.1f, 0.2f, 0.1f, LerpType.LINEAR.name());
             }
             c.addAttachment(newAtt);
             selectedAttachmentIndex.set(attachments.indexOf(newAtt));
@@ -487,7 +486,7 @@ public class CutsceneTimelinePanel extends EditorPanel {
                 var att = attachments.get(idx);
                 if (att instanceof EffectAttachment eff) {
                     int len = Math.max(1, c.getDefaultLength());
-                    Client.getCutsceneScreenEffectManager().startEffect(
+                    Client.getPostEffectManager().startScreenEffect(
                             eff.getEffectName(), eff.getIntroTicks(len), eff.getHoldTicks(len), eff.getOutroTicks(len), eff.getLerpType());
                 }
             }

@@ -9,8 +9,8 @@ layout (std140) uniform SamplerInfo {
     vec2 InSize;
 };
 
-layout (std140) uniform ProgressBuffer {
-    float Progress;
+layout (std140) uniform Intensity {
+    float Value;
 };
 
 out vec4 fragColor;
@@ -18,11 +18,11 @@ out vec4 fragColor;
 
 float sdPentagram(in vec2 p, in float r)
 {
-    const float k1x = 0.809016994; // cos(π/ 5) = ¼(√5+1)
-    const float k2x = 0.309016994; // sin(π/10) = ¼(√5-1)
-    const float k1y = 0.587785252; // sin(π/ 5) = ¼√(10-2√5)
-    const float k2y = 0.951056516; // cos(π/10) = ¼√(10+2√5)
-    const float k1z = 0.726542528; // tan(π/ 5) = √(5-2√5)
+    const float k1x = 0.809016994;
+    const float k2x = 0.309016994;
+    const float k1y = 0.587785252;
+    const float k2y = 0.951056516;
+    const float k1z = 0.726542528;
     const vec2 v1 = vec2(k1x, -k1y);
     const vec2 v2 = vec2(-k1x, -k1y);
     const vec2 v3 = vec2(k2x, -k2y);
@@ -41,7 +41,7 @@ void main() {
     vec2 fragCoord = texCoord * OutSize;
 
     vec2 screenCenter = (2.0 * fragCoord - OutSize) / OutSize.y;
-    float radius = 5.2 * (1.0 - (1 - pow(1 - Progress, 3)));
+    float radius = 5.2 * (1.0 - (1 - pow(1 - Value, 3)));
 
     if (sdPentagram(screenCenter, radius) > 0.0)
     diffuseColor = vec4(0.0, 0.0, 0.0, 1.0);

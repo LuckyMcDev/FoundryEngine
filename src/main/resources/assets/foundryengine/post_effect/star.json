@@ -13,15 +13,7 @@
         }
       ],
       "output": "swap",
-      "uniforms": {
-        "ProgressBuffer": [
-          {
-            "name": "Progress",
-            "type": "float",
-            "value": 0.5
-          }
-        ]
-      }
+      "uniforms": {}
     },
     {
       "vertex_shader": "minecraft:core/screenquad",

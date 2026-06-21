@@ -5,13 +5,11 @@ import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
-import de.luckymcdev.foundryengine.client.post.PrioritizedEffect;
+import de.luckymcdev.foundryengine.client.post.internal.PostEffectEntry;
 import de.luckymcdev.foundryengine.common.Common;
 import imgui.ImGui;
-import imgui.type.ImBoolean;
-import net.minecraft.resources.Identifier;
 
-import java.util.Locale;
+import java.util.List;
 
 public class EffectPanel extends EditorPanel {
     public static final EffectPanel INSTANCE = new EffectPanel();
@@ -24,26 +22,36 @@ public class EffectPanel extends EditorPanel {
 
     @Override
     public void content() {
+        var mgr = Client.getPostEffectManager();
+
         ImGuiUtils.section("Post Processing Effects");
 
-        if (ImGui.button(ImIcons.FA.FA_ARROW_ROTATE_RIGHT + " Reload")) {
-            Client.getEffectManager().reload();
+        List<PostEffectEntry> entries = mgr.getRegistry().getEntries();
+        for (var entry : entries) {
+            renderEffectToggle(entry);
         }
 
-        for (PrioritizedEffect effect : Client.getEffectManager().getEffects()) {
-            renderEffectToggle(effect.id().getPath().toUpperCase(Locale.ROOT), effect.id(), effect.priority());
-        }
+        ImGui.dummy(0, 4);
 
-        if (ImGui.button("Reset All Effects")) {
-            Client.getEffectManager().clearAllEffects();
+        ImGuiUtils.section("Active Effects");
+        for (var entry : entries) {
+            renderActive(entry);
         }
     }
 
-    private void renderEffectToggle(String label, Identifier id, int priority) {
-        boolean active = Client.getEffectManager().getActiveEffects().contains(id);
-        ImBoolean check = new ImBoolean(active);
-        if (ImGui.checkbox(label + " (Priority: " + priority + ")", check)) {
-            Client.getEffectManager().setEffectActive(id, priority, check.get());
+    private void renderEffectToggle(PostEffectEntry entry) {
+        boolean enabled = entry.isEnabled();
+        if (ImGui.checkbox(entry.getId().getPath(), enabled)) {
+            entry.setEnabled(!enabled);
         }
+        if (ImGui.isItemHovered()) {
+            ImGui.setTooltip("Toggle post-processing effect");
+        }
+    }
+
+    private void renderActive(PostEffectEntry entry) {
+        if (!entry.isEnabled()) return;
+        String status = entry.isActive() ? "Active" : "Inactive";
+        ImGui.textColored(entry.isActive() ? 0xFF00FF00 : 0xFFAAAAAA, "  " + status + " \u00b7 " + entry.getId().getPath());
     }
 }

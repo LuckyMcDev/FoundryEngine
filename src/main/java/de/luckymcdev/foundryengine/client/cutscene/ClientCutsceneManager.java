@@ -98,7 +98,7 @@ public class ClientCutsceneManager {
         if (currentAgeInTicks >= total) {
             if (cutsceneQueue.isEmpty()) {
                 currentCutscene = null;
-                if (!Client.getCutsceneScreenEffectManager().inScreenEffect()) {
+                if (!Client.getPostEffectManager().inScreenEffect()) {
                     mc.options.hideGui = false;
                 }
                 return;
@@ -122,7 +122,7 @@ public class ClientCutsceneManager {
         CompoundTag tag = packet.nbt();
 
         if (tag.getBooleanOr("Cancel", false)) {
-            Client.getCutsceneScreenEffectManager().stopEffect();
+            Client.getPostEffectManager().stopScreenEffect();
             if (cutsceneQueue.isEmpty()) {
                 currentCutscene = null;
                 currentLengthInTicks = 0;
@@ -262,7 +262,7 @@ public class ClientCutsceneManager {
                 EffectAttachment eff = effects.get(i);
                 if (rawT + 1e-6f < eff.getAt()) continue;
                 firedEffects[i] = true;
-                Client.getCutsceneScreenEffectManager().startEffect(
+                Client.getPostEffectManager().startScreenEffect(
                         eff.getEffectName(),
                         eff.getIntroTicks(cutsceneLength),
                         eff.getHoldTicks(cutsceneLength),

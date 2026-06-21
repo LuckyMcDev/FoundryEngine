@@ -173,6 +173,15 @@ public class FoundryEngineModClient {
                                 gameExecutor
                         )
         );
+        event.addListener(Common.id("post_effects"), (sharedState, backgroundExecutor, barrier, gameExecutor) ->
+                CompletableFuture
+                        .<Void>supplyAsync(() -> null, backgroundExecutor)
+                        .thenCompose(barrier::wait)
+                        .thenAcceptAsync(v ->
+                                        Client.getPostEffectManager().getRegistry().invalidatePipelineCaches(),
+                                gameExecutor
+                        )
+        );
     }
 
     private void onAfterOpaqueFeatures(RenderLevelStageEvent.AfterOpaqueFeatures event) {
@@ -184,7 +193,6 @@ public class FoundryEngineModClient {
         Client.updateMain(camState.viewRotationMatrix, camState.projectionMatrix);
 
         Client.getCutsceneManager().renderTick();
-        Client.getCutsceneScreenEffectManager().renderTick();
         Client.getEditorController().renderFeatures();
         Client.getWaypointRenderer().renderWaypoints(event);
         Client.getAreaRenderer().renderAreaModules(event);
