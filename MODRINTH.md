@@ -38,13 +38,4 @@ Foundry Engine is a Minecraft mod that extends the game with a comprehensive in-
 
 - **Network System** — 18+ packet types for editor synchronization, file transfer, world state, and bundle data — all using modern codec-based serialization.
 
-## Getting Started
 
-1. Install NeoForge 26.1.x.x for Minecraft 26.1.x
-2. Download the latest FoundryEngine `.jar` from the [release page](https://github.com/LuckyMcDev/FoundryEngine/releases)
-3. Place it in your `mods/` folder
-4. Launch the game — the `FoundryEngine/` folder is created automatically
-5. Create a bundle in `FoundryEngine/bundles/your-bundle/` with a `.bundles.toml` manifest and Groovy scripts
-6. Run `/engine reload` to load your bundle instantly
-
-Full documentation is available at [https://luckymcdev.github.io/FoundryEngine/](https://luckymcdev.github.io/FoundryEngine/).
