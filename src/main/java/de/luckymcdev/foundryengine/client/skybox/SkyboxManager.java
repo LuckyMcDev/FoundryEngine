@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.client.skybox;
 
 import com.mojang.math.Transformation;
+import de.luckymcdev.foundryengine.config.ClientConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.Identifier;
@@ -25,13 +26,20 @@ public class SkyboxManager {
     }
 
     public void tick(ClientTickEvent.Pre event) {
+        if(!ClientConfig.CUSTOM_SKYBOX.getAsBoolean()) return;
         Minecraft mc = Minecraft.getInstance();
+
         if (mc.player == null || mc.level == null) {
-            if (skyboxEntity != null && skyboxEntity.isAlive()) {
+            if (skyboxEntity != null) {
                 skyboxEntity.discard();
                 skyboxEntity = null;
             }
             return;
+        }
+
+        if (skyboxEntity != null && skyboxEntity.level() != mc.level) {
+            skyboxEntity.discard();
+            skyboxEntity = null;
         }
 
         if (skyboxItemStack == null) {
@@ -51,6 +59,7 @@ public class SkyboxManager {
             ));
             mc.level.addEntity(skyboxEntity);
         }
+
         skyboxEntity.setPos(mc.player.getX(), mc.player.getY(), mc.player.getZ());
     }
 }
