@@ -65,11 +65,12 @@ public class FoundryEngineModClient {
 
         BUS.addListener(this::onRegisterKeyBinding);
         BUS.addListener(this::onRegisterPanels);
-        BUS.addListener(this::onClientTick);
+        BUS.addListener(this::onClientTickPost);
         BUS.addListener(this::onRenderLevel);
         BUS.addListener(this::onAfterOpaqueFeatures);
         BUS.addListener(this::onRegisterCommands);
         BUS.addListener(this::onLoggingIn);
+        BUS.addListener(this::onClientTickPre);
 
         Config.registerClient(modContainer);
     }
@@ -201,7 +202,11 @@ public class FoundryEngineModClient {
         //SUZANNE.renderModel(modelView, EngineRenderPipelines.POSITION_COLOR_NORMAL);
     }
 
-    private void onClientTick(ClientTickEvent.Post event) {
+    private void onClientTickPre(ClientTickEvent.Pre event) {
+        Client.getSkyboxManager().tick(event);
+    }
+
+    private void onClientTickPost(ClientTickEvent.Post event) {
         Client.getEditorManager().handleTick();
         Client.getCutsceneManager().clientTick();
         Client.getEditorController().clientTick();
