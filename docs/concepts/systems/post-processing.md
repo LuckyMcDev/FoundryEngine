@@ -1,30 +1,32 @@
 # Post-Processing Effects
 
-FoundryEngine includes a priority-based shader post-processing system that lets you apply custom effects to the game view. Effects are registered through `PostEffects` and rendered at configurable phases in the frame.
+FoundryEngine includes a priority-based shader post-processing system that lets you apply custom effects to the game view. Effects are registered through `Client.getPostEffectManager()` and rendered at configurable phases in the frame.
 
 ## Getting Started
 
 ### Registering an Effect
 
-Effects are registered through the static `PostEffects` API. The `id` must match a pipeline JSON file under `assets/foundryengine/post_effect/[name].json`.
+The `id` must match a pipeline JSON file under `assets/foundryengine/post_effect/[name].json`.
 
 ```java
-import de.luckymcdev.foundryengine.client.post.PostEffects;
+import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.post.PostEffectHandle;
 import de.luckymcdev.foundryengine.client.post.RenderPhase;
 import de.luckymcdev.foundryengine.common.Common;
 
+var mgr = Client.getPostEffectManager();
+
 // Always active
-PostEffectHandle handle = PostEffects.register(Common.id("my_effect"));
+PostEffectHandle handle = mgr.register(Common.id("my_effect"));
 
 // Conditional
-PostEffectHandle handle = PostEffects.register(
+PostEffectHandle handle = mgr.register(
     Common.id("my_effect"),
     () -> SomeClientState.isActive()
 );
 
 // Full configuration
-PostEffectHandle handle = PostEffects.register(
+PostEffectHandle handle = mgr.register(
     Common.id("my_effect"),
     cfg -> cfg
         .when(() -> SomeClientState.isActive())
@@ -48,15 +50,17 @@ handle.unregister();
 
 ### Built-in Effects
 
-Effects are registered through `Client.getPostEffectManager()`:
+```java
+var mgr = Client.getPostEffectManager();
 
-| Effect | Handle |
-|--------|--------|
-| Grayscale | `Client.getPostEffectManager().getGrayscale()` |
-| Sepia | `Client.getPostEffectManager().getSepia()` |
-| Fade to Black | `Client.getPostEffectManager().getBlack()` |
-
----
+mgr.getGrayscale();  // Monochrome effect
+mgr.getSepia();      // Sepia tone
+mgr.getBlack();      // Fade to black
+mgr.getDepthVis();   // Depth visualization
+mgr.getStar();       // Star wipe
+mgr.getCircle();     // Circle wipe
+mgr.getCinematic();  // Cinematic bars
+```
 
 ## Pipeline JSON Format
 
@@ -116,10 +120,10 @@ When you need an intermediate framebuffer, use the swap target pattern:
 }
 ```
 
-### Fields
+### Pipeline JSON Fields
 
 | Field | Description |
-|---|---|
+|-------|-------------|
 | `targets` | Local intermediate framebuffers for multi-pass effects |
 | `passes` | Ordered list of render passes, each a fullscreen quad |
 | `vertex_shader` | Use `"minecraft:core/screenquad"` for all effects |
@@ -131,12 +135,10 @@ When you need an intermediate framebuffer, use the swap target pattern:
 ### Uniform Member Descriptor
 
 | Field | Description |
-|---|---|
+|-------|-------------|
 | `name` | GLSL member variable name inside the block |
 | `type` | `"float"`, `"int"`, `"vec2"`, `"vec3"`, `"vec4"`, `"mat4"` |
 | `value` | Default value (number for scalars, array for vectors/matrices) |
-
----
 
 ## GLSL Shader Conventions
 
@@ -163,7 +165,7 @@ Provided by `minecraft:core/screenquad`. No custom vertex shader needed.
 GLSL sampler name = JSON `sampler_name` + `"Sampler"` suffix:
 
 | JSON `sampler_name` | GLSL uniform |
-|---|---|
+|---------------------|--------------|
 | `"In"` | `InSampler` |
 | `"Depth"` | `DepthSampler` |
 
@@ -208,13 +210,11 @@ void main() {
 }
 ```
 
----
-
 ## API Reference
 
-### PostEffects (entry point)
+### PostEffectManager (entry point)
 
-All methods are static:
+Access via `Client.getPostEffectManager()`:
 
 ```java
 PostEffectHandle register(Identifier id)
@@ -296,8 +296,6 @@ handle.unregister()
 
 ### PostEffectContext
 
-Passed to `onBeforeApply` / `onAfterApply` callbacks each frame:
-
 ```java
 ctx.getClient()
 ctx.getDeltaTick()
@@ -305,22 +303,6 @@ ctx.getScreenWidth()
 ctx.getScreenHeight()
 ctx.getProcessor()
 ```
-
-### PostEffectManager
-
-The `PostEffectManager` is a singleton owned by `Client`:
-
-```java
-// Access
-var mgr = Client.getPostEffectManager();
-
-// Registered effect handles
-mgr.getGrayscale()
-mgr.getSepia()
-mgr.getBlack()
-```
-
----
 
 ## RenderPhase
 
@@ -331,10 +313,10 @@ RenderPhase.POST_RENDER  // After everything (entire frame)
 ```
 
 | Phase | Covers | Use Case |
-|---|---|---|
+|-------|--------|----------|
 | `POST_WORLD` | World only (depth available) | World-space effects, water distortion |
 | `PRE_GUI` | World + items/hands | Full game-view effects before UI |
-| `POST_RENDER` | Entire frame including GUI | Screen-wide overlays, color grading |
+| `POST_RENDER` | Entire frame including GUI | Screen-wide overlays, colour grading |
 
 ### Depth Snapshot Target
 
@@ -356,8 +338,6 @@ In a pipeline JSON:
 
 This is the most reliable way to read world-only depth in `POST_RENDER`, since vanilla clears the main depth buffer earlier in the frame.
 
----
-
 ## Priority Ordering
 
 Multiple effects in the same phase are applied in **descending priority order**:
@@ -366,7 +346,21 @@ Multiple effects in the same phase are applied in **descending priority order**:
 - Lower priority = applied last (closest to display)
 - Default priority is `0`. Use negatives to run after defaults.
 
----
+## Fade System
+
+When `fadeIn` / `fadeOut` is configured, the engine tracks a per-effect `intensity` (0.0 to 1.0):
+
+- Condition `false -> true`: ramps to 1.0 over `fadeIn` ticks
+- Condition `true -> false`: ramps to 0.0 over `fadeOut` ticks
+- If ticks = 0, the transition is instant
+
+The current intensity is injected each frame as the `Intensity` uniform block:
+
+```glsl
+layout(std140) uniform Intensity {
+    float Value;
+};
+```
 
 ## Uniform Convention
 
@@ -397,45 +391,24 @@ cfg.uniform("Intensity", 0.8f);
 cfg.uniformVec4("TintBlock", () -> new Vector4f(r, g, b, a));
 ```
 
----
-
-## Fade System
-
-When `fadeIn` / `fadeOut` is configured, the engine tracks a per-effect `intensity` (0.0 to 1.0):
-
-- Condition `false → true`: ramps to 1.0 over `fadeIn` ticks
-- Condition `true → false`: ramps to 0.0 over `fadeOut` ticks
-- If ticks = 0, the transition is instant
-
-The current intensity is injected each frame as the `Intensity` uniform block:
-
-```glsl
-layout(std140) uniform Intensity {
-    float Value;
-};
-```
-
-Declare this block and multiply your effect strength by `Intensity.Value` to honor the fade.
-
----
-
 ## UniformSuppliers Reference
 
-`UniformSuppliers` provides factory methods for common uniform value suppliers:
-
 ### Constant
+
 ```java
 UniformSuppliers.constant(float value)
 UniformSuppliers.constant(float x, float y)
 ```
 
 ### Time
+
 ```java
 UniformSuppliers.gameTime()
 UniformSuppliers.partialTick()
 ```
 
 ### Screen
+
 ```java
 UniformSuppliers.screenWidth()
 UniformSuppliers.screenHeight()
@@ -443,6 +416,7 @@ UniformSuppliers.screenSize()
 ```
 
 ### Player State
+
 ```java
 UniformSuppliers.playerHealth()
 UniformSuppliers.playerHealthNorm()
@@ -451,6 +425,7 @@ UniformSuppliers.playerAirNorm()
 ```
 
 ### Animation
+
 ```java
 UniformSuppliers.sinTime(float speed)
 UniformSuppliers.cosTime(float speed)
@@ -458,6 +433,7 @@ UniformSuppliers.pingPong(float min, float max, float speed)
 ```
 
 ### Wrappers
+
 ```java
 UniformSuppliers.ofFloat(DoubleSupplier)
 UniformSuppliers.ofInt(IntSupplier)
@@ -467,10 +443,8 @@ UniformSuppliers.ofVec4(Supplier<Vector4fc>)
 UniformSuppliers.ofMat4(Supplier<Matrix4fc>)
 ```
 
----
-
 ## See Also
 
 - [Editor](editor) — Effects panel for toggling effects at runtime
-- [Commands](commands) — Command reference
 - [Easing Functions](easing) — Easing types for effect transitions
+- [Commands](commands) — Screeneffect command

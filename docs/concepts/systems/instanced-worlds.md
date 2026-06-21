@@ -1,8 +1,11 @@
 # Instanced Worlds
 
-FoundryEngine lets you create runtime dimensions on-the-fly — temporary or persistent — with full control over chunk generation, game rules, clock behavior, and difficulty.
+FoundryEngine provides two world instancing systems:
 
-## Overview
+1. **Runtime Levels** — Create dimensions on-the-fly with full control over chunk generation, game rules, clock behaviour, and difficulty
+2. **Bundle World Instancing** — Worlds stored in a bundle's `saves/` folder are automatically instanced to a temporary directory at runtime, keeping the original bundle files untouched
+
+## Runtime Levels
 
 The `EngineLevels` API provides a singleton for creating and managing runtime dimensions:
 
@@ -27,20 +30,30 @@ def persistent = EngineLevels.get(server).getOrOpenPersistentLevel(
 
 // Teleport a player
 player.teleport(new TeleportTransition(
-    handle.asLevel(), new Vec3(0, 100, 0), Vec3.ZERO, 0, 0,
-    TeleportTransition.DO_NOTHING))
+    handle.asLevel(), new Vec3(0, 100, 0), Vec3.ZERO, 0, 0))
 ```
+
+## Bundle World Instancing
+
+Bundles can include pre-built worlds in a `saves/` folder. When the bundle is loaded, these worlds are **instanced** — copied to a temporary directory — so the original bundle files remain pristine. Each server run gets a fresh copy of the world data, and any changes made during gameplay are isolated to the temporary instance.
+
+This is useful for:
+- Adventure maps bundled with a mod
+- Pre-built hub worlds or spawn areas
+- Tutorial/demo worlds that reset each session
+
+The instancing is automatic — place your world data in `saves/<world_name>/` inside your bundle folder and reference it normally in your scripts.
 
 ## Temporary vs Persistent
 
-| Style | Behavior |
-|-------|----------|
-| `TEMPORARY` | Created at runtime, deleted on server stop. Perfect for dungeons, minigames, or instanced player areas. |
+| Type | Behaviour |
+|------|-----------|
+| `TEMPORARY` | Created at runtime, deleted on server stop. Ideal for dungeons, minigames, instanced player areas. |
 | `PERSISTENT` | Persists across restarts. All blocks, entities, and data are saved. Must be re-opened manually each startup. |
 
 ## RuntimeLevelConfig
 
-The config builder gives you full control:
+The config builder gives you full control over the dimension:
 
 | Method | Description |
 |--------|-------------|
@@ -50,7 +63,7 @@ The config builder gives you full control:
 | `setGameTime(long)` | Starting game time |
 | `setDifficulty(Difficulty)` | Override difficulty |
 | `setGameRule(GameRule<T>, T)` | Set individual game rules |
-| `setShouldTickTime(boolean)` | Enable/disable time advancement |
+| `setShouldTickTime(boolean)` | Enable or disable time advancement |
 | `setMirrorOverworldGameRules(boolean)` | Copy overworld game rules |
 | `setMirrorOverworldDifficulty(boolean)` | Copy overworld difficulty |
 | `setMirrorOverworldClocks(boolean)` | Copy overworld clock settings |
@@ -61,7 +74,7 @@ The config builder gives you full control:
 
 ### VoidChunkGenerator
 
-An empty void world. Good for arenas, boss rooms, and sky-based levels:
+An empty void world for arenas, boss rooms, and sky-based levels:
 
 ```groovy
 import de.luckymcdev.foundryengine.common.world.level.util.VoidChunkGenerator
@@ -75,7 +88,7 @@ new VoidChunkGenerator(server, ResourceKey.create(
 
 ### TransientChunkGenerator
 
-Abstract base for generators that cannot be serialized. Extend this for completely custom generation.
+Abstract base for generators that cannot be serialized. Extend this for completely custom procedural generation.
 
 ### Copying the Overworld Generator
 
@@ -85,7 +98,7 @@ config.setGenerator(server.overworld().getChunkSource().getGenerator())
 
 ## Clock Control
 
-Runtime dimensions can have custom clock mechanics. Disable normal time, control it programmatically, or synchronize with another dimension:
+Runtime dimensions can have custom clock mechanics. Disable normal time, control it programmatically, or synchronise with another dimension:
 
 ```groovy
 import de.luckymcdev.foundryengine.common.world.level.runtime.RuntimeClockManager
@@ -94,7 +107,7 @@ import de.luckymcdev.foundryengine.common.world.level.runtime.RuntimeClockManage
 config.setShouldTickTime(false)
 
 // Access clock manager for advanced control
-def clockManager = new RuntimeClockManager(() -> false) // never advance
+def clockManager = new RuntimeClockManager(() -> false)
 config.setClockManagerConstructor(clockManager)
 ```
 
@@ -110,7 +123,7 @@ handle.unload()
 
 ## Use Cases
 
-- **Dungeons**: Temporary instanced dungeons per player/party
+- **Dungeons**: Temporary instanced dungeons per player or party
 - **Minigames**: Self-contained arenas with custom rules
 - **Hub worlds**: Persistent lobby dimensions with custom generators
 - **Skyblock-style**: Void worlds with custom island generation
@@ -118,6 +131,6 @@ handle.unload()
 
 ## See Also
 
-- [Commands](commands) — `/engine test world` for testing
+- [Commands](commands) — `/engine test world` for testing worlds
 - [Areas](areas) — Trigger dimension travel with spatial zones
 - [Stages](stages) — Gate dimension access with progression
