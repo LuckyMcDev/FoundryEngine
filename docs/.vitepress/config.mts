@@ -149,7 +149,7 @@ export default defineConfig({
         },
 
         editLink: {
-            pattern: 'https://github.com/LuckyMcDev/FoundryEngine/edit/main/docs/:path',
+            pattern: 'https://github.com/LuckyMcDev/FoundryEngine/blob/master/docs',
             text: 'Edit this page on GitHub'
         }
     },
