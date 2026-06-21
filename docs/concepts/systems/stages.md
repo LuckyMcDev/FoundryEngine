@@ -1,16 +1,16 @@
 # Game Stages
 
-Game Stages let you gate content behind named progression milestones. Add stages to players, and use them to control access to items, mobs, dimensions, and more.
+Game Stages let you gate content behind named progression milestones. Add stages to players, and use them to control access to items, mobs, dimensions, loot, and recipes.
 
 ## How Stages Work
 
-A stage is simply a string name (like `"boss_defeated"` or `"tutorial_complete"`). Players either have a stage or don't. When you try to add a stage, the engine fires cancellable events, so other code can veto the addition.
+A stage is simply a string name (like `"boss_defeated"` or `"tutorial_complete"`). Players either have a stage or don't. When adding a stage, the engine fires cancellable events so other code can veto the addition.
 
 ```
-Player joined → has no stages
-    ↓
-Player defeats boss → addStage(player, "boss_defeated")
-    ↓
+Player joined -> has no stages
+    |
+Player defeats boss -> addStage(player, "boss_defeated")
+    |
 Gated content is now accessible
 ```
 
@@ -20,14 +20,14 @@ Gated content is now accessible
 
 Access via `Common.getGameStageHandler()`:
 
-| Method                                       | Description                                   |
-|----------------------------------------------|-----------------------------------------------|
-| `addStage(Player, String)`                   | Add a stage. Returns false if already has it. |
-| `removeStage(Player, String)`                | Remove a stage. Returns false if missing.     |
-| `clearStages(Player)`                        | Remove all stages from a player.              |
-| `hasStage(Player, String)`                   | Check if player has a stage.                  |
-| `getStages(Player)`                          | Get all stages as a Set.                      |
-| `addStageIf(StageAdditionCondition, String)` | Deferred addition — checked on player tick.   |
+| Method | Description |
+|--------|-------------|
+| `addStage(Player, String)` | Add a stage. Returns false if already has it. |
+| `removeStage(Player, String)` | Remove a stage. Returns false if missing. |
+| `clearStages(Player)` | Remove all stages from a player. |
+| `hasStage(Player, String)` | Check if player has a stage. |
+| `getStages(Player)` | Get all stages as a Set. |
+| `addStageIf(StageAdditionCondition, String)` | Deferred addition — checked on player tick. |
 
 ### Stage Addons
 
@@ -63,7 +63,7 @@ stages.recipes().requireStages(
     "nether_complete")
 ```
 
-## Using Stages in Scripts
+### Using Stages in Scripts
 
 ```groovy
 import de.luckymcdev.foundryengine.common.Common
@@ -90,48 +90,36 @@ PlayerEvents.tick {
         // Grant special powers
     }
 }
-
-// Remove stage when entering a certain area (via module)
-Common.getAreaManager().registerModuleType(new AreaEnterModule() {
-    @Override Identifier id() { return Common.id("reset_stage") }
-    @Override void onEnter(ServerPlayer player, Area area) {
-        if (area.id() == Common.id("reset_zone")) {
-            stages.removeStage(player, "dragon_slayer")
-        }
-    }
-})
 ```
 
-## Stage Events
+### Stage Events
 
-Stage changes fire NeoForge events that you can listen to:
+Stage changes fire NeoForge events:
+
+| Event | Cancellable | When |
+|-------|-------------|------|
+| `GameStageEvent.Add` | Yes | Before a stage is added |
+| `GameStageEvent.Remove` | Yes | Before a stage is removed |
+| `GameStageEvent.Added` | No | After stage is added |
+| `GameStageEvent.Removed` | No | After stage is removed |
 
 ```groovy
 import de.luckymcdev.foundryengine.common.game.stage.GameStageEvent
 
-// Cancel stage addition
 @SubscribeEvent
 void onStageAdd(GameStageEvent.Add event) {
-    if (event.getStageName() == "too_early" && !hasCompletedPrerequisite(event.getEntity())) {
+    if (event.getStageName() == "too_early") {
         event.setCanceled(true)
     }
 }
 
-// React to stage added
 @SubscribeEvent
 void onStageAdded(GameStageEvent.Added event) {
     println "${event.getEntity().name} reached stage: ${event.getStageName()}"
 }
 ```
 
-| Event                    | Cancellable | When                      |
-|--------------------------|-------------|---------------------------|
-| `GameStageEvent.Add`     | Yes         | Before a stage is added   |
-| `GameStageEvent.Remove`  | Yes         | Before a stage is removed |
-| `GameStageEvent.Added`   | No          | After stage is added      |
-| `GameStageEvent.Removed` | No          | After stage is removed    |
-
-## Deferred Stage Addition
+### Deferred Stage Addition
 
 Add a condition that's checked automatically on player tick:
 
@@ -142,8 +130,23 @@ stages.addStageIf(
 )
 ```
 
+## Groovy Examples
+
+```groovy
+// Grant stage on entering a specific area
+Common.getAreaManager().registerModuleType(new AreaEnterModule() {
+    @Override Identifier id() { return Common.id("enter_stage") }
+    @Override void onEnter(ServerPlayer player, Area area) {
+        def stages = Common.getGameStageHandler()
+        if (area.id().path == "tutorial_zone") {
+            stages.addStage(player, "tutorial_complete")
+        }
+    }
+})
+```
+
 ## See Also
 
-- [Events](events) — Stage events and other hooks
 - [Areas](areas) — Trigger stage changes when entering zones
 - [Instanced Worlds](instanced-worlds) — Gate dimension access
+- [Commands](commands) — Stage management commands
