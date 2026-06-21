@@ -1,5 +1,8 @@
 #version 330
 
+#moj_import <minecraft:dynamictransforms.glsl>
+#moj_import <minecraft:globals.glsl>
+
 const float cloudscale = 1.1;
 const float speed = 0.03;
 const float clouddark = 0.5;

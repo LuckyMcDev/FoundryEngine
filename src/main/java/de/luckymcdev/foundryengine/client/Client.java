@@ -19,6 +19,7 @@ import de.luckymcdev.foundryengine.client.particle.ParticleManager;
 import de.luckymcdev.foundryengine.client.post.PostEffectManager;
 import de.luckymcdev.foundryengine.client.render.MeshRenderer;
 import de.luckymcdev.foundryengine.client.render.obj.ObjModelManager;
+import de.luckymcdev.foundryengine.client.skybox.SkyboxManager;
 import de.luckymcdev.foundryengine.client.util.key.KeyBinding;
 import de.luckymcdev.foundryengine.client.util.key.KeyBindingManager;
 import de.luckymcdev.foundryengine.client.waypoint.WaypointRenderer;
@@ -123,6 +124,7 @@ public final class Client {
     private static final ObjModelManager OBJ_MODEL_MANAGER = new ObjModelManager();
     private static final ClientCutsceneManager CUTSCENE_MANAGER = new ClientCutsceneManager();
     private static final PostEffectManager POST_EFFECT_MANAGER = new PostEffectManager();
+    private static final SkyboxManager SKYBOX_MANAGER = new SkyboxManager();
     private static final EditorController EDITOR_CONTROLLER = new EditorController();
 
     private Client() {
@@ -207,6 +209,10 @@ public final class Client {
 
     public static ObjModelManager getObjModelManager() {
         return OBJ_MODEL_MANAGER;
+    }
+
+    public static SkyboxManager getSkyboxManager() {
+        return SKYBOX_MANAGER;
     }
 
     public static GlDevice getGlDevice() {
