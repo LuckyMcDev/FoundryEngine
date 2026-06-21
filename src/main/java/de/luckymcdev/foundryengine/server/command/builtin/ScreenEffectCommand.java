@@ -6,7 +6,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import de.luckymcdev.foundryengine.common.cutscene.util.LerpType;
-import de.luckymcdev.foundryengine.common.cutscene.util.ScreenEffectType;
+
 import de.luckymcdev.foundryengine.common.cutscene.util.ServerScreenEffectManager;
 import de.luckymcdev.foundryengine.common.network.packets.editor.CutsceneCommandPacket;
 import de.luckymcdev.foundryengine.common.network.packets.sync.ScreenEffectPacket;
@@ -25,8 +25,10 @@ import java.util.Collection;
 
 public class ScreenEffectCommand implements EngineCommand {
 
+    private static final String[] KNOWN_EFFECTS = {"none", "black", "circle", "star", "cinematic", "grayscale", "sepia", "depth_vis"};
+
     private static final SuggestionProvider<CommandSourceStack> EFFECT_SUGGESTIONS = (context, builder) ->
-            SharedSuggestionProvider.suggest(Arrays.stream(ScreenEffectType.values()).map(Enum::name), builder);
+            SharedSuggestionProvider.suggest(Arrays.stream(KNOWN_EFFECTS), builder);
 
     private static final SuggestionProvider<CommandSourceStack> EASING_SUGGESTIONS = (context, builder) ->
             SharedSuggestionProvider.suggest(Arrays.stream(LerpType.values()).map(Enum::name), builder);

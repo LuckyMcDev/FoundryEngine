@@ -10,11 +10,14 @@
     "CameraMixin",
     "CutsceneCameraMixin",
     "GameRendererMixin",
+    "GlGpuBufferAccessor",
     "GpuDeviceMixin",
     "ItemInHandRendererMixin",
     "LevelRendererMixin",
     "PostChainMixin",
-    "PostPassProgressMixin"
+    "PostEffectPassAccessor",
+    "PostEffectProcessorAccessor",
+    "ShaderLoaderAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
