@@ -18,6 +18,7 @@ public final class ClientConfig {
     public static final ModConfigSpec.IntValue ICON_SIZE;
     public static final ModConfigSpec.BooleanValue SHOW_SLOT_TOOLTIP;
     public static final ModConfigSpec.ConfigValue<String> BLOCK_ENTITY_RENDER_DISTANCE;
+    public static final ModConfigSpec.BooleanValue CUSTOM_SKYBOX;
 
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -56,6 +57,10 @@ public final class ClientConfig {
                         "half -> Uses half your render distance",
                         "vanilla -> Uses the vanilla 64 blocks")
                 .define("BLOCK_ENTITY_RENDER_DISTANCE", "vanilla");
+
+        CUSTOM_SKYBOX = builder
+                .comment("If the custom skybox rendering is used")
+                .define("CUSTOM_SKYBOX", false);
 
         SPEC = builder.build();
     }

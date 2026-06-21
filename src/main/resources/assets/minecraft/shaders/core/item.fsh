@@ -5,8 +5,6 @@
 #moj_import <minecraft:globals.glsl>
 #moj_import <minecraft:skybox.glsl>
 
-#define ALPHA_EFFECT(a) if(isTextureAlpha(a))
-
 uniform sampler2D Sampler0;
 
 in float sphericalVertexDistance;
@@ -26,21 +24,17 @@ bool isTextureAlpha(float valueToExpected) {
 void main() {
     vec4 color = texture(Sampler0, texCoord0);
 
-    ALPHA_EFFECT(254) {
+    if (isTextureAlpha(254.0)) {
         vec3 viewDir = normalize(vertexPosition);
         vec3 clouds = extractSky(viewDir);
-
-        // Debug: make the sky tint red if GameTime is increasing
-        clouds = mix(clouds, vec3(1.0, 0.0, 0.0), fract(GameTime * 0.1));
-
         fragColor = vec4(clouds, 1.0);
         return;
     }
 
     #ifdef ALPHA_CUTOUT
-        if (color.a < ALPHA_CUTOUT) {
-            discard;
-        }
+    if (color.a < ALPHA_CUTOUT) {
+        discard;
+    }
     #endif
 
     color *= vertexColor * ColorModulator;
