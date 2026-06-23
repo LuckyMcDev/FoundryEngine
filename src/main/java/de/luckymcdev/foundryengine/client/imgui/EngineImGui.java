@@ -1,10 +1,10 @@
 package de.luckymcdev.foundryengine.client.imgui;
 
+import com.mojang.blaze3d.platform.Window;
 import de.luckymcdev.foundryengine.client.editor.styles.ImTheme;
 import de.luckymcdev.foundryengine.client.imgui.graphics.ImGuiGraphicsStack;
-
 public interface EngineImGui {
-    void create(final long handle);
+    void create(final Window window);
 
     void enable();
 

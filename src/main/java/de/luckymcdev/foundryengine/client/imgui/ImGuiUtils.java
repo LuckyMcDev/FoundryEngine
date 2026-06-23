@@ -1,29 +1,29 @@
 package de.luckymcdev.foundryengine.client.imgui;
 
-import com.mojang.blaze3d.opengl.GlStateManager;
-import com.mojang.blaze3d.opengl.GlTexture;
-import com.mojang.blaze3d.platform.NativeImage;
-import com.mojang.blaze3d.textures.GpuTextureView;
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcon;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
-import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.util.color.Color;
+import imgui.ImFont;
 import imgui.ImGui;
 import imgui.flag.ImGuiCol;
+import imgui.flag.ImGuiMouseCursor;
 import imgui.flag.ImGuiStyleVar;
 import imgui.flag.ImGuiTreeNodeFlags;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.StringSplitter;
+import net.minecraft.client.gui.screens.ConfirmLinkScreen;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.texture.AbstractTexture;
-import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.locale.Language;
+import net.minecraft.network.chat.*;
 import net.minecraft.resources.Identifier;
-import org.lwjgl.opengl.GL11;
+import net.minecraft.util.FormattedCharSink;
+import net.minecraft.util.Util;
+import net.minecraft.world.item.ItemStackTemplate;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.net.URI;
 
 /**
  * A Class which has static methods for
@@ -219,89 +219,226 @@ public class ImGuiUtils {
         return IM_GUI_SPLITTER;
     }
 
-    public static void drawImage(Image image) {
-        GlStateManager._bindTexture(image.glId());
+    private static final ComponentCharSink COMPONENT_SINK = new ComponentCharSink();
 
-        GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
-        GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
-
-        var stack = Client.getImGuiManager().getGraphicsStack();
-        stack.push();
-        stack.pushStyleVar(ImGuiStyleVar.FramePadding, 0, 0);
-
-        ImGui.image(image.glId(), image.width(), image.height(), 0, 0, 1, 1);
-        stack.pop();
+    /**
+     * Draws a texture previously resolved into an {@link ImGuiTexture} at its native size.
+     */
+    public static void drawImage(ImGuiTexture texture) {
+        texture.draw();
     }
 
-    public static void drawImage(int id, float w, float h) {
-        GlStateManager._bindTexture(id);
-
-        GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
-        GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
-
-        var stack = Client.getImGuiManager().getGraphicsStack();
-        stack.push();
-        stack.pushStyleVar(ImGuiStyleVar.FramePadding, 0, 0);
-
-        ImGui.image(id, w, h, 0, 0, 1, 1);
-        stack.pop();
+    /**
+     * Draws a texture previously resolved into an {@link ImGuiTexture}, scaled to the given size.
+     */
+    public static void drawImage(ImGuiTexture texture, float w, float h) {
+        texture.draw(w, h);
     }
 
-    public static void drawImageButton(int id, float w, float h) {
-        GlStateManager._bindTexture(id);
-
-        GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
-        GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
-
-        var stack = Client.getImGuiManager().getGraphicsStack();
-        stack.push();
-        stack.pushStyleVar(ImGuiStyleVar.FramePadding, 0, 0);
-
-        ImGui.imageButton(id, w, h, 0, 0, 1, 1);
-        stack.pop();
+    /**
+     * Draws a clickable image button for a texture previously resolved into an {@link ImGuiTexture}.
+     *
+     * @return true if the button was clicked this frame
+     */
+    public static boolean drawImageButton(ImGuiTexture texture, float w, float h) {
+        return texture.drawButton(w, h);
     }
 
-    public static Image getTexture(Identifier texture) {
-        return loadTexture("identifier", texture);
+    /**
+     * Resolves the texture currently registered to {@code textureId} in Minecraft's
+     * texture manager into a drawable {@link ImGuiTexture}.
+     */
+    public static ImGuiTexture getTexture(Identifier textureId) {
+        return ImGuiTexture.of(textureId);
     }
 
-    public static Image getTexture(File imageFile) {
-        return loadTexture("file", imageFile);
+    /**
+     * Loads an image file from disk into a drawable {@link ImGuiTexture}.
+     */
+    public static ImGuiTexture getTexture(File imageFile) {
+        return ImGuiTexture.of(imageFile);
     }
 
-    private static <T> Image loadTexture(String type, T idOrFile) {
-        int textureId = -1;
-        int width = -1;
-        int height = -1;
-        if (type.equals("identifier")) {
-            AbstractTexture texture = Minecraft.getInstance().getTextureManager().getTexture((Identifier) idOrFile);
-            GpuTextureView textureView = texture.getTextureView();
-            if (texture != null) {
-                GlTexture glTexture = (GlTexture) texture.getTexture();
-                textureId = glTexture.glId();
-                width = textureView.getWidth(textureView.baseMipLevel());
-                height = textureView.getHeight(textureView.baseMipLevel());
+    /**
+     * Resolves and draws the texture registered to {@code textureId} at the given size.
+     */
+    public static void image(Identifier textureId, float w, float h) {
+        ImGuiTexture.of(textureId).draw(w, h);
+    }
+
+    /**
+     * Draws an already-resolved Minecraft texture at the given size.
+     */
+    public static void image(AbstractTexture texture, float w, float h) {
+        ImGuiTexture.of(texture).draw(w, h);
+    }
+
+    /**
+     * Resolves the texture registered to {@code textureId} and draws it as a clickable button.
+     *
+     * @return true if the button was clicked this frame
+     */
+    public static boolean imageButton(Identifier textureId, float w, float h) {
+        return ImGuiTexture.of(textureId).drawButton(w, h);
+    }
+
+    /**
+     * Draws an already-resolved Minecraft texture as a clickable button.
+     *
+     * @return true if the button was clicked this frame
+     */
+    public static boolean imageButton(AbstractTexture texture, float w, float h) {
+        return ImGuiTexture.of(texture).drawButton(w, h);
+    }
+
+    public static void component(Component text) {
+        component(text, Float.MAX_VALUE);
+    }
+
+    public static void component(Component text, float wrapWidth) {
+        var sink = COMPONENT_SINK;
+        sink.setup();
+        var lines = IM_GUI_SPLITTER.splitLines(text, Math.max((int) wrapWidth, 1), Style.EMPTY);
+        for (var part : Language.getInstance().getVisualOrder(lines)) {
+            part.accept(sink);
+            sink.finish();
+            ImGui.newLine();
+        }
+        sink.reset();
+    }
+
+    private static final class ComponentCharSink implements FormattedCharSink {
+        private final StringBuilder buffer = new StringBuilder();
+        private ImFont font;
+        private int textColor;
+        private HoverEvent hoverEvent;
+        private ClickEvent clickEvent;
+
+        void setup() {
+            font = ImGui.getFont();
+            textColor = ImGui.getColorU32(ImGuiCol.Text);
+        }
+
+        void reset() {
+            font = null;
+            textColor = 0;
+            buffer.setLength(0);
+            hoverEvent = null;
+            clickEvent = null;
+        }
+
+        @Override
+        public boolean accept(int index, Style style, int codePoint) {
+            var styleFont = resolveFont(style);
+            int styleColor = style.getColor() != null ? style.getColor().getValue() : textColor;
+            if (styleFont != font || styleColor != textColor || style.getHoverEvent() != hoverEvent || style.getClickEvent() != clickEvent) {
+                if (!buffer.isEmpty()) finish();
+                font = styleFont;
+                textColor = styleColor;
+                hoverEvent = style.getHoverEvent();
+                clickEvent = style.getClickEvent();
             }
-        } else {
-            File file = (File) idOrFile;
-            try (InputStream is = new FileInputStream(file)) {
-                NativeImage image = NativeImage.read(is);
-                DynamicTexture texture = new DynamicTexture(() -> "EditorView_" + file.getName(), image);
-                GpuTextureView textureView = texture.getTextureView();
-                if (texture != null) {
-                    GlTexture glTexture = (GlTexture) texture.getTexture();
-                    textureId = glTexture.glId();
-                    width = textureView.getWidth(textureView.baseMipLevel());
-                    height = textureView.getHeight(textureView.baseMipLevel());
+            buffer.appendCodePoint(codePoint);
+            return true;
+        }
+
+        void finish() {
+            if (buffer.isEmpty()) return;
+
+            ImGui.pushStyleVar(ImGuiStyleVar.ItemSpacing, 0, 0);
+            ImGui.pushFont(font);
+            int argb = 0xFF000000
+                    | (textColor & 0xFF0000) >> 16
+                    | (textColor & 0xFF00)
+                    | (textColor & 0xFF) << 16;
+            ImGui.textColored(argb, buffer.toString());
+            ImGui.popStyleVar();
+            buffer.setLength(0);
+
+            if (ImGui.isItemClicked() && clickEvent != null) handleClick();
+            if (ImGui.isItemHovered() && hoverEvent != null) {
+                if (clickEvent != null) ImGui.setMouseCursor(ImGuiMouseCursor.Hand);
+                handleHover();
+            }
+
+            ImGui.sameLine();
+            ImGui.popFont();
+        }
+
+        private ImFont resolveFont(Style style) {
+            var fonts = Client.getImGuiManager().getFontManager();
+            var fontDesc = style.getFont();
+            if (fontDesc != null) {
+                if (fontDesc instanceof FontDescription.Resource(var fontId)) {
+                    try {
+                        return fonts.getFont(fontId);
+                    } catch (Exception ignored) {}
                 }
-            } catch (IOException e) {
-                Common.LOGGER.error("Failed to load texture for viewer: {}", file.getAbsolutePath(), e);
+            }
+            if (style.isBold() && style.isItalic()) return fonts.getFont(net.minecraft.resources.Identifier.withDefaultNamespace("bold_italic"));
+            if (style.isBold()) return fonts.getFont(net.minecraft.resources.Identifier.withDefaultNamespace("bold"));
+            if (style.isItalic()) return fonts.getFont(net.minecraft.resources.Identifier.withDefaultNamespace("italic"));
+            return ImGui.getFont();
+        }
+
+        private void handleClick() {
+            var mc = Minecraft.getInstance();
+            switch (clickEvent) {
+                case ClickEvent.OpenUrl(URI uri):
+                    if (!mc.options.chatLinks().get()) return;
+                    if (mc.options.chatLinksPrompt().get()) {
+                        var oldScreen = mc.screen;
+                        mc.setScreen(new ConfirmLinkScreen(confirm -> {
+                            if (confirm) Util.getPlatform().openUri(uri);
+                            mc.setScreen(oldScreen);
+                        }, uri.toString(), false));
+                    } else {
+                        Util.getPlatform().openUri(uri);
+                    }
+                    break;
+                case ClickEvent.OpenFile(String path):
+                    Util.getPlatform().openUri(new java.io.File(path).toURI());
+                    break;
+                case ClickEvent.RunCommand(String cmd):
+                    var player = mc.player;
+                    if (player != null) {
+                        player.connection.sendUnattendedCommand(
+                                net.minecraft.commands.Commands.trimOptionalPrefix(cmd), mc.screen);
+                    }
+                    break;
+                case ClickEvent.CopyToClipboard(String text):
+                    mc.keyboardHandler.setClipboard(text);
+                    break;
+                default:
+                    break;
             }
         }
-        return new Image(textureId, width, height);
-    }
 
-    public record Image(int glId, int width, int height) {
+        private void handleHover() {
+            var mc = Minecraft.getInstance();
+            switch (hoverEvent) {
+                case HoverEvent.ShowItem(ItemStackTemplate item):
+                    var tooltip = Screen.getTooltipFromItem(mc, item.create());
+                    ImGui.beginTooltip();
+                    for (var line : tooltip) component(line, ImGui.getFontSize() * 35.0f);
+                    ImGui.endTooltip();
+                    break;
+                case HoverEvent.ShowEntity(HoverEvent.EntityTooltipInfo info):
+                    if (mc.options.advancedItemTooltips) {
+                        ImGui.beginTooltip();
+                        for (var line : info.getTooltipLines()) component(line, ImGui.getFontSize() * 35.0f);
+                        ImGui.endTooltip();
+                    }
+                    break;
+                case HoverEvent.ShowText(Component component):
+                    ImGui.beginTooltip();
+                    component(component, ImGui.getFontSize() * 35.0f);
+                    ImGui.endTooltip();
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────────────

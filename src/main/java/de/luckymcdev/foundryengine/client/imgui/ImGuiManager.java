@@ -1,16 +1,12 @@
 package de.luckymcdev.foundryengine.client.imgui;
 
-import com.mojang.blaze3d.opengl.GlDevice;
-import com.mojang.blaze3d.opengl.GlStateManager;
-import com.mojang.blaze3d.opengl.GlTexture;
-import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.styles.ImTheme;
 import de.luckymcdev.foundryengine.client.editor.styles.ImThemes;
-import de.luckymcdev.foundryengine.client.imgui.backend.ImGuiImplGl3;
-import de.luckymcdev.foundryengine.client.imgui.backend.ImGuiImplGlfw;
+import de.luckymcdev.foundryengine.client.imgui.backend.ImGuiRenderer;
+import de.luckymcdev.foundryengine.client.imgui.backend.ImGuiWindow;
 import de.luckymcdev.foundryengine.client.imgui.graphics.ImGuiGraphicsStack;
 import de.luckymcdev.foundryengine.common.font.BuiltInFonts;
 import de.luckymcdev.foundryengine.config.ClientConfig;
@@ -32,10 +28,6 @@ import net.minecraft.client.input.InputQuirks;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL30;
-import org.lwjgl.opengl.GL30C;
 import org.lwjgl.system.NativeResource;
 import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -44,18 +36,18 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * The Central ImGui Manager.
- * Manages the low‑level ImGui hooks and holds {@link ImGuiImplGlfw} and {@link ImGuiImplGl3} contexts.
+ * Manages the low‑level ImGui hooks and holds {@link ImGuiWindow} and {@link ImGuiRenderer} contexts.
  * Font management is delegated to {@link ImGuiFontManager} for improved modularity.
- * Uses OpenGL version 330 core profile.
  */
 public final class ImGuiManager implements EngineImGui, ResourceManagerReloadListener, NativeResource {
     private static final Logger LOGGER = LogUtils.getLogger();
-    private final ImGuiImplGlfw imGuiImplGlfw = new ImGuiImplGlfw();
-    private final ImGuiImplGl3 imGuiImplGl3 = new ImGuiImplGl3();
+    private final ImGuiWindow imGuiImplGlfw = new ImGuiWindow();
+    private final ImGuiRenderer imGuiRenderer = new ImGuiRenderer();
     private final ImGuiGraphicsStack graphicsStack = new ImGuiGraphicsStack();
-    private final ImGuiFontManager fontManager = new ImGuiFontManager(imGuiImplGl3);
+    private final ImGuiFontManager fontManager = new ImGuiFontManager(imGuiRenderer);
     private final AtomicBoolean enabled = new AtomicBoolean(false);
     private final AtomicBoolean menuBarVisible = new AtomicBoolean(true);
+    private @Nullable Window window;
     private @Nullable ImGuiContext imGuiContext;
     private @Nullable ImPlotContext imPlotContext;
     private @Nullable ImNodesContext imNodesContext;
@@ -67,10 +59,11 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
      * Creates a new ImGui context for the given window handle.
      * See {@link GameRendererMixin#engine$renderHead(DeltaTracker, boolean, CallbackInfo)} for usage.
      *
-     * @param handle the window handle, e.g. {@link Window#handle()}
+     * @param window the mc window
      */
     @Override
-    public void create(final long handle) {
+    public void create(final Window window) {
+        this.window = window;
         imGuiContext = ImGui.createContext();
         imPlotContext = ImPlot.createContext();
         imNodesContext = ImNodes.createContext();
@@ -81,19 +74,22 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
         final ImGuiIO io = ImGui.getIO();
         io.setIniFilename("feimgui.ini");
         io.setLogFilename("feimguilog.log");
-        io.addConfigFlags(ImGuiConfigFlags.ViewportsEnable);
         io.addConfigFlags(ImGuiConfigFlags.DockingEnable);
         io.addConfigFlags(ImGuiConfigFlags.DpiEnableScaleFonts);
+
+        // Viewports are broken
         io.addConfigFlags(ImGuiConfigFlags.DpiEnableScaleViewports);
+        io.addConfigFlags(ImGuiConfigFlags.ViewportsEnable);
+
         io.getFonts().setFreeTypeRenderer(true);
         io.setConfigDockingWithShift(true);
-        io.setConfigWindowsMoveFromTitleBarOnly(false);
+        io.setConfigWindowsMoveFromTitleBarOnly(true);
         io.setConfigMacOSXBehaviors(InputQuirks.ON_OSX);
 
         BuiltInFonts.registerAll(fontManager);
 
-        imGuiImplGl3.init("#version 330 core");
-        imGuiImplGlfw.init(handle, true);
+        imGuiRenderer.init();
+        imGuiImplGlfw.init(this.window.handle(), true);
 
         ImGui.styleColorsDark();
         loadThemeFromConfig();
@@ -138,6 +134,10 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
         }
     }
 
+    public Window getWindow() {
+        return this.window;
+    }
+
     public boolean isEnabled() {
         return enabled.get();
     }
@@ -175,7 +175,7 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
     }
 
     /**
-     * Prepares the frame for ImGui rendering: custom framebuffer, ImGui new frame, docking setup.
+     * Prepares the frame for ImGui rendering: ImGui new frame, docking setup.
      */
     @Override
     public void begin() {
@@ -187,16 +187,7 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
             return;
         }
 
-        final RenderTarget framebuffer = Minecraft.getInstance().getMainRenderTarget();
-        GlTexture colorTexture = Client.getGlColTexture();
-        GlDevice device = Client.getGlDevice();
-
-        GlStateManager._glBindFramebuffer(
-                GL30C.GL_FRAMEBUFFER, colorTexture.getFbo(device.directStateAccess(), null)
-        );
-        GL11.glViewport(0, 0, framebuffer.width, framebuffer.height);
-
-        imGuiImplGl3.newFrame();
+        imGuiRenderer.clearTextures();
         imGuiImplGlfw.newFrame();
         ImGui.newFrame();
 
@@ -211,23 +202,13 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
     }
 
     /**
-     * Ends ImGui rendering, draws the result and restores the default framebuffer.
+     * Ends ImGui rendering, draws the result through the GPU pipeline.
      */
     @Override
     public void end() {
         if (!enabled.get()) return;
-
         ImGui.render();
-        imGuiImplGl3.renderDrawData(ImGui.getDrawData());
-
-        GlStateManager._glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
-
-        if (ImGui.getIO().hasConfigFlags(ImGuiConfigFlags.ViewportsEnable)) {
-            final long pointer = GLFW.glfwGetCurrentContext();
-            ImGui.updatePlatformWindows();
-            ImGui.renderPlatformWindowsDefault();
-            GLFW.glfwMakeContextCurrent(pointer);
-        }
+        imGuiRenderer.renderDrawData(ImGui.getDrawData(), Minecraft.getInstance().getMainRenderTarget());
     }
 
     @Override
@@ -248,14 +229,19 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
         return fontManager;
     }
 
+    public ImGuiRenderer getRenderer() {
+        return imGuiRenderer;
+    }
+
     @Override
     public boolean shouldInterceptMouse() {
-        return shouldBlockInput || (ImGui.getIO().getWantCaptureMouse() && !Client.getMc().mouseHandler.isMouseGrabbed());
+        if (shouldBlockInput) return true;
+        return ImGui.getIO().getWantCaptureMouse() && !Client.getMc().mouseHandler.isMouseGrabbed();
     }
 
     @Override
     public boolean shouldInterceptKeyboard() {
-        return shouldBlockInput || ImGui.getIO().getWantCaptureKeyboard();
+        return ImGui.getIO().getWantCaptureKeyboard();
     }
 
     /**
@@ -265,7 +251,7 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
     public void dispose() {
         fontManager.destroy();
         graphicsStack.destroy();
-        imGuiImplGl3.shutdown();
+        imGuiRenderer.close();
         imGuiImplGlfw.shutdown();
         ImGui.destroyContext(imGuiContext);
         ImPlot.destroyContext(imPlotContext);
