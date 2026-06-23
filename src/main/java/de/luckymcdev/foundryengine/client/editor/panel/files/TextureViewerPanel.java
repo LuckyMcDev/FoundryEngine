@@ -2,7 +2,6 @@ package de.luckymcdev.foundryengine.client.editor.panel.files;
 
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
-import de.luckymcdev.foundryengine.client.imgui.ImGuiTexture;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import imgui.ImGui;
@@ -11,7 +10,7 @@ import net.minecraft.resources.Identifier;
 import java.io.File;
 
 public class TextureViewerPanel extends EditorPanel {
-    private final ImGuiTexture image;
+    private final ImGuiUtils.Image image;
     private final String sourcePath;
 
     public TextureViewerPanel(Identifier id, String title, Identifier identifier) {
@@ -32,7 +31,7 @@ public class TextureViewerPanel extends EditorPanel {
 
     @Override
     public void content() {
-        if (image.isMissing()) {
+        if (image.glId() == -1) {
             ImGui.text("Failed to load texture: " + sourcePath);
             return;
         }
@@ -40,7 +39,7 @@ public class TextureViewerPanel extends EditorPanel {
         float availWidth = ImGui.getContentRegionAvailX();
         float displayHeight = (availWidth / image.width()) * image.height();
 
-        ImGuiUtils.drawImage(image, availWidth, displayHeight);
+        ImGuiUtils.drawImage(image.glId(), availWidth, displayHeight);
 
         if (ImGui.isItemHovered()) {
             ImGui.beginTooltip();

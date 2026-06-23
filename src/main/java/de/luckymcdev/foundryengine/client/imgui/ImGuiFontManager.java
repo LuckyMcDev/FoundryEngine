@@ -1,7 +1,7 @@
 package de.luckymcdev.foundryengine.client.imgui;
 
 import com.mojang.logging.LogUtils;
-import de.luckymcdev.foundryengine.client.imgui.backend.ImGuiRenderer;
+import de.luckymcdev.foundryengine.client.imgui.backend.ImGuiImplGl3;
 import de.luckymcdev.foundryengine.common.font.TTFFile;
 import imgui.ImFont;
 import imgui.ImFontAtlas;
@@ -29,7 +29,7 @@ public final class ImGuiFontManager {
             0
     };
     private static final Logger LOGGER = LogUtils.getLogger();
-    private final ImGuiRenderer renderer;
+    private final ImGuiImplGl3 glImpl;
     private final List<FontRegistration> registrations = new ArrayList<>();
     private final Map<Identifier, ImFont> loadedFonts = new LinkedHashMap<>();
     private @Nullable ImFont actualImGuiDefaultFont;
@@ -41,8 +41,8 @@ public final class ImGuiFontManager {
     private float glyphOffsetX = 0.0f;
     private float glyphOffsetY = 0.0f;
 
-    public ImGuiFontManager(ImGuiRenderer renderer) {
-        this.renderer = renderer;
+    public ImGuiFontManager(ImGuiImplGl3 glImpl) {
+        this.glImpl = glImpl;
     }
 
     public void setGlobalGlyphRanges(short[] ranges) {
@@ -92,7 +92,7 @@ public final class ImGuiFontManager {
     public void loadFonts(ResourceManager resourceManager, List<Identifier> filter) {
         ImFontAtlas atlas = ImGui.getIO().getFonts();
         atlas.clear();
-        renderer.destroyFontsTexture();
+        glImpl.destroyFontsTexture();
 
         loadedFonts.clear();
         actualImGuiDefaultFont = null;
@@ -158,7 +158,7 @@ public final class ImGuiFontManager {
             }
         }
 
-        renderer.createFontsTexture();
+        glImpl.createFontsTexture();
 
         ImFont defaultFont = defaultFontId != null ? loadedFonts.get(defaultFontId) : loadedFonts.values().iterator().next();
         if (defaultFont != null) {
@@ -177,7 +177,7 @@ public final class ImGuiFontManager {
     }
 
     public void destroy() {
-        renderer.destroyFontsTexture();
+        glImpl.destroyFontsTexture();
         loadedFonts.clear();
         registrations.clear();
         defaultFontId = null;

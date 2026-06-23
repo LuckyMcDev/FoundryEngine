@@ -4,7 +4,6 @@ import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
 import de.luckymcdev.foundryengine.client.icons.ImageExportUtil;
-import de.luckymcdev.foundryengine.client.imgui.ImGuiTexture;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.common.Common;
@@ -34,7 +33,7 @@ public class CataloguePanel extends EditorPanel {
     private static final Identifier BUCKET_ID = Identifier.parse("minecraft:water_bucket");
     private static final Identifier SPAWNER_ID = Identifier.parse("minecraft:spawner");
     private static final Identifier CRAFTING_TABLE_ID = Identifier.parse("minecraft:crafting_table");
-    private final Map<Identifier, Long> textureCache = new HashMap<>();
+    private final Map<Identifier, Integer> textureCache = new HashMap<>();
     private final Set<Identifier> failedLoads = new HashSet<>();
     private final Queue<Identifier> loadQueue = new ArrayDeque<>();
     private final Set<Identifier> queued = new HashSet<>();
@@ -225,10 +224,10 @@ public class CataloguePanel extends EditorPanel {
                 ImGui.pushID(name);
 
                 Identifier iconToLoad = iconProvider.apply(location);
-                long textureId = getOrLoadIcon(iconToLoad);
+                int textureId = getOrLoadIcon(iconToLoad);
 
                 if (textureId != -1) {
-                    ImGui.imageButton(textureId, ITEM_SIZE, ITEM_SIZE, 0, 0, 1, 1);
+                    ImGuiUtils.drawImageButton(textureId, ITEM_SIZE, ITEM_SIZE);
                     if (textOnIcon) drawLetterOverlay(location);
                 } else {
                     drawFallback(iconToLoad);
@@ -243,14 +242,14 @@ public class CataloguePanel extends EditorPanel {
                         typeId,
                         List.of(location.getNamespace()),
                         iconToLoad,
-                        null,
+                        new ImGuiUtils.Image(textureId, ClientConfig.ICON_SIZE.get(), ClientConfig.ICON_SIZE.get()),
                         location.toString()
                 );
 
                 if (ImGui.beginDragDropSource()) {
                     ImGui.setDragDropPayload("CATALOGUE_ENTRY", payload);
                     ImGui.text("Placing " + typeId + ": " + name);
-                    if (textureId != -1) ImGuiUtils.drawImageButton(payload.texture, 32, 32);
+                    if (textureId != -1) ImGuiUtils.drawImageButton(textureId, 32, 32);
                     ImGui.endDragDropSource();
                 }
 
@@ -310,7 +309,7 @@ public class CataloguePanel extends EditorPanel {
         ImGui.popStyleVar();
     }
 
-    private long getOrLoadIcon(Identifier location) {
+    private int getOrLoadIcon(Identifier location) {
         if (textureCache.containsKey(location)) return textureCache.get(location);
         if (failedLoads.contains(location)) return -1;
 
@@ -329,7 +328,7 @@ public class CataloguePanel extends EditorPanel {
             Identifier location = loadQueue.poll();
             queued.remove(location);
 
-            long texture = loadTextureNow(location);
+            int texture = loadTextureNow(location);
             if (texture != -1) {
                 textureCache.put(location, texture);
             } else {
@@ -340,7 +339,7 @@ public class CataloguePanel extends EditorPanel {
         }
     }
 
-    private long loadTextureNow(Identifier location) {
+    private int loadTextureNow(Identifier location) {
         File outputDir = Common.CACHE.resolve("icons")
                 .resolve(String.valueOf(ClientConfig.ICON_SIZE.get()))
                 .toFile();
@@ -354,14 +353,14 @@ public class CataloguePanel extends EditorPanel {
                     fileName.startsWith(prefix) && fileName.endsWith(".png"));
 
             if (matches != null && matches.length > 0) {
-                ImGuiTexture img = ImGuiUtils.getTexture(matches[0]);
-                if (img.id() > 0) {
-                    return img.id();
+                ImGuiUtils.Image img = ImGuiUtils.getTexture(matches[0]);
+                if (img.glId() > 0) {
+                    return img.glId();
                 }
             }
         }
 
-        return -1L;
+        return -1;
     }
 
     public record CataloguePayload(
@@ -369,9 +368,12 @@ public class CataloguePanel extends EditorPanel {
             String type,
             List<String> tags,
             Identifier iconLocation,
-            ImGuiTexture texture,
+            ImGuiUtils.Image texture,
             String displayName
     ) {
+        public boolean hasTexture() {
+            return texture.glId() != -1;
+        }
     }
 
     public record ClassMemberPayload(
