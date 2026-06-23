@@ -28,7 +28,7 @@ import static org.lwjgl.system.MemoryUtil.NULL;
  * X11 bug fixed.
  */
 @SuppressWarnings({"checkstyle:DesignForExtension", "checkstyle:NeedBraces", "checkstyle:LocalVariableName", "checkstyle:FinalLocalVariable", "checkstyle:ParameterName", "checkstyle:EmptyBlock", "checkstyle:AvoidNestedBlocks"})
-public class ImGuiImplGlfw {
+public class ImGuiWindow {
     protected static final String OS = System.getProperty("os.name", "generic").toLowerCase();
     protected static final boolean IS_WINDOWS = OS.contains("win");
     protected static final boolean IS_APPLE = OS.contains("mac") || OS.contains("darwin");
@@ -1237,16 +1237,16 @@ public class ImGuiImplGlfw {
             glfwSetWindowPos(vd.window, (int) vp.getPosX(), (int) vp.getPosY());
 
             // Install GLFW callbacks for secondary viewports
-            glfwSetWindowFocusCallback(vd.window, ImGuiImplGlfw.this::windowFocusCallback);
-            glfwSetCursorEnterCallback(vd.window, ImGuiImplGlfw.this::cursorEnterCallback);
-            glfwSetCursorPosCallback(vd.window, ImGuiImplGlfw.this::cursorPosCallback);
-            glfwSetMouseButtonCallback(vd.window, ImGuiImplGlfw.this::mouseButtonCallback);
-            glfwSetScrollCallback(vd.window, ImGuiImplGlfw.this::scrollCallback);
-            glfwSetKeyCallback(vd.window, ImGuiImplGlfw.this::keyCallback);
-            glfwSetCharCallback(vd.window, ImGuiImplGlfw.this::charCallback);
-            glfwSetWindowCloseCallback(vd.window, ImGuiImplGlfw.this::windowCloseCallback);
-            glfwSetWindowPosCallback(vd.window, ImGuiImplGlfw.this::windowPosCallback);
-            glfwSetWindowSizeCallback(vd.window, ImGuiImplGlfw.this::windowSizeCallback);
+            glfwSetWindowFocusCallback(vd.window, ImGuiWindow.this::windowFocusCallback);
+            glfwSetCursorEnterCallback(vd.window, ImGuiWindow.this::cursorEnterCallback);
+            glfwSetCursorPosCallback(vd.window, ImGuiWindow.this::cursorPosCallback);
+            glfwSetMouseButtonCallback(vd.window, ImGuiWindow.this::mouseButtonCallback);
+            glfwSetScrollCallback(vd.window, ImGuiWindow.this::scrollCallback);
+            glfwSetKeyCallback(vd.window, ImGuiWindow.this::keyCallback);
+            glfwSetCharCallback(vd.window, ImGuiWindow.this::charCallback);
+            glfwSetWindowCloseCallback(vd.window, ImGuiWindow.this::windowCloseCallback);
+            glfwSetWindowPosCallback(vd.window, ImGuiWindow.this::windowPosCallback);
+            glfwSetWindowSizeCallback(vd.window, ImGuiWindow.this::windowSizeCallback);
 
             glfwMakeContextCurrent(vd.window);
             glfwSwapInterval(0);

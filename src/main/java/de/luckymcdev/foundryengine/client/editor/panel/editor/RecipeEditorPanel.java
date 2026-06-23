@@ -3,6 +3,7 @@ package de.luckymcdev.foundryengine.client.editor.panel.editor;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.panel.tools.CataloguePanel;
 import de.luckymcdev.foundryengine.client.icons.ImageExportUtil;
+import de.luckymcdev.foundryengine.client.imgui.ImGuiTexture;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.common.Common;
@@ -32,8 +33,8 @@ public class RecipeEditorPanel extends EditorPanel {
     private static final int TEXT_SHADOW = 0x80000000;
 
     private final Map<String, SlotData> slots = new LinkedHashMap<>();
-    private final Map<Identifier, Integer> itemTextureCache = new HashMap<>();
-    private final Map<Identifier, ImGuiUtils.Image> bgTextureCache = new HashMap<>();
+    private final Map<Identifier, Long> itemTextureCache = new HashMap<>();
+    private final Map<Identifier, ImGuiTexture> bgTextureCache = new HashMap<>();
     private final ImString recipeIdInput = new ImString("modid:recipe_name", 256);
     private final ImString groupInput = new ImString("", 128);
     private RecipeType selectedType = RecipeType.SHAPED;
@@ -94,7 +95,7 @@ public class RecipeEditorPanel extends EditorPanel {
 
     private void renderRecipeGrid() {
         RecipeLayout layout = getLayout();
-        ImGuiUtils.Image bg = getBgTexture(layout.tex());
+        ImGuiTexture bg = ImGuiTexture.of(layout.tex());
 
         float availX = ImGui.getContentRegionAvailX();
         float texW = GUI_TEX_WIDTH * TEXTURE_SCALE;
@@ -104,10 +105,10 @@ public class RecipeEditorPanel extends EditorPanel {
 
         var drawList = ImGui.getWindowDrawList();
 
-        if (bg != null && bg.glId() != -1) {
+        if (!bg.isMissing()) {
             float u2 = GUI_TEX_WIDTH / (float) bg.width();
             float v2 = GUI_TEX_HEIGHT / (float) bg.height();
-            drawList.addImage(bg.glId(), startX, startY, startX + texW, startY + texH, 0, 0, u2, v2);
+            drawList.addImage(bg.id(), startX, startY, startX + texW, startY + texH, 0, 0, u2, v2);
         } else {
             drawList.addRectFilled(startX, startY, startX + texW, startY + texH, 0xFF2D2D2D);
         }
@@ -158,8 +159,8 @@ public class RecipeEditorPanel extends EditorPanel {
 
         SlotData data = slots.get(key);
         if (data != null) {
-            Integer texId = itemTextureCache.get(data.item);
-            if (texId != null && texId != -1) {
+            long texId = itemTextureCache.get(data.item);
+            if (texId != -1) {
                 drawList.addImage(texId, screenX, screenY, screenX + size, screenY + size, 0, 0, 1, 1);
             } else {
                 String letter = data.item.getPath().substring(0, 1).toUpperCase();
@@ -395,16 +396,6 @@ public class RecipeEditorPanel extends EditorPanel {
                 new SlotDef("result", "Result", 133, 47));
     }
 
-    private ImGuiUtils.Image getBgTexture(Identifier texId) {
-        return bgTextureCache.computeIfAbsent(texId, id -> {
-            try {
-                return ImGuiUtils.getTexture(id);
-            } catch (Exception e) {
-                return new ImGuiUtils.Image(-1, 0, 0);
-            }
-        });
-    }
-
     private void loadItemTexture(Identifier itemId) {
         if (itemTextureCache.containsKey(itemId)) return;
 
@@ -417,15 +408,15 @@ public class RecipeEditorPanel extends EditorPanel {
             String prefix = ImageExportUtil.sanitizeFilename(itemId.getPath());
             File[] matches = iconDir.listFiles((dir, name) -> name.startsWith(prefix) && name.endsWith(".png"));
             if (matches != null && matches.length > 0) {
-                ImGuiUtils.Image img = ImGuiUtils.getTexture(matches[0]);
-                if (img.glId() > 0) {
-                    itemTextureCache.put(itemId, img.glId());
+                ImGuiTexture img = ImGuiUtils.getTexture(matches[0]);
+                if (img.id() > 0) {
+                    itemTextureCache.put(itemId, img.id());
                     return;
                 }
             }
         }
 
-        itemTextureCache.put(itemId, -1);
+        itemTextureCache.put(itemId, -1L);
     }
 
     private enum RecipeType {
