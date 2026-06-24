@@ -18,7 +18,7 @@ public class ModPathBroadcaster {
     private static final int CONNECTION_TIMEOUT_MS = 5000;
     private static final String THREAD_NAME = "ModPathBroadcaster-Thread";
 
-    public static void onClientSetup() {
+    public static void broadcast() {
         Path modsPath = FMLPaths.MODSDIR.get();
         broadcastModPath(modsPath.toAbsolutePath().toString());
     }

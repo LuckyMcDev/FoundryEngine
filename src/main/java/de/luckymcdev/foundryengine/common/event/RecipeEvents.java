@@ -21,6 +21,10 @@ public class RecipeEvents {
 
     @ApiStatus.Internal
     public static class Internal {
+        static {
+            Common.registerEventClear(Internal::clear);
+        }
+
         public static void postRecipesReceived(RecipesReceivedEvent e) {
             RECIPES_UPDATED.post(e);
         }
@@ -37,10 +41,6 @@ public class RecipeEvents {
         public static void clear() {
             RECIPES_UPDATED.clear();
             MODIFY_RECIPES.clear();
-        }
-
-        static {
-            Common.registerEventClear(Internal::clear);
         }
     }
 }

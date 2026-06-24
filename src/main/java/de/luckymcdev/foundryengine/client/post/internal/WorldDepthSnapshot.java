@@ -8,7 +8,8 @@ final class WorldDepthSnapshot {
     static final Identifier TARGET_ID = Identifier.fromNamespaceAndPath("foundryengine", "world_depth_snapshot");
     private static final DepthSnapshot SNAPSHOT = new DepthSnapshot("engine_world_depth_snapshot");
 
-    private WorldDepthSnapshot() {}
+    private WorldDepthSnapshot() {
+    }
 
     static void capture(RenderTarget source) {
         SNAPSHOT.capture(source);

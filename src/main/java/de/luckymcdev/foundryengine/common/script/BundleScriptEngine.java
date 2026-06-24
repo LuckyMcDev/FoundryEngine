@@ -4,6 +4,9 @@ import de.luckymcdev.foundryengine.common.bundle.info.BundleFiles;
 
 import java.io.IOException;
 
+/**
+ * Interface for script engines that can compile and load bundle scripts.
+ */
 public interface BundleScriptEngine {
 
     String fileExtension();

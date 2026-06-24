@@ -7,7 +7,8 @@ import net.minecraft.world.phys.Vec3;
 public final class HandlePicker {
     private static final double HOVER_DEGREES = 1.0;
 
-    private HandlePicker() {}
+    private HandlePicker() {
+    }
 
     public static boolean isHovered(Vec3 target, LivingEntity entity) {
         Vec3 eye = entity.getEyePosition();

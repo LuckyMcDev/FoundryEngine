@@ -9,7 +9,7 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 /**
- * {@link GenericRegistry}
+ * Generic registry interface for key-value storage with freeze support.
  *
  * @param <K> Key Type.
  * @param <V> Value Type.

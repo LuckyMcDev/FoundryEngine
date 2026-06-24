@@ -19,31 +19,37 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Renders custom slot tooltips on inventory screens via SlotCustomization.
+ */
 @Mixin(AbstractContainerScreen.class)
 public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMenu> extends Screen {
 
-	@Shadow
-	@Final
-	protected T menu;
+    @Shadow
+    @Final
+    protected T menu;
 
-	@Shadow
-	@Nullable
-	protected Slot hoveredSlot;
+    @Shadow
+    @Nullable
+    protected Slot hoveredSlot;
 
-	protected AbstractContainerScreenMixin(Component title) {
-		super(title);
-	}
+    protected AbstractContainerScreenMixin(Component title) {
+        super(title);
+    }
 
-	@Inject(method = "extractTooltip", at = @At("RETURN"))
-	protected void engine$renderTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY, CallbackInfo ci) {
-		if (this.menu.getCarried().isEmpty() && this.hoveredSlot != null && !this.hoveredSlot.hasItem()) {
-			if (ClientConfig.SHOW_SLOT_TOOLTIP.getAsBoolean() && this.hoveredSlot instanceof SlotCustomization slotWithTooltip) {
-				List<Component> list = slotWithTooltip.engine$getSlotTooltipText();
-				if (!list.isEmpty()) {
-					graphics.setTooltipForNextFrame(this.font, list, Optional.empty(), mouseX, mouseY);
-				}
-			}
-		}
-	}
+    /**
+     * Injects at tail of extractTooltip to render custom slot tooltips.
+     */
+    @Inject(method = "extractTooltip", at = @At("RETURN"))
+    protected void engine$renderTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY, CallbackInfo ci) {
+        if (this.menu.getCarried().isEmpty() && this.hoveredSlot != null && !this.hoveredSlot.hasItem()) {
+            if (ClientConfig.SHOW_SLOT_TOOLTIP.getAsBoolean() && this.hoveredSlot instanceof SlotCustomization slotWithTooltip) {
+                List<Component> list = slotWithTooltip.engine$getSlotTooltipText();
+                if (!list.isEmpty()) {
+                    graphics.setTooltipForNextFrame(this.font, list, Optional.empty(), mouseX, mouseY);
+                }
+            }
+        }
+    }
 
 }

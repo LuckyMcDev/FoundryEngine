@@ -73,7 +73,7 @@ public class MeshRenderer implements AutoCloseable {
     }
 
     private static RenderPipeline buildCutoutPipeline(Identifier location, Identifier vertexShader,
-                                                       Identifier fragmentShader) {
+                                                      Identifier fragmentShader) {
         return RenderPipeline.builder()
                 .withLocation(location)
                 .withVertexShader(vertexShader)

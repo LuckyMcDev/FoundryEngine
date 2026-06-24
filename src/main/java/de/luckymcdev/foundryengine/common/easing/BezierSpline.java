@@ -103,10 +103,16 @@ public class BezierSpline {
         updateCoeffs();
     }
 
+    /**
+     * Returns true if this spline consists of a single point.
+     */
     public boolean isSinglePoint() {
         return this.points.size() == 1;
     }
 
+    /**
+     * Returns true if this spline contains the given point.
+     */
     public boolean containsPoint(BezierPoint point) {
         return this.points.contains(point);
     }
@@ -188,6 +194,9 @@ public class BezierSpline {
 
     /**
      * Calculates the approximate length of the spline segment.
+     */
+    /**
+     * Returns the approximate length of this spline segment.
      */
     public double getLength() {
         double length = 0;

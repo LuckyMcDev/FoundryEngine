@@ -40,9 +40,13 @@ public class BlockArea extends Area {
         return new BlockArea(id, new BlockPos(x, y, z), dimension, color);
     }
 
-    public BlockPos pos() { return pos; }
+    public BlockPos pos() {
+        return pos;
+    }
 
-    public void setPos(BlockPos pos) { this.pos = pos; }
+    public void setPos(BlockPos pos) {
+        this.pos = pos;
+    }
 
     @Override
     public AABB bounds() {

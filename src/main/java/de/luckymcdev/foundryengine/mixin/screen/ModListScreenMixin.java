@@ -16,6 +16,9 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Implements {@link BundleSelectable} on ModListScreen to display bundle info in the mod list UI.
+ */
 @Mixin(ModListScreen.class)
 public abstract class ModListScreenMixin implements BundleSelectable {
 
@@ -24,6 +27,9 @@ public abstract class ModListScreenMixin implements BundleSelectable {
     @Shadow(remap = false)
     private ModListWidget modList;
 
+    /**
+     * Sets the selected bundle and updates the info panel with bundle details.
+     */
     @Override
     public void engine$setSelectedBundle(Bundle bundle) {
         selected = null;

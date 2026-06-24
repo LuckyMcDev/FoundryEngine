@@ -1,25 +1,19 @@
 package de.luckymcdev.foundryengine.client.util.key;
 
 import de.luckymcdev.foundryengine.common.registry.GenericRegistry;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
 
 import java.util.List;
 
 /**
  * A Manager for registering and handling {@link KeyBinding}
  */
-@EventBusSubscriber(Dist.CLIENT)
 public class KeyBindingManager {
     private static final GenericRegistry<String, KeyBinding> KEYBINDINGS = new GenericRegistry<>();
 
     public KeyBindingManager() {
     }
 
-    @SubscribeEvent
-    private static void handleClick(ClientTickEvent.Post event) {
+    public void clientTick() {
         KEYBINDINGS.forEach(keyBinding -> {
             while (keyBinding.mapping().consumeClick()) {
                 keyBinding.run();

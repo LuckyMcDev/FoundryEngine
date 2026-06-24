@@ -4,6 +4,9 @@ import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+/**
+ * A registry interface for ordered lists of values with freeze support.
+ */
 public interface RegistryList<V> {
     void add(V value);
 

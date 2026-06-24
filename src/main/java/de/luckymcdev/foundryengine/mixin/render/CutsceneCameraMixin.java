@@ -13,6 +13,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+/**
+ * Overrides camera position and rotation during cutscenes.
+ */
 @Mixin(Camera.class)
 public abstract class CutsceneCameraMixin {
     @Shadow
@@ -25,6 +28,9 @@ public abstract class CutsceneCameraMixin {
     @Shadow
     protected abstract void setRotation(float yRot, float xRot);
 
+    /**
+     * Injects before isDetached to detach camera when player is far from cutscene camera.
+     */
     @Inject(method = "isDetached", at = @At("HEAD"), cancellable = true)
     private void engine$detachCameraDuringCutscene(CallbackInfoReturnable<Boolean> cir) {
         if (Client.getCutsceneManager().isCameraOverrideDisabled()) return;
@@ -37,6 +43,9 @@ public abstract class CutsceneCameraMixin {
         }
     }
 
+    /**
+     * Injects at tail of setPosition to override camera with cutscene manager values.
+     */
     @Inject(method = "setPosition(Lnet/minecraft/world/phys/Vec3;)V", at = @At("TAIL"))
     private void engine$overridePosition(Vec3 ignored, CallbackInfo ci) {
         if (Client.getCutsceneManager().isCameraOverrideDisabled()) return;

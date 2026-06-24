@@ -16,7 +16,8 @@ public final class EngineSceneDepth extends AbstractTexture {
     private TextureTarget snapshot;
     private boolean registered;
 
-    private EngineSceneDepth() {}
+    private EngineSceneDepth() {
+    }
 
     public static boolean update() {
         Minecraft mc = Minecraft.getInstance();

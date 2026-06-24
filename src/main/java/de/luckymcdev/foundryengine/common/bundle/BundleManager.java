@@ -2,7 +2,6 @@ package de.luckymcdev.foundryengine.common.bundle;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.common.Common;
-import de.luckymcdev.foundryengine.common.event.*;
 import de.luckymcdev.foundryengine.common.registry.GenericRegistry;
 import de.luckymcdev.foundryengine.common.script.BundleScriptLoader;
 import net.minecraft.commands.CommandBuildContext;
@@ -13,12 +12,14 @@ import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Bundle Manager that manages Bundle Lifecycles.
@@ -32,12 +33,13 @@ import java.util.Collection;
  */
 public class BundleManager implements ResourceManagerReloadListener {
     private static final Logger LOGGER = LogUtils.getLogger();
-    private final Object reloadLock = new Object();
+    private final ReentrantLock reloadLock = new ReentrantLock();
     private final GenericRegistry<String, Bundle> bundles = new GenericRegistry<>();
     private final BundleDiscovery bundleDiscovery;
     private final BundleScriptLoader scriptLoader;
     private final BundleLifecycleDispatcher lifecycleDispatcher = new BundleLifecycleDispatcher();
-    private MinecraftServer server;
+    private volatile boolean reloading = false;
+    private @Nullable  MinecraftServer server;
 
     public BundleManager(IEventBus modBus, Path configDirectory) {
         BundleFactory bundleFactory = new BundleFactory(modBus, configDirectory);
@@ -45,7 +47,7 @@ public class BundleManager implements ResourceManagerReloadListener {
         this.bundleDiscovery = new BundleDiscovery(bundleFactory, this::register);
     }
 
-    public void setServer(MinecraftServer server) {
+    public void setServer(@Nullable MinecraftServer server) {
         this.server = server;
     }
 
@@ -128,7 +130,10 @@ public class BundleManager implements ResourceManagerReloadListener {
      * bundles, rediscovering them from disk, and re-loading common + server scripts.
      */
     public void reload() {
-        synchronized (reloadLock) {
+        if (reloading) return;
+        reloadLock.lock();
+        try {
+            reloading = true;
             LOGGER.info("Reloading FoundryEngine Bundles...");
             lifecycleDispatcher.fireReloadStarted();
 
@@ -153,6 +158,9 @@ public class BundleManager implements ResourceManagerReloadListener {
             }
 
             lifecycleDispatcher.fireReloadCompleted();
+        } finally {
+            reloading = false;
+            reloadLock.unlock();
         }
     }
 
@@ -167,17 +175,15 @@ public class BundleManager implements ResourceManagerReloadListener {
      * and closes the ZIP FileSystem if present.
      */
     private void unloadBundle(Bundle bundle) {
+        lifecycleDispatcher.firePreUnload(bundle);
         try {
-            lifecycleDispatcher.firePreUnload(bundle);
-
             if (bundle.bundleConfig().isLoaded()) {
                 bundle.bundleConfig().save();
             }
-
             bundle.unload();
         } finally {
-            closeFileSystem(bundle);
             lifecycleDispatcher.fireUnloaded(bundle);
+            closeFileSystem(bundle);
         }
     }
 

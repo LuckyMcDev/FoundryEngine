@@ -19,6 +19,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+/**
+ * Implements {@link RemoveFromRegistry} and {@link WritableRegistry} on MappedRegistry to support entry removal and freezing.
+ */
 @Mixin(MappedRegistry.class)
 public abstract class MappedRegistryMixin<T> implements RemoveFromRegistry<T>, WritableRegistry<T> {
     @Unique
@@ -48,6 +51,9 @@ public abstract class MappedRegistryMixin<T> implements RemoveFromRegistry<T>, W
     @Shadow
     private boolean frozen;
 
+    /**
+     * Removes a registry entry by value.
+     */
     @Override
     public boolean engine$remove(T entry) {
         var registryEntry = this.byValue.get(entry);
@@ -70,22 +76,34 @@ public abstract class MappedRegistryMixin<T> implements RemoveFromRegistry<T>, W
         }
     }
 
+    /**
+     * Removes a registry entry by its identifier key.
+     */
     @Override
     public boolean engine$remove(Identifier key) {
         var entry = this.byLocation.get(key);
         return entry != null && entry.isBound() && this.engine$remove(entry.value());
     }
 
+    /**
+     * Sets the frozen state of this registry.
+     */
     @Override
     public void engine$setFrozen(boolean value) {
         this.frozen = value;
     }
 
+    /**
+     * Returns whether this registry is frozen.
+     */
     @Override
     public boolean engine$isFrozen() {
         return this.frozen;
     }
 
+    /**
+     * Filters null entries from the element stream.
+     */
     @ModifyReturnValue(method = "listElements", at = @At("RETURN"))
     public Stream<Holder.Reference<T>> fixEntryStream(Stream<Holder.Reference<T>> original) {
         return original.filter(Objects::nonNull);

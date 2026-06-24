@@ -27,16 +27,18 @@ public class AreaPanel extends EditorPanel {
 
     private static final float LEFT_PANEL_WIDTH = 240f;
     private static final float CREATE_FORM_MIN_HEIGHT = 90f;
+    private static final float CREATE_FORM_MAX_HEIGHT = 500f;
+    private static final float SPLITTER_HEIGHT = 6f;
     private final ImString newAreaName = new ImString(64);
     private final ImInt areaSizeX = new ImInt(5);
     private final ImInt areaSizeY = new ImInt(4);
     private final ImInt areaSizeZ = new ImInt(5);
     private final ImInt areaOffsetY = new ImInt(0);
-    private static final float CREATE_FORM_MAX_HEIGHT = 500f;
+    private final ImBoolean showCreateForm = new ImBoolean(false);
+    private final ImBoolean creatingBlockArea = new ImBoolean(false);
     private float[] newAreaColor;
-
     private int selectedIndex = -1;
-
+    private float createFormHeight = 240f;
     private AreaPanel() {
         super(new Builder(Common.id("area_panel"), "Areas")
                 .icon(ImIcons.FA.FA_MAP)
@@ -44,10 +46,6 @@ public class AreaPanel extends EditorPanel {
                 .menuBar(true));
         newAreaColor = Area.DEFAULT_COLOR.toFloatArray();
     }
-    private static final float SPLITTER_HEIGHT = 6f;
-    private final ImBoolean showCreateForm = new ImBoolean(false);
-    private final ImBoolean creatingBlockArea = new ImBoolean(false);
-    private float createFormHeight = 240f;
 
     @Override
     public void content() {

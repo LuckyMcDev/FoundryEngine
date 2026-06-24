@@ -12,6 +12,9 @@ import org.slf4j.Logger;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Registry for {@link BundleScriptEngine} instances, keyed by file extension.
+ */
 public class BundleScriptEngineRegistry {
     private static final Logger LOGGER = LogUtils.getLogger();
 
@@ -21,10 +24,16 @@ public class BundleScriptEngineRegistry {
         register(new GroovyBundleScriptEngine());
     }
 
+    /**
+     * Registers a script engine for its file extension.
+     */
     public void register(BundleScriptEngine engine) {
         engines.register(engine.fileExtension(), engine);
     }
 
+    /**
+     * Initializes all registered script engines for the given bundle files.
+     */
     public void initializeAll(BundleFiles files) {
         engines.forEach(engine -> {
             try {
@@ -42,6 +51,9 @@ public class BundleScriptEngineRegistry {
         });
     }
 
+    /**
+     * Finds the appropriate script engine for the given file name by extension.
+     */
     public BundleScriptEngine forFile(String fileName) {
         for (String ext : engines.keys()) {
             if (fileName.endsWith(ext)) {
@@ -51,10 +63,16 @@ public class BundleScriptEngineRegistry {
         throw new IllegalArgumentException("No script engine registered for file: " + fileName);
     }
 
+    /**
+     * Returns the list of all supported file extensions.
+     */
     public List<String> supportedExtensions() {
         return List.copyOf(engines.keys());
     }
 
+    /**
+     * Closes all registered script engines.
+     */
     public void closeAll() {
         engines.forEach(BundleScriptEngine::close);
     }

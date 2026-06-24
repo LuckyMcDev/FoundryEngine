@@ -7,6 +7,9 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 import java.util.List;
 
+/**
+ * Accessor for PostChain's internal pass list.
+ */
 @Mixin(PostChain.class)
 public interface PostEffectProcessorAccessor {
 

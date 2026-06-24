@@ -5,6 +5,9 @@ import net.minecraft.resources.Identifier;
 
 import java.util.List;
 
+/**
+ * Registry of built-in font identifiers for ImGui and game UI.
+ */
 public class BuiltInFonts {
     public static final Identifier LIGHT = TTFFile.JETBRAINS_MONO_LIGHT.id();
     public static final Identifier REGULAR = TTFFile.JETBRAINS_MONO_REGULAR.id();
@@ -21,13 +24,16 @@ public class BuiltInFonts {
             FALLBACK_JB
     );
 
+    /**
+     * Registers all built-in fonts (JetBrains Mono variants and fallback) to the manager.
+     */
     public static void registerAll(ImGuiFontManager manager) {
         registerJetbrainsMonoNerdFontMono(manager);
         manager.registerFont(TTFFile.FALLBACK_JB);
     }
 
     /**
-     * Registers all built-in fonts to the manager.
+     * Registers JetBrains Mono Nerd Font variants to the manager.
      */
     public static void registerJetbrainsMonoNerdFontMono(ImGuiFontManager manager) {
         for (TTFFile ttf : TTFFile.JETBRAINS_MONO_NERDFONT_ALL) {

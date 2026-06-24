@@ -6,7 +6,8 @@ final class PostRenderDepthSnapshot {
 
     private static final DepthSnapshot SNAPSHOT = new DepthSnapshot("engine_post_render_depth_snapshot");
 
-    private PostRenderDepthSnapshot() {}
+    private PostRenderDepthSnapshot() {
+    }
 
     static void capture(RenderTarget source) {
         SNAPSHOT.capture(source);

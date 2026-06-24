@@ -13,12 +13,18 @@ import org.spongepowered.asm.mixin.Unique;
 
 import java.util.Map;
 
+/**
+ * Implements {@link EnginePostChain} on PostChain for external target processing.
+ */
 @Mixin(PostChain.class)
 public abstract class PostChainMixin implements EnginePostChain {
 
     @Shadow
     public abstract void addToFrame(FrameGraphBuilder frame, int screenWidth, int screenHeight, PostChain.TargetBundle providedTargets);
 
+    /**
+     * Processes the post chain with the given external render targets.
+     */
     @Unique
     @Override
     public void engine$process(Map<Identifier, RenderTarget> externalTargets, GraphicsResourceAllocator resourceAllocator) {

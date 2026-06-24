@@ -29,6 +29,10 @@ public class GameEvents {
 
     @ApiStatus.Internal
     public static class Internal {
+        static {
+            Common.registerEventClear(Internal::clear);
+        }
+
         public static void postStarting(GameSessionEvent.Starting e) {
             STARTING.post(e);
         }
@@ -57,10 +61,6 @@ public class GameEvents {
             STARTED.clear();
             STOPPING.clear();
             STOPPED.clear();
-        }
-
-        static {
-            Common.registerEventClear(Internal::clear);
         }
     }
 }

@@ -10,7 +10,13 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * Computes SHA-256 hashes of folder contents for change detection.
+ */
 public class FolderHash {
+    /**
+     * Computes a SHA-256 hash of all files in a folder, sorted by path.
+     */
     public static String hashFolder(Path folder) throws IOException, NoSuchAlgorithmException {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         List<Path> files = new ArrayList<>();

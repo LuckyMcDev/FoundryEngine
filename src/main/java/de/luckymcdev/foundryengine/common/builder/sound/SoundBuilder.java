@@ -75,6 +75,7 @@ public class SoundBuilder extends AbstractBuilder<SoundEvent> {
         return this;
     }
 
-    public record SoundFileEntry(Identifier location, float volume, float pitch, int weight, boolean stream, int attenuationDistance, boolean preload) {
+    public record SoundFileEntry(Identifier location, float volume, float pitch, int weight, boolean stream,
+                                 int attenuationDistance, boolean preload) {
     }
 }

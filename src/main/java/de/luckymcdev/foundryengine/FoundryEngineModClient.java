@@ -18,12 +18,10 @@ import de.luckymcdev.foundryengine.client.editor.panel.explorer.ResourceExplorer
 import de.luckymcdev.foundryengine.client.editor.panel.tools.*;
 import de.luckymcdev.foundryengine.client.editor.panel.view.InfoPanel;
 import de.luckymcdev.foundryengine.client.editor.panel.view.ThemeSelectorPanel;
-import de.luckymcdev.foundryengine.client.event.RegisterRenderingStuffEvent;
 import de.luckymcdev.foundryengine.client.ext.ModPathBroadcaster;
 import de.luckymcdev.foundryengine.client.icons.ScreenIconExporter;
 import de.luckymcdev.foundryengine.client.render.EngineSceneDepth;
 import de.luckymcdev.foundryengine.client.render.WorldViewMatrix;
-import de.luckymcdev.foundryengine.client.render.obj.ObjModel;
 import de.luckymcdev.foundryengine.client.util.key.RegisterKeyBindingEvent;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.network.packets.BundleHashPacket;
@@ -35,7 +33,7 @@ import de.luckymcdev.foundryengine.config.Config;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.Vec3i;
-import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
+import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -49,11 +47,13 @@ import org.slf4j.Logger;
 
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * Client-side entrypoint for FoundryEngine. Registers client event listeners, panels, and key bindings.
+ */
 @Mod(value = Common.MODID, dist = Dist.CLIENT)
 public class FoundryEngineModClient {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final IEventBus BUS = NeoForge.EVENT_BUS;
-    private static final ObjModel SUZANNE = new ObjModel(Common.id("obj/suzanne.obj"));
     private boolean hasIconAutoExported = false;
 
     public FoundryEngineModClient(IEventBus modBus, ModContainer modContainer) {
@@ -77,13 +77,12 @@ public class FoundryEngineModClient {
 
     private void onClientSetup(FMLClientSetupEvent event) {
         LOGGER.debug("FoundryEngineModClient setup called");
-        ModPathBroadcaster.onClientSetup();
+        ModPathBroadcaster.broadcast();
         Common.getBundleManager().loadClientScripts();
         event.enqueueWork(() -> {
-            BUS.post(new RegisterRenderingStuffEvent(Client.getResourceManager()));
+            Minecraft.getInstance().reloadResourcePacks();
             BUS.post(new RegisterPanelEvent());
         });
-        Client.getObjModelManager().registerObjModel(SUZANNE);
         registerClientSyncHandlers();
     }
 
@@ -106,13 +105,21 @@ public class FoundryEngineModClient {
         });
     }
 
-    private void onLoggingIn(ClientPlayerNetworkEvent.LoggingIn event) {
-        try {
-            String hash = FolderHash.hashFolder(Common.BUNDLES);
-            ClientPacketDistributor.sendToServer(new BundleHashPacket(hash));
-        } catch (Exception e) {
-            LOGGER.error("Failed to hash bundles folder", e);
-        }
+    private void addClientReloadListener(AddClientReloadListenersEvent event) {
+        event.addListener(Common.id("imgui_handler"), Client.getImGuiManager());
+        event.addListener(Common.id("obj_models"), createReloadListener(() -> Client.getObjModelManager().loadModels()));
+        event.addListener(Common.id("post_effects"), createReloadListener(() -> Client.getPostEffectManager().getRegistry().invalidatePipelineCaches()));
+    }
+
+    private PreparableReloadListener createReloadListener(Runnable runnable) {
+        return (sharedState, backgroundExecutor, barrier, gameExecutor) ->
+                CompletableFuture
+                        .<Void>supplyAsync(() -> null, backgroundExecutor)
+                        .thenCompose(barrier::wait)
+                        .thenAcceptAsync(v ->
+                                        runnable.run(),
+                                gameExecutor
+                        );
     }
 
     private void onRegisterKeyMapping(RegisterKeyMappingsEvent event) {
@@ -125,21 +132,17 @@ public class FoundryEngineModClient {
         event.register(Client.CLEAR_WAYPOINTS_KEY);
     }
 
-    private void onRegisterKeyBinding(RegisterKeyBindingEvent event) {
-        event.register(Client.EDITOR_KEY);
-        event.register(Client.MENU_BAR_KEY);
-    }
-
-    private void onRegisterCommands(RegisterClientCommandsEvent event) {
-        FoundryCommandsClient.registerAll(event.getDispatcher(), event.getBuildContext());
-    }
-
     private void onRegisterDebugEntry(RegisterDebugEntriesEvent event) {
         event.register(Common.id("bundles_info"), new BundleDebugEntry(Common.getBundleManager()));
         event.register(Common.id("gamestages_info"), new GameStagesDebugEntry());
     }
 
     private void onRegisterDebugRenderers(RegisterDebugRenderersEvent event) {
+    }
+
+    private void onRegisterKeyBinding(RegisterKeyBindingEvent event) {
+        event.register(Client.EDITOR_KEY);
+        event.register(Client.MENU_BAR_KEY);
     }
 
     private void onRegisterPanels(RegisterPanelEvent event) {
@@ -163,26 +166,17 @@ public class FoundryEngineModClient {
         event.register(NodeTestPanel.INSTANCE);
     }
 
-    private void addClientReloadListener(AddClientReloadListenersEvent event) {
-        event.addListener(Common.id("imgui_handler"), (ResourceManagerReloadListener) Client.getImGuiManager());
-        event.addListener(Common.id("obj_models"), (sharedState, backgroundExecutor, barrier, gameExecutor) ->
-                CompletableFuture
-                        .<Void>supplyAsync(() -> null, backgroundExecutor)
-                        .thenCompose(barrier::wait)
-                        .thenAcceptAsync(v ->
-                                        Client.getObjModelManager().loadModels(),
-                                gameExecutor
-                        )
-        );
-        event.addListener(Common.id("post_effects"), (sharedState, backgroundExecutor, barrier, gameExecutor) ->
-                CompletableFuture
-                        .<Void>supplyAsync(() -> null, backgroundExecutor)
-                        .thenCompose(barrier::wait)
-                        .thenAcceptAsync(v ->
-                                        Client.getPostEffectManager().getRegistry().invalidatePipelineCaches(),
-                                gameExecutor
-                        )
-        );
+    private void onRegisterCommands(RegisterClientCommandsEvent event) {
+        FoundryCommandsClient.registerAll(event.getDispatcher(), event.getBuildContext());
+    }
+
+    private void onLoggingIn(ClientPlayerNetworkEvent.LoggingIn event) {
+        try {
+            String hash = FolderHash.hashFolder(Common.BUNDLES);
+            ClientPacketDistributor.sendToServer(new BundleHashPacket(hash));
+        } catch (Exception e) {
+            LOGGER.error("Failed to hash bundles folder", e);
+        }
     }
 
     private void onAfterOpaqueFeatures(RenderLevelStageEvent.AfterOpaqueFeatures event) {
@@ -210,6 +204,7 @@ public class FoundryEngineModClient {
         Client.getEditorManager().handleTick();
         Client.getCutsceneManager().clientTick();
         Client.getEditorController().clientTick();
+        Client.getKeyBindingManager().clientTick();
         handleWaypointKeys();
 
         if (Minecraft.getInstance().level instanceof ClientLevel clientLevel) {
@@ -239,7 +234,7 @@ public class FoundryEngineModClient {
     }
 
     private void handleWaypointKeys() {
-        Vec3i targetedCoords = Client.getHitOrNull();
+        Vec3i targetedCoords = Client.getBlockHitOrNull();
 
         while (Client.PRIMARY_WAYPOINT_KEY.consumeClick()) {
             if (targetedCoords != null) {
@@ -272,6 +267,3 @@ public class FoundryEngineModClient {
         }
     }
 }
-
-
-

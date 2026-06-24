@@ -42,6 +42,10 @@ public class EntityEvents {
 
     @ApiStatus.Internal
     public static class Internal {
+        static {
+            Common.registerEventClear(Internal::clear);
+        }
+
         public static void postJoinLevel(EntityJoinLevelEvent e) {
             JOIN_LEVEL.post(e);
         }
@@ -82,10 +86,6 @@ public class EntityEvents {
             HURT.clear();
             SPAWNED.clear();
             CHECK_SPAWN.clear();
-        }
-
-        static {
-            Common.registerEventClear(Internal::clear);
         }
     }
 }

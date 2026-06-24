@@ -8,11 +8,17 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.RegistryBuilder;
 
+/**
+ * Holds custom FoundryEngine registries and deferred register setup.
+ */
 public class EngineRegistries {
-    // Actual registries
     public static Registry<RecipeResult> RECIPES;
 
+    /**
+     * Registers all deferred registers to the mod event bus.
+     */
     public static void register(IEventBus modBus) {
+        if (modBus == null) return;
         Keys.RB_DEF.register(modBus);
     }
 

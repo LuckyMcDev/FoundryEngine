@@ -10,8 +10,14 @@ import net.minecraft.world.clock.ServerClockManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
+/**
+ * Redirects clock manager lookups in time commands to use the source level's clock.
+ */
 @Mixin(TimeCommand.class)
 public class TimeCommandMixin {
+    /**
+     * Wraps clockManager() lookup in time commands to use the command source's level clock.
+     */
     @WrapOperation(
             method = {"suggestTimeMarkers", "queryTime", "setTotalTicks", "addTime", "setTimeToTimeMarker", "setPaused", "setRate", "queryTimelineTicks", "queryTimelineRepetitions"},
             at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;clockManager()Lnet/minecraft/world/clock/ServerClockManager;")

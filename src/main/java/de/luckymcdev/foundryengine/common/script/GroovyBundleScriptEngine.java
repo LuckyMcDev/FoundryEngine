@@ -16,15 +16,24 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
+/**
+ * Groovy-based implementation of {@link BundleScriptEngine} for compiling bundle scripts.
+ */
 public class GroovyBundleScriptEngine implements BundleScriptEngine {
     @Nullable
     private GroovyScriptEngine engine;
 
+    /**
+     * Returns the file extension handled by this engine.
+     */
     @Override
     public String fileExtension() {
         return ".groovy";
     }
 
+    /**
+     * Initializes the Groovy script engine with the bundle's script root.
+     */
     @Override
     public void initialize(BundleFiles files) throws IOException {
         URL root = files.scripts().root().toUri().toURL();
@@ -38,11 +47,17 @@ public class GroovyBundleScriptEngine implements BundleScriptEngine {
         engine.setConfig(config);
     }
 
+    /**
+     * Loads and compiles a Groovy script class by name.
+     */
     @Override
     public Class<?> loadClass(String scriptName) throws NullPointerException, ResourceException, ScriptException {
         return engine.loadScriptByName(scriptName);
     }
 
+    /**
+     * Closes the Groovy script engine and releases resources.
+     */
     @Override
     public void close() {
         engine = null;

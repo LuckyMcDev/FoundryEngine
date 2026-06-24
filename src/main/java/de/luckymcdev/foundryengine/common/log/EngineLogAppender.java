@@ -15,7 +15,6 @@ import java.util.function.Consumer;
 
 /**
  * A Log Appender to make the {@link de.luckymcdev.foundryengine.client.editor.panel.tools.ConsolePanel} work.
- * {@link Holder} is the way of creating this, Although I don't like that and will likely remove it.
  */
 public class EngineLogAppender extends AbstractAppender {
     private final List<LogEntry> logHistory = new LinkedList<>();
@@ -31,10 +30,16 @@ public class EngineLogAppender extends AbstractAppender {
         super(name, filter, layout, ignoreExceptions, properties);
     }
 
+    /**
+     * Creates a new EngineLogAppender with the given name.
+     */
     public static EngineLogAppender create(String name) {
         return new EngineLogAppender(name, null, null, true, Property.EMPTY_ARRAY);
     }
 
+    /**
+     * Sets a listener to be notified of new log entries.
+     */
     public void setListener(Consumer<LogEntry> listener) {
         this.logListener = listener;
     }
@@ -62,12 +67,18 @@ public class EngineLogAppender extends AbstractAppender {
         }
     }
 
+    /**
+     * Returns a snapshot of the log history.
+     */
     public List<LogEntry> getHistory() {
         synchronized (logHistory) {
             return new LinkedList<>(logHistory);
         }
     }
 
+    /**
+     * Clears all log history.
+     */
     public void clearHistory() {
         synchronized (logHistory) {
             logHistory.clear();
@@ -77,6 +88,9 @@ public class EngineLogAppender extends AbstractAppender {
     public static class Holder {
         public static final EngineLogAppender logAppender = EngineLogAppender.create("EngineLogAppender");
 
+        /**
+         * Adds the log appender to the root logger.
+         */
         public static void addAppender() {
             Logger rootLogger = (Logger) LogManager.getRootLogger();
 
@@ -85,6 +99,9 @@ public class EngineLogAppender extends AbstractAppender {
             rootLogger.addAppender(logAppender);
         }
 
+        /**
+         * Returns the singleton EngineLogAppender instance.
+         */
         public static EngineLogAppender get() {
             return logAppender;
         }

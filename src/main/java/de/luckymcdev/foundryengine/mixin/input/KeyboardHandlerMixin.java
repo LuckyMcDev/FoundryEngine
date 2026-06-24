@@ -2,7 +2,6 @@ package de.luckymcdev.foundryengine.mixin.input;
 
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.EditorScreen;
-import de.luckymcdev.foundryengine.client.imgui.EngineImGui;
 import de.luckymcdev.foundryengine.interfaces.EngineKeyboardHandler;
 import net.minecraft.client.KeyboardHandler;
 import net.minecraft.client.Minecraft;
@@ -16,12 +15,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 
 /**
- * See {@link EngineImGui#shouldInterceptKeyboard()}
+ * See {@link de.luckymcdev.foundryengine.client.imgui.ImGuiManager#shouldInterceptKeyboard()}
  * Cancels Minecraft Keyboard inputs if ImGui captures the keyboard.
  */
 @Mixin(KeyboardHandler.class)
 public class KeyboardHandlerMixin implements EngineKeyboardHandler {
 
+    /**
+     * Cancels keyboard events when ImGui captures the keyboard, and handles editor/menu toggle hotkeys.
+     */
     @Inject(method = "keyPress", at = @At("HEAD"), cancellable = true)
     public void engine$keyPress(long handle, int action, KeyEvent event, CallbackInfo ci) {
         if (Client.getImGuiManager().shouldInterceptKeyboard()) {
@@ -43,6 +45,9 @@ public class KeyboardHandlerMixin implements EngineKeyboardHandler {
         }
     }
 
+    /**
+     * Cancels char-typed events when ImGui captures the keyboard.
+     */
     @Override
     @Inject(method = "charTyped", at = @At("HEAD"), cancellable = true)
     public void engine$charTyped(long handle, CharacterEvent event, CallbackInfo ci) {

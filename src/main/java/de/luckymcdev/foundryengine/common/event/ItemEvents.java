@@ -72,6 +72,10 @@ public class ItemEvents {
 
     @ApiStatus.Internal
     public static class Internal {
+        static {
+            Common.registerEventClear(Internal::clear);
+        }
+
         public static void postPickedUp(ItemEntityPickupEvent.Post e) {
             PICKED_UP.post(e);
         }
@@ -148,10 +152,6 @@ public class ItemEvents {
             FIRST_LEFT_CLICKED.clear();
             FIRST_RIGHT_CLICKED.clear();
             ITEM_MODIFICATION.clear();
-        }
-
-        static {
-            Common.registerEventClear(Internal::clear);
         }
     }
 }

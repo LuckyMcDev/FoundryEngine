@@ -66,6 +66,10 @@ public class ClientEvents {
 
     @ApiStatus.Internal
     public static class Internal {
+        static {
+            Common.registerEventClear(Internal::clear);
+        }
+
         public static void postTick(ClientTickEvent.Post e) {
             TICK.post(e);
         }
@@ -131,10 +135,6 @@ public class ClientEvents {
             RENDER_AFTER_LEVEL.clear();
             LOGGED_IN.clear();
             LOGGED_OUT.clear();
-        }
-
-        static {
-            Common.registerEventClear(Internal::clear);
         }
     }
 }

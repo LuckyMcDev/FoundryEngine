@@ -19,6 +19,10 @@ public class NetworkEvents {
 
     @ApiStatus.Internal
     public static class Internal {
+        static {
+            Common.registerEventClear(Internal::clear);
+        }
+
         public static void postLogin(PlayerEvent.PlayerLoggedInEvent e) {
             LOGIN.post(e);
         }
@@ -35,10 +39,6 @@ public class NetworkEvents {
         public static void clear() {
             LOGIN.clear();
             LOGOUT.clear();
-        }
-
-        static {
-            Common.registerEventClear(Internal::clear);
         }
     }
 }

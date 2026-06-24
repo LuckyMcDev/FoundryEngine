@@ -24,11 +24,17 @@ public class GameRendererMixin implements EngineGameRenderer {
     @Final
     public CrossFrameResourcePool resourcePool;
 
+    /**
+     * Injects at render HEAD as a hook for future use.
+     */
     @Override
     @Inject(method = "render", at = @At("HEAD"))
     public void engine$renderHead(DeltaTracker deltaTracker, boolean advanceGameTime, CallbackInfo ci) {
     }
 
+    /**
+     * Injects at render RETURN to render ImGui and editor overlays.
+     */
     @Override
     @Inject(method = "render", at = @At("RETURN"))
     public void engine$renderReturn(DeltaTracker deltaTracker, boolean advanceGameTime, CallbackInfo ci) {
@@ -51,6 +57,9 @@ public class GameRendererMixin implements EngineGameRenderer {
         }
     }
 
+    /**
+     * Injects before post-world depth clear to capture snapshots and apply POST_WORLD effects.
+     */
     @Inject(
             method = "renderLevel",
             at = @At(
@@ -68,6 +77,9 @@ public class GameRendererMixin implements EngineGameRenderer {
         Client.getPostEffectManager().getRegistry().applyAll(RenderPhase.POST_WORLD, ticker.getGameTimeDeltaPartialTick(true), resourcePool);
     }
 
+    /**
+     * Injects before pre-GUI depth clear to capture snapshots and apply PRE_GUI effects.
+     */
     @Inject(
             method = "render",
             at = @At(
@@ -86,6 +98,9 @@ public class GameRendererMixin implements EngineGameRenderer {
         Client.getPostEffectManager().getRegistry().applyAll(RenderPhase.PRE_GUI, ticker.getGameTimeDeltaPartialTick(true), resourcePool);
     }
 
+    /**
+     * Injects at render TAIL to restore depth and apply POST_RENDER effects.
+     */
     @Inject(method = "render", at = @At("TAIL"))
     private void engine$onPostRender(DeltaTracker ticker, boolean renderLevel, CallbackInfo ci) {
         Minecraft mc = Minecraft.getInstance();

@@ -15,6 +15,10 @@ public class AreaEvents {
 
     @ApiStatus.Internal
     public static class Internal {
+        static {
+            Common.registerEventClear(Internal::clear);
+        }
+
         public static void postLoad(LevelEvent.Load event) {
             if (event.getLevel() instanceof ServerLevel level) {
                 Common.getAreaManager().onLevelLoad(event);
@@ -32,10 +36,6 @@ public class AreaEvents {
 
         public static void clear() {
             ON_LOAD.clear();
-        }
-
-        static {
-            Common.registerEventClear(Internal::clear);
         }
     }
 }

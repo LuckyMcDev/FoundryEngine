@@ -11,6 +11,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+/**
+ * Overrides camera depth/near/far values with client-configured values.
+ */
 @Mixin(Camera.class)
 public abstract class CameraMixin {
 
@@ -21,6 +24,9 @@ public abstract class CameraMixin {
     private void setupPerspective(float zNear, float zFar, float fov, float width, float height) {
     }
 
+    /**
+     * Injects after depthFar field write to override with Client.DEPTH_FAR.
+     */
     @Inject(
             method = "update",
             at = @At(value = "FIELD", target = "Lnet/minecraft/client/Camera;depthFar:F", opcode = Opcodes.PUTFIELD, shift = At.Shift.AFTER)
@@ -29,6 +35,9 @@ public abstract class CameraMixin {
         this.depthFar = Client.DEPTH_FAR.floatValue();
     }
 
+    /**
+     * Redirects setupPerspective to use Client.DEPTH_NEAR and Client.DEPTH_FAR.
+     */
     @Redirect(
             method = "update",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setupPerspective(FFFFF)V")

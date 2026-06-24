@@ -85,6 +85,10 @@ public class BundleEvents {
 
     @ApiStatus.Internal
     public static class Internal {
+        static {
+            Common.registerEventClear(Internal::clear);
+        }
+
         public static void postRegistry(RegistryEvent event) {
             REGISTRY.post(event);
         }
@@ -144,10 +148,6 @@ public class BundleEvents {
             DATA_GEN.clear();
             SERVER_ABOUT_TO_START.clear();
             CUSTOM_EVENTS.clear();
-        }
-
-        static {
-            Common.registerEventClear(Internal::clear);
         }
     }
 }

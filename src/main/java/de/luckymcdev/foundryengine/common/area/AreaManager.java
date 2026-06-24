@@ -22,14 +22,21 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.*;
 
+/**
+ * Manages area registration, persistence, lifecycle hooks, and module dispatch.
+ */
 public class AreaManager {
+    private static final int SPATIAL_CELL_SIZE = 32;
     private final Map<Identifier, AreaModule> moduleTypes = new HashMap<>();
     private final Map<String, AreaPreset> presets = new HashMap<>();
     private final Map<Identifier, Area> areasById = new HashMap<>();
     private final Map<ResourceKey<Level>, List<Identifier>> areaIdsByDimension = new HashMap<>();
     private final Map<ResourceKey<Level>, Map<Identifier, Set<UUID>>> lastMembersByDimension = new HashMap<>();
+    private final Map<ResourceKey<Level>, Map<Long, List<Area>>> areaSpatialIndex = new HashMap<>();
 
-    // ── Module type registry ──────────────────────────────────────────
+    private static long spatialCellKey(int cellX, int cellZ) {
+        return ((long) cellX << 32) | (cellZ & 0xFFFFFFFFL);
+    }
 
     public void registerModuleType(AreaModule module) {
         moduleTypes.put(module.id(), module);
@@ -44,8 +51,6 @@ public class AreaManager {
         return Collections.unmodifiableCollection(moduleTypes.values());
     }
 
-    // ── Preset registry ──────────────────────────────────────────────
-
     public void registerPreset(AreaPreset preset) {
         presets.put(preset.id(), preset);
     }
@@ -58,8 +63,6 @@ public class AreaManager {
     public Collection<AreaPreset> getPresets() {
         return Collections.unmodifiableCollection(presets.values());
     }
-
-    // ── CRUD ─────────────────────────────────────────────────────────
 
     @Nullable
     public Area getArea(Identifier id) {
@@ -87,6 +90,7 @@ public class AreaManager {
         if (!dimIds.contains(area.id())) {
             dimIds.add(area.id());
         }
+        indexAreaSpatially(area);
         if (level != null) {
             AreaSavedData.get(level).addArea(area);
             syncToDimension(level);
@@ -107,13 +111,12 @@ public class AreaManager {
         if (ids != null) ids.remove(area.id());
         var members = lastMembersByDimension.get(area.dimension());
         if (members != null) members.remove(area.id());
+        removeAreaFromSpatialIndex(area);
         if (level != null) {
             AreaSavedData.get(level).removeArea(area.id());
             syncToDimension(level);
         }
     }
-
-    // ── Persistence ──────────────────────────────────────────────────
 
     public void loadFromLevel(ServerLevel level) {
         AreaSavedData savedData = AreaSavedData.get(level);
@@ -122,6 +125,7 @@ public class AreaManager {
         for (Area area : savedData.getAreas()) {
             areasById.put(area.id(), area);
             ids.add(area.id());
+            indexAreaSpatially(area);
         }
         areaIdsByDimension.put(dim, ids);
     }
@@ -134,6 +138,7 @@ public class AreaManager {
                 Area area = Area.readFromNbt(ct);
                 areasById.put(area.id(), area);
                 ids.add(area.id());
+                indexAreaSpatially(area);
             }
         }
         areaIdsByDimension.put(dimension, ids);
@@ -160,8 +165,6 @@ public class AreaManager {
         Common.getSavedDataManager().syncToDimension(level);
     }
 
-    // ── Lifecycle hooks ──────────────────────────────────────────────
-
     public void onLevelLoad(LevelEvent.Load event) {
         if (event.getLevel() instanceof ServerLevel level) {
             loadFromLevel(level);
@@ -174,8 +177,6 @@ public class AreaManager {
             savedData.setDirty();
         }
     }
-
-    // ── Module dispatch: tick / enter / leave ────────────────────────
 
     public void onLevelTick(LevelTickEvent.Post event) {
         if (!(event.getLevel() instanceof ServerLevel level)) return;
@@ -197,17 +198,17 @@ public class AreaManager {
             currMembers.put(a.id(), new HashSet<>());
         }
 
+        Map<Long, List<Area>> spatial = areaSpatialIndex.get(dim);
         Map<UUID, Entity> entitiesByUuid = new HashMap<>();
         level.getEntities().getAll().forEach(e -> entitiesByUuid.put(e.getUUID(), e));
 
         for (Entity entity : entitiesByUuid.values()) {
             var pos = entity.blockPosition();
-            int x = pos.getX();
-            int y = pos.getY();
-            int z = pos.getZ();
+            long cellKey = spatialCellKey(pos.getX() >> 5, pos.getZ() >> 5);
+            List<Area> candidates = spatial != null ? spatial.getOrDefault(cellKey, List.of()) : areas;
 
-            for (Area area : areas) {
-                if (area.bounds().contains(x, y, z)) {
+            for (Area area : candidates) {
+                if (area.bounds().contains(pos.getX(), pos.getY(), pos.getZ())) {
                     currMembers.get(area.id()).add(entity.getUUID());
                 }
             }
@@ -219,9 +220,6 @@ public class AreaManager {
 
             if (!curr.isEmpty()) {
                 dispatchTick(area, level);
-            }
-
-            if (!curr.isEmpty()) {
                 for (UUID u : curr) {
                     if (prev.contains(u)) continue;
                     Entity e = entitiesByUuid.get(u);
@@ -243,6 +241,26 @@ public class AreaManager {
         }
 
         lastMembersByDimension.put(dim, currMembers);
+    }
+
+    private void indexAreaSpatially(Area area) {
+        var bounds = area.bounds();
+        int minCellX = (int) Math.floor(bounds.minX) >> 5;
+        int maxCellX = (int) Math.floor(bounds.maxX) >> 5;
+        int minCellZ = (int) Math.floor(bounds.minZ) >> 5;
+        int maxCellZ = (int) Math.floor(bounds.maxZ) >> 5;
+        var grid = areaSpatialIndex.computeIfAbsent(area.dimension(), k -> new HashMap<>());
+        for (int cx = minCellX; cx <= maxCellX; cx++) {
+            for (int cz = minCellZ; cz <= maxCellZ; cz++) {
+                grid.computeIfAbsent(spatialCellKey(cx, cz), k -> new ArrayList<>()).add(area);
+            }
+        }
+    }
+
+    private void removeAreaFromSpatialIndex(Area area) {
+        var grid = areaSpatialIndex.get(area.dimension());
+        if (grid == null) return;
+        grid.values().forEach(list -> list.remove(area));
     }
 
     private void dispatchTick(Area area, ServerLevel level) {
@@ -271,8 +289,6 @@ public class AreaManager {
             }
         }
     }
-
-    // ── Module dispatch: block events ────────────────────────────────
 
     public void onBlockBreak(BreakBlockEvent event) {
         if (!(event.getLevel() instanceof ServerLevel level)) return;

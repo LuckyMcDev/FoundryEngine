@@ -1,5 +1,6 @@
 package de.luckymcdev.foundryengine.server.packs;
 
+import com.google.gson.JsonObject;
 import com.mojang.logging.LogUtils;
 import net.minecraft.SharedConstants;
 import net.minecraft.network.chat.Component;
@@ -17,6 +18,7 @@ import org.slf4j.Logger;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashSet;
@@ -26,6 +28,9 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+/**
+ * A {@link RepositorySource} that serves paths from a dynamic supplier as a virtual resource pack.
+ */
 public class DynamicPackRepository implements RepositorySource {
     private static final Logger LOGGER = LogUtils.getLogger();
 
@@ -67,6 +72,9 @@ public class DynamicPackRepository implements RepositorySource {
         this(packType, packId, packTitle, packTitle, pathsSupplier, position, fixedPosition);
     }
 
+    /**
+     * Full constructor. Creates a virtual pack containing files from all {@code pathsSupplier} directories.
+     */
     public DynamicPackRepository(
             PackType packType,
             String packId,
@@ -86,12 +94,12 @@ public class DynamicPackRepository implements RepositorySource {
     }
 
     private static byte[] buildPackMeta(PackType packType, String description) {
-        String escaped = description
-                .replace("\\", "\\\\")
-                .replace("\"", "\\\"");
-        return "{\"pack\":{\"description\":\"%s\",\"pack_format\":%d}}"
-                .formatted(escaped, SharedConstants.getCurrentVersion().packVersion(packType).major())
-                .getBytes();
+        JsonObject pack = new JsonObject();
+        pack.addProperty("description", description);
+        pack.addProperty("pack_format", SharedConstants.getCurrentVersion().packVersion(packType).major());
+        JsonObject root = new JsonObject();
+        root.add("pack", pack);
+        return root.toString().getBytes(StandardCharsets.UTF_8);
     }
 
     @Override

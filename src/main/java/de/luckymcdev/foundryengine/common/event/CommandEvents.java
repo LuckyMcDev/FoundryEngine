@@ -20,6 +20,10 @@ public class CommandEvents {
 
     @ApiStatus.Internal
     public static class Internal {
+        static {
+            Common.registerEventClear(Internal::clear);
+        }
+
         public static void post(RegisterCommandsEvent event) {
             COMMANDS.post(event);
         }
@@ -36,10 +40,6 @@ public class CommandEvents {
         public static void clear() {
             COMMANDS.clear();
             COMMANDS_CLIENT.clear();
-        }
-
-        static {
-            Common.registerEventClear(Internal::clear);
         }
     }
 }
