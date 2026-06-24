@@ -14,6 +14,7 @@ import de.luckymcdev.foundryengine.common.cutscene.model.EffectAttachment;
 import de.luckymcdev.foundryengine.common.cutscene.util.LerpType;
 
 import de.luckymcdev.foundryengine.common.network.packets.editor.CutscenePacket;
+import de.luckymcdev.foundryengine.common.network.packets.editor.LinearizeCutscenePacket;
 import de.luckymcdev.foundryengine.common.util.color.Color;
 import imgui.ImGui;
 import imgui.flag.ImGuiCol;
@@ -272,7 +273,7 @@ public class CutsceneTimelinePanel extends EditorPanel {
 
         if (nodes == 2) {
             if (ImGui.button(ImIcons.FA.FA_BEZIER_CURVE + " Linearize##cs_node_linearize")) {
-                sendCommand("engine cutscene linearize " + c.getName());
+                ClientPacketDistributor.sendToServer(new LinearizeCutscenePacket(c.getName()));
                 sendChatStatus("Linearized: " + c.getName());
             }
             if (ImGui.isItemHovered())
@@ -780,13 +781,6 @@ public class CutsceneTimelinePanel extends EditorPanel {
 
         double time = (double) anchorIndex / (double) splineCount;
         return c.path.getNormalizedDistanceAtTime(time);
-    }
-
-    private void sendCommand(String command) {
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.getConnection() != null) {
-            mc.getConnection().sendCommand(command);
-        }
     }
 
     private void sendChatStatus(String message) {
