@@ -24,6 +24,11 @@ tasks.register('javadocJar', Jar) {
     archiveClassifier.set('javadoc')
 }
 
+tasks.assemble {
+    dependsOn(tasks.javadocJar)
+}
+
+
 publishMods {
     changelog = providers.environmentVariable("CHANGELOG").orElse("No changelog provided.")
     type = ALPHA
@@ -33,7 +38,7 @@ publishMods {
     displayName = "${mod_name} ${mod_version}"
 
     file = jar.archiveFile
-    additionalFiles.from(javadocJar.archiveFile)
+    additionalFiles.from(javadocJar.archiveFile, sourcesJar.archiveFile)
 
     // dryRun = true
 
@@ -51,6 +56,7 @@ publishing {
         register('mavenJava', MavenPublication) {
             from components.java
             artifact javadocJar
+            artifact sourcesJar
         }
     }
     repositories {
