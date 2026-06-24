@@ -7,18 +7,22 @@ import de.luckymcdev.foundryengine.client.icons.ImageExportUtil;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.common.Common;
+import de.luckymcdev.foundryengine.common.network.packets.editor.GiveItemPacket;
+import de.luckymcdev.foundryengine.common.network.packets.world.ServerBoundSpawnEntityPacket;
 import de.luckymcdev.foundryengine.config.ClientConfig;
 import imgui.ImGui;
 import imgui.flag.ImGuiMouseButton;
 import imgui.flag.ImGuiStyleVar;
 import imgui.type.ImString;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
 import java.io.File;
 import java.util.*;
@@ -77,7 +81,7 @@ public class CataloguePanel extends EditorPanel {
                         .sorted(Comparator.comparing(Identifier::getPath)).toList();
                 renderRegistryGrid("items", list, id -> id, false, id -> {
                     if (Minecraft.getInstance().level == null) return;
-                    Minecraft.getInstance().player.connection.sendCommand("give @s " + id);
+                    ClientPacketDistributor.sendToServer(new GiveItemPacket(id.toString()));
                 });
                 ImGui.endTabItem();
             }
@@ -106,10 +110,11 @@ public class CataloguePanel extends EditorPanel {
                         false,
                         id -> {
                             if (Minecraft.getInstance().level == null) return;
-                            var pos = Minecraft.getInstance().player.position();
-                            Minecraft.getInstance().player.connection.sendCommand(
-                                    String.format("summon %s %.2f %.2f %.2f", id, pos.x, pos.y, pos.z).replace(",", ".")
-                            );
+                            LocalPlayer player = Minecraft.getInstance().player;
+                            var pos = player.position();
+                            ClientPacketDistributor.sendToServer(new ServerBoundSpawnEntityPacket(
+                                    id.toString(), pos.x, pos.y, pos.z, player.getYRot(), player.getXRot()
+                            ));
                         });
                 ImGui.endTabItem();
             }

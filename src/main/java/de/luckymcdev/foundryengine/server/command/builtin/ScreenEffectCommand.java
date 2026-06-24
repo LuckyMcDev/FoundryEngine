@@ -8,7 +8,6 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
 import de.luckymcdev.foundryengine.common.cutscene.util.LerpType;
 
 import de.luckymcdev.foundryengine.common.cutscene.util.ServerScreenEffectManager;
-import de.luckymcdev.foundryengine.common.network.packets.editor.CutsceneCommandPacket;
 import de.luckymcdev.foundryengine.common.network.packets.sync.ScreenEffectPacket;
 import de.luckymcdev.foundryengine.server.command.EngineCommand;
 import net.minecraft.commands.CommandBuildContext;
@@ -17,7 +16,9 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.TimeArgument;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.permissions.PermissionSet;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.Arrays;
@@ -82,7 +83,13 @@ public class ScreenEffectCommand implements EngineCommand {
             PacketDistributor.sendToPlayer(player, new ScreenEffectPacket(effect, intro, hold, outro, easing));
             ServerScreenEffectManager.addInstance(player, intro + hold + outro);
             if (!command.isEmpty()) {
-                PacketDistributor.sendToPlayer(player, new CutsceneCommandPacket(command));
+                MinecraftServer server = player.level().getServer();
+                if (server != null) {
+                    var source = player.createCommandSourceStack()
+                            .withMaximumPermission(PermissionSet.ALL_PERMISSIONS)
+                            .withSuppressedOutput();
+                    server.getCommands().performPrefixedCommand(source, command);
+                }
             }
         }
 
