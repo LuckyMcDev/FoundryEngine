@@ -16,17 +16,29 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
+/**
+ * Loads and compiles bundle scripts into entrypoints using registered script engines.
+ */
 public class BundleScriptLoader {
     private static final Logger LOGGER = LogUtils.getLogger();
 
+    /**
+     * Loads common (environment-independent) scripts for the given bundle.
+     */
     public List<BundleEntrypoint> loadCommon(BundleFiles files, BundleScriptEngineRegistry registry, String bundleId) {
         return load(files, registry, BundleFiles.ScriptFiles::common, "common", bundleId);
     }
 
+    /**
+     * Loads client-side scripts for the given bundle.
+     */
     public List<BundleEntrypoint> loadClient(BundleFiles files, BundleScriptEngineRegistry registry, String bundleId) {
         return load(files, registry, BundleFiles.ScriptFiles::client, "client", bundleId);
     }
 
+    /**
+     * Loads server-side scripts for the given bundle.
+     */
     public List<BundleEntrypoint> loadServer(BundleFiles files, BundleScriptEngineRegistry registry, String bundleId) {
         return load(files, registry, BundleFiles.ScriptFiles::server, "server", bundleId);
     }

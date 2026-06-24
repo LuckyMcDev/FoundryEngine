@@ -17,19 +17,29 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Manages the lifecycle and tick dispatch of game sessions.
+ */
 public class GameManager implements BundleLifecycleListener {
     private static final Logger LOGGER = LogUtils.getLogger();
     private final Map<Identifier, GameSession> sessions = new ConcurrentHashMap<>();
 
-    public void register(GameSession session) {
+    /**
+     * Registers a game session by its ID. Returns false if already registered.
+     */
+    public boolean register(GameSession session) {
         Identifier id = session.id();
         if (sessions.putIfAbsent(id, session) != null) {
             LOGGER.warn("Game session [{}] is already registered", id);
-            return;
+            return false;
         }
         LOGGER.debug("Registered game session [{}]", id);
+        return true;
     }
 
+    /**
+     * Unregisters a game session and stops it if running.
+     */
     public void unregister(Identifier id) {
         GameSession session = sessions.remove(id);
         if (session != null && session.isRunning()) {
@@ -38,18 +48,30 @@ public class GameManager implements BundleLifecycleListener {
         LOGGER.debug("Unregistered game session [{}]", id);
     }
 
+    /**
+     * Returns the registered session by ID, or null if not found.
+     */
     public GameSession getSession(Identifier id) {
         return sessions.get(id);
     }
 
+    /**
+     * Returns an unmodifiable collection of all active sessions.
+     */
     public Collection<GameSession> getActiveSessions() {
         return Collections.unmodifiableCollection(sessions.values());
     }
 
+    /**
+     * Checks if a session with the given ID is registered.
+     */
     public boolean hasSession(Identifier id) {
         return sessions.containsKey(id);
     }
 
+    /**
+     * Starts the given session, transitioning it through starting and running states.
+     */
     public boolean startSession(Identifier id) {
         GameSession session = sessions.get(id);
         if (session == null) {
@@ -71,6 +93,9 @@ public class GameManager implements BundleLifecycleListener {
         return true;
     }
 
+    /**
+     * Stops the given session, transitioning through stopping to stopped.
+     */
     public boolean stopSession(Identifier id) {
         GameSession session = sessions.get(id);
         if (session == null) return false;
@@ -80,21 +105,30 @@ public class GameManager implements BundleLifecycleListener {
         if (NeoForge.EVENT_BUS.post(stoppingEvent).isCanceled()) return false;
 
         session.state(GameState.STOPPING);
-        session.onStopping();
-        session.save();
-        session.state(GameState.STOPPED);
+        try {
+            session.onStopping();
+            session.save();
+        } finally {
+            session.state(GameState.STOPPED);
+        }
 
         NeoForge.EVENT_BUS.post(new GameSessionEvent.Stopped(id));
         LOGGER.debug("Stopped game session [{}]", id);
         return true;
     }
 
+    /**
+     * Stops all active sessions.
+     */
     public void stopAll() {
         for (Identifier id : sessions.keySet()) {
             stopSession(id);
         }
     }
 
+    /**
+     * Ticks all running sessions on the common tick.
+     */
     public void tickCommon(Level level) {
         for (GameSession session : sessions.values()) {
             if (session.state().isRunning()) {
@@ -103,6 +137,9 @@ public class GameManager implements BundleLifecycleListener {
         }
     }
 
+    /**
+     * Ticks all running sessions on the client tick.
+     */
     public void tickClient(Minecraft client, ClientLevel level) {
         for (GameSession session : sessions.values()) {
             if (session.state().isRunning()) {
@@ -111,6 +148,9 @@ public class GameManager implements BundleLifecycleListener {
         }
     }
 
+    /**
+     * Ticks all running sessions on the server tick.
+     */
     public void tickServer(MinecraftServer server, ServerLevel level) {
         for (GameSession session : sessions.values()) {
             if (session.state().isRunning()) {

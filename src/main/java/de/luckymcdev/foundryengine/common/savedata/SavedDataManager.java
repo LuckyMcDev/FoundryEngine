@@ -14,6 +14,9 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * Manages per-dimension saved data collection and client sync via packets.
+ */
 public class SavedDataManager {
     private final Map<Identifier, Function<ServerLevel, CompoundTag>> collectors = new LinkedHashMap<>();
     private final Map<Identifier, Consumer<CompoundTag>> clientHandlers = new HashMap<>();

@@ -13,7 +13,6 @@ import de.luckymcdev.foundryengine.client.editor.EditorController;
 import de.luckymcdev.foundryengine.client.editor.EditorManager;
 import de.luckymcdev.foundryengine.client.editor.MainMenu;
 import de.luckymcdev.foundryengine.client.editor.feature.CutsceneEditorFeature;
-import de.luckymcdev.foundryengine.client.imgui.EngineImGui;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiManager;
 import de.luckymcdev.foundryengine.client.particle.ParticleManager;
 import de.luckymcdev.foundryengine.client.post.PostEffectManager;
@@ -55,6 +54,9 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
+/**
+ * Client-side singleton providing access to all client subsystems and utility methods.
+ */
 public final class Client {
     public static final Matrix4f MODEL_VIEW = new Matrix4f();
     public static final Matrix4f PROJECTION = new Matrix4f();
@@ -131,50 +133,86 @@ public final class Client {
         throw new UtilityClassException();
     }
 
+    /**
+     * Returns the Minecraft instance via the engine interface.
+     */
     public static Minecraft getMc() {
         return ((EngineMinecraft) Minecraft.getInstance()).engine$self();
     }
 
+    /**
+     * Returns the current resource manager.
+     */
     public static ResourceManager getResourceManager() {
         return getMc().getResourceManager();
     }
 
+    /**
+     * Returns the main game window.
+     */
     public static Window getWindow() {
         return getMc().getWindow();
     }
 
+    /**
+     * Returns the game renderer.
+     */
     public static GameRenderer getGameRenderer() {
         return getMc().gameRenderer;
     }
 
+    /**
+     * Returns the main render target.
+     */
     public static RenderTarget getMainRenderTarget() {
         return getMc().getMainRenderTarget();
     }
 
+    /**
+     * Returns the main game camera.
+     */
     public static Camera getMainCamera() {
         return getGameRenderer().getMainCamera();
     }
 
+    /**
+     * Returns the client network connection, or null.
+     */
     public static @Nullable ClientPacketListener getConnection() {
         return getMc().getConnection();
     }
 
+    /**
+     * Returns the local player, or null.
+     */
     public static @Nullable LocalPlayer getPlayer() {
         return getMc().player;
     }
 
+    /**
+     * Sets the current screen overlay.
+     */
     public static void setScreen(Screen screen) {
         getMc().setScreen(screen);
     }
 
+    /**
+     * Sends a chat command to the server.
+     */
     public static void sendCommand(String command) {
         Objects.requireNonNull(getConnection()).sendCommand(command);
     }
 
+    /**
+     * Sends a network packet to the server.
+     */
     public static void sendPacket(Packet<?> packet) {
         Objects.requireNonNull(getConnection()).send(packet);
     }
 
+    /**
+     * Returns the recipe manager from the integrated server, or null.
+     */
     public static @Nullable RecipeManager getRecipeManager() {
         Minecraft mc = getMc();
         if (mc.getSingleplayerServer() != null) {
@@ -183,87 +221,150 @@ public final class Client {
         return null;
     }
 
-    public static EngineImGui getImGuiManager() {
+    /**
+     * Returns the ImGui manager.
+     */
+    public static ImGuiManager getImGuiManager() {
         return IMGUI_MANAGER;
     }
 
+    /**
+     * Returns the main menu.
+     */
     public static MainMenu getMainMenu() {
         return MAIN_MENU;
     }
 
+    /**
+     * Returns the editor manager.
+     */
     public static EditorManager getEditorManager() {
         return EDITOR_MANAGER;
     }
 
+    /**
+     * Returns the key binding manager.
+     */
     public static KeyBindingManager getKeyBindingManager() {
         return KEY_BINDING_MANAGER;
     }
 
+    /**
+     * Returns the particle manager.
+     */
     public static ParticleManager getParticleManager() {
         return PARTICLE_MANAGER;
     }
 
+    /**
+     * Returns the mesh renderer.
+     */
     public static MeshRenderer getMeshRenderer() {
         return MESH_RENDERER;
     }
 
+    /**
+     * Returns the OBJ model manager.
+     */
     public static ObjModelManager getObjModelManager() {
         return OBJ_MODEL_MANAGER;
     }
 
+    /**
+     * Returns the skybox manager.
+     */
     public static SkyboxManager getSkyboxManager() {
         return SKYBOX_MANAGER;
     }
 
+    /**
+     * Returns the OpenGL device from the GPU backend.
+     */
     public static GlDevice getGlDevice() {
         return (GlDevice) ((EngineGpuDevice) RenderSystem.getDevice()).engine$getBackend();
     }
 
+    /**
+     * Returns the color texture of the main render target.
+     */
     public static GlTexture getGlColTexture() {
         return getGlColTexture(getMainRenderTarget());
     }
 
+    /**
+     * Returns the color texture of the given render target.
+     */
     public static GlTexture getGlColTexture(RenderTarget target) {
         return unwrapTexture(target.getColorTexture());
     }
 
+    /**
+     * Returns the depth texture of the main render target.
+     */
     public static GlTexture getGlDepthTexture() {
         return getGlDepthTexture(getMainRenderTarget());
     }
 
+    /**
+     * Returns the depth texture of the given render target.
+     */
     public static GlTexture getGlDepthTexture(RenderTarget target) {
         return unwrapTexture(target.getDepthTexture());
     }
 
+    /**
+     * Unwraps a Minecraft texture object to its GL texture handle.
+     */
     public static GlTexture unwrapTexture(Object tex) {
         return (GlTexture) tex;
     }
 
+    /**
+     * Returns the waypoint renderer.
+     */
     public static WaypointRenderer getWaypointRenderer() {
         return WAYPOINT_RENDERER;
     }
 
+    /**
+     * Returns the area renderer.
+     */
     public static AreaRenderer getAreaRenderer() {
         return AREA_RENDERER;
     }
 
+    /**
+     * Returns the client cutscene manager.
+     */
     public static ClientCutsceneManager getCutsceneManager() {
         return CUTSCENE_MANAGER;
     }
 
+    /**
+     * Returns the post-effect manager.
+     */
     public static PostEffectManager getPostEffectManager() {
         return POST_EFFECT_MANAGER;
     }
 
+    /**
+     * Returns the editor controller.
+     */
     public static EditorController getEditorController() {
         return EDITOR_CONTROLLER;
     }
 
+    /**
+     * Returns the cutscene editor feature.
+     */
     public static CutsceneEditorFeature getCutsceneEditor() {
         return EDITOR_CONTROLLER.getCutsceneEditorFeature();
     }
 
-    public static @Nullable Vec3i getHitOrNull() {
+    /**
+     * Returns the block position the player is looking at, or null.
+     */
+    public static @Nullable Vec3i getBlockHitOrNull() {
         HitResult hit = getMc().hitResult;
         if (hit != null && hit.getType() == (HitResult.Type.BLOCK)) {
             BlockHitResult blockHit = (BlockHitResult) hit;
@@ -291,6 +392,9 @@ public final class Client {
         }
     }
 
+    /**
+     * Updates the main view and projection matrices and their derived matrices.
+     */
     public static void updateMain(Matrix4fc modelView, Matrix4fc projection) {
         MODEL_VIEW.set(modelView);
         PROJECTION.set(projection);

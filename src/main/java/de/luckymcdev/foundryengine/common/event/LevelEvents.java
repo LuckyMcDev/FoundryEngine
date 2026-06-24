@@ -41,6 +41,10 @@ public class LevelEvents {
 
     @ApiStatus.Internal
     public static class Internal {
+        static {
+            Common.registerEventClear(Internal::clear);
+        }
+
         public static void postLoad(LevelEvent.Load e) {
             LOAD.post(e);
         }
@@ -81,10 +85,6 @@ public class LevelEvents {
             TICK.clear();
             BEFORE_EXPLOSION.clear();
             AFTER_EXPLOSION.clear();
-        }
-
-        static {
-            Common.registerEventClear(Internal::clear);
         }
     }
 }

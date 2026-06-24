@@ -48,7 +48,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Font management is delegated to {@link ImGuiFontManager} for improved modularity.
  * Uses OpenGL version 330 core profile.
  */
-public final class ImGuiManager implements EngineImGui, ResourceManagerReloadListener, NativeResource {
+public final class ImGuiManager implements ResourceManagerReloadListener, NativeResource {
     private static final Logger LOGGER = LogUtils.getLogger();
     private final ImGuiImplGlfw imGuiImplGlfw = new ImGuiImplGlfw();
     private final ImGuiImplGl3 imGuiImplGl3 = new ImGuiImplGl3();
@@ -69,7 +69,6 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
      *
      * @param handle the window handle, e.g. {@link Window#handle()}
      */
-    @Override
     public void create(final long handle) {
         imGuiContext = ImGui.createContext();
         imPlotContext = ImPlot.createContext();
@@ -99,37 +98,51 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
         loadThemeFromConfig();
     }
 
-    @Override
+    /**
+     * Enables ImGui rendering and input processing.
+     */
     public void enable() {
         enabled.set(true);
     }
 
-    @Override
+    /**
+     * Disables ImGui rendering and input processing.
+     */
     public void disable() {
         enabled.set(false);
     }
 
-    @Override
+    /**
+     * Shows the menu bar.
+     */
     public void showMenuBar() {
         menuBarVisible.set(true);
     }
 
-    @Override
+    /**
+     * Hides the menu bar.
+     */
     public void hideMenuBar() {
         menuBarVisible.set(false);
     }
 
-    @Override
+    /**
+     * Toggles the menu bar visibility.
+     */
     public void toggleMenuBar() {
         menuBarVisible.set(!menuBarVisible.get());
     }
 
-    @Override
+    /**
+     * Returns whether the menu bar is currently visible.
+     */
     public boolean isMenuBarVisible() {
         return menuBarVisible.get();
     }
 
-    @Override
+    /**
+     * Toggles the enabled state.
+     */
     public void toggle() {
         if (isEnabled()) {
             disable();
@@ -138,6 +151,9 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
         }
     }
 
+    /**
+     * Returns whether ImGui rendering is currently enabled.
+     */
     public boolean isEnabled() {
         return enabled.get();
     }
@@ -149,17 +165,21 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
         return theme;
     }
 
+    /**
+     * Persists the given theme name to the client config.
+     */
     public void saveThemeToConfig(ImTheme theme) {
         ClientConfig.SELECTED_THEME.set(theme.getName());
         ClientConfig.SELECTED_THEME.save();
     }
 
-    @Override
+    /**
+     * Applies the given theme and saves it to config.
+     */
     public void setTheme(ImTheme theme) {
         setTheme(theme, true);
     }
 
-    @Override
     public void setTheme(ImTheme theme, boolean saveToConfig) {
         theme.apply(ImGui.getStyle());
         this.currentTheme = theme;
@@ -169,7 +189,9 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
         LOGGER.info("Applied theme '{}'", theme.getName());
     }
 
-    @Override
+    /**
+     * Returns the currently active theme.
+     */
     public ImTheme getCurrentTheme() {
         return currentTheme;
     }
@@ -177,7 +199,6 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
     /**
      * Prepares the frame for ImGui rendering: custom framebuffer, ImGui new frame, docking setup.
      */
-    @Override
     public void begin() {
         final ImGuiIO io = ImGui.getIO();
 
@@ -213,7 +234,6 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
     /**
      * Ends ImGui rendering, draws the result and restores the default framebuffer.
      */
-    @Override
     public void end() {
         if (!enabled.get()) return;
 
@@ -230,12 +250,16 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
         }
     }
 
-    @Override
+    /**
+     * Returns the graphics stack for push/pop operations.
+     */
     public ImGuiGraphicsStack getGraphicsStack() {
         return graphicsStack;
     }
 
-    @Override
+    /**
+     * Returns the current dock space ID.
+     */
     public int getDockId() {
         return dockId;
     }
@@ -243,17 +267,20 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
     /**
      * Returns the font manager used for custom font configuration.
      */
-    @Override
     public ImGuiFontManager getFontManager() {
         return fontManager;
     }
 
-    @Override
+    /**
+     * Returns whether ImGui should capture mouse input.
+     */
     public boolean shouldInterceptMouse() {
         return shouldBlockInput || (ImGui.getIO().getWantCaptureMouse() && !Client.getMc().mouseHandler.isMouseGrabbed());
     }
 
-    @Override
+    /**
+     * Returns whether ImGui should capture keyboard input.
+     */
     public boolean shouldInterceptKeyboard() {
         return shouldBlockInput || ImGui.getIO().getWantCaptureKeyboard();
     }
@@ -272,11 +299,17 @@ public final class ImGuiManager implements EngineImGui, ResourceManagerReloadLis
         ImNodes.destroyContext(imNodesContext);
     }
 
+    /**
+     * Disposes all ImGui resources.
+     */
     @Override
     public void free() {
         dispose();
     }
 
+    /**
+     * Reloads fonts from the resource manager on resource reload.
+     */
     @Override
     public void onResourceManagerReload(ResourceManager resourceManager) {
         LOGGER.info("Hey. Fonts might be broken. If they appear really bad for you, disable custom fonts in the config.");

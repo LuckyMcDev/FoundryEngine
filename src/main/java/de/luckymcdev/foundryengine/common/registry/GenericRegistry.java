@@ -179,6 +179,9 @@ public class GenericRegistry<K, V> implements Registry<K, V> {
         return primaryLookup.size();
     }
 
+    /**
+     * Sets the default value returned when a key is not found.
+     */
     public void setDefaultValue(V defaultValue) {
         this.defaultValue = defaultValue;
     }

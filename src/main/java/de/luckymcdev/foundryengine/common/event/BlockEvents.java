@@ -47,6 +47,10 @@ public class BlockEvents {
 
     @ApiStatus.Internal
     public static class Internal {
+        static {
+            Common.registerEventClear(Internal::clear);
+        }
+
         public static void postBroken(BreakBlockEvent e) {
             BROKEN.post(e);
         }
@@ -88,10 +92,6 @@ public class BlockEvents {
             RIGHT_CLICKED.clear();
             FARMLAND_TRAMPLED.clear();
             BLOCK_MODIFICATION.clear();
-        }
-
-        static {
-            Common.registerEventClear(Internal::clear);
         }
     }
 }

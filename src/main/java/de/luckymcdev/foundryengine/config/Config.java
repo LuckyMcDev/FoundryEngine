@@ -7,6 +7,9 @@ import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 
+/**
+ * Registers the four NeoForge config types (client, server, common, startup).
+ */
 public final class Config {
 
     public static void registerClient(ModContainer container) {

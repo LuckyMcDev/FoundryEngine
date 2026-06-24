@@ -73,50 +73,86 @@ public final class Common {
         return Identifier.fromNamespaceAndPath(MODID, path);
     }
 
+    /**
+     * Returns an {@link Identifier} in the default Minecraft namespace.
+     */
     public static Identifier mId(String path) {
         return Identifier.withDefaultNamespace(path);
     }
 
+    /**
+     * Returns an {@link Identifier} with the given namespace and path.
+     */
     public static Identifier id(String namespace, String path) {
         return Identifier.fromNamespaceAndPath(namespace, path);
     }
 
+    /**
+     * Returns the singleton {@link BundleManager}.
+     */
     public static BundleManager getBundleManager() {
         return BUNDLE_MANAGER;
     }
 
+    /**
+     * Returns the singleton {@link GameStageHandler}.
+     */
     public static GameStageHandler getGameStageHandler() {
         return GAME_STAGE_HANDLER;
     }
 
+    /**
+     * Returns the singleton {@link NetworkManager}.
+     */
     public static NetworkManager getNetworkManager() {
         return NETWORK_MANAGER;
     }
 
+    /**
+     * Returns the singleton {@link AreaManager}.
+     */
     public static AreaManager getAreaManager() {
         return AREA_MANAGER;
     }
 
+    /**
+     * Returns the singleton {@link CutsceneManager}.
+     */
     public static CutsceneManager getCutsceneManager() {
         return CUTSCENE_MANAGER;
     }
 
+    /**
+     * Returns the singleton {@link CutsceneSessionManager}.
+     */
     public static CutsceneSessionManager getCutsceneSessionManager() {
         return CUTSCENE_SESSION_MANAGER;
     }
 
+    /**
+     * Returns the singleton {@link SavedDataManager}.
+     */
     public static SavedDataManager getSavedDataManager() {
         return SAVED_DATA_MANAGER;
     }
 
+    /**
+     * Returns the singleton {@link WaypointManager}.
+     */
     public static WaypointManager getWaypointManager() {
         return WAYPOINT_MANAGER;
     }
 
+    /**
+     * Returns the singleton {@link GameManager}.
+     */
     public static GameManager getGameManager() {
         return GAME_MANAGER;
     }
 
+    /**
+     * Reads the full content of a file as a UTF-8 string. Returns empty on failure.
+     */
     public static String getFileContent(Path file) {
         try (InputStream is = Files.newInputStream(file)) {
             return new String(is.readAllBytes());
@@ -126,18 +162,30 @@ public final class Common {
         }
     }
 
+    /**
+     * Posts an event to the NeoForge event bus.
+     */
     public static <T extends Event> T post(T event) {
         return NeoForge.EVENT_BUS.post(event);
     }
 
+    /**
+     * Posts an event at the given priority to the NeoForge event bus.
+     */
     public static <T extends Event> T post(EventPriority priority, T event) {
         return NeoForge.EVENT_BUS.post(priority, event);
     }
 
+    /**
+     * Registers a cleanup callback invoked on {@link #clearEvents()}.
+     */
     public static void registerEventClear(Runnable clearer) {
         EVENT_CLEARERS.add(clearer);
     }
 
+    /**
+     * Runs all registered event cleanup callbacks.
+     */
     public static void clearEvents() {
         for (var clearer : EVENT_CLEARERS) {
             clearer.run();

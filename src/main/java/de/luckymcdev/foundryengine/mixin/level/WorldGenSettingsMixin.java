@@ -8,9 +8,15 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 
+/**
+ * Filters world dimensions to exclude those with save-properties disabled during world gen.
+ */
 @Mixin(WorldGenSettings.class)
 public class WorldGenSettingsMixin {
 
+    /**
+     * Modifies the WorldDimensions argument to filter out non-saveable dimensions.
+     */
     @ModifyArg(
             method = "of(Lnet/minecraft/world/level/levelgen/WorldOptions;Lnet/minecraft/core/RegistryAccess;)Lnet/minecraft/world/level/levelgen/WorldGenSettings;",
             at = @At(

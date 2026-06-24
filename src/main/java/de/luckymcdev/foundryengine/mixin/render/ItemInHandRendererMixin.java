@@ -14,6 +14,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+/**
+ * Mixin to render offhand arm when empty and handle item-in-hand rendering overrides.
+ */
 @Mixin(ItemInHandRenderer.class)
 public abstract class ItemInHandRendererMixin {
 
@@ -21,6 +24,9 @@ public abstract class ItemInHandRendererMixin {
     abstract void invokeRenderPlayerArm(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int light,
                                         float equippedProgress, float swingProgress, HumanoidArm arm);
 
+    /**
+     * Injects at tail of renderArmWithItem to render the offhand arm when empty.
+     */
     @Inject(method = "renderArmWithItem", at = @At("TAIL"))
     private void renderOffhandArmWhenEmpty(AbstractClientPlayer player, float f, float g, InteractionHand hand, float swingProgress, ItemStack stack, float equippedProgress,
                                            PoseStack poseStack, SubmitNodeCollector submitNodeCollector,

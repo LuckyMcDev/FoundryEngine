@@ -9,6 +9,9 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.function.BiConsumer;
 
+/**
+ * Base interface for all network packets.
+ */
 public interface AbstractPacket<T extends AbstractPacket<T>> extends CustomPacketPayload {
 
     static <T extends CustomPacketPayload> Type<T> createType(Identifier id) {

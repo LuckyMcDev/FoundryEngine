@@ -6,6 +6,9 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
+/**
+ * Implements {@link EngineBlockBehavior} on BlockBehaviour to allow runtime property modification.
+ */
 @Mixin(BlockBehaviour.class)
 public abstract class BlockBehaviorMixin implements EngineBlockBehavior {
     @Shadow
@@ -23,36 +26,57 @@ public abstract class BlockBehaviorMixin implements EngineBlockBehavior {
     @Shadow
     public float jumpFactor;
 
+    /**
+     * Sets whether this block has collision.
+     */
     @Override
     public void engine$hasCollision(boolean collision) {
         hasCollision = collision;
     }
 
+    /**
+     * Sets the explosion resistance of this block.
+     */
     @Override
     public void engine$setExplosionResistance(float resistance) {
         explosionResistance = resistance;
     }
 
+    /**
+     * Sets whether this block randomly ticks.
+     */
     @Override
     public void engine$setIsRandomlyTicking(boolean randomlyTicking) {
         isRandomlyTicking = randomlyTicking;
     }
 
+    /**
+     * Sets the sound type of this block.
+     */
     @Override
     public void engine$setSoundType(SoundType type) {
         soundType = type;
     }
 
+    /**
+     * Sets the friction of this block.
+     */
     @Override
     public void engine$setFriction(float friction) {
         this.friction = friction;
     }
 
+    /**
+     * Sets the speed factor of this block.
+     */
     @Override
     public void engine$setSpeedFactor(float speedFactor) {
         this.speedFactor = speedFactor;
     }
 
+    /**
+     * Sets the jump factor of this block.
+     */
     @Override
     public void engine$setJumpFactor(float nJumpFactor) {
         jumpFactor = nJumpFactor;

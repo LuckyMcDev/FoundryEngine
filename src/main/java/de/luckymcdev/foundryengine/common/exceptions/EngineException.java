@@ -1,5 +1,8 @@
 package de.luckymcdev.foundryengine.common.exceptions;
 
+/**
+ * Base runtime exception for Foundry Engine errors.
+ */
 public class EngineException extends RuntimeException {
 
     public EngineException() {

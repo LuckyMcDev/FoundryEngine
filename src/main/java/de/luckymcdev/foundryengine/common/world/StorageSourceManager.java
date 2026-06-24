@@ -18,11 +18,17 @@ import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.stream.Stream;
 
+/**
+ * Manages additional world storage directories and world instancing for pack distribution.
+ */
 public class StorageSourceManager {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final List<Path> additionalBaseDirs = new ArrayList<>();
     private static final Map<String, Path> instancedWorlds = new HashMap<>();
 
+    /**
+     * Adds an additional directory to search for world data.
+     */
     public static void addAdditionalPath(Path path) {
         if (path != null && Files.isDirectory(path)) {
             Path normalized = path.toAbsolutePath().normalize();
@@ -35,10 +41,16 @@ public class StorageSourceManager {
         }
     }
 
+    /**
+     * Returns an unmodifiable list of additional world directories.
+     */
     public static List<Path> getAdditionalPaths() {
         return Collections.unmodifiableList(additionalBaseDirs);
     }
 
+    /**
+     * Removes an additional world directory by path.
+     */
     public static boolean removeAdditionalPath(Path path) {
         if (path == null) return false;
         Path normalized = path.toAbsolutePath().normalize();
@@ -49,11 +61,17 @@ public class StorageSourceManager {
         return removed;
     }
 
+    /**
+     * Clears all additional world directories.
+     */
     public static void clearAdditionalPaths() {
         additionalBaseDirs.clear();
         LOGGER.info("Cleared all extra world directories");
     }
 
+    /**
+     * Resolves the path for a world, checking additional directories first.
+     */
     public static Path resolveWorldPath(Path baseDir, String levelId) {
         Path primary = baseDir.resolve(levelId);
         if (Files.isDirectory(primary)) return primary;
@@ -64,6 +82,9 @@ public class StorageSourceManager {
         return primary;
     }
 
+    /**
+     * Checks if a world is stored in an additional directory rather than the primary.
+     */
     public static boolean isWorldExternal(Path baseDir, String levelId) {
         Path primary = baseDir.resolve(levelId);
         if (Files.isDirectory(primary)) return false;
@@ -73,6 +94,9 @@ public class StorageSourceManager {
         return false;
     }
 
+    /**
+     * Adds world candidates from all additional directories to the output list.
+     */
     public static void addCandidatesFromAdditionalDirs(List<LevelDirectory> out) throws LevelStorageException {
         for (Path dir : additionalBaseDirs) {
             addCandidatesFromDir(dir, out);
@@ -91,16 +115,23 @@ public class StorageSourceManager {
         }
     }
 
-    // Instancing
-
+    /**
+     * Checks if a world level has been instanced.
+     */
     public static boolean isInstanced(String levelId) {
         return instancedWorlds.containsKey(levelId);
     }
 
+    /**
+     * Returns the path to an instanced copy of the given world.
+     */
     public static Path getInstancedPath(String levelId) {
         return instancedWorlds.get(levelId);
     }
 
+    /**
+     * Deletes the instanced copy of the given world.
+     */
     public static void deleteInstance(String levelId) {
         Path target = instancedWorlds.remove(levelId);
         if (target != null && Files.isDirectory(target)) {
@@ -113,6 +144,9 @@ public class StorageSourceManager {
         }
     }
 
+    /**
+     * Clears all instanced worlds and deletes the instances directory.
+     */
     public static void clearInstanced() {
         instancedWorlds.clear();
         try {
@@ -125,6 +159,9 @@ public class StorageSourceManager {
         }
     }
 
+    /**
+     * Ensures an instanced copy of the world exists, copying from source if needed.
+     */
     public static void ensureInstanced(String levelId, Path source) throws IOException {
         String packMode = CommonConfig.PACK_MODE.get();
         if (!packMode.isEmpty() && packMode.equalsIgnoreCase("dev")) {
@@ -165,6 +202,9 @@ public class StorageSourceManager {
         instancedWorlds.put(levelId, target);
     }
 
+    /**
+     * Returns the target directory for an instanced copy of the given world.
+     */
     public static Path getInstanceDir(String levelId, Path source) {
         String key;
         try {

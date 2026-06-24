@@ -161,6 +161,21 @@ public record AreaPacket(
         }
     }
 
+    @Override
+    public Type<AreaPacket> getType() {
+        return TYPE;
+    }
+
+    @Override
+    public PacketBounds getBoundTo() {
+        return PacketBounds.SERVER;
+    }
+
+    @Override
+    public StreamCodec<RegistryFriendlyByteBuf, AreaPacket> getCodec() {
+        return CODEC;
+    }
+
     public enum Action {
         CREATE, UPDATE, REMOVE, REQUEST_SYNC;
 
@@ -175,20 +190,5 @@ public record AreaPacket(
         public static AreaType fromOrdinal(int ordinal) {
             return values()[ordinal];
         }
-    }
-
-    @Override
-    public Type<AreaPacket> getType() {
-        return TYPE;
-    }
-
-    @Override
-    public PacketBounds getBoundTo() {
-        return PacketBounds.SERVER;
-    }
-
-    @Override
-    public StreamCodec<RegistryFriendlyByteBuf, AreaPacket> getCodec() {
-        return CODEC;
     }
 }

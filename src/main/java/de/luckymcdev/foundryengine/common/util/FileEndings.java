@@ -8,43 +8,28 @@ import imgui.extension.texteditor.TextEditorLanguageDefinition;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Maps file extensions to editor language definitions and icons.
+ */
 public class FileEndings {
 
     private static final Map<String, TextEditorLanguageDefinition> EXTENSION_TO_LANG = new HashMap<>();
     private static final Map<String, String> EXTENSION_TO_ICON = new HashMap<>();
 
     static {
-        // GLSL Shaders
         registerLanguage(CodeEditorLanguageDefinitions.glsl(), "glsl", "vsh", "fsh", "geom", "comp");
-        // Java
         registerLanguage(CodeEditorLanguageDefinitions.java(), "java");
-        // Groovy
         registerLanguage(CodeEditorLanguageDefinitions.groovy(), "groovy", "gradle");
-        // JSON
         registerLanguage(CodeEditorLanguageDefinitions.json(), "json");
-        // TOML
         registerLanguage(CodeEditorLanguageDefinitions.toml(), "toml");
 
-        registerIcon(ImGuiUtils.icon(ImIcons.FA.FA_FILE_CODE),
-                "java", "groovy", "glsl", "vsh", "fsh", "js");
-
-        registerIcon(ImGuiUtils.icon(ImIcons.FA.FA_FILE_IMPORT),
-                "json", "toml", "yaml", "yml");
-
-        registerIcon(ImGuiUtils.icon(ImIcons.FA.FA_FILE_IMAGE),
-                "png", "jpg", "jpeg", "tga");
-
-        registerIcon(ImGuiUtils.icon(ImIcons.FA.FA_FILE_AUDIO),
-                "ogg", "wav", "mp3");
-
-        registerIcon(ImGuiUtils.icon(ImIcons.FA.FA_FILE_ZIPPER),
-                "zip", "jar", "tar", "gz");
-
-        registerIcon(ImGuiUtils.icon(ImIcons.FA.FA_FILE_TEXT),
-                "txt", "log");
-
-        registerIcon(ImGuiUtils.icon(ImIcons.FA.FA_FILE_PEN),
-                "md");
+        registerIcon(ImGuiUtils.icon(ImIcons.FA.FA_FILE_CODE), "java", "groovy", "glsl", "vsh", "fsh", "js");
+        registerIcon(ImGuiUtils.icon(ImIcons.FA.FA_FILE_IMPORT), "json", "toml", "yaml", "yml");
+        registerIcon(ImGuiUtils.icon(ImIcons.FA.FA_FILE_IMAGE), "png", "jpg", "jpeg", "tga");
+        registerIcon(ImGuiUtils.icon(ImIcons.FA.FA_FILE_AUDIO), "ogg", "wav", "mp3");
+        registerIcon(ImGuiUtils.icon(ImIcons.FA.FA_FILE_ZIPPER), "zip", "jar", "tar", "gz");
+        registerIcon(ImGuiUtils.icon(ImIcons.FA.FA_FILE_TEXT), "txt", "log");
+        registerIcon(ImGuiUtils.icon(ImIcons.FA.FA_FILE_PEN), "md");
     }
 
     private static void registerLanguage(TextEditorLanguageDefinition def, String... extensions) {
@@ -62,6 +47,9 @@ public class FileEndings {
     /**
      * Gets the language definition for the editor based on file extension.
      */
+    /**
+     * Returns the language definition for the given file name based on its extension.
+     */
     public static TextEditorLanguageDefinition getLanguageDefinitionByFileName(String fileName) {
         String ext = getExtension(fileName);
         return ext != null ? EXTENSION_TO_LANG.get(ext) : null;
@@ -69,6 +57,9 @@ public class FileEndings {
 
     /**
      * Gets the FontAwesome icon string based on file extension.
+     */
+    /**
+     * Returns the FontAwesome icon string for the given file name based on its extension.
      */
     public static String getFileIcon(String fileName) {
         String ext = getExtension(fileName);

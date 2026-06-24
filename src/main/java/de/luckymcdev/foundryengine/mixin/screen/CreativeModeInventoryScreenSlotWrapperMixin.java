@@ -14,6 +14,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
 
+/**
+ * Implements {@link SlotCustomization} on the creative inventory slot wrapper.
+ */
 @Mixin(targets = {"net/minecraft/client/gui/screens/inventory/CreativeModeInventoryScreen$SlotWrapper"})
 public abstract class CreativeModeInventoryScreenSlotWrapperMixin extends Slot implements SlotCustomization {
 
@@ -27,6 +30,9 @@ public abstract class CreativeModeInventoryScreenSlotWrapperMixin extends Slot i
         super(container, slot, x, y);
     }
 
+    /**
+     * Copies tooltip and disabled state from the wrapped slot.
+     */
     @Inject(method = "<init>", at = @At("TAIL"))
     public void CreativeModeInventoryScreen$SlotWrapper(Slot target, int index, int x, int y, CallbackInfo ci) {
         var targetCus = (SlotCustomization) target;
@@ -40,21 +46,33 @@ public abstract class CreativeModeInventoryScreenSlotWrapperMixin extends Slot i
         cir.setReturnValue(false);
     }
 
+    /**
+     * Sets the disabled override for this slot.
+     */
     @Override
     public void engine$setDisabledOverride(boolean disabled) {
         this.engine$disabledOverride = disabled;
     }
 
+    /**
+     * Returns whether this slot is overridden as disabled.
+     */
     @Override
     public boolean engine$getDisabledOverride() {
         return this.engine$disabledOverride;
     }
 
+    /**
+     * Sets the custom tooltip text for this slot.
+     */
     @Override
     public void engine$setSlotTooltipText(List<Component> newSlotTooltipTextList) {
         this.engine$slotTooltipText = newSlotTooltipTextList;
     }
 
+    /**
+     * Returns the custom tooltip text for this slot.
+     */
     @Override
     public List<Component> engine$getSlotTooltipText() {
         return this.engine$slotTooltipText;

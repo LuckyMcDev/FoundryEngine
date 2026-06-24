@@ -44,20 +44,32 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 
+/**
+ * Generates data (recipes, loot tables, models, etc.) for all loaded bundles.
+ */
 public class BundleDataGenerator {
     public static final Path OUTPUT_ROOT = Common.TEMP_DIR.resolve("instances").resolve(instanceKey()).resolve("bundles");
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final Path generatedDataPath = OUTPUT_ROOT.resolve("data");
     private static final Path generatedAssetsPath = OUTPUT_ROOT.resolve("assets");
 
+    /**
+     * Returns the path where generated data files are placed.
+     */
     public static Path getGeneratedDataPath() {
         return generatedDataPath;
     }
 
+    /**
+     * Returns the path where generated asset files are placed.
+     */
     public static Path getGeneratedAssetsPath() {
         return generatedAssetsPath;
     }
 
+    /**
+     * Runs data generation for all loaded bundles.
+     */
     public static void runAll() {
         prepareOutputDirectories();
         for (Bundle bundle : Common.getBundleManager().getBundles()) {
@@ -77,6 +89,9 @@ public class BundleDataGenerator {
         }
     }
 
+    /**
+     * Runs data generation for a single bundle.
+     */
     public static void run(Bundle bundle) {
         prepareOutputDirectories();
         EngineDataGenerator gen = new EngineDataGenerator(OUTPUT_ROOT);
@@ -109,7 +124,6 @@ public class BundleDataGenerator {
         try {
             LOGGER.info(outputRoot.toAbsolutePath().toString());
 
-            // Server
             gen.addProvider(new EngineAdvancementProvider(
                     pOut,
                     lookupProvider,
@@ -134,7 +148,6 @@ public class BundleDataGenerator {
             gen.addProvider(new EngineItemTagsProvider(pOut, lookupProvider, namespace));
             gen.addProvider(new EngineGlobalLootModifierProvider(pOut, lookupProvider, namespace));
 
-            // Client
             if (FMLEnvironment.getDist().isClient()) {
                 gen.addProvider(new EngineLanguageProvider(pOut, "en_us", namespace, blockBuilders, itemBuilders, soundBuilders));
                 gen.addProvider(new EngineModelProvider(pOut, namespace, blockBuilders, itemBuilders));

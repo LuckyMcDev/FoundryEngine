@@ -18,6 +18,9 @@ public class BezierPath {
     public ArrayList<BezierSpline> splines = new ArrayList<>();
     private boolean lutValid = false;
 
+    /**
+     * Creates a new BezierPath starting at the given position.
+     */
     public BezierPath(Vec3 startPos) {
         this.splines.add(new BezierSpline(startPos, this));
         this.updateLUT();
@@ -30,10 +33,16 @@ public class BezierPath {
         this.init(list);
     }
 
+    /**
+     * Returns true if the path consists of a single point with no spline.
+     */
     public boolean isSinglePoint() {
         return this.splines.size() == 1 && this.splines.getFirst().isSinglePoint();
     }
 
+    /**
+     * Creates a new path with the player's eye position as the starting point.
+     */
     public BezierPath withPlayerOrigin(Player player) {
         BezierPath newPath = new BezierPath(Vec3.ZERO);
         ArrayList<BezierSpline> tempSplines = new ArrayList<>(this.splines);
@@ -50,6 +59,9 @@ public class BezierPath {
         return newPath;
     }
 
+    /**
+     * Creates a new path with the player's eye position as the ending point.
+     */
     public BezierPath withPlayerEnd(Player player) {
         BezierPath newPath = new BezierPath(Vec3.ZERO);
         ArrayList<BezierSpline> tempSplines = new ArrayList<>(this.splines);

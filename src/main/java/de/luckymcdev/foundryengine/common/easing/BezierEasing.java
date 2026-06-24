@@ -9,7 +9,6 @@ import net.minecraft.util.Mth;
  */
 public class BezierEasing extends Easing {
 
-    // Common CSS Presets
     public static final BezierEasing EASE = new BezierEasing("ease", 0.25f, 0.1f, 0.25f, 1.0f);
     public static final BezierEasing EASE_IN = new BezierEasing("easeIn", 0.42f, 0.0f, 1.0f, 1.0f);
     public static final BezierEasing EASE_OUT = new BezierEasing("easeOut", 0.0f, 0.0f, 0.58f, 1.0f);

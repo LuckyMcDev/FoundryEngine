@@ -18,6 +18,10 @@ public class SlotEvents {
 
     @ApiStatus.Internal
     public static class Internal {
+        static {
+            Common.registerEventClear(Internal::clear);
+        }
+
         public static void register(IEventBus bus) {
             bus.addListener(Internal::onContainerOpen);
             bus.addListener(Internal::onScreenInit);
@@ -39,10 +43,6 @@ public class SlotEvents {
 
         public static void clear() {
             MODIFICATION.clear();
-        }
-
-        static {
-            Common.registerEventClear(Internal::clear);
         }
     }
 }

@@ -7,6 +7,9 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 
 import java.util.List;
 
+/**
+ * Invoker to set info panel content on the mod screen.
+ */
 @Mixin(targets = "net.neoforged.neoforge.client.gui.ModListScreen$InfoPanel")
 public interface InfoPanelAccessor {
     @Invoker("setInfo")

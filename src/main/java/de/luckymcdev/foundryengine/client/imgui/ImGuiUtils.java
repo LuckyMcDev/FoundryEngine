@@ -76,30 +76,45 @@ public class ImGuiUtils {
         return "" + icon;
     }
 
+    /**
+     * Displays an icon at 2x font scale.
+     */
     public static void displayIcon(ImIcon icon) {
         ImGui.setWindowFontScale(2f);
         ImGui.text(icon.iconText(""));
         ImGui.setWindowFontScale(1f);
     }
 
+    /**
+     * Renders text at heading level 1 (3x font scale).
+     */
     public static void h1(Runnable txt) {
         ImGui.setWindowFontScale(3f);
         txt.run();
         ImGui.setWindowFontScale(1f);
     }
 
+    /**
+     * Renders text at heading level 2 (2.5x font scale).
+     */
     public static void h2(Runnable txt) {
         ImGui.setWindowFontScale(2.5f);
         txt.run();
         ImGui.setWindowFontScale(1f);
     }
 
+    /**
+     * Renders text at heading level 3 (2x font scale).
+     */
     public static void h3(Runnable txt) {
         ImGui.setWindowFontScale(2f);
         txt.run();
         ImGui.setWindowFontScale(1f);
     }
 
+    /**
+     * Renders text at heading level 4 (1.5x font scale).
+     */
     public static void h4(Runnable txt) {
         ImGui.setWindowFontScale(1.5f);
         txt.run();
@@ -130,6 +145,9 @@ public class ImGuiUtils {
         runnable.run();
     }
 
+    /**
+     * Renders text in red if the condition is true.
+     */
     public static void redTextIf(String text, boolean condition) {
         if (condition) {
             ImGui.pushStyleColor(ImGuiCol.Text, 1.0f, 0.2f, 0.2f, 1.0f);
@@ -172,6 +190,9 @@ public class ImGuiUtils {
         }
     }
 
+    /**
+     * Formats a duration in milliseconds to a HH:MM:SS.mmm string.
+     */
     public static String timer(long time) {
         long ms = time % 1000;
         long sec = (time / 1000) % 60;
@@ -219,6 +240,9 @@ public class ImGuiUtils {
         return IM_GUI_SPLITTER;
     }
 
+    /**
+     * Draws an {@link Image} record as an ImGui image.
+     */
     public static void drawImage(Image image) {
         GlStateManager._bindTexture(image.glId());
 
@@ -233,6 +257,9 @@ public class ImGuiUtils {
         stack.pop();
     }
 
+    /**
+     * Draws an OpenGL texture as an ImGui image.
+     */
     public static void drawImage(int id, float w, float h) {
         GlStateManager._bindTexture(id);
 
@@ -247,6 +274,9 @@ public class ImGuiUtils {
         stack.pop();
     }
 
+    /**
+     * Draws an OpenGL texture as a clickable ImGui image button.
+     */
     public static void drawImageButton(int id, float w, float h) {
         GlStateManager._bindTexture(id);
 
@@ -261,10 +291,16 @@ public class ImGuiUtils {
         stack.pop();
     }
 
+    /**
+     * Loads a texture from an Identifier and returns its image record.
+     */
     public static Image getTexture(Identifier texture) {
         return loadTexture("identifier", texture);
     }
 
+    /**
+     * Loads a texture from a file and returns its image record.
+     */
     public static Image getTexture(File imageFile) {
         return loadTexture("file", imageFile);
     }
@@ -300,13 +336,6 @@ public class ImGuiUtils {
         }
         return new Image(textureId, width, height);
     }
-
-    public record Image(int glId, int width, int height) {
-    }
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // Layout / structural helpers
-    // ─────────────────────────────────────────────────────────────────────────
 
     /**
      * Renders a section header with colored text and a separator below it.
@@ -397,5 +426,8 @@ public class ImGuiUtils {
      */
     public static String formatColored(String text, Object... args) {
         return String.format(text, args);
+    }
+
+    public record Image(int glId, int width, int height) {
     }
 }

@@ -45,42 +45,69 @@ public final class ImGuiFontManager {
         this.glImpl = glImpl;
     }
 
+    /**
+     * Sets the global glyph ranges used for all fonts without explicit ranges.
+     */
     public void setGlobalGlyphRanges(short[] ranges) {
         this.globalGlyphRanges = ranges;
     }
 
+    /**
+     * Sets the global oversampling for all fonts.
+     */
     public void setGlobalOversample(int h, int v) {
         this.oversampleH = h;
         this.oversampleV = v;
     }
 
+    /**
+     * Sets the global rasterizer multiply value for all fonts.
+     */
     public void setGlobalRasterizerMultiply(float mul) {
         this.rasterizerMultiply = mul;
     }
 
+    /**
+     * Sets the global glyph offset for all fonts.
+     */
     public void setGlobalGlyphOffset(float x, float y) {
         this.glyphOffsetX = x;
         this.glyphOffsetY = y;
     }
 
+    /**
+     * Registers a TTF font at the default size of 18.
+     */
     public void registerFont(TTFFile ttfFile) {
         registerFont(ttfFile, 18.0f);
     }
 
+    /**
+     * Registers a TTF font at the given size.
+     */
     public void registerFont(TTFFile ttfFile, float fontSize) {
         registerFont(ttfFile, fontSize, null);
     }
 
+    /**
+     * Registers a TTF font at the given size with an optional custom config.
+     */
     public void registerFont(TTFFile ttfFile, float fontSize, @Nullable ImFontConfig customConfig) {
         Objects.requireNonNull(ttfFile, "TTFFile cannot be null");
         registrations.add(new TTFFileRegistration(ttfFile, fontSize, customConfig));
     }
 
+    /**
+     * Registers a raw font with a provider function and explicit config.
+     */
     public void registerRawFont(Identifier id, Function<ResourceManager, byte[]> ttfProvider,
                                 float fontSize, ImFontConfig config) {
         registrations.add(new RawFontRegistration(id, ttfProvider, fontSize, config));
     }
 
+    /**
+     * Sets the default font used when no specific font is pushed.
+     */
     public void setDefaultFont(Identifier id) {
         this.defaultFontId = id;
     }
@@ -172,10 +199,16 @@ public final class ImGuiFontManager {
         atlas.clearTexData();
     }
 
+    /**
+     * Loads all registered fonts into the atlas.
+     */
     public void loadFonts(ResourceManager resourceManager) {
         loadFonts(resourceManager, List.of());
     }
 
+    /**
+     * Destroys the font texture and clears all registrations.
+     */
     public void destroy() {
         glImpl.destroyFontsTexture();
         loadedFonts.clear();
@@ -184,10 +217,16 @@ public final class ImGuiFontManager {
         actualImGuiDefaultFont = null;
     }
 
+    /**
+     * Returns the currently active ImFont.
+     */
     public ImFont getCurrent() {
         return ImGui.getFont();
     }
 
+    /**
+     * Returns a registered font by its identifier, or the default if not found.
+     */
     public ImFont getFont(Identifier id) {
         ImFont font = loadedFonts.get(id);
         if (font == null) {
@@ -197,20 +236,32 @@ public final class ImGuiFontManager {
         return font;
     }
 
+    /**
+     * Returns an unmodifiable set of all loaded font identifiers.
+     */
     public Set<Identifier> getLoadedFontIds() {
         return Collections.unmodifiableSet(loadedFonts.keySet());
     }
 
+    /**
+     * Runs the given action with the specified font pushed.
+     */
     public void withFont(Identifier font, Runnable runnable) {
         pushFont(font);
         runnable.run();
         popFont();
     }
 
+    /**
+     * Pushes a registered font onto the ImGui font stack.
+     */
     public void pushFont(Identifier id) {
         ImGui.pushFont(getFont(id));
     }
 
+    /**
+     * Pops the top font from the ImGui font stack.
+     */
     public void popFont() {
         ImGui.popFont();
     }

@@ -11,12 +11,18 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+/**
+ * Appends bundle entries to the mod list widget.
+ */
 @Mixin(ModListWidget.class)
 public abstract class ModListWidgetMixin {
 
     @Shadow
     private ModListScreen parent;
 
+    /**
+     * Injects at tail of refreshList to append bundle entries to the mod list.
+     */
     @Inject(method = "refreshList", at = @At("TAIL"))
     private void foundry$appendBundleEntries(CallbackInfo ci) {
         @SuppressWarnings("unchecked")

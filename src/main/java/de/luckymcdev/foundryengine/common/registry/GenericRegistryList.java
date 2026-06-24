@@ -8,6 +8,9 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+/**
+ * Thread-safe implementation of {@link RegistryList} backed by CopyOnWriteArrayList.
+ */
 public class GenericRegistryList<V> implements RegistryList<V>, Iterable<V> {
     private final CopyOnWriteArrayList<V> values = new CopyOnWriteArrayList<>();
     private final CopyOnWriteArrayList<Runnable> onFreezeCallbacks = new CopyOnWriteArrayList<>();

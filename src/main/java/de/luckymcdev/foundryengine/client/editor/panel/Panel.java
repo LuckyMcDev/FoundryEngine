@@ -15,6 +15,7 @@ import net.minecraft.server.permissions.PermissionLevel;
 import org.jetbrains.annotations.Nullable;
 
 public class Panel {
+    private static PanelRequirements defaultRequirements = new MinecraftPanelRequirements();
     public final Identifier id;
     public final String label;
     public final @Nullable ImIcon icon;
@@ -27,8 +28,6 @@ public class Panel {
     public ImGuiWindowType type;
     public PanelCategory category;
     private boolean focused;
-
-    private static PanelRequirements defaultRequirements = new MinecraftPanelRequirements();
 
     protected Panel(Builder builder) {
         this.id = builder.id;
@@ -70,58 +69,6 @@ public class Panel {
 
     protected static boolean requireLocal() {
         return defaultRequirements.requireLocal();
-    }
-
-    public static final class Builder {
-        private final Identifier id;
-        private final String label;
-        private @Nullable ImIcon icon;
-        private Shortcut shortcut = Shortcut.empty();
-        private PanelCategory category = PanelCategory.OPEN;
-        private boolean temporary;
-        private boolean menuBar;
-        private boolean unsaved;
-        private PanelStyle style = PanelStyle.NORMAL;
-
-        public Builder(Identifier id, String label) {
-            this.id = id;
-            this.label = label;
-        }
-
-        public Builder icon(@Nullable ImIcon icon) {
-            this.icon = icon;
-            return this;
-        }
-
-        public Builder shortcut(Shortcut shortcut) {
-            this.shortcut = shortcut;
-            return this;
-        }
-
-        public Builder category(PanelCategory category) {
-            this.category = category;
-            return this;
-        }
-
-        public Builder temporary(boolean temporary) {
-            this.temporary = temporary;
-            return this;
-        }
-
-        public Builder menuBar(boolean menuBar) {
-            this.menuBar = menuBar;
-            return this;
-        }
-
-        public Builder unsaved(boolean unsaved) {
-            this.unsaved = unsaved;
-            return this;
-        }
-
-        public Builder style(PanelStyle style) {
-            this.style = style;
-            return this;
-        }
     }
 
     public Identifier getId() {
@@ -261,6 +208,58 @@ public class Panel {
         if (ImGui.beginMenuBar()) {
             body.run();
             ImGui.endMenuBar();
+        }
+    }
+
+    public static final class Builder {
+        private final Identifier id;
+        private final String label;
+        private @Nullable ImIcon icon;
+        private Shortcut shortcut = Shortcut.empty();
+        private PanelCategory category = PanelCategory.OPEN;
+        private boolean temporary;
+        private boolean menuBar;
+        private boolean unsaved;
+        private PanelStyle style = PanelStyle.NORMAL;
+
+        public Builder(Identifier id, String label) {
+            this.id = id;
+            this.label = label;
+        }
+
+        public Builder icon(@Nullable ImIcon icon) {
+            this.icon = icon;
+            return this;
+        }
+
+        public Builder shortcut(Shortcut shortcut) {
+            this.shortcut = shortcut;
+            return this;
+        }
+
+        public Builder category(PanelCategory category) {
+            this.category = category;
+            return this;
+        }
+
+        public Builder temporary(boolean temporary) {
+            this.temporary = temporary;
+            return this;
+        }
+
+        public Builder menuBar(boolean menuBar) {
+            this.menuBar = menuBar;
+            return this;
+        }
+
+        public Builder unsaved(boolean unsaved) {
+            this.unsaved = unsaved;
+            return this;
+        }
+
+        public Builder style(PanelStyle style) {
+            this.style = style;
+            return this;
         }
     }
 }

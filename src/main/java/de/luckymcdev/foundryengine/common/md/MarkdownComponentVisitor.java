@@ -23,6 +23,9 @@ public class MarkdownComponentVisitor extends AbstractVisitor {
         stack.push(Component.literal(""));
     }
 
+    /**
+     * Returns the accumulated formatted component after visiting all nodes.
+     */
     public MutableComponent getComponent() {
         return stack.peek();
     }

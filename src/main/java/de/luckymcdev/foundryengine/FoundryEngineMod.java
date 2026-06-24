@@ -33,7 +33,6 @@ import de.luckymcdev.foundryengine.config.StartupConfig;
 import de.luckymcdev.foundryengine.server.command.FoundryCommands;
 import de.luckymcdev.foundryengine.server.packs.DynamicPackRepository;
 import net.minecraft.SharedConstants;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerPlayer;
@@ -49,7 +48,6 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.*;
-import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeVersion;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
@@ -76,6 +74,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
+/**
+ * Main entrypoint for FoundryEngine. Registers all event bus listeners, packets, and subsystems.
+ */
 @Mod(value = Common.MODID)
 public class FoundryEngineMod {
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -89,35 +90,8 @@ public class FoundryEngineMod {
 
         registerModBus(modBus);
         registerInternalEvents();
-
-        modBus.addListener(EventPriority.LOWEST, this::onRegisterEvent);
-        modBus.addListener(this::commonSetup);
-        modBus.addListener(this::onConstruct);
-        modBus.addListener(this::onAddPackFinders);
-        modBus.addListener(this::onRegisterPayloadHandlers);
-        modBus.addListener(this::clientSetup);
-        modBus.addListener(this::dedicatedServerSetup);
-        modBus.addListener(this::postInit);
-        modBus.addListener(EventPriority.LOWEST, this::onLoadComplete);
-        modBus.addListener(this::onItemModification);
-        modBus.addListener(Config::onLoad);
-        modBus.addListener(Config::onReload);
-
-        BUS.addListener(this::onRegisterCommands);
-        BUS.addListener(this::onServerAboutToStart);
-        BUS.addListener(this::onServerStarted);
-        BUS.addListener((ServerAboutToStartEvent event) -> Common.getBundleManager().setServer(event.getServer()));
-        BUS.addListener(this::onServerStarting);
-        BUS.addListener((ServerStoppingEvent event) -> Common.getBundleManager().setServer(null));
-        BUS.addListener(this::onServerTick);
-        AreaEvents.Internal.register(BUS);
-        BUS.addListener((ServerStoppingEvent event) -> Common.getGameManager().stopAll());
-        BUS.addListener(Common.getCutsceneManager()::onLevelLoad);
-        BUS.addListener(this::onLevelTick);
-        BUS.addListener(this::onWaypointLevelLoad);
-        BUS.addListener(this::onWaypointServerStopping);
-        BUS.addListener(this::onPlayerChangedDimension);
-
+        registerModEventHandlers(modBus);
+        registerNeoForgeEventHandlers();
         registerSavedDataTypes();
 
         Config.registerCommon(modContainer);
@@ -146,6 +120,9 @@ public class FoundryEngineMod {
                 Util.getPlatform().name());
     }
 
+    /**
+     * Returns the mod event bus for internal use.
+     */
     @ApiStatus.Internal
     public static IEventBus getModBus() {
         return modBus;
@@ -156,20 +133,51 @@ public class FoundryEngineMod {
         EngineRegistries.register(modBus);
     }
 
-    private void onWaypointLevelLoad(LevelEvent.Load event) {
-        if (event.getLevel() instanceof Level level) {
-            Common.getWaypointManager().onLevelLoad(level);
-        }
+    private void registerInternalEvents() {
+        BlockEvents.Internal.register(BUS);
+        BundleEvents.Internal.register(BUS);
+        ClientEvents.Internal.register(BUS);
+        CommandEvents.Internal.register(BUS);
+        EntityEvents.Internal.register(BUS);
+        ItemEvents.Internal.register(BUS);
+        LevelEvents.Internal.register(BUS);
+        NetworkEvents.Internal.register(BUS);
+        PlayerEvents.Internal.register(BUS);
+        RecipeEvents.Internal.register(BUS);
+        ServerEvents.Internal.register(BUS);
+        StageEvents.Internal.register(BUS);
+        GameEvents.Internal.register(BUS);
+        SlotEvents.Internal.register(BUS);
+        AreaEvents.Internal.register(BUS);
     }
 
-    private void onWaypointServerStopping(ServerStoppingEvent event) {
-        Common.getWaypointManager().onServerStopping(event);
+    private void registerModEventHandlers(IEventBus modBus) {
+        modBus.addListener(EventPriority.LOWEST, this::onRegisterEvent);
+        modBus.addListener(this::onCommonSetup);
+        modBus.addListener(this::onConstruct);
+        modBus.addListener(this::onAddPackFinders);
+        modBus.addListener(this::onRegisterPayloadHandlers);
+        modBus.addListener(this::onClientSetup);
+        modBus.addListener(this::onDedicatedServerSetup);
+        modBus.addListener(this::onPostInit);
+        modBus.addListener(EventPriority.LOWEST, this::onLoadComplete);
+        modBus.addListener(this::onItemModification);
+        modBus.addListener(Config::onLoad);
+        modBus.addListener(Config::onReload);
     }
 
-    private void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
-        if (event.getEntity() instanceof ServerPlayer player) {
-            Common.getSavedDataManager().syncToPlayer(player);
-        }
+    private void registerNeoForgeEventHandlers() {
+        BUS.addListener(this::onRegisterCommands);
+        BUS.addListener(this::onServerAboutToStart);
+        BUS.addListener(this::onServerStarting);
+        BUS.addListener(this::onServerStarted);
+        BUS.addListener(this::onServerStopping);
+        BUS.addListener(this::onServerTick);
+
+        BUS.addListener(this::onLevelLoad);
+        BUS.addListener(this::onLevelTick);
+
+        BUS.addListener(this::onPlayerChangedDimension);
     }
 
     private void registerSavedDataTypes() {
@@ -179,13 +187,34 @@ public class FoundryEngineMod {
         manager.register(Common.id("cutscene_manager"), level -> Common.getCutsceneManager().toNbt(level));
     }
 
-    private void commonSetup(FMLCommonSetupEvent event) {
+    private void onRegisterEvent(RegisterEvent event) {
+        event.register(Registries.CHUNK_GENERATOR, helper -> {
+            helper.register(Common.id("void"), VoidChunkGenerator.CODEC);
+            helper.register(Common.id("transient"), TransientChunkGenerator.CODEC);
+        });
+    }
+
+    private void onConstruct(FMLConstructModEvent event) {
+        try {
+            Common.getBundleManager().discover(Common.BUNDLES);
+            if (modBus != null) {
+                modBus.addListener((RegisterEvent ev) -> {
+                    RegistryEvent registryEvent = new RegistryEvent(ev, modBus);
+                    ModLoader.postEvent(registryEvent);
+                    BundleEvents.Internal.postRegistry(registryEvent);
+                });
+            }
+            BundleDataGenerator.runAll();
+        } catch (IOException e) {
+            LOGGER.error("Error while loading bundles: {}", e.getLocalizedMessage());
+        }
+
+        EngineLogAppender.Holder.addAppender();
+    }
+
+    private void onCommonSetup(FMLCommonSetupEvent event) {
         BundleEvents.Internal.postCommonSetup(event);
         BundleDataGenerator.runAll();
-
-        if (FMLEnvironment.getDist().isClient()) {
-            event.enqueueWork(() -> Minecraft.getInstance().reloadResourcePacks());
-        }
 
         var network = Common.getNetworkManager();
         network.register(TestPacket.DEFINITION);
@@ -207,59 +236,16 @@ public class FoundryEngineMod {
         network.register(SavedDataSyncPacket.DEFINITION);
     }
 
-    private void clientSetup(FMLClientSetupEvent event) {
+    private void onClientSetup(FMLClientSetupEvent event) {
         BundleEvents.Internal.postClientSetup(event);
     }
 
-    private void dedicatedServerSetup(FMLDedicatedServerSetupEvent event) {
+    private void onDedicatedServerSetup(FMLDedicatedServerSetupEvent event) {
         BundleEvents.Internal.postDedicatedServerSetup(event);
     }
 
-    private void postInit(InterModProcessEvent event) {
+    private void onPostInit(InterModProcessEvent event) {
         BundleEvents.Internal.postPostInit(event);
-    }
-
-    private void onRegisterEvent(RegisterEvent event) {
-        event.register(Registries.CHUNK_GENERATOR, helper -> {
-            helper.register(Common.id("void"), VoidChunkGenerator.CODEC);
-            helper.register(Common.id("transient"), TransientChunkGenerator.CODEC);
-        });
-    }
-
-    private void onLoadComplete(FMLLoadCompleteEvent event) {
-        event.enqueueWork(() -> {
-            for (Block block : BuiltInRegistries.BLOCK) {
-                var e = new BlockModificationEvent(block);
-                BUS.post(e);
-            }
-        });
-    }
-
-    private void onItemModification(ModifyDefaultComponentsEvent event) {
-        ItemModificationEvent.bind(event);
-        for (Item item : BuiltInRegistries.ITEM) {
-            var e = new ItemModificationEvent(item);
-            BUS.post(e);
-        }
-        ItemModificationEvent.flush();
-    }
-
-    private void onConstruct(FMLConstructModEvent event) {
-        try {
-            Common.getBundleManager().discover(Common.BUNDLES);
-            if (modBus != null) {
-                modBus.addListener((RegisterEvent ev) -> {
-                    RegistryEvent registryEvent = new RegistryEvent(ev, modBus);
-                    ModLoader.postEvent(registryEvent);
-                    BundleEvents.Internal.postRegistry(registryEvent);
-                });
-            }
-            BundleDataGenerator.runAll();
-        } catch (IOException e) {
-            LOGGER.error("Error while loading bundles: {}", e.getLocalizedMessage());
-        }
-
-        EngineLogAppender.Holder.addAppender();
     }
 
     private void onAddPackFinders(AddPackFindersEvent event) {
@@ -300,11 +286,30 @@ public class FoundryEngineMod {
         Common.getNetworkManager().handleRegistration(event);
     }
 
+    private void onLoadComplete(FMLLoadCompleteEvent event) {
+        event.enqueueWork(() -> {
+            for (Block block : BuiltInRegistries.BLOCK) {
+                var e = new BlockModificationEvent(block);
+                BUS.post(e);
+            }
+        });
+    }
+
+    private void onItemModification(ModifyDefaultComponentsEvent event) {
+        ItemModificationEvent.bind(event);
+        for (Item item : BuiltInRegistries.ITEM) {
+            var e = new ItemModificationEvent(item);
+            BUS.post(e);
+        }
+        ItemModificationEvent.flush();
+    }
+
     private void onRegisterCommands(RegisterCommandsEvent event) {
         FoundryCommands.registerAll(event.getDispatcher(), event.getBuildContext());
     }
 
     private void onServerAboutToStart(ServerAboutToStartEvent event) {
+        Common.getBundleManager().setServer(event.getServer());
     }
 
     private void onServerStarting(ServerStartingEvent event) {
@@ -320,18 +325,32 @@ public class FoundryEngineMod {
                         .setSeed("North Carolina".hashCode())
                         .setMirrorOverworldGameRules(true)
         );
-        
+
         event.getServer().getPlayerList().getPlayers().forEach(player -> {
             Common.getSavedDataManager().syncToPlayer(player);
         });
     }
 
+    private void onServerStopping(ServerStoppingEvent event) {
+        Common.getGameManager().stopAll();
+        Common.getWaypointManager().onServerStopping(event);
+        Common.getBundleManager().setServer(null);
+    }
+
     private void onServerTick(ServerTickEvent.Post event) {
         var server = event.getServer();
         Common.getCutsceneSessionManager().tick(server);
+        Common.getGameStageHandler().onPlayerTick(event);
         ServerScreenEffectManager.tick();
         for (var level : server.getAllLevels()) {
             Common.getGameManager().tickServer(server, level);
+        }
+    }
+
+    private void onLevelLoad(LevelEvent.Load event) {
+        Common.getCutsceneManager().onLevelLoad(event);
+        if (event.getLevel() instanceof Level level) {
+            Common.getWaypointManager().onLevelLoad(level);
         }
     }
 
@@ -339,20 +358,9 @@ public class FoundryEngineMod {
         Common.getGameManager().tickCommon(event.getLevel());
     }
 
-    private void registerInternalEvents() {
-        BlockEvents.Internal.register(BUS);
-        BundleEvents.Internal.register(BUS);
-        ClientEvents.Internal.register(BUS);
-        CommandEvents.Internal.register(BUS);
-        EntityEvents.Internal.register(BUS);
-        ItemEvents.Internal.register(BUS);
-        LevelEvents.Internal.register(BUS);
-        NetworkEvents.Internal.register(BUS);
-        PlayerEvents.Internal.register(BUS);
-        RecipeEvents.Internal.register(BUS);
-        ServerEvents.Internal.register(BUS);
-        StageEvents.Internal.register(BUS);
-        GameEvents.Internal.register(BUS);
-        SlotEvents.Internal.register(BUS);
+    private void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            Common.getSavedDataManager().syncToPlayer(player);
+        }
     }
 }

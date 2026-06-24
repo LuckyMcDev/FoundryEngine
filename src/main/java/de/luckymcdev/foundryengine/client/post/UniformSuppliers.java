@@ -13,7 +13,8 @@ import java.util.function.Supplier;
 
 public final class UniformSuppliers {
 
-    private UniformSuppliers() {}
+    private UniformSuppliers() {
+    }
 
     public static Supplier<List<UniformValue>> constant(float value) {
         List<UniformValue> cached = List.of(new UniformValue.FloatUniform(value));

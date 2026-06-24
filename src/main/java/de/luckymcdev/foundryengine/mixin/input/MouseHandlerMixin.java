@@ -1,7 +1,6 @@
 package de.luckymcdev.foundryengine.mixin.input;
 
 import de.luckymcdev.foundryengine.client.Client;
-import de.luckymcdev.foundryengine.client.imgui.EngineImGui;
 import de.luckymcdev.foundryengine.interfaces.EngineMouseHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
@@ -12,12 +11,15 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * See {@link EngineImGui#shouldInterceptMouse()}
+ * See {@link de.luckymcdev.foundryengine.client.imgui.ImGuiManager#shouldInterceptMouse()}
  * Cancels Minecraft Mouse inputs if ImGui captures the Mouse.
  */
 @Mixin(MouseHandler.class)
 public class MouseHandlerMixin implements EngineMouseHandler {
 
+    /**
+     * Cancels mouse button events when ImGui captures the mouse.
+     */
     @Override
     @Inject(method = "onButton", at = @At("HEAD"), cancellable = true)
     public void engine$onButton(long handle, MouseButtonInfo buttonInfo, int action, CallbackInfo ci) {
@@ -26,6 +28,9 @@ public class MouseHandlerMixin implements EngineMouseHandler {
         }
     }
 
+    /**
+     * Cancels scroll events when ImGui captures the mouse, or forwards to the in-world editor.
+     */
     @Override
     @Inject(method = "onScroll", at = @At("HEAD"), cancellable = true)
     public void engine$onScroll(long handle, double horizontal, double vertical, CallbackInfo ci) {

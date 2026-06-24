@@ -74,6 +74,9 @@ public record TTFFile(Identifier id, Identifier resource, FontVariant variant, s
             FontVariant.REGULAR, GLYPH_RANGES_MINIMAL
     );
 
+    /**
+     * Loads the TTF file bytes from the resource manager.
+     */
     public byte[] load(ResourceManager resourceManager) {
         try (var in = resourceManager.getResource(resource).orElseThrow().open()) {
             return in.readAllBytes();
@@ -85,10 +88,16 @@ public record TTFFile(Identifier id, Identifier resource, FontVariant variant, s
     public enum FontVariant {
         LIGHT, REGULAR, MEDIUM, SEMIBOLD, BOLD, ITALIC, BOLD_ITALIC;
 
+        /**
+         * Returns true if this variant is a bold weight.
+         */
         public boolean isBold() {
             return this == BOLD || this == SEMIBOLD || this == BOLD_ITALIC;
         }
 
+        /**
+         * Returns true if this variant is italic.
+         */
         public boolean isItalic() {
             return this == ITALIC || this == BOLD_ITALIC;
         }

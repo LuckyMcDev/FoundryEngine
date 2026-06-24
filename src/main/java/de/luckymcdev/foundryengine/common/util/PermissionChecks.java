@@ -3,6 +3,9 @@ package de.luckymcdev.foundryengine.common.util;
 import net.minecraft.server.permissions.PermissionCheck;
 import net.minecraft.server.permissions.Permissions;
 
+/**
+ * Pre-defined permission checks for command and chat access levels.
+ */
 public class PermissionChecks {
     public static final PermissionCheck PASS = PermissionCheck.AlwaysPass.INSTANCE;
 

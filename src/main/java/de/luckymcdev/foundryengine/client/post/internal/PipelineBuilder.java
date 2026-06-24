@@ -12,7 +12,8 @@ import java.util.function.Supplier;
 
 public final class PipelineBuilder {
 
-    private PipelineBuilder() {}
+    private PipelineBuilder() {
+    }
 
     public static PostChainConfig build(
             PostChainConfig base,

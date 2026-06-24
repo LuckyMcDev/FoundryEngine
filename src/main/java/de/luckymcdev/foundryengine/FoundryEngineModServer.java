@@ -24,7 +24,6 @@ public class FoundryEngineModServer {
         modBus.addListener(this::onServerSetup);
 
         BUS.addListener(this::onAddReloadListeners);
-        BUS.addListener(Common.getGameStageHandler()::onPlayerTick);
 
         Config.registerServer(modContainer);
 

@@ -6,6 +6,9 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
+/**
+ * Implements {@link EngineBlockStateBehavior} on BlockStateBase via accessor mixins.
+ */
 @Mixin(BlockBehaviour.BlockStateBase.class)
 public abstract class BlockStateBaseMixin implements EngineBlockStateBehavior {
     @Accessor("lightEmission")

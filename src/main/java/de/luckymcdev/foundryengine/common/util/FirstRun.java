@@ -14,6 +14,9 @@ public class FirstRun {
     private static final List<String> notFirstLoad = new ArrayList<>();
     private static final Logger LOGGER = LogUtils.getLogger();
 
+    /**
+     * Checks if this is the first run for the given mod since startup.
+     */
     public static boolean isFor(String modTarget) {
         if (ModList.get().isLoaded(modTarget)) {
             if (!notFirstLoad.contains(modTarget)) {

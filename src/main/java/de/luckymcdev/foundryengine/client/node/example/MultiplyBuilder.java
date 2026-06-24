@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.client.node.example;
 
 import de.luckymcdev.foundryengine.client.node.*;
 import imgui.ImGui;
+
 import java.util.List;
 
 public class MultiplyBuilder implements NodeBuilder<Double> {

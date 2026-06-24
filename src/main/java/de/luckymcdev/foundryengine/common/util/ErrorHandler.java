@@ -5,12 +5,18 @@ import net.minecraft.network.chat.Component;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.slf4j.Logger;
 
+/**
+ * Centralized error handler for script errors with server broadcast support.
+ */
 public final class ErrorHandler {
     private static final Logger LOGGER = LogUtils.getLogger();
 
     private ErrorHandler() {
     }
 
+    /**
+     * Logs and broadcasts a script error to the server's players.
+     */
     public static void handleScriptError(String context, Throwable error) {
         LOGGER.error("Uncaught error in {}", context, error);
 

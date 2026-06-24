@@ -15,12 +15,18 @@ import org.spongepowered.asm.mixin.injection.At;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * Wraps reload resources to add a success feedback message.
+ */
 @Mixin(ReloadCommand.class)
 public class ReloadCommandMixin {
     @Shadow
     @Final
     private static Logger LOGGER;
 
+    /**
+     * Wraps reloadResources to send a success message after reload completes.
+     */
     @WrapOperation(
             method = "reloadPacks",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;reloadResources(Ljava/util/Collection;)Ljava/util/concurrent/CompletableFuture;")

@@ -53,7 +53,8 @@ public class NodeTestPanel extends EditorPanel {
             }
 
             @Override
-            public void setNode(Node<Double> node) {}
+            public void setNode(Node<Double> node) {
+            }
         };
 
         editor.rootBuilder = rootEvalBuilder;

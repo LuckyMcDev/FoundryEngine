@@ -29,6 +29,10 @@ public class StageEvents {
 
     @ApiStatus.Internal
     public static class Internal {
+        static {
+            Common.registerEventClear(Internal::clear);
+        }
+
         public static void postAdding(GameStageEvent.Add event) {
             ADDING.post(event);
         }
@@ -57,10 +61,6 @@ public class StageEvents {
             REMOVING.clear();
             ADDED.clear();
             REMOVED.clear();
-        }
-
-        static {
-            Common.registerEventClear(Internal::clear);
         }
     }
 }

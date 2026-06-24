@@ -16,17 +16,26 @@ import org.spongepowered.asm.mixin.injection.At;
 
 import java.util.Map;
 
+/**
+ * Implements {@link ServerClockManagerExtension} to expose clock instances and redirect broadcasts per-level.
+ */
 @Mixin(ServerClockManager.class)
 public abstract class ServerClockManagerMixin implements ServerClockManagerExtension {
     @Shadow
     @Final
     private Map<Holder<WorldClock>, ServerClockManager.ClockInstance> clocks;
 
+    /**
+     * Returns the internal map of clocks.
+     */
     @Override
     public Map<Holder<WorldClock>, ServerClockManager.ClockInstance> engine$getClocks() {
         return this.clocks;
     }
 
+    /**
+     * Wraps broadcastAll in modifyClock to only send time updates to players in this clock's level.
+     */
     @WrapOperation(method = "modifyClock", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/players/PlayerList;broadcastAll(Lnet/minecraft/network/protocol/Packet;)V"))
     private void updateTimeOnlyOverworld(PlayerList instance, Packet<?> packet, Operation<Void> original) {
         for (ServerPlayer player : instance.getPlayers()) {

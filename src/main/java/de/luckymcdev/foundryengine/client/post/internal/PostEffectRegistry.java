@@ -15,7 +15,8 @@ public final class PostEffectRegistry {
 
     private final List<PostEffectEntry> entries = new CopyOnWriteArrayList<>();
 
-    public PostEffectRegistry() {}
+    public PostEffectRegistry() {
+    }
 
     public PostEffectEntry register(Identifier id) {
         PostEffectEntry entry = new PostEffectEntry(id);

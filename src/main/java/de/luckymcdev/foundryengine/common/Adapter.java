@@ -3,7 +3,7 @@ package de.luckymcdev.foundryengine.common;
 import de.luckymcdev.foundryengine.common.exceptions.UtilityClassException;
 
 /**
- * HEAVY WIP, May sometime be to adapt things to Foundry Engine objects.
+ * Utility adapter for converting objects to Foundry Engine types.
  */
 public class Adapter {
     private Adapter() {

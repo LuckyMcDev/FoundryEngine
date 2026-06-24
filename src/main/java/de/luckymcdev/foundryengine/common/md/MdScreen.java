@@ -17,21 +17,33 @@ import java.nio.file.Path;
 public class MdScreen extends Screen {
     private final Component markdownComponent;
 
+    /**
+     * Creates an MdScreen from a pre-rendered Component.
+     */
     public MdScreen(Component title, Component md) {
         super(title);
         this.markdownComponent = md;
     }
 
+    /**
+     * Creates an MdScreen by parsing a markdown string.
+     */
     public MdScreen(Component title, String md) {
         super(title);
         this.markdownComponent = MarkdownParser.parse(md);
     }
 
+    /**
+     * Creates an MdScreen by reading markdown from a file path.
+     */
     public MdScreen(Component title, Path mdFile) {
         super(title);
         this.markdownComponent = MarkdownParser.parse(Common.getFileContent(mdFile));
     }
 
+    /**
+     * Creates an MdScreen by reading markdown from a resource identifier.
+     */
     public MdScreen(Component title, Identifier mdFile) {
         super(title);
         this.markdownComponent = MarkdownParser.parse(Client.getIdSource(mdFile));
@@ -74,6 +86,9 @@ public class MdScreen extends Screen {
         );
     }
 
+    /**
+     * Returns true - this screen never pauses the game.
+     */
     @Override
     public boolean isPauseScreen() {
         return false;

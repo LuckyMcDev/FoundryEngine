@@ -8,8 +8,14 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 
+/**
+ * Fires {@link TitleScreenModificationEvent} when singleplayer/multiplayer/realms buttons are pressed.
+ */
 @Mixin(TitleScreen.class)
 public abstract class TitleScreenMixin {
+    /**
+     * Wraps the singleplayer button callback to fire TitleScreenModificationEvent.
+     */
     @ModifyArg(
             method = "createNormalMenuOptions",
             at = @At(
@@ -28,6 +34,9 @@ public abstract class TitleScreenMixin {
         };
     }
 
+    /**
+     * Wraps the multiplayer button callback to fire TitleScreenModificationEvent.
+     */
     @ModifyArg(
             method = "createNormalMenuOptions",
             at = @At(
@@ -46,6 +55,9 @@ public abstract class TitleScreenMixin {
         };
     }
 
+    /**
+     * Wraps the realms button callback to fire TitleScreenModificationEvent.
+     */
     @ModifyArg(
             method = "createNormalMenuOptions",
             at = @At(

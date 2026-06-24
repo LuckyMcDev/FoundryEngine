@@ -224,7 +224,7 @@ public class WaypointPanel extends EditorPanel {
 
     private void createWaypoint(String name) {
         Minecraft mc = Minecraft.getInstance();
-        Vec3i pos = Client.getHitOrNull();
+        Vec3i pos = Client.getBlockHitOrNull();
         if (pos == null) {
             pos = mc.player.blockPosition();
         }

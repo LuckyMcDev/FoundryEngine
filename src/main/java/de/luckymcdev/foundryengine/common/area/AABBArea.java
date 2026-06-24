@@ -46,9 +46,13 @@ public class AABBArea extends Area {
     }
 
     @Override
-    public AABB bounds() { return bounds; }
+    public AABB bounds() {
+        return bounds;
+    }
 
-    public void setBounds(AABB bounds) { this.bounds = bounds; }
+    public void setBounds(AABB bounds) {
+        this.bounds = bounds;
+    }
 
     @Override
     public boolean contains(GlobalPos position) {

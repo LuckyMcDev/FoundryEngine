@@ -8,6 +8,9 @@ import net.minecraft.nbt.CompoundTag;
  */
 public record Waypoint(String name, String icon, int x, int y, int z, Color color) {
 
+    /**
+     * Deserializes a Waypoint from an NBT compound tag.
+     */
     public static Waypoint fromNbt(CompoundTag tag) {
         return new Waypoint(
                 tag.getString("name").orElse(""),
@@ -19,6 +22,9 @@ public record Waypoint(String name, String icon, int x, int y, int z, Color colo
         );
     }
 
+    /**
+     * Serializes this Waypoint to an NBT compound tag.
+     */
     public CompoundTag toNbt() {
         CompoundTag tag = new CompoundTag();
         tag.putString("name", name);

@@ -15,20 +15,6 @@ public void onRegisterPanel(RegisterPanelEvent event) {
 }
 ```
 
-## RegisterRenderingStuffEvent
-
-**Package:** `de.luckymcdev.foundryengine.client.event.RegisterRenderingStuffEvent`
-
-`@ApiStatus.Experimental` — register custom renderers, OBJ models, and other rendering resources.
-
-```java
-@SubscribeEvent
-public void onRegisterRendering(RegisterRenderingStuffEvent event) {
-    ResourceManager manager = event.getResourceManager();
-    // Register custom renderers
-}
-```
-
 ## RegisterKeyBindingEvent
 
 **Package:** `de.luckymcdev.foundryengine.client.util.key.RegisterKeyBindingEvent`

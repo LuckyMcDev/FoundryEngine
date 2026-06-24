@@ -26,7 +26,7 @@ public class SkyboxManager {
     }
 
     public void tick(ClientTickEvent.Pre event) {
-        if(!ClientConfig.CUSTOM_SKYBOX.getAsBoolean()) return;
+        if (!ClientConfig.CUSTOM_SKYBOX.getAsBoolean()) return;
         Minecraft mc = Minecraft.getInstance();
 
         if (mc.player == null || mc.level == null) {

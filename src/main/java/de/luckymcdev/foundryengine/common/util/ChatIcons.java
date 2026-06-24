@@ -7,7 +7,7 @@ import net.minecraft.network.chat.FontDescription;
 import net.minecraft.network.chat.Style;
 
 /**
- * Holy goated mod Lat
+ * Chat icon components using a custom font for engine UI elements.
  */
 public interface ChatIcons {
     Style ICONS = Style.EMPTY.withFont(new FontDescription.Resource(Common.id("icons"))).applyFormat(ChatFormatting.WHITE);

@@ -20,10 +20,10 @@ public abstract class Area {
 
     private final Identifier id;
     private final ResourceKey<Level> dimension;
-    private Color color;
     private final List<Identifier> moduleIds = new ArrayList<>();
     private final Map<Identifier, CompoundTag> moduleData = new HashMap<>();
     private final Map<String, Identifier> linkedAreas = new HashMap<>();
+    private Color color;
 
     protected Area(Identifier id, ResourceKey<Level> dimension, Color color) {
         this.id = id;
@@ -58,13 +58,21 @@ public abstract class Area {
 
     // ── Identity ─────────────────────────────────────────────────────
 
-    public Identifier id() { return id; }
+    public Identifier id() {
+        return id;
+    }
 
-    public ResourceKey<Level> dimension() { return dimension; }
+    public ResourceKey<Level> dimension() {
+        return dimension;
+    }
 
-    public Color color() { return color; }
+    public Color color() {
+        return color;
+    }
 
-    public void setColor(Color color) { this.color = color; }
+    public void setColor(Color color) {
+        this.color = color;
+    }
 
     // ── Shape ────────────────────────────────────────────────────────
 
@@ -84,7 +92,9 @@ public abstract class Area {
 
     // ── Module management ────────────────────────────────────────────
 
-    public List<Identifier> moduleIds() { return Collections.unmodifiableList(moduleIds); }
+    public List<Identifier> moduleIds() {
+        return Collections.unmodifiableList(moduleIds);
+    }
 
     public void addModule(Identifier moduleId) {
         if (!moduleIds.contains(moduleId)) {
@@ -97,7 +107,9 @@ public abstract class Area {
         moduleData.remove(moduleId);
     }
 
-    public boolean hasModule(Identifier moduleId) { return moduleIds.contains(moduleId); }
+    public boolean hasModule(Identifier moduleId) {
+        return moduleIds.contains(moduleId);
+    }
 
     public void clearModules() {
         moduleIds.clear();
@@ -106,7 +118,9 @@ public abstract class Area {
 
     // ── Module data ──────────────────────────────────────────────────
 
-    public Map<Identifier, CompoundTag> moduleData() { return Collections.unmodifiableMap(moduleData); }
+    public Map<Identifier, CompoundTag> moduleData() {
+        return Collections.unmodifiableMap(moduleData);
+    }
 
     public CompoundTag getModuleData(Identifier moduleId) {
         return moduleData.computeIfAbsent(moduleId, k -> new CompoundTag());
@@ -119,18 +133,28 @@ public abstract class Area {
         }
     }
 
-    public boolean hasModuleData(Identifier moduleId) { return moduleData.containsKey(moduleId); }
+    public boolean hasModuleData(Identifier moduleId) {
+        return moduleData.containsKey(moduleId);
+    }
 
     // ── Linked areas ─────────────────────────────────────────────────
 
-    public Map<String, Identifier> linkedAreas() { return Collections.unmodifiableMap(linkedAreas); }
+    public Map<String, Identifier> linkedAreas() {
+        return Collections.unmodifiableMap(linkedAreas);
+    }
 
-    public void linkArea(String name, Identifier areaId) { linkedAreas.put(name, areaId); }
+    public void linkArea(String name, Identifier areaId) {
+        linkedAreas.put(name, areaId);
+    }
 
-    public void unlinkArea(String name) { linkedAreas.remove(name); }
+    public void unlinkArea(String name) {
+        linkedAreas.remove(name);
+    }
 
     @Nullable
-    public Identifier getLinkedArea(String name) { return linkedAreas.get(name); }
+    public Identifier getLinkedArea(String name) {
+        return linkedAreas.get(name);
+    }
 
     protected CompoundTag writeSharedNbt() {
         CompoundTag tag = new CompoundTag();
@@ -173,5 +197,7 @@ public abstract class Area {
     }
 
     @Override
-    public int hashCode() { return id.hashCode(); }
+    public int hashCode() {
+        return id.hashCode();
+    }
 }

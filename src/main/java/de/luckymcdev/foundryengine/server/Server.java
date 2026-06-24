@@ -47,7 +47,8 @@ public final class Server {
         Collection<String> selected = new ArrayList<>(repo.getSelectedIds());
 
         repo.reload();
-        for (String pack : repo.getAvailableIds()) {
+        Collection<String> available = new ArrayList<>(repo.getAvailableIds());
+        for (String pack : available) {
             if (!worldData.getDataConfiguration().dataPacks().getDisabled().contains(pack)
                     && !selected.contains(pack)) {
                 selected.add(pack);

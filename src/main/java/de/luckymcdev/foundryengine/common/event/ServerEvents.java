@@ -46,6 +46,10 @@ public class ServerEvents {
 
     @ApiStatus.Internal
     public static class Internal {
+        static {
+            Common.registerEventClear(Internal::clear);
+        }
+
         public static void postAboutToStart(ServerAboutToStartEvent e) {
             ABOUT_TO_START.post(e);
         }
@@ -92,10 +96,6 @@ public class ServerEvents {
             STOPPING.clear();
             TICK.clear();
             TAGS.clear();
-        }
-
-        static {
-            Common.registerEventClear(Internal::clear);
         }
     }
 }

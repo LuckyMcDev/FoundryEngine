@@ -4,6 +4,9 @@ import net.minecraft.network.chat.Component;
 
 import java.util.List;
 
+/**
+ * Interface for customizing inventory slot behavior (position, locking, tooltips).
+ */
 public interface SlotCustomization {
     void engine$setX(int x);
 
@@ -29,11 +32,11 @@ public interface SlotCustomization {
         return engine$getDisabledOverride();
     }
 
-    default void setTooltip(List<Component> tooltip) {
-        engine$setSlotTooltipText(tooltip);
-    }
-
     default List<Component> getTooltip() {
         return engine$getSlotTooltipText();
+    }
+
+    default void setTooltip(List<Component> tooltip) {
+        engine$setSlotTooltipText(tooltip);
     }
 }
