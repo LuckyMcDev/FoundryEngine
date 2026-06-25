@@ -1,10 +1,12 @@
 package de.luckymcdev.foundryengine.client.editor.panel.editor;
 
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
+import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.dialogue.DialogueNode;
 import de.luckymcdev.foundryengine.common.dialogue.DialogueOption;
+import de.luckymcdev.foundryengine.common.dialogue.DialogueStyle;
 import de.luckymcdev.foundryengine.common.dialogue.DialogueTree;
 import de.luckymcdev.foundryengine.common.network.packets.dialogue.DialogueSavePacket;
 import imgui.ImGui;
@@ -18,13 +20,9 @@ import java.util.ArrayList;
 
 public class DialogueEditorPanel extends EditorPanel {
     public static final DialogueEditorPanel INSTANCE = new DialogueEditorPanel();
-
-    // Layout constants -- tweak these in one place instead of magic numbers everywhere.
     private static final float TREE_PANEL_WIDTH = 220f;
     private static final float SECTION_SPACING = 8f;
     private static final float ACCENT_R = 0.33f, ACCENT_G = 0.62f, ACCENT_B = 1.0f;
-    private static final float DANGER_R = 0.62f, DANGER_G = 0.16f, DANGER_B = 0.16f;
-    private static final float DANGER_HOVER_R = 0.75f, DANGER_HOVER_G = 0.20f, DANGER_HOVER_B = 0.20f;
 
     private final ArrayList<DialogueTree> trees = new ArrayList<>();
     private final ImString editSpeaker = new ImString("", 64);
@@ -44,6 +42,7 @@ public class DialogueEditorPanel extends EditorPanel {
     private boolean showNewTree;
     private boolean showNewNode;
     private boolean showNewOption;
+    private boolean showResetConfirm;
 
     private DialogueEditorPanel() {
         super(new Builder(Common.id("dialogue_editor"), "Dialogue Editor")
@@ -71,10 +70,6 @@ public class DialogueEditorPanel extends EditorPanel {
         loadFromServer();
     }
 
-    // ------------------------------------------------------------------
-    // Menu bar
-    // ------------------------------------------------------------------
-
     private void renderMenuBar() {
         menuBar(() -> {
             if (ImGui.menuItem(ImIcons.FA.FA_PLUS + " New Tree")) {
@@ -97,80 +92,10 @@ public class DialogueEditorPanel extends EditorPanel {
         });
     }
 
-    // ------------------------------------------------------------------
-    // Left panel: tree list
-    // ------------------------------------------------------------------
-
-    private static boolean colorInt4(String label, int[] rgba) {
-        float[] f = new float[]{
-                ((rgba[0] >> 16) & 0xFF) / 255f,
-                ((rgba[0] >> 8) & 0xFF) / 255f,
-                (rgba[0] & 0xFF) / 255f,
-                ((rgba[0] >> 24) & 0xFF) / 255f
-        };
-        ImGui.setNextItemWidth(180);
-        if (ImGui.colorEdit4(label, f, ImGuiColorEditFlags.NoInputs)) {
-            int r = (int) (f[0] * 255);
-            int g = (int) (f[1] * 255);
-            int b = (int) (f[2] * 255);
-            int a = (int) (f[3] * 255);
-            rgba[0] = (a << 24) | (r << 16) | (g << 8) | b;
-            return true;
-        }
-        return false;
-    }
-
-    /** Dimmed, slightly spaced-out uppercase label used to head a section. */
-    private static void sectionLabel(String text) {
-        ImGui.textDisabled(text);
-        ImGui.spacing();
-    }
-
-    // ------------------------------------------------------------------
-    // Right panel: tree details
-    // ------------------------------------------------------------------
-
-    /** Centered, dimmed placeholder message for empty states. */
-    private static void centeredMessage(String text) {
-        ImGui.dummy(0, 24);
-        float avail = ImGui.getContentRegionAvailX();
-        float textW = ImGui.calcTextSize(text).x;
-        ImGui.setCursorPosX(Math.max(0, (avail - textW) / 2f));
-        ImGui.textDisabled(text);
-    }
-
-    /** Begins a bordered, padded "card" child region that auto-sizes to its content. */
-    private static void cardBegin(String id) {
-        ImGui.beginChild(id, 0, 0, true, imgui.flag.ImGuiWindowFlags.AlwaysAutoResize | imgui.flag.ImGuiWindowFlags.NoScrollbar);
-    }
-
-    // ------------------------------------------------------------------
-    // Style editor -- now grouped into labeled collapsible sub-sections
-    // instead of one undifferentiated list of 14 rows.
-    // ------------------------------------------------------------------
-
-    private static void cardEnd() {
-        ImGui.endChild();
-    }
-
-    private static void dangerButtonBegin() {
-        ImGui.pushStyleColor(ImGuiCol.Button, DANGER_R, DANGER_G, DANGER_B, 1.0f);
-        ImGui.pushStyleColor(ImGuiCol.ButtonHovered, DANGER_HOVER_R, DANGER_HOVER_G, DANGER_HOVER_B, 1.0f);
-    }
-
-    // ------------------------------------------------------------------
-    // Node tab strip -- now a proper bordered, horizontally scrolling
-    // strip of tab-like buttons instead of full-width squished buttons.
-    // ------------------------------------------------------------------
-
-    private static void dangerButtonEnd() {
-        ImGui.popStyleColor(2);
-    }
-
     private void renderTreePanel() {
         ImGui.beginChild("##tree_panel", TREE_PANEL_WIDTH, 0, true);
 
-        sectionLabel("TREES");
+        ImGuiUtils.sectionLabel("TREES");
 
         if (showNewTree) {
             renderNewTreeForm();
@@ -214,10 +139,6 @@ public class DialogueEditorPanel extends EditorPanel {
         ImGui.endChild();
     }
 
-    // ------------------------------------------------------------------
-    // Node editor
-    // ------------------------------------------------------------------
-
     private void renderNewTreeForm() {
         ImGui.beginChild("##new_tree_form", 0, 64, true);
         ImGui.textColored(ACCENT_R, ACCENT_G, ACCENT_B, 1f, "New Tree");
@@ -251,7 +172,7 @@ public class DialogueEditorPanel extends EditorPanel {
         ImGui.beginChild("##detail_panel", 0, 0, false);
 
         if (selectedTree < 0 || selectedTree >= trees.size()) {
-            centeredMessage("Select a tree on the left to start editing.");
+            ImGuiUtils.centeredMessage("Select a tree on the left to start editing.");
             ImGui.endChild();
             return;
         }
@@ -264,23 +185,18 @@ public class DialogueEditorPanel extends EditorPanel {
         renderStyleEditor(tree);
         ImGui.dummy(0, SECTION_SPACING);
 
-        cardBegin("##nodes_card");
-        sectionLabel("NODES");
+        ImGuiUtils.cardBegin("##nodes_card");
+        ImGuiUtils.sectionLabel("NODES");
         renderNodeBar(tree);
         ImGui.spacing();
         renderNodeEdit(tree);
-        cardEnd();
+        ImGuiUtils.cardEnd();
 
         ImGui.dummy(0, SECTION_SPACING);
         renderOptionList(tree);
 
         ImGui.endChild();
     }
-
-    // ------------------------------------------------------------------
-    // Options list -- each option is now its own bordered "card" row
-    // with a clear label, instead of bare inline widgets.
-    // ------------------------------------------------------------------
 
     private void renderTreeHeader(DialogueTree tree) {
         ImGui.pushStyleColor(ImGuiCol.Text, ACCENT_R, ACCENT_G, ACCENT_B, 1f);
@@ -311,12 +227,35 @@ public class DialogueEditorPanel extends EditorPanel {
         ImGui.endGroup();
     }
 
-    // ------------------------------------------------------------------
-    // Small layout helpers
-    // ------------------------------------------------------------------
-
     private void renderStyleEditor(DialogueTree tree) {
-        if (!ImGui.collapsingHeader(ImIcons.FA.FA_PAINT_BRUSH + " Style")) {
+        ImGuiUtils.pushErrorButtonStyle();
+        boolean resetClicked = ImGui.button(ImIcons.FA.FA_UNDO + " Reset Styles", 130, 0);
+        ImGuiUtils.popErrorButtonStyle();
+        if (ImGui.isItemHovered()) ImGui.setTooltip("Restore this tree's default colors and sizes");
+
+        boolean open = ImGui.collapsingHeader(ImIcons.FA.FA_PAINT_BRUSH + " Style");
+
+        if (resetClicked) {
+            showResetConfirm = true;
+        }
+
+        if (showResetConfirm) {
+            ImGui.spacing();
+            ImGui.beginChild("##reset_confirm", 0, 50, true);
+            ImGui.textColored(0.75f, 0.20f, 0.20f, 1f,
+                    "Reset all style settings for this tree to defaults?");
+            if (ImGui.button("Yes, Reset")) {
+                resetStyleToDefaults(tree);
+                showResetConfirm = false;
+            }
+            ImGui.sameLine();
+            if (ImGui.button("Cancel##resetCancel")) {
+                showResetConfirm = false;
+            }
+            ImGui.endChild();
+        }
+
+        if (!open) {
             return;
         }
 
@@ -325,9 +264,9 @@ public class DialogueEditorPanel extends EditorPanel {
 
         if (ImGui.treeNodeEx("Dialogue Box", ImGuiTreeNodeFlags.DefaultOpen)) {
             int[] col = new int[]{s.getDialogueBackground()};
-            if (colorInt4("Background##dialogueBg", col)) s.setDialogueBackground(col[0]);
+            if (ImGuiUtils.colorEdit4Int("Background##dialogueBg", col)) s.setDialogueBackground(col[0]);
             col[0] = s.getDialogueBorder();
-            if (colorInt4("Border##dialogueBorder", col)) s.setDialogueBorder(col[0]);
+            if (ImGuiUtils.colorEdit4Int("Border##dialogueBorder", col)) s.setDialogueBorder(col[0]);
 
             var bw = new ImInt(s.getDialogueBorderWidth());
             ImGui.setNextItemWidth(100);
@@ -337,9 +276,9 @@ public class DialogueEditorPanel extends EditorPanel {
 
         if (ImGui.treeNodeEx("Options Box", ImGuiTreeNodeFlags.DefaultOpen)) {
             int[] col = new int[]{s.getOptionsBackground()};
-            if (colorInt4("Background##optionsBg", col)) s.setOptionsBackground(col[0]);
+            if (ImGuiUtils.colorEdit4Int("Background##optionsBg", col)) s.setOptionsBackground(col[0]);
             col[0] = s.getOptionsBorder();
-            if (colorInt4("Border##optionsBorder", col)) s.setOptionsBorder(col[0]);
+            if (ImGuiUtils.colorEdit4Int("Border##optionsBorder", col)) s.setOptionsBorder(col[0]);
 
             var bw = new ImInt(s.getOptionsBorderWidth());
             ImGui.setNextItemWidth(100);
@@ -349,27 +288,27 @@ public class DialogueEditorPanel extends EditorPanel {
 
         if (ImGui.treeNodeEx("Buttons", ImGuiTreeNodeFlags.DefaultOpen)) {
             int[] col = new int[]{s.getButtonBackground()};
-            if (colorInt4("Background##btnBg", col)) s.setButtonBackground(col[0]);
+            if (ImGuiUtils.colorEdit4Int("Background##btnBg", col)) s.setButtonBackground(col[0]);
             col[0] = s.getButtonHover();
-            if (colorInt4("Hover##btnHover", col)) s.setButtonHover(col[0]);
+            if (ImGuiUtils.colorEdit4Int("Hover##btnHover", col)) s.setButtonHover(col[0]);
             col[0] = s.getButtonBorder();
-            if (colorInt4("Border##btnBorder", col)) s.setButtonBorder(col[0]);
+            if (ImGuiUtils.colorEdit4Int("Border##btnBorder", col)) s.setButtonBorder(col[0]);
             ImGui.treePop();
         }
 
         if (ImGui.treeNodeEx("Navigation Buttons", ImGuiTreeNodeFlags.None)) {
             int[] col = new int[]{s.getNavButtonBackground()};
-            if (colorInt4("Background##navBg", col)) s.setNavButtonBackground(col[0]);
+            if (ImGuiUtils.colorEdit4Int("Background##navBg", col)) s.setNavButtonBackground(col[0]);
             col[0] = s.getNavButtonHover();
-            if (colorInt4("Hover##navHover", col)) s.setNavButtonHover(col[0]);
+            if (ImGuiUtils.colorEdit4Int("Hover##navHover", col)) s.setNavButtonHover(col[0]);
             col[0] = s.getNavButtonBorder();
-            if (colorInt4("Border##navBorder", col)) s.setNavButtonBorder(col[0]);
+            if (ImGuiUtils.colorEdit4Int("Border##navBorder", col)) s.setNavButtonBorder(col[0]);
             ImGui.treePop();
         }
 
         if (ImGui.treeNodeEx("Overlay & Text", ImGuiTreeNodeFlags.None)) {
             int[] col = new int[]{s.getOverlayColor()};
-            if (colorInt4("Overlay##overlay", col)) s.setOverlayColor(col[0]);
+            if (ImGuiUtils.colorEdit4Int("Overlay##overlay", col)) s.setOverlayColor(col[0]);
 
             ImGui.spacing();
             var iv = new ImInt(s.getSpeakerFontSize());
@@ -401,6 +340,43 @@ public class DialogueEditorPanel extends EditorPanel {
         }
 
         ImGui.unindent();
+    }
+
+    /**
+     * Resets the tree's style back to engine defaults.
+     */
+    private void resetStyleToDefaults(DialogueTree tree) {
+        var defaults = new DialogueStyle();
+        var s = tree.getStyle();
+
+        s.setDialogueBackground(defaults.getDialogueBackground());
+        s.setDialogueBorder(defaults.getDialogueBorder());
+        s.setDialogueBorderWidth(defaults.getDialogueBorderWidth());
+
+        s.setOptionsBackground(defaults.getOptionsBackground());
+        s.setOptionsBorder(defaults.getOptionsBorder());
+        s.setOptionsBorderWidth(defaults.getOptionsBorderWidth());
+
+        s.setButtonBackground(defaults.getButtonBackground());
+        s.setButtonHover(defaults.getButtonHover());
+        s.setButtonBorder(defaults.getButtonBorder());
+
+        s.setNavButtonBackground(defaults.getNavButtonBackground());
+        s.setNavButtonHover(defaults.getNavButtonHover());
+        s.setNavButtonBorder(defaults.getNavButtonBorder());
+
+        s.setOverlayColor(defaults.getOverlayColor());
+
+        s.setSpeakerFontSize(defaults.getSpeakerFontSize());
+        s.setDialogueFontSize(defaults.getDialogueFontSize());
+        s.setOptionFontSize(defaults.getOptionFontSize());
+
+        s.setMargin(defaults.getMargin());
+        s.setPanelHeight(defaults.getPanelHeight());
+        s.setButtonHeight(defaults.getButtonHeight());
+        s.setOptionGap(defaults.getOptionGap());
+
+        setStatus("Style reset to defaults for " + tree.getId() + ".");
     }
 
     private void renderNodeBar(DialogueTree tree) {
@@ -475,7 +451,7 @@ public class DialogueEditorPanel extends EditorPanel {
         var nodes = new ArrayList<>(tree.getNodes().values());
 
         if (selectedNode < 0 || selectedNode >= nodes.size()) {
-            centeredMessage("Select a node above to edit its contents.");
+            ImGuiUtils.centeredMessage("Select a node above to edit its contents.");
             return;
         }
 
@@ -524,12 +500,12 @@ public class DialogueEditorPanel extends EditorPanel {
         }
 
         ImGui.sameLine(0, 12);
-        dangerButtonBegin();
+        ImGuiUtils.pushErrorButtonStyle();
         if (ImGui.button(ImIcons.FA.FA_TRASH + " Delete Node")) {
             tree.removeNode(node.getId());
             selectedNode = -1;
         }
-        dangerButtonEnd();
+        ImGuiUtils.popErrorButtonStyle();
         ImGui.endGroup();
 
         if (showNewOption) {
@@ -572,12 +548,12 @@ public class DialogueEditorPanel extends EditorPanel {
         var node = nodes.get(selectedNode);
         var options = node.getOptions();
 
-        cardBegin("##options_card");
-        sectionLabel("OPTIONS (" + options.size() + ")");
+        ImGuiUtils.cardBegin("##options_card");
+        ImGuiUtils.sectionLabel("OPTIONS (" + options.size() + ")");
 
         if (options.isEmpty()) {
             ImGui.textDisabled("This node has no options yet -- add one above.");
-            cardEnd();
+            ImGuiUtils.cardEnd();
             return;
         }
 
@@ -591,9 +567,9 @@ public class DialogueEditorPanel extends EditorPanel {
 
             ImGui.textColored(ACCENT_R, ACCENT_G, ACCENT_B, 1f, ImIcons.FA.FA_ARROW_RIGHT + " Option " + (i + 1));
             ImGui.sameLine(ImGui.getContentRegionAvailX() + ImGui.getCursorPosX() - 24);
-            dangerButtonBegin();
+            ImGuiUtils.pushErrorButtonStyle();
             boolean deleteClicked = ImGui.button(ImIcons.FA.FA_TIMES + "##del" + i, 24, 0);
-            dangerButtonEnd();
+            ImGuiUtils.popErrorButtonStyle();
             if (deleteClicked) removeIndex = i;
 
             var t = new ImString(opt.getText(), 256);
@@ -620,12 +596,8 @@ public class DialogueEditorPanel extends EditorPanel {
             options.remove(removeIndex);
         }
 
-        cardEnd();
+        ImGuiUtils.cardEnd();
     }
-
-    // ------------------------------------------------------------------
-    // Data sync / persistence (unchanged behavior)
-    // ------------------------------------------------------------------
 
     private void syncEditFields() {
         if (selectedTree < 0 || selectedTree >= trees.size()) return;
