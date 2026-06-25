@@ -56,8 +56,6 @@ public abstract class Area {
         return area;
     }
 
-    // ── Identity ─────────────────────────────────────────────────────
-
     public Identifier id() {
         return id;
     }
@@ -74,8 +72,6 @@ public abstract class Area {
         this.color = color;
     }
 
-    // ── Shape ────────────────────────────────────────────────────────
-
     public abstract AABB bounds();
 
     public abstract boolean contains(GlobalPos position);
@@ -89,8 +85,6 @@ public abstract class Area {
     public abstract void drawDebugOutline();
 
     public abstract CompoundTag writeToNbt();
-
-    // ── Module management ────────────────────────────────────────────
 
     public List<Identifier> moduleIds() {
         return Collections.unmodifiableList(moduleIds);
@@ -116,8 +110,6 @@ public abstract class Area {
         moduleData.clear();
     }
 
-    // ── Module data ──────────────────────────────────────────────────
-
     public Map<Identifier, CompoundTag> moduleData() {
         return Collections.unmodifiableMap(moduleData);
     }
@@ -136,8 +128,6 @@ public abstract class Area {
     public boolean hasModuleData(Identifier moduleId) {
         return moduleData.containsKey(moduleId);
     }
-
-    // ── Linked areas ─────────────────────────────────────────────────
 
     public Map<String, Identifier> linkedAreas() {
         return Collections.unmodifiableMap(linkedAreas);

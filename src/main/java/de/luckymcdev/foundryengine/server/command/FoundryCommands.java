@@ -24,6 +24,7 @@ public class FoundryCommands {
             new TestCommand(),
             new EvalCommand(),
             new CutsceneCommand(),
+            new DialogueCommand(),
             new ScreenEffectCommand(),
             new WaypointCommand()
     );

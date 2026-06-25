@@ -84,8 +84,6 @@ public final class PostEffectManager {
         );
     }
 
-    // ── Getters for built-in effects ──
-
     public PostEffectHandle getGrayscale() {
         return grayscale;
     }
@@ -114,13 +112,9 @@ public final class PostEffectManager {
         return cinematic;
     }
 
-    // ── Internal registry access (for mixin / reload listener) ──
-
     public PostEffectRegistry getRegistry() {
         return registry;
     }
-
-    // ── Cutscene screen effect management ──
 
     public boolean inScreenEffect() {
         return inScreenEffect;
