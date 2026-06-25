@@ -21,6 +21,7 @@ public class DialogueSession {
     private String currentNodeId;
     private boolean ended;
     private DialogueDisplayMode displayMode;
+    private DialogueStyle style = new DialogueStyle();
 
     public DialogueSession(Identifier treeId, String currentNodeId) {
         this.treeId = treeId;
@@ -36,6 +37,9 @@ public class DialogueSession {
         var session = new DialogueSession(treeId, tag.getStringOr("CurrentNodeId", ""));
         if (tag.getBooleanOr("Ended", false)) session.end();
         session.setDisplayMode(DialogueDisplayMode.fromOrdinal(tag.getIntOr("DisplayMode", 0)));
+        if (tag.contains("Style")) {
+            session.style = DialogueStyle.fromNbt(tag.getCompoundOrEmpty("Style"));
+        }
 
         var histTag = tag.getListOrEmpty("History");
         for (int i = 0; i < histTag.size(); i++) {
@@ -64,6 +68,10 @@ public class DialogueSession {
 
     public void setDisplayMode(DialogueDisplayMode displayMode) { this.displayMode = displayMode; }
 
+    public DialogueStyle getStyle() { return style; }
+
+    public void setStyle(DialogueStyle style) { this.style = style; }
+
     public Deque<String> getHistory() { return history; }
 
     public Map<String, String> getVariables() { return variables; }
@@ -82,6 +90,7 @@ public class DialogueSession {
         tag.putString("CurrentNodeId", currentNodeId);
         tag.putBoolean("Ended", ended);
         tag.putInt("DisplayMode", displayMode.ordinal());
+        tag.put("Style", style.toNbt());
 
         var histTag = new ListTag();
         for (var h : history) histTag.add(StringTag.valueOf(h));

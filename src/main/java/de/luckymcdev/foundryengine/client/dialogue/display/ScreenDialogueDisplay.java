@@ -9,6 +9,7 @@ import de.luckymcdev.foundryengine.client.ui.widget.PanelWidget;
 import de.luckymcdev.foundryengine.client.ui.widget.TextWidget;
 import de.luckymcdev.foundryengine.common.dialogue.DialogueNode;
 import de.luckymcdev.foundryengine.common.dialogue.DialogueSession;
+import de.luckymcdev.foundryengine.common.dialogue.DialogueStyle;
 import de.luckymcdev.foundryengine.common.dialogue.display.IDialogueDisplay;
 import de.luckymcdev.foundryengine.common.network.packets.dialogue.ServerboundDialoguePacket;
 import de.luckymcdev.foundryengine.common.util.color.Color;
@@ -31,13 +32,14 @@ public class ScreenDialogueDisplay implements IDialogueDisplay {
 
     @Override
     public void showDialogue(Identifier treeId, DialogueSession session, DialogueNode node) {
-        currentScreen = new DialogueScreen(node);
+        currentScreen = new DialogueScreen(node, session.getStyle());
         Client.setScreen(currentScreen);
     }
 
     @Override
     public void advanceDialogue(Identifier treeId, DialogueSession session, DialogueNode node) {
         if (currentScreen != null) {
+            currentScreen.setStyle(session.getStyle());
             currentScreen.updateNode(node);
         } else {
             showDialogue(treeId, session, node);
@@ -57,12 +59,9 @@ public class ScreenDialogueDisplay implements IDialogueDisplay {
     }
 
     private static class DialogueScreen extends EngineScreen {
-        private static final int MARGIN = 10;
-        private static final int PANEL_H = 150;
-        private static final int BTN_H = 22;
-        private static final int GAP = 4;
         private final List<ButtonWidget> optionButtons = new ArrayList<>();
         private DialogueNode node;
+        private DialogueStyle style;
         private boolean widgetsBuilt;
         private PanelWidget dialogueBox;
         private TextWidget speakerText;
@@ -70,10 +69,13 @@ public class ScreenDialogueDisplay implements IDialogueDisplay {
         private PanelWidget optionsBox;
         private ButtonWidget navButton;
 
-        DialogueScreen(DialogueNode node) {
+        DialogueScreen(DialogueNode node, DialogueStyle style) {
             this.node = node;
+            this.style = style;
             this.widgetsBuilt = false;
         }
+
+        void setStyle(DialogueStyle s) { this.style = s; }
 
         void updateNode(DialogueNode n) {
             this.node = n;
@@ -89,37 +91,40 @@ public class ScreenDialogueDisplay implements IDialogueDisplay {
         }
 
         private void buildLayout() {
+            var m = style.getMargin();
+            var ph = style.getPanelHeight();
+
             dialogueBox = new PanelWidget(
-                    new UIVec(0, 1, MARGIN, -MARGIN),
-                    new UIVec(0.75, 0, 0, PANEL_H)
+                    new UIVec(0, 1, m, -m),
+                    new UIVec(0.75, 0, 0, ph)
             );
             dialogueBox.setAnchorPoint(new Vec2(0, 1));
-            dialogueBox.setBackgroundColor(new Color(0xCC101010));
-            dialogueBox.setBorder(new Color(0xFF666666), 2);
+            dialogueBox.setBackgroundColor(new Color(style.getDialogueBackground()));
+            dialogueBox.setBorder(new Color(style.getDialogueBorder()), style.getDialogueBorderWidth());
 
             speakerText = new TextWidget(
                     new UIVec(0, 0, 10, 8),
                     new UIVec(1, 0, -20, 14)
             );
-            speakerText.setFontSize(9);
+            speakerText.setFontSize(style.getSpeakerFontSize());
             dialogueBox.addWidget(speakerText);
 
             dialogueText = new TextWidget(
                     new UIVec(0, 0, 10, 26),
                     new UIVec(1, 1, -20, -34)
             );
-            dialogueText.setFontSize(9);
+            dialogueText.setFontSize(style.getDialogueFontSize());
             dialogueBox.addWidget(dialogueText);
 
             this.addWidget(dialogueBox);
 
             optionsBox = new PanelWidget(
-                    new UIVec(1, 1, -MARGIN, -MARGIN),
-                    new UIVec(0.25, 0, 0, PANEL_H)
+                    new UIVec(1, 1, -m, -m),
+                    new UIVec(0.25, 0, 0, ph)
             );
             optionsBox.setAnchorPoint(new Vec2(1, 1));
-            optionsBox.setBackgroundColor(new Color(0xCC101010));
-            optionsBox.setBorder(new Color(0xFF666666), 2);
+            optionsBox.setBackgroundColor(new Color(style.getOptionsBackground()));
+            optionsBox.setBorder(new Color(style.getOptionsBorder()), style.getOptionsBorderWidth());
             this.addWidget(optionsBox);
 
             updateText();
@@ -127,7 +132,7 @@ public class ScreenDialogueDisplay implements IDialogueDisplay {
 
         private void updateText() {
             if (node == null) return;
-            speakerText.setText(Component.literal("<" + node.getSpeaker() + ">").withStyle(style -> style.withColor(node.getSpeakerColor())));
+            speakerText.setText(Component.literal("<" + node.getSpeaker() + ">").withStyle(s -> s.withColor(node.getSpeakerColor())));
             dialogueText.setText(Component.literal(node.getText()));
         }
 
@@ -142,26 +147,30 @@ public class ScreenDialogueDisplay implements IDialogueDisplay {
 
             if (node == null) return;
 
+            var bt = style.getButtonHeight();
+            var gap = style.getOptionGap();
             var options = node.getOptions();
+
             if (options.isEmpty()) {
                 boolean hasNext = node.getNextNodeId() != null && !node.getNextNodeId().isBlank();
                 navButton = new ButtonWidget(
                         new UIVec(0.5, 0.5, 0, 0),
-                        new UIVec(0, 0, 130, BTN_H),
+                        new UIVec(0, 0, 130, bt),
                         (mx, my, btn) -> ClientPacketDistributor.sendToServer(
                                 hasNext ? ServerboundDialoguePacket.advanceNext() : ServerboundDialoguePacket.end())
                 );
                 navButton.setAnchorPoint(new Vec2(0.5f, 0.5f));
-                navButton.setBackgroundColor(new Color(0x88000000));
-                navButton.setHoverColor(new Color(0xAA444444));
-                navButton.setBorderColor(new Color(0xFF888888));
+                navButton.setBackgroundColor(new Color(style.getNavButtonBackground()));
+                navButton.setHoverColor(new Color(style.getNavButtonHover()));
+                navButton.setBorderColor(new Color(style.getNavButtonBorder()));
 
                 var label = new TextWidget(
                         new UIVec(0.5, 0.5, 0, 0),
-                        new UIVec(0, 0, 120, BTN_H)
+                        new UIVec(0, 0, 120, bt)
                 );
                 label.setAnchorPoint(new Vec2(0.5f, 0.5f));
                 label.setAlignment(Enums.Alignment.CENTER);
+                label.setFontSize(style.getOptionFontSize());
                 label.setText(Component.literal(hasNext ? "Next \u2192" : "[End Dialogue]"));
                 navButton.addWidget(label);
                 optionsBox.addWidget(navButton);
@@ -170,24 +179,25 @@ public class ScreenDialogueDisplay implements IDialogueDisplay {
                 for (var opt : options) {
                     var btn = new ButtonWidget(
                             new UIVec(0, 0, 8, y),
-                            new UIVec(1, 0, -16, BTN_H),
+                            new UIVec(1, 0, -16, bt),
                             (mx, my, b) -> ClientPacketDistributor.sendToServer(
                                     ServerboundDialoguePacket.selectOption(opt.getId()))
                     );
-                    btn.setBackgroundColor(new Color(0x88000000));
-                    btn.setHoverColor(new Color(0xAA444444));
-                    btn.setBorderColor(new Color(0xFF888888));
+                    btn.setBackgroundColor(new Color(style.getButtonBackground()));
+                    btn.setHoverColor(new Color(style.getButtonHover()));
+                    btn.setBorderColor(new Color(style.getButtonBorder()));
 
                     var label = new TextWidget(
                             new UIVec(0, 0, 4, 3),
                             new UIVec(1, 0, -8, 16)
                     );
+                    label.setFontSize(style.getOptionFontSize());
                     label.setText(Component.literal(opt.getText()));
 
                     btn.addWidget(label);
                     optionButtons.add(btn);
                     optionsBox.addWidget(btn);
-                    y += BTN_H + GAP;
+                    y += bt + gap;
                 }
             }
 
@@ -199,7 +209,7 @@ public class ScreenDialogueDisplay implements IDialogueDisplay {
 
         @Override
         public void extractBackground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
-            guiGraphics.fill(RenderPipelines.GUI, 0, 0, this.width, this.height, 0x88000000);
+            guiGraphics.fill(RenderPipelines.GUI, 0, 0, this.width, this.height, style.getOverlayColor());
         }
 
         @Override
