@@ -127,7 +127,7 @@ public class ScreenDialogueDisplay implements IDialogueDisplay {
 
         private void updateText() {
             if (node == null) return;
-            speakerText.setText(Component.literal("<" + node.getSpeaker() + ">").withStyle(style -> style.withColor(0xFF55FF55)));
+            speakerText.setText(Component.literal("<" + node.getSpeaker() + ">").withStyle(style -> style.withColor(node.getSpeakerColor())));
             dialogueText.setText(Component.literal(node.getText()));
         }
 
@@ -182,7 +182,8 @@ public class ScreenDialogueDisplay implements IDialogueDisplay {
                             new UIVec(0, 0, 4, 3),
                             new UIVec(1, 0, -8, 16)
                     );
-                    label.setText(Component.literal("> " + opt.getText()));
+                    label.setText(Component.literal(opt.getText()));
+
                     btn.addWidget(label);
                     optionButtons.add(btn);
                     optionsBox.addWidget(btn);
@@ -206,4 +207,5 @@ public class ScreenDialogueDisplay implements IDialogueDisplay {
             return false;
         }
     }
+
 }

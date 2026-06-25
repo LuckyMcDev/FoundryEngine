@@ -10,6 +10,7 @@ import de.luckymcdev.foundryengine.common.dialogue.DialogueTree;
 import de.luckymcdev.foundryengine.common.network.packets.dialogue.DialogueSavePacket;
 import imgui.ImGui;
 import imgui.flag.ImGuiCol;
+import imgui.flag.ImGuiColorEditFlags;
 import imgui.flag.ImGuiInputTextFlags;
 import imgui.flag.ImGuiSelectableFlags;
 import imgui.type.ImInt;
@@ -26,6 +27,7 @@ public class DialogueEditorPanel extends EditorPanel {
     private final ImString editSpeaker = new ImString("", 64);
     private final ImString editText = new ImString("", 4096);
     private final ImString editNextNode = new ImString("", 64);
+    private final float[] editSpeakerColor = new float[]{0.33f, 1.0f, 0.33f, 1.0f};
     private final ImString newTreeId = new ImString(64);
     private final ImString newNodeId = new ImString(64);
     private final ImString newNodeSpeaker = new ImString(64);
@@ -95,17 +97,14 @@ public class DialogueEditorPanel extends EditorPanel {
             ImGui.setNextItemWidth(-1);
             boolean done = ImGui.inputTextWithHint("##ntid", "namespace:path", newTreeId, ImGuiInputTextFlags.EnterReturnsTrue);
             if (ImGui.button("Create") || done) {
-                var s = newTreeId.get().trim();
-                if (!s.isBlank()) {
-                    var id = Identifier.parse(s);
-                    var tree = new DialogueTree(id, "start");
-                    tree.addNode(new DialogueNode("start", "NPC", "Hello!"));
-                    trees.add(tree);
-                    selectedTree = trees.size() - 1;
-                    selectedNode = 0;
-                    syncEditFields();
-                    showNewTree = false;
-                }
+                var id = Identifier.parse(newTreeId.get().trim());
+                var tree = new DialogueTree(id, "start");
+                tree.addNode(new DialogueNode("start", "NPC", "Hello!"));
+                trees.add(tree);
+                selectedTree = trees.size() - 1;
+                selectedNode = 0;
+                syncEditFields();
+                showNewTree = false;
             }
             ImGui.sameLine();
             if (ImGui.button("Cancel")) showNewTree = false;
@@ -185,13 +184,10 @@ public class DialogueEditorPanel extends EditorPanel {
             ImGui.setNextItemWidth(80);
             ImGui.inputText("##nnspeaker", newNodeSpeaker);
             if (ImGui.button("Add")) {
-                var id = newNodeId.get().trim();
-                if (!id.isBlank()) {
-                    tree.addNode(new DialogueNode(id, newNodeSpeaker.get(), newNodeText.get()));
-                    selectedNode = new ArrayList<>(tree.getNodes().values()).size() - 1;
-                    syncEditFields();
-                    showNewNode = false;
-                }
+                tree.addNode(new DialogueNode(newNodeId.get().trim(), newNodeSpeaker.get(), newNodeText.get()));
+                selectedNode = new ArrayList<>(tree.getNodes().values()).size() - 1;
+                syncEditFields();
+                showNewNode = false;
             }
             ImGui.sameLine();
             if (ImGui.button("X")) showNewNode = false;
@@ -220,7 +216,6 @@ public class DialogueEditorPanel extends EditorPanel {
             return;
         }
 
-        // Sync ImStrings when selection changes
         if (selectedTree != lastEditedTree || selectedNode != lastEditedNode) {
             syncEditFields();
         }
@@ -230,14 +225,17 @@ public class DialogueEditorPanel extends EditorPanel {
 
         ImGui.setNextItemWidth(150);
         ImGui.inputText("Speaker", editSpeaker);
+        ImGui.sameLine();
+        ImGui.colorEdit4("##spkColor", editSpeakerColor, ImGuiColorEditFlags.NoInputs | ImGuiColorEditFlags.NoLabel | ImGuiColorEditFlags.NoAlpha);
+        if (ImGui.isItemHovered()) ImGui.setTooltip("Speaker name color");
         ImGui.setNextItemWidth(200);
         ImGui.inputText("Next Node ID", editNextNode);
         ImGui.setNextItemWidth(-1);
-        ImGui.inputTextMultiline("##text", editText, 100, 80);
+        ImGui.inputTextMultiline("##text", editText, 100, 300);
 
-        // If any ImString changed, commit to the node
-        if (!editSpeaker.get().equals(node.getSpeaker()) || !editText.get().equals(node.getText()) || !editNextNode.get().equals(node.getNextNodeId() != null ? node.getNextNodeId() : "")) {
-            var updated = new DialogueNode(node.getId(), editSpeaker.get(), editText.get());
+        int newColor = ((int) (editSpeakerColor[0] * 255) << 16) | ((int) (editSpeakerColor[1] * 255) << 8) | (int) (editSpeakerColor[2] * 255);
+        if (!editSpeaker.get().equals(node.getSpeaker()) || !editText.get().equals(node.getText()) || !editNextNode.get().equals(node.getNextNodeId() != null ? node.getNextNodeId() : "") || newColor != node.getSpeakerColor()) {
+            var updated = new DialogueNode(node.getId(), editSpeaker.get(), editText.get(), newColor);
             updated.setNextNodeId(editNextNode.get().trim().isEmpty() ? null : editNextNode.get().trim());
             updated.getOptions().addAll(node.getOptions());
             updated.getEnterActionIds().addAll(node.getEnterActionIds());
@@ -262,15 +260,12 @@ public class DialogueEditorPanel extends EditorPanel {
             ImGui.inputText("Target##notg", newOptionTarget);
             ImGui.sameLine();
             if (ImGui.button("Add")) {
-                var txt = newOptionText.get().trim();
-                if (!txt.isBlank()) {
-                    node.getOptions().add(new DialogueOption(
-                            "opt_" + (node.getOptions().size() + 1),
-                            txt,
-                            newOptionTarget.get().trim()
-                    ));
-                    showNewOption = false;
-                }
+                node.getOptions().add(new DialogueOption(
+                        "opt_" + (node.getOptions().size() + 1),
+                        newOptionText.get().trim(),
+                        newOptionTarget.get().trim()
+                ));
+                showNewOption = false;
             }
             ImGui.sameLine();
             if (ImGui.button("X")) showNewOption = false;
@@ -341,6 +336,11 @@ public class DialogueEditorPanel extends EditorPanel {
             editSpeaker.set(node.getSpeaker());
             editText.set(node.getText());
             editNextNode.set(node.getNextNodeId() != null ? node.getNextNodeId() : "");
+            int c = node.getSpeakerColor();
+            editSpeakerColor[0] = ((c >> 16) & 0xFF) / 255f;
+            editSpeakerColor[1] = ((c >> 8) & 0xFF) / 255f;
+            editSpeakerColor[2] = (c & 0xFF) / 255f;
+            editSpeakerColor[3] = 1f;
         } else {
             editSpeaker.set("");
             editText.set("");
