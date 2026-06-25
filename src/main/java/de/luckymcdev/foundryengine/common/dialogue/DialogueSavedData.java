@@ -3,6 +3,7 @@ package de.luckymcdev.foundryengine.common.dialogue;
 import de.luckymcdev.foundryengine.common.Common;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.level.saveddata.SavedData;
@@ -43,7 +44,7 @@ public class DialogueSavedData extends SavedData {
         var list = tag.getListOrEmpty("DialogueTrees");
         for (int i = 0; i < list.size(); i++) {
             var entry = list.getCompoundOrEmpty(i);
-            var id = net.minecraft.resources.Identifier.parse(entry.getStringOr("Id", "foundryengine:empty"));
+            var id = Identifier.parse(entry.getStringOr("Id", "foundryengine:empty"));
             trees.add(DialogueTree.fromNbt(id, entry));
         }
         return trees;

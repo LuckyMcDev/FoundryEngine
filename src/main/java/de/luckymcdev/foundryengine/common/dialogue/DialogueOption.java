@@ -42,11 +42,11 @@ public class DialogueOption {
         );
         var conds = tag.getListOrEmpty("Conditions");
         for (int i = 0; i < conds.size(); i++) {
-            conds.getString(i).ifPresent(s -> opt.conditionIds.add(s));
+            conds.getString(i).ifPresent(opt.conditionIds::add);
         }
         var acts = tag.getListOrEmpty("Actions");
         for (int i = 0; i < acts.size(); i++) {
-            acts.getString(i).ifPresent(s -> opt.actionIds.add(s));
+            acts.getString(i).ifPresent(opt.actionIds::add);
         }
         return opt;
     }
@@ -65,10 +65,27 @@ public class DialogueOption {
         return tag;
     }
 
-    public String getId() { return id; }
-    public String getText() { return text; }
-    public String getTargetNodeId() { return targetNodeId; }
-    public void setTargetNodeId(String targetNodeId) { this.targetNodeId = targetNodeId; }
-    public List<String> getConditionIds() { return conditionIds; }
-    public List<String> getActionIds() { return actionIds; }
+    public String getId() {
+        return id;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public String getTargetNodeId() {
+        return targetNodeId;
+    }
+
+    public void setTargetNodeId(String targetNodeId) {
+        this.targetNodeId = targetNodeId;
+    }
+
+    public List<String> getConditionIds() {
+        return conditionIds;
+    }
+
+    public List<String> getActionIds() {
+        return actionIds;
+    }
 }

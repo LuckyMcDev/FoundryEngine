@@ -7,6 +7,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.*;
@@ -80,10 +81,11 @@ public class DialogueManager {
 
         var session = new DialogueSession(treeId, node.getId());
         session.setDisplayMode(displayMode);
+        session.setStyle(tree.getStyle());
         sessions.put(player.getUUID(), session);
         executeEnterActions(player, session, node);
 
-        DialogueEvents.Internal.postStarted(new DialogueEvents.Started(player, session));
+        NeoForge.EVENT_BUS.post(new DialogueEvent.Started(player, session));
 
         PacketDistributor.sendToPlayer(player, ClientboundDialoguePacket.show(treeId, session, node));
     }
@@ -106,7 +108,7 @@ public class DialogueManager {
 
         if (!evaluateConditions(player, session, option.getConditionIds())) return;
 
-        DialogueEvents.Internal.postOptionSelected(new DialogueEvents.OptionSelected(player, session, option));
+        NeoForge.EVENT_BUS.post(new DialogueEvent.OptionSelected(player, session, option));
         executeActions(player, session, option.getActionIds());
         advanceTo(player, session, tree, option.getTargetNodeId());
     }
@@ -131,7 +133,7 @@ public class DialogueManager {
         if (session == null) return;
 
         session.end();
-        DialogueEvents.Internal.postEnded(new DialogueEvents.Ended(player, session));
+        NeoForge.EVENT_BUS.post(new DialogueEvent.Ended(player, session));
 
         PacketDistributor.sendToPlayer(player, ClientboundDialoguePacket.ended(session.getTreeId()));
     }
@@ -196,7 +198,7 @@ public class DialogueManager {
         executeEnterActions(player, session, nextNode);
         session.getHistory().push(fromNodeId);
         session.setCurrentNodeId(targetNodeId);
-        DialogueEvents.Internal.postAdvanced(new DialogueEvents.Advanced(player, session, fromNodeId, targetNodeId));
+        NeoForge.EVENT_BUS.post(new DialogueEvent.Advanced(player, session, fromNodeId, targetNodeId));
 
         PacketDistributor.sendToPlayer(player, ClientboundDialoguePacket.advance(tree.getId(), session, nextNode));
     }
