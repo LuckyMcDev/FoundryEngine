@@ -15,15 +15,21 @@ public class DialogueNode {
     private final String id;
     private final String speaker;
     private final String text;
+    private final int speakerColor;
     private final List<DialogueOption> options;
     private final List<String> enterActionIds;
     private final List<String> conditionIds;
     private String nextNodeId;
 
     public DialogueNode(String id, String speaker, String text) {
+        this(id, speaker, text, 0x55FF55);
+    }
+
+    public DialogueNode(String id, String speaker, String text, int speakerColor) {
         this.id = id;
         this.speaker = speaker;
         this.text = text;
+        this.speakerColor = speakerColor;
         this.nextNodeId = null;
         this.options = new ArrayList<>();
         this.enterActionIds = new ArrayList<>();
@@ -34,7 +40,8 @@ public class DialogueNode {
         var node = new DialogueNode(
                 tag.getStringOr("Id", ""),
                 tag.getStringOr("Speaker", ""),
-                tag.getStringOr("Text", "")
+                tag.getStringOr("Text", ""),
+                tag.getIntOr("SpeakerColor", 0x55FF55)
         );
         if (tag.contains("NextNodeId")) node.nextNodeId = tag.getStringOr("NextNodeId", null);
         var opts = tag.getListOrEmpty("Options");
@@ -57,6 +64,7 @@ public class DialogueNode {
         tag.putString("Id", id);
         tag.putString("Speaker", speaker);
         tag.putString("Text", text);
+        tag.putInt("SpeakerColor", speakerColor);
         if (nextNodeId != null) tag.putString("NextNodeId", nextNodeId);
         var opts = new ListTag();
         for (var o : options) opts.add(o.toNbt());
@@ -73,6 +81,7 @@ public class DialogueNode {
     public String getId() { return id; }
     public String getSpeaker() { return speaker; }
     public String getText() { return text; }
+    public int getSpeakerColor() { return speakerColor; }
     public String getNextNodeId() { return nextNodeId; }
     public void setNextNodeId(String nextNodeId) { this.nextNodeId = nextNodeId; }
     public List<DialogueOption> getOptions() { return options; }
