@@ -11,6 +11,9 @@ import de.luckymcdev.foundryengine.common.event.registry.RegistryEvent;
 import de.luckymcdev.foundryengine.common.log.EngineLogAppender;
 import de.luckymcdev.foundryengine.common.network.packets.BundleHashPacket;
 import de.luckymcdev.foundryengine.common.network.packets.TestPacket;
+import de.luckymcdev.foundryengine.common.network.packets.dialogue.ClientboundDialoguePacket;
+import de.luckymcdev.foundryengine.common.network.packets.dialogue.DialogueSavePacket;
+import de.luckymcdev.foundryengine.common.network.packets.dialogue.ServerboundDialoguePacket;
 import de.luckymcdev.foundryengine.common.network.packets.editor.*;
 import de.luckymcdev.foundryengine.common.network.packets.explorer.*;
 import de.luckymcdev.foundryengine.common.network.packets.sync.SavedDataSyncPacket;
@@ -174,6 +177,7 @@ public class FoundryEngineMod {
         BUS.addListener(this::onLevelLoad);
         BUS.addListener(this::onLevelTick);
 
+        BUS.addListener(this::onPlayerDisconnect);
         BUS.addListener(this::onPlayerChangedDimension);
     }
 
@@ -182,6 +186,7 @@ public class FoundryEngineMod {
         manager.register(Common.id("waypoints"), level -> Common.getWaypointManager().toNbt(level));
         manager.register(Common.id("areas"), level -> Common.getAreaManager().toNbt(level));
         manager.register(Common.id("cutscene_manager"), level -> Common.getCutsceneManager().toNbt(level));
+        manager.register(Common.id("dialogue"), level -> Common.getDialogueManager().toNbt());
     }
 
     private void onRegisterEvent(RegisterEvent event) {
@@ -233,6 +238,9 @@ public class FoundryEngineMod {
         network.register(AreaPacket.DEFINITION);
         network.register(WaypointPacket.DEFINITION);
         network.register(SavedDataSyncPacket.DEFINITION);
+        network.register(ClientboundDialoguePacket.DEFINITION);
+        network.register(ServerboundDialoguePacket.DEFINITION);
+        network.register(DialogueSavePacket.DEFINITION);
     }
 
     private void onClientSetup(FMLClientSetupEvent event) {
@@ -317,6 +325,7 @@ public class FoundryEngineMod {
 
     private void onServerStarted(ServerStartedEvent event) {
         var server = event.getServer();
+        Common.getDialogueManager().loadFrom(server.overworld());
         EngineLevels.get(server).openTemporaryLevel(
                 new RuntimeLevelConfig()
                         .setGenerator(server.overworld().getChunkSource().getGenerator())
@@ -334,6 +343,8 @@ public class FoundryEngineMod {
         Common.getGameManager().stopAll();
         Common.getWaypointManager().onServerStopping(event);
         Common.getBundleManager().setServer(null);
+        var overworld = event.getServer().overworld();
+        Common.getDialogueManager().saveTo(overworld);
     }
 
     private void onServerTick(ServerTickEvent.Post event) {
@@ -355,6 +366,12 @@ public class FoundryEngineMod {
 
     private void onLevelTick(LevelTickEvent.Post event) {
         Common.getGameManager().tickCommon(event.getLevel());
+    }
+
+    private void onPlayerDisconnect(PlayerEvent.PlayerLoggedOutEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            Common.getDialogueManager().onPlayerDisconnect(player);
+        }
     }
 
     private void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {

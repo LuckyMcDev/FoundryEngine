@@ -7,6 +7,7 @@ import de.luckymcdev.foundryengine.common.bundle.BundleManager;
 import de.luckymcdev.foundryengine.common.bundle.BundleSavePathListener;
 import de.luckymcdev.foundryengine.common.cutscene.CutsceneManager;
 import de.luckymcdev.foundryengine.common.cutscene.CutsceneSessionManager;
+import de.luckymcdev.foundryengine.common.dialogue.DialogueManager;
 import de.luckymcdev.foundryengine.common.exceptions.UtilityClassException;
 import de.luckymcdev.foundryengine.common.game.GameManager;
 import de.luckymcdev.foundryengine.common.game.stage.GameStageHandler;
@@ -55,6 +56,7 @@ public final class Common {
     private static final SavedDataManager SAVED_DATA_MANAGER = new SavedDataManager();
     private static final WaypointManager WAYPOINT_MANAGER = new WaypointManager();
     private static final GameManager GAME_MANAGER = new GameManager();
+    private static final DialogueManager DIALOGUE_MANAGER = new DialogueManager();
     private static final List<Runnable> EVENT_CLEARERS = new ArrayList<>();
 
     static {
@@ -148,6 +150,13 @@ public final class Common {
      */
     public static GameManager getGameManager() {
         return GAME_MANAGER;
+    }
+
+    /**
+     * Returns the singleton {@link DialogueManager}.
+     */
+    public static DialogueManager getDialogueManager() {
+        return DIALOGUE_MANAGER;
     }
 
     /**

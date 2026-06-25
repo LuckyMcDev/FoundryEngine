@@ -210,10 +210,6 @@ public class MeshRenderer implements AutoCloseable {
         return vertexBuffer.currentBuffer();
     }
 
-    // ──────────────────────────────────────────────
-    //  Supporting types
-    // ──────────────────────────────────────────────
-
     public record TextureBinding(String samplerName, @Nullable GpuTextureView view, @Nullable GpuSampler sampler) {
         public static TextureBinding of(String samplerName, GpuTextureView view, GpuSampler sampler) {
             return new TextureBinding(samplerName, view, sampler);

@@ -9,6 +9,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.client.area.AreaRenderer;
 import de.luckymcdev.foundryengine.client.cutscene.ClientCutsceneManager;
+import de.luckymcdev.foundryengine.client.dialogue.ClientDialogueManager;
 import de.luckymcdev.foundryengine.client.editor.EditorController;
 import de.luckymcdev.foundryengine.client.editor.EditorManager;
 import de.luckymcdev.foundryengine.client.editor.MainMenu;
@@ -128,6 +129,7 @@ public final class Client {
     private static final PostEffectManager POST_EFFECT_MANAGER = new PostEffectManager();
     private static final SkyboxManager SKYBOX_MANAGER = new SkyboxManager();
     private static final EditorController EDITOR_CONTROLLER = new EditorController();
+    private static final ClientDialogueManager DIALOGUE_MANAGER = new ClientDialogueManager();
 
     private Client() {
         throw new UtilityClassException();
@@ -359,6 +361,13 @@ public final class Client {
      */
     public static CutsceneEditorFeature getCutsceneEditor() {
         return EDITOR_CONTROLLER.getCutsceneEditorFeature();
+    }
+
+    /**
+     * Returns the client dialogue manager.
+     */
+    public static ClientDialogueManager getDialogueManager() {
+        return DIALOGUE_MANAGER;
     }
 
     /**

@@ -5,6 +5,7 @@ import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.command.FoundryCommandsClient;
 import de.luckymcdev.foundryengine.client.debug.screen.BundleDebugEntry;
 import de.luckymcdev.foundryengine.client.debug.screen.GameStagesDebugEntry;
+import de.luckymcdev.foundryengine.client.dialogue.editor.DialogueEditorPanel;
 import de.luckymcdev.foundryengine.client.editor.event.RegisterPanelEvent;
 import de.luckymcdev.foundryengine.client.editor.panel.NodeTestPanel;
 import de.luckymcdev.foundryengine.client.editor.panel.TestPanel;
@@ -103,6 +104,9 @@ public class FoundryEngineModClient {
             if (dimension == null) return;
             Common.getCutsceneManager().applySync(dimension, data);
         });
+        savedataManager.registerClientHandler(Common.id("dialogue"), data -> {
+            Common.getDialogueManager().applyNbt(data);
+        });
     }
 
     private void addClientReloadListener(AddClientReloadListenersEvent event) {
@@ -164,6 +168,7 @@ public class FoundryEngineModClient {
         event.register(CutsceneTimelinePanel.INSTANCE);
         event.register(WaypointPanel.INSTANCE);
         event.register(NodeTestPanel.INSTANCE);
+        event.register(DialogueEditorPanel.INSTANCE);
     }
 
     private void onRegisterCommands(RegisterClientCommandsEvent event) {
