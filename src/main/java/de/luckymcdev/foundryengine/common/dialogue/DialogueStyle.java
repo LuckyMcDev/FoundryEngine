@@ -77,44 +77,163 @@ public class DialogueStyle {
         return tag;
     }
 
-    public int getDialogueBackground() { return dialogueBackground; }
-    public void setDialogueBackground(int v) { this.dialogueBackground = v; }
-    public int getDialogueBorder() { return dialogueBorder; }
-    public void setDialogueBorder(int v) { this.dialogueBorder = v; }
-    public int getDialogueBorderWidth() { return dialogueBorderWidth; }
-    public void setDialogueBorderWidth(int v) { this.dialogueBorderWidth = v; }
-    public int getOptionsBackground() { return optionsBackground; }
-    public void setOptionsBackground(int v) { this.optionsBackground = v; }
-    public int getOptionsBorder() { return optionsBorder; }
-    public void setOptionsBorder(int v) { this.optionsBorder = v; }
-    public int getOptionsBorderWidth() { return optionsBorderWidth; }
-    public void setOptionsBorderWidth(int v) { this.optionsBorderWidth = v; }
-    public int getButtonBackground() { return buttonBackground; }
-    public void setButtonBackground(int v) { this.buttonBackground = v; }
-    public int getButtonHover() { return buttonHover; }
-    public void setButtonHover(int v) { this.buttonHover = v; }
-    public int getButtonBorder() { return buttonBorder; }
-    public void setButtonBorder(int v) { this.buttonBorder = v; }
-    public int getNavButtonBackground() { return navButtonBackground; }
-    public void setNavButtonBackground(int v) { this.navButtonBackground = v; }
-    public int getNavButtonHover() { return navButtonHover; }
-    public void setNavButtonHover(int v) { this.navButtonHover = v; }
-    public int getNavButtonBorder() { return navButtonBorder; }
-    public void setNavButtonBorder(int v) { this.navButtonBorder = v; }
-    public int getOverlayColor() { return overlayColor; }
-    public void setOverlayColor(int v) { this.overlayColor = v; }
-    public int getSpeakerFontSize() { return speakerFontSize; }
-    public void setSpeakerFontSize(int v) { this.speakerFontSize = v; }
-    public int getDialogueFontSize() { return dialogueFontSize; }
-    public void setDialogueFontSize(int v) { this.dialogueFontSize = v; }
-    public int getOptionFontSize() { return optionFontSize; }
-    public void setOptionFontSize(int v) { this.optionFontSize = v; }
-    public int getMargin() { return margin; }
-    public void setMargin(int v) { this.margin = v; }
-    public int getPanelHeight() { return panelHeight; }
-    public void setPanelHeight(int v) { this.panelHeight = v; }
-    public int getButtonHeight() { return buttonHeight; }
-    public void setButtonHeight(int v) { this.buttonHeight = v; }
-    public int getOptionGap() { return optionGap; }
-    public void setOptionGap(int v) { this.optionGap = v; }
+    public int getDialogueBackground() {
+        return dialogueBackground;
+    }
+
+    public void setDialogueBackground(int v) {
+        this.dialogueBackground = v;
+    }
+
+    public int getDialogueBorder() {
+        return dialogueBorder;
+    }
+
+    public void setDialogueBorder(int v) {
+        this.dialogueBorder = v;
+    }
+
+    public int getDialogueBorderWidth() {
+        return dialogueBorderWidth;
+    }
+
+    public void setDialogueBorderWidth(int v) {
+        this.dialogueBorderWidth = v;
+    }
+
+    public int getOptionsBackground() {
+        return optionsBackground;
+    }
+
+    public void setOptionsBackground(int v) {
+        this.optionsBackground = v;
+    }
+
+    public int getOptionsBorder() {
+        return optionsBorder;
+    }
+
+    public void setOptionsBorder(int v) {
+        this.optionsBorder = v;
+    }
+
+    public int getOptionsBorderWidth() {
+        return optionsBorderWidth;
+    }
+
+    public void setOptionsBorderWidth(int v) {
+        this.optionsBorderWidth = v;
+    }
+
+    public int getButtonBackground() {
+        return buttonBackground;
+    }
+
+    public void setButtonBackground(int v) {
+        this.buttonBackground = v;
+    }
+
+    public int getButtonHover() {
+        return buttonHover;
+    }
+
+    public void setButtonHover(int v) {
+        this.buttonHover = v;
+    }
+
+    public int getButtonBorder() {
+        return buttonBorder;
+    }
+
+    public void setButtonBorder(int v) {
+        this.buttonBorder = v;
+    }
+
+    public int getNavButtonBackground() {
+        return navButtonBackground;
+    }
+
+    public void setNavButtonBackground(int v) {
+        this.navButtonBackground = v;
+    }
+
+    public int getNavButtonHover() {
+        return navButtonHover;
+    }
+
+    public void setNavButtonHover(int v) {
+        this.navButtonHover = v;
+    }
+
+    public int getNavButtonBorder() {
+        return navButtonBorder;
+    }
+
+    public void setNavButtonBorder(int v) {
+        this.navButtonBorder = v;
+    }
+
+    public int getOverlayColor() {
+        return overlayColor;
+    }
+
+    public void setOverlayColor(int v) {
+        this.overlayColor = v;
+    }
+
+    public int getSpeakerFontSize() {
+        return speakerFontSize;
+    }
+
+    public void setSpeakerFontSize(int v) {
+        this.speakerFontSize = v;
+    }
+
+    public int getDialogueFontSize() {
+        return dialogueFontSize;
+    }
+
+    public void setDialogueFontSize(int v) {
+        this.dialogueFontSize = v;
+    }
+
+    public int getOptionFontSize() {
+        return optionFontSize;
+    }
+
+    public void setOptionFontSize(int v) {
+        this.optionFontSize = v;
+    }
+
+    public int getMargin() {
+        return margin;
+    }
+
+    public void setMargin(int v) {
+        this.margin = v;
+    }
+
+    public int getPanelHeight() {
+        return panelHeight;
+    }
+
+    public void setPanelHeight(int v) {
+        this.panelHeight = v;
+    }
+
+    public int getButtonHeight() {
+        return buttonHeight;
+    }
+
+    public void setButtonHeight(int v) {
+        this.buttonHeight = v;
+    }
+
+    public int getOptionGap() {
+        return optionGap;
+    }
+
+    public void setOptionGap(int v) {
+        this.optionGap = v;
+    }
 }

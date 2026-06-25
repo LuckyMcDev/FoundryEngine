@@ -11,6 +11,7 @@ import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.util.color.Color;
 import imgui.ImGui;
 import imgui.flag.ImGuiCol;
+import imgui.flag.ImGuiColorEditFlags;
 import imgui.flag.ImGuiStyleVar;
 import imgui.flag.ImGuiTreeNodeFlags;
 import net.minecraft.client.Minecraft;
@@ -426,6 +427,64 @@ public class ImGuiUtils {
      */
     public static String formatColored(String text, Object... args) {
         return String.format(text, args);
+    }
+
+
+    /**
+     * Dimmed, slightly spaced‑out uppercase label used to head a section.
+     */
+    public static void sectionLabel(String text) {
+        ImGui.textDisabled(text);
+        ImGui.spacing();
+    }
+
+    /**
+     * Centered, dimmed placeholder message for empty states.
+     */
+    public static void centeredMessage(String text) {
+        ImGui.dummy(0, 24);
+        float avail = ImGui.getContentRegionAvailX();
+        float textW = ImGui.calcTextSize(text).x;
+        ImGui.setCursorPosX(Math.max(0, (avail - textW) / 2f));
+        ImGui.textDisabled(text);
+    }
+
+    /**
+     * Begins a bordered, padded "card" child region that auto-sizes to its content.
+     */
+    public static void cardBegin(String id) {
+        ImGui.beginChild(id, 0, 0, true,
+                imgui.flag.ImGuiWindowFlags.AlwaysAutoResize | imgui.flag.ImGuiWindowFlags.NoScrollbar);
+    }
+
+    /**
+     * Ends a card region started with {@link #cardBegin(String)}.
+     */
+    public static void cardEnd() {
+        ImGui.endChild();
+    }
+
+    /**
+     * RGBA color picker that reads/writes an int[4] where each element is a packed ARGB int.
+     * Returns true if the value changed.
+     */
+    public static boolean colorEdit4Int(String label, int[] rgba) {
+        float[] f = new float[]{
+                ((rgba[0] >> 16) & 0xFF) / 255f,
+                ((rgba[0] >> 8) & 0xFF) / 255f,
+                (rgba[0] & 0xFF) / 255f,
+                ((rgba[0] >> 24) & 0xFF) / 255f
+        };
+        ImGui.setNextItemWidth(180);
+        if (ImGui.colorEdit4(label, f, ImGuiColorEditFlags.NoInputs)) {
+            int r = (int) (f[0] * 255);
+            int g = (int) (f[1] * 255);
+            int b = (int) (f[2] * 255);
+            int a = (int) (f[3] * 255);
+            rgba[0] = (a << 24) | (r << 16) | (g << 8) | b;
+            return true;
+        }
+        return false;
     }
 
     public record Image(int glId, int width, int height) {
