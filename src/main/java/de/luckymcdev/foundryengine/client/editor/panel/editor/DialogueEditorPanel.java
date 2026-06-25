@@ -1,7 +1,6 @@
-package de.luckymcdev.foundryengine.client.dialogue.editor;
+package de.luckymcdev.foundryengine.client.editor.panel.editor;
 
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
-import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.dialogue.DialogueNode;
@@ -231,7 +230,7 @@ public class DialogueEditorPanel extends EditorPanel {
         ImGui.setNextItemWidth(200);
         ImGui.inputText("Next Node ID", editNextNode);
         ImGui.setNextItemWidth(-1);
-        ImGui.inputTextMultiline("##text", editText, 100, 300);
+        ImGui.inputTextMultiline("##text", editText, 400, 300);
 
         int newColor = ((int) (editSpeakerColor[0] * 255) << 16) | ((int) (editSpeakerColor[1] * 255) << 8) | (int) (editSpeakerColor[2] * 255);
         if (!editSpeaker.get().equals(node.getSpeaker()) || !editText.get().equals(node.getText()) || !editNextNode.get().equals(node.getNextNodeId() != null ? node.getNextNodeId() : "") || newColor != node.getSpeakerColor()) {
