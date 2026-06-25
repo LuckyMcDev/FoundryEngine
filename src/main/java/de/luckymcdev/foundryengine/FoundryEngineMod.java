@@ -149,6 +149,7 @@ public class FoundryEngineMod {
         GameEvents.Internal.register(BUS);
         SlotEvents.Internal.register(BUS);
         AreaEvents.Internal.register(BUS);
+        DialogueEvents.Internal.register(BUS);
     }
 
     private void registerModEventHandlers(IEventBus modBus) {

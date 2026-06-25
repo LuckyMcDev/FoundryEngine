@@ -2,7 +2,7 @@ package de.luckymcdev.foundryengine.common.event;
 
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.dialogue.DialogueEvent;
-import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.bus.api.IEventBus;
 import org.jetbrains.annotations.ApiStatus;
 
 public final class DialogueEvents {
@@ -52,11 +52,11 @@ public final class DialogueEvents {
             ENDED.post(event);
         }
 
-        public static void register() {
-            NeoForge.EVENT_BUS.addListener(Internal::postOnStarted);
-            NeoForge.EVENT_BUS.addListener(Internal::postOnAdvanced);
-            NeoForge.EVENT_BUS.addListener(Internal::postOnEnded);
-            NeoForge.EVENT_BUS.addListener(Internal::postOnOptionSelected);
+        public static void register(IEventBus bus) {
+            bus.addListener(Internal::postOnStarted);
+            bus.addListener(Internal::postOnAdvanced);
+            bus.addListener(Internal::postOnEnded);
+            bus.addListener(Internal::postOnOptionSelected);
         }
 
         public static void clear() {
