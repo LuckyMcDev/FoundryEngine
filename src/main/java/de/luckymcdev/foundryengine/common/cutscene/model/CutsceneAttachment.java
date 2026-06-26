@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.common.cutscene.model;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Mth;
 
 /**
  * Base class for all cutscene attachments.
@@ -23,7 +24,7 @@ public abstract class CutsceneAttachment {
     protected String type;
 
     protected CutsceneAttachment(float at, String type) {
-        this.at = net.minecraft.util.Mth.clamp(at, 0f, 1f);
+        this.at = Mth.clamp(at, 0f, 1f);
         this.type = type == null ? "unknown" : type;
     }
 
@@ -32,7 +33,7 @@ public abstract class CutsceneAttachment {
     }
 
     public void setAt(float at) {
-        this.at = net.minecraft.util.Mth.clamp(at, 0f, 1f);
+        this.at = Mth.clamp(at, 0f, 1f);
     }
 
     public String getType() {

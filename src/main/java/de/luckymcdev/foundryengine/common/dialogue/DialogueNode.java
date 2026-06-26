@@ -78,13 +78,39 @@ public class DialogueNode {
         return tag;
     }
 
-    public String getId() { return id; }
-    public String getSpeaker() { return speaker; }
-    public String getText() { return text; }
-    public int getSpeakerColor() { return speakerColor; }
-    public String getNextNodeId() { return nextNodeId; }
-    public void setNextNodeId(String nextNodeId) { this.nextNodeId = nextNodeId; }
-    public List<DialogueOption> getOptions() { return options; }
-    public List<String> getEnterActionIds() { return enterActionIds; }
-    public List<String> getConditionIds() { return conditionIds; }
+    public String getId() {
+        return id;
+    }
+
+    public String getSpeaker() {
+        return speaker;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public int getSpeakerColor() {
+        return speakerColor;
+    }
+
+    public String getNextNodeId() {
+        return nextNodeId;
+    }
+
+    public void setNextNodeId(String nextNodeId) {
+        this.nextNodeId = nextNodeId;
+    }
+
+    public List<DialogueOption> getOptions() {
+        return options;
+    }
+
+    public List<String> getEnterActionIds() {
+        return enterActionIds;
+    }
+
+    public List<String> getConditionIds() {
+        return conditionIds;
+    }
 }

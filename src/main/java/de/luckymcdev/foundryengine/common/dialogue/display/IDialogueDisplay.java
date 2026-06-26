@@ -11,7 +11,10 @@ import net.minecraft.resources.Identifier;
  */
 public interface IDialogueDisplay {
     void showDialogue(Identifier treeId, DialogueSession session, DialogueNode node);
+
     void advanceDialogue(Identifier treeId, DialogueSession session, DialogueNode node);
+
     void endDialogue(Identifier treeId);
+
     boolean isActive();
 }

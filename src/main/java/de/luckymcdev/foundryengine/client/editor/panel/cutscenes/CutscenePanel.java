@@ -14,6 +14,7 @@ import de.luckymcdev.foundryengine.common.util.color.Color;
 import imgui.ImGui;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiColorEditFlags;
+import imgui.flag.ImGuiInputTextFlags;
 import imgui.flag.ImGuiSelectableFlags;
 import imgui.type.ImFloat;
 import imgui.type.ImInt;
@@ -119,7 +120,7 @@ public class CutscenePanel extends EditorPanel {
     private void renderNewCutsceneForm() {
         ImGui.setNextItemWidth(-1);
         boolean confirm = ImGui.inputTextWithHint("##newname", "cutscene_name", newName,
-                imgui.flag.ImGuiInputTextFlags.EnterReturnsTrue);
+                ImGuiInputTextFlags.EnterReturnsTrue);
         if (ImGui.button("Create") || confirm) {
             String name = newName.get().trim();
             if (!name.isBlank()) {

@@ -1,5 +1,6 @@
 package de.luckymcdev.foundryengine.common.network.packets.sync;
 
+import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.network.AbstractPacket;
 import de.luckymcdev.foundryengine.common.network.PacketBounds;
@@ -48,6 +49,6 @@ public record ScreenEffectPacket(
 
     @Override
     public void handleClient(IPayloadContext ctx) {
-        ctx.enqueueWork(() -> de.luckymcdev.foundryengine.client.Client.getPostEffectManager().startScreenEffect(name(), introTicks(), holdTicks(), outroTicks(), lerpType()));
+        ctx.enqueueWork(() -> Client.getPostEffectManager().startScreenEffect(name(), introTicks(), holdTicks(), outroTicks(), lerpType()));
     }
 }

@@ -54,27 +54,49 @@ public class DialogueSession {
         return session;
     }
 
-    public Identifier getTreeId() { return treeId; }
+    public Identifier getTreeId() {
+        return treeId;
+    }
 
-    public String getCurrentNodeId() { return currentNodeId; }
+    public String getCurrentNodeId() {
+        return currentNodeId;
+    }
 
-    public void setCurrentNodeId(String currentNodeId) { this.currentNodeId = currentNodeId; }
+    public void setCurrentNodeId(String currentNodeId) {
+        this.currentNodeId = currentNodeId;
+    }
 
-    public boolean isEnded() { return ended; }
+    public boolean isEnded() {
+        return ended;
+    }
 
-    public void end() { this.ended = true; }
+    public void end() {
+        this.ended = true;
+    }
 
-    public DialogueDisplayMode getDisplayMode() { return displayMode; }
+    public DialogueDisplayMode getDisplayMode() {
+        return displayMode;
+    }
 
-    public void setDisplayMode(DialogueDisplayMode displayMode) { this.displayMode = displayMode; }
+    public void setDisplayMode(DialogueDisplayMode displayMode) {
+        this.displayMode = displayMode;
+    }
 
-    public DialogueStyle getStyle() { return style; }
+    public DialogueStyle getStyle() {
+        return style;
+    }
 
-    public void setStyle(DialogueStyle style) { this.style = style; }
+    public void setStyle(DialogueStyle style) {
+        this.style = style;
+    }
 
-    public Deque<String> getHistory() { return history; }
+    public Deque<String> getHistory() {
+        return history;
+    }
 
-    public Map<String, String> getVariables() { return variables; }
+    public Map<String, String> getVariables() {
+        return variables;
+    }
 
     public String getVariable(String key) {
         return variables.get(key);

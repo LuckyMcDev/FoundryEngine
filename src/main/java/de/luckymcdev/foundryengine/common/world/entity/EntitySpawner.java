@@ -2,7 +2,9 @@ package de.luckymcdev.foundryengine.common.world.entity;
 
 import de.luckymcdev.foundryengine.common.Common;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.phys.Vec3;
 
@@ -13,7 +15,7 @@ public final class EntitySpawner {
     }
 
     public static <T extends Entity> T spawnServer(
-            net.minecraft.server.level.ServerLevel level,
+            ServerLevel level,
             EntityType<T> entityType,
             Vec3 pos
     ) {
@@ -21,7 +23,7 @@ public final class EntitySpawner {
     }
 
     public static <T extends Entity> T spawnServer(
-            net.minecraft.server.level.ServerLevel level,
+            ServerLevel level,
             EntityType<T> entityType,
             Vec3 pos,
             Consumer<T> configurator
@@ -30,14 +32,14 @@ public final class EntitySpawner {
     }
 
     public static <T extends Entity> T spawnServer(
-            net.minecraft.server.level.ServerLevel level,
+            ServerLevel level,
             EntityType<T> entityType,
             Vec3 pos,
             float yRot,
             float xRot,
             Consumer<T> configurator
     ) {
-        T entity = entityType.create(level, net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+        T entity = entityType.create(level, EntitySpawnReason.COMMAND);
         if (entity == null) {
             Common.LOGGER.warn("EntitySpawner: EntityType '{}' returned null on create",
                     BuiltInRegistries.ENTITY_TYPE.getKey(entityType));

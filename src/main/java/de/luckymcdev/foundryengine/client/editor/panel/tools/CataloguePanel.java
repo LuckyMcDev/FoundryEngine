@@ -28,6 +28,7 @@ import java.io.File;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
+import java.util.stream.Stream;
 
 public class CataloguePanel extends EditorPanel {
     public static final CataloguePanel INSTANCE = new CataloguePanel();
@@ -154,7 +155,7 @@ public class CataloguePanel extends EditorPanel {
                 List<Identifier> allTagIds = BuiltInRegistries.REGISTRY.entrySet().stream()
                         .flatMap(entry -> {
                             var tags = entry.getValue().getTags().toList();
-                            if (tags.isEmpty()) return java.util.stream.Stream.empty();
+                            if (tags.isEmpty()) return Stream.empty();
                             return tags.stream().map(t -> t.key().location());
                         })
                         .sorted(Comparator.comparing(Identifier::getPath))

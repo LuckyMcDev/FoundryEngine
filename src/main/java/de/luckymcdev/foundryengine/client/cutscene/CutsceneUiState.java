@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.client.cutscene;
 
 import de.luckymcdev.foundryengine.common.cutscene.model.Cutscene;
+import de.luckymcdev.foundryengine.common.cutscene.util.LerpType;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -56,7 +57,7 @@ public final class CutsceneUiState {
 
         String easing = cutscene.getDefaultEasing();
         playbackEasingIndex = 0;
-        var easingValues = de.luckymcdev.foundryengine.common.cutscene.util.LerpType.values();
+        var easingValues = LerpType.values();
         for (int i = 0; i < easingValues.length; i++) {
             if (easingValues[i].name().equalsIgnoreCase(easing)) {
                 playbackEasingIndex = i;
@@ -75,7 +76,7 @@ public final class CutsceneUiState {
         cutscene.setDefaultLength(playbackLength);
         cutscene.setDefaultHoldStart(playbackHoldStart);
         cutscene.setDefaultHoldEnd(playbackHoldEnd);
-        var easingValues = de.luckymcdev.foundryengine.common.cutscene.util.LerpType.values();
+        var easingValues = LerpType.values();
         if (playbackEasingIndex >= 0 && playbackEasingIndex < easingValues.length) {
             cutscene.setDefaultEasing(easingValues[playbackEasingIndex].name());
         }

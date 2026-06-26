@@ -10,10 +10,7 @@ import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.util.color.Color;
 import imgui.ImGui;
-import imgui.flag.ImGuiCol;
-import imgui.flag.ImGuiColorEditFlags;
-import imgui.flag.ImGuiStyleVar;
-import imgui.flag.ImGuiTreeNodeFlags;
+import imgui.flag.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.StringSplitter;
 import net.minecraft.client.renderer.texture.AbstractTexture;
@@ -454,7 +451,7 @@ public class ImGuiUtils {
      */
     public static void cardBegin(String id) {
         ImGui.beginChild(id, 0, 0, true,
-                imgui.flag.ImGuiWindowFlags.AlwaysAutoResize | imgui.flag.ImGuiWindowFlags.NoScrollbar);
+                ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoScrollbar);
     }
 
     /**

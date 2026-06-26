@@ -6,6 +6,7 @@ import de.luckymcdev.foundryengine.config.CommonConfig;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.storage.LevelStorageException;
 import net.minecraft.world.level.storage.LevelStorageSource.LevelDirectory;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -136,7 +137,7 @@ public class StorageSourceManager {
         Path target = instancedWorlds.remove(levelId);
         if (target != null && Files.isDirectory(target)) {
             try {
-                org.apache.commons.io.FileUtils.deleteDirectory(target.toFile());
+                FileUtils.deleteDirectory(target.toFile());
                 LOGGER.info("Deleted instanced copy of world '{}'", levelId);
             } catch (IOException e) {
                 LOGGER.error("Failed to delete instanced copy of world '{}'", levelId, e);
@@ -152,7 +153,7 @@ public class StorageSourceManager {
         try {
             Path instancesDir = Common.TEMP_DIR.resolve("instances").resolve("worlds");
             if (Files.isDirectory(instancesDir)) {
-                org.apache.commons.io.FileUtils.deleteDirectory(instancesDir.toFile());
+                FileUtils.deleteDirectory(instancesDir.toFile());
             }
         } catch (IOException e) {
             LOGGER.error("Failed to delete instanced worlds directory", e);

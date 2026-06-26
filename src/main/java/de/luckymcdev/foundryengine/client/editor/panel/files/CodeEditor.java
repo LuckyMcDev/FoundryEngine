@@ -8,10 +8,7 @@ import imgui.ImGui;
 import imgui.extension.texteditor.TextEditor;
 import imgui.extension.texteditor.TextEditorCoordinates;
 import imgui.extension.texteditor.TextEditorLanguageDefinition;
-import imgui.flag.ImGuiFocusedFlags;
-import imgui.flag.ImGuiInputTextFlags;
-import imgui.flag.ImGuiKey;
-import imgui.flag.ImGuiWindowFlags;
+import imgui.flag.*;
 import imgui.type.ImBoolean;
 import imgui.type.ImInt;
 import imgui.type.ImString;
@@ -21,6 +18,9 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.permissions.PermissionLevel;
 
 import java.util.Collections;
+import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * InGame Code editor. May be replaced with MonacoFx at some point IDK yet.
@@ -220,8 +220,8 @@ public class CodeEditor extends EditorPanel {
     private void renderFindBar() {
         if (!showFind) return;
 
-        ImGui.pushStyleColor(imgui.flag.ImGuiCol.ChildBg,
-                ImGui.getStyle().getColor(imgui.flag.ImGuiCol.FrameBg));
+        ImGui.pushStyleColor(ImGuiCol.ChildBg,
+                ImGui.getStyle().getColor(ImGuiCol.FrameBg));
 
         float barHeight = showReplace
                 ? ImGui.getFrameHeightWithSpacing() * 2 + ImGui.getStyle().getItemSpacingY() * 2 + 6
@@ -352,8 +352,8 @@ public class CodeEditor extends EditorPanel {
         String text = textEditor.getText();
         String newText = matchCase.get()
                 ? text.replace(query, replaceText.get())
-                : text.replaceAll("(?i)" + java.util.regex.Pattern.quote(query),
-                java.util.regex.Matcher.quoteReplacement(replaceText.get()));
+                : text.replaceAll("(?i)" + Pattern.quote(query),
+                Matcher.quoteReplacement(replaceText.get()));
         textEditor.setText(newText);
     }
 
@@ -361,8 +361,8 @@ public class CodeEditor extends EditorPanel {
         if (from < 0 || from >= text.length()) return -1;
         return matchCase.get()
                 ? text.indexOf(query, from)
-                : text.toLowerCase(java.util.Locale.ROOT)
-                  .indexOf(query.toLowerCase(java.util.Locale.ROOT), from);
+                : text.toLowerCase(Locale.ROOT)
+                .indexOf(query.toLowerCase(Locale.ROOT), from);
     }
 
     private int searchReverse(String text, String query, int from) {
@@ -370,8 +370,8 @@ public class CodeEditor extends EditorPanel {
         from = Math.min(from, text.length() - query.length());
         return matchCase.get()
                 ? text.lastIndexOf(query, from)
-                : text.toLowerCase(java.util.Locale.ROOT)
-                  .lastIndexOf(query.toLowerCase(java.util.Locale.ROOT), from);
+                : text.toLowerCase(Locale.ROOT)
+                .lastIndexOf(query.toLowerCase(Locale.ROOT), from);
     }
 
     /**
