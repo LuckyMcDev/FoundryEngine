@@ -1,10 +1,12 @@
 package de.luckymcdev.foundryengine.client.waypoint;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.render.WorldViewMatrix;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.util.ChatIcons;
 import de.luckymcdev.foundryengine.common.util.color.Color;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -12,8 +14,36 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import org.joml.Matrix4f;
+import org.lwjgl.glfw.GLFW;
 
-public class WaypointRenderer {
+public class ClientWaypointManager {
+    public static final KeyMapping PRIMARY_WAYPOINT_KEY = new KeyMapping(
+            "key.foundryengine.primary_waypoint",
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_B,
+            Client.EDITOR_CATEGORY
+    );
+
+    public static final KeyMapping SECONDARY_WAYPOINT_KEY = new KeyMapping(
+            "key.foundryengine.secondary_waypoint",
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_N,
+            Client.EDITOR_CATEGORY
+    );
+
+    public static final KeyMapping REMOVE_WAYPOINT_KEY = new KeyMapping(
+            "key.foundryengine.remove_waypoint",
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_M,
+            Client.EDITOR_CATEGORY
+    );
+    public static final KeyMapping CLEAR_WAYPOINTS_KEY = new KeyMapping(
+            "key.foundryengine.clear_waypoints",
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_COMMA,
+            Client.EDITOR_CATEGORY
+    );
+
     public void renderWaypoints(RenderLevelStageEvent.AfterLevel context) {
         Minecraft mc = Client.getMc();
         if (mc.level == null) return;

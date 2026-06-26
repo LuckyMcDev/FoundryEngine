@@ -5,9 +5,9 @@ import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.panel.files.CodeEditor;
 import de.luckymcdev.foundryengine.client.editor.panel.files.TextureViewerPanel;
+import de.luckymcdev.foundryengine.client.imgui.ImGuiShortcut;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
-import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.exceptions.EngineException;
 import de.luckymcdev.foundryengine.common.network.packets.explorer.ClientBoundFileListPacket;
@@ -63,7 +63,7 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
     public FileExplorerPanel(File rootDir) {
         super(new Builder(Common.id("file_explorer"), "File Explorer")
                 .icon(ImIcons.FA.FA_FILES_O)
-                .shortcut(Shortcut.empty())
+                .shortcut(ImGuiShortcut.empty())
                 .category(PanelCategory.EDITOR_EXPLORER));
         this.rootDir = rootDir;
     }

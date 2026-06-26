@@ -20,9 +20,7 @@ import de.luckymcdev.foundryengine.client.post.PostEffectManager;
 import de.luckymcdev.foundryengine.client.render.MeshRenderer;
 import de.luckymcdev.foundryengine.client.render.obj.ObjModelManager;
 import de.luckymcdev.foundryengine.client.skybox.SkyboxManager;
-import de.luckymcdev.foundryengine.client.util.key.KeyBinding;
-import de.luckymcdev.foundryengine.client.util.key.KeyBindingManager;
-import de.luckymcdev.foundryengine.client.waypoint.WaypointRenderer;
+import de.luckymcdev.foundryengine.client.waypoint.ClientWaypointManager;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.exceptions.UtilityClassException;
 import de.luckymcdev.foundryengine.interfaces.EngineGpuDevice;
@@ -46,7 +44,6 @@ import org.apache.commons.lang3.mutable.MutableFloat;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 import org.jspecify.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -67,61 +64,25 @@ public final class Client {
     public static final Matrix4f FRUSTUM = new Matrix4f();
     public static final MutableFloat DEPTH_FAR = new MutableFloat(65536F);
     public static final MutableFloat DEPTH_NEAR = new MutableFloat(0.05F);
-
     public static final KeyMapping.Category EDITOR_CATEGORY = new KeyMapping.Category(Common.id("editor"));
-    public static final KeyBinding EDITOR_KEY = new KeyBinding(
-            new KeyMapping(
-                    Component.translatable("key.foundryengine.editor").getString(),
-                    InputConstants.Type.KEYSYM,
-                    InputConstants.KEY_F7,
-                    EDITOR_CATEGORY
-            ),
-            () -> {
-            }
-    );
-    public static final KeyBinding MENU_BAR_KEY = new KeyBinding(
-            new KeyMapping(
-                    Component.translatable("key.foundryengine.menu_bar").getString(),
-                    InputConstants.Type.KEYSYM,
-                    InputConstants.KEY_F6,
-                    EDITOR_CATEGORY
-            ),
-            () -> {
-            }
-    );
-    public static final KeyMapping PRIMARY_WAYPOINT_KEY = new KeyMapping(
-            "key.foundryengine.primary_waypoint",
+    public static final KeyMapping EDITOR_KEY = new KeyMapping(
+            Component.translatable("key.foundryengine.editor").getString(),
             InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_B,
+            InputConstants.KEY_F7,
             EDITOR_CATEGORY
     );
-
-    public static final KeyMapping SECONDARY_WAYPOINT_KEY = new KeyMapping(
-            "key.foundryengine.secondary_waypoint",
+    public static final KeyMapping MENU_BAR_KEY = new KeyMapping(
+            Component.translatable("key.foundryengine.menu_bar").getString(),
             InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_N,
-            EDITOR_CATEGORY
-    );
-
-    public static final KeyMapping REMOVE_WAYPOINT_KEY = new KeyMapping(
-            "key.foundryengine.remove_waypoint",
-            InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_M,
-            EDITOR_CATEGORY
-    );
-    public static final KeyMapping CLEAR_WAYPOINTS_KEY = new KeyMapping(
-            "key.foundryengine.clear_waypoints",
-            InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_COMMA,
+            InputConstants.KEY_F6,
             EDITOR_CATEGORY
     );
     public static final Logger LOGGER = LogUtils.getLogger();
     private static final ImGuiManager IMGUI_MANAGER = new ImGuiManager();
     private static final MainMenu MAIN_MENU = new MainMenu();
     private static final EditorManager EDITOR_MANAGER = new EditorManager();
-    private static final KeyBindingManager KEY_BINDING_MANAGER = new KeyBindingManager();
     private static final ParticleManager PARTICLE_MANAGER = new ParticleManager();
-    private static final WaypointRenderer WAYPOINT_RENDERER = new WaypointRenderer();
+    private static final ClientWaypointManager WAYPOINT_RENDERER = new ClientWaypointManager();
     private static final AreaRenderer AREA_RENDERER = new AreaRenderer();
     private static final MeshRenderer MESH_RENDERER = new MeshRenderer();
     private static final ObjModelManager OBJ_MODEL_MANAGER = new ObjModelManager();
@@ -245,13 +206,6 @@ public final class Client {
     }
 
     /**
-     * Returns the key binding manager.
-     */
-    public static KeyBindingManager getKeyBindingManager() {
-        return KEY_BINDING_MANAGER;
-    }
-
-    /**
      * Returns the particle manager.
      */
     public static ParticleManager getParticleManager() {
@@ -324,7 +278,7 @@ public final class Client {
     /**
      * Returns the waypoint renderer.
      */
-    public static WaypointRenderer getWaypointRenderer() {
+    public static ClientWaypointManager getWaypointRenderer() {
         return WAYPOINT_RENDERER;
     }
 
