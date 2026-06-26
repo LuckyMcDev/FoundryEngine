@@ -1,37 +1,37 @@
-package de.luckymcdev.foundryengine.client.util.key;
+package de.luckymcdev.foundryengine.client.imgui;
 
 import imgui.ImGui;
 import imgui.flag.ImGuiKey;
 
-public record Shortcut(int key, boolean ctrl, boolean shift, boolean alt) {
+public record ImGuiShortcut(int key, boolean ctrl, boolean shift, boolean alt) {
 
     // Static factories for clean construction
-    public static Shortcut of(int key) {
-        return new Shortcut(key, false, false, false);
+    public static ImGuiShortcut of(int key) {
+        return new ImGuiShortcut(key, false, false, false);
     }
 
-    public static Shortcut ctrl(int key) {
-        return new Shortcut(key, true, false, false);
+    public static ImGuiShortcut ctrl(int key) {
+        return new ImGuiShortcut(key, true, false, false);
     }
 
-    public static Shortcut shift(int key) {
-        return new Shortcut(key, false, true, false);
+    public static ImGuiShortcut shift(int key) {
+        return new ImGuiShortcut(key, false, true, false);
     }
 
-    public static Shortcut alt(int key) {
-        return new Shortcut(key, false, false, true);
+    public static ImGuiShortcut alt(int key) {
+        return new ImGuiShortcut(key, false, false, true);
     }
 
-    public static Shortcut ctrlShift(int key) {
-        return new Shortcut(key, true, true, false);
+    public static ImGuiShortcut ctrlShift(int key) {
+        return new ImGuiShortcut(key, true, true, false);
     }
 
-    public static Shortcut ctrlAlt(int key) {
-        return new Shortcut(key, true, false, true);
+    public static ImGuiShortcut ctrlAlt(int key) {
+        return new ImGuiShortcut(key, true, false, true);
     }
 
-    public static Shortcut empty() {
-        return new Shortcut(ImGuiKey.None, false, false, false);
+    public static ImGuiShortcut empty() {
+        return new ImGuiShortcut(ImGuiKey.None, false, false, false);
     }
 
     /**

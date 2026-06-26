@@ -2,7 +2,7 @@ package de.luckymcdev.foundryengine.client.editor.menu;
 
 import de.luckymcdev.foundryengine.client.editor.EditorManager;
 import de.luckymcdev.foundryengine.client.editor.panel.Panel;
-import de.luckymcdev.foundryengine.client.util.key.Shortcut;
+import de.luckymcdev.foundryengine.client.imgui.ImGuiShortcut;
 
 public class ShortcutHandler implements MenuSection {
     private final EditorManager editor;
@@ -24,8 +24,8 @@ public class ShortcutHandler implements MenuSection {
     }
 
     private void handlePanelShortcut(Panel panel) {
-        Shortcut shortcut = panel.getShortcut();
-        if (shortcut != null && shortcut.isPressed()) {
+        ImGuiShortcut imGuiShortcut = panel.getShortcut();
+        if (imGuiShortcut.isPressed()) {
             editor.togglePanel(panel);
         }
     }

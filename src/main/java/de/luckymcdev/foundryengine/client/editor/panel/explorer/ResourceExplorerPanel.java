@@ -5,9 +5,9 @@ import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.panel.files.CodeEditor;
 import de.luckymcdev.foundryengine.client.editor.panel.files.TextureViewerPanel;
+import de.luckymcdev.foundryengine.client.imgui.ImGuiShortcut;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
-import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.server.Server;
 import imgui.ImGui;
@@ -49,7 +49,7 @@ public class ResourceExplorerPanel extends AbstractExplorerPanel {
     public ResourceExplorerPanel() {
         super(new Builder(Common.id("resource_browser"), "Resource Browser")
                 .icon(ImIcons.FA.FA_IMAGE)
-                .shortcut(Shortcut.empty())
+                .shortcut(ImGuiShortcut.empty())
                 .category(PanelCategory.EDITOR_EXPLORER));
     }
 

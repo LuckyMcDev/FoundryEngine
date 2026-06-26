@@ -4,9 +4,9 @@ import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.config.ImGuiWindowType;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.config.PanelStyle;
+import de.luckymcdev.foundryengine.client.imgui.ImGuiShortcut;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcon;
-import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import imgui.ImGui;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImBoolean;
@@ -19,7 +19,7 @@ public class Panel {
     public final Identifier id;
     public final String label;
     public final @Nullable ImIcon icon;
-    public final Shortcut shortcut;
+    public final ImGuiShortcut imGuiShortcut;
     public boolean temporary;
     public boolean menuBar;
     public boolean unsaved;
@@ -33,7 +33,7 @@ public class Panel {
         this.id = builder.id;
         this.label = builder.label;
         this.icon = builder.icon;
-        this.shortcut = builder.shortcut;
+        this.imGuiShortcut = builder.imGuiShortcut;
         this.category = builder.category;
         this.temporary = builder.temporary;
         this.menuBar = builder.menuBar;
@@ -111,8 +111,8 @@ public class Panel {
         return ImGuiWindowFlags.None;
     }
 
-    public Shortcut getShortcut() {
-        return shortcut;
+    public ImGuiShortcut getShortcut() {
+        return imGuiShortcut;
     }
 
     public final void open() {
@@ -215,7 +215,7 @@ public class Panel {
         private final Identifier id;
         private final String label;
         private @Nullable ImIcon icon;
-        private Shortcut shortcut = Shortcut.empty();
+        private ImGuiShortcut imGuiShortcut = ImGuiShortcut.empty();
         private PanelCategory category = PanelCategory.OPEN;
         private boolean temporary;
         private boolean menuBar;
@@ -232,8 +232,8 @@ public class Panel {
             return this;
         }
 
-        public Builder shortcut(Shortcut shortcut) {
-            this.shortcut = shortcut;
+        public Builder shortcut(ImGuiShortcut imGuiShortcut) {
+            this.imGuiShortcut = imGuiShortcut;
             return this;
         }
 

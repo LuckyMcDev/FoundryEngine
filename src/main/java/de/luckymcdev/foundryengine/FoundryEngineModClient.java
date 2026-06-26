@@ -23,7 +23,7 @@ import de.luckymcdev.foundryengine.client.ext.ModPathBroadcaster;
 import de.luckymcdev.foundryengine.client.icons.ScreenIconExporter;
 import de.luckymcdev.foundryengine.client.render.EngineSceneDepth;
 import de.luckymcdev.foundryengine.client.render.WorldViewMatrix;
-import de.luckymcdev.foundryengine.client.util.key.RegisterKeyBindingEvent;
+import de.luckymcdev.foundryengine.client.waypoint.ClientWaypointManager;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.network.packets.BundleHashPacket;
 import de.luckymcdev.foundryengine.common.network.packets.editor.WaypointPacket;
@@ -64,7 +64,6 @@ public class FoundryEngineModClient {
         modBus.addListener(this::onRegisterDebugEntry);
         modBus.addListener(this::onRegisterDebugRenderers);
 
-        BUS.addListener(this::onRegisterKeyBinding);
         BUS.addListener(this::onRegisterPanels);
         BUS.addListener(this::onClientTickPost);
         BUS.addListener(this::onRenderLevel);
@@ -127,13 +126,12 @@ public class FoundryEngineModClient {
     }
 
     private void onRegisterKeyMapping(RegisterKeyMappingsEvent event) {
-        BUS.post(new RegisterKeyBindingEvent(Client.getKeyBindingManager()));
-        Client.getKeyBindingManager().getKeyBindings().forEach(kb -> event.register(kb.mapping()));
         event.registerCategory(Client.EDITOR_CATEGORY);
-        event.register(Client.PRIMARY_WAYPOINT_KEY);
-        event.register(Client.SECONDARY_WAYPOINT_KEY);
-        event.register(Client.REMOVE_WAYPOINT_KEY);
-        event.register(Client.CLEAR_WAYPOINTS_KEY);
+        event.register(Client.EDITOR_KEY);
+        event.register(ClientWaypointManager.PRIMARY_WAYPOINT_KEY);
+        event.register(ClientWaypointManager.SECONDARY_WAYPOINT_KEY);
+        event.register(ClientWaypointManager.REMOVE_WAYPOINT_KEY);
+        event.register(ClientWaypointManager.CLEAR_WAYPOINTS_KEY);
     }
 
     private void onRegisterDebugEntry(RegisterDebugEntriesEvent event) {
@@ -142,11 +140,6 @@ public class FoundryEngineModClient {
     }
 
     private void onRegisterDebugRenderers(RegisterDebugRenderersEvent event) {
-    }
-
-    private void onRegisterKeyBinding(RegisterKeyBindingEvent event) {
-        event.register(Client.EDITOR_KEY);
-        event.register(Client.MENU_BAR_KEY);
     }
 
     private void onRegisterPanels(RegisterPanelEvent event) {
@@ -209,7 +202,6 @@ public class FoundryEngineModClient {
         Client.getEditorManager().handleTick();
         Client.getCutsceneManager().clientTick();
         Client.getEditorController().clientTick();
-        Client.getKeyBindingManager().clientTick();
         handleWaypointKeys();
 
         if (Minecraft.getInstance().level instanceof ClientLevel clientLevel) {
@@ -241,7 +233,7 @@ public class FoundryEngineModClient {
     private void handleWaypointKeys() {
         Vec3i targetedCoords = Client.getBlockHitOrNull();
 
-        while (Client.PRIMARY_WAYPOINT_KEY.consumeClick()) {
+        while (ClientWaypointManager.PRIMARY_WAYPOINT_KEY.consumeClick()) {
             if (targetedCoords != null) {
                 ClientPacketDistributor.sendToServer(WaypointPacket.add(
                         targetedCoords.getX(), targetedCoords.getY(), targetedCoords.getZ(),
@@ -250,7 +242,7 @@ public class FoundryEngineModClient {
             }
         }
 
-        while (Client.SECONDARY_WAYPOINT_KEY.consumeClick()) {
+        while (ClientWaypointManager.SECONDARY_WAYPOINT_KEY.consumeClick()) {
             if (targetedCoords != null) {
                 ClientPacketDistributor.sendToServer(WaypointPacket.add(
                         targetedCoords.getX(), targetedCoords.getY(), targetedCoords.getZ(),
@@ -259,7 +251,7 @@ public class FoundryEngineModClient {
             }
         }
 
-        while (Client.REMOVE_WAYPOINT_KEY.consumeClick()) {
+        while (ClientWaypointManager.REMOVE_WAYPOINT_KEY.consumeClick()) {
             if (targetedCoords != null) {
                 ClientPacketDistributor.sendToServer(WaypointPacket.remove(
                         targetedCoords.getX(), targetedCoords.getY(), targetedCoords.getZ()
@@ -267,7 +259,7 @@ public class FoundryEngineModClient {
             }
         }
 
-        while (Client.CLEAR_WAYPOINTS_KEY.consumeClick()) {
+        while (ClientWaypointManager.CLEAR_WAYPOINTS_KEY.consumeClick()) {
             ClientPacketDistributor.sendToServer(WaypointPacket.clear());
         }
     }

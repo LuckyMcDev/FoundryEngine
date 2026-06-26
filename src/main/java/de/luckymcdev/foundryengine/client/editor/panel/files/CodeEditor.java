@@ -2,8 +2,8 @@ package de.luckymcdev.foundryengine.client.editor.panel.files;
 
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
+import de.luckymcdev.foundryengine.client.imgui.ImGuiShortcut;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
-import de.luckymcdev.foundryengine.client.util.key.Shortcut;
 import imgui.ImGui;
 import imgui.extension.texteditor.TextEditor;
 import imgui.extension.texteditor.TextEditorCoordinates;
@@ -57,7 +57,7 @@ public class CodeEditor extends EditorPanel {
     public CodeEditor(Identifier id, String fileName, String source) {
         super(new Builder(id, " Editor: " + fileName)
                 .icon(ImIcons.FA.FA_EDIT)
-                .shortcut(Shortcut.empty())
+                .shortcut(ImGuiShortcut.empty())
                 .category(PanelCategory.EDITOR_FILES)
                 .menuBar(true));
         this.fileName = fileName;
