@@ -22,7 +22,7 @@ bundleName/
 │       ├── recipes/
 │       ├── loot_tables/
 │       └── tags/
-└── blueprints/                  # Blueprint .febp files (visual scripting)
+
 ```
 
 ## Bundle Manifest

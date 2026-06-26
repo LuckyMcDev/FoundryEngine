@@ -1,8 +1,8 @@
 # Events
 
-FoundryEngine exposes a rich event system for reacting to nearly everything in the game. Events can be subscribed to from Groovy scripts, Blueprints, or Java addons.
+FoundryEngine exposes a rich event system for reacting to nearly everything in the game. Events can be subscribed to from Groovy scripts or Java addons.
 
-All API events are in package `de.luckymcdev.foundryengine.api.event` unless noted otherwise.
+All API events are in package `de.luckymcdev.foundryengine.common.event` unless noted otherwise.
 
 ## Architecture
 
@@ -11,8 +11,7 @@ NeoForge Event Bus
     ↕ (listener forwards)
 FoundryEngine EventGroupHolder
     ↕ (dispatches to)
-    ├── Java/Groovy callbacks (EventCallback<T>)
-    └── Blueprint visual scripting nodes
+    └── Java/Groovy callbacks (EventCallback<T>)
 ```
 
 Each API event class contains:
@@ -32,9 +31,7 @@ BlockEvents.broken {
 
 ### EventGroupHolder
 
-Wraps an `EventGroup` (thread-safe list of callbacks) plus an optional Blueprint node ID and context mapper. When an event fires it:
-1. Calls all registered Java/Groovy `EventCallback` listeners sequentially
-2. If a Blueprint node ID is set, maps the event to a `Map<String, Object>` context and executes matching Blueprint graphs
+Wraps an `EventGroup` (thread-safe list of callbacks). When an event fires it calls all registered Java/Groovy `EventCallback` listeners sequentially.
 
 ### What Data Does Each Event Expose?
 
@@ -66,9 +63,9 @@ BundleEvents.custom(LivingDeathEvent.class, {
 
 Package: `de.luckymcdev.foundryengine.common.event.AreaEvents`
 
-| Event | Description | Blueprint Node |
-|---|---|---|
-| `register(cb)` | Called for every `ServerLevel` as it loads | — |
+| Event | Description |
+|---|---|
+| `register(cb)` | Called for every `ServerLevel` as it loads |
 
 Fires when server levels load, providing a hook to create areas. Area runtime behavior uses module interfaces (`AreaTickModule`, `AreaEnterModule`, `AreaLeaveModule`, `AreaBlockModule`, `AreaRenderModule`).
 
@@ -76,17 +73,17 @@ Fires when server levels load, providing a hook to create areas. Area runtime be
 
 ## BlockEvents
 
-Package: `de.luckymcdev.foundryengine.api.event.BlockEvents`
+Package: `de.luckymcdev.foundryengine.common.event.BlockEvents`
 
-| Event | Description | Blueprint Node |
-|---|---|---|
-| `broken(cb)` | A block is broken | `EVENT_BLOCK_BROKEN` |
-| `placed(cb)` | A block is placed | `EVENT_BLOCK_PLACED` |
-| `neighborNotify(cb)` | Block neighbor update | — |
-| `leftClicked(cb)` | Player left-clicks a block | `EVENT_BLOCK_LEFT_CLICKED` |
-| `rightClicked(cb)` | Player right-clicks a block | `EVENT_BLOCK_RIGHT_CLICKED` |
-| `farmlandTrampled(cb)` | Farmland is trampled | `EVENT_FARMLAND_TRAMPLED` |
-| `modification(cb)` | Modify block behavior post-registration | — |
+| Event | Description |
+|---|---|
+| `broken(cb)` | A block is broken |
+| `placed(cb)` | A block is placed |
+| `neighborNotify(cb)` | Block neighbor update |
+| `leftClicked(cb)` | Player left-clicks a block |
+| `rightClicked(cb)` | Player right-clicks a block |
+| `farmlandTrampled(cb)` | Farmland is trampled |
+| `modification(cb)` | Modify block behavior post-registration |
 
 > **⚠️ BlockModificationEvent is unstable.** The modification API has known issues and may not produce the expected results in all cases. Use with caution.
 
@@ -100,20 +97,20 @@ The `it` parameter exposes: `hasCollision`, `explosionResistance`, `lightEmissio
 
 ## BundleEvents
 
-Package: `de.luckymcdev.foundryengine.api.event.BundleEvents`
+Package: `de.luckymcdev.foundryengine.common.event.BundleEvents`
 
 Core lifecycle events. **The most important event class for bundle developers.**
 
-| Event | Description | Blueprint Node |
-|---|---|---|
-| `registry(cb)` | Register items, blocks, recipes, sounds, particles | `EVENT_REGISTRY` |
-| `vanillaGame(cb)` | Vanilla game events (advancement, etc.) | `EVENT_VANILLA_GAME` |
-| `commonSetup(cb)` | FML common setup phase | `EVENT_COMMON_SETUP` |
-| `clientSetup(cb)` | FML client-only setup | `EVENT_CLIENT_SETUP` |
-| `dedicatedServerSetup(cb)` | Dedicated server setup | `EVENT_DEDICATED_SERVER_SETUP` |
-| `postInit(cb)` | After all mods initialize | `EVENT_POST_INIT` |
-| `serverAboutToStart(cb)` | Server about to start | `EVENT_SERVER_ABOUT_TO_START` |
-| `dataGen(cb)` | Bundle data generation | `EVENT_DATA_GEN` |
+| Event | Description |
+|---|---|
+| `registry(cb)` | Register items, blocks, recipes, sounds, particles |
+| `vanillaGame(cb)` | Vanilla game events (advancement, etc.) |
+| `commonSetup(cb)` | FML common setup phase |
+| `clientSetup(cb)` | FML client-only setup |
+| `dedicatedServerSetup(cb)` | Dedicated server setup |
+| `postInit(cb)` | After all mods initialize |
+| `serverAboutToStart(cb)` | Server about to start |
+| `dataGen(cb)` | Bundle data generation |
 
 ```groovy
 BundleEvents.registry {
@@ -143,34 +140,34 @@ BundleEvents.custom(LivingDeathEvent.class, {
 
 ## ClientEvents
 
-Package: `de.luckymcdev.foundryengine.api.event.ClientEvents`
+Package: `de.luckymcdev.foundryengine.common.event.ClientEvents`
 
 Only fires on the **client side**.
 
-| Event | Description | Blueprint Node |
-|---|---|---|
-| `tick(cb)` | End of client tick | `EVENT_CLIENT_TICK` |
-| `stopped(cb)` | Client fully stopped | `EVENT_CLIENT_STOPPED` |
-| `stopping(cb)` | Client is stopping | `EVENT_CLIENT_STOPPING` |
-| `chat(cb)` | Client sending a chat message | `EVENT_CHAT_MESSAGE` |
-| `keyMappings(cb)` | Register key mappings | — |
-| `renderGui(cb)` | After GUI is rendered | `EVENT_RENDER_GUI` |
-| `renderGuiLayer(cb)` | After a GUI layer is rendered | — |
-| `renderHand(cb)` | Hand rendering | — |
-| `renderAfterLevel(cb)` | After level rendering | — |
-| `loggedIn(cb)` | Client logged into a server | `EVENT_CLIENT_LOGGED_IN` |
-| `loggedOut(cb)` | Client logged out | `EVENT_CLIENT_LOGGED_OUT` |
+| Event | Description |
+|---|---|
+| `tick(cb)` | End of client tick |
+| `stopped(cb)` | Client fully stopped |
+| `stopping(cb)` | Client is stopping |
+| `chat(cb)` | Client sending a chat message |
+| `keyMappings(cb)` | Register key mappings |
+| `renderGui(cb)` | After GUI is rendered |
+| `renderGuiLayer(cb)` | After a GUI layer is rendered |
+| `renderHand(cb)` | Hand rendering |
+| `renderAfterLevel(cb)` | After level rendering |
+| `loggedIn(cb)` | Client logged into a server |
+| `loggedOut(cb)` | Client logged out |
 
 ---
 
 ## CommandEvents
 
-Package: `de.luckymcdev.foundryengine.api.event.CommandEvents`
+Package: `de.luckymcdev.foundryengine.common.event.CommandEvents`
 
-| Event | Description | Blueprint Node |
-|---|---|---|
-| `register(cb)` | Register server commands | `EVENT_COMMANDS` |
-| `registerClient(cb)` | Register client-side commands | `EVENT_COMMANDS_CLIENT` |
+| Event | Description |
+|---|---|
+| `register(cb)` | Register server commands |
+| `registerClient(cb)` | Register client-side commands |
 
 ```groovy
 CommandEvents.register {
@@ -188,16 +185,16 @@ CommandEvents.register {
 
 ## EntityEvents
 
-Package: `de.luckymcdev.foundryengine.api.event.EntityEvents`
+Package: `de.luckymcdev.foundryengine.common.event.EntityEvents`
 
-| Event | Description | Blueprint Node |
-|---|---|---|
-| `joinLevel(cb)` | Entity enters a level | `EVENT_ENTITY_JOIN_LEVEL` |
-| `death(cb)` | Living entity dies | `EVENT_LIVING_DEATH` |
-| `drops(cb)` | Entity drops items on death | `EVENT_LIVING_DROPS` |
-| `hurt(cb)` | Entity takes damage (post) | `EVENT_LIVING_HURT` |
-| `spawned(cb)` | Entity spawned into world | `EVENT_ENTITY_JOIN_LEVEL` |
-| `checkSpawn(cb)` | Check entity spawn conditions | `EVENT_ENTITY_JOIN_LEVEL` |
+| Event | Description |
+|---|---|
+| `joinLevel(cb)` | Entity enters a level |
+| `death(cb)` | Living entity dies |
+| `drops(cb)` | Entity drops items on death |
+| `hurt(cb)` | Entity takes damage (post) |
+| `spawned(cb)` | Entity spawned into world |
+| `checkSpawn(cb)` | Check entity spawn conditions |
 
 ---
 
@@ -207,33 +204,33 @@ Package: `de.luckymcdev.foundryengine.common.event.GameEvents`
 
 Game session lifecycle events.
 
-| Event | Description | Blueprint Node |
-|---|---|---|
-| `onStarting(cb)` | Game session starting | — |
-| `onStarted(cb)` | Game session started | — |
-| `onStopping(cb)` | Game session stopping | — |
-| `onStopped(cb)` | Game session stopped | — |
+| Event | Description |
+|---|---|
+| `onStarting(cb)` | Game session starting |
+| `onStarted(cb)` | Game session started |
+| `onStopping(cb)` | Game session stopping |
+| `onStopped(cb)` | Game session stopped |
 
 ---
 
 ## ItemEvents
 
-Package: `de.luckymcdev.foundryengine.api.event.ItemEvents`
+Package: `de.luckymcdev.foundryengine.common.event.ItemEvents`
 
-| Event | Description | Blueprint Node |
-|---|---|---|
-| `pickedUp(cb)` | Item picked up by player | `EVENT_ITEM_PICKUP` |
-| `destroyed(cb)` | Item is destroyed (used up) | `EVENT_ITEM_DESTROY` |
-| `rightClicked(cb)` | Player right-clicks with item | `EVENT_ITEM_RIGHT_CLICK` |
-| `crafted(cb)` | Item crafted | `EVENT_ITEM_CRAFTED` |
-| `dropped(cb)` | Item thrown/dropped | `EVENT_ITEM_DROPPED` |
-| `foodEaten(cb)` | Food consumption finished | `EVENT_ITEM_FOOD_EATEN` |
-| `smelted(cb)` | Item smelted in furnace | `EVENT_ITEM_SMELTED` |
-| `dynamicTooltips(cb)` | Item tooltip rendering | `EVENT_ITEM_TOOLTIP` |
-| `entityInteracted(cb)` | Player interacts entity with item | `EVENT_ITEM_ENTITY_INTERACT` |
-| `firstLeftClicked(cb)` | Left-click on empty space | `EVENT_ITEM_FIRST_LEFT_CLICK` |
-| `firstRightClicked(cb)` | Right-click on empty space | `EVENT_ITEM_FIRST_RIGHT_CLICK` |
-| `modification(cb)` | Modify item behavior post-registration | — |
+| Event | Description |
+|---|---|
+| `pickedUp(cb)` | Item picked up by player |
+| `destroyed(cb)` | Item is destroyed (used up) |
+| `rightClicked(cb)` | Player right-clicks with item |
+| `crafted(cb)` | Item crafted |
+| `dropped(cb)` | Item thrown/dropped |
+| `foodEaten(cb)` | Food consumption finished |
+| `smelted(cb)` | Item smelted in furnace |
+| `dynamicTooltips(cb)` | Item tooltip rendering |
+| `entityInteracted(cb)` | Player interacts entity with item |
+| `firstLeftClicked(cb)` | Left-click on empty space |
+| `firstRightClicked(cb)` | Right-click on empty space |
+| `modification(cb)` | Modify item behavior post-registration |
 
 > **⚠️ ItemModificationEvent is unstable.** The modification API has known issues and may not produce the expected results in all cases. Use with caution.
 
@@ -247,72 +244,72 @@ The `it` parameter exposes: `setMaxStackSize`, `setMaxDamage`, `setUnbreakable`,
 
 ## LevelEvents
 
-Package: `de.luckymcdev.foundryengine.api.event.LevelEvents`
+Package: `de.luckymcdev.foundryengine.common.event.LevelEvents`
 
-| Event | Description | Blueprint Node |
-|---|---|---|
-| `load(cb)` | Level/dimension is loaded | `EVENT_LEVEL_LOAD` |
-| `unload(cb)` | Level/dimension is unloaded | `EVENT_LEVEL_UNLOAD` |
-| `save(cb)` | Level data is saved | `EVENT_LEVEL_SAVE` |
-| `tick(cb)` | End of level tick | `EVENT_LEVEL_TICK` |
-| `beforeExplosion(cb)` | Before an explosion detonates | `EVENT_BEFORE_EXPLOSION` |
-| `afterExplosion(cb)` | After an explosion detonates | `EVENT_AFTER_EXPLOSION` |
+| Event | Description |
+|---|---|
+| `load(cb)` | Level/dimension is loaded |
+| `unload(cb)` | Level/dimension is unloaded |
+| `save(cb)` | Level data is saved |
+| `tick(cb)` | End of level tick |
+| `beforeExplosion(cb)` | Before an explosion detonates |
+| `afterExplosion(cb)` | After an explosion detonates |
 
 ---
 
 ## NetworkEvents
 
-Package: `de.luckymcdev.foundryengine.api.event.NetworkEvents`
+Package: `de.luckymcdev.foundryengine.common.event.NetworkEvents`
 
-| Event | Description | Blueprint Node |
-|---|---|---|
-| `login(cb)` | Player network login | `EVENT_NETWORK_LOGIN` |
-| `logout(cb)` | Player network logout | `EVENT_NETWORK_LOGOUT` |
+| Event | Description |
+|---|---|
+| `login(cb)` | Player network login |
+| `logout(cb)` | Player network logout |
 
 ---
 
 ## PlayerEvents
 
-Package: `de.luckymcdev.foundryengine.api.event.PlayerEvents`
+Package: `de.luckymcdev.foundryengine.common.event.PlayerEvents`
 
-| Event | Description | Blueprint Node |
-|---|---|---|
-| `loggedIn(cb)` | Player logged in | `EVENT_PLAYER_LOGGED_IN` |
-| `loggedOut(cb)` | Player logged out | `EVENT_PLAYER_LOGGED_OUT` |
-| `tick(cb)` | End of player tick | `EVENT_PLAYER_TICK` |
-| `chat(cb)` | Player sends chat message | `EVENT_PLAYER_CHAT` |
-| `advancement(cb)` | Player earns advancement | `EVENT_PLAYER_ADVANCEMENT` |
-| `chestClosed(cb)` | Player closes a container | `EVENT_CHEST_CLOSED` |
-| `chestOpened(cb)` | Player opens a container | `EVENT_CHEST_OPENED` |
-| `respawned(cb)` | Player respawns | `EVENT_PLAYER_RESPAWNED` |
-| `decorateChat(cb)` | Decorate received chat messages | `EVENT_DECORATE_CHAT` |
+| Event | Description |
+|---|---|
+| `loggedIn(cb)` | Player logged in |
+| `loggedOut(cb)` | Player logged out |
+| `tick(cb)` | End of player tick |
+| `chat(cb)` | Player sends chat message |
+| `advancement(cb)` | Player earns advancement |
+| `chestClosed(cb)` | Player closes a container |
+| `chestOpened(cb)` | Player opens a container |
+| `respawned(cb)` | Player respawns |
+| `decorateChat(cb)` | Decorate received chat messages |
 
 ---
 
 ## RecipeEvents
 
-Package: `de.luckymcdev.foundryengine.api.event.RecipeEvents`
+Package: `de.luckymcdev.foundryengine.common.event.RecipeEvents`
 
-| Event | Description | Blueprint Node |
-|---|---|---|
-| `recipesReceived(cb)` | Client received recipe list | `EVENT_RECIPE_VIEWER_UPDATED` |
-| `modifyRecipes(cb)` | Modify recipe JSONs at reload | — |
+| Event | Description |
+|---|---|
+| `recipesReceived(cb)` | Client received recipe list |
+| `modifyRecipes(cb)` | Modify recipe JSONs at reload |
 
 ---
 
 ## ServerEvents
 
-Package: `de.luckymcdev.foundryengine.api.event.ServerEvents`
+Package: `de.luckymcdev.foundryengine.common.event.ServerEvents`
 
-| Event | Description | Blueprint Node |
-|---|---|---|
-| `aboutToStart(cb)` | Server about to start | `EVENT_SERVER_ABOUT_TO_START` |
-| `started(cb)` | Server has started | `EVENT_SERVER_STARTED` |
-| `starting(cb)` | Server is starting | `EVENT_SERVER_STARTING` |
-| `stopped(cb)` | Server has stopped | `EVENT_SERVER_STOPPED` |
-| `stopping(cb)` | Server is stopping | `EVENT_SERVER_STOPPING` |
-| `tick(cb)` | End of server tick | `EVENT_SERVER_TICK` |
-| `tags(cb)` | Game tags were updated/reloaded | `EVENT_SERVER_TAGS` |
+| Event | Description |
+|---|---|
+| `aboutToStart(cb)` | Server about to start |
+| `started(cb)` | Server has started |
+| `starting(cb)` | Server is starting |
+| `stopped(cb)` | Server has stopped |
+| `stopping(cb)` | Server is stopping |
+| `tick(cb)` | End of server tick |
+| `tags(cb)` | Game tags were updated/reloaded |
 
 ---
 
@@ -320,9 +317,9 @@ Package: `de.luckymcdev.foundryengine.api.event.ServerEvents`
 
 Package: `de.luckymcdev.foundryengine.common.event.SlotEvents`
 
-| Event | Description | Blueprint Node |
-|---|---|---|
-| `modification(cb)` | Container menu opened or screen initialized | — |
+| Event | Description |
+|---|---|
+| `modification(cb)` | Container menu opened or screen initialized |
 
 Fired with `AbstractContainerMenu` when a container is opened or a screen initializes.
 
@@ -334,12 +331,27 @@ Package: `de.luckymcdev.foundryengine.common.event.StageEvents`
 
 Game stage progression events.
 
-| Event | Description | Blueprint Node |
-|---|---|---|
-| `adding(cb)` | Before a stage is added (cancellable) | — |
-| `removing(cb)` | Before a stage is removed (cancellable) | — |
-| `added(cb)` | After a stage has been added | — |
-| `removed(cb)` | After a stage has been removed | — |
+| Event | Description |
+|---|---|
+| `adding(cb)` | Before a stage is added (cancellable) |
+| `removing(cb)` | Before a stage is removed (cancellable) |
+| `added(cb)` | After a stage has been added |
+| `removed(cb)` | After a stage has been removed |
+
+---
+
+## DialogueEvents
+
+Package: `de.luckymcdev.foundryengine.common.event.DialogueEvents`
+
+Dialogue tree traversal events.
+
+| Event | Description |
+|---|---|
+| `onStarted(cb)` | Dialogue started for a player |
+| `onAdvanced(cb)` | Dialogue advanced to next node |
+| `onOptionSelected(cb)` | Player selected an option |
+| `onEnded(cb)` | Dialogue ended |
 
 ---
 
@@ -348,7 +360,7 @@ Game stage progression events.
 ```groovy
 package mybundle
 
-import de.luckymcdev.foundryengine.api.event.*
+import de.luckymcdev.foundryengine.common.event.*
 
 class Entrypoint implements BundleEntrypoint {
     @Override
@@ -376,7 +388,7 @@ class Entrypoint implements BundleEntrypoint {
 
 ## Internal / Addon Events
 
-These events are not exposed via the `api.event` package but are available for Java addon developers using NeoForge's event bus directly.
+These events are available for Java addon developers using NeoForge's event bus directly.
 
 ### RegisterPanelEvent
 
@@ -401,19 +413,6 @@ Package: `de.luckymcdev.foundryengine.client.event.RegisterRenderingStuffEvent`
 @SubscribeEvent
 public void onRegisterRendering(RegisterRenderingStuffEvent event) {
     ResourceManager manager = event.getResourceManager();
-}
-```
-
-### RegisterKeyBindingEvent
-
-Package: `de.luckymcdev.foundryengine.client.util.key.RegisterKeyBindingEvent`
-
-Fired to register custom key bindings with the engine's key binding manager.
-
-```java
-@SubscribeEvent
-public void onRegisterKeyBindings(RegisterKeyBindingEvent event) {
-    event.register(new KeyBinding("key.mybind", GLFW.GLFW_KEY_P, "My Mod"));
 }
 ```
 

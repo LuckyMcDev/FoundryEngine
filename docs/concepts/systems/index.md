@@ -4,11 +4,7 @@ FoundryEngine provides a collection of game-engine-style systems that run alongs
 
 ## Editor System
 
-- [In-Game Editor](editor) — Dear ImGui-based dockable panels, blueprint editor, cutscene editor, in-world editing, theming
-
-## Visual Scripting
-
-- [Blueprints](blueprints) — Node-based visual scripting with `.febp` files and a full JSON schema
+- [In-Game Editor](editor) — Dear ImGui-based dockable panels, cutscene editor, in-world editing, theming
 
 ## Camera & Cinematics
 
@@ -33,6 +29,10 @@ FoundryEngine provides a collection of game-engine-style systems that run alongs
 - [Custom Particles](particles) — Keyframe-driven particle animation system
 - [Post-Processing](post-processing) — Priority-based shader effects with fade transitions
 - [Mesh Rendering & OBJ](mesh-rendering) — Custom mesh rendering engine, OBJ model loading, and pipeline system
+
+## Dialogue
+
+- [Dialogue System](dialogue) — Branching NPC dialogue trees with conditions, actions, and display modes
 
 ## Utilities
 

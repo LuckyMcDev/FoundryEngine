@@ -28,6 +28,6 @@ The bundle data generation system automatically creates assets and data (models,
 
 ## Mixin Architecture
 
-Over 50 mixin classes that patch Minecraft's internals to power FoundryEngine features — from rendering and input to world/level management and UI.
+Over 40 mixin classes that patch Minecraft's internals to power FoundryEngine features — from rendering and input to world/level management and UI.
 
 [Read more →](mixins)

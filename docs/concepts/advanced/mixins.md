@@ -1,6 +1,6 @@
 # Mixin Architecture
 
-FoundryEngine uses over 50 mixin classes to inject hooks into Minecraft's core systems. These patches provide the foundation for all engine features — from rendering and input to world management and UI.
+FoundryEngine uses over 40 mixin classes to inject hooks into Minecraft's core systems. These patches provide the foundation for all engine features — from rendering and input to world management and UI.
 
 Mixins are organized by target area in the `de.luckymcdev.foundryengine.mixin` package.
 
@@ -22,6 +22,7 @@ Mixins are organized by target area in the `de.luckymcdev.foundryengine.mixin` p
 | `CutsceneCameraMixin`          | `Camera`                     | Cutscene-specific camera transformations |
 | `BlockEntityRendererMixin`     | `BlockEntityRenderer`        | Extended block entity rendering distance  |
 | `ItemInHandRendererMixin`      | `ItemInHandRenderer`         | Off-hand rendering changes                |
+| `RenderPipelinesInvoker`       | `RenderPipelines`            | Custom render pipeline invocation         |
 
 ## Post-Processing
 
@@ -32,6 +33,7 @@ Mixins are organized by target area in the `de.luckymcdev.foundryengine.mixin` p
 | `ShaderLoaderAccessor`            | `ShaderLoader`      | Access shader loading internals    |
 | `PostEffectProcessorAccessor`     | `PostEffectProcessor` | Access to effect processor internals |
 | `PostEffectPassAccessor`          | `PostEffectPass`    | Access to effect pass internals    |
+| `GlGpuBufferAccessor`            | `GlGpuBuffer`       | GPU buffer access for mesh rendering |
 
 ## Input
 
