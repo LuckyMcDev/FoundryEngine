@@ -10,6 +10,7 @@ import de.luckymcdev.foundryengine.common.network.packets.editor.CutscenePacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
@@ -59,7 +60,7 @@ public class ClientCutsceneManager {
         if (inCutscene()) return;
         previewActive = cutscene != null;
         previewCutscene = cutscene;
-        previewT = net.minecraft.util.Mth.clamp(t, 0f, 1f);
+        previewT = Mth.clamp(t, 0f, 1f);
     }
 
     public void clearPreview() {

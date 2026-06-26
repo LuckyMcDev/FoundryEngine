@@ -10,7 +10,9 @@ import de.luckymcdev.foundryengine.common.area.BlockArea;
 import de.luckymcdev.foundryengine.common.network.packets.editor.AreaPacket;
 import de.luckymcdev.foundryengine.common.util.color.Color;
 import imgui.ImGui;
+import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiColorEditFlags;
+import imgui.flag.ImGuiMouseCursor;
 import imgui.type.ImBoolean;
 import imgui.type.ImInt;
 import imgui.type.ImString;
@@ -39,6 +41,7 @@ public class AreaPanel extends EditorPanel {
     private float[] newAreaColor;
     private int selectedIndex = -1;
     private float createFormHeight = 240f;
+
     private AreaPanel() {
         super(new Builder(Common.id("area_panel"), "Areas")
                 .icon(ImIcons.FA.FA_MAP)
@@ -150,14 +153,14 @@ public class AreaPanel extends EditorPanel {
     }
 
     private void renderCreateFormSplitter() {
-        ImGui.pushStyleColor(imgui.flag.ImGuiCol.Button, 0.0f, 0.0f, 0.0f, 0.0f);
-        ImGui.pushStyleColor(imgui.flag.ImGuiCol.ButtonHovered, 1.0f, 1.0f, 1.0f, 0.15f);
-        ImGui.pushStyleColor(imgui.flag.ImGuiCol.ButtonActive, 1.0f, 1.0f, 1.0f, 0.25f);
+        ImGui.pushStyleColor(ImGuiCol.Button, 0.0f, 0.0f, 0.0f, 0.0f);
+        ImGui.pushStyleColor(ImGuiCol.ButtonHovered, 1.0f, 1.0f, 1.0f, 0.15f);
+        ImGui.pushStyleColor(ImGuiCol.ButtonActive, 1.0f, 1.0f, 1.0f, 0.25f);
 
         ImGui.button("##create_form_splitter", -1, SPLITTER_HEIGHT);
 
         if (ImGui.isItemHovered() || ImGui.isItemActive()) {
-            ImGui.setMouseCursor(imgui.flag.ImGuiMouseCursor.ResizeNS);
+            ImGui.setMouseCursor(ImGuiMouseCursor.ResizeNS);
         }
         if (ImGui.isItemActive()) {
             float deltaY = ImGui.getIO().getMouseDeltaY();
@@ -245,9 +248,9 @@ public class AreaPanel extends EditorPanel {
             ImGui.spacing();
         }
 
-        ImGui.pushStyleColor(imgui.flag.ImGuiCol.Button, 0.55f, 0.10f, 0.10f, 1.0f);
-        ImGui.pushStyleColor(imgui.flag.ImGuiCol.ButtonHovered, 0.70f, 0.15f, 0.15f, 1.0f);
-        ImGui.pushStyleColor(imgui.flag.ImGuiCol.ButtonActive, 0.45f, 0.08f, 0.08f, 1.0f);
+        ImGui.pushStyleColor(ImGuiCol.Button, 0.55f, 0.10f, 0.10f, 1.0f);
+        ImGui.pushStyleColor(ImGuiCol.ButtonHovered, 0.70f, 0.15f, 0.15f, 1.0f);
+        ImGui.pushStyleColor(ImGuiCol.ButtonActive, 0.45f, 0.08f, 0.08f, 1.0f);
         if (ImGui.button(ImIcons.FA.FA_TRASH + " Delete " + area.id())) {
             Common.getNetworkManager().sendToServer(AreaPacket.remove(area.id()));
             selectedIndex = -1;

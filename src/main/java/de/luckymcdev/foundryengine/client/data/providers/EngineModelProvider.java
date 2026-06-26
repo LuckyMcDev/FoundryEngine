@@ -12,6 +12,7 @@ import net.minecraft.client.data.models.model.ModelLocationUtils;
 import net.minecraft.client.data.models.model.ModelTemplates;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModelDispatcher;
 import net.minecraft.client.renderer.item.ClientItem;
+import net.minecraft.client.renderer.item.ItemModel;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
@@ -115,7 +116,7 @@ public class EngineModelProvider implements DataProvider {
         }
 
         @Override
-        public void accept(Item item, net.minecraft.client.renderer.item.ItemModel.Unbaked model, ClientItem.Properties properties) {
+        public void accept(Item item, ItemModel.Unbaked model, ClientItem.Properties properties) {
             registerItemInfo(item, new ClientItem(model, properties));
         }
 

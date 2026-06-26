@@ -10,6 +10,7 @@ import imgui.type.ImInt;
 import imgui.type.ImString;
 import org.slf4j.Logger;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class MainEditor extends EditorPanel {
@@ -61,7 +62,7 @@ public class MainEditor extends EditorPanel {
                     if (ImGui.button("Create", 100, 0)) {
                         String[] authorsArray = inputAuthors.get().split(",");
 
-                        List<String> authorsList = java.util.Arrays.stream(authorsArray)
+                        List<String> authorsList = Arrays.stream(authorsArray)
                                 .map(String::trim)
                                 .filter(s -> !s.isEmpty())
                                 .toList();

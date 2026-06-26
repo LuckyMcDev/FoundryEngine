@@ -75,7 +75,9 @@ public class ScreenDialogueDisplay implements IDialogueDisplay {
             this.widgetsBuilt = false;
         }
 
-        void setStyle(DialogueStyle s) { this.style = s; }
+        void setStyle(DialogueStyle s) {
+            this.style = s;
+        }
 
         void updateNode(DialogueNode n) {
             this.node = n;

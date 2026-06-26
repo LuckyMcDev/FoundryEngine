@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.mixin.render;
 
 import de.luckymcdev.foundryengine.client.Client;
+import de.luckymcdev.foundryengine.client.cutscene.ClientCutsceneManager;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -38,7 +39,7 @@ public abstract class CutsceneCameraMixin {
         if (player == null) return;
 
         Vec3 cam = Client.getCutsceneManager().getPos();
-        if (!player.getEyePosition().closerThan(cam, de.luckymcdev.foundryengine.client.cutscene.ClientCutsceneManager.RENDER_PLAYER_RANGE)) {
+        if (!player.getEyePosition().closerThan(cam, ClientCutsceneManager.RENDER_PLAYER_RANGE)) {
             cir.setReturnValue(true);
         }
     }

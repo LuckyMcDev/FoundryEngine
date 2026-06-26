@@ -1,5 +1,6 @@
 package de.luckymcdev.foundryengine.common.network.packets.editor;
 
+import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.cutscene.model.Cutscene;
 import de.luckymcdev.foundryengine.common.cutscene.util.LerpType;
@@ -89,7 +90,7 @@ public record CutscenePacket(CompoundTag nbt) implements AbstractPacket<Cutscene
 
     @Override
     public void handleClient(IPayloadContext ctx) {
-        ctx.enqueueWork(() -> de.luckymcdev.foundryengine.client.Client.getCutsceneManager().handlePacket(this));
+        ctx.enqueueWork(() -> Client.getCutsceneManager().handlePacket(this));
     }
 
     @Override

@@ -39,7 +39,7 @@ public class BundleManager implements ResourceManagerReloadListener {
     private final BundleScriptLoader scriptLoader;
     private final BundleLifecycleDispatcher lifecycleDispatcher = new BundleLifecycleDispatcher();
     private volatile boolean reloading = false;
-    private @Nullable  MinecraftServer server;
+    private @Nullable MinecraftServer server;
 
     public BundleManager(IEventBus modBus, Path configDirectory) {
         BundleFactory bundleFactory = new BundleFactory(modBus, configDirectory);

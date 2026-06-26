@@ -388,7 +388,7 @@ public class DialogueEditorPanel extends EditorPanel {
         }
 
         ImGui.beginChild("##node_tabs", 0, 40, true,
-                imgui.flag.ImGuiWindowFlags.HorizontalScrollbar | imgui.flag.ImGuiWindowFlags.NoScrollWithMouse);
+                ImGuiWindowFlags.HorizontalScrollbar | ImGuiWindowFlags.NoScrollWithMouse);
 
         for (int i = 0; i < nodes.size(); i++) {
             var n = nodes.get(i);

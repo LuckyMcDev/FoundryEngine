@@ -10,6 +10,7 @@ import de.luckymcdev.foundryengine.config.ClientConfig;
 import imgui.ImGui;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiInputTextFlags;
+import imgui.flag.ImGuiMouseButton;
 import imgui.flag.ImGuiStyleVar;
 import imgui.type.ImString;
 import net.minecraft.resources.Identifier;
@@ -152,7 +153,7 @@ public class RecipeEditorPanel extends EditorPanel {
             }
         }
 
-        if (ImGui.isItemClicked(imgui.flag.ImGuiMouseButton.Right)) {
+        if (ImGui.isItemClicked(ImGuiMouseButton.Right)) {
             slots.remove(key);
         }
 

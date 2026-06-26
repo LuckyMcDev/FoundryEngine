@@ -46,14 +46,39 @@ public class DialogueTree {
         return tag;
     }
 
-    public Identifier getId() { return id; }
-    public String getRootNodeId() { return rootNodeId; }
-    public void setRootNodeId(String rootNodeId) { this.rootNodeId = rootNodeId; }
-    public Map<String, DialogueNode> getNodes() { return nodes; }
-    public DialogueStyle getStyle() { return style; }
-    public void setStyle(DialogueStyle style) { this.style = style; }
+    public Identifier getId() {
+        return id;
+    }
 
-    public DialogueNode getNode(String nodeId) { return nodes.get(nodeId); }
-    public void addNode(DialogueNode node) { nodes.put(node.getId(), node); }
-    public void removeNode(String nodeId) { nodes.remove(nodeId); }
+    public String getRootNodeId() {
+        return rootNodeId;
+    }
+
+    public void setRootNodeId(String rootNodeId) {
+        this.rootNodeId = rootNodeId;
+    }
+
+    public Map<String, DialogueNode> getNodes() {
+        return nodes;
+    }
+
+    public DialogueStyle getStyle() {
+        return style;
+    }
+
+    public void setStyle(DialogueStyle style) {
+        this.style = style;
+    }
+
+    public DialogueNode getNode(String nodeId) {
+        return nodes.get(nodeId);
+    }
+
+    public void addNode(DialogueNode node) {
+        nodes.put(node.getId(), node);
+    }
+
+    public void removeNode(String nodeId) {
+        nodes.remove(nodeId);
+    }
 }

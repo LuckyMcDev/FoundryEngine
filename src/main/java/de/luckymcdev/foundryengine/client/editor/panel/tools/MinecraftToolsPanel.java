@@ -17,6 +17,8 @@ import net.minecraft.server.permissions.PermissionSet;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.gamerules.GameRules;
 
+import java.util.List;
+
 public class MinecraftToolsPanel extends EditorPanel {
     public static final MinecraftToolsPanel INSTANCE = new MinecraftToolsPanel();
 
@@ -115,7 +117,7 @@ public class MinecraftToolsPanel extends EditorPanel {
         if (ImGui.button("Lock " + ImGuiUtils.icon(ImIcons.FA.FA_LOCK) + "##time")) {
             BuiltInRegistries.GAME_RULE.getResourceKey(GameRules.ADVANCE_TIME).ifPresent(key -> {
                 var entry = new ServerboundSetGameRulePacket.Entry(key, "false");
-                Client.getConnection().send(new ServerboundSetGameRulePacket(java.util.List.of(entry)));
+                Client.getConnection().send(new ServerboundSetGameRulePacket(List.of(entry)));
             });
         }
         if (ImGui.isItemHovered()) ImGui.setTooltip("Stops the daylight cycle");
@@ -140,7 +142,7 @@ public class MinecraftToolsPanel extends EditorPanel {
         if (ImGui.button("Lock " + ImGuiUtils.icon(ImIcons.FA.FA_LOCK) + "##weather")) {
             BuiltInRegistries.GAME_RULE.getResourceKey(GameRules.ADVANCE_WEATHER).ifPresent(key -> {
                 var entry = new ServerboundSetGameRulePacket.Entry(key, "false");
-                Client.getConnection().send(new ServerboundSetGameRulePacket(java.util.List.of(entry)));
+                Client.getConnection().send(new ServerboundSetGameRulePacket(List.of(entry)));
             });
         }
         if (ImGui.isItemHovered()) ImGui.setTooltip("Stops the weather cycle");
