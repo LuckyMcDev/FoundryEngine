@@ -1,6 +1,6 @@
 # Java Addon API
 
-FoundryEngine exposes events and builders for Java addon developers through NeoForge's event bus. All API events are in the package `de.luckymcdev.foundryengine.api.event` and builders in `de.luckymcdev.foundryengine.api.builder`. Subscribe using `@SubscribeEvent` on the appropriate bus.
+FoundryEngine exposes events and builders for Java addon developers through NeoForge's event bus. All API events are in the package `de.luckymcdev.foundryengine.common.event` and builders in `de.luckymcdev.foundryengine.common.builder`. Subscribe using `@SubscribeEvent` on the appropriate bus.
 
 ## RegisterPanelEvent
 
@@ -12,19 +12,6 @@ Register custom ImGui editor panels. Panels extend `Panel` and override `content
 @SubscribeEvent
 public void onRegisterPanel(RegisterPanelEvent event) {
     event.register(new MyCustomPanel());
-}
-```
-
-## RegisterKeyBindingEvent
-
-**Package:** `de.luckymcdev.foundryengine.client.util.key.RegisterKeyBindingEvent`
-
-Register custom key bindings with the engine's key binding manager.
-
-```java
-@SubscribeEvent
-public void onRegisterKeyBindings(RegisterKeyBindingEvent event) {
-    event.register(new KeyBinding("key.mybind", GLFW.GLFW_KEY_P, "My Mod"));
 }
 ```
 

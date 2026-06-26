@@ -80,7 +80,15 @@ network.register(new AbstractPacket.Definition<>(
 - **CutscenePacket** — synchronizes cutscene data between the cutscene editor and server
 - **CutsceneCommandPacket** — commands triggered during cutscene playback
 - **CutsceneAction** — action model for cutscene editor operations
+- **LinearizeCutscenePacket** — linearizes a cutscene's keyframes into a flat timeline
 - **WaypointPacket** — synchronizes waypoint data
+- **GiveItemPacket** — editor gives an item to a player
+
+### Dialogue
+
+- **ClientboundDialoguePacket** — dialogue session state sent server→client
+- **ServerboundDialoguePacket** — player dialogue action sent client→server
+- **DialogueSavePacket** — saves dialogue trees from the editor to the server
 
 ### File Explorer
 

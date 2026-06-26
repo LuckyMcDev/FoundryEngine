@@ -54,7 +54,6 @@ export default defineConfig({
                     items: [
                         { text: 'Overview', link: '/concepts/systems/' },
                         { text: 'In-Game Editor', link: '/concepts/systems/editor' },
-                        { text: 'Blueprints', link: '/concepts/systems/blueprints' },
                         { text: 'Cutscene System', link: '/concepts/systems/cutscenes' },
                         { text: 'Instanced Worlds', link: '/concepts/systems/instanced-worlds' },
                         { text: 'Game Stages', link: '/concepts/systems/stages' },
@@ -66,7 +65,8 @@ export default defineConfig({
                         { text: 'Mesh Rendering & OBJ', link: '/concepts/systems/mesh-rendering' },
                         { text: 'Easing Functions', link: '/concepts/systems/easing' },
                         { text: 'Markdown Rendering', link: '/concepts/systems/markdown' },
-                        { text: 'Commands', link: '/concepts/systems/commands' }
+                        { text: 'Commands', link: '/concepts/systems/commands' },
+                        { text: 'Dialogue System', link: '/concepts/systems/dialogue' }
                     ]
                 },
                 {
@@ -88,7 +88,6 @@ export default defineConfig({
                     items: [
                         { text: 'Overview', link: '/concepts/systems/' },
                         { text: 'In-Game Editor', link: '/concepts/systems/editor' },
-                        { text: 'Blueprints', link: '/concepts/systems/blueprints' },
                         { text: 'Cutscene System', link: '/concepts/systems/cutscenes' },
                         { text: 'Instanced Worlds', link: '/concepts/systems/instanced-worlds' },
                         { text: 'Game Stages', link: '/concepts/systems/stages' },
@@ -100,7 +99,8 @@ export default defineConfig({
                         { text: 'Mesh Rendering & OBJ', link: '/concepts/systems/mesh-rendering' },
                         { text: 'Easing Functions', link: '/concepts/systems/easing' },
                         { text: 'Markdown Rendering', link: '/concepts/systems/markdown' },
-                        { text: 'Commands', link: '/concepts/systems/commands' }
+                        { text: 'Commands', link: '/concepts/systems/commands' },
+                        { text: 'Dialogue System', link: '/concepts/systems/dialogue' }
                     ]
                 },
                 {

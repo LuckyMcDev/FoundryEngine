@@ -21,7 +21,7 @@ hero:
 
 features:
   - title: "Bundle System"
-    details: "Self-contained mod packaging — combine scripts, resources, data packs, and blueprints in a single folder. No Java compilation needed."
+    details: "Self-contained mod packaging — combine scripts, resources, and data packs in a single folder. No Java compilation needed."
     link: "/concepts/core/bundles"
 
   - title: "Groovy Scripting"
@@ -33,16 +33,12 @@ features:
     link: "/concepts/core/builders"
 
   - title: "Rich Event System"
-    details: "Over 50 events across 12 event classes — block, item, player, entity, level, network, area, client, server, command, recipe, and bundle lifecycle."
+    details: "80+ events across 16 event classes — block, item, player, entity, level, network, area, client, server, command, recipe, bundle, stage, game session, slot, and dialogue lifecycle."
     link: "/concepts/core/events"
 
   - title: "In-Game Editor"
-    details: "Dear ImGui-powered dockable editor with panels for blueprints, cutscenes, areas, waypoints, file browsing, code editing, and more — all accessible in-game."
+    details: "Dear ImGui-powered dockable editor with panels for cutscenes, areas, waypoints, file browsing, code editing, dialogues, and more — all accessible in-game."
     link: "/concepts/systems/editor"
-
-  - title: "Blueprint Visual Scripting"
-    details: "Node-based visual scripting with execution flow, typed pins, and built-in event nodes. Create complex game logic without writing code."
-    link: "/concepts/systems/blueprints"
 
   - title: "Cutscene System"
     details: "Bezier-based camera paths with keyframe commands, screen effects (black bars, cinematic bars), rotational anchor points, and full in-world editor."

@@ -4,16 +4,17 @@
 NeoForge Minecraft mod (`foundryengine`) that turns MC into a game engine.
 - Java 25, Gradle, NeoForge MDG `net.neoforged.moddev` v2.0.140
 - Package: `de.luckymcdev.foundryengine` (single project)
-- Version: `0.0.65` (alpha)
+- Version: `0.1.1` (alpha)
 
 ## Architecture
 ```
 src/main/java/de/luckymcdev/foundryengine/
-  common/   — shared logic (cutscenes, easing, network, blueprints, bundles, world)
+  common/   — shared logic (events, builders, cutscenes, easing, network, blueprints, bundles, world)
   client/   — client-only (ImGui editor, rendering, particles, post-processing)
   server/   — server-only (commands, dynamic packs)
+  interfaces/ — mixin accessor interfaces for runtime property modification
   mixin/    — mixin patches
-  config/   — NeoForge config (Config, ClientConfig, ServerConfig, StartupConfig)
+  config/   — NeoForge config (CommonConfig, Config, ClientConfig, ServerConfig, StartupConfig)
 ```
 - Managers via `Common.get*()` static methods
 - Two event buses: `NeoForge.EVENT_BUS` + mod event bus
@@ -52,6 +53,7 @@ src/main/java/de/luckymcdev/foundryengine/
 |-------------------------------------|--------------------------------------|
 | `./gradlew.bat build`               | Full build                           |
 | `./gradlew.bat preCommit`           | Check → runData → build              |
+| `./gradlew.bat copyExampleBundles`   | Sync ExampleBundles into run dirs    |
 | `./gradlew.bat runClient/runServer` | Launch MC                            |
 | `./gradlew.bat gameTestServer`      | Game test server                     |
 | `./gradlew.bat test`                | JUnit 5 tests                        |
@@ -64,7 +66,7 @@ src/main/java/de/luckymcdev/foundryengine/
 - Always run `runData` before committing (part of `preCommit`)
 
 ## Bundles
-- `ExampleBundles/` → copied to `runs/*/FoundryEngine/bundles/` via `copyExampleBundles`
+- `ExampleBundles/` → copied to `runs/client`, `runs/server`, and `runs/gameTestServer` via `copyExampleBundles`
 - Bundles: Groovy scripts, assets, configs, packed via `DynamicPackRepository`
 
 ## Dependencies (jarJar)
