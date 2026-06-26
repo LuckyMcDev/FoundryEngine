@@ -21,7 +21,6 @@ public class AreaEvents {
 
         public static void postLoad(LevelEvent.Load event) {
             if (event.getLevel() instanceof ServerLevel level) {
-                Common.getAreaManager().onLevelLoad(event);
                 ON_LOAD.post(level);
             }
         }
@@ -29,7 +28,6 @@ public class AreaEvents {
         public static void register(IEventBus bus) {
             bus.addListener(Internal::postLoad);
             bus.addListener(Common.getAreaManager()::onLevelTick);
-            bus.addListener(Common.getAreaManager()::onServerStopping);
             bus.addListener(Common.getAreaManager()::onBlockBreak);
             bus.addListener(Common.getAreaManager()::onBlockPlace);
         }

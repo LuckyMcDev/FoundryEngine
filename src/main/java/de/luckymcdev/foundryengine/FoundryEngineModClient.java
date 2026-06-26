@@ -83,30 +83,9 @@ public class FoundryEngineModClient {
             Minecraft.getInstance().reloadResourcePacks();
             BUS.post(new RegisterPanelEvent());
         });
-        registerClientSyncHandlers();
     }
 
-    private void registerClientSyncHandlers() {
-        var savedataManager = Common.getSavedDataManager();
-        savedataManager.registerClientHandler(Common.id("waypoints"), data -> {
-            var dimension = Client.getMc().level != null ? Client.getMc().level.dimension() : null;
-            if (dimension == null) return;
-            Common.getWaypointManager().applySync(dimension, data);
-        });
-        savedataManager.registerClientHandler(Common.id("areas"), data -> {
-            var dimension = Client.getMc().level != null ? Client.getMc().level.dimension() : null;
-            if (dimension == null) return;
-            Common.getAreaManager().applySync(dimension, data);
-        });
-        savedataManager.registerClientHandler(Common.id("cutscene_manager"), data -> {
-            var dimension = Client.getMc().level != null ? Client.getMc().level.dimension() : null;
-            if (dimension == null) return;
-            Common.getCutsceneManager().applySync(dimension, data);
-        });
-        savedataManager.registerClientHandler(Common.id("dialogue"), data -> {
-            Common.getDialogueManager().applyNbt(data);
-        });
-    }
+
 
     private void addClientReloadListener(AddClientReloadListenersEvent event) {
         event.addListener(Common.id("imgui_handler"), Client.getImGuiManager());

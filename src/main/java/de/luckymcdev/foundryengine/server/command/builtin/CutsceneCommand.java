@@ -65,38 +65,31 @@ public class CutsceneCommand implements EngineCommand {
         LiteralArgumentBuilder<CommandSourceStack> root = Commands.literal("cutscene")
                 .requires(this::isGamemaster);
 
-        // resetAll confirm
         root.then(Commands.literal("resetAll")
                 .then(Commands.literal("confirm")
                         .executes(this::resetAll)));
 
-        // list
         root.then(Commands.literal("list")
                 .executes(this::listCutscenes));
 
-        // add <name>
         root.then(Commands.literal("add")
                 .then(Commands.argument("name", StringArgumentType.word())
                         .executes(this::addCutscene)));
 
-        // remove <name>
         root.then(Commands.literal("remove")
                 .then(Commands.argument("name", IdentifierArgument.id())
                         .suggests(CUTSCENE_SUGGESTIONS)
                         .executes(this::removeCutscene)));
 
-        // linearize <name>
         root.then(Commands.literal("linearize")
                 .then(Commands.argument("name", IdentifierArgument.id())
                         .suggests(CUTSCENE_SUGGESTIONS)
                         .executes(this::linearizeCutscene)));
 
-        // cancel <player>
         root.then(Commands.literal("cancel")
                 .then(Commands.argument("player", EntityArgument.player())
                         .executes(this::cancelCutscene)));
 
-        // play <player> <name> <length> [easing] [holdStart] [holdEnd] or play <player> <name>
         var play = Commands.literal("play")
                 .then(Commands.argument("player", EntityArgument.player())
                         .then(Commands.argument("name", IdentifierArgument.id())
@@ -118,8 +111,8 @@ public class CutsceneCommand implements EngineCommand {
     private int resetAll(CommandContext<CommandSourceStack> ctx) {
         ServerLevel level = ctx.getSource().getLevel();
         var manager = Common.getCutsceneManager();
-        manager.clear(level);
-        manager.syncToDimension(level);
+        manager.clear(level.dimension());
+        manager.syncToAll();
         sendSuccess(ctx, "All cutscenes removed.", true);
         return 1;
     }
@@ -127,7 +120,6 @@ public class CutsceneCommand implements EngineCommand {
     private int listCutscenes(CommandContext<CommandSourceStack> ctx) {
         ServerLevel level = ctx.getSource().getLevel();
         var manager = Common.getCutsceneManager();
-        if (!manager.isLoaded(level.dimension())) manager.loadFromLevel(level);
         List<Cutscene> cutscenes = manager.getCutscenes(level.dimension());
         sendInfo(ctx, "There are " + cutscenes.size() + " cutscenes:");
         for (Cutscene cutscene : cutscenes) {
@@ -141,7 +133,6 @@ public class CutsceneCommand implements EngineCommand {
         String name = StringArgumentType.getString(ctx, "name");
         ServerLevel level = ctx.getSource().getLevel();
         var manager = Common.getCutsceneManager();
-        if (!manager.isLoaded(level.dimension())) manager.loadFromLevel(level);
         if (manager.find(level.dimension(), name) != null) {
             sendFailure(ctx, "Cutscene of name [" + name + "] already exists!");
             return 0;
@@ -149,8 +140,8 @@ public class CutsceneCommand implements EngineCommand {
 
         BezierPath path = new BezierPath(player.getEyePosition());
         Vec2 rot = new Vec2(player.getXRot(), player.getYRot());
-        manager.add(level, new Cutscene(name, rot, rot, path));
-        manager.syncToDimension(level);
+        manager.add(level.dimension(), new Cutscene(name, rot, rot, path));
+        manager.syncToAll();
         sendSuccess(ctx, "Added cutscene: " + name, true);
         return 1;
     }
@@ -160,13 +151,12 @@ public class CutsceneCommand implements EngineCommand {
         Identifier id = IdentifierArgument.getId(ctx, "name");
         String name = id.getPath();
         var manager = Common.getCutsceneManager();
-        if (!manager.isLoaded(level.dimension())) manager.loadFromLevel(level);
-        boolean removed = manager.remove(level, name);
+        boolean removed = manager.remove(level.dimension(), name);
         if (!removed) {
             sendFailure(ctx, "No cutscene found with name: " + name);
             return 0;
         }
-        manager.syncToDimension(level);
+        manager.syncToAll();
         sendSuccess(ctx, "Removed cutscene: " + name, true);
         return 1;
     }
@@ -176,7 +166,6 @@ public class CutsceneCommand implements EngineCommand {
         Identifier id = IdentifierArgument.getId(ctx, "name");
         String name = id.getPath();
         var manager = Common.getCutsceneManager();
-        if (!manager.isLoaded(level.dimension())) manager.loadFromLevel(level);
         Cutscene target = manager.find(level.dimension(), name);
         if (target == null) {
             sendFailure(ctx, "No cutscene found with name: " + name);
@@ -194,8 +183,8 @@ public class CutsceneCommand implements EngineCommand {
         target.path.getPoints().get(1).setPos(tangent);
         target.path.getPoints().get(2).setPos(tangent);
 
-        manager.persist(level);
-        manager.syncToDimension(level);
+        manager.save();
+        manager.syncToAll();
         sendInfo(ctx, "Linearized cutscene: " + name);
         return 1;
     }
@@ -222,7 +211,6 @@ public class CutsceneCommand implements EngineCommand {
         String name = id.getPath();
 
         var manager = Common.getCutsceneManager();
-        if (!manager.isLoaded(level.dimension())) manager.loadFromLevel(level);
         Cutscene cutscene = manager.find(level.dimension(), name);
 
         if (cutscene == null) {

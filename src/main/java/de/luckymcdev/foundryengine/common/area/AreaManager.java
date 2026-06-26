@@ -14,18 +14,14 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.event.level.BlockEvent;
-import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
-import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import org.jspecify.annotations.Nullable;
 
 import java.util.*;
 
-/**
- * Manages area registration, persistence, lifecycle hooks, and module dispatch.
- */
 public class AreaManager {
+    public static final String SAVE_SECTION = "areas";
     private static final int SPATIAL_CELL_SIZE = 32;
     private final Map<Identifier, AreaModule> moduleTypes = new HashMap<>();
     private final Map<String, AreaPreset> presets = new HashMap<>();
@@ -92,16 +88,16 @@ public class AreaManager {
         }
         indexAreaSpatially(area);
         if (level != null) {
-            AreaSavedData.get(level).addArea(area);
-            syncToDimension(level);
+            save();
+            syncToAll();
         }
     }
 
     public void update(@Nullable ServerLevel level, Area updatedArea) {
         areasById.put(updatedArea.id(), updatedArea);
         if (level != null) {
-            AreaSavedData.get(level).updateArea(updatedArea.id(), updatedArea);
-            syncToDimension(level);
+            save();
+            syncToAll();
         }
     }
 
@@ -113,78 +109,58 @@ public class AreaManager {
         if (members != null) members.remove(area.id());
         removeAreaFromSpatialIndex(area);
         if (level != null) {
-            AreaSavedData.get(level).removeArea(area.id());
-            syncToDimension(level);
+            save();
+            syncToAll();
         }
     }
 
-    public void loadFromLevel(ServerLevel level) {
-        AreaSavedData savedData = AreaSavedData.get(level);
-        ResourceKey<Level> dim = level.dimension();
-        List<Identifier> ids = new ArrayList<>();
-        for (Area area : savedData.getAreas()) {
-            areasById.put(area.id(), area);
-            ids.add(area.id());
-            indexAreaSpatially(area);
+    public CompoundTag toNbt() {
+        var tag = new CompoundTag();
+        var allList = new ListTag();
+        for (Area area : areasById.values()) {
+            allList.add(area.writeToNbt());
         }
-        areaIdsByDimension.put(dim, ids);
+        tag.put("Areas", allList);
+        return tag;
     }
 
-    public void applySync(ResourceKey<Level> dimension, CompoundTag tag) {
-        List<Identifier> ids = new ArrayList<>();
-        ListTag list = tag.getListOrEmpty("Areas");
-        for (var entry : list) {
-            if (entry instanceof CompoundTag ct) {
+    public void fromNbt(CompoundTag tag) {
+        areasById.clear();
+        areaIdsByDimension.clear();
+        areaSpatialIndex.clear();
+        lastMembersByDimension.clear();
+        var list = tag.getListOrEmpty("Areas");
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i) instanceof CompoundTag ct) {
                 Area area = Area.readFromNbt(ct);
                 areasById.put(area.id(), area);
-                ids.add(area.id());
+                areaIdsByDimension.computeIfAbsent(area.dimension(), k -> new ArrayList<>()).add(area.id());
                 indexAreaSpatially(area);
             }
         }
-        areaIdsByDimension.put(dimension, ids);
     }
 
-    public CompoundTag toNbt(ServerLevel level) {
-        if (!isLoaded(level.dimension())) {
-            loadFromLevel(level);
-        }
-        CompoundTag tag = new CompoundTag();
-        ListTag list = new ListTag();
-        for (Area area : getAreasForDimension(level.dimension())) {
-            list.add(area.writeToNbt());
-        }
-        tag.put("Areas", list);
-        return tag;
+    public void save() {
+        Common.getSavedDataManager().setSection(SAVE_SECTION, toNbt());
+    }
+
+    public void load() {
+        fromNbt(Common.getSavedDataManager().getSection(SAVE_SECTION));
+    }
+
+    public void syncToAll() {
+        Common.getSavedDataManager().syncToAll();
     }
 
     public void syncToPlayer(ServerPlayer player) {
         Common.getSavedDataManager().syncToPlayer(player);
     }
 
-    public void syncToDimension(ServerLevel level) {
-        Common.getSavedDataManager().syncToDimension(level);
-    }
-
-    public void onLevelLoad(LevelEvent.Load event) {
-        if (event.getLevel() instanceof ServerLevel level) {
-            loadFromLevel(level);
-        }
-    }
-
-    public void onServerStopping(ServerStoppingEvent event) {
-        for (ServerLevel level : event.getServer().getAllLevels()) {
-            AreaSavedData savedData = AreaSavedData.get(level);
-            savedData.setDirty();
-        }
-    }
-
     public void onLevelTick(LevelTickEvent.Post event) {
         if (!(event.getLevel() instanceof ServerLevel level)) return;
 
         ResourceKey<Level> dim = level.dimension();
-        if (!isLoaded(dim)) {
-            loadFromLevel(level);
-        }
+        if (!isLoaded(dim)) return;
 
         List<Area> areas = getAreasForDimension(dim);
         if (areas.isEmpty()) {

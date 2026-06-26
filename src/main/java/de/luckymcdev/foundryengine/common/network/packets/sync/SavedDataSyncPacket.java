@@ -27,7 +27,13 @@ public record SavedDataSyncPacket(CompoundTag data) implements AbstractPacket<Sa
     );
 
     private static void handleClient(SavedDataSyncPacket packet, IPayloadContext ctx) {
-        ctx.enqueueWork(() -> Common.getSavedDataManager().dispatchSync(packet.data()));
+        ctx.enqueueWork(() -> {
+            Common.getSavedDataManager().setData(packet.data());
+            Common.getWaypointManager().load();
+            Common.getAreaManager().load();
+            Common.getCutsceneManager().load();
+            Common.getDialogueManager().load();
+        });
     }
 
     @Override
