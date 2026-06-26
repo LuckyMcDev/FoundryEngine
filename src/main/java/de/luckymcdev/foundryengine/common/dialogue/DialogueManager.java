@@ -5,18 +5,14 @@ import de.luckymcdev.foundryengine.common.network.packets.dialogue.ClientboundDi
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.*;
 
-/**
- * Server-side manager for dialogue trees, sessions, actions, and conditions.
- * Handles lifecycle: start → advance → selectOption → end.
- */
 public class DialogueManager {
+    public static final String SAVE_SECTION = "dialogue";
     private final Map<Identifier, DialogueTree> trees = new LinkedHashMap<>();
     private final Map<UUID, DialogueSession> sessions = new HashMap<>();
     private final Map<String, DialogueAction> actions = new LinkedHashMap<>();
@@ -146,6 +142,10 @@ public class DialogueManager {
         sessions.clear();
     }
 
+    public void syncToAll() {
+        Common.getSavedDataManager().syncToAll();
+    }
+
     public CompoundTag toNbt() {
         var tag = new CompoundTag();
         var list = new ListTag();
@@ -168,22 +168,12 @@ public class DialogueManager {
         }
     }
 
-    public void saveTo(ServerLevel level) {
-        DialogueSavedData.get(level).setTrees(new ArrayList<>(trees.values()));
+    public void save() {
+        Common.getSavedDataManager().setSection(SAVE_SECTION, toNbt());
     }
 
-    public void loadFrom(ServerLevel level) {
-        for (var tree : DialogueSavedData.get(level).getTrees()) {
-            trees.put(tree.getId(), tree);
-        }
-    }
-
-    public void syncToPlayer(ServerPlayer player) {
-        Common.getSavedDataManager().syncToPlayer(player);
-    }
-
-    public void syncToDimension(ServerLevel level) {
-        Common.getSavedDataManager().syncToDimension(level);
+    public void load() {
+        applyNbt(Common.getSavedDataManager().getSection(SAVE_SECTION));
     }
 
     private void advanceTo(ServerPlayer player, DialogueSession session, DialogueTree tree, String targetNodeId) {

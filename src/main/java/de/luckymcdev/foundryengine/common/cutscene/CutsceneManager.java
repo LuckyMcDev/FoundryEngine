@@ -1,48 +1,27 @@
 package de.luckymcdev.foundryengine.common.cutscene;
 
-import de.luckymcdev.foundryengine.client.editor.feature.CutsceneEditorFeature;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.cutscene.model.Cutscene;
-import de.luckymcdev.foundryengine.common.cutscene.storage.CutsceneSavedData;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.event.level.LevelEvent;
 import org.jspecify.annotations.Nullable;
 
 import java.util.*;
 
-/**
- * Canonical cutscene definition store.
- * <p>
- * Server-side: loads/persists via {@link CutsceneSavedData} and acts as the single API for modifying cutscenes.
- * Client-side: receives synced NBT via {@link de.luckymcdev.foundryengine.common.savedata.SavedDataManager} and
- * keeps the current dimension's cutscene list for rendering/editor tooling.
- */
 public class CutsceneManager {
+    public static final String SAVE_SECTION = "cutscenes";
     private final Map<ResourceKey<Level>, List<Cutscene>> cutscenesByDimension = new HashMap<>();
 
     public boolean isLoaded(ResourceKey<Level> dimension) {
         return cutscenesByDimension.containsKey(dimension);
     }
 
-    public void loadFromLevel(ServerLevel level) {
-        ResourceKey<Level> dimension = level.dimension();
-        replaceAll(dimension, CutsceneSavedData.get(level).getCutscenes());
-    }
-
-    public void onLevelLoad(LevelEvent.Load event) {
-        if (event.getLevel() instanceof ServerLevel level) {
-            loadFromLevel(level);
-        }
-    }
-
-    /**
-     * Returns the current cutscene list for {@code dimension}. The returned list should be treated as read-only.
-     */
     public List<Cutscene> getCutscenes(ResourceKey<Level> dimension) {
         return cutscenesByDimension.getOrDefault(dimension, Collections.emptyList());
     }
@@ -60,7 +39,9 @@ public class CutsceneManager {
 
     public Collection<Identifier> getSuggestions(ServerLevel level) {
         if (!isLoaded(level.dimension())) {
-            loadFromLevel(level);
+            var dim = level.dimension();
+            var list = getCutscenes(dim);
+            replaceAll(dim, list);
         }
         ArrayList<Identifier> out = new ArrayList<>();
         for (Cutscene c : getCutscenes(level.dimension())) {
@@ -69,72 +50,79 @@ public class CutsceneManager {
         return out;
     }
 
-    /**
-     * Applies a full NBT replacement (the same shape as {@link CutsceneEditorFeature#toNbt()}).
-     */
-    public void applyFullNbt(ServerLevel level, CompoundTag tag) {
-        CutsceneSavedData.get(level).setData(tag);
-        replaceAll(level.dimension(), CutsceneSavedData.makeList(tag));
+    public void applyFullNbt(CompoundTag tag) {
+        var list = new ArrayList<Cutscene>();
+        var nbtList = tag.getListOrEmpty("CutsceneList");
+        for (int i = 0; i < nbtList.size(); i++) {
+            list.add(Cutscene.fromNbt(nbtList.getCompoundOrEmpty(i)));
+        }
+        replaceAll(Level.OVERWORLD, list);
     }
 
-    /**
-     * Client-side: applies a synced cutscene list for {@code dimension}.
-     */
-    public void applySync(ResourceKey<Level> dimension, CompoundTag tag) {
-        replaceAll(dimension, CutsceneSavedData.makeList(tag));
+    public void fromNbt(CompoundTag tag) {
+        cutscenesByDimension.clear();
+        for (var dimKey : tag.keySet()) {
+            var dimTag = tag.getCompoundOrEmpty(dimKey);
+            var dim = ResourceKey.create(Registries.DIMENSION, Identifier.parse(dimKey));
+            var list = new ArrayList<Cutscene>();
+            var nbtList = dimTag.getListOrEmpty("CutsceneList");
+            for (int i = 0; i < nbtList.size(); i++) {
+                list.add(Cutscene.fromNbt(nbtList.getCompoundOrEmpty(i)));
+            }
+            cutscenesByDimension.put(dim, list);
+        }
     }
 
-    /**
-     * Serializes the current cutscenes for {@code level} into the canonical "CutsceneList" format.
-     */
-    public CompoundTag toNbt(ServerLevel level) {
-        if (!isLoaded(level.dimension())) {
-            loadFromLevel(level);
+    public CompoundTag toNbt() {
+        var tag = new CompoundTag();
+        for (var entry : cutscenesByDimension.entrySet()) {
+            var dimTag = new CompoundTag();
+            var list = new ListTag();
+            for (Cutscene cutscene : entry.getValue()) {
+                list.add(cutscene.toNbt());
+            }
+            dimTag.put("CutsceneList", list);
+            tag.put(entry.getKey().identifier().toString(), dimTag);
         }
-        CompoundTag tag = new CompoundTag();
-        var list = new net.minecraft.nbt.ListTag();
-        for (Cutscene cutscene : getCutscenes(level.dimension())) {
-            list.add(cutscene.toNbt());
-        }
-        tag.put("CutsceneList", list);
         return tag;
     }
 
-    public boolean add(ServerLevel level, Cutscene cutscene) {
-        ResourceKey<Level> dim = level.dimension();
-        var list = new ArrayList<>(getCutscenes(dim));
+    public boolean add(ResourceKey<Level> dimension, Cutscene cutscene) {
+        var list = new ArrayList<>(getCutscenes(dimension));
         if (list.stream().anyMatch(c -> c.getName().equals(cutscene.getName()))) return false;
         list.add(cutscene);
-        CutsceneSavedData.get(level).setCutscenes(list);
-        replaceAll(dim, list);
+        replaceAll(dimension, list);
+        save();
         return true;
     }
 
-    public boolean remove(ServerLevel level, String name) {
-        ResourceKey<Level> dim = level.dimension();
-        var list = new ArrayList<>(getCutscenes(dim));
+    public boolean remove(ResourceKey<Level> dimension, String name) {
+        var list = new ArrayList<>(getCutscenes(dimension));
         boolean removed = list.removeIf(c -> c.getName().equals(name));
         if (!removed) return false;
-        CutsceneSavedData.get(level).setCutscenes(list);
-        replaceAll(dim, list);
+        replaceAll(dimension, list);
+        save();
         return true;
     }
 
-    public void clear(ServerLevel level) {
-        CutsceneSavedData.get(level).setData(new CompoundTag());
-        replaceAll(level.dimension(), List.of());
+    public void clear(ResourceKey<Level> dimension) {
+        replaceAll(dimension, List.of());
+        save();
+    }
+
+    public void save() {
+        Common.getSavedDataManager().setSection(SAVE_SECTION, toNbt());
+    }
+
+    public void load() {
+        fromNbt(Common.getSavedDataManager().getSection(SAVE_SECTION));
     }
 
     public void syncToPlayer(ServerPlayer player) {
         Common.getSavedDataManager().syncToPlayer(player);
     }
 
-    public void syncToDimension(ServerLevel level) {
-        Common.getSavedDataManager().syncToDimension(level);
-    }
-
-    public void persist(ServerLevel level) {
-        ResourceKey<Level> dim = level.dimension();
-        CutsceneSavedData.get(level).setCutscenes(new ArrayList<>(getCutscenes(dim)));
+    public void syncToAll() {
+        Common.getSavedDataManager().syncToAll();
     }
 }

@@ -8,7 +8,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
@@ -46,13 +45,10 @@ public record DialogueSavePacket(CompoundTag data) implements AbstractPacket<Dia
         ctx.enqueueWork(() -> {
             if (!(ctx.player() instanceof ServerPlayer player)) return;
             if (!PermissionChecks.COMMANDS_GAMEMASTER.check(player.permissions())) return;
-            var level = player.level();
-            if (!(level instanceof ServerLevel serverLevel)) return;
-
             var mgr = Common.getDialogueManager();
             mgr.applyNbt(data);
-            mgr.saveTo(serverLevel);
-            mgr.syncToDimension(serverLevel);
+            mgr.save();
+            mgr.syncToAll();
         });
     }
 }

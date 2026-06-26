@@ -18,6 +18,8 @@ import net.minecraft.world.phys.Vec2;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
+import java.util.ArrayList;
+
 public record CutscenePacket(CompoundTag nbt) implements AbstractPacket<CutscenePacket> {
 
     public static final Definition<CutscenePacket> DEFINITION = new Definition<>(
@@ -99,10 +101,8 @@ public record CutscenePacket(CompoundTag nbt) implements AbstractPacket<Cutscene
         if (!PermissionChecks.COMMANDS_GAMEMASTER.check(player.permissions())) return;
 
         ServerLevel level = player.level();
+        var dimension = level.dimension();
         var cutsceneManager = Common.getCutsceneManager();
-        if (!cutsceneManager.isLoaded(level.dimension())) {
-            cutsceneManager.loadFromLevel(level);
-        }
 
         if (this.nbt.getBooleanOr("Request", false)) {
             cutsceneManager.syncToPlayer(player);
@@ -112,8 +112,14 @@ public record CutscenePacket(CompoundTag nbt) implements AbstractPacket<Cutscene
         String actionStr = this.nbt.getStringOr("Action", "");
         CutsceneAction action = actionStr.isEmpty() ? null : CutsceneAction.valueOf(actionStr);
         if (action == null) {
-            cutsceneManager.applyFullNbt(level, this.nbt);
-            cutsceneManager.syncToDimension(level);
+            var list = new ArrayList<Cutscene>();
+            var nbtList = this.nbt.getListOrEmpty("CutsceneList");
+            for (int i = 0; i < nbtList.size(); i++) {
+                list.add(Cutscene.fromNbt(nbtList.getCompoundOrEmpty(i)));
+            }
+            cutsceneManager.replaceAll(dimension, list);
+            cutsceneManager.save();
+            cutsceneManager.syncToAll();
             return;
         }
         switch (action) {
@@ -122,14 +128,14 @@ public record CutscenePacket(CompoundTag nbt) implements AbstractPacket<Cutscene
                 if (name.isBlank()) return;
                 BezierPath path = new BezierPath(player.getEyePosition());
                 Vec2 rot = new Vec2(player.getXRot(), player.getYRot());
-                boolean added = cutsceneManager.add(level, new Cutscene(name, rot, rot, path));
-                if (added) cutsceneManager.syncToDimension(level);
+                boolean added = cutsceneManager.add(dimension, new Cutscene(name, rot, rot, path));
+                if (added) cutsceneManager.syncToAll();
             }
             case REMOVE -> {
                 String name = this.nbt.getStringOr("Name", "");
                 if (name.isBlank()) return;
-                boolean removed = cutsceneManager.remove(level, name);
-                if (removed) cutsceneManager.syncToDimension(level);
+                boolean removed = cutsceneManager.remove(dimension, name);
+                if (removed) cutsceneManager.syncToAll();
             }
             case PLAY -> {
                 String targetName = this.nbt.getStringOr("TargetPlayer", "");

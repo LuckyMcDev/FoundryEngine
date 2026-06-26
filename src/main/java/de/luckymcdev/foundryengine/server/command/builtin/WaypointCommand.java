@@ -51,7 +51,7 @@ public class WaypointCommand implements EngineCommand {
 
         var manager = Common.getWaypointManager();
         manager.addWaypoint(level, new Waypoint(name, icon, pos.getX(), pos.getY(), pos.getZ(), color));
-        manager.syncToDimension(level);
+        manager.syncToAll();
         sendSuccess(ctx, "Added waypoint [" + name + "] at " + pos.toShortString(), true);
         return 1;
     }
@@ -63,7 +63,7 @@ public class WaypointCommand implements EngineCommand {
 
         var manager = Common.getWaypointManager();
         if (manager.removeWaypoint(level, pos.getX(), pos.getY(), pos.getZ())) {
-            manager.syncToDimension(level);
+            manager.syncToAll();
             sendSuccess(ctx, "Removed waypoint at " + pos.toShortString(), true);
             return 1;
         }
@@ -77,7 +77,7 @@ public class WaypointCommand implements EngineCommand {
 
         var manager = Common.getWaypointManager();
         manager.clearWaypoints(level);
-        manager.syncToDimension(level);
+        manager.syncToAll();
         sendSuccess(ctx, "All waypoints cleared.", true);
         return 1;
     }

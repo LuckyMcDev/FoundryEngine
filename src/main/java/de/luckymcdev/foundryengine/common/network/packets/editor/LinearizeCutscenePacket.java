@@ -48,7 +48,6 @@ public record LinearizeCutscenePacket(String cutsceneName) implements AbstractPa
 
         ServerLevel level = player.level();
         var manager = Common.getCutsceneManager();
-        if (!manager.isLoaded(level.dimension())) manager.loadFromLevel(level);
 
         Cutscene target = manager.find(level.dimension(), cutsceneName);
         if (target == null) {
@@ -67,7 +66,7 @@ public record LinearizeCutscenePacket(String cutsceneName) implements AbstractPa
         target.path.getPoints().get(1).setPos(tangent);
         target.path.getPoints().get(2).setPos(tangent);
 
-        manager.persist(level);
-        manager.syncToDimension(level);
+        manager.save();
+        manager.syncToAll();
     }
 }

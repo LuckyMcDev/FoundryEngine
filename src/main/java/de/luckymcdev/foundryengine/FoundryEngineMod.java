@@ -40,7 +40,6 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.util.Util;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
@@ -54,7 +53,6 @@ import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.event.ModifyDefaultComponentsEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
@@ -92,7 +90,6 @@ public class FoundryEngineMod {
         registerInternalEvents();
         registerModEventHandlers(modBus);
         registerNeoForgeEventHandlers();
-        registerSavedDataTypes();
 
         Config.registerCommon(modContainer);
         Config.registerStartup(modContainer);
@@ -175,19 +172,10 @@ public class FoundryEngineMod {
         BUS.addListener(this::onServerStopping);
         BUS.addListener(this::onServerTick);
 
-        BUS.addListener(this::onLevelLoad);
         BUS.addListener(this::onLevelTick);
 
         BUS.addListener(this::onPlayerDisconnect);
         BUS.addListener(this::onPlayerChangedDimension);
-    }
-
-    private void registerSavedDataTypes() {
-        var manager = Common.getSavedDataManager();
-        manager.register(Common.id("waypoints"), level -> Common.getWaypointManager().toNbt(level));
-        manager.register(Common.id("areas"), level -> Common.getAreaManager().toNbt(level));
-        manager.register(Common.id("cutscene_manager"), level -> Common.getCutsceneManager().toNbt(level));
-        manager.register(Common.id("dialogue"), level -> Common.getDialogueManager().toNbt());
     }
 
     private void onRegisterEvent(RegisterEvent event) {
@@ -321,12 +309,16 @@ public class FoundryEngineMod {
     }
 
     private void onServerStarting(ServerStartingEvent event) {
+        Common.getSavedDataManager().load();
+        Common.getWaypointManager().load();
+        Common.getAreaManager().load();
+        Common.getCutsceneManager().load();
+        Common.getDialogueManager().load();
         Common.getBundleManager().loadServerScripts();
     }
 
     private void onServerStarted(ServerStartedEvent event) {
         var server = event.getServer();
-        Common.getDialogueManager().loadFrom(server.overworld());
         EngineLevels.get(server).openTemporaryLevel(
                 new RuntimeLevelConfig()
                         .setGenerator(server.overworld().getChunkSource().getGenerator())
@@ -342,10 +334,12 @@ public class FoundryEngineMod {
 
     private void onServerStopping(ServerStoppingEvent event) {
         Common.getGameManager().stopAll();
-        Common.getWaypointManager().onServerStopping(event);
+        Common.getWaypointManager().save();
+        Common.getAreaManager().save();
+        Common.getCutsceneManager().save();
+        Common.getDialogueManager().save();
+        Common.getSavedDataManager().save();
         Common.getBundleManager().setServer(null);
-        var overworld = event.getServer().overworld();
-        Common.getDialogueManager().saveTo(overworld);
     }
 
     private void onServerTick(ServerTickEvent.Post event) {
@@ -358,15 +352,9 @@ public class FoundryEngineMod {
         }
     }
 
-    private void onLevelLoad(LevelEvent.Load event) {
-        Common.getCutsceneManager().onLevelLoad(event);
-        if (event.getLevel() instanceof Level level) {
-            Common.getWaypointManager().onLevelLoad(level);
-        }
-    }
-
     private void onLevelTick(LevelTickEvent.Post event) {
         Common.getGameManager().tickCommon(event.getLevel());
+        Common.getAreaManager().onLevelTick(event);
     }
 
     private void onPlayerDisconnect(PlayerEvent.PlayerLoggedOutEvent event) {

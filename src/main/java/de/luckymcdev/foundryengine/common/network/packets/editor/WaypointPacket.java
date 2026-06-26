@@ -52,7 +52,7 @@ public record WaypointPacket(String action, int x, int y, int z, String icon, St
                 }
             }
 
-            manager.syncToDimension(level);
+            manager.syncToAll();
         });
     }
 
