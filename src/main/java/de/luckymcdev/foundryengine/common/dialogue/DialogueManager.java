@@ -173,7 +173,9 @@ public class DialogueManager {
     }
 
     public void loadFrom(ServerLevel level) {
-        replaceAll(DialogueSavedData.get(level).getTrees());
+        for (var tree : DialogueSavedData.get(level).getTrees()) {
+            trees.put(tree.getId(), tree);
+        }
     }
 
     public void syncToPlayer(ServerPlayer player) {
