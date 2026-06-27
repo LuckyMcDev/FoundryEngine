@@ -25,7 +25,20 @@ public class EngineRenderPipelines {
                     .withDepthStencilState(new DepthStencilState(CompareOp.ALWAYS_PASS, false))
                     .build()
     );
-
+    public static final RenderPipeline OBJ_ENTITY = RenderPipelinesInvoker.register(
+            RenderPipeline.builder(RenderPipelines.MATRICES_FOG_LIGHT_DIR_SNIPPET)
+                    .withLocation(Common.id("pipeline/obj_entity"))
+                    .withVertexFormat(DefaultVertexFormat.ENTITY, VertexFormat.Mode.QUADS)
+                    .withVertexShader(Identifier.withDefaultNamespace("core/entity"))
+                    .withFragmentShader(Identifier.withDefaultNamespace("core/entity"))
+                    .withSampler("Sampler0")
+                    .withSampler("Sampler1")
+                    .withSampler("Sampler2")
+                    .withColorTargetState(new ColorTargetState(TRANSLUCENT))
+                    .withDepthStencilState(DepthStencilState.DEFAULT)
+                    .withCull(false)
+                    .build()
+    );
     private static RenderPipeline reg(String path, RenderPipeline.Snippet snippet) {
         return RenderPipelinesInvoker.register(
                 RenderPipeline.builder(snippet)
