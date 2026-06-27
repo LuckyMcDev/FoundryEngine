@@ -9,6 +9,7 @@ import de.luckymcdev.foundryengine.common.dialogue.DialogueOption;
 import de.luckymcdev.foundryengine.common.dialogue.DialogueStyle;
 import de.luckymcdev.foundryengine.common.dialogue.DialogueTree;
 import de.luckymcdev.foundryengine.common.network.packets.dialogue.DialogueSavePacket;
+import de.luckymcdev.foundryengine.common.util.color.Color;
 import imgui.ImGui;
 import imgui.flag.*;
 import imgui.type.ImInt;
@@ -17,6 +18,8 @@ import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
 import java.util.ArrayList;
+
+import static de.luckymcdev.foundryengine.client.imgui.ImGuiUtils.colorEdit4;
 
 public class DialogueEditorPanel extends EditorPanel {
     public static final DialogueEditorPanel INSTANCE = new DialogueEditorPanel();
@@ -263,10 +266,10 @@ public class DialogueEditorPanel extends EditorPanel {
         ImGui.indent();
 
         if (ImGui.treeNodeEx("Dialogue Box", ImGuiTreeNodeFlags.DefaultOpen)) {
-            int[] col = new int[]{s.getDialogueBackground()};
-            if (ImGuiUtils.colorEdit4Int("Background##dialogueBg", col)) s.setDialogueBackground(col[0]);
-            col[0] = s.getDialogueBorder();
-            if (ImGuiUtils.colorEdit4Int("Border##dialogueBorder", col)) s.setDialogueBorder(col[0]);
+            Color c = colorEdit4("Background##dialogueBg", s.getDialogueBackground());
+            if (c != null) s.setDialogueBackground(c);
+            c = colorEdit4("Border##dialogueBorder", s.getDialogueBorder());
+            if (c != null) s.setDialogueBorder(c);
 
             var bw = new ImInt(s.getDialogueBorderWidth());
             ImGui.setNextItemWidth(100);
@@ -275,10 +278,10 @@ public class DialogueEditorPanel extends EditorPanel {
         }
 
         if (ImGui.treeNodeEx("Options Box", ImGuiTreeNodeFlags.DefaultOpen)) {
-            int[] col = new int[]{s.getOptionsBackground()};
-            if (ImGuiUtils.colorEdit4Int("Background##optionsBg", col)) s.setOptionsBackground(col[0]);
-            col[0] = s.getOptionsBorder();
-            if (ImGuiUtils.colorEdit4Int("Border##optionsBorder", col)) s.setOptionsBorder(col[0]);
+            Color c = colorEdit4("Background##optionsBg", s.getOptionsBackground());
+            if (c != null) s.setOptionsBackground(c);
+            c = colorEdit4("Border##optionsBorder", s.getOptionsBorder());
+            if (c != null) s.setOptionsBorder(c);
 
             var bw = new ImInt(s.getOptionsBorderWidth());
             ImGui.setNextItemWidth(100);
@@ -287,28 +290,28 @@ public class DialogueEditorPanel extends EditorPanel {
         }
 
         if (ImGui.treeNodeEx("Buttons", ImGuiTreeNodeFlags.DefaultOpen)) {
-            int[] col = new int[]{s.getButtonBackground()};
-            if (ImGuiUtils.colorEdit4Int("Background##btnBg", col)) s.setButtonBackground(col[0]);
-            col[0] = s.getButtonHover();
-            if (ImGuiUtils.colorEdit4Int("Hover##btnHover", col)) s.setButtonHover(col[0]);
-            col[0] = s.getButtonBorder();
-            if (ImGuiUtils.colorEdit4Int("Border##btnBorder", col)) s.setButtonBorder(col[0]);
+            Color c = colorEdit4("Background##btnBg", s.getButtonBackground());
+            if (c != null) s.setButtonBackground(c);
+            c = colorEdit4("Hover##btnHover", s.getButtonHover());
+            if (c != null) s.setButtonHover(c);
+            c = colorEdit4("Border##btnBorder", s.getButtonBorder());
+            if (c != null) s.setButtonBorder(c);
             ImGui.treePop();
         }
 
         if (ImGui.treeNodeEx("Navigation Buttons", ImGuiTreeNodeFlags.None)) {
-            int[] col = new int[]{s.getNavButtonBackground()};
-            if (ImGuiUtils.colorEdit4Int("Background##navBg", col)) s.setNavButtonBackground(col[0]);
-            col[0] = s.getNavButtonHover();
-            if (ImGuiUtils.colorEdit4Int("Hover##navHover", col)) s.setNavButtonHover(col[0]);
-            col[0] = s.getNavButtonBorder();
-            if (ImGuiUtils.colorEdit4Int("Border##navBorder", col)) s.setNavButtonBorder(col[0]);
+            Color c = colorEdit4("Background##navBg", s.getNavButtonBackground());
+            if (c != null) s.setNavButtonBackground(c);
+            c = colorEdit4("Hover##navHover", s.getNavButtonHover());
+            if (c != null) s.setNavButtonHover(c);
+            c = colorEdit4("Border##navBorder", s.getNavButtonBorder());
+            if (c != null) s.setNavButtonBorder(c);
             ImGui.treePop();
         }
 
         if (ImGui.treeNodeEx("Overlay & Text", ImGuiTreeNodeFlags.None)) {
-            int[] col = new int[]{s.getOverlayColor()};
-            if (ImGuiUtils.colorEdit4Int("Overlay##overlay", col)) s.setOverlayColor(col[0]);
+            Color c = colorEdit4("Overlay##overlay", s.getOverlayColor());
+            if (c != null) s.setOverlayColor(c);
 
             ImGui.spacing();
             var iv = new ImInt(s.getSpeakerFontSize());

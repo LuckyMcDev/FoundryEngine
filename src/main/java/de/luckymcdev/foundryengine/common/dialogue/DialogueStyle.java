@@ -1,21 +1,22 @@
 package de.luckymcdev.foundryengine.common.dialogue;
 
+import de.luckymcdev.foundryengine.common.util.color.Color;
 import net.minecraft.nbt.CompoundTag;
 
 public class DialogueStyle {
-    private int dialogueBackground = 0xCC101010;
-    private int dialogueBorder = 0xFF666666;
+    private Color dialogueBackground = new Color(0xCC101010);
+    private Color dialogueBorder = new Color(0xFF666666);
     private int dialogueBorderWidth = 2;
-    private int optionsBackground = 0xCC101010;
-    private int optionsBorder = 0xFF666666;
+    private Color optionsBackground = new Color(0xCC101010);
+    private Color optionsBorder = new Color(0xFF666666);
     private int optionsBorderWidth = 2;
-    private int buttonBackground = 0x88000000;
-    private int buttonHover = 0xAA444444;
-    private int buttonBorder = 0xFF888888;
-    private int navButtonBackground = 0x88000000;
-    private int navButtonHover = 0xAA444444;
-    private int navButtonBorder = 0xFF888888;
-    private int overlayColor = 0x88000000;
+    private Color buttonBackground = new Color(0x88000000);
+    private Color buttonHover = new Color(0xAA444444);
+    private Color buttonBorder = new Color(0xFF888888);
+    private Color navButtonBackground = new Color(0x88000000);
+    private Color navButtonHover = new Color(0xAA444444);
+    private Color navButtonBorder = new Color(0xFF888888);
+    private Color overlayColor = new Color(0x88000000);
     private int speakerFontSize = 9;
     private int dialogueFontSize = 9;
     private int optionFontSize = 9;
@@ -29,19 +30,19 @@ public class DialogueStyle {
 
     public static DialogueStyle fromNbt(CompoundTag tag) {
         var s = new DialogueStyle();
-        s.dialogueBackground = tag.getIntOr("DialogueBackground", s.dialogueBackground);
-        s.dialogueBorder = tag.getIntOr("DialogueBorder", s.dialogueBorder);
+        s.dialogueBackground = new Color(tag.getIntOr("DialogueBackground", s.dialogueBackground.argb()));
+        s.dialogueBorder = new Color(tag.getIntOr("DialogueBorder", s.dialogueBorder.argb()));
         s.dialogueBorderWidth = tag.getIntOr("DialogueBorderWidth", s.dialogueBorderWidth);
-        s.optionsBackground = tag.getIntOr("OptionsBackground", s.optionsBackground);
-        s.optionsBorder = tag.getIntOr("OptionsBorder", s.optionsBorder);
+        s.optionsBackground = new Color(tag.getIntOr("OptionsBackground", s.optionsBackground.argb()));
+        s.optionsBorder = new Color(tag.getIntOr("OptionsBorder", s.optionsBorder.argb()));
         s.optionsBorderWidth = tag.getIntOr("OptionsBorderWidth", s.optionsBorderWidth);
-        s.buttonBackground = tag.getIntOr("ButtonBackground", s.buttonBackground);
-        s.buttonHover = tag.getIntOr("ButtonHover", s.buttonHover);
-        s.buttonBorder = tag.getIntOr("ButtonBorder", s.buttonBorder);
-        s.navButtonBackground = tag.getIntOr("NavButtonBackground", s.navButtonBackground);
-        s.navButtonHover = tag.getIntOr("NavButtonHover", s.navButtonHover);
-        s.navButtonBorder = tag.getIntOr("NavButtonBorder", s.navButtonBorder);
-        s.overlayColor = tag.getIntOr("OverlayColor", s.overlayColor);
+        s.buttonBackground = new Color(tag.getIntOr("ButtonBackground", s.buttonBackground.argb()));
+        s.buttonHover = new Color(tag.getIntOr("ButtonHover", s.buttonHover.argb()));
+        s.buttonBorder = new Color(tag.getIntOr("ButtonBorder", s.buttonBorder.argb()));
+        s.navButtonBackground = new Color(tag.getIntOr("NavButtonBackground", s.navButtonBackground.argb()));
+        s.navButtonHover = new Color(tag.getIntOr("NavButtonHover", s.navButtonHover.argb()));
+        s.navButtonBorder = new Color(tag.getIntOr("NavButtonBorder", s.navButtonBorder.argb()));
+        s.overlayColor = new Color(tag.getIntOr("OverlayColor", s.overlayColor.argb()));
         s.speakerFontSize = tag.getIntOr("SpeakerFontSize", s.speakerFontSize);
         s.dialogueFontSize = tag.getIntOr("DialogueFontSize", s.dialogueFontSize);
         s.optionFontSize = tag.getIntOr("OptionFontSize", s.optionFontSize);
@@ -54,19 +55,19 @@ public class DialogueStyle {
 
     public CompoundTag toNbt() {
         var tag = new CompoundTag();
-        tag.putInt("DialogueBackground", dialogueBackground);
-        tag.putInt("DialogueBorder", dialogueBorder);
+        tag.putInt("DialogueBackground", dialogueBackground.argb());
+        tag.putInt("DialogueBorder", dialogueBorder.argb());
         tag.putInt("DialogueBorderWidth", dialogueBorderWidth);
-        tag.putInt("OptionsBackground", optionsBackground);
-        tag.putInt("OptionsBorder", optionsBorder);
+        tag.putInt("OptionsBackground", optionsBackground.argb());
+        tag.putInt("OptionsBorder", optionsBorder.argb());
         tag.putInt("OptionsBorderWidth", optionsBorderWidth);
-        tag.putInt("ButtonBackground", buttonBackground);
-        tag.putInt("ButtonHover", buttonHover);
-        tag.putInt("ButtonBorder", buttonBorder);
-        tag.putInt("NavButtonBackground", navButtonBackground);
-        tag.putInt("NavButtonHover", navButtonHover);
-        tag.putInt("NavButtonBorder", navButtonBorder);
-        tag.putInt("OverlayColor", overlayColor);
+        tag.putInt("ButtonBackground", buttonBackground.argb());
+        tag.putInt("ButtonHover", buttonHover.argb());
+        tag.putInt("ButtonBorder", buttonBorder.argb());
+        tag.putInt("NavButtonBackground", navButtonBackground.argb());
+        tag.putInt("NavButtonHover", navButtonHover.argb());
+        tag.putInt("NavButtonBorder", navButtonBorder.argb());
+        tag.putInt("OverlayColor", overlayColor.argb());
         tag.putInt("SpeakerFontSize", speakerFontSize);
         tag.putInt("DialogueFontSize", dialogueFontSize);
         tag.putInt("OptionFontSize", optionFontSize);
@@ -77,19 +78,19 @@ public class DialogueStyle {
         return tag;
     }
 
-    public int getDialogueBackground() {
+    public Color getDialogueBackground() {
         return dialogueBackground;
     }
 
-    public void setDialogueBackground(int v) {
+    public void setDialogueBackground(Color v) {
         this.dialogueBackground = v;
     }
 
-    public int getDialogueBorder() {
+    public Color getDialogueBorder() {
         return dialogueBorder;
     }
 
-    public void setDialogueBorder(int v) {
+    public void setDialogueBorder(Color v) {
         this.dialogueBorder = v;
     }
 
@@ -101,19 +102,19 @@ public class DialogueStyle {
         this.dialogueBorderWidth = v;
     }
 
-    public int getOptionsBackground() {
+    public Color getOptionsBackground() {
         return optionsBackground;
     }
 
-    public void setOptionsBackground(int v) {
+    public void setOptionsBackground(Color v) {
         this.optionsBackground = v;
     }
 
-    public int getOptionsBorder() {
+    public Color getOptionsBorder() {
         return optionsBorder;
     }
 
-    public void setOptionsBorder(int v) {
+    public void setOptionsBorder(Color v) {
         this.optionsBorder = v;
     }
 
@@ -125,59 +126,59 @@ public class DialogueStyle {
         this.optionsBorderWidth = v;
     }
 
-    public int getButtonBackground() {
+    public Color getButtonBackground() {
         return buttonBackground;
     }
 
-    public void setButtonBackground(int v) {
+    public void setButtonBackground(Color v) {
         this.buttonBackground = v;
     }
 
-    public int getButtonHover() {
+    public Color getButtonHover() {
         return buttonHover;
     }
 
-    public void setButtonHover(int v) {
+    public void setButtonHover(Color v) {
         this.buttonHover = v;
     }
 
-    public int getButtonBorder() {
+    public Color getButtonBorder() {
         return buttonBorder;
     }
 
-    public void setButtonBorder(int v) {
+    public void setButtonBorder(Color v) {
         this.buttonBorder = v;
     }
 
-    public int getNavButtonBackground() {
+    public Color getNavButtonBackground() {
         return navButtonBackground;
     }
 
-    public void setNavButtonBackground(int v) {
+    public void setNavButtonBackground(Color v) {
         this.navButtonBackground = v;
     }
 
-    public int getNavButtonHover() {
+    public Color getNavButtonHover() {
         return navButtonHover;
     }
 
-    public void setNavButtonHover(int v) {
+    public void setNavButtonHover(Color v) {
         this.navButtonHover = v;
     }
 
-    public int getNavButtonBorder() {
+    public Color getNavButtonBorder() {
         return navButtonBorder;
     }
 
-    public void setNavButtonBorder(int v) {
+    public void setNavButtonBorder(Color v) {
         this.navButtonBorder = v;
     }
 
-    public int getOverlayColor() {
+    public Color getOverlayColor() {
         return overlayColor;
     }
 
-    public void setOverlayColor(int v) {
+    public void setOverlayColor(Color v) {
         this.overlayColor = v;
     }
 

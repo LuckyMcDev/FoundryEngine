@@ -32,6 +32,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import org.jspecify.annotations.Nullable;
 import org.lwjgl.opengl.GL11;
 
 import java.io.File;
@@ -46,6 +47,17 @@ import java.util.*;
  */
 public class ImGuiUtils {
     private static final StringSplitter IM_GUI_SPLITTER = new StringSplitter((charId, style) -> Client.getImGuiManager().getFontManager().getCurrent().getCharAdvance(charId));
+    private static final int MAX_ICON_LOADS_PER_FRAME = 25;
+    private static final Map<String, Integer> iconCache = new HashMap<>();
+    private static final Map<String, DynamicTexture> iconTextures = new HashMap<>();
+    private static final Set<String> pendingKeys = new HashSet<>();
+    private static final Queue<ItemStack> renderQueue = new ArrayDeque<>();
+    private @Nullable static GpuTexture fbColorTex;
+    private @Nullable static GpuTextureView fbColorView;
+    private @Nullable static GpuTexture fbDepthTex;
+    private @Nullable static GpuTextureView fbDepthView;
+    private @Nullable static ProjectionMatrixBuffer fbProjBuf;
+    private static int fbSize;
 
     /**
      * Displays a (?) with a hover tooltip. Useful for example information.
@@ -197,7 +209,7 @@ public class ImGuiUtils {
             ImGui.pushStyleVar(ImGuiStyleVar.ItemSpacing, 0, 0);
             ImGui.setItemAllowOverlap();
             ImGui.sameLine();
-            ImGuiUtils.icon(ImIcons.FA.FA_CLIPBOARD);
+            ImGuiUtils.displayIcon(ImIcons.FA.FA_CLIPBOARD);
             ImGui.sameLine();
             ImGui.popStyleVar();
             ImGui.text("Copy Location");
@@ -443,7 +455,6 @@ public class ImGuiUtils {
         return String.format(text, args);
     }
 
-
     /**
      * Dimmed, slightly spaced‑out uppercase label used to head a section.
      */
@@ -478,6 +489,15 @@ public class ImGuiUtils {
         ImGui.endChild();
     }
 
+    public static @Nullable Color colorEdit4(String label, Color current) {
+        float[] f = new float[]{current.r(), current.g(), current.b(), current.a()};
+        ImGui.setNextItemWidth(180);
+        if (ImGui.colorEdit4(label, f, ImGuiColorEditFlags.NoInputs)) {
+            return new Color(f[0], f[1], f[2], f[3]);
+        }
+        return null;
+    }
+
     /**
      * RGBA color picker that reads/writes an int[4] where each element is a packed ARGB int.
      * Returns true if the value changed.
@@ -501,19 +521,6 @@ public class ImGuiUtils {
         return false;
     }
 
-    private static final int MAX_ICON_LOADS_PER_FRAME = 25;
-    private static final Map<String, Integer> iconCache = new HashMap<>();
-    private static final Map<String, DynamicTexture> iconTextures = new HashMap<>();
-    private static final Set<String> pendingKeys = new HashSet<>();
-    private static final Queue<ItemStack> renderQueue = new ArrayDeque<>();
-
-    private static GpuTexture fbColorTex;
-    private static GpuTextureView fbColorView;
-    private static GpuTexture fbDepthTex;
-    private static GpuTextureView fbDepthView;
-    private static ProjectionMatrixBuffer fbProjBuf;
-    private static int fbSize;
-
     private static void ensureFramebuffer(int size) {
         if (fbSize == size && fbColorTex != null && !fbColorTex.isClosed()) return;
         closeFramebuffer();
@@ -527,11 +534,26 @@ public class ImGuiUtils {
     }
 
     private static void closeFramebuffer() {
-        if (fbColorTex != null) { fbColorTex.close(); fbColorTex = null; }
-        if (fbColorView != null) { fbColorView.close(); fbColorView = null; }
-        if (fbDepthTex != null) { fbDepthTex.close(); fbDepthTex = null; }
-        if (fbDepthView != null) { fbDepthView.close(); fbDepthView = null; }
-        if (fbProjBuf != null) { fbProjBuf.close(); fbProjBuf = null; }
+        if (fbColorTex != null) {
+            fbColorTex.close();
+            fbColorTex = null;
+        }
+        if (fbColorView != null) {
+            fbColorView.close();
+            fbColorView = null;
+        }
+        if (fbDepthTex != null) {
+            fbDepthTex.close();
+            fbDepthTex = null;
+        }
+        if (fbDepthView != null) {
+            fbDepthView.close();
+            fbDepthView = null;
+        }
+        if (fbProjBuf != null) {
+            fbProjBuf.close();
+            fbProjBuf = null;
+        }
         fbSize = 0;
     }
 
