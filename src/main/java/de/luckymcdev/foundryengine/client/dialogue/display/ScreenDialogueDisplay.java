@@ -13,11 +13,15 @@ import de.luckymcdev.foundryengine.common.dialogue.DialogueSession;
 import de.luckymcdev.foundryengine.common.dialogue.DialogueStyle;
 import de.luckymcdev.foundryengine.common.dialogue.display.IDialogueDisplay;
 import de.luckymcdev.foundryengine.common.network.packets.dialogue.ServerboundDialoguePacket;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.phys.Vec2;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import org.jspecify.annotations.Nullable;
@@ -72,6 +76,7 @@ public class ScreenDialogueDisplay implements IDialogueDisplay {
         private ButtonWidget navButton;
         private String fullText = "";
         private long typewriterStartNanos;
+        private int lastVisibleCharCount = 0;
         private boolean typewriterDone;
         private boolean optionsRevealed;
 
@@ -150,6 +155,7 @@ public class ScreenDialogueDisplay implements IDialogueDisplay {
             typewriterStartNanos = System.nanoTime();
             typewriterDone = fullText.isEmpty();
             optionsRevealed = typewriterDone;
+            lastVisibleCharCount = 0;
             updateSpeaker();
             applyVisibleText(typewriterDone ? fullText.length() : 0);
         }
@@ -164,6 +170,17 @@ public class ScreenDialogueDisplay implements IDialogueDisplay {
                 visibleChars = fullText.length();
                 typewriterDone = true;
             }
+
+            int newChars = visibleChars - lastVisibleCharCount;
+            if (newChars > 0) {
+                SoundEvent typewriterSound = SoundEvents.POINTED_DRIPSTONE_DRIP_WATER;
+                for (int i = 0; i < newChars; i++) {
+                    Minecraft.getInstance().getSoundManager().play(
+                            SimpleSoundInstance.forUI(typewriterSound, 0.4f, 0.9f)
+                    );
+                }
+            }
+            lastVisibleCharCount = visibleChars;
 
             applyVisibleText(visibleChars);
 
@@ -181,6 +198,7 @@ public class ScreenDialogueDisplay implements IDialogueDisplay {
         void skipTypewriter() {
             if (typewriterDone) return;
             typewriterDone = true;
+            lastVisibleCharCount = fullText.length();
             applyVisibleText(fullText.length());
             if (!optionsRevealed) {
                 optionsRevealed = true;
@@ -273,7 +291,7 @@ public class ScreenDialogueDisplay implements IDialogueDisplay {
 
         @Override
         public boolean keyPressed(KeyEvent event) {
-            if(event.key() == InputConstants.KEY_SPACE) {
+            if (event.key() == InputConstants.KEY_SPACE) {
                 skipTypewriter();
             }
             return super.keyPressed(event);
