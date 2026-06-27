@@ -21,7 +21,7 @@ public class DialogueStyle {
     private int dialogueFontSize = 9;
     private int optionFontSize = 9;
     private int margin = 10;
-    private int panelHeight = 150;
+    private int panelHeight = 125;
     private int buttonHeight = 22;
     private int optionGap = 4;
 

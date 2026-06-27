@@ -65,6 +65,8 @@ public class ScreenDialogueDisplay implements IDialogueDisplay {
 
     private static class DialogueScreen extends EngineScreen {
         private static final double CHARS_PER_SECOND = 45.0;
+        private static final double MAX_PANEL_HEIGHT_FRACTION = 0.28;
+
         private final List<ButtonWidget> optionButtons = new ArrayList<>();
         private DialogueNode node;
         private DialogueStyle style;
@@ -109,9 +111,15 @@ public class ScreenDialogueDisplay implements IDialogueDisplay {
             super.init();
         }
 
+        private int resolvePanelHeight() {
+            int configured = style.getPanelHeight();
+            int capped = (int) (this.height * MAX_PANEL_HEIGHT_FRACTION);
+            return Math.clamp(capped, 60, configured);
+        }
+
         private void buildLayout() {
             var m = style.getMargin();
-            var ph = style.getPanelHeight();
+            var ph = resolvePanelHeight();
 
             dialogueBox = new PanelWidget(
                     new UIVec(0, 1, m, -m),
