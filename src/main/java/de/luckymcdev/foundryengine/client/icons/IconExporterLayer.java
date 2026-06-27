@@ -62,7 +62,7 @@ public class IconExporterLayer implements GuiLayer {
         return !pendingItems.isEmpty();
     }
 
-    public void startExport(HolderLookup.Provider lookup, double guiScale, @Nullable String modIdFilter, boolean modIdRegex) {
+    public void startExport(HolderLookup.Provider lookup, @Nullable String modIdFilter, boolean modIdRegex) {
         this.imageSize = ClientConfig.ICON_SIZE.get();
         this.pendingItems.clear();
         this.exporting = true;
@@ -97,13 +97,13 @@ public class IconExporterLayer implements GuiLayer {
     public void exportCustomItems(List<ItemStack> customStacks) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) return;
-        startExport(mc.level.registryAccess(), mc.getWindow().getGuiScale(), customStacks);
+        startExport(mc.level.registryAccess(), customStacks);
         if (!hasWork() && mc.player != null) {
             mc.player.sendSystemMessage(Component.literal("Items already exported!"));
         }
     }
 
-    public void startExport(HolderLookup.Provider lookup, double guiScale, List<ItemStack> customItems) {
+    public void startExport(HolderLookup.Provider lookup, List<ItemStack> customItems) {
         this.imageSize = ClientConfig.ICON_SIZE.get();
         this.pendingItems.clear();
         this.exporting = true;

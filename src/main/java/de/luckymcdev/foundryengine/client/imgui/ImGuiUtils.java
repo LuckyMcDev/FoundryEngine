@@ -1,27 +1,47 @@
 package de.luckymcdev.foundryengine.client.imgui;
 
+import com.mojang.blaze3d.ProjectionType;
+import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.opengl.GlTexture;
+import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.platform.NativeImage;
+import com.mojang.blaze3d.systems.CommandEncoder;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.textures.GpuTexture;
 import com.mojang.blaze3d.textures.GpuTextureView;
+import com.mojang.blaze3d.textures.TextureFormat;
+import com.mojang.blaze3d.vertex.PoseStack;
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcon;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.util.color.Color;
+import de.luckymcdev.foundryengine.config.ClientConfig;
 import imgui.ImGui;
 import imgui.flag.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.StringSplitter;
+import net.minecraft.client.renderer.Projection;
+import net.minecraft.client.renderer.ProjectionMatrixBuffer;
+import net.minecraft.client.renderer.item.TrackingItemStackRenderState;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
 import org.lwjgl.opengl.GL11;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayDeque;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Queue;
 
 /**
  * A Class which has static methods for
@@ -482,6 +502,142 @@ public class ImGuiUtils {
             return true;
         }
         return false;
+    }
+
+    // ─── Item icon cache ─────────────────────────────────────────────────────
+    private static final int MAX_ICON_LOADS_PER_FRAME = 25;
+    private static final Map<String, Integer> iconCache = new HashMap<>();
+    private static final Map<String, DynamicTexture> iconTextures = new HashMap<>();
+    private static final Queue<ItemStack> renderQueue = new ArrayDeque<>();
+
+    private static GpuTexture fbColorTex;
+    private static GpuTextureView fbColorView;
+    private static GpuTexture fbDepthTex;
+    private static GpuTextureView fbDepthView;
+    private static ProjectionMatrixBuffer fbProjBuf;
+    private static int fbSize;
+
+    private static void ensureFramebuffer(int size) {
+        if (fbSize == size && fbColorTex != null && !fbColorTex.isClosed()) return;
+        closeFramebuffer();
+        fbSize = size;
+        var device = RenderSystem.getDevice();
+        fbColorTex = device.createTexture(() -> "cat_icon_fb", 13, TextureFormat.RGBA8, size, size, 1, 1);
+        fbColorView = device.createTextureView(fbColorTex);
+        fbDepthTex = device.createTexture(() -> "cat_icon_fb_depth", 9, TextureFormat.DEPTH32, size, size, 1, 1);
+        fbDepthView = device.createTextureView(fbDepthTex);
+        fbProjBuf = new ProjectionMatrixBuffer("cat_icon_fb_proj");
+    }
+
+    private static void closeFramebuffer() {
+        if (fbColorTex != null) { fbColorTex.close(); fbColorTex = null; }
+        if (fbColorView != null) { fbColorView.close(); fbColorView = null; }
+        if (fbDepthTex != null) { fbDepthTex.close(); fbDepthTex = null; }
+        if (fbDepthView != null) { fbDepthView.close(); fbDepthView = null; }
+        if (fbProjBuf != null) { fbProjBuf.close(); fbProjBuf = null; }
+        fbSize = 0;
+    }
+
+    public static int getOrCreateItemIcon(ItemStack stack) {
+        int size = ClientConfig.ICON_SIZE.get();
+        String key = BuiltInRegistries.ITEM.getKey(stack.getItem()) + "@" + size;
+
+        Integer cached = iconCache.get(key);
+        if (cached != null) return cached;
+
+        if (!renderQueue.contains(stack)) {
+            renderQueue.add(stack);
+        }
+        return -1;
+    }
+
+    public static void processIconQueue() {
+        int loads = 0;
+        while (!renderQueue.isEmpty() && loads < MAX_ICON_LOADS_PER_FRAME) {
+            ItemStack stack = renderQueue.poll();
+            int size = ClientConfig.ICON_SIZE.get();
+            String key = BuiltInRegistries.ITEM.getKey(stack.getItem()) + "@" + size;
+            if (iconCache.containsKey(key)) continue;
+
+            renderOne(stack, size, key);
+            loads++;
+        }
+    }
+
+    private static void renderOne(ItemStack stack, int size, String cacheKey) {
+        var mc = Minecraft.getInstance();
+        var level = mc.level;
+        if (level == null) return;
+
+        ensureFramebuffer(size);
+        var device = RenderSystem.getDevice();
+
+        device.createCommandEncoder().clearColorAndDepthTextures(fbColorTex, 0, fbDepthTex, 1.0);
+        RenderSystem.outputColorTextureOverride = fbColorView;
+        RenderSystem.outputDepthTextureOverride = fbDepthView;
+
+        Projection projection = new Projection();
+        projection.setupOrtho(-1000.0F, 1000.0F, size, size, true);
+
+        RenderSystem.backupProjectionMatrix();
+        RenderSystem.setProjectionMatrix(fbProjBuf.getBuffer(projection), ProjectionType.ORTHOGRAPHIC);
+
+        var resolver = mc.getItemModelResolver();
+        var submitNodeCollector = mc.gameRenderer.getSubmitNodeStorage();
+        var featureDispatcher = mc.gameRenderer.getFeatureRenderDispatcher();
+        var bufferSource = mc.renderBuffers().bufferSource();
+        var lighting = mc.gameRenderer.getLighting();
+        var player = mc.player;
+
+        TrackingItemStackRenderState renderState = new TrackingItemStackRenderState();
+        resolver.updateForTopItem(renderState, stack, ItemDisplayContext.GUI, level, player, 0);
+
+        Lighting.Entry lightingEntry = renderState.usesBlockLight() ? Lighting.Entry.ITEMS_3D : Lighting.Entry.ITEMS_FLAT;
+        lighting.setupFor(lightingEntry);
+
+        PoseStack poseStack = new PoseStack();
+        poseStack.translate(size / 2.0F, size / 2.0F, 0.0F);
+        poseStack.scale(size, -size, size);
+        renderState.submit(poseStack, submitNodeCollector, 15728880, OverlayTexture.NO_OVERLAY, 0);
+
+        featureDispatcher.renderAllFeatures();
+        bufferSource.endBatch();
+
+        RenderSystem.restoreProjectionMatrix();
+        RenderSystem.outputColorTextureOverride = null;
+        RenderSystem.outputDepthTextureOverride = null;
+
+        int pixelSize = TextureFormat.RGBA8.pixelSize();
+        GpuBuffer readBuffer = device.createBuffer(() -> "cat_icon_read", GpuBuffer.USAGE_MAP_READ | GpuBuffer.USAGE_COPY_DST, (long) size * size * pixelSize);
+        CommandEncoder encoder = device.createCommandEncoder();
+        device.createCommandEncoder().copyTextureToBuffer(fbColorTex, readBuffer, 0, () -> {
+            try (var mapped = encoder.mapBuffer(readBuffer, true, false)) {
+                NativeImage image = new NativeImage(size, size, false);
+                for (int y = 0; y < size; y++) {
+                    for (int x = 0; x < size; x++) {
+                        int pixel = mapped.data().getInt((x + y * size) * pixelSize);
+                        image.setPixelABGR(x, size - y - 1, pixel);
+                    }
+                }
+                DynamicTexture dynTex = new DynamicTexture(() -> "cat_icon_" + cacheKey, image);
+                int glId = ((GlTexture) dynTex.getTexture()).glId();
+                iconCache.put(cacheKey, glId);
+                iconTextures.put(cacheKey, dynTex);
+            } catch (Exception e) {
+                Common.LOGGER.error("Failed to read back item icon for {}", cacheKey, e);
+            }
+            readBuffer.close();
+        }, 0);
+    }
+
+    public static void clearItemIconCache() {
+        renderQueue.clear();
+        for (DynamicTexture tex : iconTextures.values()) {
+            tex.close();
+        }
+        iconTextures.clear();
+        iconCache.clear();
+        closeFramebuffer();
     }
 
     public record Image(int glId, int width, int height) {

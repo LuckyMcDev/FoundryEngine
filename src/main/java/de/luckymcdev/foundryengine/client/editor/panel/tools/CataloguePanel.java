@@ -3,7 +3,6 @@ package de.luckymcdev.foundryengine.client.editor.panel.tools;
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
-import de.luckymcdev.foundryengine.client.icons.ImageExportUtil;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.common.Common;
@@ -19,12 +18,12 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
-import java.io.File;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
@@ -32,16 +31,12 @@ import java.util.stream.Stream;
 
 public class CataloguePanel extends EditorPanel {
     public static final CataloguePanel INSTANCE = new CataloguePanel();
-    private static final int MAX_LOADS_PER_FRAME = 25;
     private static final float ITEM_SIZE = 64f;
     private static final Identifier NAMETAG_ID = Identifier.parse("minecraft:name_tag");
     private static final Identifier BUCKET_ID = Identifier.parse("minecraft:water_bucket");
     private static final Identifier SPAWNER_ID = Identifier.parse("minecraft:spawner");
     private static final Identifier CRAFTING_TABLE_ID = Identifier.parse("minecraft:crafting_table");
-    private final Map<Identifier, Integer> textureCache = new HashMap<>();
     private final Set<Identifier> failedLoads = new HashSet<>();
-    private final Queue<Identifier> loadQueue = new ArrayDeque<>();
-    private final Set<Identifier> queued = new HashSet<>();
     private final ImString searchBuffer = new ImString(256);
 
     public CataloguePanel() {
@@ -72,6 +67,7 @@ public class CataloguePanel extends EditorPanel {
 
     @Override
     public void content() {
+        if (!requireWorld()) return;
         processTextureQueue();
         renderSearchHeader();
 
@@ -316,57 +312,13 @@ public class CataloguePanel extends EditorPanel {
     }
 
     private int getOrLoadIcon(Identifier location) {
-        if (textureCache.containsKey(location)) return textureCache.get(location);
-        if (failedLoads.contains(location)) return -1;
-
-        if (!queued.contains(location)) {
-            loadQueue.add(location);
-            queued.add(location);
-        }
-
-        return -1;
+        var item = BuiltInRegistries.ITEM.getOptional(location);
+        if (item.isEmpty()) return -1;
+        return ImGuiUtils.getOrCreateItemIcon(new ItemStack(item.get()));
     }
 
     private void processTextureQueue() {
-        int loads = 0;
-
-        while (!loadQueue.isEmpty() && loads < MAX_LOADS_PER_FRAME) {
-            Identifier location = loadQueue.poll();
-            queued.remove(location);
-
-            int texture = loadTextureNow(location);
-            if (texture != -1) {
-                textureCache.put(location, texture);
-            } else {
-                failedLoads.add(location);
-            }
-
-            loads++;
-        }
-    }
-
-    private int loadTextureNow(Identifier location) {
-        File outputDir = Common.CACHE.resolve("icons")
-                .resolve(String.valueOf(ClientConfig.ICON_SIZE.get()))
-                .toFile();
-
-        File namespaceDir = new File(outputDir, location.getNamespace());
-
-        if (namespaceDir.exists()) {
-            String prefix = ImageExportUtil.sanitizeFilename(location.getPath());
-
-            File[] matches = namespaceDir.listFiles((dir, fileName) ->
-                    fileName.startsWith(prefix) && fileName.endsWith(".png"));
-
-            if (matches != null && matches.length > 0) {
-                ImGuiUtils.Image img = ImGuiUtils.getTexture(matches[0]);
-                if (img.glId() > 0) {
-                    return img.glId();
-                }
-            }
-        }
-
-        return -1;
+        ImGuiUtils.processIconQueue();
     }
 
     public record CataloguePayload(

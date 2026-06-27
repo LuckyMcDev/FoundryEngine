@@ -20,6 +20,7 @@ import de.luckymcdev.foundryengine.client.editor.panel.tools.*;
 import de.luckymcdev.foundryengine.client.editor.panel.view.InfoPanel;
 import de.luckymcdev.foundryengine.client.editor.panel.view.ThemeSelectorPanel;
 import de.luckymcdev.foundryengine.client.ext.ModPathBroadcaster;
+import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.render.EngineSceneDepth;
 import de.luckymcdev.foundryengine.client.render.WorldViewMatrix;
 import de.luckymcdev.foundryengine.client.waypoint.ClientWaypointManager;
@@ -28,7 +29,6 @@ import de.luckymcdev.foundryengine.common.network.packets.BundleHashPacket;
 import de.luckymcdev.foundryengine.common.network.packets.editor.WaypointPacket;
 import de.luckymcdev.foundryengine.common.util.FolderHash;
 import de.luckymcdev.foundryengine.common.util.color.Color;
-import de.luckymcdev.foundryengine.config.ClientConfig;
 import de.luckymcdev.foundryengine.config.Config;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -54,7 +54,6 @@ import java.util.concurrent.CompletableFuture;
 public class FoundryEngineModClient {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final IEventBus BUS = NeoForge.EVENT_BUS;
-    private boolean hasIconAutoExported = false;
 
     public FoundryEngineModClient(IEventBus modBus, ModContainer modContainer) {
         modBus.addListener(this::onClientSetup);
@@ -99,6 +98,7 @@ public class FoundryEngineModClient {
         event.addListener(Common.id("imgui_handler"), Client.getImGuiManager());
         event.addListener(Common.id("obj_models"), createReloadListener(() -> Client.getObjModelManager().loadModels()));
         event.addListener(Common.id("post_effects"), createReloadListener(() -> Client.getPostEffectManager().getRegistry().invalidatePipelineCaches()));
+        event.addListener(Common.id("item_icon_cache"), createReloadListener(ImGuiUtils::clearItemIconCache));
     }
 
     private PreparableReloadListener createReloadListener(Runnable runnable) {
@@ -195,24 +195,7 @@ public class FoundryEngineModClient {
             Common.getGameManager().tickClient(Minecraft.getInstance(), clientLevel);
         }
 
-        if (!hasIconAutoExported && ClientConfig.AUTO_EXPORT.get()) {
-            Minecraft mc = Minecraft.getInstance();
-            if (mc.level == null) return;
 
-            hasIconAutoExported = true;
-            LOGGER.info("Auto-export: Initializing icon generation...");
-
-            Client.getIconExporterLayer().startExport(
-                    mc.level.registryAccess(),
-                    mc.getWindow().getGuiScale(),
-                    null,
-                    false
-            );
-
-            if (!Client.getIconExporterLayer().hasWork()) {
-                LOGGER.info("Auto-export: All icons are up to date.");
-            }
-        }
     }
 
     private void handleWaypointKeys() {

@@ -55,8 +55,7 @@ public class GenerateIconsCommand implements EngineCommand {
                     HolderLookup.Provider lookup,
                     String modIdFilter,
                     boolean regex) {
-        double guiScale = Minecraft.getInstance().getWindow().getGuiScale();
-        Client.getIconExporterLayer().startExport(lookup, guiScale, modIdFilter, regex);
+        Client.getIconExporterLayer().startExport(lookup, modIdFilter, regex);
         return 1;
     }
 }
