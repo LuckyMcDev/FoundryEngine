@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.client.node;
 
 import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
+import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import imgui.ImGui;
 import imgui.extension.imnodes.ImNodes;
 import imgui.extension.imnodes.flag.ImNodesMiniMapLocation;
@@ -106,7 +107,7 @@ public class NodeEditorInstance<T> {
             ImNodes.beginNodeTitleBar();
 
             if (node.builder != null) {
-                if (ImGui.button("X")) {
+                if (ImGui.button(" "+ImIcons.FA.FA_CLOSE+" ")) {
                     removedNode = node;
                 }
                 ImGui.sameLine();
