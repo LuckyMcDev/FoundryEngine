@@ -38,10 +38,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayDeque;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Queue;
+import java.util.*;
 
 /**
  * A Class which has static methods for
@@ -504,10 +501,10 @@ public class ImGuiUtils {
         return false;
     }
 
-    // ─── Item icon cache ─────────────────────────────────────────────────────
     private static final int MAX_ICON_LOADS_PER_FRAME = 25;
     private static final Map<String, Integer> iconCache = new HashMap<>();
     private static final Map<String, DynamicTexture> iconTextures = new HashMap<>();
+    private static final Set<String> pendingKeys = new HashSet<>();
     private static final Queue<ItemStack> renderQueue = new ArrayDeque<>();
 
     private static GpuTexture fbColorTex;
@@ -545,7 +542,8 @@ public class ImGuiUtils {
         Integer cached = iconCache.get(key);
         if (cached != null) return cached;
 
-        if (!renderQueue.contains(stack)) {
+        if (!pendingKeys.contains(key)) {
+            pendingKeys.add(key);
             renderQueue.add(stack);
         }
         return -1;
@@ -567,7 +565,10 @@ public class ImGuiUtils {
     private static void renderOne(ItemStack stack, int size, String cacheKey) {
         var mc = Minecraft.getInstance();
         var level = mc.level;
-        if (level == null) return;
+        if (level == null) {
+            pendingKeys.remove(cacheKey);
+            return;
+        }
 
         ensureFramebuffer(size);
         var device = RenderSystem.getDevice();
@@ -623,8 +624,10 @@ public class ImGuiUtils {
                 int glId = ((GlTexture) dynTex.getTexture()).glId();
                 iconCache.put(cacheKey, glId);
                 iconTextures.put(cacheKey, dynTex);
+                pendingKeys.remove(cacheKey);
             } catch (Exception e) {
                 Common.LOGGER.error("Failed to read back item icon for {}", cacheKey, e);
+                pendingKeys.remove(cacheKey);
             }
             readBuffer.close();
         }, 0);
@@ -632,6 +635,7 @@ public class ImGuiUtils {
 
     public static void clearItemIconCache() {
         renderQueue.clear();
+        pendingKeys.clear();
         for (DynamicTexture tex : iconTextures.values()) {
             tex.close();
         }
