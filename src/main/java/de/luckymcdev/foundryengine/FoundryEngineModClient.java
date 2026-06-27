@@ -20,7 +20,6 @@ import de.luckymcdev.foundryengine.client.editor.panel.tools.*;
 import de.luckymcdev.foundryengine.client.editor.panel.view.InfoPanel;
 import de.luckymcdev.foundryengine.client.editor.panel.view.ThemeSelectorPanel;
 import de.luckymcdev.foundryengine.client.ext.ModPathBroadcaster;
-import de.luckymcdev.foundryengine.client.icons.ScreenIconExporter;
 import de.luckymcdev.foundryengine.client.render.EngineSceneDepth;
 import de.luckymcdev.foundryengine.client.render.WorldViewMatrix;
 import de.luckymcdev.foundryengine.client.waypoint.ClientWaypointManager;
@@ -63,7 +62,7 @@ public class FoundryEngineModClient {
         modBus.addListener(this::onRegisterKeyMapping);
         modBus.addListener(this::onRegisterDebugEntry);
         modBus.addListener(this::onRegisterDebugRenderers);
-
+        modBus.addListener(this::onRegisterGuiLayers);
         BUS.addListener(this::onRegisterPanels);
         BUS.addListener(this::onClientTickPost);
         BUS.addListener(this::onRenderLevel);
@@ -71,6 +70,7 @@ public class FoundryEngineModClient {
         BUS.addListener(this::onRegisterCommands);
         BUS.addListener(this::onLoggingIn);
         BUS.addListener(this::onClientTickPre);
+        BUS.addListener(this::onRenderFramePost);
 
         Config.registerClient(modContainer);
     }
@@ -83,6 +83,14 @@ public class FoundryEngineModClient {
             Minecraft.getInstance().reloadResourcePacks();
             BUS.post(new RegisterPanelEvent());
         });
+    }
+
+    private void onRegisterGuiLayers(RegisterGuiLayersEvent event) {
+        event.registerAboveAll(Common.id("icon_exporter"), Client.getIconExporterLayer());
+    }
+
+    private void onRenderFramePost(RenderFrameEvent.Post event) {
+        Client.getIconExporterLayer().onPostRender();
     }
 
 
@@ -189,21 +197,19 @@ public class FoundryEngineModClient {
 
         if (!hasIconAutoExported && ClientConfig.AUTO_EXPORT.get()) {
             Minecraft mc = Minecraft.getInstance();
-            if (mc.level == null || mc.screen != null) return;
+            if (mc.level == null) return;
 
             hasIconAutoExported = true;
             LOGGER.info("Auto-export: Initializing icon generation...");
 
-            ScreenIconExporter screen = new ScreenIconExporter(
+            Client.getIconExporterLayer().startExport(
                     mc.level.registryAccess(),
                     mc.getWindow().getGuiScale(),
                     null,
                     false
             );
 
-            if (screen.hasWork()) {
-                mc.setScreen(screen);
-            } else {
+            if (!Client.getIconExporterLayer().hasWork()) {
                 LOGGER.info("Auto-export: All icons are up to date.");
             }
         }

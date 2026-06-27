@@ -14,6 +14,7 @@ import de.luckymcdev.foundryengine.client.editor.EditorController;
 import de.luckymcdev.foundryengine.client.editor.EditorManager;
 import de.luckymcdev.foundryengine.client.editor.MainMenu;
 import de.luckymcdev.foundryengine.client.editor.feature.CutsceneEditorFeature;
+import de.luckymcdev.foundryengine.client.icons.IconExporterLayer;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiManager;
 import de.luckymcdev.foundryengine.client.particle.ParticleManager;
 import de.luckymcdev.foundryengine.client.post.PostEffectManager;
@@ -91,6 +92,7 @@ public final class Client {
     private static final SkyboxManager SKYBOX_MANAGER = new SkyboxManager();
     private static final EditorController EDITOR_CONTROLLER = new EditorController();
     private static final ClientDialogueManager DIALOGUE_MANAGER = new ClientDialogueManager();
+    private static final IconExporterLayer ICON_EXPORTER_LAYER = new IconExporterLayer();
 
     private Client() {
         throw new UtilityClassException();
@@ -322,6 +324,13 @@ public final class Client {
      */
     public static ClientDialogueManager getDialogueManager() {
         return DIALOGUE_MANAGER;
+    }
+
+    /**
+     * Returns the icon exporter layer for non-blocking icon generation.
+     */
+    public static IconExporterLayer getIconExporterLayer() {
+        return ICON_EXPORTER_LAYER;
     }
 
     /**
