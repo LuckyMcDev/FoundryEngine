@@ -1,5 +1,6 @@
 package de.luckymcdev.foundryengine.client.render.obj;
 
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
@@ -20,11 +21,24 @@ public class ObjParser {
     public List<Vector2f> uvs = new ArrayList<>();
     public List<Face> faces = new ArrayList<>();
     public Map<String, ObjObject> objects = new LinkedHashMap<>();
+    public Map<String, Material> materials = new LinkedHashMap<>();
 
     protected ObjObject currentObject;
     protected String currentObjectName = "default";
+    protected Material currentMaterial = Material.MISSING;
+    private Identifier objLocation;
 
     public void parseObjFile(Resource resource) throws IOException {
+        parseObjFile(null, resource);
+    }
+
+    /**
+     * @param objLocation the resource location of the .obj file being parsed, used to
+     *                    resolve {@code mtllib} references relative to it. May be {@code null}
+     *                    if the file contains no {@code mtllib} directive.
+     */
+    public void parseObjFile(Identifier objLocation, Resource resource) throws IOException {
+        this.objLocation = objLocation;
         currentObject = new ObjObject(currentObjectName);
         objects.put(currentObjectName, currentObject);
 
@@ -47,6 +61,10 @@ public class ObjParser {
                 parseVt(line);
             } else if (line.startsWith("f ")) {
                 parseF(line);
+            } else if (line.startsWith("mtllib ")) {
+                parseMtllib(line);
+            } else if (line.startsWith("usemtl ")) {
+                parseUsemtl(line);
             }
         }
         reader.close();
@@ -92,6 +110,32 @@ public class ObjParser {
         currentObject.addFace(face);
     }
 
+    private void parseMtllib(String line) {
+        if (objLocation == null) {
+            de.luckymcdev.foundryengine.common.Common.LOGGER.warn(
+                    "mtllib directive found but no objLocation was provided to parseObjFile — skipping: {}", line);
+            return;
+        }
+        String[] tokens = line.split("\\s+", 2);
+        if (tokens.length < 2) {
+            return;
+        }
+        // mtllib may reference multiple files separated by whitespace.
+        for (String ref : tokens[1].trim().split("\\s+")) {
+            MtlParser.loadFromObj(objLocation, ref).ifPresent(materials::putAll);
+        }
+    }
+
+    private void parseUsemtl(String line) {
+        String[] tokens = line.split("\\s+", 2);
+        String name = tokens.length > 1 ? tokens[1].trim() : "";
+        currentMaterial = materials.getOrDefault(name, Material.MISSING);
+        if (currentMaterial == Material.MISSING && !name.isEmpty()) {
+            de.luckymcdev.foundryengine.common.Common.LOGGER.warn(
+                    "usemtl referenced unknown material '{}' — using default", name);
+        }
+    }
+
     private @NotNull Face getFace(String line) {
         String[] tokens = line.trim().split("\\s+");
         List<Vertex> faceVertices = new ArrayList<>();
@@ -110,7 +154,7 @@ public class ObjParser {
             faceVertices.add(new Vertex(position, normal, uv));
         }
 
-        return new Face(faceVertices);
+        return new Face(faceVertices, currentMaterial);
     }
 
     protected Vector3f safeGetNormal(int index) {
@@ -144,5 +188,9 @@ public class ObjParser {
 
     public ObjObject getObject(String name) {
         return objects.get(name);
+    }
+
+    public Map<String, Material> getMaterials() {
+        return materials;
     }
 }

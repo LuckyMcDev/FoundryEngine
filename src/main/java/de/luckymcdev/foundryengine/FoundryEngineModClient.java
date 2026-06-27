@@ -1,5 +1,6 @@
 package de.luckymcdev.foundryengine;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.command.FoundryCommandsClient;
@@ -23,6 +24,7 @@ import de.luckymcdev.foundryengine.client.ext.ModPathBroadcaster;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.render.EngineSceneDepth;
 import de.luckymcdev.foundryengine.client.render.WorldViewMatrix;
+import de.luckymcdev.foundryengine.client.render.obj.ObjModel;
 import de.luckymcdev.foundryengine.client.waypoint.ClientWaypointManager;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.network.packets.BundleHashPacket;
@@ -34,6 +36,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.Vec3i;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
+import net.minecraft.util.LightCoordsUtil;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -42,7 +45,7 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.common.NeoForge;
-import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
 import org.slf4j.Logger;
 
 import java.util.concurrent.CompletableFuture;
@@ -54,6 +57,7 @@ import java.util.concurrent.CompletableFuture;
 public class FoundryEngineModClient {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final IEventBus BUS = NeoForge.EVENT_BUS;
+    private static final ObjModel CHUPACABRA = new ObjModel(Common.id("obj/chupacabra.obj"));
 
     public FoundryEngineModClient(IEventBus modBus, ModContainer modContainer) {
         modBus.addListener(this::onClientSetup);
@@ -82,6 +86,7 @@ public class FoundryEngineModClient {
             Minecraft.getInstance().reloadResourcePacks();
             BUS.post(new RegisterPanelEvent());
         });
+        Client.getObjModelManager().registerObjModel(CHUPACABRA);
     }
 
     private void onRegisterGuiLayers(RegisterGuiLayersEvent event) {
@@ -177,8 +182,10 @@ public class FoundryEngineModClient {
         Client.getWaypointRenderer().renderWaypoints(event);
         Client.getAreaRenderer().renderAreaModules(event);
 
-        Matrix4f modelView = WorldViewMatrix.from(event).at(0, 110, 0).scale(2).buildModelView();
-        //SUZANNE.renderModel(modelView, EngineRenderPipelines.POSITION_COLOR_NORMAL);
+        Matrix4fc modelView = WorldViewMatrix.from(event)
+                .at(0f, 110f, 0f)
+                .buildModelView();
+        CHUPACABRA.renderModel(modelView, new PoseStack(), LightCoordsUtil.FULL_BRIGHT);
     }
 
     private void onClientTickPre(ClientTickEvent.Pre event) {

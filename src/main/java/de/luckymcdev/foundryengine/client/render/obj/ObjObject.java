@@ -1,15 +1,15 @@
 package de.luckymcdev.foundryengine.client.render.obj;
 
-import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.vertex.PoseStack;
-import de.luckymcdev.foundryengine.client.Client;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ObjObject {
     private final String name;
@@ -30,27 +30,42 @@ public class ObjObject {
         faces.add(face);
     }
 
-    public void render(PoseStack poseStack, RenderType renderType, int packedLight) {
+    /**
+     * Renders all faces, grouped by material. Each material/{@link Material} resolves
+     * to its own {@link RenderType} via {@link ObjRenderTypes},
+     * so faces sharing a material share a batched draw.
+     */
+    public void render(PoseStack poseStack, int packedLight) {
         poseStack.pushPose();
         applyTransformToPoseStack(poseStack);
-        faces.forEach(face -> face.renderFace(poseStack, renderType, packedLight));
+        for (Face face : faces) {
+            face.renderFace(poseStack, packedLight);
+        }
         poseStack.popPose();
     }
 
-    public void render(RenderPipeline pipeline, Matrix4f viewMatrix,
-                       float r, float g, float b, float a) {
-        Matrix4f mvp = new Matrix4f(viewMatrix).mul(buildModelMatrix());
-
-        Client.getMeshRenderer().draw(pipeline, mvp, buffer -> {
-            PoseStack poseStack = new PoseStack();
-            for (Face face : faces) {
-                face.buildVertices(buffer, poseStack, r, g, b, a);
-            }
-        });
+    /**
+     * Renders all faces using a single caller-supplied {@link RenderType},
+     * ignoring per-face materials. Useful for non-textured passes (depth-only, outline, etc).
+     */
+    public void render(PoseStack poseStack, RenderType renderType, int packedLight) {
+        poseStack.pushPose();
+        applyTransformToPoseStack(poseStack);
+        for (Face face : faces) {
+            face.renderFace(poseStack, renderType, packedLight);
+        }
+        poseStack.popPose();
     }
 
-    public void render(RenderPipeline pipeline, Matrix4f viewMatrix) {
-        render(pipeline, viewMatrix, 1f, 1f, 1f, 1f);
+    /**
+     * Groups this object's faces by material, e.g. for diagnostics or custom render loops.
+     */
+    public Map<Material, List<Face>> facesByMaterial() {
+        Map<Material, List<Face>> grouped = new LinkedHashMap<>();
+        for (Face face : faces) {
+            grouped.computeIfAbsent(face.material(), k -> new ArrayList<>()).add(face);
+        }
+        return grouped;
     }
 
     public Vector3f getCentroid() {
