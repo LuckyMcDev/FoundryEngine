@@ -1,5 +1,6 @@
 package de.luckymcdev.foundryengine.client.dialogue.display;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.ui.Enums;
 import de.luckymcdev.foundryengine.client.ui.UIVec;
@@ -12,8 +13,8 @@ import de.luckymcdev.foundryengine.common.dialogue.DialogueSession;
 import de.luckymcdev.foundryengine.common.dialogue.DialogueStyle;
 import de.luckymcdev.foundryengine.common.dialogue.display.IDialogueDisplay;
 import de.luckymcdev.foundryengine.common.network.packets.dialogue.ServerboundDialoguePacket;
-import de.luckymcdev.foundryengine.common.util.color.Color;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -59,6 +60,7 @@ public class ScreenDialogueDisplay implements IDialogueDisplay {
     }
 
     private static class DialogueScreen extends EngineScreen {
+        private static final double CHARS_PER_SECOND = 45.0;
         private final List<ButtonWidget> optionButtons = new ArrayList<>();
         private DialogueNode node;
         private DialogueStyle style;
@@ -68,6 +70,10 @@ public class ScreenDialogueDisplay implements IDialogueDisplay {
         private TextWidget dialogueText;
         private PanelWidget optionsBox;
         private ButtonWidget navButton;
+        private String fullText = "";
+        private long typewriterStartNanos;
+        private boolean typewriterDone;
+        private boolean optionsRevealed;
 
         DialogueScreen(DialogueNode node, DialogueStyle style) {
             this.node = node;
@@ -81,12 +87,14 @@ public class ScreenDialogueDisplay implements IDialogueDisplay {
 
         void updateNode(DialogueNode n) {
             this.node = n;
+            startTypewriter();
             if (widgetsBuilt) rebuildOptions();
         }
 
         @Override
         protected void init() {
             buildLayout();
+            startTypewriter();
             rebuildOptions();
             widgetsBuilt = true;
             super.init();
@@ -101,8 +109,8 @@ public class ScreenDialogueDisplay implements IDialogueDisplay {
                     new UIVec(0.75, 0, 0, ph)
             );
             dialogueBox.setAnchorPoint(new Vec2(0, 1));
-            dialogueBox.setBackgroundColor(new Color(style.getDialogueBackground()));
-            dialogueBox.setBorder(new Color(style.getDialogueBorder()), style.getDialogueBorderWidth());
+            dialogueBox.setBackgroundColor(style.getDialogueBackground());
+            dialogueBox.setBorder(style.getDialogueBorder(), style.getDialogueBorderWidth());
 
             speakerText = new TextWidget(
                     new UIVec(0, 0, 10, 8),
@@ -125,17 +133,59 @@ public class ScreenDialogueDisplay implements IDialogueDisplay {
                     new UIVec(0.25, 0, 0, ph)
             );
             optionsBox.setAnchorPoint(new Vec2(1, 1));
-            optionsBox.setBackgroundColor(new Color(style.getOptionsBackground()));
-            optionsBox.setBorder(new Color(style.getOptionsBorder()), style.getOptionsBorderWidth());
+            optionsBox.setBackgroundColor(style.getOptionsBackground());
+            optionsBox.setBorder(style.getOptionsBorder(), style.getOptionsBorderWidth());
             this.addWidget(optionsBox);
 
-            updateText();
+            updateSpeaker();
         }
 
-        private void updateText() {
+        private void updateSpeaker() {
             if (node == null) return;
             speakerText.setText(Component.literal("<" + node.getSpeaker() + ">").withStyle(s -> s.withColor(node.getSpeakerColor())));
-            dialogueText.setText(Component.literal(node.getText()));
+        }
+
+        private void startTypewriter() {
+            fullText = node != null ? node.getText() : "";
+            typewriterStartNanos = System.nanoTime();
+            typewriterDone = fullText.isEmpty();
+            optionsRevealed = typewriterDone;
+            updateSpeaker();
+            applyVisibleText(typewriterDone ? fullText.length() : 0);
+        }
+
+        private void tickTypewriter() {
+            if (typewriterDone || fullText.isEmpty()) return;
+
+            double elapsedSeconds = (System.nanoTime() - typewriterStartNanos) / 1_000_000_000.0;
+            int visibleChars = (int) (elapsedSeconds * CHARS_PER_SECOND);
+
+            if (visibleChars >= fullText.length()) {
+                visibleChars = fullText.length();
+                typewriterDone = true;
+            }
+
+            applyVisibleText(visibleChars);
+
+            if (typewriterDone && !optionsRevealed) {
+                optionsRevealed = true;
+                if (widgetsBuilt) rebuildOptions();
+            }
+        }
+
+        private void applyVisibleText(int visibleChars) {
+            String shown = fullText.substring(0, Math.min(visibleChars, fullText.length()));
+            dialogueText.setText(Component.literal(shown));
+        }
+
+        void skipTypewriter() {
+            if (typewriterDone) return;
+            typewriterDone = true;
+            applyVisibleText(fullText.length());
+            if (!optionsRevealed) {
+                optionsRevealed = true;
+                if (widgetsBuilt) rebuildOptions();
+            }
         }
 
         private void rebuildOptions() {
@@ -145,9 +195,10 @@ public class ScreenDialogueDisplay implements IDialogueDisplay {
                 optionsBox.removeWidget(navButton);
                 navButton = null;
             }
-            updateText();
 
             if (node == null) return;
+
+            if (!optionsRevealed) return;
 
             var bt = style.getButtonHeight();
             var gap = style.getOptionGap();
@@ -162,9 +213,9 @@ public class ScreenDialogueDisplay implements IDialogueDisplay {
                                 hasNext ? ServerboundDialoguePacket.advanceNext() : ServerboundDialoguePacket.end())
                 );
                 navButton.setAnchorPoint(new Vec2(0.5f, 0.5f));
-                navButton.setBackgroundColor(new Color(style.getNavButtonBackground()));
-                navButton.setHoverColor(new Color(style.getNavButtonHover()));
-                navButton.setBorderColor(new Color(style.getNavButtonBorder()));
+                navButton.setBackgroundColor(style.getNavButtonBackground());
+                navButton.setHoverColor(style.getNavButtonHover());
+                navButton.setBorderColor(style.getNavButtonBorder());
 
                 var label = new TextWidget(
                         new UIVec(0.5, 0.5, 0, 0),
@@ -185,9 +236,9 @@ public class ScreenDialogueDisplay implements IDialogueDisplay {
                             (mx, my, b) -> ClientPacketDistributor.sendToServer(
                                     ServerboundDialoguePacket.selectOption(opt.getId()))
                     );
-                    btn.setBackgroundColor(new Color(style.getButtonBackground()));
-                    btn.setHoverColor(new Color(style.getButtonHover()));
-                    btn.setBorderColor(new Color(style.getButtonBorder()));
+                    btn.setBackgroundColor(style.getButtonBackground());
+                    btn.setHoverColor(style.getButtonHover());
+                    btn.setBorderColor(style.getButtonBorder());
 
                     var label = new TextWidget(
                             new UIVec(0, 0, 4, 3),
@@ -211,12 +262,21 @@ public class ScreenDialogueDisplay implements IDialogueDisplay {
 
         @Override
         public void extractBackground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
-            guiGraphics.fill(RenderPipelines.GUI, 0, 0, this.width, this.height, style.getOverlayColor());
+            tickTypewriter();
+            guiGraphics.fill(RenderPipelines.GUI, 0, 0, this.width, this.height, style.getOverlayColor().argb());
         }
 
         @Override
         public boolean isPauseScreen() {
             return false;
+        }
+
+        @Override
+        public boolean keyPressed(KeyEvent event) {
+            if(event.key() == InputConstants.KEY_SPACE) {
+                skipTypewriter();
+            }
+            return super.keyPressed(event);
         }
     }
 
