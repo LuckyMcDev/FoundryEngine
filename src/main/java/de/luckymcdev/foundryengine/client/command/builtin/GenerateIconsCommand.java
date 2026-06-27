@@ -3,7 +3,7 @@ package de.luckymcdev.foundryengine.client.command.builtin;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import de.luckymcdev.foundryengine.client.icons.ScreenIconExporter;
+import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.server.command.EngineCommand;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandBuildContext;
@@ -47,7 +47,7 @@ public class GenerateIconsCommand implements EngineCommand {
 
         List<ItemStack> singleItemList = List.of(stackInHand.copy());
 
-        ScreenIconExporter.exportCustomItems(singleItemList);
+        Client.getIconExporterLayer().exportCustomItems(singleItemList);
         return 1;
     }
 
@@ -56,8 +56,7 @@ public class GenerateIconsCommand implements EngineCommand {
                     String modIdFilter,
                     boolean regex) {
         double guiScale = Minecraft.getInstance().getWindow().getGuiScale();
-        ScreenIconExporter screen = new ScreenIconExporter(lookup, guiScale, modIdFilter, regex);
-        Minecraft.getInstance().submitAsync(() -> Minecraft.getInstance().setScreen(screen));
+        Client.getIconExporterLayer().startExport(lookup, guiScale, modIdFilter, regex);
         return 1;
     }
 }

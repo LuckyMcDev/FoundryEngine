@@ -19,7 +19,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class ImageExportUtil {
-    private static final Logger LOGGER = LogManager.getLogger();
+    static final Logger LOGGER = LogManager.getLogger();
 
     public static String baseFilenameFromItem(HolderLookup.Provider lookupProvider, ItemStack itemStack) {
         Identifier id = BuiltInRegistries.ITEM.getKey(itemStack.getItem());
