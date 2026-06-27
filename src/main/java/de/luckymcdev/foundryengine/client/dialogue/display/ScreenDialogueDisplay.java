@@ -99,7 +99,11 @@ public class ScreenDialogueDisplay implements IDialogueDisplay {
         @Override
         protected void init() {
             buildLayout();
-            startTypewriter();
+            if (fullText.isEmpty() && !widgetsBuilt) {
+                startTypewriter();
+            } else {
+                applyVisibleText(lastVisibleCharCount);
+            }
             rebuildOptions();
             widgetsBuilt = true;
             super.init();
@@ -226,7 +230,7 @@ public class ScreenDialogueDisplay implements IDialogueDisplay {
                 boolean hasNext = node.getNextNodeId() != null && !node.getNextNodeId().isBlank();
                 navButton = new ButtonWidget(
                         new UIVec(0.5, 0.5, 0, 0),
-                        new UIVec(0, 0, 130, bt),
+                        new UIVec(0.9, 0, 0, bt),
                         (mx, my, btn) -> ClientPacketDistributor.sendToServer(
                                 hasNext ? ServerboundDialoguePacket.advanceNext() : ServerboundDialoguePacket.end())
                 );
@@ -237,12 +241,12 @@ public class ScreenDialogueDisplay implements IDialogueDisplay {
 
                 var label = new TextWidget(
                         new UIVec(0.5, 0.5, 0, 0),
-                        new UIVec(0, 0, 120, bt)
+                        new UIVec(0.85, 0, 0, bt)
                 );
                 label.setAnchorPoint(new Vec2(0.5f, 0.5f));
                 label.setAlignment(Enums.Alignment.CENTER);
                 label.setFontSize(style.getOptionFontSize());
-                label.setText(Component.literal(hasNext ? "Next \u2192" : "[End Dialogue]"));
+                label.setText(Component.literal(hasNext ? "Next ->" : "[End Dialogue]"));
                 navButton.addWidget(label);
                 optionsBox.addWidget(navButton);
             } else {
