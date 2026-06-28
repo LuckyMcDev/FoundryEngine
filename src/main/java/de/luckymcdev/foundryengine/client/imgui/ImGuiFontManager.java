@@ -1,6 +1,5 @@
 package de.luckymcdev.foundryengine.client.imgui;
 
-import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.client.imgui.backend.ImGuiImplGl3;
 import de.luckymcdev.foundryengine.common.font.TTFFile;
 import imgui.ImFont;
@@ -10,7 +9,6 @@ import imgui.ImGui;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.jspecify.annotations.Nullable;
-import org.slf4j.Logger;
 
 import java.util.*;
 import java.util.function.Function;
@@ -28,12 +26,10 @@ public final class ImGuiFontManager {
             0x3040, 0x30FF,   // Hiragana & Katakana
             0
     };
-    private static final Logger LOGGER = LogUtils.getLogger();
     private final ImGuiImplGl3 glImpl;
     private final List<FontRegistration> registrations = new ArrayList<>();
     private final Map<Identifier, ImFont> loadedFonts = new LinkedHashMap<>();
     private @Nullable ImFont actualImGuiDefaultFont;
-    private @Nullable Identifier defaultFontId;
     private short[] globalGlyphRanges = DEFAULT_GLYPH_RANGES;
     private int oversampleH = 3;
     private int oversampleV = 3;
@@ -43,6 +39,8 @@ public final class ImGuiFontManager {
 
     public ImGuiFontManager(ImGuiImplGl3 glImpl) {
         this.glImpl = glImpl;
+        registerFonts(TTFFile.JETBRAINS_MONO_NERD.all());
+        registerFont(TTFFile.FALLBACK_JB);
     }
 
     /**
@@ -98,6 +96,15 @@ public final class ImGuiFontManager {
     }
 
     /**
+     * Registers multiple TTF fonts.
+     */
+    public void registerFonts(Collection<TTFFile> fonts) {
+        for (TTFFile font : fonts) {
+            registerFont(font);
+        }
+    }
+
+    /**
      * Registers a raw font with a provider function and explicit config.
      */
     public void registerRawFont(Identifier id, Function<ResourceManager, byte[]> ttfProvider,
@@ -106,20 +113,26 @@ public final class ImGuiFontManager {
     }
 
     /**
-     * Sets the default font used when no specific font is pushed.
-     */
-    public void setDefaultFont(Identifier id) {
-        this.defaultFontId = id;
-    }
-
-    /**
      * Loads all registered fonts. Pass an empty list to load all fonts,
      * or a non-empty list to load only the fonts with matching IDs.
      */
     public void loadFonts(ResourceManager resourceManager, List<Identifier> filter) {
+        loadFonts(resourceManager, filter, null);
+    }
+
+    /**
+     * Loads registered fonts and selects an optional default font by id.
+     */
+    public void loadFonts(ResourceManager resourceManager, List<Identifier> filter, @Nullable Identifier defaultFontId) {
         ImFontAtlas atlas = ImGui.getIO().getFonts();
+        if (atlas == null) {
+            return;
+        }
+
         atlas.clear();
-        glImpl.destroyFontsTexture();
+        if (glImpl != null) {
+            glImpl.destroyFontsTexture();
+        }
 
         loadedFonts.clear();
         actualImGuiDefaultFont = null;
@@ -128,73 +141,29 @@ public final class ImGuiFontManager {
             if (!filter.isEmpty() && !filter.contains(reg.getId())) {
                 continue;
             }
-            try {
-                byte[] ttfData = reg.loadBytes(resourceManager);
-                if (ttfData == null) {
-                    LOGGER.warn("Skipping font {} – no TTF data", reg.getId());
-                    continue;
-                }
-
-                ImFontConfig fontConfig;
-                if (reg.getCustomConfig() != null) {
-                    fontConfig = reg.getCustomConfig();
-                } else {
-                    fontConfig = new ImFontConfig();
-                    fontConfig.setOversampleH(oversampleH);
-                    fontConfig.setOversampleV(oversampleV);
-                    fontConfig.setRasterizerMultiply(rasterizerMultiply);
-                    fontConfig.setGlyphOffset(glyphOffsetX, glyphOffsetY);
-
-                    short[] ranges = reg.getGlyphRanges();
-                    if (ranges == null || ranges.length == 0) {
-                        ranges = globalGlyphRanges;
-                    }
-                    fontConfig.setGlyphRanges(ranges);
-                }
-
-                ImFont font = atlas.addFontFromMemoryTTF(ttfData, reg.getFontSize(), fontConfig);
-                if (font != null) {
-                    loadedFonts.put(reg.getId(), font);
-                    LOGGER.debug("Loaded font: {}", reg.getId());
-                } else {
-                    LOGGER.error("Failed to add font from TTF: {}", reg.getId());
-                }
-
-                if (reg.getCustomConfig() == null) {
-                    fontConfig.destroy();
-                }
-            } catch (Exception e) {
-                LOGGER.error("Exception while loading font {}: {}", reg.getId(), e.getMessage(), e);
+            if (loadFont(atlas, reg, resourceManager)) {
+                continue;
             }
         }
 
         if (loadedFonts.isEmpty()) {
-            LOGGER.warn("No fonts were loaded – falling back to ImGui default font");
-            actualImGuiDefaultFont = atlas.addFontDefault();
-            loadedFonts.put(Identifier.withDefaultNamespace("default"), actualImGuiDefaultFont);
+            addFallbackFont(atlas);
         }
 
         if (!atlas.build()) {
-            LOGGER.error("Failed to build font atlas! Falling back to a minimal default font.");
             atlas.clear();
             loadedFonts.clear();
-            actualImGuiDefaultFont = atlas.addFontDefault();
-            loadedFonts.put(Identifier.withDefaultNamespace("default"), actualImGuiDefaultFont);
+            addFallbackFont(atlas);
             if (!atlas.build()) {
                 throw new IllegalStateException("Could not build even the default font atlas");
             }
         }
 
-        glImpl.createFontsTexture();
-
-        ImFont defaultFont = defaultFontId != null ? loadedFonts.get(defaultFontId) : loadedFonts.values().iterator().next();
-        if (defaultFont != null) {
-            actualImGuiDefaultFont = defaultFont;
-            ImGui.getIO().setFontDefault(defaultFont);
-        } else if (!loadedFonts.isEmpty()) {
-            actualImGuiDefaultFont = loadedFonts.values().iterator().next();
-            ImGui.getIO().setFontDefault(actualImGuiDefaultFont);
+        if (glImpl != null) {
+            glImpl.createFontsTexture();
         }
+
+        selectDefaultFont(defaultFontId);
 
         atlas.clearTexData();
     }
@@ -210,10 +179,11 @@ public final class ImGuiFontManager {
      * Destroys the font texture and clears all registrations.
      */
     public void destroy() {
-        glImpl.destroyFontsTexture();
+        if (glImpl != null) {
+            glImpl.destroyFontsTexture();
+        }
         loadedFonts.clear();
         registrations.clear();
-        defaultFontId = null;
         actualImGuiDefaultFont = null;
     }
 
@@ -230,7 +200,6 @@ public final class ImGuiFontManager {
     public ImFont getFont(Identifier id) {
         ImFont font = loadedFonts.get(id);
         if (font == null) {
-            LOGGER.error("Font '{}' not found, returning default font.", id);
             return actualImGuiDefaultFont != null ? actualImGuiDefaultFont : ImGui.getIO().getFontDefault();
         }
         return font;
@@ -256,7 +225,14 @@ public final class ImGuiFontManager {
      * Pushes a registered font onto the ImGui font stack.
      */
     public void pushFont(Identifier id) {
-        ImGui.pushFont(getFont(id));
+        ImGui.pushFont(getFont(id), 0.0F);
+    }
+
+    /**
+     * Pushes a registered font onto the ImGui font stack.
+     */
+    public void pushFont(Identifier id, int size) {
+        ImGui.pushFont(getFont(id), size);
     }
 
     /**
@@ -331,6 +307,55 @@ public final class ImGuiFontManager {
         @Override
         public ImFontConfig getCustomConfig() {
             return customConfig;
+        }
+    }
+
+    private boolean loadFont(ImFontAtlas atlas, FontRegistration reg, ResourceManager resourceManager) {
+        try {
+            byte[] ttfData = reg.loadBytes(resourceManager);
+
+            ImFontConfig fontConfig = reg.getCustomConfig();
+            boolean destroyConfig = false;
+            if (fontConfig == null) {
+                fontConfig = new ImFontConfig();
+                fontConfig.setOversampleH(oversampleH);
+                fontConfig.setOversampleV(oversampleV);
+                fontConfig.setRasterizerMultiply(rasterizerMultiply);
+                fontConfig.setGlyphOffset(glyphOffsetX, glyphOffsetY);
+                short[] ranges = reg.getGlyphRanges();
+                if (ranges == null || ranges.length == 0) {
+                    ranges = globalGlyphRanges;
+                }
+                fontConfig.setGlyphRanges(ranges);
+                destroyConfig = true;
+            }
+
+            ImFont font = atlas.addFontFromMemoryTTF(ttfData, reg.getFontSize(), fontConfig);
+            if (destroyConfig) {
+                fontConfig.destroy();
+            }
+            if (font != null) {
+                loadedFonts.put(reg.getId(), font);
+                return true;
+            }
+        } catch (Exception ignored) {
+        }
+        return false;
+    }
+
+    private void addFallbackFont(ImFontAtlas atlas) {
+        actualImGuiDefaultFont = atlas.addFontDefault();
+        loadedFonts.put(Identifier.withDefaultNamespace("default"), actualImGuiDefaultFont);
+    }
+
+    private void selectDefaultFont(@Nullable Identifier defaultFontId) {
+        ImFont defaultFont = defaultFontId != null ? loadedFonts.get(defaultFontId) : null;
+        if (defaultFont == null && !loadedFonts.isEmpty()) {
+            defaultFont = loadedFonts.values().iterator().next();
+        }
+        if (defaultFont != null) {
+            actualImGuiDefaultFont = defaultFont;
+            ImGui.getIO().setFontDefault(defaultFont);
         }
     }
 }

@@ -2,8 +2,7 @@ package de.luckymcdev.foundryengine.common.util;
 
 import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
-import de.luckymcdev.foundryengine.common.editor.builtin.code.CodeEditorLanguageDefinitions;
-import imgui.extension.texteditor.TextEditorLanguageDefinition;
+import imgui.extension.texteditor.TextEditorLanguage;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,17 +11,9 @@ import java.util.Map;
  * Maps file extensions to editor language definitions and icons.
  */
 public class FileEndings {
-
-    private static final Map<String, TextEditorLanguageDefinition> EXTENSION_TO_LANG = new HashMap<>();
     private static final Map<String, String> EXTENSION_TO_ICON = new HashMap<>();
 
     static {
-        registerLanguage(CodeEditorLanguageDefinitions.glsl(), "glsl", "vsh", "fsh", "geom", "comp");
-        registerLanguage(CodeEditorLanguageDefinitions.java(), "java");
-        registerLanguage(CodeEditorLanguageDefinitions.groovy(), "groovy", "gradle");
-        registerLanguage(CodeEditorLanguageDefinitions.json(), "json");
-        registerLanguage(CodeEditorLanguageDefinitions.toml(), "toml");
-
         registerIcon(ImGraphicsExtractor.icon(ImIcons.FA.FA_FILE_CODE), "java", "groovy", "glsl", "vsh", "fsh", "js");
         registerIcon(ImGraphicsExtractor.icon(ImIcons.FA.FA_FILE_IMPORT), "json", "toml", "yaml", "yml");
         registerIcon(ImGraphicsExtractor.icon(ImIcons.FA.FA_FILE_IMAGE), "png", "jpg", "jpeg", "tga");
@@ -30,12 +21,6 @@ public class FileEndings {
         registerIcon(ImGraphicsExtractor.icon(ImIcons.FA.FA_FILE_ZIPPER), "zip", "jar", "tar", "gz");
         registerIcon(ImGraphicsExtractor.icon(ImIcons.FA.FA_FILE_TEXT), "txt", "log");
         registerIcon(ImGraphicsExtractor.icon(ImIcons.FA.FA_FILE_PEN), "md");
-    }
-
-    private static void registerLanguage(TextEditorLanguageDefinition def, String... extensions) {
-        for (String ext : extensions) {
-            EXTENSION_TO_LANG.put(ext.toLowerCase(), def);
-        }
     }
 
     private static void registerIcon(String icon, String... extensions) {
@@ -50,14 +35,24 @@ public class FileEndings {
     /**
      * Returns the language definition for the given file name based on its extension.
      */
-    public static TextEditorLanguageDefinition getLanguageDefinitionByFileName(String fileName) {
+    public static TextEditorLanguage getLanguageDefinitionByFileName(String fileName) {
         String ext = getExtension(fileName);
-        return ext != null ? EXTENSION_TO_LANG.get(ext) : null;
+        return switch (ext) {
+            case "as" -> TextEditorLanguage.AngelScript();
+            case "c" -> TextEditorLanguage.C();
+            case "cpp" -> TextEditorLanguage.Cpp();
+            case "cs" -> TextEditorLanguage.Cs();
+            case "glsl" -> TextEditorLanguage.Glsl();
+            case "hlsl" -> TextEditorLanguage.Hlsl();
+            case "json" -> TextEditorLanguage.Json();
+            case "md" -> TextEditorLanguage.Markdown();
+            case "lua" -> TextEditorLanguage.Lua();
+            case "py" -> TextEditorLanguage.Python();
+            case "sql" -> TextEditorLanguage.Sql();
+            default -> TextEditorLanguage.Cs();
+        };
     }
 
-    /**
-     * Gets the FontAwesome icon string based on file extension.
-     */
     /**
      * Returns the FontAwesome icon string for the given file name based on its extension.
      */

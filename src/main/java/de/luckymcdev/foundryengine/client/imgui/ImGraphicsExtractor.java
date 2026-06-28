@@ -27,7 +27,6 @@ import imgui.type.ImBoolean;
 import it.unimi.dsi.fastutil.floats.FloatArrayList;
 import it.unimi.dsi.fastutil.floats.FloatList;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.StringSplitter;
 import net.minecraft.client.renderer.Projection;
 import net.minecraft.client.renderer.ProjectionMatrixBuffer;
 import net.minecraft.client.renderer.item.TrackingItemStackRenderState;
@@ -53,7 +52,6 @@ import java.util.*;
 import java.util.function.Function;
 
 public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorConsumer {
-    private static final StringSplitter IM_GUI_SPLITTER = new StringSplitter((charId, style) -> Client.getImGuiManager().getFontManager().getCurrent().getCharAdvance(charId));
     private static final int MAX_ICON_LOADS_PER_FRAME = 25;
     private static final Map<String, Integer> iconCache = new HashMap<>();
     private static final Map<String, DynamicTexture> iconTextures = new HashMap<>();
@@ -101,15 +99,7 @@ public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorCons
      */
     public static ImFont getStyleFont(final Style style) {
         var fm = Client.getImGuiManager().getFontManager();
-        if (style.isBold() && style.isItalic()) {
-            return fm.getFont(TTFFile.JETBRAINS_MONO_BOLD_ITALIC.id());
-        } else if (style.isBold()) {
-            return fm.getFont(TTFFile.JETBRAINS_MONO_BOLD.id());
-        } else if (style.isItalic()) {
-            return fm.getFont(TTFFile.JETBRAINS_MONO_ITALIC.id());
-        } else {
-            return fm.getFont(TTFFile.JETBRAINS_MONO_REGULAR.id());
-        }
+        return fm.getFont(TTFFile.JETBRAINS_MONO_NERD.face(style.isBold(), style.isItalic()).id());
     }
 
     public static int getColor(final int color) {
@@ -405,8 +395,7 @@ public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorCons
 
     public void setFontScale(float scale) {
         var font = ImGui.getFont();
-        font.setScale(scale);
-        ImGui.pushFont(font);
+        ImGui.pushFont(font, scale);
 
         if (stack.pushedFontScales == null) {
             stack.pushedFontScales = new FloatArrayList(1);
@@ -529,10 +518,6 @@ public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorCons
         return combo(label, selected, noneLabel, Arrays.asList(options), nameFunction);
     }
 
-    public StringSplitter getStringSplitter() {
-        return IM_GUI_SPLITTER;
-    }
-
     public void helpTooltip(String text) {
         ImGui.sameLine();
         ImGui.textColored(0xFF555555, "(?)");
@@ -576,7 +561,7 @@ public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorCons
                 ImGui.setClipboardText(loc.toString());
             }
             ImGui.pushStyleVar(ImGuiStyleVar.ItemSpacing, 0, 0);
-            ImGui.setItemAllowOverlap();
+            ImGui.setNextItemAllowOverlap();
             ImGui.sameLine();
             this.displayIcon(ImIcons.FA.FA_CLIPBOARD);
             ImGui.sameLine();
@@ -707,7 +692,7 @@ public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorCons
         GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
         pushStack();
         setStyleVar(ImGuiStyleVar.FramePadding, 0, 0);
-        ImGui.imageButton(id, w, h, 0, 0, 1, 1);
+        ImGui.imageButton(String.valueOf(id), id, w, h, 0, 0, 1, 1);
         popStack();
     }
 

@@ -6,7 +6,7 @@ import org.joml.Vector3f;
 /**
  * A single material parsed from a {@code .mtl} file.
  * <p>
- * Only {@link #diffuseTexture} and {@link #opacity} currently affect rendering
+ * Only {@link #getDiffuseTexturePath()} and {@link #getOpacity()} currently affect rendering
  * (see {@link Face#renderFace}); the color components are retained for future use
  * (e.g. tinting, custom shaders) since the current vertex format only carries a
  * flat per-vertex color and a single diffuse sampler.

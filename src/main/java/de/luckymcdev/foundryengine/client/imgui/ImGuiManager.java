@@ -52,7 +52,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public final class ImGuiManager implements ResourceManagerReloadListener, NativeResource {
     public static final ImGuiCharSink IMGUI_CHAR_SINK = new ImGuiCharSink();
     public static final StringSplitter IM_GUI_SPLITTER = new StringSplitter((charId, style) -> {
-        ImGui.pushFont(ImGraphicsExtractor.getStyleFont(style));
+        ImGui.pushFont(ImGraphicsExtractor.getStyleFont(style), 0.0F);
         float width = ImGui.calcTextSizeX(Character.toString(charId));
         ImGui.popFont();
         return width;
@@ -75,8 +75,9 @@ public final class ImGuiManager implements ResourceManagerReloadListener, Native
      * See {@link GameRendererMixin#engine$renderHead(DeltaTracker, boolean, CallbackInfo)} for usage.
      *
      * @param handle the window handle, e.g. {@link Window#handle()}
+     * @param resourceManager the resource manager for loading fonts
      */
-    public void create(final long handle) {
+    public void create(final long handle, final ResourceManager resourceManager) {
         imGuiContext = ImGui.createContext();
         imPlotContext = ImPlot.createContext();
         imNodesContext = ImNodes.createContext();
@@ -92,14 +93,14 @@ public final class ImGuiManager implements ResourceManagerReloadListener, Native
         io.addConfigFlags(ImGuiConfigFlags.DpiEnableScaleFonts);
         io.addConfigFlags(ImGuiConfigFlags.DpiEnableScaleViewports);
         io.getFonts().setFreeTypeRenderer(true);
+        imGuiImplGl3.init("#version 330 core");
+        imGuiImplGlfw.init(handle, true);
+
         io.setConfigDockingWithShift(true);
         io.setConfigWindowsMoveFromTitleBarOnly(false);
         io.setConfigMacOSXBehaviors(InputQuirks.ON_OSX);
 
-        BuiltInFonts.registerAll(fontManager);
-
-        imGuiImplGl3.init("#version 330 core");
-        imGuiImplGlfw.init(handle, true);
+        fontManager.loadFonts(resourceManager);
 
         ImGui.styleColorsDark();
         loadThemeFromConfig();
@@ -232,8 +233,8 @@ public final class ImGuiManager implements ResourceManagerReloadListener, Native
             io.setMousePos(-1, -1);
         }
 
-        dockId = ImGui.dockSpaceOverViewport(ImGui.getMainViewport(),
-                ImGuiDockNodeFlags.PassthruCentralNode + ImGuiDockNodeFlags.AutoHideTabBar);
+
+        dockId = ImGui.dockSpaceOverViewport(ImGui.getID(ImGui.getMainViewport().ptr),ImGui.getMainViewport(), ImGuiDockNodeFlags.PassthruCentralNode + ImGuiDockNodeFlags.AutoHideTabBar);
         ImGuiDockNode centralNode = imgui.internal.ImGui.dockBuilderGetCentralNode(dockId);
         shouldBlockInput = centralNode.isLeafNode() && !centralNode.isEmpty();
     }
@@ -314,20 +315,16 @@ public final class ImGuiManager implements ResourceManagerReloadListener, Native
      */
     @Override
     public void onResourceManagerReload(ResourceManager resourceManager) {
-        LOGGER.debug("Reloading fonts from resource manager");
         switch (ClientConfig.FONT_OPTION.get()) {
             case "MINIMAL": {
-                fontManager.loadFonts(resourceManager, BuiltInFonts.MINIMAL_LIST);
-                fontManager.setDefaultFont(BuiltInFonts.FALLBACK_JB);
+                fontManager.loadFonts(resourceManager, BuiltInFonts.MINIMAL_LIST, BuiltInFonts.FALLBACK_JB);
                 break;
             }
             case "NORMAL": {
-                fontManager.loadFonts(resourceManager, BuiltInFonts.NORMAL_LIST);
-                fontManager.setDefaultFont(BuiltInFonts.REGULAR);
+                fontManager.loadFonts(resourceManager, BuiltInFonts.NORMAL_LIST, BuiltInFonts.REGULAR);
                 break;
             }
             case "DISABLED": {
-                LOGGER.info("Fonts are Disabled.");
                 break;
             }
         }
