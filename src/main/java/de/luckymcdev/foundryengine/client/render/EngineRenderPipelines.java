@@ -25,17 +25,33 @@ public class EngineRenderPipelines {
                     .withDepthStencilState(new DepthStencilState(CompareOp.ALWAYS_PASS, false))
                     .build()
     );
-    public static final RenderPipeline OBJ_ENTITY = RenderPipelinesInvoker.register(
+    public static final RenderPipeline OBJ_ENTITY_CUTOUT = RenderPipelinesInvoker.register(
             RenderPipeline.builder(RenderPipelines.MATRICES_FOG_LIGHT_DIR_SNIPPET)
-                    .withLocation(Common.id("pipeline/obj_entity"))
+                    .withLocation(Common.id("pipeline/obj_entity_cutout"))
                     .withVertexFormat(DefaultVertexFormat.ENTITY, VertexFormat.Mode.QUADS)
                     .withVertexShader(Identifier.withDefaultNamespace("core/entity"))
                     .withFragmentShader(Identifier.withDefaultNamespace("core/entity"))
                     .withSampler("Sampler0")
                     .withSampler("Sampler1")
                     .withSampler("Sampler2")
-                    .withColorTargetState(new ColorTargetState(TRANSLUCENT))
+                    .withShaderDefine("ALPHA_CUTOUT", 0.1F)
+                    .withColorTargetState(ColorTargetState.DEFAULT)
                     .withDepthStencilState(DepthStencilState.DEFAULT)
+                    .withCull(false)
+                    .build()
+    );
+    public static final RenderPipeline OBJ_ENTITY_TRANSLUCENT = RenderPipelinesInvoker.register(
+            RenderPipeline.builder(RenderPipelines.MATRICES_FOG_LIGHT_DIR_SNIPPET)
+                    .withLocation(Common.id("pipeline/obj_entity_translucent"))
+                    .withVertexFormat(DefaultVertexFormat.ENTITY, VertexFormat.Mode.QUADS)
+                    .withVertexShader(Identifier.withDefaultNamespace("core/entity"))
+                    .withFragmentShader(Identifier.withDefaultNamespace("core/entity"))
+                    .withSampler("Sampler0")
+                    .withSampler("Sampler1")
+                    .withSampler("Sampler2")
+                    .withShaderDefine("ALPHA_CUTOUT", 0.1F)
+                    .withColorTargetState(new ColorTargetState(TRANSLUCENT))
+                    .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, false))
                     .withCull(false)
                     .build()
     );

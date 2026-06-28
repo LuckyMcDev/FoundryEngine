@@ -80,6 +80,10 @@ public class Material {
         this.opacity = opacity;
     }
 
+    public boolean isTransparent() {
+        return opacity < 1.0f;
+    }
+
     public Identifier getDiffuseTexturePath() {
         return diffuseTexturePath;
     }

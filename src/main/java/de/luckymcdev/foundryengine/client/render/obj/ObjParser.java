@@ -1,8 +1,8 @@
 package de.luckymcdev.foundryengine.client.render.obj;
 
+import de.luckymcdev.foundryengine.common.Common;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
-import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
@@ -16,27 +16,22 @@ import java.util.List;
 import java.util.Map;
 
 public class ObjParser {
-    public List<Vector3f> vertices = new ArrayList<>();
-    public List<Vector3f> normals = new ArrayList<>();
-    public List<Vector2f> uvs = new ArrayList<>();
-    public List<Face> faces = new ArrayList<>();
-    public Map<String, ObjObject> objects = new LinkedHashMap<>();
-    public Map<String, Material> materials = new LinkedHashMap<>();
+    private final List<Vector3f> vertices = new ArrayList<>();
+    private final List<Vector3f> normals = new ArrayList<>();
+    private final List<Vector2f> uvs = new ArrayList<>();
+    private final List<Face> faces = new ArrayList<>();
+    private final Map<String, ObjObject> objects = new LinkedHashMap<>();
+    private final Map<String, Material> materials = new LinkedHashMap<>();
 
-    protected ObjObject currentObject;
-    protected String currentObjectName = "default";
-    protected Material currentMaterial = Material.MISSING;
+    private ObjObject currentObject;
+    private String currentObjectName = "default";
+    private Material currentMaterial = Material.MISSING;
     private Identifier objLocation;
 
     public void parseObjFile(Resource resource) throws IOException {
         parseObjFile(null, resource);
     }
 
-    /**
-     * @param objLocation the resource location of the .obj file being parsed, used to
-     *                    resolve {@code mtllib} references relative to it. May be {@code null}
-     *                    if the file contains no {@code mtllib} directive.
-     */
     public void parseObjFile(Identifier objLocation, Resource resource) throws IOException {
         this.objLocation = objLocation;
         currentObject = new ObjObject(currentObjectName);
@@ -112,15 +107,13 @@ public class ObjParser {
 
     private void parseMtllib(String line) {
         if (objLocation == null) {
-            de.luckymcdev.foundryengine.common.Common.LOGGER.warn(
-                    "mtllib directive found but no objLocation was provided to parseObjFile — skipping: {}", line);
+            Common.LOGGER.warn("mtllib directive found but no objLocation was provided to parseObjFile — skipping: {}", line);
             return;
         }
         String[] tokens = line.split("\\s+", 2);
         if (tokens.length < 2) {
             return;
         }
-        // mtllib may reference multiple files separated by whitespace.
         for (String ref : tokens[1].trim().split("\\s+")) {
             MtlParser.loadFromObj(objLocation, ref).ifPresent(materials::putAll);
         }
@@ -131,12 +124,11 @@ public class ObjParser {
         String name = tokens.length > 1 ? tokens[1].trim() : "";
         currentMaterial = materials.getOrDefault(name, Material.MISSING);
         if (currentMaterial == Material.MISSING && !name.isEmpty()) {
-            de.luckymcdev.foundryengine.common.Common.LOGGER.warn(
-                    "usemtl referenced unknown material '{}' — using default", name);
+            Common.LOGGER.warn("usemtl referenced unknown material '{}' — using default", name);
         }
     }
 
-    private @NotNull Face getFace(String line) {
+    private Face getFace(String line) {
         String[] tokens = line.trim().split("\\s+");
         List<Vertex> faceVertices = new ArrayList<>();
 
@@ -157,21 +149,21 @@ public class ObjParser {
         return new Face(faceVertices, currentMaterial);
     }
 
-    protected Vector3f safeGetNormal(int index) {
+    private Vector3f safeGetNormal(int index) {
         if (index >= 0 && index < normals.size()) {
             return normals.get(index);
         }
         return new Vector3f(0, 0, 0);
     }
 
-    protected Vector2f safeGetUV(int index) {
+    private Vector2f safeGetUV(int index) {
         if (index >= 0 && index < uvs.size()) {
             return uvs.get(index);
         }
         return new Vector2f(0, 0);
     }
 
-    protected Vector3f safeGetVertex(int index) {
+    private Vector3f safeGetVertex(int index) {
         if (index >= 0 && index < vertices.size()) {
             return vertices.get(index);
         }

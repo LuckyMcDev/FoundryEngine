@@ -13,17 +13,14 @@ import org.joml.Matrix4fc;
 import org.joml.Vector3f;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class ObjModel {
-    public List<Face> faces = new ArrayList<>();
-    public Map<String, ObjObject> objects;
-    public Map<String, Material> materials;
-    public Identifier modelLocation;
-    protected ObjParser objParser;
+    private final List<Face> faces = new ArrayList<>();
+    private final Identifier modelLocation;
+    private final ObjParser objParser;
+    private Map<String, ObjObject> objects = Map.of();
+    private Map<String, Material> materials = Map.of();
 
     public ObjModel(Identifier modelLocation) {
         this.modelLocation = modelLocation;
@@ -38,8 +35,9 @@ public class ObjModel {
         }
         Resource resource = resourceO.get();
         try {
-            this.objParser.parseObjFile(modelLocation, resource);
-            this.faces = objParser.getFaces();
+            objParser.parseObjFile(modelLocation, resource);
+            faces.clear();
+            faces.addAll(objParser.getFaces());
             this.objects = objParser.getObjects();
             this.materials = objParser.getMaterials();
             Common.LOGGER.info("Loaded {} objects and {} materials from {}", objects.size(), materials.size(), modelLocation);
@@ -52,12 +50,18 @@ public class ObjModel {
     }
 
     public void renderModel(Matrix4fc modelView, PoseStack poseStack, int packedLight) {
+        var opaqueFaces = new ArrayList<Face>();
+        var transparentFaces = new ArrayList<Face>();
+
+        for (Face face : faces) {
+            (face.material().isTransparent() ? transparentFaces : opaqueFaces).add(face);
+        }
+
         float wx = modelView.m30();
         float wy = modelView.m31();
         float wz = modelView.m32();
 
-        List<Face> sorted = new ArrayList<>(faces);
-        sorted.sort((a, b) -> {
+        transparentFaces.sort((a, b) -> {
             Vector3f ca = a.getCentroid();
             Vector3f cb = b.getCentroid();
             float dax = wx + ca.x, day = wy + ca.y, daz = wz + ca.z;
@@ -67,26 +71,34 @@ public class ObjModel {
             return Double.compare(db, da);
         });
 
-        for (Face face : sorted) {
-            RenderType rt = ObjRenderTypes.forMaterial(face.material());
+        renderFacesByMaterial(opaqueFaces, poseStack, modelView, packedLight);
+        renderFacesByMaterial(transparentFaces, poseStack, modelView, packedLight);
+    }
+
+    private void renderFacesByMaterial(List<Face> group, PoseStack poseStack, Matrix4fc modelView, int packedLight) {
+        if (group.isEmpty()) return;
+
+        Map<Material, List<Face>> byMaterial = new LinkedHashMap<>();
+        for (Face face : group) {
+            byMaterial.computeIfAbsent(face.material(), k -> new ArrayList<>()).add(face);
+        }
+
+        for (var entry : byMaterial.entrySet()) {
+            Material mat = entry.getKey();
+            List<Face> matFaces = entry.getValue();
+            RenderType rt = ObjRenderTypes.forMaterial(mat);
             try (MeshRenderer.DrawSession session = Client.getMeshRenderer().begin(rt, modelView)) {
-                face.buildVerticesTextured(session.buffer(), poseStack, packedLight);
+                for (Face face : matFaces) {
+                    face.buildVerticesTextured(session.buffer(), poseStack, packedLight);
+                }
             }
         }
     }
 
-    /**
-     * Renders every face using its assigned material's texture (via {@link ObjRenderTypes}).
-     * This is the normal entry point for textured OBJ/MTL rendering.
-     */
     public void renderModel(PoseStack poseStack, int packedLight) {
         faces.forEach(face -> face.renderFace(poseStack, packedLight));
     }
 
-    /**
-     * Renders every face using a single caller-supplied {@link RenderType}, ignoring
-     * per-face materials. Kept for callers that don't use materials / want a forced pass.
-     */
     public void renderModel(PoseStack poseStack, RenderType renderType, int packedLight) {
         faces.forEach(face -> face.renderFace(poseStack, renderType, packedLight));
     }
@@ -101,5 +113,9 @@ public class ObjModel {
 
     public Map<String, Material> getMaterials() {
         return materials;
+    }
+
+    public List<Face> getFaces() {
+        return faces;
     }
 }

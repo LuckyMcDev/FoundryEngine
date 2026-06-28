@@ -14,24 +14,11 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
-/**
- * Parses Wavefront {@code .mtl} material library files.
- * <p>
- * Texture references ({@code map_Kd}) are resolved into {@link Identifier}s relative
- * to the {@code .mtl} file's own resource location: same namespace, same parent
- * directory, unless the reference already looks like a full {@code namespace:path}
- * identifier (some exporters/tools point directly at modded asset paths).
- */
 public class MtlParser {
     private final Map<String, Material> materials = new LinkedHashMap<>();
     private Material current;
+    private Identifier mtlLocation;
 
-    /**
-     * Resolves and parses a {@code .mtl} resource referenced by a {@code mtllib} line.
-     *
-     * @param objLocation  the location of the owning {@code .obj} file (used to resolve relative mtllib paths)
-     * @param mtlReference the raw filename/path given after {@code mtllib} in the OBJ file
-     */
     public static Optional<Map<String, Material>> loadFromObj(Identifier objLocation, String mtlReference) {
         Identifier mtlLocation = resolveRelative(objLocation, mtlReference);
         Optional<Resource> resourceO = Minecraft.getInstance().getResourceManager().getResource(mtlLocation);
@@ -65,21 +52,11 @@ public class MtlParser {
         }
     }
 
-    /**
-     * map_Kd lines can carry options (-o, -s, etc.) before the filename; the
-     * filename is always the last whitespace-separated token.
-     */
     private static String lastToken(String rest) {
         String[] parts = rest.trim().split("\\s+");
         return parts[parts.length - 1];
     }
 
-    /**
-     * Resolves a relative reference (e.g. "diffuse.png", "../textures/foo.png") against
-     * the parent directory of {@code base}, in the same namespace. If {@code reference}
-     * already contains a namespace separator ({@code :}), it is treated as a complete
-     * Identifier instead.
-     */
     private static Identifier resolveRelative(Identifier base, String reference) {
         String cleaned = reference.replace('\\', '/').trim();
         if (cleaned.contains(":")) {
@@ -95,11 +72,8 @@ public class MtlParser {
         return Identifier.fromNamespaceAndPath(base.getNamespace(), combined);
     }
 
-    /**
-     * Collapses {@code ./} and resolves {@code ../} segments in a resource path.
-     */
     private static String normalize(String path) {
-        java.util.Deque<String> stack = new java.util.ArrayDeque<>();
+        java.util.ArrayDeque<String> stack = new java.util.ArrayDeque<>();
         for (String segment : path.split("/")) {
             if (segment.isEmpty() || segment.equals(".")) {
                 continue;
@@ -113,7 +87,15 @@ public class MtlParser {
         return String.join("/", stack);
     }
 
+    private static String fileNameWithoutExtension(String path) {
+        int lastSlash = path.lastIndexOf('/');
+        String file = lastSlash >= 0 ? path.substring(lastSlash + 1) : path;
+        int dot = file.lastIndexOf('.');
+        return dot >= 0 ? file.substring(0, dot) : file;
+    }
+
     public void parseMtlFile(Identifier mtlLocation, Resource resource) throws IOException {
+        this.mtlLocation = mtlLocation;
         InputStream inputStream = resource.open();
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
@@ -136,12 +118,31 @@ public class MtlParser {
                 case "d" -> ifCurrent(m -> m.setOpacity(parseFloatSafe(rest, 1f)));
                 case "Tr" -> ifCurrent(m -> m.setOpacity(1f - parseFloatSafe(rest, 0f)));
                 case "map_Kd" -> ifCurrent(m -> m.setDiffuseTexturePath(resolveRelative(mtlLocation, lastToken(rest))));
-                default -> {
-                    // Unsupported directive (map_Bump, illum, Ni, etc.) — ignored.
-                }
             }
         }
         reader.close();
+
+        applyTextureFallback();
+    }
+
+    private void applyTextureFallback() {
+        if (mtlLocation == null) return;
+        String mtlBaseName = fileNameWithoutExtension(mtlLocation.getPath());
+        Identifier fallbackTexture = Identifier.fromNamespaceAndPath(
+                mtlLocation.getNamespace(),
+                mtlLocation.getPath().substring(0, mtlLocation.getPath().lastIndexOf('/') + 1) + mtlBaseName + ".png"
+        );
+        Identifier normalizedFallback = Identifier.fromNamespaceAndPath(
+                mtlLocation.getNamespace(),
+                normalize(fallbackTexture.getPath())
+        );
+
+        for (Material mat : materials.values()) {
+            if (!mat.hasTexture()) {
+                mat.setDiffuseTexturePath(normalizedFallback);
+                Common.LOGGER.debug("Applied texture fallback for material '{}': {}", mat.getName(), normalizedFallback);
+            }
+        }
     }
 
     private void startMaterial(String name) {
