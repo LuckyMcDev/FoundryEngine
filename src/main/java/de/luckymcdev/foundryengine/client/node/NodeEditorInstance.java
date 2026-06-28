@@ -1,6 +1,6 @@
 package de.luckymcdev.foundryengine.client.node;
 
-import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
+import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import imgui.ImGui;
 import imgui.extension.imnodes.ImNodes;
@@ -94,7 +94,7 @@ public class NodeEditorInstance<T> {
         addNode(node);
     }
 
-    public boolean content() {
+    public boolean content(ImGraphicsExtractor g) {
         boolean update = false;
         boolean mouseRightButton = ImGui.isMouseClicked(1);
 
@@ -130,7 +130,7 @@ public class NodeEditorInstance<T> {
                     T value = rootBuilder.evaluate();
                     ImGui.textUnformatted(String.valueOf(value));
                 } else {
-                    ImGuiUtils.redTextIf("Invalid", true);
+                    g.redTextIf("Invalid", true);
                 }
             }
 

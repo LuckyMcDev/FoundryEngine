@@ -3,7 +3,7 @@ package de.luckymcdev.foundryengine.client.editor.panel.tools;
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
-import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
+import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.log.EngineLogAppender;
@@ -62,12 +62,12 @@ public class ConsolePanel extends EditorPanel {
     }
 
     @Override
-    public void content() {
+    public void content(ImGraphicsExtractor g) {
         renderControls();
 
         List<LogEntry> logsToRender = getFilteredLogs();
 
-        ImGuiUtils.scrollableRegion("##scrollingRegion", 0, -ImGui.getFrameHeightWithSpacing(), false, () -> {
+        g.scrollableRegion("##scrollingRegion", 0, -ImGui.getFrameHeightWithSpacing(), false, () -> {
             for (LogEntry entry : logsToRender) {
                 boolean hasColor = pushLevelColor(entry.level());
                 ImGui.textUnformatted(entry.format());

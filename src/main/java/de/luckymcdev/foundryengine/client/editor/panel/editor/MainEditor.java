@@ -2,7 +2,7 @@ package de.luckymcdev.foundryengine.client.editor.panel.editor;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
-import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
+import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.common.Common;
 import imgui.ImGui;
@@ -32,9 +32,9 @@ public class MainEditor extends EditorPanel {
     }
 
     @Override
-    public void content() {
+    public void content(ImGraphicsExtractor g) {
         renderMenuBar();
-        renderCreateMenu();
+        renderCreateMenu(g);
     }
 
     private void renderMenuBar() {
@@ -48,7 +48,7 @@ public class MainEditor extends EditorPanel {
         });
     }
 
-    private void renderCreateMenu() {
+    private void renderCreateMenu(ImGraphicsExtractor g) {
         if (wantsNew) {
             if (ImGui.begin("Create new Bundle")) {
                 ImGui.inputText("Bundle Id", inputId);
@@ -58,7 +58,7 @@ public class MainEditor extends EditorPanel {
                 ImGui.inputInt("##MinorVersion", inputMinorVersion);
                 ImGui.inputInt("##PatchVersion", inputPatchVersion);
 
-                ImGuiUtils.centered(() -> {
+                g.centered(() -> {
                     if (ImGui.button("Create", 100, 0)) {
                         String[] authorsArray = inputAuthors.get().split(",");
 

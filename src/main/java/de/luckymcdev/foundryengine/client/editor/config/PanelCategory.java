@@ -1,6 +1,6 @@
 package de.luckymcdev.foundryengine.client.editor.config;
 
-import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
+import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcon;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import org.jspecify.annotations.Nullable;
@@ -39,6 +39,6 @@ public enum PanelCategory {
     }
 
     public String getMenuLabel() {
-        return displayName + " " + ImGuiUtils.icon(this.icon);
+        return displayName + " " + ImGraphicsExtractor.icon(this.icon);
     }
 }

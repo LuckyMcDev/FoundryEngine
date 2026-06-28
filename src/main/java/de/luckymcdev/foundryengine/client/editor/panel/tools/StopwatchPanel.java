@@ -3,7 +3,7 @@ package de.luckymcdev.foundryengine.client.editor.panel.tools;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.config.PanelStyle;
 import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
-import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
+import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.common.Common;
 import imgui.ImGui;
@@ -26,22 +26,43 @@ public class StopwatchPanel extends EditorPanel {
     }
 
     @Override
-    public void content() {
+    protected void onPreWindow() {
+        ImGui.setNextWindowSizeConstraints(260f, 0f, 600f, Float.MAX_VALUE);
+    }
+
+    @Override
+    public void content(ImGraphicsExtractor g) {
         long now = System.currentTimeMillis();
         long displayTime = running ? stopwatch.elapsedMilliseconds(now) : stopwatch.accumulatedElapsedTime();
 
-        ImGui.text(displayThing);
+        ImGui.textDisabled(displayThing);
+        ImGui.spacing();
 
-        if (ImGui.smallButton(ImGuiUtils.icon(ImIcons.FA.FA_ARROW_ROTATE_LEFT))) {
+        g.setNextItemWidth(ImGui.getContentRegionAvailX());
+        ImGui.setWindowFontScale(2.5f);
+        String timeStr = g.timer(displayTime);
+        float textW = ImGui.calcTextSize(timeStr).x;
+        float avail = ImGui.getContentRegionAvailX();
+        ImGui.setCursorPosX(ImGui.getCursorPosX() + Math.max(0, (avail - textW) / 2));
+        ImGui.textColored(running ? 0xFF4CAF50 : 0xFFCCCCCC, timeStr);
+        ImGui.setWindowFontScale(1f);
+
+        ImGui.spacing();
+        ImGui.separator();
+        ImGui.spacing();
+
+        float btnW = (ImGui.getContentRegionAvailX() - ImGui.getStyle().getItemSpacingX() * 2) / 3;
+
+        if (ImGui.button(ImGraphicsExtractor.icon(ImIcons.FA.FA_ARROW_ROTATE_LEFT) + " Reset", btnW, 0)) {
             stopwatch = new Stopwatch(now, 0L);
+            if (running) {
+                stopwatch = new Stopwatch(now, 0L);
+            }
         }
 
         ImGui.sameLine();
 
-        String label = "";
-        if (running) label = ImGuiUtils.icon(ImIcons.FA.FA_CIRCLE_STOP);
-        if (!running) label = ImGuiUtils.icon(ImIcons.FA.FA_CIRCLE_PLAY);
-        if (ImGui.smallButton(label)) {
+        if (ImGui.button(running ? ImGraphicsExtractor.icon(ImIcons.FA.FA_PAUSE) + " Pause" : ImGraphicsExtractor.icon(ImIcons.FA.FA_PLAY) + " Start", btnW, 0)) {
             if (!running) {
                 stopwatch = new Stopwatch(now, stopwatch.accumulatedElapsedTime());
                 running = true;
@@ -52,10 +73,8 @@ public class StopwatchPanel extends EditorPanel {
         }
 
         ImGui.sameLine();
-        ImGui.text(ImGuiUtils.timer(displayTime));
 
-        ImGui.sameLine();
-        if (ImGui.smallButton(ImGuiUtils.icon(ImIcons.FA.FA_CLOSE))) {
+        if (ImGui.button(ImGraphicsExtractor.icon(ImIcons.FA.FA_CLOSE) + " Close", btnW, 0)) {
             close();
         }
     }

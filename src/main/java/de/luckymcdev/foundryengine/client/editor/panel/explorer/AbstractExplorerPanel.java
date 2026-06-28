@@ -5,7 +5,7 @@ import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.panel.Panel;
 import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
 import de.luckymcdev.foundryengine.client.editor.panel.files.CodeEditor;
-import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
+import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.common.Common;
 import imgui.ImGui;
@@ -43,7 +43,7 @@ public abstract class AbstractExplorerPanel extends EditorPanel {
     protected abstract void openResource(Identifier id);
 
     @Override
-    public final void content() {
+    public final void content(ImGraphicsExtractor g) {
         if (!initialized) {
             refresh();
         }
@@ -73,7 +73,7 @@ public abstract class AbstractExplorerPanel extends EditorPanel {
      * The node is shown with a cube icon and the namespace name.
      */
     protected void renderNamespaceNode(ExplorerNode.ResourceExplorerNode ns) {
-        String label = ImGuiUtils.icon(ImIcons.FA.FA_CUBE) + " " + ns.name;
+        String label = ImGraphicsExtractor.icon(ImIcons.FA.FA_CUBE) + " " + ns.name;
         boolean open = ImGui.treeNodeEx("##ns_" + ns.name, ImGuiTreeNodeFlags.SpanAvailWidth, label);
         if (open) {
             renderResourceFolder(ns);
@@ -99,8 +99,8 @@ public abstract class AbstractExplorerPanel extends EditorPanel {
      * Renders a single collapsible sub-folder within a resource tree.
      */
     private void renderResourceSubFolder(ExplorerNode.ResourceExplorerNode folder) {
-        String openIcon = ImGuiUtils.icon(ImIcons.FA.FA_FOLDER_OPEN);
-        String closedIcon = ImGuiUtils.icon(ImIcons.FA.FA_FOLDER);
+        String openIcon = ImGraphicsExtractor.icon(ImIcons.FA.FA_FOLDER_OPEN);
+        String closedIcon = ImGraphicsExtractor.icon(ImIcons.FA.FA_FOLDER);
 
         boolean open = ImGui.treeNodeEx("##f_" + folder.name, ImGuiTreeNodeFlags.SpanAvailWidth, "");
         ImGui.sameLine();
@@ -118,7 +118,7 @@ public abstract class AbstractExplorerPanel extends EditorPanel {
      */
     protected void renderResourceFile(Identifier id) {
         String fileName = id.getPath().substring(id.getPath().lastIndexOf('/') + 1);
-        String label = ImGuiUtils.icon(ImIcons.FA.FA_FILE_CODE) + " " + fileName;
+        String label = ImGraphicsExtractor.icon(ImIcons.FA.FA_FILE_CODE) + " " + fileName;
 
         ImGui.treeNodeEx(
                 "##file_" + id,
@@ -147,7 +147,7 @@ public abstract class AbstractExplorerPanel extends EditorPanel {
      * Returns {@code true} if an editor for the given ID is already registered and open.
      */
     protected boolean isResourceOpen(Identifier editorId) {
-        return Client.getEditorManager().getPanels().get(editorId) instanceof CodeEditor;
+        return Client.getEditorManager().getPanel(editorId) instanceof CodeEditor;
     }
 
     /**
@@ -155,7 +155,7 @@ public abstract class AbstractExplorerPanel extends EditorPanel {
      * Returns {@code null} if no such editor exists yet.
      */
     protected @Nullable CodeEditor getExistingEditor(Identifier editorId) {
-        Panel panel = Client.getEditorManager().getPanels().get(editorId);
+        Panel panel = Client.getEditorManager().getPanel(editorId);
         if (panel instanceof CodeEditor editor) {
             editor.open();
             return editor;

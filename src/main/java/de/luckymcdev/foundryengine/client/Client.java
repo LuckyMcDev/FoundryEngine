@@ -15,6 +15,7 @@ import de.luckymcdev.foundryengine.client.editor.EditorManager;
 import de.luckymcdev.foundryengine.client.editor.MainMenu;
 import de.luckymcdev.foundryengine.client.editor.feature.CutsceneEditorFeature;
 import de.luckymcdev.foundryengine.client.icons.IconExporterLayer;
+import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiManager;
 import de.luckymcdev.foundryengine.client.particle.ParticleManager;
 import de.luckymcdev.foundryengine.client.post.PostEffectManager;
@@ -80,6 +81,7 @@ public final class Client {
     );
     public static final Logger LOGGER = LogUtils.getLogger();
     private static final ImGuiManager IMGUI_MANAGER = new ImGuiManager();
+    private static final ImGraphicsExtractor IM_GRAPHICS_EXTRACTOR = new ImGraphicsExtractor();
     private static final MainMenu MAIN_MENU = new MainMenu();
     private static final EditorManager EDITOR_MANAGER = new EditorManager();
     private static final ParticleManager PARTICLE_MANAGER = new ParticleManager();
@@ -191,6 +193,13 @@ public final class Client {
      */
     public static ImGuiManager getImGuiManager() {
         return IMGUI_MANAGER;
+    }
+
+    /**
+     * Returns the shared ImGraphicsExtractor for drawing ImGui widgets with style stacking.
+     */
+    public static ImGraphicsExtractor getImGraphics() {
+        return IM_GRAPHICS_EXTRACTOR;
     }
 
     /**

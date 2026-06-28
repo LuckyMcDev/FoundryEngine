@@ -5,8 +5,8 @@ import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.panel.files.CodeEditor;
 import de.luckymcdev.foundryengine.client.editor.panel.files.TextureViewerPanel;
+import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiShortcut;
-import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.server.Server;
@@ -201,7 +201,7 @@ public class ResourceExplorerPanel extends AbstractExplorerPanel {
     @Override
     protected void renderResourceFile(Identifier id) {
         String fileName = id.getPath().substring(id.getPath().lastIndexOf('/') + 1);
-        String label = ImGuiUtils.icon(ImIcons.FA.FA_FILE_CODE) + " " + fileName;
+        String label = ImGraphicsExtractor.icon(ImIcons.FA.FA_FILE_CODE) + " " + fileName;
         String nodeId = "##file_" + id;
 
         ImGui.treeNodeEx(
@@ -245,7 +245,7 @@ public class ResourceExplorerPanel extends AbstractExplorerPanel {
         Identifier viewerId = generateEditorId("res_tex", id.toString());
 
         // Re-focus if already open.
-        if (Client.getEditorManager().getPanels().get(viewerId) instanceof TextureViewerPanel viewer) {
+        if (Client.getEditorManager().getPanel(viewerId) instanceof TextureViewerPanel viewer) {
             viewer.open();
             return;
         }

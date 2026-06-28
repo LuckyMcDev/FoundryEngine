@@ -3,7 +3,7 @@ package de.luckymcdev.foundryengine.client.editor.panel.tools;
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
-import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
+import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.network.packets.editor.GiveItemPacket;
@@ -66,7 +66,7 @@ public class CataloguePanel extends EditorPanel {
     }
 
     @Override
-    public void content() {
+    public void content(ImGraphicsExtractor g) {
         if (!requireWorld()) return;
         processTextureQueue();
         renderSearchHeader();
@@ -76,7 +76,7 @@ public class CataloguePanel extends EditorPanel {
             if (ImGui.beginTabItem(ImIcons.FA.FA_BOX + " Items")) {
                 var list = BuiltInRegistries.ITEM.keySet().stream()
                         .sorted(Comparator.comparing(Identifier::getPath)).toList();
-                renderRegistryGrid("items", list, id -> id, false, id -> {
+                renderRegistryGrid(g, "items", list, id -> id, false, id -> {
                     if (Minecraft.getInstance().level == null) return;
                     ClientPacketDistributor.sendToServer(new GiveItemPacket(id.toString()));
                 });
@@ -88,7 +88,7 @@ public class CataloguePanel extends EditorPanel {
                         .map(block -> BuiltInRegistries.ITEM.getKey(block.asItem()))
                         .distinct()
                         .sorted(Comparator.comparing(Identifier::getPath)).toList();
-                renderRegistryGrid("blocks", blockItems, id -> id, false, id -> {
+                renderRegistryGrid(g, "blocks", blockItems, id -> id, false, id -> {
                 });
                 ImGui.endTabItem();
             }
@@ -97,7 +97,7 @@ public class CataloguePanel extends EditorPanel {
                 var list = BuiltInRegistries.ENTITY_TYPE.keySet().stream()
                         .sorted(Comparator.comparing(Identifier::getPath)).toList();
 
-                renderRegistryGrid("entities", list,
+                renderRegistryGrid(g, "entities", list,
                         entityId -> {
                             var optType = BuiltInRegistries.ENTITY_TYPE.getOptional(entityId);
                             if (optType.isEmpty()) return SPAWNER_ID;
@@ -120,7 +120,7 @@ public class CataloguePanel extends EditorPanel {
                 var list = BuiltInRegistries.FLUID.keySet().stream()
                         .sorted(Comparator.comparing(Identifier::getPath)).toList();
 
-                renderRegistryGrid("fluids", list,
+                renderRegistryGrid(g, "fluids", list,
                         fluidId -> {
                             String path = fluidId.getPath();
                             String namespace = fluidId.getNamespace();
@@ -157,7 +157,7 @@ public class CataloguePanel extends EditorPanel {
                         .sorted(Comparator.comparing(Identifier::getPath))
                         .distinct()
                         .toList();
-                renderRegistryGrid("tags", allTagIds, id -> NAMETAG_ID, true, id -> {
+                renderRegistryGrid(g, "tags", allTagIds, id -> NAMETAG_ID, true, id -> {
                 });
                 ImGui.endTabItem();
             }
@@ -173,7 +173,7 @@ public class CataloguePanel extends EditorPanel {
                     }
                     recipeIds.sort(Comparator.comparing(Identifier::getPath));
 
-                    renderRegistryGrid("recipes", recipeIds,
+                    renderRegistryGrid(g, "recipes", recipeIds,
                             recipeId -> CRAFTING_TABLE_ID,
                             false,
                             recipeId -> {
@@ -209,7 +209,7 @@ public class CataloguePanel extends EditorPanel {
         ImGui.separator();
     }
 
-    private void renderRegistryGrid(String typeId, List<Identifier> entries, UnaryOperator<Identifier> iconProvider, boolean textOnIcon, Consumer<Identifier> onRightClick) {
+    private void renderRegistryGrid(ImGraphicsExtractor g, String typeId, List<Identifier> entries, UnaryOperator<Identifier> iconProvider, boolean textOnIcon, Consumer<Identifier> onRightClick) {
         String filter = searchBuffer.get().toLowerCase();
 
         ImGui.beginChild("##grid_" + typeId, 0, 0, false);
@@ -229,7 +229,7 @@ public class CataloguePanel extends EditorPanel {
                 int textureId = getOrLoadIcon(iconToLoad);
 
                 if (textureId != -1) {
-                    ImGuiUtils.drawImageButton(textureId, ITEM_SIZE, ITEM_SIZE);
+                    g.drawImageButton(textureId, ITEM_SIZE, ITEM_SIZE);
                     if (textOnIcon) drawLetterOverlay(location);
                 } else {
                     drawFallback(iconToLoad);
@@ -244,14 +244,14 @@ public class CataloguePanel extends EditorPanel {
                         typeId,
                         List.of(location.getNamespace()),
                         iconToLoad,
-                        new ImGuiUtils.Image(textureId, ClientConfig.ICON_SIZE.get(), ClientConfig.ICON_SIZE.get()),
+                        new ImGraphicsExtractor.Image(textureId, ClientConfig.ICON_SIZE.get(), ClientConfig.ICON_SIZE.get()),
                         location.toString()
                 );
 
                 if (ImGui.beginDragDropSource()) {
                     ImGui.setDragDropPayload("CATALOGUE_ENTRY", payload);
                     ImGui.text("Placing " + typeId + ": " + name);
-                    if (textureId != -1) ImGuiUtils.drawImageButton(textureId, 32, 32);
+                    if (textureId != -1) g.drawImageButton(textureId, 32, 32);
                     ImGui.endDragDropSource();
                 }
 
@@ -314,11 +314,11 @@ public class CataloguePanel extends EditorPanel {
     private int getOrLoadIcon(Identifier location) {
         var item = BuiltInRegistries.ITEM.getOptional(location);
         if (item.isEmpty()) return -1;
-        return ImGuiUtils.getOrCreateItemIcon(new ItemStack(item.get()));
+        return ImGraphicsExtractor.getOrCreateItemIcon(new ItemStack(item.get()));
     }
 
     private void processTextureQueue() {
-        ImGuiUtils.processIconQueue();
+        ImGraphicsExtractor.processIconQueue();
     }
 
     public record CataloguePayload(
@@ -326,7 +326,7 @@ public class CataloguePanel extends EditorPanel {
             String type,
             List<String> tags,
             Identifier iconLocation,
-            ImGuiUtils.Image texture,
+            ImGraphicsExtractor.Image texture,
             String displayName
     ) {
         public boolean hasTexture() {

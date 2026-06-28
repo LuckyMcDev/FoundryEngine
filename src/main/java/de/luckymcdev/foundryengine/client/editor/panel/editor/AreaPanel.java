@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.client.editor.panel.editor;
 
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
+import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.area.AABBArea;
@@ -20,6 +21,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.Vec3;
+
 
 import java.util.List;
 import java.util.Map;
@@ -51,7 +53,7 @@ public class AreaPanel extends EditorPanel {
     }
 
     @Override
-    public void content() {
+    public void content(ImGraphicsExtractor g) {
         if (!requireWorld("You need to join a world to manage areas.")) {
             return;
         }
@@ -64,12 +66,10 @@ public class AreaPanel extends EditorPanel {
             ImGui.separator();
         }
 
-        beginContent();
         List<Area> areas = getAreas();
         renderLeftPanel(areas);
         ImGui.sameLine();
         renderRightPanel(areas);
-        endContent();
     }
 
     private void renderMenuBar() {

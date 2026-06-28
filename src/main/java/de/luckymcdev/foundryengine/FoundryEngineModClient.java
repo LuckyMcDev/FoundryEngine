@@ -21,7 +21,7 @@ import de.luckymcdev.foundryengine.client.editor.panel.tools.*;
 import de.luckymcdev.foundryengine.client.editor.panel.view.InfoPanel;
 import de.luckymcdev.foundryengine.client.editor.panel.view.ThemeSelectorPanel;
 import de.luckymcdev.foundryengine.client.ext.ModPathBroadcaster;
-import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
+import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.client.render.EngineSceneDepth;
 import de.luckymcdev.foundryengine.client.render.WorldViewMatrix;
 import de.luckymcdev.foundryengine.client.render.obj.ObjModel;
@@ -103,7 +103,7 @@ public class FoundryEngineModClient {
         event.addListener(Common.id("imgui_handler"), Client.getImGuiManager());
         event.addListener(Common.id("obj_models"), createReloadListener(() -> Client.getObjModelManager().loadModels()));
         event.addListener(Common.id("post_effects"), createReloadListener(() -> Client.getPostEffectManager().getRegistry().invalidatePipelineCaches()));
-        event.addListener(Common.id("item_icon_cache"), createReloadListener(ImGuiUtils::clearItemIconCache));
+        event.addListener(Common.id("item_icon_cache"), createReloadListener(ImGraphicsExtractor::clearItemIconCache));
     }
 
     private PreparableReloadListener createReloadListener(Runnable runnable) {

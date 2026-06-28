@@ -4,87 +4,220 @@ import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.config.ImGuiWindowType;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.config.PanelStyle;
+import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiShortcut;
-import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcon;
 import imgui.ImGui;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImBoolean;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.permissions.PermissionLevel;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
-public class Panel {
-    private static PanelRequirements defaultRequirements = new MinecraftPanelRequirements();
-    public final Identifier id;
-    public final String label;
-    public final @Nullable ImIcon icon;
-    public final ImGuiShortcut imGuiShortcut;
-    public boolean temporary;
-    public boolean menuBar;
-    public boolean unsaved;
-    public PanelStyle style;
-    public boolean open;
-    public ImGuiWindowType type;
-    public PanelCategory category;
+public abstract class Panel {
+    private static final PanelRequirements REQUIREMENTS = new MinecraftPanelRequirements();
+    private final Identifier id;
+    private final String label;
+    private final @Nullable ImIcon icon;
+    private final ImGuiShortcut shortcut;
+    private final PanelCategory category;
+    private final boolean temporary;
+    private final boolean menuBar;
+    private final PanelStyle style;
+    private final ImBoolean windowOpen = new ImBoolean(false);
+    private boolean unsaved;
     private boolean focused;
+    private boolean open;
+    private ImGuiWindowType windowType = ImGuiWindowType.WINDOW;
 
     protected Panel(Builder builder) {
         this.id = builder.id;
         this.label = builder.label;
         this.icon = builder.icon;
-        this.imGuiShortcut = builder.imGuiShortcut;
+        this.shortcut = builder.imGuiShortcut;
         this.category = builder.category;
         this.temporary = builder.temporary;
         this.menuBar = builder.menuBar;
         this.unsaved = builder.unsaved;
         this.style = builder.style;
-        this.open = false;
-        this.type = ImGuiWindowType.WINDOW;
-    }
-
-    public static void setDefaultRequirements(PanelRequirements requirements) {
-        defaultRequirements = requirements;
     }
 
     protected static boolean requireWorld() {
-        return defaultRequirements.requireWorld();
+        return REQUIREMENTS.requireWorld();
     }
 
     protected static boolean requireWorld(String message) {
-        return defaultRequirements.requireWorld(message);
+        return REQUIREMENTS.requireWorld(message);
     }
 
     protected static boolean requireLevel(PermissionLevel level) {
-        return defaultRequirements.requireLevel(level);
+        return REQUIREMENTS.requireLevel(level);
     }
 
     protected static boolean requireLevel(PermissionLevel level, String message) {
-        return defaultRequirements.requireLevel(level, message);
+        return REQUIREMENTS.requireLevel(level, message);
     }
 
     protected static boolean requireLevelOnServer(PermissionLevel level) {
-        return defaultRequirements.requireLevelOnServer(level);
+        return REQUIREMENTS.requireLevelOnServer(level);
     }
 
     protected static boolean requireLocal() {
-        return defaultRequirements.requireLocal();
+        return REQUIREMENTS.requireLocal();
     }
 
-    public Identifier getId() {
-        return this.id;
+    public abstract void content(ImGraphicsExtractor g);
+
+    protected void onOpened() {
     }
 
-    public String getLabel() {
-        return this.label;
+    protected void onClosed() {
+    }
+
+    protected void onPreContent() {
+    }
+
+    protected void onPostContent() {
+    }
+
+    protected void onPreWindow() {
+    }
+
+    protected void tick() {
+    }
+
+    protected int customFlags() {
+        return ImGuiWindowFlags.None;
+    }
+
+    public final Identifier getId() {
+        return id;
+    }
+
+    public final String getLabel() {
+        return label;
+    }
+
+    public final @Nullable ImIcon getIcon() {
+        return icon;
+    }
+
+    public final ImGuiShortcut getShortcut() {
+        return shortcut;
+    }
+
+    public final PanelCategory getCategory() {
+        return category;
+    }
+
+    public final boolean isTemporary() {
+        return temporary;
+    }
+
+    public final boolean hasMenuBar() {
+        return menuBar;
+    }
+
+    public final boolean isUnsaved() {
+        return unsaved;
+    }
+
+    protected final void setUnsaved(boolean unsaved) {
+        this.unsaved = unsaved;
+    }
+
+    public final PanelStyle getStyle() {
+        return style;
+    }
+
+    public final boolean isOpen() {
+        return open;
+    }
+
+    public final boolean isFocused() {
+        return focused;
+    }
+
+    public final ImGuiWindowType getWindowType() {
+        return windowType;
+    }
+
+    public final void open() {
+        if (open) return;
+        open = true;
+        onOpened();
+    }
+
+    public final void close() {
+        if (!open) return;
+        open = false;
+        onClosed();
+    }
+
+    public final boolean handleRender() {
+        if (!open) return false;
+
+        windowOpen.set(true);
+        int flags = getFlags();
+
+        if (style != PanelStyle.NORMAL && windowType != ImGuiWindowType.DOCKED) {
+            flags |= ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.AlwaysAutoResize;
+
+            if (windowType == ImGuiWindowType.VIEWPORT && style == PanelStyle.TRANSPARENT) {
+                flags |= ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoDecoration;
+            }
+
+            ImGui.setNextWindowSizeConstraints(0F, 0F, 600F, Client.getWindow().getHeight() - 80F);
+        } else {
+            ImGui.setNextWindowSizeConstraints(160F, 90F, Float.MAX_VALUE, Float.MAX_VALUE);
+        }
+
+        onPreWindow();
+
+        String title = getFormattedLabel() + "###" + this.id;
+        boolean visible = ImGui.begin(title, windowOpen, flags);
+
+        ImGraphicsExtractor g = Client.getImGraphics();
+        g.pushStack();
+        try {
+            if (visible) {
+                this.focused = ImGui.isWindowFocused();
+                onPreContent();
+                content(g);
+                onPostContent();
+            } else {
+                this.focused = false;
+            }
+
+            windowType = ImGuiWindowType.get(Client.getWindow().handle());
+        } finally {
+            ImGui.end();
+            g.popStack();
+        }
+
+        if (!windowOpen.get()) {
+            close();
+        }
+
+        return open;
+    }
+
+    public final void handleTick() {
+        tick();
+    }
+
+    protected final void menuBar(Runnable body) {
+        if (ImGui.beginMenuBar()) {
+            body.run();
+            ImGui.endMenuBar();
+        }
     }
 
     public String getFormattedLabel() {
         if (this.icon == null) {
             return this.label;
-        } else {
-            return this.label + " " + ImGuiUtils.icon(this.icon);
         }
+        return this.label + " " + ImGraphicsExtractor.icon(this.icon);
     }
 
     private int getFlags() {
@@ -105,110 +238,6 @@ public class Panel {
         flags |= customFlags();
 
         return flags;
-    }
-
-    public int customFlags() {
-        return ImGuiWindowFlags.None;
-    }
-
-    public ImGuiShortcut getShortcut() {
-        return imGuiShortcut;
-    }
-
-    public final void open() {
-        if (!this.open) {
-            this.open = true;
-        }
-        onOpened();
-    }
-
-    public final void close() {
-        if (this.open) {
-            this.open = false;
-        }
-    }
-
-    public void onOpened() {
-    }
-
-    public void onClosed() {
-    }
-
-    public final boolean handleRender() {
-        int flags = getFlags();
-        ImBoolean WINDOW = new ImBoolean(this.open);
-
-        if (this.style != PanelStyle.NORMAL && this.type != ImGuiWindowType.DOCKED) {
-            flags |= ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.AlwaysAutoResize;
-
-            if (this.type == ImGuiWindowType.VIEWPORT && this.style == PanelStyle.TRANSPARENT) {
-                flags |= ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoDecoration;
-            }
-
-            ImGui.setNextWindowSizeConstraints(0F, 0F, 600F, Client.getWindow().getHeight() - 80F);
-        } else {
-            ImGui.setNextWindowSizeConstraints(160F, 90F, Float.MAX_VALUE, Float.MAX_VALUE);
-        }
-
-        String title = this.getFormattedLabel() + "###" + this.getId();
-
-        boolean menuOpen = ImGui.begin(title, WINDOW, flags);
-
-        try {
-            if (menuOpen) {
-                boolean shouldClose = !WINDOW.get();
-                this.focused = ImGui.isWindowFocused();
-
-                this.content();
-
-                if (shouldClose) {
-                    this.close();
-                }
-
-                if (!open) {
-                    onClosed();
-                }
-            } else {
-                this.focused = false;
-                if (!WINDOW.get()) {
-                    this.close();
-                    if (!open) {
-                        onClosed();
-                    }
-                }
-            }
-
-            type = ImGuiWindowType.get(Client.getWindow().handle());
-        } finally {
-            ImGui.end();
-        }
-
-        return open;
-    }
-
-    public boolean isFocused() {
-        return this.focused;
-    }
-
-    public boolean isOpen() {
-        return this.open;
-    }
-
-    public final void handleTick() {
-        tick();
-    }
-
-    public void content() {
-    }
-
-    public void tick() {
-    }
-
-    protected void menuBar(Runnable body) {
-        if (ImGui.beginMenuBar()) {
-            body.run();
-            ImGui.endMenuBar();
-        }
     }
 
     public static final class Builder {

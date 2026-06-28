@@ -5,6 +5,7 @@ import de.luckymcdev.foundryengine.client.cutscene.CutsceneRenderer;
 import de.luckymcdev.foundryengine.client.cutscene.CutsceneUiState;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
+import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.cutscene.model.CommandAttachment;
@@ -72,7 +73,7 @@ public class CutsceneTimelinePanel extends EditorPanel {
     }
 
     @Override
-    public void content() {
+    public void content(ImGraphicsExtractor g) {
         if (!requireWorld()) {
             return;
         }

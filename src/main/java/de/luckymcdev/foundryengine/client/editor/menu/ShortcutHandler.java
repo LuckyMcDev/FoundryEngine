@@ -13,14 +13,15 @@ public class ShortcutHandler implements MenuSection {
 
     @Override
     public void render() {
-        // Empty as It's only for handling shortcuts and doesn't need to render anything.
     }
 
     public void handleShortcuts() {
         if (editor == null) {
             throw new IllegalStateException("EditorManager is null in ShortcutHandler");
         }
-        editor.getPanels().forEach(this::handlePanelShortcut);
+        for (Panel panel : editor.getPanels()) {
+            handlePanelShortcut(panel);
+        }
     }
 
     private void handlePanelShortcut(Panel panel) {

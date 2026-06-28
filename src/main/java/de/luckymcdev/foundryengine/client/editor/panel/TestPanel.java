@@ -4,7 +4,7 @@ import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.panel.tools.CataloguePanel;
-import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
+import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.client.ui.ExampleScreen;
 import de.luckymcdev.foundryengine.common.Common;
@@ -16,6 +16,8 @@ import imgui.extension.imguiknobs.ImGuiKnobs;
 import imgui.flag.ImGuiColorEditFlags;
 import imgui.type.ImBoolean;
 import imgui.type.ImFloat;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import org.slf4j.Logger;
 
 public class TestPanel extends Panel {
@@ -33,25 +35,25 @@ public class TestPanel extends Panel {
     }
 
     @Override
-    public void content() {
+    public void content(ImGraphicsExtractor g) {
         if (!requireLocal()) return;
 
         ImGui.text("Hello, World!");
         ImGui.separator();
 
         ImGui.text("You dont know what i do? Hover it.");
-        ImGuiUtils.helpTooltip("BOO!");
+        g.helpTooltip("BOO!");
 
-        ImGuiUtils.withFont(BuiltInFonts.LIGHT, () -> ImGui.text("Hello World (Light)"));
-        ImGuiUtils.withFont(BuiltInFonts.REGULAR, () -> ImGui.text("Hello World (Regular)"));
-        ImGuiUtils.withFont(BuiltInFonts.MEDIUM, () -> ImGui.text("Hello World (Medium)"));
-        ImGuiUtils.withFont(BuiltInFonts.SEMIBOLD, () -> ImGui.text("Hello World (SemiBold)"));
-        ImGuiUtils.withFont(BuiltInFonts.BOLD, () -> ImGui.text("Hello World (Bold)"));
-        ImGuiUtils.withFont(BuiltInFonts.ITALIC, () -> ImGui.text("Hello World (Italic)"));
-        ImGuiUtils.withFont(BuiltInFonts.BOLD_ITALIC, () -> ImGui.text("Hello World (Bold Italic)"));
+        g.withFont(BuiltInFonts.LIGHT, () -> ImGui.text("Hello World (Light)"));
+        g.withFont(BuiltInFonts.REGULAR, () -> ImGui.text("Hello World (Regular)"));
+        g.withFont(BuiltInFonts.MEDIUM, () -> ImGui.text("Hello World (Medium)"));
+        g.withFont(BuiltInFonts.SEMIBOLD, () -> ImGui.text("Hello World (SemiBold)"));
+        g.withFont(BuiltInFonts.BOLD, () -> ImGui.text("Hello World (Bold)"));
+        g.withFont(BuiltInFonts.ITALIC, () -> ImGui.text("Hello World (Italic)"));
+        g.withFont(BuiltInFonts.BOLD_ITALIC, () -> ImGui.text("Hello World (Bold Italic)"));
 
-        ImGuiUtils.textCentered("center center", ImGui.getWindowWidth());
-        ImGuiUtils.identifier(Common.id("imguiiscool"));
+        g.textCentered("center center", ImGui.getWindowWidth());
+        g.identifier(Common.id("imguiiscool"));
 
         ImGuiKnobs.knob("This Will Damage you if you press that button!", FLOAT, 0.0f, 10.0f);
         ImGui.progressBar(FLOAT.get() / 10, ImGui.getContentRegionAvailX(), 0, "Progress");
@@ -81,11 +83,19 @@ public class TestPanel extends Panel {
         if (cataloguePayload != null) {
             ImGui.text("Dropped: " + cataloguePayload.type() + " - " + cataloguePayload.id());
             float wh = 64;
-            ImGuiUtils.drawImage(cataloguePayload.texture().glId(), wh, wh);
+            g.drawImage(cataloguePayload.texture().glId(), wh, wh);
         } else {
             ImGui.text("Drop something from the Catalogue panel!");
         }
 
         ImGui.colorPicker3("Pick a color", FLOAT2.getData(), ImGuiColorEditFlags.PickerHueWheel);
+
+        ImGui.separator();
+
+        g.component(Component.literal("Hello, World!").withColor(Color.RED.argb()));
+        g.component(Component.literal("This is a Component being rendered. BOLD!").withStyle(Style.EMPTY.withBold(true)));
+        g.component(Component.literal("This is a Component being rendered. ITALIC!").withStyle(Style.EMPTY.withItalic(true)));
+        g.component(Component.literal("This is a Component being rendered. BOLD ITALIC!").withStyle(Style.EMPTY.withBold(true).withItalic(true)));
+        g.component(Component.translatable("key.category.jei.hover.config.button"));
     }
 }
