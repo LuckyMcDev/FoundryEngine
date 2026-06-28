@@ -1,7 +1,7 @@
 package de.luckymcdev.foundryengine.client.editor.panel;
 
 import de.luckymcdev.foundryengine.client.Client;
-import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
+import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import imgui.ImGui;
 import imgui.ImVec4;
@@ -14,7 +14,7 @@ public class MinecraftPanelRequirements implements PanelRequirements {
 
     private static void textDenied(String title, String... lines) {
         ImGui.textColored(DENIED_COLOR,
-                ImGuiUtils.icon(ImIcons.FA.FA_EXCLAMATION_TRIANGLE) + " " + title);
+                ImGraphicsExtractor.icon(ImIcons.FA.FA_EXCLAMATION_TRIANGLE) + " " + title);
         ImGui.spacing();
         for (String line : lines) {
             ImGui.textDisabled(line);

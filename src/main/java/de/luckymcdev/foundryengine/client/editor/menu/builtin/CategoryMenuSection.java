@@ -4,6 +4,7 @@ import de.luckymcdev.foundryengine.client.editor.EditorManager;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.menu.MenuSection;
 import de.luckymcdev.foundryengine.client.editor.menu.PanelMenuItemRenderer;
+import de.luckymcdev.foundryengine.client.editor.panel.Panel;
 import imgui.ImGui;
 
 public class CategoryMenuSection implements MenuSection {
@@ -37,8 +38,10 @@ public class CategoryMenuSection implements MenuSection {
     }
 
     private void renderPanelsForCategory(PanelCategory cat) {
-        editor.getPanels().stream()
-                .filter(p -> p.category == cat)
-                .forEach(menuItemRenderer::render);
+        for (Panel panel : editor.getPanels()) {
+            if (panel.getCategory() == cat) {
+                menuItemRenderer.render(panel);
+            }
+        }
     }
 }

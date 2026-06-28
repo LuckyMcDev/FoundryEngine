@@ -2,7 +2,7 @@ package de.luckymcdev.foundryengine.client.editor.panel.tools;
 
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.panel.Panel;
-import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
+import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.world.StorageSourceManager;
@@ -19,30 +19,42 @@ public class DevToolsPanel extends Panel {
     }
 
     @Override
-    public void content() {
-        ImGuiUtils.section("Pack Mode");
+    public void content(ImGraphicsExtractor g) {
+        g.cardBegin("##pack_mode_card");
+        ImGui.text(ImIcons.FA.FA_CUBES + "  Pack Mode");
 
         String current = CommonConfig.PACK_MODE.get();
         boolean isDev = current.equalsIgnoreCase("dev");
 
+        ImGui.spacing();
         if (ImGui.checkbox("Dev Mode (edit original saves directly)", isDev)) {
             CommonConfig.PACK_MODE.set(!isDev ? "dev" : "");
             CommonConfig.PACK_MODE.save();
         }
-        ImGuiUtils.helpTooltip("When enabled, bundle saves are loaded directly without instancing. Changes will modify the original files.");
+        g.helpTooltip("When enabled, bundle saves are loaded directly without instancing. Changes will modify the original files.");
 
-        ImGui.text("Current pack mode: " + (current.isEmpty() ? "(none)" : current));
-
+        ImGui.spacing();
+        ImGui.text("Current mode: ");
+        ImGui.sameLine();
         if (isDev) {
-            ImGui.textColored(0xFFFFAA00, "Warning: Changes will be written to the original bundle saves!");
+            ImGui.textColored(0xFFFFAA00, "Dev");
+            g.helpTooltip("Changes will be written to the original bundle saves!");
+        } else {
+            ImGui.textColored(0xFF4CAF50, "Safe");
+            g.helpTooltip("Each save is instanced. Original files are never modified.");
         }
+        g.cardEnd();
 
-        ImGui.dummy(0, 8);
-        ImGuiUtils.section("Instancing");
+        ImGui.spacing();
 
-        if (ImGui.button("Clear Instances Cache")) {
+        g.cardBegin("##instancing_card");
+        ImGui.text(ImIcons.FA.FA_DATABASE + "  Instancing");
+
+        ImGui.spacing();
+        if (ImGui.button(ImIcons.FA.FA_TRASH + " Clear Instances Cache", -1, 0)) {
             StorageSourceManager.clearInstanced();
         }
-        ImGuiUtils.helpTooltip("Clears the cache of instanced world copies. New copies will be created on next load.");
+        g.helpTooltip("Clears the cache of instanced world copies. New copies will be created on next load.");
+        g.cardEnd();
     }
 }

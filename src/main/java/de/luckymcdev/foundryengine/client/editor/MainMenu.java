@@ -5,7 +5,6 @@ import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.menu.MenuSection;
 import de.luckymcdev.foundryengine.client.editor.menu.ShortcutHandler;
 import de.luckymcdev.foundryengine.client.editor.menu.builtin.CategoryMenuSection;
-import de.luckymcdev.foundryengine.client.imgui.graphics.ImGuiGraphicsStack;
 import de.luckymcdev.foundryengine.common.registry.GenericRegistry;
 import imgui.ImGui;
 
@@ -15,12 +14,10 @@ import imgui.ImGui;
  */
 public class MainMenu {
     private final GenericRegistry<String, MenuSection> menuSections = new GenericRegistry<>();
-    private ImGuiGraphicsStack graphicsStack;
     private ShortcutHandler shortcutHandler;
 
     public void register() {
         var editor = Client.getEditorManager();
-        this.graphicsStack = Client.getImGuiManager().getGraphicsStack();
         this.shortcutHandler = new ShortcutHandler(editor);
 
         for (PanelCategory category : PanelCategory.values()) {
@@ -46,9 +43,10 @@ public class MainMenu {
 
     public void render() {
         if (ImGui.beginMainMenuBar()) {
-            graphicsStack.push();
+            var g = Client.getImGraphics();
+            g.pushStack();
             menuSections.forEach(MenuSection::render);
-            graphicsStack.pop();
+            g.popStack();
 
             ImGui.endMainMenuBar();
         }

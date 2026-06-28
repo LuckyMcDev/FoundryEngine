@@ -3,7 +3,7 @@ package de.luckymcdev.foundryengine.client.editor.panel.editor;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.panel.tools.CataloguePanel;
 import de.luckymcdev.foundryengine.client.icons.ImageExportUtil;
-import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
+import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.config.ClientConfig;
@@ -34,7 +34,7 @@ public class RecipeEditorPanel extends EditorPanel {
 
     private final Map<String, SlotData> slots = new LinkedHashMap<>();
     private final Map<Identifier, Integer> itemTextureCache = new HashMap<>();
-    private final Map<Identifier, ImGuiUtils.Image> bgTextureCache = new HashMap<>();
+    private final Map<Identifier, ImGraphicsExtractor.Image> bgTextureCache = new HashMap<>();
     private final ImString recipeIdInput = new ImString("modid:recipe_name", 256);
     private final ImString groupInput = new ImString("", 128);
     private RecipeType selectedType = RecipeType.SHAPED;
@@ -52,8 +52,7 @@ public class RecipeEditorPanel extends EditorPanel {
     }
 
     @Override
-    public void content() {
-        beginContent();
+    public void content(ImGraphicsExtractor g) {
         renderTypeSelector();
         ImGui.separator();
         renderIdInput();
@@ -62,7 +61,6 @@ public class RecipeEditorPanel extends EditorPanel {
         renderConfigFields();
         ImGui.separator();
         renderCodePreview();
-        endContent();
     }
 
     private void renderTypeSelector() {
@@ -95,7 +93,7 @@ public class RecipeEditorPanel extends EditorPanel {
 
     private void renderRecipeGrid() {
         RecipeLayout layout = getLayout();
-        ImGuiUtils.Image bg = getBgTexture(layout.tex());
+        ImGraphicsExtractor.Image bg = getBgTexture(layout.tex());
 
         float availX = ImGui.getContentRegionAvailX();
         float texW = GUI_TEX_WIDTH * TEXTURE_SCALE;
@@ -396,12 +394,12 @@ public class RecipeEditorPanel extends EditorPanel {
                 new SlotDef("result", "Result", 133, 47));
     }
 
-    private ImGuiUtils.Image getBgTexture(Identifier texId) {
+    private ImGraphicsExtractor.Image getBgTexture(Identifier texId) {
         return bgTextureCache.computeIfAbsent(texId, id -> {
             try {
-                return ImGuiUtils.getTexture(id);
+                return ImGraphicsExtractor.getTexture(id);
             } catch (Exception e) {
-                return new ImGuiUtils.Image(-1, 0, 0);
+                return new ImGraphicsExtractor.Image(-1, 0, 0);
             }
         });
     }
@@ -418,7 +416,7 @@ public class RecipeEditorPanel extends EditorPanel {
             String prefix = ImageExportUtil.sanitizeFilename(itemId.getPath());
             File[] matches = iconDir.listFiles((dir, name) -> name.startsWith(prefix) && name.endsWith(".png"));
             if (matches != null && matches.length > 0) {
-                ImGuiUtils.Image img = ImGuiUtils.getTexture(matches[0]);
+                ImGraphicsExtractor.Image img = ImGraphicsExtractor.getTexture(matches[0]);
                 if (img.glId() > 0) {
                     itemTextureCache.put(itemId, img.glId());
                     return;

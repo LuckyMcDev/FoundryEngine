@@ -4,6 +4,7 @@ package de.luckymcdev.foundryengine.common.util.color;
  * Utility class for handling Colors.
  */
 public class Color {
+    public static final Color TRANSPARENT = new Color(0, 0 ,0, 0);
     public static final Color WHITE = new Color(255, 255, 255);
     public static final Color LIGHT_GRAY = new Color(192, 192, 192);
     public static final Color GRAY = new Color(128, 128, 128);
@@ -72,6 +73,88 @@ public class Color {
 
     public Color(float[] floats) {
         this(floats[0], floats[1], floats[2], 255);
+    }
+
+
+    public static Color hsb(float hue, float saturation, float brightness, int alpha) {
+        if (saturation <= 0F) {
+            int c = (int) (brightness * 255F + 0.5F);
+            return of(alpha, c, c, c);
+        }
+
+        int r = 0;
+        int g = 0;
+        int b = 0;
+        float h = (hue - (float) Math.floor(hue)) * 6F;
+        float f = h - (float) Math.floor(h);
+        float p = brightness * (1F - saturation);
+        float q = brightness * (1F - saturation * f);
+        float t = brightness * (1F - saturation * (1F - f));
+
+        switch ((int) h) {
+            case 0:
+                r = (int) (brightness * 255F + 0.5F);
+                g = (int) (t * 255F + 0.5F);
+                b = (int) (p * 255F + 0.5F);
+                break;
+            case 1:
+                r = (int) (q * 255F + 0.5F);
+                g = (int) (brightness * 255F + 0.5F);
+                b = (int) (p * 255F + 0.5F);
+                break;
+            case 2:
+                r = (int) (p * 255F + 0.5F);
+                g = (int) (brightness * 255F + 0.5F);
+                b = (int) (t * 255F + 0.5F);
+                break;
+            case 3:
+                r = (int) (p * 255F + 0.5F);
+                g = (int) (q * 255F + 0.5F);
+                b = (int) (brightness * 255F + 0.5F);
+                break;
+            case 4:
+                r = (int) (t * 255F + 0.5F);
+                g = (int) (p * 255F + 0.5F);
+                b = (int) (brightness * 255F + 0.5F);
+                break;
+            case 5:
+                r = (int) (brightness * 255F + 0.5F);
+                g = (int) (p * 255F + 0.5F);
+                b = (int) (q * 255F + 0.5F);
+        }
+
+        return of(alpha, r, g, b);
+    }
+
+    public static Color of(int argb) {
+        return switch (argb) {
+            case 0x00000000 -> TRANSPARENT;
+            case 0xFFFFFFFF -> WHITE;
+            case 0xFF000000 -> BLACK;
+            case 0xFFFF0000 -> RED;
+            case 0xFF00FF00 -> GREEN;
+            case 0xFF0000FF -> BLUE;
+            case 0xFFFFFF00 -> YELLOW;
+            case 0xFFFF00FF -> MAGENTA;
+            case 0xFF00FFFF -> CYAN;
+            default -> new Color(argb);
+        };
+    }
+
+    public static Color ofRGB(int rgb) {
+        return of(0xFF000000 | rgb);
+    }
+
+    public static Color of(int a, int r, int g, int b) {
+        return of(((a & 0xFF) << 24) | ((r & 0xFF) << 16) | ((g & 0xFF) << 8) | (b & 0xFF));
+    }
+
+    public static Color of(int r, int g, int b) {
+        return of(255, r, g, b);
+    }
+
+    public static Color of(float a, float r, float g, float b) {
+        return of((int) (a * 255F), (int) (r * 255F), (int) (g * 255F), (int) (b * 255F));
     }
 
     /**

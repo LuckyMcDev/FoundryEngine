@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.client.editor.panel;
 
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
+import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.client.node.*;
 import de.luckymcdev.foundryengine.common.Common;
@@ -21,12 +22,10 @@ public class NodeTestPanel extends EditorPanel {
                 .category(PanelCategory.EDITOR)
         );
 
-        // Use the predefined DOUBLE type
         NodePinType<Double> doubleType = NodeTypes.DOUBLE;
 
         editor = new NodeEditorInstance<>(doubleType);
 
-        // Root evaluator – simply evaluates the root's input link
         rootEvalBuilder = new NodeBuilder<>() {
             @Override
             public List<NodePin<Double>> getPins() {
@@ -61,16 +60,9 @@ public class NodeTestPanel extends EditorPanel {
     }
 
     @Override
-    public void content() {
-        beginContent();
-
-        // Render the node editor
-        editor.content();
-
-        // Show final result
+    public void content(ImGraphicsExtractor g) {
+        editor.content(g);
         ImGui.separator();
         ImGui.text("Final value: " + editor.rootBuilder.evaluate());
-
-        endContent();
     }
 }

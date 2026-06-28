@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.client.editor.panel.files;
 
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
+import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiShortcut;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import imgui.ImGui;
@@ -86,7 +87,7 @@ public class CodeEditor extends EditorPanel {
         this.oldSource = source;
         this.textEditor.setText(source);
         this.textEditor.setErrorMarkers(Collections.emptyMap());
-        this.unsaved = false;
+        this.setUnsaved(false);
         this.open();
     }
 
@@ -110,16 +111,16 @@ public class CodeEditor extends EditorPanel {
 
         if (errors.isEmpty()) {
             this.oldSource = this.textEditor.getText();
-            this.unsaved = false;
+            this.setUnsaved(false);
         }
 
         this.textEditor.setErrorMarkers(errors);
     }
 
     @Override
-    public void content() {
+    public void content(ImGraphicsExtractor g) {
         if (!requireLevelOnServer(PermissionLevel.OWNERS)) return;
-        this.unsaved = isDirty() && !forceReadOnly;
+        this.setUnsaved(isDirty() && !forceReadOnly);
 
         renderMenuBar();
         handleShortcuts();
@@ -529,7 +530,7 @@ public class CodeEditor extends EditorPanel {
         ImGui.sameLine();
         if (ImGui.button("Discard", BUTTON_WIDTH, 0)) {
             this.oldSource = this.textEditor.getText();
-            this.unsaved = false;
+            this.setUnsaved(false);
             ImGui.closeCurrentPopup();
             super.close();
         }

@@ -3,7 +3,7 @@ package de.luckymcdev.foundryengine.client.editor.panel.tools;
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
-import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
+import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.network.packets.editor.WaypointPacket;
@@ -55,16 +55,14 @@ public class WaypointPanel extends EditorPanel {
     }
 
     @Override
-    public void content() {
+    public void content(ImGraphicsExtractor g) {
         if (!requireWorld("You need to join a world to manage waypoints.")) {
             return;
         }
 
         renderMenuBar();
 
-        beginContent();
-        renderWaypointList();
-        endContent();
+        renderWaypointList(g);
     }
 
     private void renderMenuBar() {
@@ -80,8 +78,8 @@ public class WaypointPanel extends EditorPanel {
         });
     }
 
-    private void renderWaypointList() {
-        ImGuiUtils.scrollableRegion("##waypoint_list", () -> {
+    private void renderWaypointList(ImGraphicsExtractor g) {
+        g.scrollableRegion("##waypoint_list", () -> {
             if (showNewForm) {
                 renderNewWaypointForm();
                 ImGui.separator();

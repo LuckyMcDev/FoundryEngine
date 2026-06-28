@@ -5,8 +5,8 @@ import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.panel.files.CodeEditor;
 import de.luckymcdev.foundryengine.client.editor.panel.files.TextureViewerPanel;
+import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiShortcut;
-import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.exceptions.EngineException;
@@ -212,7 +212,7 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
             String query = searchFilter.get().trim().toLowerCase();
 
             // Client section
-            renderSection(ImGuiUtils.icon(ImIcons.FA.FA_DESKTOP) + " Client", "##section_client", () -> {
+            renderSection(ImGraphicsExtractor.icon(ImIcons.FA.FA_DESKTOP) + " Client", "##section_client", () -> {
                 if (filtering) {
                     renderFilteredLocalFiles(rootDir, query);
                 } else if (rootNode != null) {
@@ -223,7 +223,7 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
             // Server section
             if (isMultiplayer()) {
                 ImGui.spacing();
-                renderSection(ImGuiUtils.icon(ImIcons.FA.FA_SERVER) + " Server", "##section_server", () -> {
+                renderSection(ImGraphicsExtractor.icon(ImIcons.FA.FA_SERVER) + " Server", "##section_server", () -> {
                     if (remoteLoading) {
                         ImGui.textDisabled("Loading…");
                     } else if (remoteRootNode == null) {
@@ -284,8 +284,8 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
 
         ImGui.sameLine();
         String folderIcon = isOpen
-                ? ImGuiUtils.icon(ImIcons.FA.FA_FOLDER_OPEN)
-                : ImGuiUtils.icon(ImIcons.FA.FA_FOLDER);
+                ? ImGraphicsExtractor.icon(ImIcons.FA.FA_FOLDER_OPEN)
+                : ImGraphicsExtractor.icon(ImIcons.FA.FA_FOLDER);
         ImGui.textUnformatted(folderIcon + " " + node.name);
 
         renderDirectoryContextMenu(node.file, id + "_ctx");
@@ -370,8 +370,8 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
 
             ImGui.sameLine();
             String folderIcon = isOpen
-                    ? ImGuiUtils.icon(ImIcons.FA.FA_FOLDER_OPEN)
-                    : ImGuiUtils.icon(ImIcons.FA.FA_FOLDER);
+                    ? ImGraphicsExtractor.icon(ImIcons.FA.FA_FOLDER_OPEN)
+                    : ImGraphicsExtractor.icon(ImIcons.FA.FA_FOLDER);
             ImGui.textUnformatted(folderIcon + " " + node.name);
 
             if (isOpen) {
@@ -470,7 +470,7 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
 
     private void openTextureViewer(File file) {
         Identifier viewerId = Common.id("tex_viewer_" + file.getAbsolutePath().hashCode());
-        if (Client.getEditorManager().getPanels().get(viewerId) instanceof TextureViewerPanel viewer) {
+        if (Client.getEditorManager().getPanel(viewerId) instanceof TextureViewerPanel viewer) {
             viewer.open();
             return;
         }

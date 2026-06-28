@@ -3,7 +3,7 @@ package de.luckymcdev.foundryengine.client.editor.panel.tools;
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
-import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
+import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.network.packets.world.ServerBoundChangeWeatherPacket;
@@ -29,12 +29,12 @@ public class MinecraftToolsPanel extends EditorPanel {
     }
 
     @Override
-    public void content() {
+    public void content(ImGraphicsExtractor g) {
         if (!requireWorld()) {
             return;
         }
 
-        ImGuiUtils.section("Permissions");
+        g.section("Permissions");
         PermissionSet pSet = Client.getPlayer().permissions();
         if (pSet instanceof LevelBasedPermissionSet levelSet) {
             ImGui.text("Access Level: " + levelSet.level().name());
@@ -42,20 +42,20 @@ public class MinecraftToolsPanel extends EditorPanel {
             ImGui.text("Permissions: Custom/Unknown Set");
         }
 
-        ImGuiUtils.section("Game Mode");
-        gameModeSelector();
+        g.section("Game Mode");
+        gameModeSelector(g);
 
-        ImGuiUtils.section("Time");
-        timeSelector();
+        g.section("Time");
+        timeSelector(g);
 
-        ImGuiUtils.section("Weather");
-        weatherSelector();
+        g.section("Weather");
+        weatherSelector(g);
 
-        ImGuiUtils.section("Metrics");
-        metrics();
+        g.section("Metrics");
+        metrics(g);
     }
 
-    private void metrics() {
+    private void metrics(ImGraphicsExtractor g) {
         if (ImGui.collapsingHeader("Minecraft Metrics")) {
             memory();
             ImGui.separator();
@@ -93,7 +93,7 @@ public class MinecraftToolsPanel extends EditorPanel {
         return bytes / 1024L / 1024L;
     }
 
-    private void timeSelector() {
+    private void timeSelector(ImGraphicsExtractor g) {
         if (Client.getConnection() == null) return;
 
         ImGui.text("Time Selector");
@@ -114,7 +114,7 @@ public class MinecraftToolsPanel extends EditorPanel {
             Client.getConnection().send(new ServerBoundSetTimePacket(18000));
         }
         ImGui.sameLine();
-        if (ImGui.button("Lock " + ImGuiUtils.icon(ImIcons.FA.FA_LOCK) + "##time")) {
+        if (ImGui.button("Lock " + ImGraphicsExtractor.icon(ImIcons.FA.FA_LOCK) + "##time")) {
             BuiltInRegistries.GAME_RULE.getResourceKey(GameRules.ADVANCE_TIME).ifPresent(key -> {
                 var entry = new ServerboundSetGameRulePacket.Entry(key, "false");
                 Client.getConnection().send(new ServerboundSetGameRulePacket(List.of(entry)));
@@ -123,7 +123,7 @@ public class MinecraftToolsPanel extends EditorPanel {
         if (ImGui.isItemHovered()) ImGui.setTooltip("Stops the daylight cycle");
     }
 
-    private void weatherSelector() {
+    private void weatherSelector(ImGraphicsExtractor g) {
         if (Client.getConnection() == null) return;
         ImGui.text("Weather");
 
@@ -139,7 +139,7 @@ public class MinecraftToolsPanel extends EditorPanel {
             Client.getConnection().send(new ServerBoundChangeWeatherPacket("thunder"));
         }
         ImGui.sameLine();
-        if (ImGui.button("Lock " + ImGuiUtils.icon(ImIcons.FA.FA_LOCK) + "##weather")) {
+        if (ImGui.button("Lock " + ImGraphicsExtractor.icon(ImIcons.FA.FA_LOCK) + "##weather")) {
             BuiltInRegistries.GAME_RULE.getResourceKey(GameRules.ADVANCE_WEATHER).ifPresent(key -> {
                 var entry = new ServerboundSetGameRulePacket.Entry(key, "false");
                 Client.getConnection().send(new ServerboundSetGameRulePacket(List.of(entry)));
@@ -148,7 +148,7 @@ public class MinecraftToolsPanel extends EditorPanel {
         if (ImGui.isItemHovered()) ImGui.setTooltip("Stops the weather cycle");
     }
 
-    private void gameModeSelector() {
+    private void gameModeSelector(ImGraphicsExtractor g) {
         if (Client.getConnection() == null) return;
 
         ImGui.text("Game mode");

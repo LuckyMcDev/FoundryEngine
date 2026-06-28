@@ -5,7 +5,7 @@ import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
 import de.luckymcdev.foundryengine.client.editor.styles.ImTheme;
 import de.luckymcdev.foundryengine.client.editor.styles.ImThemes;
-import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
+import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.common.Common;
 import imgui.ImGui;
@@ -20,13 +20,13 @@ public class ThemeSelectorPanel extends EditorPanel {
     }
 
     @Override
-    public void content() {
+    public void content(ImGraphicsExtractor g) {
         var manager = Client.getImGuiManager();
         ImTheme currentTheme = manager.getCurrentTheme();
 
-        ImGuiUtils.section("Available Themes");
+        g.section("Available Themes");
 
-        ImGuiUtils.scrollableRegion("##theme_list", () -> {
+        g.scrollableRegion("##theme_list", 0, ImGui.getContentRegionAvailY(), true, () -> {
             for (ImTheme theme : ImThemes.ALL) {
                 boolean isSelected = currentTheme.getClass() == theme.getClass();
 

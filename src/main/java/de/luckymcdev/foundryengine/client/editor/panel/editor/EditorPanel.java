@@ -1,12 +1,9 @@
 package de.luckymcdev.foundryengine.client.editor.panel.editor;
 
 import de.luckymcdev.foundryengine.client.editor.panel.Panel;
+import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import imgui.ImGui;
 
-/**
- * WIP
- * A Panel for the editor which will be to generate bundles from an ingame menu.
- */
 public class EditorPanel extends Panel {
     private String statusMessage = "";
     private long statusExpiry = 0L;
@@ -15,30 +12,40 @@ public class EditorPanel extends Panel {
         super(builder);
     }
 
-    protected void setStatus(String message) {
+    @Override
+    public void content(ImGraphicsExtractor g) {
+    }
+
+    protected final void setStatus(String message) {
         statusMessage = message;
         statusExpiry = System.currentTimeMillis() + 4000L;
     }
 
-    private float getStatusReservedHeight() {
-        if (!statusMessage.isEmpty() && System.currentTimeMillis() <= statusExpiry) {
-            return ImGui.getTextLineHeightWithSpacing() + ImGui.getStyle().getItemSpacingY() * 2;
+    @Override
+    protected void onPreContent() {
+        if (hasStatus()) {
+            ImGui.beginChild("##editor_content_scroll", 0, -getStatusReservedHeight(), false);
         }
-        return 0;
     }
 
-    protected void beginContent() {
-        ImGui.beginChild("##editor_content_scroll", 0, -getStatusReservedHeight(), false);
-    }
-
-    protected void endContent() {
-        ImGui.endChild();
+    @Override
+    protected void onPostContent() {
+        if (hasStatus()) {
+            ImGui.endChild();
+        }
         renderStatus();
     }
 
+    private boolean hasStatus() {
+        return !statusMessage.isEmpty() && System.currentTimeMillis() <= statusExpiry;
+    }
+
+    private float getStatusReservedHeight() {
+        return ImGui.getTextLineHeightWithSpacing() + ImGui.getStyle().getItemSpacingY() * 2;
+    }
+
     private void renderStatus() {
-        if (statusMessage.isEmpty()) return;
-        if (System.currentTimeMillis() > statusExpiry) {
+        if (!hasStatus()) {
             statusMessage = "";
             return;
         }

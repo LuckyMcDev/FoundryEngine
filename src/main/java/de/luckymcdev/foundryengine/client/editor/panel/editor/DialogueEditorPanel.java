@@ -1,7 +1,7 @@
 package de.luckymcdev.foundryengine.client.editor.panel.editor;
 
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
-import de.luckymcdev.foundryengine.client.imgui.ImGuiUtils;
+import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.dialogue.DialogueNode;
@@ -19,7 +19,6 @@ import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
 import java.util.ArrayList;
 
-import static de.luckymcdev.foundryengine.client.imgui.ImGuiUtils.colorEdit4;
 
 public class DialogueEditorPanel extends EditorPanel {
     public static final DialogueEditorPanel INSTANCE = new DialogueEditorPanel();
@@ -55,17 +54,15 @@ public class DialogueEditorPanel extends EditorPanel {
     }
 
     @Override
-    public void content() {
+    public void content(ImGraphicsExtractor g) {
         if (!requireWorld()) return;
 
         renderMenuBar();
         ImGui.separator();
 
-        beginContent();
-        renderTreePanel();
+        renderTreePanel(g);
         ImGui.sameLine();
-        renderDetailPanel();
-        endContent();
+        renderDetailPanel(g);
     }
 
     @Override
@@ -95,10 +92,10 @@ public class DialogueEditorPanel extends EditorPanel {
         });
     }
 
-    private void renderTreePanel() {
+    private void renderTreePanel(ImGraphicsExtractor g) {
         ImGui.beginChild("##tree_panel", TREE_PANEL_WIDTH, 0, true);
 
-        ImGuiUtils.sectionLabel("TREES");
+        g.sectionLabel("TREES");
 
         if (showNewTree) {
             renderNewTreeForm();
@@ -171,11 +168,11 @@ public class DialogueEditorPanel extends EditorPanel {
         ImGui.endChild();
     }
 
-    private void renderDetailPanel() {
+    private void renderDetailPanel(ImGraphicsExtractor g) {
         ImGui.beginChild("##detail_panel", 0, 0, false);
 
         if (selectedTree < 0 || selectedTree >= trees.size()) {
-            ImGuiUtils.centeredMessage("Select a tree on the left to start editing.");
+            g.centeredMessage("Select a tree on the left to start editing.");
             ImGui.endChild();
             return;
         }
@@ -185,18 +182,18 @@ public class DialogueEditorPanel extends EditorPanel {
         renderTreeHeader(tree);
         ImGui.dummy(0, SECTION_SPACING);
 
-        renderStyleEditor(tree);
+        renderStyleEditor(tree, g);
         ImGui.dummy(0, SECTION_SPACING);
 
-        ImGuiUtils.cardBegin("##nodes_card");
-        ImGuiUtils.sectionLabel("NODES");
+        g.cardBegin("##nodes_card");
+        g.sectionLabel("NODES");
         renderNodeBar(tree);
         ImGui.spacing();
-        renderNodeEdit(tree);
-        ImGuiUtils.cardEnd();
+        renderNodeEdit(tree, g);
+        g.cardEnd();
 
         ImGui.dummy(0, SECTION_SPACING);
-        renderOptionList(tree);
+        renderOptionList(tree, g);
 
         ImGui.endChild();
     }
@@ -230,10 +227,10 @@ public class DialogueEditorPanel extends EditorPanel {
         ImGui.endGroup();
     }
 
-    private void renderStyleEditor(DialogueTree tree) {
-        ImGuiUtils.pushErrorButtonStyle();
+    private void renderStyleEditor(DialogueTree tree, ImGraphicsExtractor g) {
+        g.pushStack(); g.setRedButton();
         boolean resetClicked = ImGui.button(ImIcons.FA.FA_UNDO + " Reset Styles", 130, 0);
-        ImGuiUtils.popErrorButtonStyle();
+        g.popStack();
         if (ImGui.isItemHovered()) ImGui.setTooltip("Restore this tree's default colors and sizes");
 
         boolean open = ImGui.collapsingHeader(ImIcons.FA.FA_PAINT_BRUSH + " Style");
@@ -266,9 +263,9 @@ public class DialogueEditorPanel extends EditorPanel {
         ImGui.indent();
 
         if (ImGui.treeNodeEx("Dialogue Box", ImGuiTreeNodeFlags.DefaultOpen)) {
-            Color c = colorEdit4("Background##dialogueBg", s.getDialogueBackground());
+            Color c = g.colorEdit4("Background##dialogueBg", s.getDialogueBackground());
             if (c != null) s.setDialogueBackground(c);
-            c = colorEdit4("Border##dialogueBorder", s.getDialogueBorder());
+            c = g.colorEdit4("Border##dialogueBorder", s.getDialogueBorder());
             if (c != null) s.setDialogueBorder(c);
 
             var bw = new ImInt(s.getDialogueBorderWidth());
@@ -278,9 +275,9 @@ public class DialogueEditorPanel extends EditorPanel {
         }
 
         if (ImGui.treeNodeEx("Options Box", ImGuiTreeNodeFlags.DefaultOpen)) {
-            Color c = colorEdit4("Background##optionsBg", s.getOptionsBackground());
+            Color c = g.colorEdit4("Background##optionsBg", s.getOptionsBackground());
             if (c != null) s.setOptionsBackground(c);
-            c = colorEdit4("Border##optionsBorder", s.getOptionsBorder());
+            c = g.colorEdit4("Border##optionsBorder", s.getOptionsBorder());
             if (c != null) s.setOptionsBorder(c);
 
             var bw = new ImInt(s.getOptionsBorderWidth());
@@ -290,27 +287,27 @@ public class DialogueEditorPanel extends EditorPanel {
         }
 
         if (ImGui.treeNodeEx("Buttons", ImGuiTreeNodeFlags.DefaultOpen)) {
-            Color c = colorEdit4("Background##btnBg", s.getButtonBackground());
+            Color c = g.colorEdit4("Background##btnBg", s.getButtonBackground());
             if (c != null) s.setButtonBackground(c);
-            c = colorEdit4("Hover##btnHover", s.getButtonHover());
+            c = g.colorEdit4("Hover##btnHover", s.getButtonHover());
             if (c != null) s.setButtonHover(c);
-            c = colorEdit4("Border##btnBorder", s.getButtonBorder());
+            c = g.colorEdit4("Border##btnBorder", s.getButtonBorder());
             if (c != null) s.setButtonBorder(c);
             ImGui.treePop();
         }
 
         if (ImGui.treeNodeEx("Navigation Buttons", ImGuiTreeNodeFlags.None)) {
-            Color c = colorEdit4("Background##navBg", s.getNavButtonBackground());
+            Color c = g.colorEdit4("Background##navBg", s.getNavButtonBackground());
             if (c != null) s.setNavButtonBackground(c);
-            c = colorEdit4("Hover##navHover", s.getNavButtonHover());
+            c = g.colorEdit4("Hover##navHover", s.getNavButtonHover());
             if (c != null) s.setNavButtonHover(c);
-            c = colorEdit4("Border##navBorder", s.getNavButtonBorder());
+            c = g.colorEdit4("Border##navBorder", s.getNavButtonBorder());
             if (c != null) s.setNavButtonBorder(c);
             ImGui.treePop();
         }
 
         if (ImGui.treeNodeEx("Overlay & Text", ImGuiTreeNodeFlags.None)) {
-            Color c = colorEdit4("Overlay##overlay", s.getOverlayColor());
+            Color c = g.colorEdit4("Overlay##overlay", s.getOverlayColor());
             if (c != null) s.setOverlayColor(c);
 
             ImGui.spacing();
@@ -450,11 +447,11 @@ public class DialogueEditorPanel extends EditorPanel {
         ImGui.endChild();
     }
 
-    private void renderNodeEdit(DialogueTree tree) {
+    private void renderNodeEdit(DialogueTree tree, ImGraphicsExtractor g) {
         var nodes = new ArrayList<>(tree.getNodes().values());
 
         if (selectedNode < 0 || selectedNode >= nodes.size()) {
-            ImGuiUtils.centeredMessage("Select a node above to edit its contents.");
+            g.centeredMessage("Select a node above to edit its contents.");
             return;
         }
 
@@ -503,12 +500,12 @@ public class DialogueEditorPanel extends EditorPanel {
         }
 
         ImGui.sameLine(0, 12);
-        ImGuiUtils.pushErrorButtonStyle();
+        g.pushStack(); g.setRedButton();
         if (ImGui.button(ImIcons.FA.FA_TRASH + " Delete Node")) {
             tree.removeNode(node.getId());
             selectedNode = -1;
         }
-        ImGuiUtils.popErrorButtonStyle();
+        g.popStack();
         ImGui.endGroup();
 
         if (showNewOption) {
@@ -544,19 +541,19 @@ public class DialogueEditorPanel extends EditorPanel {
         ImGui.endChild();
     }
 
-    private void renderOptionList(DialogueTree tree) {
+    private void renderOptionList(DialogueTree tree, ImGraphicsExtractor g) {
         var nodes = new ArrayList<>(tree.getNodes().values());
         if (selectedNode < 0 || selectedNode >= nodes.size()) return;
 
         var node = nodes.get(selectedNode);
         var options = node.getOptions();
 
-        ImGuiUtils.cardBegin("##options_card");
-        ImGuiUtils.sectionLabel("OPTIONS (" + options.size() + ")");
+        g.cardBegin("##options_card");
+        g.sectionLabel("OPTIONS (" + options.size() + ")");
 
         if (options.isEmpty()) {
             ImGui.textDisabled("This node has no options yet -- add one above.");
-            ImGuiUtils.cardEnd();
+            g.cardEnd();
             return;
         }
 
@@ -570,9 +567,9 @@ public class DialogueEditorPanel extends EditorPanel {
 
             ImGui.textColored(ACCENT_R, ACCENT_G, ACCENT_B, 1f, ImIcons.FA.FA_ARROW_RIGHT + " Option " + (i + 1));
             ImGui.sameLine(ImGui.getContentRegionAvailX() + ImGui.getCursorPosX() - 24);
-            ImGuiUtils.pushErrorButtonStyle();
+            g.pushStack(); g.setRedButton();
             boolean deleteClicked = ImGui.button(ImIcons.FA.FA_TIMES + "##del" + i, 24, 0);
-            ImGuiUtils.popErrorButtonStyle();
+            g.popStack();
             if (deleteClicked) removeIndex = i;
 
             var t = new ImString(opt.getText(), 256);
@@ -599,7 +596,7 @@ public class DialogueEditorPanel extends EditorPanel {
             options.remove(removeIndex);
         }
 
-        ImGuiUtils.cardEnd();
+        g.cardEnd();
     }
 
     private void syncEditFields() {

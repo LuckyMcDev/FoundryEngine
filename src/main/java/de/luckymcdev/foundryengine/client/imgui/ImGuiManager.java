@@ -11,7 +11,7 @@ import de.luckymcdev.foundryengine.client.editor.styles.ImTheme;
 import de.luckymcdev.foundryengine.client.editor.styles.ImThemes;
 import de.luckymcdev.foundryengine.client.imgui.backend.ImGuiImplGl3;
 import de.luckymcdev.foundryengine.client.imgui.backend.ImGuiImplGlfw;
-import de.luckymcdev.foundryengine.client.imgui.graphics.ImGuiGraphicsStack;
+
 import de.luckymcdev.foundryengine.common.font.BuiltInFonts;
 import de.luckymcdev.foundryengine.config.ClientConfig;
 import de.luckymcdev.foundryengine.mixin.MinecraftMixin;
@@ -28,6 +28,7 @@ import imgui.internal.ImGuiContext;
 import imgui.internal.ImGuiDockNode;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.StringSplitter;
 import net.minecraft.client.input.InputQuirks;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
@@ -49,10 +50,16 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Uses OpenGL version 330 core profile.
  */
 public final class ImGuiManager implements ResourceManagerReloadListener, NativeResource {
+    public static final ImGuiCharSink IMGUI_CHAR_SINK = new ImGuiCharSink();
+    public static final StringSplitter IM_GUI_SPLITTER = new StringSplitter((charId, style) -> {
+        ImGui.pushFont(ImGraphicsExtractor.getStyleFont(style));
+        float width = ImGui.calcTextSizeX(Character.toString(charId));
+        ImGui.popFont();
+        return width;
+    });
     private static final Logger LOGGER = LogUtils.getLogger();
     private final ImGuiImplGlfw imGuiImplGlfw = new ImGuiImplGlfw();
     private final ImGuiImplGl3 imGuiImplGl3 = new ImGuiImplGl3();
-    private final ImGuiGraphicsStack graphicsStack = new ImGuiGraphicsStack();
     private final ImGuiFontManager fontManager = new ImGuiFontManager(imGuiImplGl3);
     private final AtomicBoolean enabled = new AtomicBoolean(false);
     private final AtomicBoolean menuBarVisible = new AtomicBoolean(true);
@@ -251,13 +258,6 @@ public final class ImGuiManager implements ResourceManagerReloadListener, Native
     }
 
     /**
-     * Returns the graphics stack for push/pop operations.
-     */
-    public ImGuiGraphicsStack getGraphicsStack() {
-        return graphicsStack;
-    }
-
-    /**
      * Returns the current dock space ID.
      */
     public int getDockId() {
@@ -291,7 +291,9 @@ public final class ImGuiManager implements ResourceManagerReloadListener, Native
      */
     public void dispose() {
         fontManager.destroy();
-        graphicsStack.destroy();
+        if (Client.getImGraphics().getStackDepth() > 0) {
+            Client.getImGraphics().popStack();
+        }
         imGuiImplGl3.shutdown();
         imGuiImplGlfw.shutdown();
         ImGui.destroyContext(imGuiContext);
@@ -312,7 +314,7 @@ public final class ImGuiManager implements ResourceManagerReloadListener, Native
      */
     @Override
     public void onResourceManagerReload(ResourceManager resourceManager) {
-        LOGGER.info("Hey. Fonts might be broken. If they appear really bad for you, disable custom fonts in the config.");
+        LOGGER.debug("Reloading fonts from resource manager");
         switch (ClientConfig.FONT_OPTION.get()) {
             case "MINIMAL": {
                 fontManager.loadFonts(resourceManager, BuiltInFonts.MINIMAL_LIST);
