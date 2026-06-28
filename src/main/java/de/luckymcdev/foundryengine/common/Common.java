@@ -46,7 +46,7 @@ public final class Common {
     public static final Path CACHE = dir(DIRECTORY.resolve(".cache"));
     public static final Path DUMPS = dir(CACHE.resolve("dumps"));
     public static final Path GAME = dir(CACHE.resolve("game"));
-    public static final Path GAME_DATA = CACHE.resolve("game_data.nbt");
+    public static final Path ENGINE_DATA = CACHE.resolve("engine.dat");
     public static final Path CONFIG_FE = dir(DIRECTORY.resolve("config"));
     private static final BundleManager BUNDLE_MANAGER = new BundleManager(FoundryEngineMod.getModBus(), CONFIG_FE);
     private static final GameStageHandler GAME_STAGE_HANDLER = new GameStageHandler();
