@@ -16,7 +16,7 @@ import de.luckymcdev.foundryengine.common.network.packets.explorer.ServerBoundRe
 import de.luckymcdev.foundryengine.common.network.packets.explorer.ServerBoundSaveFilePacket;
 import de.luckymcdev.foundryengine.common.util.FileEndings;
 import imgui.ImGui;
-import imgui.extension.texteditor.TextEditorLanguageDefinition;
+import imgui.extension.texteditor.TextEditorLanguage;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiKey;
 import imgui.flag.ImGuiMouseButton;
@@ -111,9 +111,9 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
     }
 
     private static void applyLanguageHighlighting(CodeEditor editor, String fileName) {
-        TextEditorLanguageDefinition lang = FileEndings.getLanguageDefinitionByFileName(fileName);
+        TextEditorLanguage lang = FileEndings.getLanguageDefinitionByFileName(fileName);
         if (lang != null) {
-            editor.getTextEditor().setLanguageDefinition(lang);
+            editor.getTextEditor().setLanguage(lang);
             editor.customLangOverride = true;
         }
     }

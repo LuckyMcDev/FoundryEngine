@@ -5,11 +5,11 @@ import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import imgui.ImGui;
 import imgui.extension.imnodes.ImNodes;
 import imgui.extension.imnodes.flag.ImNodesMiniMapLocation;
+import imgui.flag.ImGuiKey;
 import imgui.type.ImInt;
 import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
 
 public class NodeEditorInstance<T> {
     public final NodePinType<T> type;
@@ -210,7 +210,7 @@ public class NodeEditorInstance<T> {
         }
 
         // Delete selected links with DEL
-        if (ImGui.getIO().getKeysDown(GLFW.GLFW_KEY_DELETE)) {
+        if (ImGui.isKeyDown(ImGuiKey.Delete)) {
             for (var pin : pins.values()) {
                 if (pin.inputLinkSelected) {
                     pin.inputLinkSelected = false;

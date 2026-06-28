@@ -7,8 +7,8 @@ import de.luckymcdev.foundryengine.client.imgui.ImGuiShortcut;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import imgui.ImGui;
 import imgui.extension.texteditor.TextEditor;
-import imgui.extension.texteditor.TextEditorCoordinates;
-import imgui.extension.texteditor.TextEditorLanguageDefinition;
+import imgui.extension.texteditor.TextEditorCursorPosition;
+import imgui.extension.texteditor.TextEditorLanguage;
 import imgui.flag.*;
 import imgui.type.ImBoolean;
 import imgui.type.ImInt;
@@ -18,7 +18,6 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.permissions.PermissionLevel;
 
-import java.util.Collections;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -66,12 +65,12 @@ public class CodeEditor extends EditorPanel {
         this.saveCallback = (_, _) -> { /* default no-op */ };
 
         this.textEditor = new TextEditor();
-        this.textEditor.setShowWhitespaces(false);
+        this.textEditor.setShowWhitespacesEnabled(false);
         this.textEditor.setText(source);
-        this.textEditor.setPalette(textEditor.getDarkPalette());
+        this.textEditor.setPalette(TextEditor.getDarkPalette());
 
         if (!customLangOverride) {
-            this.textEditor.setLanguageDefinition(TextEditorLanguageDefinition.GLSL());
+            this.textEditor.setLanguage(TextEditorLanguage.Glsl());
         }
     }
 
@@ -86,7 +85,6 @@ public class CodeEditor extends EditorPanel {
         this.fileName = fileName;
         this.oldSource = source;
         this.textEditor.setText(source);
-        this.textEditor.setErrorMarkers(Collections.emptyMap());
         this.setUnsaved(false);
         this.open();
     }
@@ -113,8 +111,6 @@ public class CodeEditor extends EditorPanel {
             this.oldSource = this.textEditor.getText();
             this.setUnsaved(false);
         }
-
-        this.textEditor.setErrorMarkers(errors);
     }
 
     @Override
@@ -159,13 +155,13 @@ public class CodeEditor extends EditorPanel {
             }
 
             if (ImGui.beginMenu("Edit")) {
-                boolean ro = textEditor.isReadOnly();
+                boolean ro = textEditor.isReadOnlyEnabled();
 
                 if (ImGui.menuItem("Read-only mode", "", ro, !forceReadOnly)) {
-                    textEditor.setReadOnly(!ro);
+                    textEditor.setReadOnlyEnabled(!ro);
                 }
-                if (ImGui.menuItem("Show Whitespace", "", textEditor.isShowingWhitespaces()))
-                    textEditor.setShowWhitespaces(!textEditor.isShowingWhitespaces());
+                if (ImGui.menuItem("Show Whitespace", "", textEditor.isShowWhitespacesEnabled()))
+                    textEditor.setShowWhitespacesEnabled(!textEditor.isShowWhitespacesEnabled());
 
                 ImGui.separator();
 
@@ -176,22 +172,21 @@ public class CodeEditor extends EditorPanel {
 
                 ImGui.separator();
 
-                if (ImGui.menuItem("Copy", "Ctrl+C", false, textEditor.hasSelection())) textEditor.copy();
+                if (ImGui.menuItem("Copy", "Ctrl+C", false, textEditor.anyCursorHasSelection())) textEditor.copy();
                 ImGui.beginDisabled(ro);
-                if (ImGui.menuItem("Cut", "Ctrl+X", false, textEditor.hasSelection())) textEditor.cut();
+                if (ImGui.menuItem("Cut", "Ctrl+X", false, textEditor.anyCursorHasSelection())) textEditor.cut();
                 if (ImGui.menuItem("Paste", "Ctrl+V", false, ImGui.getClipboardText() != null)) textEditor.paste();
-                if (ImGui.menuItem("Delete", "Del", false, textEditor.hasSelection())) textEditor.delete();
-                if (ImGui.menuItem("Select All", "Ctrl+A", false, textEditor.getTotalLines() > 0))
-                    textEditor.setSelection(0, 0, textEditor.getTotalLines(), 0);
+                if (ImGui.menuItem("Delete", "Del", false, textEditor.anyCursorHasSelection())) textEditor.cut();
+                if (ImGui.menuItem("Select All", "Ctrl+A", false, textEditor.getLineCount() > 0))
+                    textEditor.selectRegion(0, 0, textEditor.getLineCount(), 0);
                 ImGui.endDisabled();
 
                 ImGui.endMenu();
             }
 
             if (ImGui.beginMenu("View")) {
-                if (ImGui.menuItem("Dark Palette")) textEditor.setPalette(textEditor.getDarkPalette());
-                if (ImGui.menuItem("Light Palette")) textEditor.setPalette(textEditor.getLightPalette());
-                if (ImGui.menuItem("Retro Blue Palette")) textEditor.setPalette(textEditor.getRetroBluePalette());
+                if (ImGui.menuItem("Dark Palette")) textEditor.setPalette(TextEditor.getDarkPalette());
+                if (ImGui.menuItem("Light Palette")) textEditor.setPalette(TextEditor.getLightPalette());
 
                 ImGui.separator();
 
@@ -329,14 +324,14 @@ public class CodeEditor extends EditorPanel {
         String query = findText.get();
         if (query.isEmpty()) return;
 
-        if (textEditor.hasSelection()) {
-            String sel = textEditor.getSelectedText();
+        if (textEditor.anyCursorHasSelection()) {
+            var csel = textEditor.getMainCursorSelection();
+            String sel = textEditor.getSectionText(csel.start.line, csel.start.column, csel.end.line, csel.end.column);
             boolean matches = matchCase.get()
                     ? sel.equals(query)
                     : sel.equalsIgnoreCase(query);
             if (matches) {
-                textEditor.delete();
-                textEditor.insertText(replaceText.get());
+                textEditor.replaceSectionText(csel.start.line, csel.start.column, csel.end.line, csel.end.column, replaceText.get());
             }
         }
         findNext();
@@ -380,10 +375,10 @@ public class CodeEditor extends EditorPanel {
      * offset within {@code text}.
      */
     private int getAbsoluteCursorPos(String text) {
-        TextEditorCoordinates pos = textEditor.getCursorPosition();
+        TextEditorCursorPosition pos = textEditor.getMainCursorPosition();
         int line = 0, col = 0, offset = 0;
         for (int i = 0; i < text.length(); i++) {
-            if (line == pos.mLine && col == pos.mColumn) return i;
+            if (line == pos.line && col == pos.column) return i;
             if (text.charAt(i) == '\n') {
                 line++;
                 col = 0;
@@ -425,31 +420,31 @@ public class CodeEditor extends EditorPanel {
             }
         }
 
-        textEditor.setSelection(startLine, startCol, endLine, endCol);
-        textEditor.setCursorPosition(endLine, endCol);
+        textEditor.selectRegion(startLine, startCol, endLine, endCol);
+        textEditor.setCursor(endLine, endCol);
     }
 
     /**
      * Opens the Go-to-Line popup initialized to the current cursor line.
      */
     private void openGotoLine() {
-        gotoLineTarget = textEditor.getCursorPosition().mLine + 1;
+        gotoLineTarget = textEditor.getMainCursorPosition().line + 1;
         ImGui.openPopup(POPUP_GOTO_LINE);
     }
 
     private void renderGotoLinePopup() {
         if (!ImGui.beginPopupModal(POPUP_GOTO_LINE, ImGuiWindowFlags.AlwaysAutoResize)) return;
 
-        ImGui.text("Enter line number (1 – " + textEditor.getTotalLines() + "):");
+        ImGui.text("Enter line number (1 – " + textEditor.getLineCount() + "):");
 
         ImInt buf = new ImInt(gotoLineTarget);
         if (ImGui.inputInt("##gotoLine", buf)) {
-            gotoLineTarget = Math.clamp(buf.get(), 1, textEditor.getTotalLines());
+            gotoLineTarget = Math.clamp(buf.get(), 1, textEditor.getLineCount());
         }
 
         if (ImGui.button("Go", BUTTON_WIDTH, 0)) {
             int line = Math.max(0, gotoLineTarget - 1);
-            textEditor.setCursorPosition(line, 0);
+            textEditor.setCursor(line, 0);
             ImGui.closeCurrentPopup();
         }
         ImGui.sameLine();
@@ -463,8 +458,8 @@ public class CodeEditor extends EditorPanel {
     private void renderStatusBar() {
         ImGui.separator();
 
-        TextEditorCoordinates pos = textEditor.getCursorPosition();
-        String overwrite = textEditor.isOverwrite() ? "OVR" : "INS";
+        TextEditorCursorPosition pos = textEditor.getMainCursorPosition();
+        String overwrite = textEditor.isOverwriteEnabled() ? "OVR" : "INS";
         String zoomLabel = fontScale != 1.0f
                 ? String.format(" | Zoom: %d%%", Math.round(fontScale * 100))
                 : "";
@@ -472,8 +467,8 @@ public class CodeEditor extends EditorPanel {
         String roLabel = forceReadOnly ? " | [READ-ONLY]" : "";
 
         ImGui.text(String.format("Ln %d, Col %d | Lines: %d | %s%s%s",
-                pos.mLine + 1, pos.mColumn + 1,
-                textEditor.getTotalLines(),
+                pos.line + 1, pos.column + 1,
+                textEditor.getLineCount(),
                 overwrite,
                 zoomLabel,
                 roLabel));

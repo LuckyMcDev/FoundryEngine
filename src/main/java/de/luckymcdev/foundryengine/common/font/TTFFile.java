@@ -6,8 +6,9 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 
 import java.io.IOException;
+import java.util.List;
 
-public record TTFFile(Identifier id, Identifier resource, FontVariant variant, short[] glyphRanges) {
+public record TTFFile(Identifier id, Identifier resource, short[] glyphRanges) {
     public static final short[] DEFAULT_GLYPH_RANGES = {
             0x0020, 0x00FF,             // Basic Latin
             0x0100, 0x017F,             // Latin Extended-A
@@ -24,82 +25,59 @@ public record TTFFile(Identifier id, Identifier resource, FontVariant variant, s
             0
     };
 
-    public static final TTFFile JETBRAINS_MONO_LIGHT = new TTFFile(
-            Common.id("jetbrains_mono_nerd/light"),
-            Common.id("font/jetbrainsmononerdfontmonolight.ttf"),
-            FontVariant.LIGHT, DEFAULT_GLYPH_RANGES);
-
-    public static final TTFFile JETBRAINS_MONO_MEDIUM = new TTFFile(
-            Common.id("jetbrains_mono_nerd/medium"),
-            Common.id("font/jetbrainsmononerdfontmonomedium.ttf"),
-            FontVariant.MEDIUM, DEFAULT_GLYPH_RANGES);
-
-    public static final TTFFile JETBRAINS_MONO_SEMIBOLD = new TTFFile(
-            Common.id("jetbrains_mono_nerd/semibold"),
-            Common.id("font/jetbrainsmononerdfontmonosemibold.ttf"),
-            FontVariant.SEMIBOLD, DEFAULT_GLYPH_RANGES);
-
-    public static final TTFFile JETBRAINS_MONO_REGULAR = new TTFFile(
-            Common.id("jetbrains_mono_nerd/regular"),
-            Common.id("font/jetbrainsmononerdfontmonoregular.ttf"),
-            FontVariant.REGULAR, DEFAULT_GLYPH_RANGES);
-
-    public static final TTFFile JETBRAINS_MONO_BOLD = new TTFFile(
-            Common.id("jetbrains_mono_nerd/bold"),
-            Common.id("font/jetbrainsmononerdfontmonobold.ttf"),
-            FontVariant.BOLD, DEFAULT_GLYPH_RANGES);
-
-    public static final TTFFile JETBRAINS_MONO_ITALIC = new TTFFile(
-            Common.id("jetbrains_mono_nerd/italic"),
-            Common.id("font/jetbrainsmononerdfontmonoitalic.ttf"),
-            FontVariant.ITALIC, DEFAULT_GLYPH_RANGES);
-
-    public static final TTFFile JETBRAINS_MONO_BOLD_ITALIC = new TTFFile(
-            Common.id("jetbrains_mono_nerd/bold_italic"),
-            Common.id("font/jetbrainsmononerdfontmonobolditalic.ttf"),
-            FontVariant.BOLD_ITALIC, DEFAULT_GLYPH_RANGES);
-
-    public static final TTFFile[] JETBRAINS_MONO_NERDFONT_ALL = {
-            JETBRAINS_MONO_LIGHT,
-            JETBRAINS_MONO_REGULAR,
-            JETBRAINS_MONO_MEDIUM,
-            JETBRAINS_MONO_SEMIBOLD,
-            JETBRAINS_MONO_BOLD,
-            JETBRAINS_MONO_ITALIC,
-            JETBRAINS_MONO_BOLD_ITALIC
-    };
+    public static final FontFamily JETBRAINS_MONO_NERD = new FontFamily(
+            face("jetbrains_mono_nerd/light", "font/jetbrainsmononerdfontmonolight.ttf", DEFAULT_GLYPH_RANGES),
+            face("jetbrains_mono_nerd/regular", "font/jetbrainsmononerdfontmonoregular.ttf", DEFAULT_GLYPH_RANGES),
+            face("jetbrains_mono_nerd/medium", "font/jetbrainsmononerdfontmonomedium.ttf", DEFAULT_GLYPH_RANGES),
+            face("jetbrains_mono_nerd/semibold", "font/jetbrainsmononerdfontmonosemibold.ttf", DEFAULT_GLYPH_RANGES),
+            face("jetbrains_mono_nerd/bold", "font/jetbrainsmononerdfontmonobold.ttf", DEFAULT_GLYPH_RANGES),
+            face("jetbrains_mono_nerd/italic", "font/jetbrainsmononerdfontmonoitalic.ttf", DEFAULT_GLYPH_RANGES),
+            face("jetbrains_mono_nerd/bold_italic", "font/jetbrainsmononerdfontmonobolditalic.ttf", DEFAULT_GLYPH_RANGES)
+    );
     public static final TTFFile FALLBACK_JB = new TTFFile(
             Common.id("jetbrains/fallback"),
             Common.id("font/jetbrainsmonoregular.ttf"),
-            FontVariant.REGULAR, GLYPH_RANGES_MINIMAL
+            GLYPH_RANGES_MINIMAL
     );
+
+    private static TTFFile face(String idPath, String resourcePath, short[] glyphRanges) {
+        return new TTFFile(Common.id(idPath), Common.id(resourcePath), glyphRanges);
+    }
 
     /**
      * Loads the TTF file bytes from the resource manager.
      */
     public byte[] load(ResourceManager resourceManager) {
-        try (var in = resourceManager.getResource(resource).orElseThrow().open()) {
+        try (var in = resourceManager.getResource(resource).orElseThrow(
+                () -> new EngineException("Missing TTF resource: " + resource + " for font " + id)
+        ).open()) {
             return in.readAllBytes();
         } catch (IOException e) {
             throw new EngineException("Failed to read TTF file: " + id, e);
         }
     }
 
-    public enum FontVariant {
-        LIGHT, REGULAR, MEDIUM, SEMIBOLD, BOLD, ITALIC, BOLD_ITALIC;
-
-        /**
-         * Returns true if this variant is a bold weight.
-         */
-        public boolean isBold() {
-            return this == BOLD || this == SEMIBOLD || this == BOLD_ITALIC;
+    public record FontFamily(TTFFile light, TTFFile regular, TTFFile medium, TTFFile semibold, TTFFile bold,
+                             TTFFile italic, TTFFile boldItalic) {
+        public List<TTFFile> all() {
+            return List.of(light, regular, medium, semibold, bold, italic, boldItalic);
         }
 
-        /**
-         * Returns true if this variant is italic.
-         */
-        public boolean isItalic() {
-            return this == ITALIC || this == BOLD_ITALIC;
+        public List<Identifier> ids() {
+            return all().stream().map(TTFFile::id).toList();
+        }
+
+        public TTFFile face(boolean isBold, boolean isItalic) {
+            if (isBold && isItalic) {
+                return this.boldItalic;
+            }
+            if (isBold) {
+                return this.bold;
+            }
+            if (isItalic) {
+                return this.italic;
+            }
+            return this.regular;
         }
     }
 }

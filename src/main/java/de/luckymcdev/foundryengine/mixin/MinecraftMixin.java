@@ -35,7 +35,7 @@ public class MinecraftMixin implements EngineMinecraft {
     @Override
     @Inject(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;resizeGui()V", shift = At.Shift.BEFORE))
     public void engine$init(GameConfig gameConfig, CallbackInfo ci) {
-        Client.getImGuiManager().create(window.handle());
+        Client.getImGuiManager().create(window.handle(), resourceManager);
         Client.getMainMenu().register();
     }
 
