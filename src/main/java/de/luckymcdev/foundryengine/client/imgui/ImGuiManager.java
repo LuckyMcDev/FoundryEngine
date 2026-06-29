@@ -11,7 +11,6 @@ import de.luckymcdev.foundryengine.client.editor.styles.ImTheme;
 import de.luckymcdev.foundryengine.client.editor.styles.ImThemes;
 import de.luckymcdev.foundryengine.client.imgui.backend.ImGuiImplGl3;
 import de.luckymcdev.foundryengine.client.imgui.backend.ImGuiImplGlfw;
-
 import de.luckymcdev.foundryengine.common.font.BuiltInFonts;
 import de.luckymcdev.foundryengine.config.ClientConfig;
 import de.luckymcdev.foundryengine.mixin.MinecraftMixin;
@@ -63,9 +62,7 @@ public final class ImGuiManager implements ResourceManagerReloadListener, Native
     private final ImGuiFontManager fontManager = new ImGuiFontManager(imGuiImplGl3);
     private final AtomicBoolean enabled = new AtomicBoolean(false);
     private final AtomicBoolean menuBarVisible = new AtomicBoolean(true);
-    private @Nullable ImGuiContext imGuiContext;
-    private @Nullable ImPlotContext imPlotContext;
-    private @Nullable ImNodesContext imNodesContext;
+    private @Nullable ImGuiContextStack imGuiContextStack;
     private boolean shouldBlockInput = false;
     private int dockId;
     private ImTheme currentTheme;
@@ -78,12 +75,12 @@ public final class ImGuiManager implements ResourceManagerReloadListener, Native
      * @param resourceManager the resource manager for loading fonts
      */
     public void create(final long handle, final ResourceManager resourceManager) {
-        imGuiContext = ImGui.createContext();
-        imPlotContext = ImPlot.createContext();
-        imNodesContext = ImNodes.createContext();
-        ImGui.setCurrentContext(imGuiContext);
-        ImPlot.setCurrentContext(imPlotContext);
-        ImNodes.setCurrentContext(imNodesContext);
+        // Initialize ImGui, ImPlot, and ImNodes contexts
+        final ImGuiContext imGuiContext = ImGui.createContext();
+        final ImPlotContext imPlotContext = ImPlot.createContext();
+        final ImNodesContext imNodesContext = ImNodes.createContext();
+        imGuiContextStack = new ImGuiContextStack(imGuiContext, imPlotContext, imNodesContext);
+        imGuiContextStack.push();
 
         final ImGuiIO io = ImGui.getIO();
         io.setIniFilename("feimgui.ini");
@@ -297,9 +294,7 @@ public final class ImGuiManager implements ResourceManagerReloadListener, Native
         }
         imGuiImplGl3.shutdown();
         imGuiImplGlfw.shutdown();
-        ImGui.destroyContext(imGuiContext);
-        ImPlot.destroyContext(imPlotContext);
-        ImNodes.destroyContext(imNodesContext);
+        imGuiContextStack.destroy();
     }
 
     /**
