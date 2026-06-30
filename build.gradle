@@ -53,6 +53,7 @@ idea {
     module {
         downloadSources = true
         downloadJavadoc = true
+	    excludeDirs.add(file(".editorconfig"))
     }
 }
 
