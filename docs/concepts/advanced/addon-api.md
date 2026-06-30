@@ -2,19 +2,6 @@
 
 FoundryEngine exposes events and builders for Java addon developers through NeoForge's event bus. All API events are in the package `de.luckymcdev.foundryengine.common.event` and builders in `de.luckymcdev.foundryengine.common.builder`. Subscribe using `@SubscribeEvent` on the appropriate bus.
 
-## RegisterPanelEvent
-
-**Package:** `de.luckymcdev.foundryengine.client.editor.event.RegisterPanelEvent`
-
-Register custom ImGui editor panels. Panels extend `Panel` and override `content()` for ImGui drawing and `tick()` for per-frame logic.
-
-```java
-@SubscribeEvent
-public void onRegisterPanel(RegisterPanelEvent event) {
-    event.register(new MyCustomPanel());
-}
-```
-
 ## TitleScreenModifyEvent
 
 **Package:** `de.luckymcdev.foundryengine.common.event.modification.TitleScreenModifyEvent`
