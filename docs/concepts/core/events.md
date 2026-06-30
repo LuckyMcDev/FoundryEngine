@@ -390,32 +390,6 @@ class Entrypoint implements BundleEntrypoint {
 
 These events are available for Java addon developers using NeoForge's event bus directly.
 
-### RegisterPanelEvent
-
-Package: `de.luckymcdev.foundryengine.client.editor.event.RegisterPanelEvent`
-
-Fired to register custom panels in the built-in Dear ImGui editor.
-
-```java
-@SubscribeEvent
-public void onRegisterPanel(RegisterPanelEvent event) {
-    event.register(new MyCustomPanel());
-}
-```
-
-### RegisterRenderingStuffEvent
-
-Package: `de.luckymcdev.foundryengine.client.event.RegisterRenderingStuffEvent`
-
-`@ApiStatus.Experimental` — Fired to register custom renderers, OBJ models, etc.
-
-```java
-@SubscribeEvent
-public void onRegisterRendering(RegisterRenderingStuffEvent event) {
-    ResourceManager manager = event.getResourceManager();
-}
-```
-
 ### TitleScreenModifyEvent
 
 Package: `de.luckymcdev.foundryengine.common.event.modification.TitleScreenModifyEvent`
