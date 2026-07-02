@@ -4,7 +4,7 @@ Game Stages let you gate content behind named progression milestones. Add stages
 
 ## How Stages Work
 
-A stage is simply a string name (like `"boss_defeated"` or `"tutorial_complete"`). Players either have a stage or don't. When adding a stage, the engine fires cancellable events so other code can veto the addition.
+A stage is a string name (like `"boss_defeated"` or `"tutorial_complete"`). Players either have a stage or don't. When adding a stage, the engine fires cancellable events so other code can veto the addition.
 
 ```
 Player joined -> has no stages
@@ -68,8 +68,8 @@ stages.recipes().requireStages(
 ```groovy
 import de.luckymcdev.foundryengine.common.Common
 import de.luckymcdev.foundryengine.common.area.module.AreaEnterModule
-import de.luckymcdev.foundryengine.api.event.EntityEvents
-import de.luckymcdev.foundryengine.api.event.PlayerEvents
+import de.luckymcdev.foundryengine.common.event.EntityEvents
+import de.luckymcdev.foundryengine.common.event.PlayerEvents
 
 def stages = Common.getGameStageHandler()
 

@@ -66,7 +66,8 @@ export default defineConfig({
                         { text: 'Easing Functions', link: '/concepts/systems/easing' },
                         { text: 'Markdown Rendering', link: '/concepts/systems/markdown' },
                         { text: 'Commands', link: '/concepts/systems/commands' },
-                        { text: 'Dialogue System', link: '/concepts/systems/dialogue' }
+                        { text: 'Dialogue System', link: '/concepts/systems/dialogue' },
+                        { text: 'Blueprints', link: '/concepts/systems/blueprints' }
                     ]
                 },
                 {
@@ -100,7 +101,8 @@ export default defineConfig({
                         { text: 'Easing Functions', link: '/concepts/systems/easing' },
                         { text: 'Markdown Rendering', link: '/concepts/systems/markdown' },
                         { text: 'Commands', link: '/concepts/systems/commands' },
-                        { text: 'Dialogue System', link: '/concepts/systems/dialogue' }
+                        { text: 'Dialogue System', link: '/concepts/systems/dialogue' },
+                        { text: 'Blueprints', link: '/concepts/systems/blueprints' }
                     ]
                 },
                 {
@@ -149,7 +151,7 @@ export default defineConfig({
         },
 
         editLink: {
-            pattern: 'https://github.com/LuckyMcDev/FoundryEngine/blob/master/docs',
+            pattern: 'https://github.com/LuckyMcDev/FoundryEngine/blob/master/docs/:path',
             text: 'Edit this page on GitHub'
         }
     },
@@ -159,5 +161,5 @@ export default defineConfig({
         theme: 'github-dark'
     },
 
-    ignoreDeadLinks: true
+    ignoreDeadLinks: false
 })

@@ -88,13 +88,13 @@ Switch themes from the **Theme Selector Panel** under the View menu.
 
 ## Extending the Editor
 
-Java addon developers can register custom panels via `RegisterPanelEvent`:
+Java addon developers can register custom panels programmatically:
 
 ```java
-@SubscribeEvent
-public void onRegisterPanel(RegisterPanelEvent event) {
-    event.register(new MyCustomPanel());
-}
+import de.luckymcdev.foundryengine.client.Client;
+
+var panel = new MyCustomPanel();
+Client.getEditorManager().register(panel);
 ```
 
 Panels extend `de.luckymcdev.foundryengine.client.editor.panel.Panel` and override `content()` for ImGui drawing and `tick()` for per-frame logic.

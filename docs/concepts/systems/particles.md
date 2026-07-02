@@ -9,8 +9,8 @@ FoundryEngine's particle system goes beyond simple particle types. It uses a key
 The `ParticleBuilder` provides a fluent API for defining particle behaviour:
 
 ```groovy
-import de.luckymcdev.foundryengine.api.builder.particle.ParticleBuilder
-import de.luckymcdev.foundryengine.api.builder.particle.ParticleLayer
+import de.luckymcdev.foundryengine.common.builder.particle.ParticleBuilder
+import de.luckymcdev.foundryengine.client.particle.ParticleLayer
 import de.luckymcdev.foundryengine.common.easing.Easing
 
 ParticleBuilder.create(Common.id("sparkle"))
@@ -28,7 +28,7 @@ ParticleBuilder.create(Common.id("sparkle"))
 |--------|-------------|
 | `alwaysShow()` | Ignore client particle settings |
 | `lifetime(int)` | Duration in ticks |
-| `layer(ParticleLayer)` | Render layer (TRANSLUCENT, ADDITIVE, etc.) |
+| `layer(ParticleLayer)` | Render layer (OPAQUE, TRANSLUCENT) |
 | `color(Color, Color, Easing)` | Start/end colour with easing |
 | `scale(float, float, Easing)` | Start/end scale with easing |
 | `velocity(Vector3d)` | Constant velocity |
@@ -122,7 +122,7 @@ def seq = new KeyframeSequence<Color>()
 
 ParticleBuilder.create(Common.id("explosion"))
     .lifetime(40)
-    .layer(ParticleLayer.ADDITIVE)
+    .layer(ParticleLayer.TRANSLUCENT)
     .colorData(new ParticleColorData(seq))
     .scaleData(new ParticleScaleData(new KeyframeSequence<Float>()
         .add(0.1f, 0f, Easing.LINEAR)

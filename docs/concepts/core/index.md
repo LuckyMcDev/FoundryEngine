@@ -8,7 +8,7 @@ FoundryEngine's core concepts form the foundation for building Minecraft content
 | [Scripts & Entrypoints](scripts) | Groovy scripting engine with entrypoint and helper scripts |
 | [Builders](builders) | Fluent API for creating items, blocks, recipes, sounds, and particles |
 | [Registries](registries) | How custom content is registered with the game |
-| [Events](events) | Over 50 events across 12 categories |
+| [Events](events) | Over 80 events across 16 categories |
 | [Sides](sides) | Client/server separation and what goes where |
 | [Dependencies](dependencies) | Bundle and mod dependency syntax |
 | [Bundle Config](config) | Per-bundle TOML configuration with typed values |

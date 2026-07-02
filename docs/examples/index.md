@@ -7,9 +7,9 @@ This page contains complete working examples organized by category. All examples
 ### Custom Item with Properties
 
 ```groovy
-import de.luckymcdev.foundryengine.api.builder.item.ItemBuilder
-import de.luckymcdev.foundryengine.api.builder.recipe.RecipeBuilder
-import de.luckymcdev.foundryengine.api.event.BundleEvents
+import de.luckymcdev.foundryengine.common.builder.item.ItemBuilder
+import de.luckymcdev.foundryengine.common.builder.recipe.RecipeBuilder
+import de.luckymcdev.foundryengine.common.event.BundleEvents
 import net.minecraft.world.InteractionResult
 import net.minecraft.world.item.Rarity
 
@@ -29,7 +29,7 @@ BundleEvents.registry {
 ### Item with Callbacks
 
 ```groovy
-import de.luckymcdev.foundryengine.api.builder.item.ItemBuilder
+import de.luckymcdev.foundryengine.common.builder.item.ItemBuilder
 
 ItemBuilder.create(id("wand"))
     .use { level, player, hand ->
@@ -53,7 +53,7 @@ ItemBuilder.create(id("wand"))
 ### Food Item
 
 ```groovy
-import de.luckymcdev.foundryengine.api.builder.item.ItemBuilder
+import de.luckymcdev.foundryengine.common.builder.item.ItemBuilder
 import net.minecraft.world.item.Rarity
 import net.minecraft.world.item.component.Consumables
 import net.minecraft.world.food.FoodProperties
@@ -71,8 +71,8 @@ ItemBuilder.create(id("cosmic_apple"))
 ### Block with Callbacks
 
 ```groovy
-import de.luckymcdev.foundryengine.api.builder.block.BlockBuilder
-import de.luckymcdev.foundryengine.api.event.BundleEvents
+import de.luckymcdev.foundryengine.common.builder.block.BlockBuilder
+import de.luckymcdev.foundryengine.common.event.BundleEvents
 
 BlockBuilder.create(id("magic_block"))
     .properties { it.strength(2.0f, 3.0f).lightLevel { 15 } }
@@ -94,7 +94,7 @@ BundleEvents.registry {
 ### Block with Custom Properties
 
 ```groovy
-import de.luckymcdev.foundryengine.api.builder.block.BlockBuilder
+import de.luckymcdev.foundryengine.common.builder.block.BlockBuilder
 
 // Block with no collision and no item
 BlockBuilder.create(id("invisible_wall"))
@@ -121,7 +121,7 @@ BlockBuilder.create(id("hot_plate"))
 ### Shaped Recipe
 
 ```groovy
-import de.luckymcdev.foundryengine.api.builder.recipe.RecipeBuilder
+import de.luckymcdev.foundryengine.common.builder.recipe.RecipeBuilder
 
 RecipeBuilder.shaped(id("test_shaped"), Items.DIAMOND_SWORD)
     .pattern(" D ", " D ", " S ")
@@ -139,7 +139,7 @@ BundleEvents.registry {
 ### Shapeless Recipe
 
 ```groovy
-import de.luckymcdev.foundryengine.api.builder.recipe.RecipeBuilder
+import de.luckymcdev.foundryengine.common.builder.recipe.RecipeBuilder
 
 RecipeBuilder.shapeless(id("test_shapeless"), Items.FLINT_AND_STEEL)
     .requires(Items.IRON_INGOT)
@@ -151,7 +151,7 @@ RecipeBuilder.shapeless(id("test_shapeless"), Items.FLINT_AND_STEEL)
 ### Smelting Recipe
 
 ```groovy
-import de.luckymcdev.foundryengine.api.builder.recipe.RecipeBuilder
+import de.luckymcdev.foundryengine.common.builder.recipe.RecipeBuilder
 
 RecipeBuilder.smelting(id("test_smelting"), Items.IRON_INGOT)
     .ingredient(Items.IRON_ORE)
@@ -212,7 +212,7 @@ RecipeBuilder.smithingTransform(id("test_smithing"), Items.NETHERITE_SWORD)
 ### Responding to Block Broken
 
 ```groovy
-import de.luckymcdev.foundryengine.api.event.BlockEvents
+import de.luckymcdev.foundryengine.common.event.BlockEvents
 
 BlockEvents.broken {
     println "${it.player.name} broke a block at ${it.pos}"
@@ -222,7 +222,7 @@ BlockEvents.broken {
 ### Player Tick
 
 ```groovy
-import de.luckymcdev.foundryengine.api.event.PlayerEvents
+import de.luckymcdev.foundryengine.common.event.PlayerEvents
 
 PlayerEvents.tick {
     if (it.player.tickCount % 20 == 0) {
@@ -238,7 +238,7 @@ PlayerEvents.tick {
 ### Server Started
 
 ```groovy
-import de.luckymcdev.foundryengine.api.event.ServerEvents
+import de.luckymcdev.foundryengine.common.event.ServerEvents
 
 ServerEvents.started {
     println "Server is ready!"
@@ -248,7 +248,7 @@ ServerEvents.started {
 ### Entity Death
 
 ```groovy
-import de.luckymcdev.foundryengine.api.event.EntityEvents
+import de.luckymcdev.foundryengine.common.event.EntityEvents
 
 EntityEvents.death {
     println "${it.entity} died"
@@ -262,7 +262,7 @@ EntityEvents.drops {
 ### Custom Event
 
 ```groovy
-import de.luckymcdev.foundryengine.api.event.BundleEvents
+import de.luckymcdev.foundryengine.common.event.BundleEvents
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent
 
 BundleEvents.custom(LivingDeathEvent.class, {
@@ -273,7 +273,7 @@ BundleEvents.custom(LivingDeathEvent.class, {
 ### Block Modification at Runtime
 
 ```groovy
-import de.luckymcdev.foundryengine.api.event.BlockEvents
+import de.luckymcdev.foundryengine.common.event.BlockEvents
 
 BlockEvents.modification {
     it.hasCollision(false)
@@ -298,9 +298,8 @@ import de.luckymcdev.foundryengine.common.area.module.AreaTickModule
 Common.getAreaManager().registerModuleType(new AreaTickModule() {
     @Override Identifier id() { return Common.id("heal_zone") }
     @Override void tick(ServerLevel level, Area area) {
-        def entities = area.getEntitiesInside(level)
-        entities.forEach { e ->
-            if (e instanceof LivingEntity) {
+        level.getEntities().getAll().each { e ->
+            if (e instanceof LivingEntity && area.contains(e.position())) {
                 e.heal(0.5f)
             }
         }
@@ -350,28 +349,24 @@ Common.getAreaManager().registerModuleType(new AreaEnterModule() {
 ```groovy
 import de.luckymcdev.foundryengine.common.Common
 import de.luckymcdev.foundryengine.common.cutscene.model.Cutscene
-import de.luckymcdev.foundryengine.common.cutscene.model.bezier.BezierPath
-import de.luckymcdev.foundryengine.common.cutscene.model.bezier.BezierPoint
-import org.joml.Vector3d
-import org.joml.Vector2d
+import de.luckymcdev.foundryengine.common.easing.BezierPath
+import net.minecraft.world.phys.Vec3
+import net.minecraft.world.phys.Vec2
 
-def points = [
-    new BezierPoint(new Vector3d(0, 64, 0),
-                    new Vector3d(0, 64, 0)),
-    new BezierPoint(new Vector3d(10, 70, 10),
-                    new Vector3d(10, 70, 10))
-]
+def path = new BezierPath(new Vec3(0, 64, 0))
 
 def cutscene = new Cutscene("intro",
-    new Vector2d(0, 0), new Vector2d(-10, 90),
-    new BezierPath(points))
+    new Vec2(0, 0), new Vec2(-10, 90),
+    path)
 cutscene.setDefaultLength(100)
 
-Common.getCutsceneManager().add(serverLevel, cutscene)
+Common.getCutsceneManager().add(serverLevel.dimension(), cutscene)
 
-// Play it:
-Common.getCutsceneManager().playCutscene(player, "intro",
-    100, "SINE_IN_OUT", 10, 10)
+// Play it via server command:
+player.server.commands.performCommand(
+    player.server.createCommandSourceStack(),
+    "engine cutscene play ${player.name.string} intro 100 SINE_IN_OUT 10 10"
+)
 ```
 
 ### Cutscene with Attachments
@@ -394,8 +389,8 @@ cutscene.addAttachment(new CommandAttachment(
 ### Simple Particle
 
 ```groovy
-import de.luckymcdev.foundryengine.api.builder.particle.ParticleBuilder
-import de.luckymcdev.foundryengine.api.builder.particle.ParticleLayer
+import de.luckymcdev.foundryengine.common.builder.particle.ParticleBuilder
+import de.luckymcdev.foundryengine.client.particle.ParticleLayer
 import de.luckymcdev.foundryengine.common.easing.Easing
 
 ParticleBuilder.create(Common.id("sparkle"))
@@ -414,8 +409,8 @@ BundleEvents.registry {
 ### Keyframe-Driven Particle
 
 ```groovy
-import de.luckymcdev.foundryengine.api.builder.particle.ParticleBuilder
-import de.luckymcdev.foundryengine.api.builder.particle.ParticleLayer
+import de.luckymcdev.foundryengine.common.builder.particle.ParticleBuilder
+import de.luckymcdev.foundryengine.client.particle.ParticleLayer
 import de.luckymcdev.foundryengine.client.particle.data.*
 import de.luckymcdev.foundryengine.common.easing.Easing
 
@@ -441,7 +436,7 @@ def complexFx = ParticleBuilder.create(Common.id("complex_fx"))
 
 ```groovy
 import de.luckymcdev.foundryengine.common.Common
-import de.luckymcdev.foundryengine.api.event.EntityEvents
+import de.luckymcdev.foundryengine.common.event.EntityEvents
 
 def stages = Common.getGameStageHandler()
 
@@ -464,7 +459,7 @@ stages.dimensions().requireStages(
 
 ```groovy
 import de.luckymcdev.foundryengine.common.Common
-import de.luckymcdev.foundryengine.api.event.EntityEvents
+import de.luckymcdev.foundryengine.common.event.EntityEvents
 
 def stages = Common.getGameStageHandler()
 
@@ -524,13 +519,13 @@ package mybundle
 
 import de.luckymcdev.foundryengine.common.script.BundleEntrypoint
 import de.luckymcdev.foundryengine.common.Common
-import de.luckymcdev.foundryengine.api.event.BundleEvents
-import de.luckymcdev.foundryengine.api.event.ServerEvents
-import de.luckymcdev.foundryengine.api.event.PlayerEvents
-import de.luckymcdev.foundryengine.api.event.BlockEvents
-import de.luckymcdev.foundryengine.api.builder.item.ItemBuilder
-import de.luckymcdev.foundryengine.api.builder.block.BlockBuilder
-import de.luckymcdev.foundryengine.api.builder.recipe.RecipeBuilder
+import de.luckymcdev.foundryengine.common.event.BundleEvents
+import de.luckymcdev.foundryengine.common.event.ServerEvents
+import de.luckymcdev.foundryengine.common.event.PlayerEvents
+import de.luckymcdev.foundryengine.common.event.BlockEvents
+import de.luckymcdev.foundryengine.common.builder.item.ItemBuilder
+import de.luckymcdev.foundryengine.common.builder.block.BlockBuilder
+import de.luckymcdev.foundryengine.common.builder.recipe.RecipeBuilder
 
 class Entrypoint implements BundleEntrypoint {
 

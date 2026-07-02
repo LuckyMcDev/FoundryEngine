@@ -15,7 +15,7 @@ FoundryEngine EventGroupHolder
 ```
 
 Each API event class contains:
-- **Static `EventGroupHolder` fields** — one per event type, holding both Java callbacks and Blueprint node links
+- **Static `EventGroupHolder` fields** — one per event type, holding Java/Groovy callbacks
 - **Static registration methods** — e.g. `BlockEvents.broken(callback)` adds your callback
 - **Internal `Internal` class** — listens on NeoForge's bus and forwards to the `EventGroupHolder`
 
@@ -42,7 +42,7 @@ BlockEvents.broken { it -> it.pos }     // BlockPos, player, level, state
 ItemEvents.pickedUp { it -> it.player }  // player, stack, level
 EntityEvents.death { it -> it.entity }   // entity, source
 PlayerEvents.tick { it -> it.player }    // player
-ServerEvents.started { /* no data */ }   // just a signal
+ServerEvents.started { /* no data */ }   // signal only
 ```
 
 For every event class listed below, the `it` object in your closure corresponds to the **wrapped event type**. For standard NeoForge events wrapped by the API, `it` provides all the getters of that event class. Use your IDE's auto-complete or check the NeoForge documentation for the full list of available properties.

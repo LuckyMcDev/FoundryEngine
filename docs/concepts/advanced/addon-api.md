@@ -114,5 +114,5 @@ public void onDataGen(BundleDataGenEvent event) {
 
 - [Events](../core/events) — Full event reference for all API events
 - [Builders](../core/builders) — Builder reference for creating content
-- [Editor](../systems/editor) — RegisterPanelEvent and editor extension
+- [Editor](../systems/editor) — Panel registration and editor extension
 - [Data Generation](data-generation) — Bundle data generation system

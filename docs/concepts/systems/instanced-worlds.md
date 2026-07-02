@@ -102,13 +102,15 @@ Runtime dimensions can have custom clock mechanics. Disable normal time, control
 
 ```groovy
 import de.luckymcdev.foundryengine.common.world.level.runtime.RuntimeClockManager
+import net.minecraft.world.clock.PackedClockStates
 
 // Custom clock that never advances
 config.setShouldTickTime(false)
 
-// Access clock manager for advanced control
-def clockManager = new RuntimeClockManager(() -> false)
-config.setClockManagerConstructor(clockManager)
+// Supply a factory: PackedClockStates + BooleanSupplier → RuntimeClockManager
+config.setClockManagerConstructor { advanceTime ->
+    new RuntimeClockManager(PackedClockStates.EMPTY, advanceTime)
+}
 ```
 
 ## Deleting and Unloading
