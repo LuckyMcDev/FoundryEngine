@@ -18,7 +18,7 @@ You should see a version number starting with `25`. If the command isn't found, 
 
 ### NeoForge 26.1.x
 
-FoundryEngine runs on **NeoForge 26.1.x.x** for **Minecraft 26.1.x**.
+FoundryEngine runs on **NeoForge 26.1.x** for **Minecraft 26.1.x**.
 
 **Using a custom launcher (Prism, MultiMC, ATLauncher, etc.):**
 
@@ -48,7 +48,7 @@ On first launch, FoundryEngine creates a `FoundryEngine/` folder inside your Min
     └── .cache/           # Internal cache
 ```
 
-If you see this folder, the mod loaded successfully. You can also check the Mods menu — FoundryEngine **0.0.65** should appear in the list.
+If you see this folder, the mod loaded successfully. You can also check the Mods menu — FoundryEngine **0.1.1** should appear in the list.
 
 ## What's Next
 

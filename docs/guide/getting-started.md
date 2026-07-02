@@ -6,7 +6,7 @@ If you haven't read about [Bundles](/concepts/core/bundles) yet, start there to 
 
 ## What Is a Bundle?
 
-A **bundle** is a self-contained mod packaged as a folder. It combines Groovy scripts, resource pack files, data pack files under one roof. No Java compilation, no Gradle build — just plain files and a reload command.
+A **bundle** is a self-contained mod packaged as a folder. It combines Groovy scripts, resource pack files, and data pack files under one roof. No Java compilation, no Gradle build — plain files and a reload command.
 
 Bundles can register:
 
@@ -17,7 +17,7 @@ Bundles can register:
 
 ## Prerequisites
 
-- Minecraft 26.1.x with NeoForge 26.1.x.x and FoundryEngine installed ([Installation Guide](index))
+- Minecraft 26.1.x with NeoForge 26.1.x and FoundryEngine installed ([Installation Guide](index))
 
 ## Choose a Workspace
 
@@ -122,7 +122,7 @@ class Entrypoint implements BundleEntrypoint {
 }
 ```
 
-This entrypoint doesn't do anything yet — it just prints a message when loaded and unloaded.
+This entrypoint prints a message when loaded and unloaded — nothing more yet.
 
 ## Add a Custom Item
 

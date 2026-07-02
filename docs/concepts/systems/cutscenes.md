@@ -27,37 +27,32 @@ Cutscenes are managed on the server through `Common.getCutsceneManager()`:
 
 ```groovy
 import de.luckymcdev.foundryengine.common.cutscene.model.Cutscene
-import de.luckymcdev.foundryengine.common.cutscene.model.bezier.BezierPath
-import de.luckymcdev.foundryengine.common.cutscene.model.bezier.BezierPoint
-import org.joml.Vector3d
-import org.joml.Vector2d
+import de.luckymcdev.foundryengine.common.easing.BezierPath
+import net.minecraft.world.phys.Vec3
+import net.minecraft.world.phys.Vec2
 
-// Create path points
-def points = [
-    new BezierPoint(new Vector3d(0, 64, 0), new Vector3d(0, 64, 0)),
-    new BezierPoint(new Vector3d(10, 70, 10), new Vector3d(10, 70, 10))
-]
-def path = new BezierPath(points)
+// Create a path starting at a position
+def path = new BezierPath(new Vec3(0, 64, 0))
 def cutscene = new Cutscene("my_cutscene",
-    new Vector2d(0, 0),    // initial rotation (pitch, yaw)
-    new Vector2d(-10, 90), // final rotation
+    new Vec2(0, 0),     // initial rotation (pitch, yaw)
+    new Vec2(-10, 90),  // final rotation
     path)
 cutscene.setDefaultLength(100)     // ticks
 cutscene.setDefaultHoldStart(20)   // hold at start
 cutscene.setDefaultHoldEnd(20)     // hold at end
 
-// Register with the manager
+// Register with the manager (per-dimension)
 def manager = Common.getCutsceneManager()
-manager.add(serverLevel, cutscene)
+manager.add(serverLevel.dimension(), cutscene)
 ```
 
-### BezierPoint
+### BezierPath
 
-Each `BezierPoint` takes a position and a control point (both `Vector3d`). For a straight segment, set the control point equal to the position.
+A `BezierPath` is created with a start position (`Vec3`). Path nodes are typically managed through the in-game cutscene editor rather than constructed manually.
 
 ### Anchor Rotations
 
-Each cutscene has a starting and ending rotation as `Vector2d(pitch, yaw)` in degrees.
+Each cutscene has a starting and ending rotation as `Vec2(pitch, yaw)` in degrees.
 
 ## Adding Timeline Attachments
 
@@ -141,9 +136,13 @@ Common.getAreaManager().registerModuleType(new AreaEnterModule() {
     @Override
     void onEnter(ServerPlayer player, Area area) {
         def manager = Common.getCutsceneManager()
-        def cutscene = manager.find(player.serverLevel(), "intro_cutscene")
+        def cutscene = manager.find(player.serverLevel().dimension(), "intro_cutscene")
         if (cutscene != null) {
-            manager.playCutscene(player, cutscene.getName(), 100, "SINE_IN_OUT", 10, 10)
+            // Use the /engine cutscene play command via CommandAttachment
+            player.server.commands.performCommand(
+                player.server.createCommandSourceStack(),
+                "engine cutscene play ${player.name.string} intro_cutscene 100 SINE_IN_OUT 10 10"
+            )
         }
     }
 })

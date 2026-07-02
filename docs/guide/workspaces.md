@@ -6,7 +6,7 @@ A workspace is where you develop your bundle. FoundryEngine supports two approac
 
 | Aspect | In-Game Folder | Template Project |
 |--------|---------------|------------------|
-| **Setup time** | None — just create a folder | Clone or generate from GitHub template |
+| **Setup time** | None — create a folder | Clone or generate from GitHub template |
 | **Build step** | Not required | `gradlew deployBundle` |
 | **Reload** | `/engine reload` — instant | `gradlew deployBundle` then `/engine reload` |
 | **Version control** | Manual | Git built-in |
