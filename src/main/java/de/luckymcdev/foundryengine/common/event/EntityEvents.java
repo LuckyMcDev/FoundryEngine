@@ -14,7 +14,6 @@ public class EntityEvents {
     public static final EventGroupHolder<LivingDropsEvent> DROPS = new EventGroupHolder<>();
     public static final EventGroupHolder<LivingDamageEvent.Post> HURT = new EventGroupHolder<>();
     public static final EventGroupHolder<EntityJoinLevelEvent> SPAWNED = new EventGroupHolder<>();
-    public static final EventGroupHolder<EntityJoinLevelEvent> CHECK_SPAWN = new EventGroupHolder<>();
 
     public static void joinLevel(EventCallback<EntityJoinLevelEvent> cb) {
         JOIN_LEVEL.register(cb);
@@ -32,12 +31,8 @@ public class EntityEvents {
         HURT.register(cb);
     }
 
-    public static void spawned(EventCallback<EntityJoinLevelEvent> cb) {
+    public static void spawn(EventCallback<EntityJoinLevelEvent> cb) {
         SPAWNED.register(cb);
-    }
-
-    public static void checkSpawn(EventCallback<EntityJoinLevelEvent> cb) {
-        CHECK_SPAWN.register(cb);
     }
 
     @ApiStatus.Internal
@@ -66,17 +61,12 @@ public class EntityEvents {
             SPAWNED.post(e);
         }
 
-        public static void postCheckSpawn(EntityJoinLevelEvent e) {
-            CHECK_SPAWN.post(e);
-        }
-
         public static void register(IEventBus bus) {
             bus.addListener(Internal::postJoinLevel);
             bus.addListener(Internal::postDeath);
             bus.addListener(Internal::postDrops);
             bus.addListener(Internal::postHurt);
             bus.addListener(Internal::postSpawned);
-            bus.addListener(Internal::postCheckSpawn);
         }
 
         public static void clear() {
@@ -85,7 +75,6 @@ public class EntityEvents {
             DROPS.clear();
             HURT.clear();
             SPAWNED.clear();
-            CHECK_SPAWN.clear();
         }
     }
 }
