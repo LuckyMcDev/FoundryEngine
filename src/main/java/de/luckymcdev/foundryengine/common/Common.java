@@ -12,6 +12,7 @@ import de.luckymcdev.foundryengine.common.exceptions.UtilityClassException;
 import de.luckymcdev.foundryengine.common.game.GameManager;
 import de.luckymcdev.foundryengine.common.game.stage.GameStageHandler;
 import de.luckymcdev.foundryengine.common.network.NetworkManager;
+import de.luckymcdev.foundryengine.common.registry.RegistryCollector;
 import de.luckymcdev.foundryengine.common.savedata.SavedDataManager;
 import de.luckymcdev.foundryengine.common.util.FirstRun;
 import de.luckymcdev.foundryengine.common.waypoint.WaypointManager;
@@ -21,6 +22,7 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.NeoForge;
 import org.apache.commons.lang3.SystemProperties;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -58,6 +60,7 @@ public final class Common {
     private static final WaypointManager WAYPOINT_MANAGER = new WaypointManager();
     private static final GameManager GAME_MANAGER = new GameManager();
     private static final DialogueManager DIALOGUE_MANAGER = new DialogueManager();
+    private static @Nullable RegistryCollector registryCollector;
     private static final List<Runnable> EVENT_CLEARERS = new ArrayList<>();
 
     static {
@@ -160,6 +163,15 @@ public final class Common {
         return DIALOGUE_MANAGER;
     }
 
+    @Nullable
+    public static RegistryCollector getRegistryCollector() {
+        return registryCollector;
+    }
+
+    public static void setRegistryCollector(@Nullable RegistryCollector collector) {
+        registryCollector = collector;
+    }
+
     /**
      * Reads the full content of a file as a UTF-8 string. Returns empty on failure.
      */
@@ -197,6 +209,7 @@ public final class Common {
      * Runs all registered event cleanup callbacks.
      */
     public static void clearEvents() {
+        registryCollector = null;
         for (var clearer : EVENT_CLEARERS) {
             clearer.run();
         }
