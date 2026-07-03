@@ -1,7 +1,11 @@
 package de.luckymcdev.foundryengine.common.data;
 
 import com.mojang.logging.LogUtils;
-import de.luckymcdev.foundryengine.client.data.providers.*;
+import de.luckymcdev.foundryengine.client.data.providers.EngineEquipmentAssetProvider;
+import de.luckymcdev.foundryengine.client.data.providers.EngineLanguageProvider;
+import de.luckymcdev.foundryengine.client.data.providers.EngineModelProvider;
+import de.luckymcdev.foundryengine.client.data.providers.EngineParticleDescriptionProvider;
+import de.luckymcdev.foundryengine.client.data.providers.EngineSoundDefinitionsProvider;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.builder.block.BlockBuilder;
 import de.luckymcdev.foundryengine.common.builder.item.ItemBuilder;
@@ -10,7 +14,7 @@ import de.luckymcdev.foundryengine.common.builder.sound.SoundBuilder;
 import de.luckymcdev.foundryengine.common.bundle.Bundle;
 import de.luckymcdev.foundryengine.common.bundle.BundleExceptionHandler;
 import de.luckymcdev.foundryengine.common.event.data.BundleDataGenEvent;
-import de.luckymcdev.foundryengine.common.event.registry.RegistryEvent;
+import de.luckymcdev.foundryengine.common.registry.RegistryCollector;
 import de.luckymcdev.foundryengine.server.data.providers.EngineGlobalLootModifierProvider;
 import de.luckymcdev.foundryengine.server.data.providers.adv.EngineAdvancementProvider;
 import de.luckymcdev.foundryengine.server.data.providers.adv.EngineAdvancementSubProvider;
@@ -101,23 +105,26 @@ public class BundleDataGenerator {
                 layeredAccess.compositeAccess()
         );
 
+        RegistryCollector collector = Common.getRegistryCollector();
+        if (collector == null) return;
+
         PackOutput pOut = gen.getGenerator().getPackOutput();
         Path outputRoot = gen.getOutput();
         String namespace = bundle.info().id();
 
-        List<BlockBuilder> blockBuilders = RegistryEvent.getBlockBuilders().stream()
+        List<BlockBuilder> blockBuilders = collector.getBlocks().stream()
                 .filter(b -> b.getId().getNamespace().equals(namespace) && b.shouldGenerateData())
                 .collect(Collectors.toList());
 
-        List<ItemBuilder> itemBuilders = RegistryEvent.getItemBuilders().stream()
+        List<ItemBuilder> itemBuilders = collector.getItems().stream()
                 .filter(b -> b.getId().getNamespace().equals(namespace) && b.shouldGenerateData())
                 .collect(Collectors.toList());
 
-        List<RecipeBuilder> recipeBuilders = RegistryEvent.getRecipeBuilders().stream()
+        List<RecipeBuilder> recipeBuilders = collector.getRecipes().stream()
                 .filter(b -> b.getId().getNamespace().equals(namespace) && b.shouldGenerateData())
                 .collect(Collectors.toList());
 
-        List<SoundBuilder> soundBuilders = RegistryEvent.getSoundBuilders().stream()
+        List<SoundBuilder> soundBuilders = collector.getSounds().stream()
                 .filter(b -> b.getId().getNamespace().equals(namespace) && b.shouldGenerateData())
                 .collect(Collectors.toList());
 

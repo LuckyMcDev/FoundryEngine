@@ -25,6 +25,7 @@ import de.luckymcdev.foundryengine.client.editor.panel.tools.StopwatchPanel;
 import de.luckymcdev.foundryengine.client.editor.panel.tools.WaypointPanel;
 import de.luckymcdev.foundryengine.client.editor.panel.view.InfoPanel;
 import de.luckymcdev.foundryengine.client.editor.panel.view.ThemeSelectorPanel;
+import de.luckymcdev.foundryengine.client.event.registry.RegistryEventClient;
 import de.luckymcdev.foundryengine.client.ext.ModPathBroadcaster;
 import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.client.render.EngineSceneDepth;
@@ -55,6 +56,7 @@ import net.neoforged.neoforge.client.event.RegisterDebugEntriesEvent;
 import net.neoforged.neoforge.client.event.RegisterDebugRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.client.event.RenderFrameEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
@@ -80,6 +82,7 @@ public class FoundryEngineModClient {
 		modBus.addListener(this::onRegisterDebugEntry);
 		modBus.addListener(this::onRegisterDebugRenderers);
 		modBus.addListener(this::onRegisterGuiLayers);
+		modBus.addListener(this::onRegisterParticleProviders);
 		BUS.addListener(this::onClientTickPost);
 		BUS.addListener(this::onRenderLevel);
 		BUS.addListener(this::onAfterOpaqueFeatures);
@@ -121,6 +124,13 @@ public class FoundryEngineModClient {
 
 	private void onRegisterGuiLayers(RegisterGuiLayersEvent event) {
 		event.registerAboveAll(Common.id("icon_exporter"), Client.getIconExporterLayer());
+	}
+
+	private void onRegisterParticleProviders(RegisterParticleProvidersEvent event) {
+		var collector = Common.getRegistryCollector();
+		if (collector != null) {
+			RegistryEventClient.registerParticleProviders(event, collector);
+		}
 	}
 
 	private void onRenderFramePost(RenderFrameEvent.Post event) {

@@ -4,7 +4,22 @@ import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.cutscene.util.ServerScreenEffectManager;
 import de.luckymcdev.foundryengine.common.data.BundleDataGenerator;
-import de.luckymcdev.foundryengine.common.event.*;
+import de.luckymcdev.foundryengine.common.event.AreaEvents;
+import de.luckymcdev.foundryengine.common.event.BlockEvents;
+import de.luckymcdev.foundryengine.common.event.BundleEvents;
+import de.luckymcdev.foundryengine.common.event.ClientEvents;
+import de.luckymcdev.foundryengine.common.event.CommandEvents;
+import de.luckymcdev.foundryengine.common.event.DialogueEvents;
+import de.luckymcdev.foundryengine.common.event.EntityEvents;
+import de.luckymcdev.foundryengine.common.event.GameEvents;
+import de.luckymcdev.foundryengine.common.event.ItemEvents;
+import de.luckymcdev.foundryengine.common.event.LevelEvents;
+import de.luckymcdev.foundryengine.common.event.NetworkEvents;
+import de.luckymcdev.foundryengine.common.event.PlayerEvents;
+import de.luckymcdev.foundryengine.common.event.RecipeEvents;
+import de.luckymcdev.foundryengine.common.event.ServerEvents;
+import de.luckymcdev.foundryengine.common.event.SlotEvents;
+import de.luckymcdev.foundryengine.common.event.StageEvents;
 import de.luckymcdev.foundryengine.common.event.modification.BlockModificationEvent;
 import de.luckymcdev.foundryengine.common.event.modification.ItemModificationEvent;
 import de.luckymcdev.foundryengine.common.event.registry.RegistryEvent;
@@ -14,8 +29,17 @@ import de.luckymcdev.foundryengine.common.network.packets.TestPacket;
 import de.luckymcdev.foundryengine.common.network.packets.dialogue.ClientboundDialoguePacket;
 import de.luckymcdev.foundryengine.common.network.packets.dialogue.DialogueSavePacket;
 import de.luckymcdev.foundryengine.common.network.packets.dialogue.ServerboundDialoguePacket;
-import de.luckymcdev.foundryengine.common.network.packets.editor.*;
-import de.luckymcdev.foundryengine.common.network.packets.explorer.*;
+import de.luckymcdev.foundryengine.common.network.packets.editor.AreaPacket;
+import de.luckymcdev.foundryengine.common.network.packets.editor.CutsceneCommandPacket;
+import de.luckymcdev.foundryengine.common.network.packets.editor.CutscenePacket;
+import de.luckymcdev.foundryengine.common.network.packets.editor.GiveItemPacket;
+import de.luckymcdev.foundryengine.common.network.packets.editor.LinearizeCutscenePacket;
+import de.luckymcdev.foundryengine.common.network.packets.editor.WaypointPacket;
+import de.luckymcdev.foundryengine.common.network.packets.explorer.ClientBoundFileContentPacket;
+import de.luckymcdev.foundryengine.common.network.packets.explorer.ClientBoundFileListPacket;
+import de.luckymcdev.foundryengine.common.network.packets.explorer.ServerBoundRequestFileContentPacket;
+import de.luckymcdev.foundryengine.common.network.packets.explorer.ServerBoundRequestFileListPacket;
+import de.luckymcdev.foundryengine.common.network.packets.explorer.ServerBoundSaveFilePacket;
 import de.luckymcdev.foundryengine.common.network.packets.sync.SavedDataSyncPacket;
 import de.luckymcdev.foundryengine.common.network.packets.sync.ScreenEffectPacket;
 import de.luckymcdev.foundryengine.common.network.packets.world.ServerBoundChangeWeatherPacket;
@@ -23,6 +47,7 @@ import de.luckymcdev.foundryengine.common.network.packets.world.ServerBoundSetTi
 import de.luckymcdev.foundryengine.common.network.packets.world.ServerBoundSpawnEntityPacket;
 import de.luckymcdev.foundryengine.common.network.packets.world.ServerBoundTeleportPacket;
 import de.luckymcdev.foundryengine.common.registry.EngineRegistries;
+import de.luckymcdev.foundryengine.common.registry.RegistryCollector;
 import de.luckymcdev.foundryengine.common.world.level.EngineLevels;
 import de.luckymcdev.foundryengine.common.world.level.runtime.RuntimeLevelConfig;
 import de.luckymcdev.foundryengine.common.world.level.test.CustomLevel;
@@ -44,9 +69,13 @@ import net.minecraft.world.level.block.Block;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.event.lifecycle.*;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLConstructModEvent;
+import net.neoforged.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
+import net.neoforged.fml.event.lifecycle.InterModProcessEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeVersion;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
@@ -160,6 +189,7 @@ public class FoundryEngineMod {
         modBus.addListener(this::onPostInit);
         modBus.addListener(EventPriority.LOWEST, this::onLoadComplete);
         modBus.addListener(this::onItemModification);
+        modBus.addListener(this::onEngineRegister);
         modBus.addListener(Config::onLoad);
         modBus.addListener(Config::onReload);
     }
@@ -185,17 +215,18 @@ public class FoundryEngineMod {
         });
     }
 
+    private void onEngineRegister(RegisterEvent event) {
+        if (modBus == null) return;
+        RegistryCollector collector = new RegistryCollector();
+        Common.setRegistryCollector(collector);
+        RegistryEvent registryEvent = new RegistryEvent(event, collector);
+        modBus.post(registryEvent);
+        BundleEvents.Internal.postRegistry(registryEvent);
+    }
+
     private void onConstruct(FMLConstructModEvent event) {
         try {
             Common.getBundleManager().discover(Common.BUNDLES);
-            if (modBus != null) {
-                modBus.addListener((RegisterEvent ev) -> {
-                    RegistryEvent registryEvent = new RegistryEvent(ev, modBus);
-                    ModLoader.postEvent(registryEvent);
-                    BundleEvents.Internal.postRegistry(registryEvent);
-                });
-            }
-            BundleDataGenerator.runAll();
         } catch (IOException e) {
             LOGGER.error("Error while loading bundles: {}", e.getLocalizedMessage());
         }
