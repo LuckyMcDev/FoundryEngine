@@ -7,6 +7,7 @@ import de.luckymcdev.foundryengine.client.debug.screen.BundleDebugEntry;
 import de.luckymcdev.foundryengine.client.debug.screen.GameStagesDebugEntry;
 import de.luckymcdev.foundryengine.client.editor.panel.NodeTestPanel;
 import de.luckymcdev.foundryengine.client.editor.panel.TestPanel;
+import de.luckymcdev.foundryengine.client.editor.panel.TextEditorTestPanel;
 import de.luckymcdev.foundryengine.client.editor.panel.cutscenes.CutscenePanel;
 import de.luckymcdev.foundryengine.client.editor.panel.cutscenes.CutsceneTimelinePanel;
 import de.luckymcdev.foundryengine.client.editor.panel.editor.AreaPanel;
@@ -93,6 +94,7 @@ public class FoundryEngineModClient {
 		ModPathBroadcaster.broadcast();
 		Client.getEditorManager().register(
 			TestPanel.INSTANCE,
+			TextEditorTestPanel.INSTANCE,
 			FileExplorerPanel.INSTANCE,
 			ResourceExplorerPanel.INSTANCE,
 			ConsolePanel.INSTANCE,

@@ -17,4 +17,14 @@ public interface EngineMouseHandler extends EngineInterface<MouseHandler> {
      * Called on mouse scroll events to allow interception or augmentation.
      */
     void engine$onScroll(long window, double horizontal, double vertical, CallbackInfo ci);
+
+    /**
+     * Called on mouse move events to allow interception or augmentation.
+     */
+    default void engine$onMove(long window, double x, double y, CallbackInfo ci) {}
+
+    /**
+     * Resets internal mouse state and positions the cursor off-screen.
+     */
+    default void engine$resetMouse() {}
 }

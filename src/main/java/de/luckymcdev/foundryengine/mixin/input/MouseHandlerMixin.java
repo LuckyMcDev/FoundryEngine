@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.client.input.MouseButtonInfo;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -16,6 +17,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  */
 @Mixin(MouseHandler.class)
 public class MouseHandlerMixin implements EngineMouseHandler {
+    @Shadow
+    private double xpos;
+    @Shadow
+    private double ypos;
 
     /**
      * Cancels mouse button events when ImGui captures the mouse.
@@ -44,5 +49,24 @@ public class MouseHandlerMixin implements EngineMouseHandler {
             ci.cancel();
         }
     }
-}
 
+    /**
+     * Cancels cursor move events when ImGui captures the mouse, resetting position off-screen
+     * so MC screen widgets don't receive hover/click events at the real cursor position.
+     */
+    @Override
+    @Inject(method = "onMove", at = @At("HEAD"), cancellable = true)
+    public void engine$onMove(long handle, double xpos, double ypos, CallbackInfo ci) {
+        if (Client.getImGuiManager().shouldInterceptMouse()) {
+            this.xpos = -1.0;
+            this.ypos = -1.0;
+            ci.cancel();
+        }
+    }
+
+    @Override
+    public void engine$resetMouse() {
+        xpos = -1.0;
+        ypos = -1.0;
+    }
+}

@@ -26,7 +26,7 @@ public class KeyboardHandlerMixin implements EngineKeyboardHandler {
      */
     @Inject(method = "keyPress", at = @At("HEAD"), cancellable = true)
     public void engine$keyPress(long handle, int action, KeyEvent event, CallbackInfo ci) {
-        if (Client.getImGuiManager().shouldInterceptKeyboard()) {
+        if (Client.getImGuiManager().shouldInterceptKeyboard() || Client.getImGuiManager().shouldInterceptMouse()) {
             ci.cancel();
             return;
         }
@@ -51,7 +51,7 @@ public class KeyboardHandlerMixin implements EngineKeyboardHandler {
     @Override
     @Inject(method = "charTyped", at = @At("HEAD"), cancellable = true)
     public void engine$charTyped(long handle, CharacterEvent event, CallbackInfo ci) {
-        if (Client.getImGuiManager().shouldInterceptKeyboard()) {
+        if (Client.getImGuiManager().shouldInterceptKeyboard() || Client.getImGuiManager().shouldInterceptMouse()) {
             ci.cancel();
         }
     }
