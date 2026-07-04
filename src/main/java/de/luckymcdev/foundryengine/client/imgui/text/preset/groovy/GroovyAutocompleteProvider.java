@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public final class GroovyAutocompleteProvider implements IAutocompleteProvider {
+public record GroovyAutocompleteProvider(GroovyColorizer colorizer) implements IAutocompleteProvider {
 	private static final List<FunctionSignature> SIGS = Arrays.asList(
 		new FunctionSignature("each", "void", "Closure closure"),
 		new FunctionSignature("eachWithIndex", "void", "Closure closure"),
@@ -52,6 +52,7 @@ public final class GroovyAutocompleteProvider implements IAutocompleteProvider {
 		}
 		return "";
 	}
+
 
 	@Override
 	public int minPrefixLength() {

@@ -7,6 +7,14 @@ import de.luckymcdev.foundryengine.client.imgui.text.editor.EditorCoordinates;
 import de.luckymcdev.foundryengine.client.imgui.text.editor.EditorGlyph;
 import de.luckymcdev.foundryengine.client.imgui.text.editor.EditorState;
 import de.luckymcdev.foundryengine.client.imgui.text.editor.EditorTheme;
+import de.luckymcdev.foundryengine.client.imgui.text.preset.glsl.GLSLAutocompleteProvider;
+import de.luckymcdev.foundryengine.client.imgui.text.preset.glsl.GLSLColorizer;
+import de.luckymcdev.foundryengine.client.imgui.text.preset.groovy.GroovyAutocompleteProvider;
+import de.luckymcdev.foundryengine.client.imgui.text.preset.groovy.GroovyColorizer;
+import de.luckymcdev.foundryengine.client.imgui.text.preset.json.JsonAutocompleteProvider;
+import de.luckymcdev.foundryengine.client.imgui.text.preset.json.JsonColorizer;
+import de.luckymcdev.foundryengine.client.imgui.text.preset.toml.TomlAutocompleteProvider;
+import de.luckymcdev.foundryengine.client.imgui.text.preset.toml.TomlColorizer;
 import de.luckymcdev.foundryengine.common.util.color.Color;
 import imgui.ImDrawList;
 import imgui.ImGui;
@@ -32,9 +40,9 @@ public final class ImGuiCoreTextEditor {
 	private final EditorCoordinates selectionAnchor = new EditorCoordinates(0, 0);
 	private final List<EditorState> undoStack = new ArrayList<>();
 	private final List<EditorState> redoStack = new ArrayList<>();
-	private final EditorTheme theme;
 	private final List<Integer> pendingChars = new ArrayList<>();
 	private final EditorCoordinates lastClickPos = new EditorCoordinates(-1, -1);
+	private EditorTheme theme;
 	private boolean editorFocused = false;
 	private IEditorColorizer colorizer;
 	private EditorAutocomplete autocomplete;
@@ -58,6 +66,16 @@ public final class ImGuiCoreTextEditor {
 		this.theme = theme;
 		lines.add(new ArrayList<>());
 		INSTANCES.add(this);
+	}
+
+	public static ImGuiCoreTextEditor createForLanguage(Language language) {
+		return createForLanguage(language, EditorTheme.dark().build());
+	}
+
+	public static ImGuiCoreTextEditor createForLanguage(Language language, EditorTheme theme) {
+		ImGuiCoreTextEditor editor = new ImGuiCoreTextEditor(null, null, theme);
+		editor.setLanguage(language);
+		return editor;
 	}
 
 	private static float nextTabStop(float x, float charWidth, int tabSize) {
@@ -235,6 +253,25 @@ public final class ImGuiCoreTextEditor {
 
 	public void setProvider(IAutocompleteProvider provider) {
 		this.autocomplete = provider != null ? new EditorAutocomplete(provider) : null;
+	}
+
+	public void setLanguage(Language language) {
+		if (language == null) {
+			setColorizer(new NullColorizer());
+			setProvider(null);
+		} else {
+			IEditorColorizer colorizer = language.createColorizer();
+			IAutocompleteProvider provider = language.createProvider(colorizer);
+			setColorizer(colorizer);
+			setProvider(provider);
+		}
+		getColorizer().invalidateAll();
+	}
+
+	public void setTheme(EditorTheme newTheme) {
+		if (newTheme == null) return;
+		this.theme = newTheme;
+		maxLineWidth = 0f;
 	}
 
 	public void resetBlink() {
@@ -1196,7 +1233,95 @@ public final class ImGuiCoreTextEditor {
 		return (li >= 0 && li < lines.size()) ? lines.get(li).size() : 0;
 	}
 
-	private static final class NullColorizer implements IEditorColorizer {
+	public enum Language {
+		GLSL("glsl", "fsh", "vsh", "frag", "vert") {
+			@Override
+			public IEditorColorizer createColorizer() {
+				return new GLSLColorizer();
+			}
+
+			@Override
+			public IAutocompleteProvider createProvider(IEditorColorizer colorizer) {
+				return new GLSLAutocompleteProvider((GLSLColorizer) colorizer);
+			}
+		},
+
+		GROOVY("groovy") {
+			@Override
+			public IEditorColorizer createColorizer() {
+				return new GroovyColorizer();
+			}
+
+			@Override
+			public IAutocompleteProvider createProvider(IEditorColorizer colorizer) {
+				return new GroovyAutocompleteProvider((GroovyColorizer) colorizer);
+			}
+		},
+
+		JSON("json") {
+			@Override
+			public IEditorColorizer createColorizer() {
+				return new JsonColorizer();
+			}
+
+			@Override
+			public IAutocompleteProvider createProvider(IEditorColorizer colorizer) {
+				return new JsonAutocompleteProvider((JsonColorizer) colorizer);
+			}
+		},
+
+		TOML("toml") {
+			@Override
+			public IEditorColorizer createColorizer() {
+				return new TomlColorizer();
+			}
+
+			@Override
+			public IAutocompleteProvider createProvider(IEditorColorizer colorizer) {
+				return new TomlAutocompleteProvider((TomlColorizer) colorizer);
+			}
+		},
+
+		TEXT("txt", "text", "md") {
+			@Override
+			public IEditorColorizer createColorizer() {
+				return new NullColorizer();
+			}
+
+			@Override
+			public IAutocompleteProvider createProvider(IEditorColorizer colorizer) {
+				return null;
+			}
+		};
+
+		private final List<String> extensions;
+
+		Language(String... extensions) {
+			this.extensions = List.of(extensions);
+		}
+
+		public static Language from(String extension) {
+			if (extension == null) {
+				return null;
+			}
+			for (Language lang : values()) {
+				if (lang.extensions.contains(extension.toLowerCase())) {
+					return lang;
+				}
+			}
+			return null;
+		}
+
+		public abstract IEditorColorizer createColorizer();
+
+		public abstract IAutocompleteProvider createProvider(IEditorColorizer colorizer);
+
+		public List<String> getExtensions() {
+			return extensions;
+		}
+	}
+
+	public static final class NullColorizer implements IEditorColorizer {
 		private static final Color DEF = Color.ofABGR(0xFFD4D4D4);
 
 		@Override

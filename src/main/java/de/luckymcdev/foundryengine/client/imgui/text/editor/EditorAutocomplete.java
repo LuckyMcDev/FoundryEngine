@@ -41,10 +41,6 @@ public final class EditorAutocomplete {
 		this.provider = provider;
 	}
 
-	private static int clamp(int v, int lo, int hi) {
-		return Math.max(lo, Math.min(hi, v));
-	}
-
 	private static String typeIcon(String type) {
 		switch (type) {
 			case "keyword":
@@ -198,7 +194,7 @@ public final class EditorAutocomplete {
 			float wheel = ImGui.getIO().getMouseWheel();
 			if (wheel != 0) {
 				scrollOffset -= (int) wheel;
-				scrollOffset = clamp(scrollOffset, 0, items.size() - MAX_VISIBLE);
+				scrollOffset = Math.clamp(scrollOffset, 0, items.size() - MAX_VISIBLE);
 			}
 		}
 		clampScroll();
@@ -342,6 +338,6 @@ public final class EditorAutocomplete {
 		} else if (selectedIdx >= scrollOffset + MAX_VISIBLE) {
 			scrollOffset = selectedIdx - MAX_VISIBLE + 1;
 		}
-		scrollOffset = clamp(scrollOffset, 0, Math.max(0, items.size() - MAX_VISIBLE));
+		scrollOffset = Math.clamp(scrollOffset, 0, Math.max(0, items.size() - MAX_VISIBLE));
 	}
 }

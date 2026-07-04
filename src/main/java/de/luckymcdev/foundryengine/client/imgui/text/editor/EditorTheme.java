@@ -3,9 +3,14 @@ package de.luckymcdev.foundryengine.client.imgui.text.editor;
 import de.luckymcdev.foundryengine.common.util.color.Color;
 import imgui.ImGui;
 
+import java.util.List;
+
 // All colours stored as Color (AARRGGBB). The static factory methods
 // accept raw ABGR packed ints for compatibility with existing themes.
 public final class EditorTheme {
+	public static final List<String> THEME_NAMES = List.of(
+		"dark", "monokai", "light", "dracula", "nord", "solarizedDark", "solarizedLight", "oneDark", "githubLight"
+	);
 	public final Color backgroundColor;
 	public final Color currentLineColor;
 	public final Color selectionColor;
@@ -180,6 +185,32 @@ public final class EditorTheme {
 			.withHScrollbarHeight(10f)
 			.withLineSpacing(1.0f)
 			.withTabSize(4);
+	}
+
+	public static EditorTheme getThemeByName(String name) {
+		if(!THEME_NAMES.contains(name)) return EditorTheme.dark().build();
+
+		return switch (name) {
+			case "dark" -> EditorTheme.dark().build();
+			case "monokai" -> EditorTheme.monokai().build();
+			case "light" -> EditorTheme.light().build();
+			case "dracula" -> EditorTheme.dracula().build();
+			case "nord" -> EditorTheme.nord().build();
+			case "solarizedDark" -> EditorTheme.solarizedDark().build();
+			case "solarizedLight" -> EditorTheme.solarizedLight().build();
+			case "oneDark" -> EditorTheme.oneDark().build();
+			case "githubLight" -> EditorTheme.githubLight().build();
+			default -> EditorTheme.dark().build();
+		};
+	}
+
+	public static String getAvailableThemeNames() {
+		StringBuilder names = new StringBuilder();
+		for (String theme : THEME_NAMES) {
+			if (!names.isEmpty()) names.append(", ");
+			names.append(theme);
+		}
+		return names.toString();
 	}
 
 	public EditorTheme withCursorColor(Color c) {
