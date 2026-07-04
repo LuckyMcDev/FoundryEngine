@@ -25,29 +25,35 @@ public final class ClientConfig {
 
         SELECTED_THEME = builder
                 .comment("The currently selected ImGui theme. Available themes: " + ImThemes.getAvailableThemeNames())
+                .translation("foundryengine.configuration.selected_theme")
                 .define("SELECTED_THEME", ImThemes.BESS_DARK_IM_THEME.getName());
 
         FONT_OPTION = builder
                 .comment("What should happen with fonts.")
                 .comment("Can be: " + Arrays.toString(FONT_OPTION_VALUES))
                 .comment("")
+                .translation("foundryengine.configuration.font_option")
                 .define("FONT_OPTION", "NORMAL");
 
         RENDER_OFFHAND = builder
                 .comment("A Funny Offhand rendering technique. It makes it be rendered the same way the main hand is.")
+                .translation("foundryengine.configuration.render_offhand")
                 .define("RENDER_OFFHAND", false);
 
         AUTO_EXPORT = builder
                 .comment("Automatically run the icon exporter on login when the registry has changed or no export exists yet.")
+                .translation("foundryengine.configuration.auto_export")
                 .define("AUTO_EXPORT", true);
 
         ICON_SIZE = builder
                 .comment("How large the icons of the icon exporter should be, default is 64.")
                 .comment("If they are larger, the game takes longer to create them.")
+                .translation("foundryengine.configuration.icon_size")
                 .defineInRange("ICON_SIZE", 64, 16, 256);
 
         SHOW_SLOT_TOOLTIP = builder
                 .comment("If slot tooltips are shown")
+                .translation("foundryengine.configuration.show_slot_tooltip")
                 .define("SHOW_SLOT_TOOLTIP", true);
 
         BLOCK_ENTITY_RENDER_DISTANCE = builder
@@ -56,10 +62,12 @@ public final class ClientConfig {
                 .comment("full -> Uses your render distance.",
                         "half -> Uses half your render distance",
                         "vanilla -> Uses the vanilla 64 blocks")
+                .translation("foundryengine.configuration.block_entity_render_distance")
                 .define("BLOCK_ENTITY_RENDER_DISTANCE", "vanilla");
 
         CUSTOM_SKYBOX = builder
                 .comment("If the custom skybox rendering is used")
+                .translation("foundryengine.configuration.custom_skybox")
                 .define("CUSTOM_SKYBOX", false);
 
         SPEC = builder.build();

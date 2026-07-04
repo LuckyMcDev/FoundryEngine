@@ -5,6 +5,7 @@ import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
 import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import imgui.ImGui;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 
 import java.io.File;
@@ -13,7 +14,7 @@ public class TextureViewerPanel extends EditorPanel {
     private final ImGraphicsExtractor.Image image;
     private final String sourcePath;
 
-    public TextureViewerPanel(Identifier id, String title, Identifier identifier) {
+    public TextureViewerPanel(Identifier id, Component title, Identifier identifier) {
         super(new Builder(id, title)
                 .icon(ImIcons.FA.FA_IMAGES)
                 .category(PanelCategory.EDITOR_FILES));
@@ -21,7 +22,7 @@ public class TextureViewerPanel extends EditorPanel {
         this.sourcePath = identifier.toString();
     }
 
-    public TextureViewerPanel(Identifier id, String title, File file) {
+    public TextureViewerPanel(Identifier id, Component title, File file) {
         super(new Builder(id, title)
                 .icon(ImIcons.FA.FA_IMAGES)
                 .category(PanelCategory.EDITOR_FILES));

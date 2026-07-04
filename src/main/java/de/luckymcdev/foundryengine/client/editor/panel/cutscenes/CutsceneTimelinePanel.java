@@ -13,7 +13,6 @@ import de.luckymcdev.foundryengine.common.cutscene.model.Cutscene;
 import de.luckymcdev.foundryengine.common.cutscene.model.CutsceneAttachment;
 import de.luckymcdev.foundryengine.common.cutscene.model.EffectAttachment;
 import de.luckymcdev.foundryengine.common.cutscene.util.LerpType;
-
 import de.luckymcdev.foundryengine.common.network.packets.editor.CutscenePacket;
 import de.luckymcdev.foundryengine.common.network.packets.editor.LinearizeCutscenePacket;
 import de.luckymcdev.foundryengine.common.util.color.Color;
@@ -60,7 +59,7 @@ public class CutsceneTimelinePanel extends EditorPanel {
     private float zoomPxPerTick = 6.0f;
 
     private CutsceneTimelinePanel() {
-        super(new Builder(Common.id("cutscene_timeline"), "Cutscene Timeline")
+        super(new Builder(Common.id("cutscene_timeline"))
                 .icon(ImIcons.FA.FA_SLIDERS)
                 .category(PanelCategory.EDITOR_CUTSCENES)
                 .menuBar(true));

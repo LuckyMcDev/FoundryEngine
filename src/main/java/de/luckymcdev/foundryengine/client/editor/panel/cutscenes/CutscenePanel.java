@@ -43,7 +43,7 @@ public class CutscenePanel extends EditorPanel {
     private boolean showNewForm = false;
 
     private CutscenePanel() {
-        super(new Builder(Common.id("cutscene_panel"), "Cutscenes")
+        super(new Builder(Common.id("cutscene_panel"))
                 .icon(ImIcons.FA.FA_FILM)
                 .category(PanelCategory.EDITOR_CUTSCENES)
                 .menuBar(true));

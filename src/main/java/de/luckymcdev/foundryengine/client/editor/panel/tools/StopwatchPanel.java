@@ -7,6 +7,7 @@ import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.common.Common;
 import imgui.ImGui;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.Stopwatch;
 
 public class StopwatchPanel extends EditorPanel {
@@ -16,7 +17,7 @@ public class StopwatchPanel extends EditorPanel {
     private boolean running = false;
 
     public StopwatchPanel(String id) {
-        super(new Builder(Common.id("stopwatch-" + id.toLowerCase().replace(" ", "_")), "Stopwatch")
+        super(new Builder(Common.id("stopwatch-" + id.toLowerCase().replace(" ", "_")), Component.translatable("panel.foundryengine.stopwatch"))
                 .icon(ImIcons.FA.FA_STOPWATCH)
                 .category(PanelCategory.TOOLS)
                 .temporary(true)

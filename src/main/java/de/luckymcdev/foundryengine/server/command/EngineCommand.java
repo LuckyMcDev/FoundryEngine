@@ -71,6 +71,10 @@ public interface EngineCommand {
         ctx.getSource().sendSuccess(() -> Component.literal(message).withStyle(ChatFormatting.DARK_GREEN), broadcastToOps);
     }
 
+    default void sendSuccess(CommandContext<CommandSourceStack> ctx, Component message, boolean broadcastToOps) {
+        ctx.getSource().sendSuccess(() -> message.copy().withStyle(ChatFormatting.DARK_GREEN), broadcastToOps);
+    }
+
     /**
      * Sends a failure/error message.
      */
@@ -78,10 +82,18 @@ public interface EngineCommand {
         ctx.getSource().sendFailure(Component.literal(message).withStyle(ChatFormatting.DARK_RED));
     }
 
+    default void sendFailure(CommandContext<CommandSourceStack> ctx, Component message) {
+        ctx.getSource().sendFailure(message.copy().withStyle(ChatFormatting.DARK_RED));
+    }
+
     /**
      * Sends a system/info message (standard gray).
      */
     default void sendInfo(CommandContext<CommandSourceStack> ctx, String message) {
         ctx.getSource().sendSuccess(() -> Component.literal(message).withStyle(ChatFormatting.GRAY), false);
+    }
+
+    default void sendInfo(CommandContext<CommandSourceStack> ctx, Component message) {
+        ctx.getSource().sendSuccess(() -> message.copy().withStyle(ChatFormatting.GRAY), false);
     }
 }

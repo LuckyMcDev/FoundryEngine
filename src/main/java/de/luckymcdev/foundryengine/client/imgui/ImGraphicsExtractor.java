@@ -22,7 +22,11 @@ import de.luckymcdev.foundryengine.config.ClientConfig;
 import imgui.ImFont;
 import imgui.ImGui;
 import imgui.ImVec4;
-import imgui.flag.*;
+import imgui.flag.ImGuiCol;
+import imgui.flag.ImGuiColorEditFlags;
+import imgui.flag.ImGuiInputTextFlags;
+import imgui.flag.ImGuiStyleVar;
+import imgui.flag.ImGuiTreeNodeFlags;
 import imgui.type.ImBoolean;
 import it.unimi.dsi.fastutil.floats.FloatArrayList;
 import it.unimi.dsi.fastutil.floats.FloatList;
@@ -48,7 +52,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
 import java.util.function.Function;
 
 public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorConsumer {
@@ -636,12 +646,13 @@ public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorCons
     }
 
     public void cardBegin(String id) {
-        ImGui.beginChild(id, 0, 0, true,
-                ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoScrollbar);
+        ImGui.pushID(id);
+        ImGui.separator();
     }
 
     public void cardEnd() {
-        ImGui.endChild();
+        ImGui.separator();
+        ImGui.popID();
     }
 
     public @Nullable Color colorEdit4(String label, Color current) {

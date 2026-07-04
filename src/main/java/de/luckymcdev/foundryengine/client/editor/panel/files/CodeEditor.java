@@ -9,12 +9,17 @@ import imgui.ImGui;
 import imgui.extension.texteditor.TextEditor;
 import imgui.extension.texteditor.TextEditorCursorPosition;
 import imgui.extension.texteditor.TextEditorLanguage;
-import imgui.flag.*;
+import imgui.flag.ImGuiCol;
+import imgui.flag.ImGuiFocusedFlags;
+import imgui.flag.ImGuiInputTextFlags;
+import imgui.flag.ImGuiKey;
+import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImBoolean;
 import imgui.type.ImInt;
 import imgui.type.ImString;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.permissions.PermissionLevel;
 
@@ -54,13 +59,13 @@ public class CodeEditor extends EditorPanel {
      * @param fileName Display name shown in the title bar and status bar.
      * @param source   Initial source text to populate the editor.
      */
-    public CodeEditor(Identifier id, String fileName, String source) {
-        super(new Builder(id, " Editor: " + fileName)
+    public CodeEditor(Identifier id, Component label, String source) {
+        super(new Builder(id, label)
                 .icon(ImIcons.FA.FA_EDIT)
                 .shortcut(ImGuiShortcut.empty())
                 .category(PanelCategory.EDITOR_FILES)
                 .menuBar(true));
-        this.fileName = fileName;
+        this.fileName = label.getString();
         this.oldSource = source;
         this.saveCallback = (_, _) -> { /* default no-op */ };
 

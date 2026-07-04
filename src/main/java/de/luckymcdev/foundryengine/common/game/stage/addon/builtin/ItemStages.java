@@ -91,7 +91,7 @@ public class ItemStages extends StageAddon<Item> {
 
         if (!required.isEmpty() && !missing.isEmpty()) {
             event.getToolTip().add(Component.empty());
-            event.getToolTip().add(Component.literal("Required Stages:").withStyle(ChatFormatting.GOLD));
+            event.getToolTip().add(Component.translatable("foundryengine.stage.required_header").withStyle(ChatFormatting.GOLD));
 
             for (String stage : required) {
                 ChatFormatting color = !missing.contains(stage) ? ChatFormatting.GREEN : ChatFormatting.RED;

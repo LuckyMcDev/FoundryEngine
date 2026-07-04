@@ -11,7 +11,12 @@ import de.luckymcdev.foundryengine.common.dialogue.DialogueTree;
 import de.luckymcdev.foundryengine.common.network.packets.dialogue.DialogueSavePacket;
 import de.luckymcdev.foundryengine.common.util.color.Color;
 import imgui.ImGui;
-import imgui.flag.*;
+import imgui.flag.ImGuiCol;
+import imgui.flag.ImGuiColorEditFlags;
+import imgui.flag.ImGuiInputTextFlags;
+import imgui.flag.ImGuiSelectableFlags;
+import imgui.flag.ImGuiTreeNodeFlags;
+import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImInt;
 import imgui.type.ImString;
 import net.minecraft.resources.Identifier;
@@ -47,7 +52,7 @@ public class DialogueEditorPanel extends EditorPanel {
     private boolean showResetConfirm;
 
     private DialogueEditorPanel() {
-        super(new Builder(Common.id("dialogue_editor"), "Dialogue Editor")
+        super(new Builder(Common.id("dialogue_editor"))
                 .icon(ImIcons.FA.FA_COMMENT)
                 .category(PanelCategory.EDITOR)
                 .menuBar(true));

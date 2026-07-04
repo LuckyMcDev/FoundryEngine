@@ -35,7 +35,7 @@ public class ConsolePanel extends EditorPanel {
     private boolean autoScroll = true;
 
     private ConsolePanel() {
-        super(new Builder(Common.id("console"), "Console")
+        super(new Builder(Common.id("console"))
                 .icon(ImIcons.FA.FA_TERMINAL)
                 .category(PanelCategory.TOOLS)
                 .menuBar(true));

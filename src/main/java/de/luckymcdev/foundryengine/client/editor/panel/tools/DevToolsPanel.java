@@ -13,7 +13,7 @@ public class DevToolsPanel extends Panel {
     public static final DevToolsPanel INSTANCE = new DevToolsPanel();
 
     private DevToolsPanel() {
-        super(new Builder(Common.id("dev_tools"), "Dev Tools")
+        super(new Builder(Common.id("dev_tools"))
                 .icon(ImIcons.FA.FA_FLASK)
                 .category(PanelCategory.TOOLS));
     }

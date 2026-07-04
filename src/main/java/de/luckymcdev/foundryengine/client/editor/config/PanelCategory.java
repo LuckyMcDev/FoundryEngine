@@ -38,7 +38,11 @@ public enum PanelCategory {
         return this.parent == null;
     }
 
+    public String getDisplayName() {
+        return displayName;
+    }
+
     public String getMenuLabel() {
-        return displayName + " " + ImGraphicsExtractor.icon(this.icon);
+        return getDisplayName() + " " + ImGraphicsExtractor.icon(this.icon);
     }
 }

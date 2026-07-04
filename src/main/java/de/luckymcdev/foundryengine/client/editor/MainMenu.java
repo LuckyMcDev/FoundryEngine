@@ -23,9 +23,8 @@ public class MainMenu {
         for (PanelCategory category : PanelCategory.values()) {
             if (isSubCategory(category)) continue;
 
-            String label = category.getMenuLabel();
             this.register(category.name().toLowerCase(),
-                    new CategoryMenuSection(editor, category, label));
+                    new CategoryMenuSection(editor, category, category.getMenuLabel()));
         }
     }
 

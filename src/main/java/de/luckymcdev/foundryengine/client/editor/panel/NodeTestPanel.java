@@ -4,7 +4,12 @@ import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
 import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
-import de.luckymcdev.foundryengine.client.node.*;
+import de.luckymcdev.foundryengine.client.node.Node;
+import de.luckymcdev.foundryengine.client.node.NodeBuilder;
+import de.luckymcdev.foundryengine.client.node.NodeEditorInstance;
+import de.luckymcdev.foundryengine.client.node.NodePin;
+import de.luckymcdev.foundryengine.client.node.NodePinType;
+import de.luckymcdev.foundryengine.client.node.NodeTypes;
 import de.luckymcdev.foundryengine.common.Common;
 import imgui.ImGui;
 
@@ -17,7 +22,7 @@ public class NodeTestPanel extends EditorPanel {
     private final NodeBuilder<Double> rootEvalBuilder;
 
     protected NodeTestPanel() {
-        super(new Builder(Common.id("node_test_panel"), "Node Test Panel")
+        super(new Builder(Common.id("node_test_panel"))
                 .icon(ImIcons.FA.FA_BLUETOOTH)
                 .category(PanelCategory.EDITOR)
         );

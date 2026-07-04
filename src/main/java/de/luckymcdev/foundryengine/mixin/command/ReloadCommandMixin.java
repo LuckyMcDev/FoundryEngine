@@ -33,7 +33,7 @@ public class ReloadCommandMixin {
     )
     private static CompletableFuture<Void> engine$wrapReloadResources(MinecraftServer instance, Collection<String> packs, Operation<CompletableFuture<Void>> original, Collection<String> selectedPacks, CommandSourceStack source) {
         return original.call(instance, packs).thenRun(() -> {
-            source.sendSuccess(() -> Component.translatable("fondryengine.commands.reload.success"), false);
+            source.sendSuccess(() -> Component.translatable("command.foundryengine.reload.success"), false);
         });
     }
 }

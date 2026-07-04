@@ -40,7 +40,7 @@ public class WaypointPanel extends EditorPanel {
     private Waypoint selectedWaypoint = null;
 
     private WaypointPanel() {
-        super(new Builder(Common.id("waypoint_panel"), "Waypoints")
+        super(new Builder(Common.id("waypoint_panel"))
                 .icon(ImIcons.FA.FA_MAP_PIN)
                 .category(PanelCategory.TOOLS)
                 .menuBar(true));

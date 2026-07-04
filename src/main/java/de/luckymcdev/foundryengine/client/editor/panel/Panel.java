@@ -10,6 +10,7 @@ import de.luckymcdev.foundryengine.client.imgui.icon.ImIcon;
 import imgui.ImGui;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImBoolean;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.permissions.PermissionLevel;
 import org.jspecify.annotations.Nullable;
@@ -17,7 +18,7 @@ import org.jspecify.annotations.Nullable;
 public abstract class Panel {
     private static final PanelRequirements REQUIREMENTS = new MinecraftPanelRequirements();
     private final Identifier id;
-    private final String label;
+    private final Component label;
     private final @Nullable ImIcon icon;
     private final ImGuiShortcut shortcut;
     private final PanelCategory category;
@@ -94,7 +95,31 @@ public abstract class Panel {
         return id;
     }
 
-    public final String getLabel() {
+    protected static String translationKey(Identifier id) {
+        return "panel.%s.%s".formatted(id.getNamespace(), id.getPath());
+    }
+
+    protected static String translationKey(Identifier id, String suffix) {
+        return "panel.%s.%s.%s".formatted(id.getNamespace(), id.getPath(), suffix);
+    }
+
+    protected static Component translatable(Identifier id) {
+        return Component.translatable(translationKey(id));
+    }
+
+    public final String translationKey() {
+        return translationKey(id);
+    }
+
+    public final String translationKey(String suffix) {
+        return translationKey(id, suffix);
+    }
+
+    protected final Component translatable() {
+        return translatable(id);
+    }
+
+    public final Component getLabel() {
         return label;
     }
 
@@ -214,10 +239,11 @@ public abstract class Panel {
     }
 
     public String getFormattedLabel() {
+        String resolved = this.label.getString();
         if (this.icon == null) {
-            return this.label;
+            return resolved;
         }
-        return this.label + " " + ImGraphicsExtractor.icon(this.icon);
+        return resolved + " " + ImGraphicsExtractor.icon(this.icon);
     }
 
     private int getFlags() {
@@ -242,7 +268,7 @@ public abstract class Panel {
 
     public static final class Builder {
         private final Identifier id;
-        private final String label;
+        private final Component label;
         private @Nullable ImIcon icon;
         private ImGuiShortcut imGuiShortcut = ImGuiShortcut.empty();
         private PanelCategory category = PanelCategory.OPEN;
@@ -251,9 +277,14 @@ public abstract class Panel {
         private boolean unsaved;
         private PanelStyle style = PanelStyle.NORMAL;
 
-        public Builder(Identifier id, String label) {
+        public Builder(Identifier id, Component label) {
             this.id = id;
             this.label = label;
+        }
+
+        public Builder(Identifier id) {
+            this.id = id;
+            this.label = translatable(id);
         }
 
         public Builder icon(@Nullable ImIcon icon) {

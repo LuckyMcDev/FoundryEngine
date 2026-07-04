@@ -23,7 +23,7 @@ public class MinecraftToolsPanel extends EditorPanel {
     public static final MinecraftToolsPanel INSTANCE = new MinecraftToolsPanel();
 
     private MinecraftToolsPanel() {
-        super(new Builder(Common.id("minecraft_tools"), "Minecraft Tools")
+        super(new Builder(Common.id("minecraft_tools"))
                 .icon(ImIcons.FA.FA_TOOLBOX)
                 .category(PanelCategory.TOOLS));
     }

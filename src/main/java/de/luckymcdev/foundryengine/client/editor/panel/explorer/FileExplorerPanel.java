@@ -22,13 +22,14 @@ import imgui.flag.ImGuiKey;
 import imgui.flag.ImGuiMouseButton;
 import imgui.flag.ImGuiTreeNodeFlags;
 import imgui.type.ImString;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.permissions.PermissionLevel;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
-import java.awt.*;
+import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -61,7 +62,7 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
     private boolean remoteLoading = false;
 
     public FileExplorerPanel(File rootDir) {
-        super(new Builder(Common.id("file_explorer"), "File Explorer")
+        super(new Builder(Common.id("file_explorer"))
                 .icon(ImIcons.FA.FA_FILES_O)
                 .shortcut(ImGuiShortcut.empty())
                 .category(PanelCategory.EDITOR_EXPLORER));
@@ -167,7 +168,7 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
         if (getExistingEditor(editorId) != null) return;
 
         String fileName = fileNameFrom(relativePath);
-        CodeEditor editor = new CodeEditor(editorId, "[SERVER] " + fileName, content);
+        CodeEditor editor = new CodeEditor(editorId, Component.literal(" Editor: [SERVER] " + fileName), content);
 
         applyLanguageHighlighting(editor, fileName);
 
@@ -474,13 +475,13 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
             viewer.open();
             return;
         }
-        TextureViewerPanel viewer = new TextureViewerPanel(viewerId, "Texture: " + file.getName(), file);
+        TextureViewerPanel viewer = new TextureViewerPanel(viewerId, Component.literal("Texture: " + file.getName()), file);
         Client.getEditorManager().register(viewer);
         viewer.open();
     }
 
     private CodeEditor buildLocalCodeEditor(File file, Identifier editorId, String content) {
-        CodeEditor editor = new CodeEditor(editorId, "[CLIENT] " + file.getName(), content);
+        CodeEditor editor = new CodeEditor(editorId, Component.literal(" Editor: [CLIENT] " + file.getName()), content);
         applyLanguageHighlighting(editor, file.getName());
         editor.setSaveCallback((source, errors) -> {
             try {
