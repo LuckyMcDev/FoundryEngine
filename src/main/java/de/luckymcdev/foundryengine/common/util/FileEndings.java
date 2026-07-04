@@ -2,13 +2,12 @@ package de.luckymcdev.foundryengine.common.util;
 
 import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
-import imgui.extension.texteditor.TextEditorLanguage;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Maps file extensions to editor language definitions and icons.
+ * Maps file extensions to file icons.
  */
 public class FileEndings {
     private static final Map<String, String> EXTENSION_TO_ICON = new HashMap<>();
@@ -27,30 +26,6 @@ public class FileEndings {
         for (String ext : extensions) {
             EXTENSION_TO_ICON.put(ext.toLowerCase(), icon);
         }
-    }
-
-    /**
-     * Gets the language definition for the editor based on file extension.
-     */
-    /**
-     * Returns the language definition for the given file name based on its extension.
-     */
-    public static TextEditorLanguage getLanguageDefinitionByFileName(String fileName) {
-        String ext = getExtension(fileName);
-        return switch (ext) {
-            case "as" -> TextEditorLanguage.AngelScript();
-            case "c" -> TextEditorLanguage.C();
-            case "cpp" -> TextEditorLanguage.Cpp();
-            case "cs" -> TextEditorLanguage.Cs();
-            case "glsl" -> TextEditorLanguage.Glsl();
-            case "hlsl" -> TextEditorLanguage.Hlsl();
-            case "json" -> TextEditorLanguage.Json();
-            case "md" -> TextEditorLanguage.Markdown();
-            case "lua" -> TextEditorLanguage.Lua();
-            case "py" -> TextEditorLanguage.Python();
-            case "sql" -> TextEditorLanguage.Sql();
-            default -> TextEditorLanguage.Cs();
-        };
     }
 
     /**

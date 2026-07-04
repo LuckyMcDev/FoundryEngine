@@ -273,14 +273,13 @@ public final class ImGuiManager implements ResourceManagerReloadListener, Native
      * Returns whether ImGui should capture mouse input.
      */
     public boolean shouldInterceptMouse() {
-        return shouldBlockInput || (ImGui.getIO().getWantCaptureMouse() && !Client.getMc().mouseHandler.isMouseGrabbed());
+        if (!enabled.get()) return false;
+		return shouldBlockInput || (ImGui.getIO().getWantCaptureMouse() && !Client.getMc().mouseHandler.isMouseGrabbed());
     }
 
-    /**
-     * Returns whether ImGui should capture keyboard input.
-     */
     public boolean shouldInterceptKeyboard() {
-        return shouldBlockInput || ImGui.getIO().getWantCaptureKeyboard();
+        if (!enabled.get()) return false;
+		return shouldBlockInput || ImGui.getIO().getWantCaptureKeyboard();
     }
 
     /**

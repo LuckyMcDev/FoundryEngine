@@ -1,12 +1,42 @@
 package de.luckymcdev.foundryengine.client.imgui.backend;
 
-import imgui.*;
-import imgui.callback.*;
-import imgui.flag.*;
+import de.luckymcdev.foundryengine.client.imgui.text.ImGuiCoreTextEditor;
+import imgui.ImGui;
+import imgui.ImGuiIO;
+import imgui.ImGuiPlatformIO;
+import imgui.ImGuiViewport;
+import imgui.ImVec2;
+import imgui.callback.ImPlatformFuncViewport;
+import imgui.callback.ImPlatformFuncViewportFloat;
+import imgui.callback.ImPlatformFuncViewportImVec2;
+import imgui.callback.ImPlatformFuncViewportString;
+import imgui.callback.ImPlatformFuncViewportSuppBoolean;
+import imgui.callback.ImPlatformFuncViewportSuppImVec2;
+import imgui.callback.ImStrConsumer;
+import imgui.callback.ImStrSupplier;
+import imgui.flag.ImGuiBackendFlags;
+import imgui.flag.ImGuiConfigFlags;
+import imgui.flag.ImGuiKey;
+import imgui.flag.ImGuiMouseButton;
+import imgui.flag.ImGuiMouseCursor;
+import imgui.flag.ImGuiViewportFlags;
 import imgui.lwjgl3.glfw.ImGuiImplGlfwNative;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.PointerBuffer;
-import org.lwjgl.glfw.*;
+import org.lwjgl.glfw.Callbacks;
+import org.lwjgl.glfw.GLFWCharCallback;
+import org.lwjgl.glfw.GLFWCursorEnterCallback;
+import org.lwjgl.glfw.GLFWCursorPosCallback;
+import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.glfw.GLFWGamepadState;
+import org.lwjgl.glfw.GLFWKeyCallback;
+import org.lwjgl.glfw.GLFWMonitorCallback;
+import org.lwjgl.glfw.GLFWMouseButtonCallback;
+import org.lwjgl.glfw.GLFWNativeCocoa;
+import org.lwjgl.glfw.GLFWNativeWin32;
+import org.lwjgl.glfw.GLFWScrollCallback;
+import org.lwjgl.glfw.GLFWVidMode;
+import org.lwjgl.glfw.GLFWWindowFocusCallback;
 import org.lwjgl.system.Callback;
 import org.lwjgl.system.MemoryUtil;
 
@@ -394,6 +424,7 @@ public class ImGuiImplGlfw {
         }
 
         ImGui.getIO().addInputCharacter(c);
+        ImGuiCoreTextEditor.dispatchCharTyped(c);
     }
 
     public void windowFocusCallback(final long window, final boolean focused) {

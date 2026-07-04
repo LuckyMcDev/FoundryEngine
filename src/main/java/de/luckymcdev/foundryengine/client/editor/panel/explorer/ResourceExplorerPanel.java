@@ -277,8 +277,9 @@ public class ResourceExplorerPanel extends AbstractExplorerPanel {
                         .collect(Collectors.joining("\n"));
 
                 CodeEditor editor = new CodeEditor(editorId, Component.literal(" Editor: " + id.getPath()), content);
-                editor.getTextEditor().setReadOnlyEnabled(true);
+                editor.getTextEditor().setReadOnly(true);
                 editor.forceReadOnly = true;
+                editor.applyLanguage(id.getPath());
 
                 Client.getEditorManager().register(editor);
                 editor.open();

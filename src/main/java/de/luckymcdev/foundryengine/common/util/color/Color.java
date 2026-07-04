@@ -126,20 +126,28 @@ public class Color {
         return of(alpha, r, g, b);
     }
 
-    public static Color of(int argb) {
-        return switch (argb) {
-            case 0x00000000 -> TRANSPARENT;
-            case 0xFFFFFFFF -> WHITE;
-            case 0xFF000000 -> BLACK;
-            case 0xFFFF0000 -> RED;
-            case 0xFF00FF00 -> GREEN;
-            case 0xFF0000FF -> BLUE;
-            case 0xFFFFFF00 -> YELLOW;
-            case 0xFFFF00FF -> MAGENTA;
-            case 0xFF00FFFF -> CYAN;
-            default -> new Color(argb);
-        };
-    }
+	public static Color of(int argb) {
+		return switch (argb) {
+			case 0x00000000 -> TRANSPARENT;
+			case 0xFFFFFFFF -> WHITE;
+			case 0xFF000000 -> BLACK;
+			case 0xFFFF0000 -> RED;
+			case 0xFF00FF00 -> GREEN;
+			case 0xFF0000FF -> BLUE;
+			case 0xFFFFFF00 -> YELLOW;
+			case 0xFFFF00FF -> MAGENTA;
+			case 0xFF00FFFF -> CYAN;
+			default -> new Color(argb);
+		};
+	}
+
+	public static Color ofABGR(int abgr) {
+		int a = (abgr >> 24) & 0xFF;
+		int r = abgr & 0xFF;
+		int g = (abgr >> 8) & 0xFF;
+		int b = (abgr >> 16) & 0xFF;
+		return of(a, r, g, b);
+	}
 
     public static Color ofRGB(int rgb) {
         return of(0xFF000000 | rgb);
