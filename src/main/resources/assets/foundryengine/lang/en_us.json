@@ -2,12 +2,8 @@
   "key.foundryengine.editor": "Toggle Editor",
   "key.foundryengine.menu_bar": "Toggle Menu Bar",
   "key.foundryengine.primary_waypoint": "Place Info Waypoint",
-  "key.foundryengine.secondary_waypoint": "Place Warn Waypoint",
   "key.foundryengine.remove_waypoint": "Remove Targeted Waypoint",
-  "key.foundryengine.clear_waypoints": "Clear All Waypoints",
-  "key.foundryengine.category": "FoundryEngine Editor",
-
-  "command.foundryengine.reload.success": "Reload complete!",
+  "key.category.foundryengine.editor": "FoundryEngine Editor",
 
   "gui.foundryengine.screen.editor": "Editor Screen",
   "gui.foundryengine.icons.finished": "Finished exporting",

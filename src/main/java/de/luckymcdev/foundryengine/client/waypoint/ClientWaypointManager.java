@@ -23,24 +23,10 @@ public class ClientWaypointManager {
             GLFW.GLFW_KEY_B,
             Client.EDITOR_CATEGORY
     );
-
-    public static final KeyMapping SECONDARY_WAYPOINT_KEY = new KeyMapping(
-            "key.foundryengine.secondary_waypoint",
-            InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_N,
-            Client.EDITOR_CATEGORY
-    );
-
     public static final KeyMapping REMOVE_WAYPOINT_KEY = new KeyMapping(
             "key.foundryengine.remove_waypoint",
             InputConstants.Type.KEYSYM,
             GLFW.GLFW_KEY_M,
-            Client.EDITOR_CATEGORY
-    );
-    public static final KeyMapping CLEAR_WAYPOINTS_KEY = new KeyMapping(
-            "key.foundryengine.clear_waypoints",
-            InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_COMMA,
             Client.EDITOR_CATEGORY
     );
 

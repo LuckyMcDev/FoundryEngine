@@ -1,6 +1,5 @@
 package de.luckymcdev.foundryengine;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.command.FoundryCommandsClient;
@@ -29,8 +28,6 @@ import de.luckymcdev.foundryengine.client.event.registry.RegistryEventClient;
 import de.luckymcdev.foundryengine.client.ext.ModPathBroadcaster;
 import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.client.render.EngineSceneDepth;
-import de.luckymcdev.foundryengine.client.render.WorldViewMatrix;
-import de.luckymcdev.foundryengine.client.render.obj.ObjModel;
 import de.luckymcdev.foundryengine.client.waypoint.ClientWaypointManager;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.network.packets.BundleHashPacket;
@@ -42,7 +39,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.Vec3i;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
-import net.minecraft.util.LightCoordsUtil;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -61,7 +57,6 @@ import net.neoforged.neoforge.client.event.RenderFrameEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.common.NeoForge;
-import org.joml.Matrix4fc;
 import org.slf4j.Logger;
 
 import java.util.concurrent.CompletableFuture;
@@ -73,7 +68,6 @@ import java.util.concurrent.CompletableFuture;
 public class FoundryEngineModClient {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final IEventBus BUS = NeoForge.EVENT_BUS;
-	private static final ObjModel CHUPACABRA = new ObjModel(Common.id("obj/chupacabra.obj"));
 
 	public FoundryEngineModClient(IEventBus modBus, ModContainer modContainer) {
 		modBus.addListener(this::onClientSetup);
@@ -118,7 +112,6 @@ public class FoundryEngineModClient {
 			NodeTestPanel.INSTANCE,
 			DialogueEditorPanel.INSTANCE
 		);
-		Client.getObjModelManager().registerObjModel(CHUPACABRA);
 		event.enqueueWork(() -> Common.getBundleManager().loadClientScripts());
 	}
 
@@ -159,10 +152,9 @@ public class FoundryEngineModClient {
 	private void onRegisterKeyMapping(RegisterKeyMappingsEvent event) {
 		event.registerCategory(Client.EDITOR_CATEGORY);
 		event.register(Client.EDITOR_KEY);
+		event.register(Client.MENU_BAR_KEY);
 		event.register(ClientWaypointManager.PRIMARY_WAYPOINT_KEY);
-		event.register(ClientWaypointManager.SECONDARY_WAYPOINT_KEY);
 		event.register(ClientWaypointManager.REMOVE_WAYPOINT_KEY);
-		event.register(ClientWaypointManager.CLEAR_WAYPOINTS_KEY);
 	}
 
 	private void onRegisterDebugEntry(RegisterDebugEntriesEvent event) {
@@ -198,11 +190,6 @@ public class FoundryEngineModClient {
 		Client.getEditorController().renderFeatures();
 		Client.getWaypointRenderer().renderWaypoints(event);
 		Client.getAreaRenderer().renderAreaModules(event);
-
-		Matrix4fc modelView = WorldViewMatrix.from(event)
-			.at(0f, 110f, 0f)
-			.buildModelView();
-		CHUPACABRA.renderModel(modelView, new PoseStack(), LightCoordsUtil.FULL_BRIGHT);
 	}
 
 	private void onClientTickPre(ClientTickEvent.Pre event) {
@@ -234,25 +221,12 @@ public class FoundryEngineModClient {
 			}
 		}
 
-		while (ClientWaypointManager.SECONDARY_WAYPOINT_KEY.consumeClick()) {
-			if (targetedCoords != null) {
-				ClientPacketDistributor.sendToServer(WaypointPacket.add(
-					targetedCoords.getX(), targetedCoords.getY(), targetedCoords.getZ(),
-					"Warn", "W", Color.ORANGE
-				));
-			}
-		}
-
 		while (ClientWaypointManager.REMOVE_WAYPOINT_KEY.consumeClick()) {
 			if (targetedCoords != null) {
 				ClientPacketDistributor.sendToServer(WaypointPacket.remove(
 					targetedCoords.getX(), targetedCoords.getY(), targetedCoords.getZ()
 				));
 			}
-		}
-
-		while (ClientWaypointManager.CLEAR_WAYPOINTS_KEY.consumeClick()) {
-			ClientPacketDistributor.sendToServer(WaypointPacket.clear());
 		}
 	}
 }
