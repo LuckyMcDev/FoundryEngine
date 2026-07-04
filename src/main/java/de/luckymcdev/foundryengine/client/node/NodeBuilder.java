@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface NodeBuilder<T> {
     /**
-     * Return the pins this node should have (input & output).
+     * Return the pins this node should have (input and output).
      */
     List<NodePin<T>> getPins();
 
