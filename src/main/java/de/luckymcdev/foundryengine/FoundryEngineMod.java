@@ -48,9 +48,6 @@ import de.luckymcdev.foundryengine.common.network.packets.world.ServerBoundSpawn
 import de.luckymcdev.foundryengine.common.network.packets.world.ServerBoundTeleportPacket;
 import de.luckymcdev.foundryengine.common.registry.EngineRegistries;
 import de.luckymcdev.foundryengine.common.registry.RegistryCollector;
-import de.luckymcdev.foundryengine.common.world.level.EngineLevels;
-import de.luckymcdev.foundryengine.common.world.level.runtime.RuntimeLevelConfig;
-import de.luckymcdev.foundryengine.common.world.level.test.CustomLevel;
 import de.luckymcdev.foundryengine.common.world.level.util.TransientChunkGenerator;
 import de.luckymcdev.foundryengine.common.world.level.util.VoidChunkGenerator;
 import de.luckymcdev.foundryengine.config.Config;
@@ -349,18 +346,6 @@ public class FoundryEngineMod {
     }
 
     private void onServerStarted(ServerStartedEvent event) {
-        var server = event.getServer();
-		if(server.overworld() == null) {
-			return;
-		}
-        EngineLevels.get(server).openTemporaryLevel(
-                new RuntimeLevelConfig()
-                        .setGenerator(server.overworld().getChunkSource().getGenerator())
-                        .setLevelConstructor(CustomLevel::new)
-                        .setSeed("North Carolina".hashCode())
-                        .setMirrorOverworldGameRules(true)
-        );
-
         event.getServer().getPlayerList().getPlayers().forEach(player -> {
             Common.getSavedDataManager().syncToPlayer(player);
         });
