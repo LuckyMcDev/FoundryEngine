@@ -15,6 +15,7 @@ import imgui.flag.ImGuiKey;
 import imgui.flag.ImGuiMouseButton;
 import imgui.flag.ImGuiTreeNodeFlags;
 import imgui.type.ImString;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.packs.PackType;
@@ -47,7 +48,7 @@ public class ResourceExplorerPanel extends AbstractExplorerPanel {
     private volatile boolean reloadInProgress = false;
 
     public ResourceExplorerPanel() {
-        super(new Builder(Common.id("resource_browser"), "Resource Browser")
+        super(new Builder(Common.id("resource_browser"))
                 .icon(ImIcons.FA.FA_IMAGE)
                 .shortcut(ImGuiShortcut.empty())
                 .category(PanelCategory.EDITOR_EXPLORER));
@@ -250,7 +251,7 @@ public class ResourceExplorerPanel extends AbstractExplorerPanel {
             return;
         }
 
-        TextureViewerPanel viewer = new TextureViewerPanel(viewerId, "Texture: " + id.getPath(), id);
+        TextureViewerPanel viewer = new TextureViewerPanel(viewerId, Component.literal("Texture: " + id.getPath()), id);
         Client.getEditorManager().register(viewer);
         viewer.open();
     }
@@ -275,7 +276,7 @@ public class ResourceExplorerPanel extends AbstractExplorerPanel {
                         .lines()
                         .collect(Collectors.joining("\n"));
 
-                CodeEditor editor = new CodeEditor(editorId, id.getPath(), content);
+                CodeEditor editor = new CodeEditor(editorId, Component.literal(" Editor: " + id.getPath()), content);
                 editor.getTextEditor().setReadOnlyEnabled(true);
                 editor.forceReadOnly = true;
 

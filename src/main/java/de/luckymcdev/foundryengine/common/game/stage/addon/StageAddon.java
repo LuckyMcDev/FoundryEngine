@@ -6,7 +6,11 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public abstract class StageAddon<T> {
 
@@ -22,7 +26,7 @@ public abstract class StageAddon<T> {
         Component baseMessage = getLockedMessage(object);
         String stagesString = String.join(", ", missing);
 
-        Component stageList = Component.literal(" Required: ")
+        Component stageList = Component.translatable("foundryengine.stage.required_prefix")
                 .withStyle(ChatFormatting.GRAY)
                 .append(Component.literal(stagesString).withStyle(ChatFormatting.YELLOW));
 
@@ -88,7 +92,7 @@ public abstract class StageAddon<T> {
     protected abstract String getObjectType();
 
     protected Component getDefaultLockedMessage() {
-        return Component.literal("You don't have the required stages to interact with this " + getObjectType() + "!")
+        return Component.translatable("foundryengine.stage.default_locked", getObjectType())
                 .withStyle(ChatFormatting.RED);
     }
 }

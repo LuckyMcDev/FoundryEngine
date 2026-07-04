@@ -24,7 +24,11 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
@@ -40,7 +44,7 @@ public class CataloguePanel extends EditorPanel {
     private final ImString searchBuffer = new ImString(256);
 
     public CataloguePanel() {
-        super(new Builder(Common.id("catalogue"), "Catalogue")
+        super(new Builder(Common.id("catalogue"))
                 .icon(ImIcons.FA.FA_LIST)
                 .category(PanelCategory.TOOLS));
     }

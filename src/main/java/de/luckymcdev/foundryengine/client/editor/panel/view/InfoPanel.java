@@ -16,7 +16,7 @@ public class InfoPanel extends EditorPanel {
     public static final InfoPanel INSTANCE = new InfoPanel();
 
     protected InfoPanel() {
-        super(new Builder(Common.id("info"), "Info")
+        super(new Builder(Common.id("info"))
                 .icon(ImIcons.FA.FA_INFO_CIRCLE)
                 .category(PanelCategory.VIEW));
     }

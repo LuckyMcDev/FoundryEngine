@@ -17,7 +17,7 @@ public class EffectPanel extends EditorPanel {
     public static final EffectPanel INSTANCE = new EffectPanel();
 
     public EffectPanel() {
-        super(new Builder(Common.id("effect_panel"), "Effects")
+        super(new Builder(Common.id("effect_panel"))
                 .icon(ImIcons.FA.FA_SLIDERS)
                 .category(PanelCategory.TOOLS));
     }

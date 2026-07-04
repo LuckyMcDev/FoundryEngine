@@ -22,7 +22,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.Vec3;
 
-
 import java.util.List;
 import java.util.Map;
 
@@ -45,7 +44,7 @@ public class AreaPanel extends EditorPanel {
     private float createFormHeight = 240f;
 
     private AreaPanel() {
-        super(new Builder(Common.id("area_panel"), "Areas")
+        super(new Builder(Common.id("area_panel"))
                 .icon(ImIcons.FA.FA_MAP)
                 .category(PanelCategory.EDITOR)
                 .menuBar(true));

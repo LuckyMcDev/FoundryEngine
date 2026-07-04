@@ -13,7 +13,7 @@ import net.minecraft.resources.Identifier;
  */
 public class ChatDialogueDisplay implements IDialogueDisplay {
 
-    private static final Component PREFIX = Component.literal("[§bDialogue§r] ");
+    private static final Component PREFIX = Component.translatable("foundryengine.dialogue.prefix");
     private boolean active;
 
     @Override
@@ -23,14 +23,14 @@ public class ChatDialogueDisplay implements IDialogueDisplay {
         if (player == null) return;
 
         player.sendSystemMessage(PREFIX.copy().append(
-                Component.literal("§e<" + node.getSpeaker() + ">§r " + node.getText())
+                Component.translatable("foundryengine.dialogue.speaker_format", node.getSpeaker(), node.getText())
         ));
 
         var options = node.getOptions();
         for (int i = 0; i < options.size(); i++) {
             var opt = options.get(i);
             player.sendSystemMessage(
-                    Component.literal("§7[" + (i + 1) + "]§r " + opt.getText())
+                    Component.translatable("foundryengine.dialogue.option_format", i + 1, opt.getText())
             );
         }
 
@@ -38,15 +38,15 @@ public class ChatDialogueDisplay implements IDialogueDisplay {
             boolean hasNext = node.getNextNodeId() != null && !node.getNextNodeId().isBlank();
             if (hasNext) {
                 player.sendSystemMessage(
-                        Component.literal("§7[Type §o/engine dialogue next§r§7 to continue]§r")
+                        Component.translatable("foundryengine.dialogue.hint_continue")
                 );
             }
             player.sendSystemMessage(
-                    Component.literal("§7[Type §o/engine dialogue end§r§7 to close]§r")
+                    Component.translatable("foundryengine.dialogue.hint_end")
             );
         } else {
             player.sendSystemMessage(
-                    Component.literal("§7[Type §o/engine dialogue select <number>§r§7 to respond]§r")
+                    Component.translatable("foundryengine.dialogue.hint_select")
             );
         }
     }
@@ -62,7 +62,7 @@ public class ChatDialogueDisplay implements IDialogueDisplay {
         var player = Minecraft.getInstance().player;
         if (player != null) {
             player.sendSystemMessage(
-                    PREFIX.copy().append(Component.literal("§7Dialogue ended."))
+                    PREFIX.copy().append(Component.translatable("foundryengine.dialogue.ended"))
             );
         }
     }

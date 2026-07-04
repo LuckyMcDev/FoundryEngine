@@ -16,7 +16,13 @@ import imgui.type.ImString;
 import net.minecraft.resources.Identifier;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
 
 public class RecipeEditorPanel extends EditorPanel {
     public static final RecipeEditorPanel INSTANCE = new RecipeEditorPanel();
@@ -42,7 +48,7 @@ public class RecipeEditorPanel extends EditorPanel {
     private int cookingTime = 200;
 
     private RecipeEditorPanel() {
-        super(new Builder(Common.id("recipe_editor"), "Recipe Editor")
+        super(new Builder(Common.id("recipe_editor"))
                 .icon(ImIcons.FA.FA_UTENSILS)
                 .category(PanelCategory.EDITOR));
     }

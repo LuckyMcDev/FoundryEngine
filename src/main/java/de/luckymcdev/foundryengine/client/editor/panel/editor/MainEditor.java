@@ -25,7 +25,7 @@ public class MainEditor extends EditorPanel {
     private boolean wantsNew = false;
 
     private MainEditor() {
-        super(new Builder(Common.id("main_editor"), "Main Editor")
+        super(new Builder(Common.id("main_editor"))
                 .icon(ImIcons.FA.FA_EDIT)
                 .category(PanelCategory.EDITOR)
                 .menuBar(true));
