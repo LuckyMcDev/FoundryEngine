@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public final class GLSLAutocompleteProvider implements IAutocompleteProvider {
+public record GLSLAutocompleteProvider(GLSLColorizer colorizer) implements IAutocompleteProvider {
 	private static final List<FunctionSignature> SIGS = Arrays.asList(
 		new FunctionSignature("sin", "float", "float angle"),
 		new FunctionSignature("cos", "float", "float angle"),
@@ -48,12 +48,6 @@ public final class GLSLAutocompleteProvider implements IAutocompleteProvider {
 		new FunctionSignature("inversesqrt", "float", "float x")
 	);
 
-	private final GLSLColorizer colorizer;
-
-	public GLSLAutocompleteProvider(GLSLColorizer colorizer) {
-		this.colorizer = colorizer;
-	}
-
 	private static String sigFor(String name) {
 		for (FunctionSignature s : SIGS) {
 			if (s.name().equals(name)) {
@@ -66,6 +60,7 @@ public final class GLSLAutocompleteProvider implements IAutocompleteProvider {
 	private static AutocompleteItem item(String text, String type, String sig, Color color) {
 		return new AutocompleteItem(text, type, sig, color);
 	}
+
 
 	@Override
 	public int minPrefixLength() {

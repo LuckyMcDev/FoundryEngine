@@ -36,7 +36,7 @@ public class FileEndings {
         return EXTENSION_TO_ICON.getOrDefault(ext, ImGraphicsExtractor.icon(ImIcons.FA.FA_FILE_O));
     }
 
-    private static String getExtension(String fileName) {
+    public static String getExtension(String fileName) {
         if (fileName == null || !fileName.contains(".")) return null;
         return fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
     }

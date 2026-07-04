@@ -88,6 +88,14 @@ public final class GroovyColorizer extends AbstractBaseColorizer {
 			+ "|([()\\[\\]{}.,;@])"                          // group 12 - punctuation
 			+ "|(\\s+)"                                      // group 13 - whitespace
 	);
+	private static final Pattern FUNC_PATTEN = Pattern.compile(
+		"(?:(?:def|void|int|long|float|double|boolean|char|byte|short|String|Object" +
+			"|[a-zA-Z_][a-zA-Z0-9_]*<[^>]*>|[a-zA-Z_][a-zA-Z0-9_]*))" +
+			"\\s+([a-zA-Z_][a-zA-Z0-9_]*)\\s*\\("
+	);
+	private static final Pattern CLASS_PATTERN = Pattern.compile(
+		"(?:class|interface|trait|enum|record)\\s+([a-zA-Z_][a-zA-Z0-9_]*)"
+	);
 
 	private static final Pattern SLASH_COMMENT = Pattern.compile("//.*$", Pattern.MULTILINE);
 
@@ -103,22 +111,21 @@ public final class GroovyColorizer extends AbstractBaseColorizer {
 	protected void analyzeDocument(List<List<EditorGlyph>> lines) {
 		userDefinedTypes.clear();
 		userDefinedFunctions.clear();
-		Pattern classPat = Pattern.compile("(?:class|interface|trait|enum|record)\\s+([a-zA-Z_][a-zA-Z0-9_]*)");
-		Pattern funcPat = Pattern.compile(
-			"(?:(?:def|void|int|long|float|double|boolean|char|byte|short|String|Object" +
-				"|[a-zA-Z_][a-zA-Z0-9_]*<[^>]*>|[a-zA-Z_][a-zA-Z0-9_]*))" +
-				"\\s+([a-zA-Z_][a-zA-Z0-9_]*)\\s*\\(");
 		for (List<EditorGlyph> line : lines) {
 			String t = glyphsToString(line);
-			if (t.isBlank()) continue;
+			if (t.isBlank()) {
+				continue;
+			}
 			String trimmed = t.stripLeading();
-			if (trimmed.startsWith("//") || trimmed.startsWith("*")) continue;
+			if (trimmed.startsWith("//") || trimmed.startsWith("*")) {
+				continue;
+			}
 
-			Matcher cm = classPat.matcher(t);
+			Matcher cm = CLASS_PATTERN.matcher(t);
 			if (cm.find()) {
 				userDefinedTypes.add(cm.group(1));
 			}
-			Matcher fm = funcPat.matcher(t);
+			Matcher fm = FUNC_PATTEN.matcher(t);
 			if (fm.find()) {
 				String fn = fm.group(1);
 				if (!KEYWORDS.contains(fn) && !GDK_METHODS.contains(fn)) {
@@ -162,34 +169,68 @@ public final class GroovyColorizer extends AbstractBaseColorizer {
 	}
 
 	private Color resolveColor(Matcher m) {
-		if (m.group(1) != null) return COLOR_COMMENT_MULTI;
-		if (m.group(2) != null) return COLOR_STRING;
-		if (m.group(3) != null) return COLOR_STRING;
-		if (m.group(4) != null) return COLOR_GSTRING;
-		if (m.group(5) != null) return COLOR_STRING;
-		if (m.group(6) != null) return COLOR_ANNOTATION;
+		if (m.group(1) != null) {
+			return COLOR_COMMENT_MULTI;
+		}
+		if (m.group(2) != null) {
+			return COLOR_STRING;
+		}
+		if (m.group(3) != null) {
+			return COLOR_STRING;
+		}
+		if (m.group(4) != null) {
+			return COLOR_GSTRING;
+		}
+		if (m.group(5) != null) {
+			return COLOR_STRING;
+		}
+		if (m.group(6) != null) {
+			return COLOR_ANNOTATION;
+		}
 
 		if (m.group(7) != null) {
 			String tok = m.group(7);
-			if (GDK_METHODS.contains(tok)) return COLOR_FUNCTION_CALL;
-			if (userDefinedFunctions.contains(tok)) return COLOR_FUNCTION_NAME;
+			if (GDK_METHODS.contains(tok)) {
+				return COLOR_FUNCTION_CALL;
+			}
+			if (userDefinedFunctions.contains(tok)) {
+				return COLOR_FUNCTION_NAME;
+			}
 			return COLOR_FUNCTION_NAME;
 		}
 
 		if (m.group(8) != null) {
 			String tok = m.group(8);
-			if (KEYWORDS.contains(tok)) return COLOR_KEYWORD;
-			if (BUILT_IN_TYPES.contains(tok)) return COLOR_BUILT_IN_TYPE;
-			if (BUILT_IN_CONSTANTS.contains(tok)) return COLOR_BUILT_IN_TYPE;
-			if (userDefinedTypes.contains(tok)) return COLOR_BUILT_IN_TYPE;
-			if (userDefinedFunctions.contains(tok)) return COLOR_FUNCTION_NAME;
+			if (KEYWORDS.contains(tok)) {
+				return COLOR_KEYWORD;
+			}
+			if (BUILT_IN_TYPES.contains(tok)) {
+				return COLOR_BUILT_IN_TYPE;
+			}
+			if (BUILT_IN_CONSTANTS.contains(tok)) {
+				return COLOR_BUILT_IN_TYPE;
+			}
+			if (userDefinedTypes.contains(tok)) {
+				return COLOR_BUILT_IN_TYPE;
+			}
+			if (userDefinedFunctions.contains(tok)) {
+				return COLOR_FUNCTION_NAME;
+			}
 			return COLOR_USER_IDENT;
 		}
 
-		if (m.group(9) != null) return COLOR_NUMBER;
-		if (m.group(10) != null) return COLOR_NUMBER;
-		if (m.group(11) != null) return COLOR_OPERATOR;
-		if (m.group(12) != null) return COLOR_OPERATOR;
+		if (m.group(9) != null) {
+			return COLOR_NUMBER;
+		}
+		if (m.group(10) != null) {
+			return COLOR_NUMBER;
+		}
+		if (m.group(11) != null) {
+			return COLOR_OPERATOR;
+		}
+		if (m.group(12) != null) {
+			return COLOR_OPERATOR;
+		}
 		return COLOR_DEFAULT;
 	}
 }

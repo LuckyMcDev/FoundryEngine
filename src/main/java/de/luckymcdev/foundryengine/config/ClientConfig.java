@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.config;
 
 import de.luckymcdev.foundryengine.client.editor.styles.ImThemes;
+import de.luckymcdev.foundryengine.client.imgui.text.editor.EditorTheme;
 import net.minecraft.client.Minecraft;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
@@ -12,6 +13,7 @@ public final class ClientConfig {
     public static final ModConfigSpec SPEC;
 
     public static final ModConfigSpec.ConfigValue<String> SELECTED_THEME;
+	public static final ModConfigSpec.ConfigValue<String> TEXT_EDITOR_THEME;
     public static final ModConfigSpec.ConfigValue<String> FONT_OPTION;
     public static final ModConfigSpec.BooleanValue RENDER_OFFHAND;
     public static final ModConfigSpec.BooleanValue AUTO_EXPORT;
@@ -27,6 +29,11 @@ public final class ClientConfig {
                 .comment("The currently selected ImGui theme. Available themes: " + ImThemes.getAvailableThemeNames())
                 .translation("foundryengine.configuration.selected_theme")
                 .define("SELECTED_THEME", ImThemes.BESS_DARK_IM_THEME.getName());
+
+		TEXT_EDITOR_THEME = builder
+			.comment("The currently selected ImGui Text Editor theme. Available themes: " + EditorTheme.getAvailableThemeNames())
+			.translation("foundryengine.configuration.selected_theme")
+			.define("TEXT_EDITOR_THEME", "dark");
 
         FONT_OPTION = builder
                 .comment("What should happen with fonts.")
