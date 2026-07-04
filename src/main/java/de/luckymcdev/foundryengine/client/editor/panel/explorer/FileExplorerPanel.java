@@ -110,10 +110,6 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
         return path.contains("/") ? path.substring(path.lastIndexOf('/') + 1) : path;
     }
 
-    private static void applyLanguageHighlighting(CodeEditor editor, String fileName) {
-        editor.applyLanguage(fileName);
-    }
-
     /**
      * Called when the server sends its file listing.
      * Rebuilds {@link #remoteRootNode} from the flat entry list.
@@ -165,7 +161,7 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
         String fileName = fileNameFrom(relativePath);
         CodeEditor editor = new CodeEditor(editorId, Component.literal(" Editor: [SERVER] " + fileName), content);
 
-        applyLanguageHighlighting(editor, fileName);
+		editor.applyLanguage(fileName);
 
         editor.setSaveCallback((source, errors) ->
                 ClientPacketDistributor.sendToServer(new ServerBoundSaveFilePacket(relativePath, source)));
@@ -477,7 +473,7 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
 
     private CodeEditor buildLocalCodeEditor(File file, Identifier editorId, String content) {
         CodeEditor editor = new CodeEditor(editorId, Component.literal(" Editor: [CLIENT] " + file.getName()), content);
-        applyLanguageHighlighting(editor, file.getName());
+		editor.applyLanguage(file.getName());
         editor.setSaveCallback((source, errors) -> {
             try {
                 Files.writeString(file.toPath(), source);
