@@ -150,7 +150,7 @@ public class FoundryEngineMod {
      * Returns the mod event bus for internal use.
      */
     @ApiStatus.Internal
-    public static IEventBus getModBus() {
+    public static @Nullable IEventBus getModBus() {
         return modBus;
     }
 
@@ -228,7 +228,7 @@ public class FoundryEngineMod {
         try {
             Common.getBundleManager().discover(Common.BUNDLES);
         } catch (IOException e) {
-            LOGGER.error("Error while loading bundles: {}", e.getLocalizedMessage());
+            LOGGER.error("Error while loading bundles: {}", e);
         }
 
         EngineLogAppender.Holder.addAppender();
@@ -350,6 +350,9 @@ public class FoundryEngineMod {
 
     private void onServerStarted(ServerStartedEvent event) {
         var server = event.getServer();
+		if(server.overworld() == null) {
+			return;
+		}
         EngineLevels.get(server).openTemporaryLevel(
                 new RuntimeLevelConfig()
                         .setGenerator(server.overworld().getChunkSource().getGenerator())

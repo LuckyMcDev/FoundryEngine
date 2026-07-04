@@ -175,7 +175,8 @@ public final class Common {
     /**
      * Reads the full content of a file as a UTF-8 string. Returns empty on failure.
      */
-    public static String getFileContent(Path file) {
+    public static String getFileContent(@Nullable Path file) {
+        if (file == null) return "";
         try (InputStream is = Files.newInputStream(file)) {
             return new String(is.readAllBytes());
         } catch (IOException e) {
