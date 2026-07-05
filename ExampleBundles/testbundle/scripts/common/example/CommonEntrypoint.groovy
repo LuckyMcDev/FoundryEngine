@@ -5,6 +5,7 @@ import de.luckymcdev.foundryengine.common.builder.block.BlockBuilder
 import de.luckymcdev.foundryengine.common.builder.item.ItemBuilder
 import de.luckymcdev.foundryengine.common.builder.recipe.RecipeBuilder
 import de.luckymcdev.foundryengine.common.builder.sound.SoundBuilder
+import de.luckymcdev.foundryengine.common.builder.tag.TagBuilder
 import de.luckymcdev.foundryengine.common.event.BundleEvents
 import de.luckymcdev.foundryengine.common.event.CommandEvents
 import de.luckymcdev.foundryengine.common.script.BundleEntrypoint
@@ -13,14 +14,18 @@ import net.minecraft.client.Minecraft
 import net.minecraft.commands.CommandSourceStack
 import net.minecraft.commands.Commands
 import net.minecraft.core.component.DataComponents
+import net.minecraft.core.registries.Registries
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.Identifier
+import net.minecraft.tags.BlockTags
 import net.minecraft.world.InteractionResult
 import net.minecraft.world.food.FoodProperties
 import net.minecraft.world.item.Items
 import net.minecraft.world.item.Rarity
 import net.minecraft.world.item.component.Consumables
 import net.minecraft.world.item.component.ItemLore
+import net.minecraft.world.level.block.Block
+import net.minecraft.world.level.block.Blocks
 
 class CommonEntrypoint implements BundleEntrypoint {
 
@@ -61,13 +66,14 @@ class CommonEntrypoint implements BundleEntrypoint {
             .properties(p -> p.strength(2.0f, 3.0f))
             .itemProperties(p -> p.rarity(Rarity.COMMON))
 
-        // Recipe builders — one for each supported type (data-gen only)
+    // Recipe builders — one for each supported type
     private static final RecipeBuilder SHAPED_RECIPE = RecipeBuilder.shaped(id("test_shaped"), Items.DIAMOND_SWORD)
             .pattern(" D ", " D ", " S ")
             .define('D' as char, Items.DIAMOND)
             .define('S' as char, Items.STICK)
             .category(net.minecraft.data.recipes.RecipeCategory.COMBAT)
             .unlockedBy("has_diamond", InventoryChangeTrigger.TriggerInstance.hasItems(Items.DIAMOND))
+			.count(10)
 
     private static final RecipeBuilder SHAPELESS_RECIPE = RecipeBuilder.shapeless(id("test_shapeless"), Items.FLINT_AND_STEEL)
             .requires(Items.IRON_INGOT)
@@ -109,12 +115,12 @@ class CommonEntrypoint implements BundleEntrypoint {
             .template(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE)
             .unlockedBy("has_netherite", InventoryChangeTrigger.TriggerInstance.hasItems(Items.NETHERITE_INGOT))
 
-    // Legacy shapeless recipe (kept for backward compatibility)
-    private static final RecipeBuilder RECIPE = RecipeBuilder.shapeless(id("custom_recipe"), Items.STICK)
-            .requires(Items.DIAMOND, 1)
-            .unlockedBy("has_log", InventoryChangeTrigger.TriggerInstance.hasItems(Items.OAK_LOG))
-
     private static final SoundBuilder MY_SOUND = SoundBuilder.create(id("test"))
+
+	private static final TagBuilder<Block> MY_TAG = TagBuilder.create(id("my_ores"), Registries.BLOCK)
+			.add(Blocks.IRON_ORE.builtInRegistryHolder().key())
+			.addTag(BlockTags.GOLD_ORES)
+			.replace()
 
     static Identifier id(String path) {
         return Identifier.fromNamespaceAndPath(BUNDLEID, path)
@@ -126,9 +132,9 @@ class CommonEntrypoint implements BundleEntrypoint {
             it.items(THIS_IS_A_ITEM, ITEM_TWO, COSMIC_APPLE)
             it.blocks(MY_BLOCK)
             it.recipes(SHAPED_RECIPE, SHAPELESS_RECIPE, SMELTING_RECIPE, BLASTING_RECIPE,
-                      SMOKING_RECIPE, CAMPFIRE_RECIPE, STONECUTTING_RECIPE, SMITHING_TRANSFORM_RECIPE,
-                      RECIPE)
+                      SMOKING_RECIPE, CAMPFIRE_RECIPE, STONECUTTING_RECIPE, SMITHING_TRANSFORM_RECIPE)
             it.sounds(MY_SOUND)
+			it.tags(MY_TAG)
         }
 
     }
