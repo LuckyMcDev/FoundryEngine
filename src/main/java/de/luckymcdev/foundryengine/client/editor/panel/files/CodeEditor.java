@@ -52,7 +52,7 @@ public class CodeEditor extends EditorPanel {
 
 	public CodeEditor(Identifier id, Component label, String source) {
 		super(new Builder(id, label)
-			.icon(ImIcons.FA.FA_EDIT)
+			.icon(ImIcons.EDIT)
 			.shortcut(ImGuiShortcut.empty())
 			.category(PanelCategory.EDITOR_FILES)
 			.menuBar(true));

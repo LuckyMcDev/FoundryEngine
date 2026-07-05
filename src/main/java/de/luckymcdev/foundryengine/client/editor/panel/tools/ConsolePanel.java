@@ -36,7 +36,7 @@ public class ConsolePanel extends EditorPanel {
 
     private ConsolePanel() {
         super(new Builder(Common.id("console"))
-                .icon(ImIcons.FA.FA_TERMINAL)
+                .icon(ImIcons.TERMINAL)
                 .category(PanelCategory.TOOLS)
                 .menuBar(true));
     }

@@ -49,7 +49,7 @@ public class RecipeEditorPanel extends EditorPanel {
 
     private RecipeEditorPanel() {
         super(new Builder(Common.id("recipe_editor"))
-                .icon(ImIcons.FA.FA_UTENSILS)
+                .icon(ImIcons.UTENSILS)
                 .category(PanelCategory.EDITOR));
     }
 
@@ -219,12 +219,12 @@ public class RecipeEditorPanel extends EditorPanel {
     private void renderCodePreview() {
         ImGui.text("Generated Groovy Code");
         ImGui.sameLine();
-        if (ImGui.button(ImIcons.FA.FA_CLIPBOARD + " Copy Code")) {
+        if (ImGui.button(ImIcons.CLIPBOARD + " Copy Code")) {
             ImGui.setClipboardText(generateCode());
             setStatus("Code copied to clipboard!");
         }
         ImGui.sameLine();
-        if (ImGui.button(ImIcons.FA.FA_REFRESH + " Regenerate")) {
+        if (ImGui.button(ImIcons.REFRESH + " Regenerate")) {
             setStatus("Code regenerated");
         }
 

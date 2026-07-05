@@ -115,7 +115,7 @@ public class NodeEditorInstance<T> {
 			ImNodes.beginNodeTitleBar();
 
 			if (node.builder != null) {
-				if (ImGui.button(" "+ImIcons.FA.FA_CLOSE+" ")) {
+				if (ImGui.button(" "+ImIcons.CLOSE+" ")) {
 					removedNode = node;
 				}
 				ImGui.sameLine();

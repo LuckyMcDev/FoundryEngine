@@ -18,7 +18,7 @@ public class StopwatchPanel extends EditorPanel {
 
     public StopwatchPanel(String id) {
         super(new Builder(Common.id("stopwatch-" + id.toLowerCase().replace(" ", "_")), Component.translatable("panel.foundryengine.stopwatch"))
-                .icon(ImIcons.FA.FA_STOPWATCH)
+                .icon(ImIcons.STOPWATCH)
                 .category(PanelCategory.TOOLS)
                 .temporary(true)
                 .style(PanelStyle.MINIMAL));
@@ -54,7 +54,7 @@ public class StopwatchPanel extends EditorPanel {
 
         float btnW = (ImGui.getContentRegionAvailX() - ImGui.getStyle().getItemSpacingX() * 2) / 3;
 
-        if (ImGui.button(ImGraphicsExtractor.icon(ImIcons.FA.FA_ARROW_ROTATE_LEFT) + " Reset", btnW, 0)) {
+        if (ImGui.button(ImGraphicsExtractor.icon(ImIcons.ROTATE_RIGHT) + " Reset", btnW, 0)) {
             stopwatch = new Stopwatch(now, 0L);
             if (running) {
                 stopwatch = new Stopwatch(now, 0L);
@@ -63,7 +63,7 @@ public class StopwatchPanel extends EditorPanel {
 
         ImGui.sameLine();
 
-        if (ImGui.button(running ? ImGraphicsExtractor.icon(ImIcons.FA.FA_PAUSE) + " Pause" : ImGraphicsExtractor.icon(ImIcons.FA.FA_PLAY) + " Start", btnW, 0)) {
+        if (ImGui.button(running ? ImGraphicsExtractor.icon(ImIcons.PAUSE) + " Pause" : ImGraphicsExtractor.icon(ImIcons.PLAY) + " Start", btnW, 0)) {
             if (!running) {
                 stopwatch = new Stopwatch(now, stopwatch.accumulatedElapsedTime());
                 running = true;
@@ -75,7 +75,7 @@ public class StopwatchPanel extends EditorPanel {
 
         ImGui.sameLine();
 
-        if (ImGui.button(ImGraphicsExtractor.icon(ImIcons.FA.FA_CLOSE) + " Close", btnW, 0)) {
+        if (ImGui.button(ImGraphicsExtractor.icon(ImIcons.CLOSE) + " Close", btnW, 0)) {
             close();
         }
     }

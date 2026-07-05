@@ -18,7 +18,7 @@ public class EffectPanel extends EditorPanel {
 
     public EffectPanel() {
         super(new Builder(Common.id("effect_panel"))
-                .icon(ImIcons.FA.FA_SLIDERS)
+                .icon(ImIcons.SLIDERS)
                 .category(PanelCategory.TOOLS));
     }
 
@@ -30,7 +30,7 @@ public class EffectPanel extends EditorPanel {
         int enabledCount = (int) entries.stream().filter(PostEffectEntry::isEnabled).count();
 
         g.cardBegin("##effects_header");
-        ImGui.text(ImIcons.FA.FA_SLIDERS + "  Post Processing Effects");
+        ImGui.text(ImIcons.SLIDERS + "  Post Processing Effects");
         ImGui.sameLine();
         ImGui.textDisabled("(" + enabledCount + "/" + entries.size() + " active)");
         g.cardEnd();
@@ -81,10 +81,10 @@ public class EffectPanel extends EditorPanel {
 
         ImGui.sameLine(ImGui.getContentRegionAvailX() + ImGui.getCursorPosX() - 16);
         if (entry.isActive()) {
-            ImGui.textColored(0xFF4CAF50, ImGraphicsExtractor.icon(ImIcons.FA.FA_CIRCLE));
+            ImGui.textColored(0xFF4CAF50, ImGraphicsExtractor.icon(ImIcons.CIRCLE));
             if (ImGui.isItemHovered()) ImGui.setTooltip("Effect is active");
         } else if (enabled) {
-            ImGui.textDisabled(ImGraphicsExtractor.icon(ImIcons.FA.FA_CIRCLE));
+            ImGui.textDisabled(ImGraphicsExtractor.icon(ImIcons.CIRCLE));
             if (ImGui.isItemHovered()) ImGui.setTooltip("Effect is loaded but not currently active");
         }
 
@@ -98,6 +98,6 @@ public class EffectPanel extends EditorPanel {
     private void renderActiveIndicator(PostEffectEntry entry) {
         String status = entry.isActive() ? "Active" : "Inactive";
         int color = entry.isActive() ? 0xFF4CAF50 : 0xFF888888;
-        ImGui.textColored(color, "  " + ImGraphicsExtractor.icon(ImIcons.FA.FA_CIRCLE) + " " + status + " \u00b7 " + entry.getId().getPath());
+        ImGui.textColored(color, "  " + ImGraphicsExtractor.icon(ImIcons.CIRCLE) + " " + status + " · " + entry.getId().getPath());
     }
 }

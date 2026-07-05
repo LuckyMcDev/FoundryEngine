@@ -41,7 +41,7 @@ public class WaypointPanel extends EditorPanel {
 
     private WaypointPanel() {
         super(new Builder(Common.id("waypoint_panel"))
-                .icon(ImIcons.FA.FA_MAP_PIN)
+                .icon(ImIcons.MAP_PIN)
                 .category(PanelCategory.TOOLS)
                 .menuBar(true));
     }
@@ -67,11 +67,11 @@ public class WaypointPanel extends EditorPanel {
 
     private void renderMenuBar() {
         menuBar(() -> {
-            if (ImGui.menuItem(ImIcons.FA.FA_PLUS + " Create at Player Pos")) {
+            if (ImGui.menuItem(ImIcons.PLUS + " Create at Player Pos")) {
                 showNewForm = !showNewForm;
             }
 
-            if (ImGui.menuItem(ImIcons.FA.FA_TRASH + " Clear All")) {
+            if (ImGui.menuItem(ImIcons.TRASH + " Clear All")) {
                 ClientPacketDistributor.sendToServer(WaypointPacket.clear());
                 setStatus("Cleared all waypoints");
             }
@@ -210,11 +210,11 @@ public class WaypointPanel extends EditorPanel {
 
         ImGui.spacing();
 
-        if (ImGui.button(ImIcons.FA.FA_LOCATION_ARROW + " Teleport")) {
+        if (ImGui.button(ImIcons.LOCATION_ARROW + " Teleport")) {
             teleportTo(wp);
         }
         ImGui.sameLine();
-        if (ImGui.button(ImIcons.FA.FA_TRASH + " Delete")) {
+        if (ImGui.button(ImIcons.TRASH + " Delete")) {
             deleteWaypoint(wp);
             selectedWaypoint = null;
         }

@@ -24,7 +24,7 @@ public class MinecraftToolsPanel extends EditorPanel {
 
     private MinecraftToolsPanel() {
         super(new Builder(Common.id("minecraft_tools"))
-                .icon(ImIcons.FA.FA_TOOLBOX)
+                .icon(ImIcons.TOOLBOX)
                 .category(PanelCategory.TOOLS));
     }
 
@@ -114,7 +114,7 @@ public class MinecraftToolsPanel extends EditorPanel {
             Client.getConnection().send(new ServerBoundSetTimePacket(18000));
         }
         ImGui.sameLine();
-        if (ImGui.button("Lock " + ImGraphicsExtractor.icon(ImIcons.FA.FA_LOCK) + "##time")) {
+        if (ImGui.button("Lock " + ImGraphicsExtractor.icon(ImIcons.LOCK) + "##time")) {
             BuiltInRegistries.GAME_RULE.getResourceKey(GameRules.ADVANCE_TIME).ifPresent(key -> {
                 var entry = new ServerboundSetGameRulePacket.Entry(key, "false");
                 Client.getConnection().send(new ServerboundSetGameRulePacket(List.of(entry)));
@@ -139,7 +139,7 @@ public class MinecraftToolsPanel extends EditorPanel {
             Client.getConnection().send(new ServerBoundChangeWeatherPacket("thunder"));
         }
         ImGui.sameLine();
-        if (ImGui.button("Lock " + ImGraphicsExtractor.icon(ImIcons.FA.FA_LOCK) + "##weather")) {
+        if (ImGui.button("Lock " + ImGraphicsExtractor.icon(ImIcons.LOCK) + "##weather")) {
             BuiltInRegistries.GAME_RULE.getResourceKey(GameRules.ADVANCE_WEATHER).ifPresent(key -> {
                 var entry = new ServerboundSetGameRulePacket.Entry(key, "false");
                 Client.getConnection().send(new ServerboundSetGameRulePacket(List.of(entry)));

@@ -45,7 +45,7 @@ public class AreaPanel extends EditorPanel {
 
     private AreaPanel() {
         super(new Builder(Common.id("area_panel"))
-                .icon(ImIcons.FA.FA_MAP)
+                .icon(ImIcons.MAP)
                 .category(PanelCategory.EDITOR)
                 .menuBar(true));
         newAreaColor = Area.DEFAULT_COLOR.toFloatArray();
@@ -73,11 +73,11 @@ public class AreaPanel extends EditorPanel {
 
     private void renderMenuBar() {
         menuBar(() -> {
-            if (ImGui.menuItem(ImIcons.FA.FA_PLUS + " New")) {
+            if (ImGui.menuItem(ImIcons.PLUS + " New")) {
                 resetCreateForm();
                 showCreateForm.set(true);
             }
-            if (ImGui.menuItem(ImIcons.FA.FA_ARROW_ROTATE_RIGHT + " Sync")) {
+            if (ImGui.menuItem(ImIcons.ROTATE_RIGHT + " Sync")) {
                 Common.getNetworkManager().sendToServer(AreaPacket.requestSync());
                 setStatus("Sync requested.");
             }
@@ -97,7 +97,7 @@ public class AreaPanel extends EditorPanel {
     private void renderCreateForm() {
         ImGui.beginChild("##create_area_form", 0, createFormHeight, true);
 
-        ImGui.textColored(0.6f, 0.85f, 1.0f, 1.0f, ImIcons.FA.FA_PLUS + " Create New Area");
+        ImGui.textColored(0.6f, 0.85f, 1.0f, 1.0f, ImIcons.PLUS + " Create New Area");
         ImGui.spacing();
 
         ImGui.setNextItemWidth(-1);
@@ -250,7 +250,7 @@ public class AreaPanel extends EditorPanel {
         ImGui.pushStyleColor(ImGuiCol.Button, 0.55f, 0.10f, 0.10f, 1.0f);
         ImGui.pushStyleColor(ImGuiCol.ButtonHovered, 0.70f, 0.15f, 0.15f, 1.0f);
         ImGui.pushStyleColor(ImGuiCol.ButtonActive, 0.45f, 0.08f, 0.08f, 1.0f);
-        if (ImGui.button(ImIcons.FA.FA_TRASH + " Delete " + area.id())) {
+        if (ImGui.button(ImIcons.TRASH + " Delete " + area.id())) {
             Common.getNetworkManager().sendToServer(AreaPacket.remove(area.id()));
             selectedIndex = -1;
             setStatus("Deleted: " + area.id());

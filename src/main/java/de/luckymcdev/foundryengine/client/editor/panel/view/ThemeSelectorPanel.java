@@ -15,7 +15,7 @@ public class ThemeSelectorPanel extends EditorPanel {
 
     public ThemeSelectorPanel() {
         super(new Builder(Common.id("theme_selector"))
-                .icon(ImIcons.FA.FA_THEMECO)
+                .icon(ImIcons.THEMECO)
                 .category(PanelCategory.VIEW));
     }
 

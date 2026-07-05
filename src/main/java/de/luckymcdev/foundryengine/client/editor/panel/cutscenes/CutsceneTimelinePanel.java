@@ -60,7 +60,7 @@ public class CutsceneTimelinePanel extends EditorPanel {
 
     private CutsceneTimelinePanel() {
         super(new Builder(Common.id("cutscene_timeline"))
-                .icon(ImIcons.FA.FA_SLIDERS)
+                .icon(ImIcons.SLIDERS)
                 .category(PanelCategory.EDITOR_CUTSCENES)
                 .menuBar(true));
     }
@@ -139,7 +139,7 @@ public class CutsceneTimelinePanel extends EditorPanel {
 
     private void renderMenuBar() {
         menuBar(() -> {
-            if (ImGui.menuItem(ImIcons.FA.FA_ROTATE_RIGHT + " Sync")) {
+            if (ImGui.menuItem(ImIcons.ROTATE_RIGHT + " Sync")) {
                 CompoundTag tag = new CompoundTag();
                 tag.putBoolean("Request", true);
                 ClientPacketDistributor.sendToServer(new CutscenePacket(tag));
@@ -233,12 +233,12 @@ public class CutsceneTimelinePanel extends EditorPanel {
         ImGui.textDisabled("Nodes: " + nodes + "  |  Splines: " + c.path.splines.size());
         ImGui.spacing();
 
-        if (ImGui.button(ImIcons.FA.FA_PLUS + " Start##cs_node_add_start")) {
+        if (ImGui.button(ImIcons.PLUS + " Start##cs_node_add_start")) {
             Client.getCutsceneEditor().addNodeAtStart(c);
             sendChatStatus("Node added at start.");
         }
         ImGui.sameLine();
-        if (ImGui.button(ImIcons.FA.FA_PLUS + " End##cs_node_add_end")) {
+        if (ImGui.button(ImIcons.PLUS + " End##cs_node_add_end")) {
             Client.getCutsceneEditor().addNodeAtEnd(c);
             sendChatStatus("Node added at end.");
         }
@@ -248,7 +248,7 @@ public class CutsceneTimelinePanel extends EditorPanel {
         ImGui.pushStyleColor(ImGuiCol.Button, 0.55f, 0.25f, 0.10f, 1.0f);
         ImGui.pushStyleColor(ImGuiCol.ButtonHovered, 0.70f, 0.35f, 0.15f, 1.0f);
         ImGui.pushStyleColor(ImGuiCol.ButtonActive, 0.45f, 0.20f, 0.08f, 1.0f);
-        if (ImGui.button(ImIcons.FA.FA_MINUS + " Start##cs_node_rm_start")) {
+        if (ImGui.button(ImIcons.MINUS + " Start##cs_node_rm_start")) {
             boolean deleted = Client.getCutsceneEditor().removeFirstNode(c);
             if (deleted) {
                 CutsceneUiState.setSelected(null);
@@ -258,7 +258,7 @@ public class CutsceneTimelinePanel extends EditorPanel {
             }
         }
         ImGui.sameLine();
-        if (ImGui.button(ImIcons.FA.FA_MINUS + " End##cs_node_rm_end")) {
+        if (ImGui.button(ImIcons.MINUS + " End##cs_node_rm_end")) {
             boolean deleted = Client.getCutsceneEditor().removeLastNode(c);
             if (deleted) {
                 CutsceneUiState.setSelected(null);
@@ -272,7 +272,7 @@ public class CutsceneTimelinePanel extends EditorPanel {
         ImGui.spacing();
 
         if (nodes == 2) {
-            if (ImGui.button(ImIcons.FA.FA_BEZIER_CURVE + " Linearize##cs_node_linearize")) {
+            if (ImGui.button(ImIcons.BEZIER_CURVE + " Linearize##cs_node_linearize")) {
                 ClientPacketDistributor.sendToServer(new LinearizeCutscenePacket(c.getName()));
                 sendChatStatus("Linearized: " + c.getName());
             }
@@ -464,7 +464,7 @@ public class CutsceneTimelinePanel extends EditorPanel {
         }
         ImGui.sameLine();
 
-        if (ImGui.button(ImIcons.FA.FA_PLUS + " Add at Playhead##cs_att_add")) {
+        if (ImGui.button(ImIcons.PLUS + " Add at Playhead##cs_att_add")) {
             float at = computeAtFromPlayhead(c, totalTicks);
             int typeIdx = selectedAttachmentTypeIndex.get();
             CutsceneAttachment newAtt;
@@ -481,7 +481,7 @@ public class CutsceneTimelinePanel extends EditorPanel {
 
         // Preview button for effects
         ImGui.sameLine();
-        if (ImGui.button(ImIcons.FA.FA_EYE + " Preview##cs_att_preview")) {
+        if (ImGui.button(ImIcons.EYE + " Preview##cs_att_preview")) {
             int idx = selectedAttachmentIndex.get();
             if (idx >= 0 && idx < attachments.size()) {
                 var att = attachments.get(idx);
@@ -529,7 +529,7 @@ public class CutsceneTimelinePanel extends EditorPanel {
         selectedAtt.setAt(at[0]);
 
         ImGui.sameLine();
-        if (ImGui.button(ImIcons.FA.FA_LOCATION_DOT + " To Playhead##cs_att_to_ph")) {
+        if (ImGui.button(ImIcons.LOCATION_DOT + " To Playhead##cs_att_to_ph")) {
             selectedAtt.setAt(computeAtFromPlayhead(c, totalTicks));
         }
 
@@ -541,14 +541,14 @@ public class CutsceneTimelinePanel extends EditorPanel {
         }
 
         // Apply/Remove buttons
-        if (ImGui.button(ImIcons.FA.FA_CHECK + " Apply##cs_att_apply")) {
+        if (ImGui.button(ImIcons.CHECK + " Apply##cs_att_apply")) {
             ClientPacketDistributor.sendToServer(new CutscenePacket(Client.getCutsceneEditor().toNbt()));
         }
         ImGui.sameLine();
         ImGui.pushStyleColor(ImGuiCol.Button, 0.55f, 0.10f, 0.10f, 1.0f);
         ImGui.pushStyleColor(ImGuiCol.ButtonHovered, 0.70f, 0.15f, 0.15f, 1.0f);
         ImGui.pushStyleColor(ImGuiCol.ButtonActive, 0.45f, 0.08f, 0.08f, 1.0f);
-        if (ImGui.button(ImIcons.FA.FA_TRASH + " Remove##cs_att_rm")) {
+        if (ImGui.button(ImIcons.TRASH + " Remove##cs_att_rm")) {
             c.removeAttachment(selectedAtt);
             selectedAttachmentIndex.set(-1);
             ClientPacketDistributor.sendToServer(new CutscenePacket(Client.getCutsceneEditor().toNbt()));

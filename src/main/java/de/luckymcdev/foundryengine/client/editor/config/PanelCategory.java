@@ -6,14 +6,14 @@ import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import org.jspecify.annotations.Nullable;
 
 public enum PanelCategory {
-    OPEN("Open", ImIcons.FA.FA_BOX_OPEN),
-    EDITOR("Editor", ImIcons.FA.FA_EDIT),
-    TOOLS("Tools", ImIcons.FAE.FAE_TOOLS),
-    VIEW("View", ImIcons.FA.FA_EYE),
+    OPEN("Open", ImIcons.BOX_OPEN),
+    EDITOR("Editor", ImIcons.EDIT),
+    TOOLS("Tools", ImIcons.TOOLS),
+    VIEW("View", ImIcons.EYE),
 
-    EDITOR_EXPLORER("Explorer", ImIcons.FA.FA_FOLDER, EDITOR),
-    EDITOR_FILES("Files", ImIcons.FA.FA_FILE, EDITOR),
-    EDITOR_CUTSCENES("Cutscenes", ImIcons.FA.FA_FILM, EDITOR);
+    EDITOR_EXPLORER("Explorer", ImIcons.FOLDER, EDITOR),
+    EDITOR_FILES("Files", ImIcons.FILE, EDITOR),
+    EDITOR_CUTSCENES("Cutscenes", ImIcons.FILM, EDITOR);
 
 
     public final String displayName;

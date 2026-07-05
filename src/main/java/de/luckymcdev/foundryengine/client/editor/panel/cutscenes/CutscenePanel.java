@@ -44,7 +44,7 @@ public class CutscenePanel extends EditorPanel {
 
     private CutscenePanel() {
         super(new Builder(Common.id("cutscene_panel"))
-                .icon(ImIcons.FA.FA_FILM)
+                .icon(ImIcons.FILM)
                 .category(PanelCategory.EDITOR_CUTSCENES)
                 .menuBar(true));
     }
@@ -71,12 +71,12 @@ public class CutscenePanel extends EditorPanel {
 
     private void renderMenuBar() {
         menuBar(() -> {
-            if (ImGui.menuItem(ImIcons.FA.FA_PLUS + " New")) {
+            if (ImGui.menuItem(ImIcons.PLUS + " New")) {
                 showNewForm = !showNewForm;
                 newName.set("");
             }
 
-            if (ImGui.menuItem(ImIcons.FA.FA_ROTATE_RIGHT + " Sync")) {
+            if (ImGui.menuItem(ImIcons.ROTATE_RIGHT + " Sync")) {
                 requestSync();
                 setStatus("Sync requested.");
             }
@@ -218,14 +218,14 @@ public class CutscenePanel extends EditorPanel {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player != null) {
             ImGui.sameLine();
-            if (ImGui.button(ImIcons.FA.FA_EYE + " Capture")) {
+            if (ImGui.button(ImIcons.EYE + " Capture")) {
                 selectedNodePitch.set(mc.player.getXRot());
                 selectedNodeYaw.set(mc.player.getYRot());
             }
         }
 
         ImGui.sameLine();
-        if (ImGui.button(ImIcons.FA.FA_CHECK + " Apply")) {
+        if (ImGui.button(ImIcons.CHECK + " Apply")) {
             c.setAnchorRotation(selectedNodeIndex.get(),
                     new net.minecraft.world.phys.Vec2(selectedNodePitch.get(), selectedNodeYaw.get()));
             ClientPacketDistributor.sendToServer(new CutscenePacket(Client.getCutsceneEditor().toNbt()));
@@ -286,7 +286,7 @@ public class CutscenePanel extends EditorPanel {
 
         ImGui.spacing();
 
-        if (ImGui.button(ImIcons.FA.FA_PLAY + " Play")) {
+        if (ImGui.button(ImIcons.PLAY + " Play")) {
             ClientPacketDistributor.sendToServer(CutscenePacket.playAction(
                     playerName, c.getName(),
                     CutsceneUiState.getPlaybackLength(), lerpName,
@@ -300,7 +300,7 @@ public class CutscenePanel extends EditorPanel {
             ImGui.pushStyleColor(ImGuiCol.Button, 0.70f, 0.20f, 0.20f, 1.0f);
             ImGui.pushStyleColor(ImGuiCol.ButtonHovered, 0.80f, 0.25f, 0.25f, 1.0f);
             ImGui.pushStyleColor(ImGuiCol.ButtonActive, 0.60f, 0.15f, 0.15f, 1.0f);
-            if (ImGui.button(ImIcons.FA.FA_STOP + " Cancel")) {
+            if (ImGui.button(ImIcons.STOP + " Cancel")) {
                 ClientPacketDistributor.sendToServer(CutscenePacket.cancelAction(playerName));
                 setStatus("Cutscene cancelled.");
             }
@@ -313,7 +313,7 @@ public class CutscenePanel extends EditorPanel {
         ImGui.pushStyleColor(ImGuiCol.Button, 0.55f, 0.10f, 0.10f, 1.0f);
         ImGui.pushStyleColor(ImGuiCol.ButtonHovered, 0.70f, 0.15f, 0.15f, 1.0f);
         ImGui.pushStyleColor(ImGuiCol.ButtonActive, 0.45f, 0.08f, 0.08f, 1.0f);
-        if (ImGui.button(ImIcons.FA.FA_TRASH + " Delete " + c.getName())) {
+        if (ImGui.button(ImIcons.TRASH + " Delete " + c.getName())) {
             ClientPacketDistributor.sendToServer(CutscenePacket.removeAction(c.getName()));
             selectedIndex = -1;
             CutsceneUiState.setSelected(null);

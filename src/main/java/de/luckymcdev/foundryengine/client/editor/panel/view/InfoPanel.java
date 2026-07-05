@@ -17,7 +17,7 @@ public class InfoPanel extends EditorPanel {
 
     protected InfoPanel() {
         super(new Builder(Common.id("info"))
-                .icon(ImIcons.FA.FA_INFO_CIRCLE)
+                .icon(ImIcons.INFO_CIRCLE)
                 .category(PanelCategory.VIEW));
     }
 
@@ -28,10 +28,10 @@ public class InfoPanel extends EditorPanel {
         g.cardEnd();
 
         ImGui.spacing();
-        g.treeSection(ImGraphicsExtractor.icon(ImIcons.FA.FA_MINUS_SQUARE) + "  System", this::renderSystemInfo);
-        g.treeSection(ImGraphicsExtractor.icon(ImIcons.FA.FA_JAVA) + "  Java & Memory", () -> renderJavaMemoryInfo(g));
-        g.treeSection(ImGraphicsExtractor.icon(ImIcons.FA.FA_MICROCHIP) + "  Graphics", this::renderGraphicsInfo);
-        g.treeSection(ImGraphicsExtractor.icon(ImIcons.FA.FA_FILE_CONTRACT) + "  Licenses", this::renderLicenses);
+        g.treeSection(ImGraphicsExtractor.icon(ImIcons.MINUS_SQUARE) + "  System", this::renderSystemInfo);
+        g.treeSection(ImGraphicsExtractor.icon(ImIcons.JAVA) + "  Java & Memory", () -> renderJavaMemoryInfo(g));
+        g.treeSection(ImGraphicsExtractor.icon(ImIcons.MICROCHIP) + "  Graphics", this::renderGraphicsInfo);
+        g.treeSection(ImGraphicsExtractor.icon(ImIcons.FILE_CONTRACT) + "  Licenses", this::renderLicenses);
     }
 
     private void renderSystemInfo() {
@@ -40,9 +40,9 @@ public class InfoPanel extends EditorPanel {
         int cores = Runtime.getRuntime().availableProcessors();
         String mcVersion = SharedConstants.getCurrentVersion().toString();
 
-        formatted(ImGraphicsExtractor.icon(ImIcons.FA.FA_WINDOWS) + "  OS", "%s (%s)", os, arch);
-        formatted(ImGraphicsExtractor.icon(ImIcons.FA.FA_MICROCHIP) + "  CPU Cores", "%d", cores);
-        formatted(ImGraphicsExtractor.icon(ImIcons.FA.FA_CUBE) + "  Minecraft", "%s", mcVersion);
+        formatted(ImGraphicsExtractor.icon(ImIcons.WINDOWS) + "  OS", "%s (%s)", os, arch);
+        formatted(ImGraphicsExtractor.icon(ImIcons.MICROCHIP) + "  CPU Cores", "%d", cores);
+        formatted(ImGraphicsExtractor.icon(ImIcons.CUBE) + "  Minecraft", "%s", mcVersion);
     }
 
     private void renderJavaMemoryInfo(ImGraphicsExtractor g) {
@@ -54,13 +54,13 @@ public class InfoPanel extends EditorPanel {
         String javaVer = System.getProperty("java.version");
         String javaVm = System.getProperty("java.vm.name");
 
-        formatted(ImGraphicsExtractor.icon(ImIcons.FA.FA_MEMORY) + "  Memory", "%d MB used / %d MB max", usedMem, maxMem);
+        formatted(ImGraphicsExtractor.icon(ImIcons.MEMORY) + "  Memory", "%d MB used / %d MB max", usedMem, maxMem);
         float usage = (float) usedMem / maxMem;
         ImGui.progressBar(usage, -1, 0, "");
         g.helpTooltip(String.format("Allocated: %d MB", totalMem));
 
-        formatted(ImGraphicsExtractor.icon(ImIcons.FA.FA_JAVA) + "  Java", "%s", javaVer);
-        formatted(ImGraphicsExtractor.icon(ImIcons.FA.FA_COG) + "  JVM", "%s", javaVm);
+        formatted(ImGraphicsExtractor.icon(ImIcons.JAVA) + "  Java", "%s", javaVer);
+        formatted(ImGraphicsExtractor.icon(ImIcons.COG) + "  JVM", "%s", javaVm);
     }
 
     private void renderGraphicsInfo() {
@@ -70,21 +70,21 @@ public class InfoPanel extends EditorPanel {
         int maxTextureSize = glGetInteger(GL_MAX_TEXTURE_SIZE);
         int maxTextureUnits = glGetInteger(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
 
-        formatted(ImGraphicsExtractor.icon(ImIcons.FA.FA_TAG) + "  Vendor", "%s", vendor);
-        formatted(ImGraphicsExtractor.icon(ImIcons.FA.FA_TAG) + "  GPU", "%s", renderer);
-        formatted(ImGraphicsExtractor.icon(ImIcons.FA.FA_TAG) + "  OpenGL", "%s", version);
-        formatted(ImGraphicsExtractor.icon(ImIcons.FA.FA_EXPAND) + "  Max Texture Size", "%d", maxTextureSize);
-        formatted(ImGraphicsExtractor.icon(ImIcons.FA.FA_LAYER_GROUP) + "  Max Texture Units", "%d", maxTextureUnits);
+        formatted(ImGraphicsExtractor.icon(ImIcons.TAG) + "  Vendor", "%s", vendor);
+        formatted(ImGraphicsExtractor.icon(ImIcons.TAG) + "  GPU", "%s", renderer);
+        formatted(ImGraphicsExtractor.icon(ImIcons.TAG) + "  OpenGL", "%s", version);
+        formatted(ImGraphicsExtractor.icon(ImIcons.EXPAND) + "  Max Texture Size", "%d", maxTextureSize);
+        formatted(ImGraphicsExtractor.icon(ImIcons.LAYER_GROUP) + "  Max Texture Units", "%d", maxTextureUnits);
     }
 
     private void renderLicenses() {
-        if (ImGui.collapsingHeader(ImGraphicsExtractor.icon(ImIcons.FA.FA_COPYRIGHT) + " FoundryEngine (All Rights Reserved)")) {
+        if (ImGui.collapsingHeader(ImGraphicsExtractor.icon(ImIcons.COPYRIGHT) + " FoundryEngine (All Rights Reserved)")) {
             ImGui.beginChild("##license_fe", 0, 60, true);
             ImGui.textWrapped("All Rights Reserved — This software is proprietary and may not be copied, distributed, or modified without explicit permission.");
             ImGui.endChild();
         }
 
-        if (ImGui.collapsingHeader(ImGraphicsExtractor.icon(ImIcons.FA.FA_COPYRIGHT) + " ImGui (MIT)")) {
+        if (ImGui.collapsingHeader(ImGraphicsExtractor.icon(ImIcons.COPYRIGHT) + " ImGui (MIT)")) {
             ImGui.beginChild("##license_imgui", 0, 120, true);
             ImGui.textWrapped("""
                     MIT License — Copyright (c) 2019-present, Ilya "SpaiR" Prymshyts
@@ -92,7 +92,7 @@ public class InfoPanel extends EditorPanel {
             ImGui.endChild();
         }
 
-        if (ImGui.collapsingHeader(ImGraphicsExtractor.icon(ImIcons.FA.FA_COPYRIGHT) + " Apache Groovy (Apache 2.0)")) {
+        if (ImGui.collapsingHeader(ImGraphicsExtractor.icon(ImIcons.COPYRIGHT) + " Apache Groovy (Apache 2.0)")) {
             ImGui.beginChild("##license_groovy", 0, 80, true);
             ImGui.textWrapped("""
                     Apache License, Version 2.0 — You may use, modify, and distribute this software under the terms of the Apache 2.0 license. A copy is included in the distribution.""");

@@ -579,7 +579,7 @@ public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorCons
 			ImGui.pushStyleVar(ImGuiStyleVar.ItemSpacing, 0, 0);
 			ImGui.setNextItemAllowOverlap();
 			ImGui.sameLine();
-			this.displayIcon(ImIcons.FA.FA_CLIPBOARD);
+			this.displayIcon(ImIcons.CLIPBOARD);
 			ImGui.sameLine();
 			ImGui.popStyleVar();
 			ImGui.text("Copy Location");
