@@ -12,8 +12,7 @@
   "gui.foundryengine.icons.metadata.success": "Exported metadata file to %s",
 
   "panel.foundryengine.test_panel": "My Panel",
-  "panel.foundryengine.file_explorer": "File Explorer",
-  "panel.foundryengine.resource_browser": "Resource Browser",
+  "panel.foundryengine.explorer": "Explorer",
   "panel.foundryengine.console": "Console",
   "panel.foundryengine.main_editor": "Main Editor",
   "panel.foundryengine.minecraft_tools": "Minecraft Tools",
