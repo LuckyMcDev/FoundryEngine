@@ -77,7 +77,7 @@ public final class PackResourceScanner {
 			}
 
 			if (pack instanceof FilePackResources filePack) {
-				Path zipFile = ((SharedZipFileAccessAccessor) filePack).engine$getFile().toPath();
+				Path zipFile = ((SharedZipFileAccessAccessor) ((FilePackResourcesAccessor) filePack).engine$zipFileAccess()).engine$getFile().toPath();
 				if (zipFile != null && Files.isRegularFile(zipFile)) {
 					String prefix = ((FilePackResourcesAccessor) filePack).engine$prefix();
 					walkZipFile(zipFile, prefix, type, consumer);
