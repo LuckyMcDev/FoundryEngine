@@ -1,5 +1,7 @@
 package de.luckymcdev.foundryengine.client.node;
 
+import net.minecraft.network.chat.Component;
+
 import java.util.List;
 
 public interface NodeBuilder<T> {
@@ -21,8 +23,8 @@ public interface NodeBuilder<T> {
     /**
      * Optional display name (used in title bar).
      */
-    default String getDisplayName() {
-        return "Node";
+    default Component getDisplayName() {
+        return Component.literal("Node");
     }
 
     /**

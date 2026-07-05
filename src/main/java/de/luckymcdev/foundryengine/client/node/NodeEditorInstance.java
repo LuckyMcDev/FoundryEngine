@@ -113,7 +113,7 @@ public class NodeEditorInstance<T> {
                 ImGui.sameLine();
             }
 
-            String title = node.builder == null ? "Root" : node.builder.getDisplayName();
+            String title = node.builder == null ? "Root" : node.builder.getDisplayName().getString();
             ImGui.text(title);
             ImNodes.endNodeTitleBar();
             ImGui.pushItemWidth(130F);

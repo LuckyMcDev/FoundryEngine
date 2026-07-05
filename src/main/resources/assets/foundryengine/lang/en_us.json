@@ -76,5 +76,10 @@
   "foundryengine.dialogue.hint_select": "§7[Type §o/engine dialogue select <number>§r§7 to respond]§r",
   "foundryengine.dialogue.ended": "§7Dialogue ended.",
 
-  "foundryengine.bundle.mismatch": "§c Bundle mismatch! §7Your local bundles do not match the server's files. Please sync your 'bundles' folder."
+  "foundryengine.bundle.mismatch": "§c Bundle mismatch! §7Your local bundles do not match the server's files. Please sync your 'bundles' folder.",
+
+  "node.foundryengine.add": "Add",
+  "node.foundryengine.root": "Root Evaluator",
+  "node.foundryengine.constant": "Constant",
+  "node.foundryengine.multiply": "Multiply"
 }
