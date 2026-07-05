@@ -3,6 +3,14 @@ dependencies {
 
     runtimeOnly "maven.modrinth:spark:${spark_version}"
 
+	// Sodium - They need to fix their shit. Its broken
+	//compileOnly("maven.modrinth:AANobbMI:FVHjuQxV")
+	//runtimeOnly("maven.modrinth:AANobbMI:FVHjuQxV")
+
+	// Iris - same thing as above
+	//compileOnly("maven.modrinth:YL57xq9U:YEGDGnJM")
+	//runtimeOnly("maven.modrinth:YL57xq9U:YEGDGnJM")
+
     // Testing dependencies
     testImplementation "org.junit.jupiter:junit-jupiter:${junit_version}"
     testImplementation "net.neoforged:testframework:${neo_version}"
