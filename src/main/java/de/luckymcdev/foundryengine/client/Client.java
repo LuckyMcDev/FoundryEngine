@@ -10,10 +10,10 @@ import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.client.area.AreaRenderer;
 import de.luckymcdev.foundryengine.client.cutscene.ClientCutsceneManager;
 import de.luckymcdev.foundryengine.client.dialogue.ClientDialogueManager;
+import de.luckymcdev.foundryengine.client.editor.CutsceneTool;
 import de.luckymcdev.foundryengine.client.editor.EditorController;
 import de.luckymcdev.foundryengine.client.editor.EditorManager;
 import de.luckymcdev.foundryengine.client.editor.MainMenu;
-import de.luckymcdev.foundryengine.client.editor.feature.CutsceneEditorFeature;
 import de.luckymcdev.foundryengine.client.icons.IconExporterLayer;
 import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiManager;
@@ -322,10 +322,10 @@ public final class Client {
     }
 
     /**
-     * Returns the cutscene editor feature.
+     * Returns the cutscene editor tool.
      */
-    public static CutsceneEditorFeature getCutsceneEditor() {
-        return EDITOR_CONTROLLER.getCutsceneEditorFeature();
+    public static CutsceneTool getCutsceneEditor() {
+        return EDITOR_CONTROLLER.getCutsceneTool();
     }
 
     /**

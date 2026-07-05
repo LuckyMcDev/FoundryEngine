@@ -1,7 +1,7 @@
-package de.luckymcdev.foundryengine.client.editor.feature;
+package de.luckymcdev.foundryengine.client.editor;
 
 import de.luckymcdev.foundryengine.client.Client;
-import de.luckymcdev.foundryengine.client.editor.HandlePicker;
+import de.luckymcdev.foundryengine.client.gizmo.WorldGizmo;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.area.AABBArea;
 import de.luckymcdev.foundryengine.common.area.Area;
@@ -10,60 +10,67 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
-public class AreaEditorFeature extends DragEditorFeature {
+public class AreaTool {
+    double storedDistance = 0;
     private Area selectedArea;
     private boolean draggingMin = false;
+    private boolean wasUsing = false;
+    private int useTicks = 0;
 
-    @Override
-    protected void onDragStart() {
-        selectedArea = null;
-        draggingMin = false;
-        Client.getAreaRenderer().selectedCornerArea = null;
-        Client.getAreaRenderer().draggingMin = false;
-        Client.getAreaRenderer().storedDistance = 0;
-    }
+    public void tick() {
+        Minecraft mc = Minecraft.getInstance();
+        boolean using = EditorController.isUsingEditorItem();
 
-    @Override
-    protected void onDragTick(Minecraft mc) {
-        if (selectedArea == null) {
-            pickAreaCorner(mc);
+        if (using && !wasUsing) {
+            wasUsing = true;
+            useTicks = 0;
+            storedDistance = 0;
+            selectedArea = null;
+            draggingMin = false;
+            Client.getAreaRenderer().selectedCornerArea = null;
+            Client.getAreaRenderer().draggingMin = false;
+            Client.getAreaRenderer().storedDistance = 0;
         }
-        if (selectedArea != null) {
-            updateDraggedCorner(mc);
+
+        if (using) {
+            useTicks++;
+            if (selectedArea == null) {
+                pickAreaCorner(mc);
+            }
+            if (selectedArea != null) {
+                updateDraggedCorner(mc);
+            }
+        }
+
+        if (!using && wasUsing) {
+            wasUsing = false;
+            if (selectedArea != null && useTicks > 2) {
+                sendAreaUpdate();
+            }
+            selectedArea = null;
+            Client.getAreaRenderer().selectedCornerArea = null;
         }
     }
 
-    @Override
-    protected void onDragEnd() {
-        if (selectedArea != null && useTicks > 2) {
-            sendAreaUpdate();
-        }
-        selectedArea = null;
-        Client.getAreaRenderer().selectedCornerArea = null;
-    }
-
-    @Override
-    public void render() {
-        Client.getAreaRenderer().render();
-    }
-
-    @Override
-    protected void onDistanceChanged() {
-        Client.getAreaRenderer().storedDistance = storedDistance;
-    }
-
-    @Override
     public boolean onScroll(double vertical) {
         if (selectedArea == null) return false;
-        return super.onScroll(vertical);
+        if (!wasUsing) return false;
+        storedDistance = Math.max(storedDistance + (vertical * 0.25), 0);
+        Client.getAreaRenderer().storedDistance = storedDistance;
+        return true;
     }
 
-    @Override
-    protected void reset() {
-        super.reset();
+    public void onDeactivated() {
+        wasUsing = false;
+        useTicks = 0;
+        storedDistance = 0;
         selectedArea = null;
         draggingMin = false;
         Client.getAreaRenderer().selectedCornerArea = null;
+    }
+
+    public void render() {
+        Client.getAreaRenderer().render();
     }
 
     private void sendAreaUpdate() {
@@ -89,7 +96,7 @@ public class AreaEditorFeature extends DragEditorFeature {
             Vec3 maxCorner = new Vec3(bounds.maxX, bounds.maxY, bounds.maxZ);
 
             for (var entry : new Vec3[]{minCorner, maxCorner}) {
-                if (HandlePicker.isHovered(entry, eye, look)) {
+                if (WorldGizmo.isHovered(entry, eye, look)) {
                     double dist = entry.distanceTo(eye);
                     if (dist < closestDist) {
                         closestDist = dist;

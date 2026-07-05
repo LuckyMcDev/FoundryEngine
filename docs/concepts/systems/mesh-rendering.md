@@ -156,26 +156,25 @@ int glId = EngineSceneDepth.snapshotDepthGlId();
 
 The depth texture is registered as `foundryengine:engine_scene_depth` and can be sampled in custom shaders.
 
-## HandleRenderer
+## World Gizmo Utilities
 
-3D transform gizmo helpers for in-world editing:
+Static helpers for in-world rendering and ray picking. Used by the editor tools for drawing point handles, lines, and hit-testing.
 
 ```java
-import de.luckymcdev.foundryengine.client.render.HandleRenderer;
+import de.luckymcdev.foundryengine.client.gizmo.WorldGizmo;
 import de.luckymcdev.foundryengine.common.util.color.Color;
 
-// Render a draggable handle
-HandleRenderer.renderHandle(position, Color.RED);
-HandleRenderer.renderHandle(position, 0.25, Color.RED, Color.TRANSPARENT_RED);
+// Render a filled box handle at a position
+WorldGizmo.renderBox(position, 0.125, Color.RED);
 
 // Render a line between points
-HandleRenderer.renderLine(from, to, Color.BLUE, 3);
+WorldGizmo.renderLine(from, to, Color.BLUE, 3);
 
 // Render an outline box
-HandleRenderer.renderOutline(aabb, Color.GREEN);
+WorldGizmo.renderOutline(aabb, Color.GREEN);
 
-// Hit test
-boolean hovered = HandleRenderer.isHovered(position, eye, look, 0.5);
+// Cone-based hit test (1° tolerance)
+boolean hovered = WorldGizmo.isHovered(position, eye, look);
 ```
 
 ## Using Custom Pipelines

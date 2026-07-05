@@ -1,7 +1,6 @@
 package de.luckymcdev.foundryengine.client.area;
 
-import de.luckymcdev.foundryengine.client.editor.HandlePicker;
-import de.luckymcdev.foundryengine.client.render.HandleRenderer;
+import de.luckymcdev.foundryengine.client.gizmo.WorldGizmo;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.area.AABBArea;
 import de.luckymcdev.foundryengine.common.area.Area;
@@ -43,13 +42,13 @@ public class AreaRenderer {
                 Vec3 max = new Vec3(b.maxX, b.maxY, b.maxZ);
 
                 boolean isSelected = selectedCornerArea != null && selectedCornerArea.id().equals(area.id());
-                boolean hoverMin = HandlePicker.isHovered(min, eye, look);
-                boolean hoverMax = HandlePicker.isHovered(max, eye, look);
+                boolean hoverMin = WorldGizmo.isHovered(min, eye, look);
+                boolean hoverMax = WorldGizmo.isHovered(max, eye, look);
 
                 Color minColor = (isSelected && draggingMin) || hoverMin ? Color.ORANGE : Color.WHITE;
                 Color maxColor = (isSelected && !draggingMin) || hoverMax ? Color.ORANGE : Color.WHITE;
-                HandleRenderer.renderHandle(min, HANDLE_SIZE, minColor);
-                HandleRenderer.renderHandle(max, HANDLE_SIZE, maxColor);
+                WorldGizmo.renderBox(min, HANDLE_SIZE, minColor);
+                WorldGizmo.renderBox(max, HANDLE_SIZE, maxColor);
             }
         }
     }

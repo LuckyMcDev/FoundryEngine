@@ -1,7 +1,6 @@
 package de.luckymcdev.foundryengine.client.cutscene;
 
-import de.luckymcdev.foundryengine.client.editor.HandlePicker;
-import de.luckymcdev.foundryengine.client.render.HandleRenderer;
+import de.luckymcdev.foundryengine.client.gizmo.WorldGizmo;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.cutscene.model.Cutscene;
 import de.luckymcdev.foundryengine.common.easing.BezierPoint;
@@ -9,7 +8,6 @@ import de.luckymcdev.foundryengine.common.easing.BezierSpline;
 import de.luckymcdev.foundryengine.common.util.color.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 
@@ -109,7 +107,7 @@ public class CutsceneRenderer {
             int hold = holdTicks.get(i);
             if (hold > 0) {
                 Color holdColor = new Color(0xFFFFCC00);
-                HandleRenderer.renderHandle(pos, POINT_SIZE * 2.5, holdColor);
+                WorldGizmo.renderBox(pos, POINT_SIZE * 2.5, holdColor);
             }
         }
 
@@ -123,31 +121,33 @@ public class CutsceneRenderer {
             for (double d = 0.00; d < 1; d += delta) {
                 Vec3 pos1 = spline.lerp(d);
                 Vec3 pos2 = spline.lerp(d + delta);
-                HandleRenderer.renderLine(pos1, pos2, lineColor, 5);
+                WorldGizmo.renderLine(pos1, pos2, lineColor, 5);
             }
         }
 
-        LivingEntity viewer = Minecraft.getInstance().player;
+        var mc = Minecraft.getInstance();
+        Vec3 eye = mc.player.getEyePosition();
+        Vec3 look = mc.player.getViewVector(1.0f);
         for (BezierPoint point : cutscene.path.getPoints()) {
-            renderBezierPoint(viewer, point);
+            renderBezierPoint(eye, look, point);
         }
     }
 
-    private static void renderBezierPoint(LivingEntity viewer, BezierPoint point) {
-        if (viewer.getEyePosition().distanceTo(point.getPos()) < 0.1) return;
+    private static void renderBezierPoint(Vec3 eye, Vec3 look, BezierPoint point) {
+        if (eye.distanceTo(point.getPos()) < 0.1) return;
 
         Color color = getBezierPointColor(point);
-        if (HandlePicker.isHovered(point.getPos(), viewer)) color = Color.WHITE;
+        if (WorldGizmo.isHovered(point.getPos(), eye, look)) color = Color.WHITE;
         if (point.getPath().isSinglePoint()) color = new Color(0xFFFF00FF);
 
         if (point.isTangent()) {
             BezierPoint root = point.getRoot();
             if (root != null) {
-                HandleRenderer.renderLine(point.getPos(), root.getPos(), scaleAlpha(getBezierPointColor(point), 0.5f), 5);
+                WorldGizmo.renderLine(point.getPos(), root.getPos(), scaleAlpha(getBezierPointColor(point), 0.5f), 5);
             }
         }
 
-        HandleRenderer.renderHandle(point.getPos(), POINT_SIZE, color);
+        WorldGizmo.renderBox(point.getPos(), POINT_SIZE, color);
     }
 
     private static Color getBezierPointColor(BezierPoint point) {
@@ -176,12 +176,12 @@ public class CutsceneRenderer {
             translatedPoints.add(rotatePointRelative(origin, point, rot));
         }
         for (Vec3 point : translatedPoints) {
-            HandleRenderer.renderLine(origin, point, color, 3);
+            WorldGizmo.renderLine(origin, point, color, 3);
         }
         for (int i = 0; i < translatedPoints.size() - 1; i++) {
-            HandleRenderer.renderLine(translatedPoints.get(i), translatedPoints.get(i + 1), color, 3);
+            WorldGizmo.renderLine(translatedPoints.get(i), translatedPoints.get(i + 1), color, 3);
         }
-        HandleRenderer.renderLine(translatedPoints.getLast(), translatedPoints.getFirst(), color, 3);
+        WorldGizmo.renderLine(translatedPoints.getLast(), translatedPoints.getFirst(), color, 3);
     }
 
     private static Vec3 rotatePointRelative(Vec3 origin, Vec3 relativeCoordinate, Vec2 rot) {
