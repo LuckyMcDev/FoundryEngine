@@ -130,10 +130,6 @@ RecipeBuilder.shaped(id("test_shaped"), Items.DIAMOND_SWORD)
     .category(RecipeCategory.COMBAT)
     .unlockedBy("has_diamond",
         InventoryChangeTrigger.TriggerInstance.hasItems(Items.DIAMOND))
-
-BundleEvents.registry {
-    it.recipes(testShaped)
-}
 ```
 
 ### Shapeless Recipe
@@ -525,8 +521,6 @@ import de.luckymcdev.foundryengine.common.event.PlayerEvents
 import de.luckymcdev.foundryengine.common.event.BlockEvents
 import de.luckymcdev.foundryengine.common.builder.item.ItemBuilder
 import de.luckymcdev.foundryengine.common.builder.block.BlockBuilder
-import de.luckymcdev.foundryengine.common.builder.recipe.RecipeBuilder
-
 class Entrypoint implements BundleEntrypoint {
 
     @Override
@@ -547,21 +541,10 @@ class Entrypoint implements BundleEntrypoint {
                 entity.setSecondsOnFire(3)
             }
 
-        // --- Define Recipes ---
-        def myRecipe = RecipeBuilder.shaped(
-            Common.id("custom_item_recipe"), myItem.get())
-            .pattern(" X ")
-            .define('X' as char, Items.DIAMOND)
-            .category(RecipeCategory.MISC)
-            .unlockedBy("has_diamond",
-                InventoryChangeTrigger.TriggerInstance
-                    .hasItems(Items.DIAMOND))
-
         // --- Register Everything ---
         BundleEvents.registry {
             it.items(myItem)
             it.blocks(myBlock)
-            it.recipes(myRecipe)
         }
 
         // --- Listen to Events ---

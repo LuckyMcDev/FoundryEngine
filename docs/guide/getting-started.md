@@ -88,14 +88,11 @@ The entrypoint is the bridge between the engine and your Groovy code. Create `sc
 package my_first_bundle
 
 import de.luckymcdev.foundryengine.common.builder.item.ItemBuilder
-import de.luckymcdev.foundryengine.common.builder.recipe.RecipeBuilder
 import de.luckymcdev.foundryengine.common.event.BundleEvents
 import de.luckymcdev.foundryengine.common.script.BundleEntrypoint
-import net.minecraft.advancements.criterion.InventoryChangeTrigger
 import net.minecraft.core.component.DataComponents
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.Identifier
-import net.minecraft.world.item.Items
 import net.minecraft.world.item.Rarity
 import net.minecraft.world.item.component.ItemLore
 
@@ -111,7 +108,6 @@ class Entrypoint implements BundleEntrypoint {
 
         BundleEvents.registry {
             it.items(MY_ITEM)
-            it.recipes(MY_RECIPE)
         }
     }
 
@@ -143,21 +139,6 @@ This creates a gem-like item that:
 - Shows as **Uncommon** rarity (blue text)
 - Stacks up to 16
 
-## Add a Crafting Recipe
-
-Add a recipe that lets players craft your item. Place this after the item builder:
-
-```groovy
-private static final RecipeBuilder MY_RECIPE = RecipeBuilder.shaped(id("my_item_recipe"), MY_ITEM)
-    .pattern(" D ", " D ", " S ")
-    .define('D' as char, Items.DIAMOND)
-    .define('S' as char, Items.STICK)
-    .unlockedBy("has_diamond",
-        InventoryChangeTrigger.TriggerInstance.hasItems(Items.DIAMOND))
-```
-
-This creates a shaped recipe that turns two diamonds and a stick into your custom item.
-
 ## Final Entrypoint
 
 Your complete `Entrypoint.groovy` should look like this:
@@ -166,14 +147,11 @@ Your complete `Entrypoint.groovy` should look like this:
 package my_first_bundle
 
 import de.luckymcdev.foundryengine.common.builder.item.ItemBuilder
-import de.luckymcdev.foundryengine.common.builder.recipe.RecipeBuilder
 import de.luckymcdev.foundryengine.common.event.BundleEvents
 import de.luckymcdev.foundryengine.common.script.BundleEntrypoint
-import net.minecraft.advancements.criterion.InventoryChangeTrigger
 import net.minecraft.core.component.DataComponents
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.Identifier
-import net.minecraft.world.item.Items
 import net.minecraft.world.item.Rarity
 import net.minecraft.world.item.component.ItemLore
 
@@ -191,20 +169,12 @@ class Entrypoint implements BundleEntrypoint {
         .component(DataComponents.RARITY, Rarity.UNCOMMON)
         .stacksTo(16)
 
-    private static final RecipeBuilder MY_RECIPE = RecipeBuilder.shaped(id("my_item_recipe"), MY_ITEM)
-        .pattern(" D ", " D ", " S ")
-        .define('D' as char, Items.DIAMOND)
-        .define('S' as char, Items.STICK)
-        .unlockedBy("has_diamond",
-            InventoryChangeTrigger.TriggerInstance.hasItems(Items.DIAMOND))
-
     @Override
     void onLoad() {
         println "My First Bundle loaded!"
 
         BundleEvents.registry {
             it.items(MY_ITEM)
-            it.recipes(MY_RECIPE)
         }
     }
 

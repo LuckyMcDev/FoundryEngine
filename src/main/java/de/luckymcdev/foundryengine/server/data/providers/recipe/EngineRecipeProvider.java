@@ -21,7 +21,7 @@ public class EngineRecipeProvider extends RecipeProvider {
     protected void buildRecipes() {
         for (RecipeBuilder builder : recipeBuilders) {
             var recipe = builder.build();
-            recipe.save().accept(output, registries);
+            recipe.accept(output, registries);
         }
     }
 

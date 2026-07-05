@@ -4,7 +4,6 @@ import de.luckymcdev.foundryengine.common.bundle.config.BundleConfig;
 import de.luckymcdev.foundryengine.common.bundle.info.BundleFiles;
 import de.luckymcdev.foundryengine.common.bundle.info.BundleInfo;
 import de.luckymcdev.foundryengine.common.bundle.registry.BundleCreativeModeTab;
-import de.luckymcdev.foundryengine.common.bundle.registry.BundleRegistryQuery;
 import de.luckymcdev.foundryengine.common.script.BundleEntrypoint;
 import de.luckymcdev.foundryengine.common.script.BundleScriptEngineRegistry;
 import de.luckymcdev.foundryengine.common.script.BundleScriptLoader;
@@ -19,7 +18,6 @@ public class Bundle {
     private final BundleInfo info;
     private final BundleFiles bundleFiles;
     private final BundleScriptEngineRegistry scriptEngineRegistry;
-    private final BundleRegistryQuery registryQuery;
     private final BundleCreativeModeTab creativeModeTab;
     private final BundleConfig bundleConfig;
     private final List<BundleEntrypoint> commonEntrypoints = new ArrayList<>();
@@ -27,11 +25,10 @@ public class Bundle {
     private final List<BundleEntrypoint> serverEntrypoints = new ArrayList<>();
 
     public Bundle(BundleInfo info, BundleFiles bundleFiles, BundleScriptEngineRegistry scriptEngineRegistry,
-                  BundleRegistryQuery registryQuery, BundleCreativeModeTab creativeModeTab, BundleConfig bundleConfig) {
+                  BundleCreativeModeTab creativeModeTab, BundleConfig bundleConfig) {
         this.info = info;
         this.bundleFiles = bundleFiles;
         this.scriptEngineRegistry = scriptEngineRegistry;
-        this.registryQuery = registryQuery;
         this.creativeModeTab = creativeModeTab;
         this.bundleConfig = bundleConfig;
     }
@@ -88,10 +85,6 @@ public class Bundle {
 
     public BundleScriptEngineRegistry scriptEngineRegistry() {
         return scriptEngineRegistry;
-    }
-
-    public BundleRegistryQuery registryQuery() {
-        return registryQuery;
     }
 
     public BundleCreativeModeTab creativeModeTab() {

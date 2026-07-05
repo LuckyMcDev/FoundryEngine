@@ -6,18 +6,30 @@ import net.minecraft.advancements.criterion.InventoryChangeTrigger;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.recipes.*;
+import net.minecraft.data.recipes.RecipeCategory;
+import net.minecraft.data.recipes.RecipeOutput;
+import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.data.recipes.ShapelessRecipeBuilder;
+import net.minecraft.data.recipes.SimpleCookingRecipeBuilder;
+import net.minecraft.data.recipes.SingleItemRecipeBuilder;
+import net.minecraft.data.recipes.SmithingTransformRecipeBuilder;
+import net.minecraft.data.recipes.SmithingTrimRecipeBuilder;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.CookingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
-import net.neoforged.neoforge.registries.RegisterEvent;
 import org.jspecify.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.BiConsumer;
 
-public class RecipeBuilder extends AbstractBuilder<RecipeResult> {
+public class RecipeBuilder extends AbstractBuilder<BiConsumer<RecipeOutput, HolderLookup.Provider>> {
     private final RecipeType type;
     private final ItemLike result;
     private final List<String> pattern = new ArrayList<>();
@@ -235,16 +247,9 @@ public class RecipeBuilder extends AbstractBuilder<RecipeResult> {
         return type == RecipeType.SMITHING_TRANSFORM || type == RecipeType.SMITHING_TRIM;
     }
 
-    public RecipeResult build() {
+    public BiConsumer<RecipeOutput, HolderLookup.Provider> build() {
         ensureValid();
-        return new RecipeResult(id, this::saveTo);
-    }
-
-    public RecipeResult register(RegisterEvent.RegisterHelper<RecipeResult> helper) {
-        RecipeResult result = build();
-        helper.register(id, result);
-        setObject(result);
-        return result;
+        return this::saveTo;
     }
 
     private void ensureValid() {

@@ -191,7 +191,7 @@ class GameManagerTest {
     private static class FakeBundle extends de.luckymcdev.foundryengine.common.bundle.Bundle {
         private final String bundleId;
         public FakeBundle(String id) {
-            super(null, null, null, null, null, null);
+            super(null, null, null, null, null);
             this.bundleId = id;
         }
         @Override
