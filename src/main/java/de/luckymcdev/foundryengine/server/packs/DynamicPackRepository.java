@@ -5,7 +5,11 @@ import com.mojang.logging.LogUtils;
 import net.minecraft.SharedConstants;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.packs.*;
+import net.minecraft.server.packs.AbstractPackResources;
+import net.minecraft.server.packs.PackLocationInfo;
+import net.minecraft.server.packs.PackResources;
+import net.minecraft.server.packs.PackSelectionConfig;
+import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackCompatibility;
 import net.minecraft.server.packs.repository.PackSource;
@@ -152,6 +156,13 @@ public class DynamicPackRepository implements RepositorySource {
             this.packType = packType;
             this.packMeta = packMeta;
         }
+
+		public List<Path> getRoot(PackType type) {
+			if (type == this.packType) {
+				return List.copyOf(roots);
+			}
+			return List.of();
+		}
 
         @Override
         public IoSupplier<@NonNull InputStream> getRootResource(String... paths) {

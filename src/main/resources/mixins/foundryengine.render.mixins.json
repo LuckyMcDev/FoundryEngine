@@ -13,7 +13,6 @@
     "GlGpuBufferAccessor",
     "GpuDeviceMixin",
     "ItemInHandRendererMixin",
-    "LevelRendererMixin",
     "PostChainMixin",
     "PostEffectPassAccessor",
     "PostEffectProcessorAccessor",

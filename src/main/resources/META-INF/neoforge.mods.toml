@@ -15,7 +15,7 @@ authors = "${mod_authors}"
 description = '''${mod_description}'''
 
 [[mixins]]
-config = "mixins/${mod_id}.data.mixins.json"
+config = "mixins/${mod_id}.resources.mixins.json"
 [[mixins]]
 config = "mixins/${mod_id}.input.mixins.json"
 [[mixins]]
