@@ -1,25 +1,21 @@
 package de.luckymcdev.foundryengine.client.editor;
 
-import de.luckymcdev.foundryengine.client.editor.feature.AreaEditorFeature;
-import de.luckymcdev.foundryengine.client.editor.feature.CutsceneEditorFeature;
-import de.luckymcdev.foundryengine.client.editor.feature.EditorFeature;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class EditorController {
     public static final Item EDITOR_ITEM = Items.DEBUG_STICK;
-    private final List<EditorFeature> features = new ArrayList<>();
-    private final CutsceneEditorFeature cutsceneEditorFeature = new CutsceneEditorFeature();
-    private final AreaEditorFeature areaEditorFeature = new AreaEditorFeature();
+    private final CutsceneTool cutsceneTool = new CutsceneTool();
+    private final AreaTool areaTool = new AreaTool();
 
-    public EditorController() {
-        features.add(cutsceneEditorFeature);
-        features.add(areaEditorFeature);
+    public CutsceneTool getCutsceneTool() {
+        return cutsceneTool;
+    }
+
+    public AreaTool getAreaTool() {
+        return areaTool;
     }
 
     public static boolean isEditorStack(ItemStack stack) {
@@ -38,36 +34,29 @@ public class EditorController {
         return isHoldingEditorItem() && mc.options.keyUse.isDown();
     }
 
-    public CutsceneEditorFeature getCutsceneEditorFeature() {
-        return cutsceneEditorFeature;
-    }
-
-    public AreaEditorFeature getAreaEditorFeature() {
-        return areaEditorFeature;
-    }
-
-
     public void clientTick() {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null || mc.player == null) return;
 
         if (!isHoldingEditorItem()) {
-            features.forEach(EditorFeature::onDeactivated);
+            cutsceneTool.onDeactivated();
+            areaTool.onDeactivated();
             return;
         }
 
-        features.forEach(EditorFeature::clientTick);
+        cutsceneTool.tick();
+        areaTool.tick();
     }
 
     public boolean onScroll(double vertical) {
-        for (EditorFeature f : features) {
-            if (f.onScroll(vertical)) return true;
-        }
-        return false;
-    }
+        if (!isHoldingEditorItem()) return false;
+        if (cutsceneTool.onScroll(vertical)) return true;
+		return areaTool.onScroll(vertical);
+	}
 
     public void renderFeatures() {
         if (!isHoldingEditorItem()) return;
-        features.forEach(EditorFeature::render);
+        cutsceneTool.render();
+        areaTool.render();
     }
 }

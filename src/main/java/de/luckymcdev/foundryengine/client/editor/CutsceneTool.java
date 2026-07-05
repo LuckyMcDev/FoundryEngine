@@ -1,7 +1,7 @@
-package de.luckymcdev.foundryengine.client.editor.feature;
+package de.luckymcdev.foundryengine.client.editor;
 
 import de.luckymcdev.foundryengine.client.cutscene.CutsceneRenderer;
-import de.luckymcdev.foundryengine.client.editor.HandlePicker;
+import de.luckymcdev.foundryengine.client.gizmo.WorldGizmo;
 import de.luckymcdev.foundryengine.common.cutscene.model.Cutscene;
 import de.luckymcdev.foundryengine.common.easing.BezierPath;
 import de.luckymcdev.foundryengine.common.easing.BezierPoint;
@@ -10,25 +10,24 @@ import de.luckymcdev.foundryengine.common.network.packets.editor.CutscenePacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
-/**
- * Client-side in-world cutscene editor input handler.
- * <p>
- * Owned by {@link de.luckymcdev.foundryengine.client.Client} (instance, not static state).
- */
-public class CutsceneEditorFeature extends DragEditorFeature {
+public class CutsceneTool {
+    double storedDistance = 0;
     private BezierPoint selectedPoint;
     private boolean changed = false;
+    private boolean wasUsing = false;
+    private int useTicks = 0;
 
-    private static BezierPoint pickHovered(LivingEntity user) {
+    private static BezierPoint pickHovered(Minecraft mc) {
+        Vec3 eye = mc.player.getEyePosition();
+        Vec3 look = mc.player.getViewVector(1.0f);
         for (Cutscene cutscene : CutsceneRenderer.getCutscenes()) {
             for (BezierSpline spline : cutscene.path.splines) {
                 for (BezierPoint point : spline.points) {
-                    if (HandlePicker.isHovered(point.getPos(), user)) {
+                    if (WorldGizmo.isHovered(point.getPos(), eye, look)) {
                         return point;
                     }
                 }
@@ -37,63 +36,65 @@ public class CutsceneEditorFeature extends DragEditorFeature {
         return null;
     }
 
-    @Override
-    protected void onDragStart() {
-        selectedPoint = null;
-        changed = false;
-        CutsceneRenderer.storedPoint = null;
-        CutsceneRenderer.storedDistance = 0;
-    }
+    public void tick() {
+        Minecraft mc = Minecraft.getInstance();
+        boolean using = EditorController.isUsingEditorItem();
 
-    @Override
-    protected void onDragTick(Minecraft mc) {
-        if (selectedPoint == null) {
-            selectedPoint = pickHovered(mc.player);
-            if (selectedPoint != null) {
-                CutsceneRenderer.storedPoint = selectedPoint;
-                storedDistance = selectedPoint.getPos().distanceTo(mc.player.getEyePosition());
-                CutsceneRenderer.storedDistance = storedDistance;
+        if (using && !wasUsing) {
+            wasUsing = true;
+            useTicks = 0;
+            storedDistance = 0;
+            selectedPoint = null;
+            changed = false;
+            CutsceneRenderer.storedPoint = null;
+            CutsceneRenderer.storedDistance = 0;
+        }
+
+        if (using) {
+            useTicks++;
+            if (selectedPoint == null) {
+                selectedPoint = pickHovered(mc);
+                if (selectedPoint != null) {
+                    CutsceneRenderer.storedPoint = selectedPoint;
+                    storedDistance = selectedPoint.getPos().distanceTo(mc.player.getEyePosition());
+                    CutsceneRenderer.storedDistance = storedDistance;
+                }
             }
         }
-    }
 
-    @Override
-    protected void onDragEnd() {
-        if (selectedPoint != null && useTicks > 2) {
-            changed = true;
+        if (!using && wasUsing) {
+            wasUsing = false;
+            if (selectedPoint != null && useTicks > 2) {
+                changed = true;
+            }
+            if (changed) {
+                ClientPacketDistributor.sendToServer(new CutscenePacket(toNbt()));
+            }
+            selectedPoint = null;
+            CutsceneRenderer.storedPoint = null;
+            changed = false;
         }
-
-        if (changed) {
-            ClientPacketDistributor.sendToServer(new CutscenePacket(toNbt()));
-        }
-
-        selectedPoint = null;
-        CutsceneRenderer.storedPoint = null;
-        changed = false;
     }
 
-    @Override
-    public void render() {
-        CutsceneRenderer.render();
-    }
-
-    @Override
-    protected void onDistanceChanged() {
-        CutsceneRenderer.storedDistance = storedDistance;
-    }
-
-    @Override
     public boolean onScroll(double vertical) {
         if (CutsceneRenderer.storedPoint == null) return false;
-        return super.onScroll(vertical);
+        if (!wasUsing) return false;
+        storedDistance = Math.max(storedDistance + (vertical * 0.25), 0);
+        CutsceneRenderer.storedDistance = storedDistance;
+        return true;
     }
 
-    @Override
-    protected void reset() {
-        super.reset();
+    public void onDeactivated() {
+        wasUsing = false;
+        useTicks = 0;
+        storedDistance = 0;
         selectedPoint = null;
         changed = false;
         CutsceneRenderer.storedPoint = null;
+    }
+
+    public void render() {
+        CutsceneRenderer.render();
     }
 
     public void addNodeAtEnd(Cutscene cutscene) {
