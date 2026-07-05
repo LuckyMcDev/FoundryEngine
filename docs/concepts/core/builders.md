@@ -190,7 +190,7 @@ BlockBuilder.create(id("hot_plate"))
 
 `de.luckymcdev.foundryengine.common.builder.recipe.RecipeBuilder`
 
-Creates all recipe types. Uses a `RecipeResult` record that pairs a recipe ID with a save function.
+Creates all recipe types. Used for data generation via `RecipeResult`.
 
 ### Static Factories
 
@@ -391,7 +391,6 @@ All builders are registered through `BundleEvents.registry`:
 BundleEvents.registry {
     it.items(myItem, anotherItem)
     it.blocks(myBlock, anotherBlock)
-    it.recipes(shapedRecipe, shapelessRecipe)
     it.sounds(mySound)
     it.particles(myParticle)
 }

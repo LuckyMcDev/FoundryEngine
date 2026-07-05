@@ -22,7 +22,7 @@ Generated output goes to a temp directory at `<gameDir>/FoundryEngine/temp/insta
 
 For each bundle, `BundleDataGenerator.run(bundle)`:
 
-1. Collects `BlockBuilder`, `ItemBuilder`, `RecipeBuilder`, and `SoundBuilder` instances for the bundle's namespace
+1. Collects `BlockBuilder`, `ItemBuilder`, and `SoundBuilder` instances for the bundle's namespace
 2. Filters to builders where `shouldGenerateData()` is `true`
 3. Registers and runs server-side and client-side providers
 4. Fires `BundleDataGenEvent` for custom provider registration
@@ -33,7 +33,6 @@ For each bundle, `BundleDataGenerator.run(bundle)`:
 |-----------------------------------|----------------------------------------|
 | `EngineAdvancementProvider`       | Advancement JSONs                      |
 | `EngineLootTableProvider`         | Loot table JSONs                       |
-| `EngineRecipeProvider`            | Recipe JSONs from RecipeBuilders       |
 | `EngineRecipePrioritiesProvider`  | Recipe priority data                   |
 | `EngineBlockTagsProvider`         | Block tag JSONs                        |
 | `EngineItemTagsProvider`          | Item tag JSONs                         |

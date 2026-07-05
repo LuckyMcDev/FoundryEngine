@@ -5,7 +5,6 @@ import de.luckymcdev.foundryengine.common.builder.item.ItemBuilder;
 import de.luckymcdev.foundryengine.common.builder.particle.ParticleBuilder;
 import de.luckymcdev.foundryengine.common.builder.recipe.RecipeBuilder;
 import de.luckymcdev.foundryengine.common.builder.sound.SoundBuilder;
-import de.luckymcdev.foundryengine.common.registry.EngineRegistries;
 import de.luckymcdev.foundryengine.common.registry.RegistryCollector;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -13,7 +12,10 @@ import net.minecraft.resources.ResourceKey;
 import net.neoforged.bus.api.Event;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
+import org.jspecify.annotations.Nullable;
 
+import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class RegistryEvent extends Event implements IModBusEvent {
@@ -26,51 +28,35 @@ public class RegistryEvent extends Event implements IModBusEvent {
     }
 
     public void items(ItemBuilder... builders) {
-        inner.register(BuiltInRegistries.ITEM.key(), registry -> {
-            for (ItemBuilder builder : builders) {
-                builder.register(registry);
-                collector.addItem(builder);
-            }
-        });
+        registerEach(BuiltInRegistries.ITEM, ItemBuilder::register, collector::addItem, List.of(builders));
     }
 
     public void blocks(BlockBuilder... builders) {
-        inner.register(BuiltInRegistries.BLOCK.key(), registry -> {
-            for (BlockBuilder builder : builders) {
-                builder.registerBlock(registry);
-                collector.addBlock(builder);
-            }
-        });
-        inner.register(BuiltInRegistries.ITEM.key(), registry -> {
-            for (BlockBuilder builder : builders) {
-                if (builder.hasItem()) builder.registerItem(registry);
-            }
-        });
+        var list = List.of(builders);
+        registerEach(BuiltInRegistries.BLOCK, BlockBuilder::registerBlock, collector::addBlock, list);
+        registerEach(BuiltInRegistries.ITEM, BlockBuilder::registerItem, null, list.stream().filter(BlockBuilder::hasItem).toList());
     }
 
     public void recipes(RecipeBuilder... builders) {
-        inner.register(EngineRegistries.RECIPES.key(), registry -> {
-            for (RecipeBuilder builder : builders) {
-                builder.register(registry);
-                collector.addRecipe(builder);
-            }
-        });
+        for (RecipeBuilder builder : builders) {
+            collector.addRecipe(builder);
+        }
     }
 
     public void particles(ParticleBuilder... builders) {
-        inner.register(BuiltInRegistries.PARTICLE_TYPE.key(), registry -> {
-            for (ParticleBuilder builder : builders) {
-                builder.register(registry);
-                collector.addParticle(builder);
-            }
-        });
+        registerEach(BuiltInRegistries.PARTICLE_TYPE, ParticleBuilder::register, collector::addParticle, List.of(builders));
     }
 
     public void sounds(SoundBuilder... builders) {
-        inner.register(BuiltInRegistries.SOUND_EVENT.key(), registry -> {
-            for (SoundBuilder builder : builders) {
-                builder.register(registry);
-                collector.addSound(builder);
+        registerEach(BuiltInRegistries.SOUND_EVENT, SoundBuilder::register, collector::addSound, List.of(builders));
+    }
+
+    private <T, B> void registerEach(Registry<T> registry, BiConsumer<B, RegisterEvent.RegisterHelper<T>> registrator,
+                                      @Nullable Consumer<B> collector, List<B> builders) {
+        inner.register(registry.key(), helper -> {
+            for (B builder : builders) {
+                registrator.accept(builder, helper);
+                if (collector != null) collector.accept(builder);
             }
         });
     }

@@ -103,7 +103,7 @@ Core lifecycle events. **The most important event class for bundle developers.**
 
 | Event | Description |
 |---|---|
-| `registry(cb)` | Register items, blocks, recipes, sounds, particles |
+| `registry(cb)` | Register items, blocks, sounds, particles |
 | `vanillaGame(cb)` | Vanilla game events (advancement, etc.) |
 | `commonSetup(cb)` | FML common setup phase |
 | `clientSetup(cb)` | FML client-only setup |
@@ -116,7 +116,6 @@ Core lifecycle events. **The most important event class for bundle developers.**
 BundleEvents.registry {
     it.items(myItemBuilder)
     it.blocks(myBlockBuilder)
-    it.recipes(myRecipeBuilder)
     it.particles(myParticleBuilder)
     it.sounds(mySoundBuilder)
 }

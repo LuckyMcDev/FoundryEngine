@@ -10,7 +10,6 @@ ItemBuilder builder = ItemBuilder.create(id("my_item"))
 BundleEvents.registry {
     it.items(builder)
     it.blocks(blockBuilder)
-    it.recipes(recipeBuilder)
     it.sounds(soundBuilder)
     it.particles(particleBuilder)
 }
@@ -24,7 +23,6 @@ You register the **builder object**, not the raw output. The engine handles regi
 |---|---|
 | `it.items(ItemBuilder...)` | Custom items |
 | `it.blocks(BlockBuilder...)` | Custom blocks (and their block items) |
-| `it.recipes(RecipeBuilder...)` | All recipe types |
 | `it.sounds(SoundBuilder...)` | Sound events |
 | `it.particles(ParticleBuilder...)` | Particle types |
 

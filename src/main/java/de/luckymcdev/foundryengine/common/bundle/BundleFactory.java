@@ -5,7 +5,6 @@ import de.luckymcdev.foundryengine.common.bundle.config.BundleConfig;
 import de.luckymcdev.foundryengine.common.bundle.info.BundleFiles;
 import de.luckymcdev.foundryengine.common.bundle.info.BundleInfo;
 import de.luckymcdev.foundryengine.common.bundle.registry.BundleCreativeModeTab;
-import de.luckymcdev.foundryengine.common.bundle.registry.BundleRegistryQuery;
 import de.luckymcdev.foundryengine.common.script.BundleScriptEngineRegistry;
 import de.luckymcdev.foundryengine.common.script.BundleScriptLoader;
 import net.neoforged.bus.api.IEventBus;
@@ -35,11 +34,10 @@ public class BundleFactory {
         BundleScriptEngineRegistry registry = new BundleScriptEngineRegistry();
         registry.initializeAll(files);
 
-        BundleRegistryQuery registryQuery = new BundleRegistryQuery(info.id());
-        BundleCreativeModeTab creativeTab = new BundleCreativeModeTab(info.id(), modBus, registryQuery);
+        BundleCreativeModeTab creativeTab = new BundleCreativeModeTab(info.id(), modBus);
         BundleConfig config = new BundleConfig(info.id(), configDirectory);
 
-        return new Bundle(info, files, registry, registryQuery, creativeTab, config);
+        return new Bundle(info, files, registry, creativeTab, config);
     }
 
     public BundleScriptLoader getScriptLoader() {

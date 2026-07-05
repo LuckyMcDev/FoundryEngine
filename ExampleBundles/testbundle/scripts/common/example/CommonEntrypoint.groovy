@@ -61,7 +61,7 @@ class CommonEntrypoint implements BundleEntrypoint {
             .properties(p -> p.strength(2.0f, 3.0f))
             .itemProperties(p -> p.rarity(Rarity.COMMON))
 
-    // Recipe builders — one for each supported type
+        // Recipe builders — one for each supported type (data-gen only)
     private static final RecipeBuilder SHAPED_RECIPE = RecipeBuilder.shaped(id("test_shaped"), Items.DIAMOND_SWORD)
             .pattern(" D ", " D ", " S ")
             .define('D' as char, Items.DIAMOND)

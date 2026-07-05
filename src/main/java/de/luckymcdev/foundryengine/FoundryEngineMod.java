@@ -46,7 +46,6 @@ import de.luckymcdev.foundryengine.common.network.packets.world.ServerBoundChang
 import de.luckymcdev.foundryengine.common.network.packets.world.ServerBoundSetTimePacket;
 import de.luckymcdev.foundryengine.common.network.packets.world.ServerBoundSpawnEntityPacket;
 import de.luckymcdev.foundryengine.common.network.packets.world.ServerBoundTeleportPacket;
-import de.luckymcdev.foundryengine.common.registry.EngineRegistries;
 import de.luckymcdev.foundryengine.common.registry.RegistryCollector;
 import de.luckymcdev.foundryengine.common.world.level.util.TransientChunkGenerator;
 import de.luckymcdev.foundryengine.common.world.level.util.VoidChunkGenerator;
@@ -153,7 +152,6 @@ public class FoundryEngineMod {
 
     private void registerModBus(IEventBus modBus) {
         Common.getGameStageHandler().register(modBus);
-        EngineRegistries.register(modBus);
     }
 
     private void registerInternalEvents() {
