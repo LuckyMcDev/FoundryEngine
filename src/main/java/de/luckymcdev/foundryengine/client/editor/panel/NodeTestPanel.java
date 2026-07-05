@@ -24,7 +24,7 @@ public class NodeTestPanel extends EditorPanel {
 
     protected NodeTestPanel() {
         super(new Builder(Common.id("node_test_panel"))
-                .icon(ImIcons.FA.FA_BLUETOOTH)
+                .icon(ImIcons.BLUETOOTH)
                 .category(PanelCategory.EDITOR)
         );
 

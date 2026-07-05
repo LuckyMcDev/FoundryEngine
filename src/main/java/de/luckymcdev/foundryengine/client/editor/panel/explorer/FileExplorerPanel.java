@@ -62,7 +62,7 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
 
     public FileExplorerPanel(File rootDir) {
         super(new Builder(Common.id("file_explorer"))
-                .icon(ImIcons.FA.FA_FILES_O)
+                .icon(ImIcons.FILES_O)
                 .shortcut(ImGuiShortcut.empty())
                 .category(PanelCategory.EDITOR_EXPLORER));
         this.rootDir = rootDir;
@@ -204,7 +204,7 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
             String query = searchFilter.get().trim().toLowerCase();
 
             // Client section
-            renderSection(ImGraphicsExtractor.icon(ImIcons.FA.FA_DESKTOP) + " Client", "##section_client", () -> {
+            renderSection(ImGraphicsExtractor.icon(ImIcons.DESKTOP) + " Client", "##section_client", () -> {
                 if (filtering) {
                     renderFilteredLocalFiles(rootDir, query);
                 } else if (rootNode != null) {
@@ -215,7 +215,7 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
             // Server section
             if (isMultiplayer()) {
                 ImGui.spacing();
-                renderSection(ImGraphicsExtractor.icon(ImIcons.FA.FA_SERVER) + " Server", "##section_server", () -> {
+                renderSection(ImGraphicsExtractor.icon(ImIcons.SERVER) + " Server", "##section_server", () -> {
                     if (remoteLoading) {
                         ImGui.textDisabled("Loading…");
                     } else if (remoteRootNode == null) {
@@ -276,8 +276,8 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
 
         ImGui.sameLine();
         String folderIcon = isOpen
-                ? ImGraphicsExtractor.icon(ImIcons.FA.FA_FOLDER_OPEN)
-                : ImGraphicsExtractor.icon(ImIcons.FA.FA_FOLDER);
+                ? ImGraphicsExtractor.icon(ImIcons.FOLDER_OPEN)
+                : ImGraphicsExtractor.icon(ImIcons.FOLDER);
         ImGui.textUnformatted(folderIcon + " " + node.name);
 
         renderDirectoryContextMenu(node.file, id + "_ctx");
@@ -362,8 +362,8 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
 
             ImGui.sameLine();
             String folderIcon = isOpen
-                    ? ImGraphicsExtractor.icon(ImIcons.FA.FA_FOLDER_OPEN)
-                    : ImGraphicsExtractor.icon(ImIcons.FA.FA_FOLDER);
+                    ? ImGraphicsExtractor.icon(ImIcons.FOLDER_OPEN)
+                    : ImGraphicsExtractor.icon(ImIcons.FOLDER);
             ImGui.textUnformatted(folderIcon + " " + node.name);
 
             if (isOpen) {
@@ -493,7 +493,7 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
         float spacing = ImGui.getStyle().getItemSpacingX();
         float searchWidth = ImGui.getContentRegionAvailX() - (buttonWidth + spacing) * 2 - spacing;
         ImGui.setNextItemWidth(Math.max(searchWidth, 60.0f));
-        ImGui.inputTextWithHint("##search", ImIcons.FA.FA_SEARCH + " Filter…", searchFilter);
+        ImGui.inputTextWithHint("##search", ImIcons.SEARCH + " Filter…", searchFilter);
 
         // Escape clears the search field
         if (ImGui.isItemFocused() && ImGui.isKeyPressed(ImGuiKey.Escape)) {
@@ -506,7 +506,7 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
         }
 
         ImGui.sameLine();
-        if (ImGui.button(ImIcons.FA.FA_ARROW_ROTATE_RIGHT + "##refresh", buttonWidth, 0)) {
+        if (ImGui.button(ImIcons.ROTATE_RIGHT + "##refresh", buttonWidth, 0)) {
             clearError();
             remoteRootNode = null;
             remoteRequested = false;
@@ -521,7 +521,7 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
     private void renderErrorBanner() {
         if (lastError == null) return;
         ImGui.pushStyleColor(ImGuiCol.Text, 1.0f, 0.35f, 0.35f, 1.0f);
-        ImGui.textWrapped(ImIcons.FA.FA_EXCLAMATION_TRIANGLE + " " + lastError);
+        ImGui.textWrapped(ImIcons.EXCLAMATION_TRIANGLE + " " + lastError);
         ImGui.popStyleColor();
         ImGui.sameLine();
         if (ImGui.smallButton("×")) lastError = null;
@@ -529,10 +529,10 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
 
     private void renderFileContextMenu(File file, String popupId) {
         if (ImGui.beginPopupContextItem(popupId)) {
-            if (ImGui.menuItem(ImIcons.FA.FA_EDIT + "  Open")) openFileInEditor(file);
+            if (ImGui.menuItem(ImIcons.EDIT + "  Open")) openFileInEditor(file);
             ImGui.separator();
-            if (ImGui.menuItem(ImIcons.FA.FA_COPY + "  Copy Path")) ImGui.setClipboardText(file.getAbsolutePath());
-            if (ImGui.menuItem(ImIcons.FA.FA_FOLDER_OPEN + "  Reveal in Explorer"))
+            if (ImGui.menuItem(ImIcons.COPYRIGHT + "  Copy Path")) ImGui.setClipboardText(file.getAbsolutePath());
+            if (ImGui.menuItem(ImIcons.FOLDER_OPEN + "  Reveal in Explorer"))
                 revealInExplorer(file.getParentFile());
             ImGui.endPopup();
         }
@@ -540,11 +540,11 @@ public class FileExplorerPanel extends AbstractExplorerPanel {
 
     private void renderDirectoryContextMenu(File dir, String popupId) {
         if (ImGui.beginPopupContextItem(popupId)) {
-            if (ImGui.menuItem(ImIcons.FA.FA_COPY + "  Copy Path")) ImGui.setClipboardText(dir.getAbsolutePath());
-            if (ImGui.menuItem(ImIcons.FA.FA_FOLDER_OPEN + "  Reveal in Explorer")) revealInExplorer(dir);
+            if (ImGui.menuItem(ImIcons.COPY + "  Copy Path")) ImGui.setClipboardText(dir.getAbsolutePath());
+            if (ImGui.menuItem(ImIcons.FOLDER_OPEN + "  Reveal in Explorer")) revealInExplorer(dir);
             ImGui.separator();
-            if (ImGui.menuItem(ImIcons.FA.FA_FILE + "  New File…")) createNewFileIn(dir);
-            if (ImGui.menuItem(ImIcons.FA.FA_FOLDER + "  New Folder…")) createNewFolderIn(dir);
+            if (ImGui.menuItem(ImIcons.FILE + "  New File…")) createNewFileIn(dir);
+            if (ImGui.menuItem(ImIcons.FOLDER + "  New Folder…")) createNewFolderIn(dir);
             ImGui.endPopup();
         }
     }

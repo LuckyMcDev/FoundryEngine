@@ -26,7 +26,7 @@ public class MainEditor extends EditorPanel {
 
     private MainEditor() {
         super(new Builder(Common.id("main_editor"))
-                .icon(ImIcons.FA.FA_EDIT)
+                .icon(ImIcons.EDIT)
                 .category(PanelCategory.EDITOR)
                 .menuBar(true));
     }

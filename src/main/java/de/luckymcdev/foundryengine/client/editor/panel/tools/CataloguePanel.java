@@ -45,7 +45,7 @@ public class CataloguePanel extends EditorPanel {
 
     public CataloguePanel() {
         super(new Builder(Common.id("catalogue"))
-                .icon(ImIcons.FA.FA_LIST)
+                .icon(ImIcons.LIST)
                 .category(PanelCategory.TOOLS));
     }
 
@@ -77,7 +77,7 @@ public class CataloguePanel extends EditorPanel {
 
         if (ImGui.beginTabBar("CatalogueTabs")) {
 
-            if (ImGui.beginTabItem(ImIcons.FA.FA_BOX + " Items")) {
+            if (ImGui.beginTabItem(ImIcons.BOX + " Items")) {
                 var list = BuiltInRegistries.ITEM.keySet().stream()
                         .sorted(Comparator.comparing(Identifier::getPath)).toList();
                 renderRegistryGrid(g, "items", list, id -> id, false, id -> {
@@ -87,7 +87,7 @@ public class CataloguePanel extends EditorPanel {
                 ImGui.endTabItem();
             }
 
-            if (ImGui.beginTabItem(ImIcons.FA.FA_CUBE + " Blocks")) {
+            if (ImGui.beginTabItem(ImIcons.CUBE + " Blocks")) {
                 List<Identifier> blockItems = BuiltInRegistries.BLOCK.stream()
                         .map(block -> BuiltInRegistries.ITEM.getKey(block.asItem()))
                         .distinct()
@@ -97,7 +97,7 @@ public class CataloguePanel extends EditorPanel {
                 ImGui.endTabItem();
             }
 
-            if (ImGui.beginTabItem(ImIcons.FA.FA_PAW + " Entities")) {
+            if (ImGui.beginTabItem(ImIcons.PAW + " Entities")) {
                 var list = BuiltInRegistries.ENTITY_TYPE.keySet().stream()
                         .sorted(Comparator.comparing(Identifier::getPath)).toList();
 
@@ -120,7 +120,7 @@ public class CataloguePanel extends EditorPanel {
                 ImGui.endTabItem();
             }
 
-            if (ImGui.beginTabItem(ImIcons.FA.FA_DROPLET + " Fluids")) {
+            if (ImGui.beginTabItem(ImIcons.DROPLET + " Fluids")) {
                 var list = BuiltInRegistries.FLUID.keySet().stream()
                         .sorted(Comparator.comparing(Identifier::getPath)).toList();
 
@@ -151,7 +151,7 @@ public class CataloguePanel extends EditorPanel {
                 ImGui.endTabItem();
             }
 
-            if (ImGui.beginTabItem(ImIcons.FA.FA_TAG + " Tags")) {
+            if (ImGui.beginTabItem(ImIcons.TAG + " Tags")) {
                 List<Identifier> allTagIds = BuiltInRegistries.REGISTRY.entrySet().stream()
                         .flatMap(entry -> {
                             var tags = entry.getValue().getTags().toList();
@@ -166,7 +166,7 @@ public class CataloguePanel extends EditorPanel {
                 ImGui.endTabItem();
             }
 
-            if (ImGui.beginTabItem(ImIcons.FA.FA_BOOK + " Recipes")) {
+            if (ImGui.beginTabItem(ImIcons.BOOK + " Recipes")) {
                 RecipeManager recipeManager = Client.getRecipeManager();
                 if (recipeManager == null) {
                     ImGui.textDisabled("No recipe manager available (join a world)");
@@ -192,7 +192,7 @@ public class CataloguePanel extends EditorPanel {
                 ImGui.endTabItem();
             }
 
-            if (ImGui.beginTabItem(ImIcons.FA.FA_CODE + " Classes")) {
+            if (ImGui.beginTabItem(ImIcons.CODE + " Classes")) {
                 ImGui.textDisabled("Class browser has been removed.");
                 ImGui.endTabItem();
             }
@@ -208,7 +208,7 @@ public class CataloguePanel extends EditorPanel {
     private void renderSearchHeader() {
         ImGui.setNextItemWidth(-1);
         ImGui.inputTextWithHint("##catalogue_search",
-                ImIcons.FA.FA_MAGNIFYING_GLASS + " Search registries...",
+                ImIcons.MAGNIFYING_GLASS + " Search registries...",
                 searchBuffer);
         ImGui.separator();
     }

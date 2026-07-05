@@ -14,14 +14,14 @@ public class DevToolsPanel extends Panel {
 
     private DevToolsPanel() {
         super(new Builder(Common.id("dev_tools"))
-                .icon(ImIcons.FA.FA_FLASK)
+                .icon(ImIcons.FLASK)
                 .category(PanelCategory.TOOLS));
     }
 
     @Override
     public void content(ImGraphicsExtractor g) {
         g.cardBegin("##pack_mode_card");
-        ImGui.text(ImIcons.FA.FA_CUBES + "  Pack Mode");
+        ImGui.text(ImIcons.CUBES + "  Pack Mode");
 
         String current = CommonConfig.PACK_MODE.get();
         boolean isDev = current.equalsIgnoreCase("dev");
@@ -48,10 +48,10 @@ public class DevToolsPanel extends Panel {
         ImGui.spacing();
 
         g.cardBegin("##instancing_card");
-        ImGui.text(ImIcons.FA.FA_DATABASE + "  Instancing");
+        ImGui.text(ImIcons.DATABASE + "  Instancing");
 
         ImGui.spacing();
-        if (ImGui.button(ImIcons.FA.FA_TRASH + " Clear Instances Cache", -1, 0)) {
+        if (ImGui.button(ImIcons.TRASH + " Clear Instances Cache", -1, 0)) {
             StorageSourceManager.clearInstanced();
         }
         g.helpTooltip("Clears the cache of instanced world copies. New copies will be created on next load.");

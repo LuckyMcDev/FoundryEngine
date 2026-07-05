@@ -31,7 +31,7 @@ public class TestPanel extends Panel {
 
     private TestPanel() {
         super(new Builder(Common.id("test_panel"))
-                .icon(ImIcons.FAE.FAE_BACTERIA)
+                .icon(ImIcons.BACTERIA)
                 .category(PanelCategory.OPEN));
     }
 

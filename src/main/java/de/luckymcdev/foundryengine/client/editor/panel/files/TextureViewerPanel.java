@@ -29,7 +29,7 @@ public class TextureViewerPanel extends EditorPanel {
 
 	public TextureViewerPanel(Identifier id, Component title, Identifier identifier) {
 		super(new Builder(id, title)
-			.icon(ImIcons.FA.FA_IMAGES)
+			.icon(ImIcons.IMAGES)
 			.category(PanelCategory.EDITOR_FILES));
 		this.textureIdentifier = identifier;
 		this.textureFile = null;
@@ -38,7 +38,7 @@ public class TextureViewerPanel extends EditorPanel {
 
 	public TextureViewerPanel(Identifier id, Component title, File file) {
 		super(new Builder(id, title)
-			.icon(ImIcons.FA.FA_IMAGES)
+			.icon(ImIcons.IMAGES)
 			.category(PanelCategory.EDITOR_FILES));
 		this.textureIdentifier = null;
 		this.textureFile = file;

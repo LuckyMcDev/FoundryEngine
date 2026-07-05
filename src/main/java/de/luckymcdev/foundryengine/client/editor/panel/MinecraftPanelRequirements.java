@@ -14,7 +14,7 @@ public class MinecraftPanelRequirements implements PanelRequirements {
 
     private static void textDenied(String title, String... lines) {
         ImGui.textColored(DENIED_COLOR,
-                ImGraphicsExtractor.icon(ImIcons.FA.FA_EXCLAMATION_TRIANGLE) + " " + title);
+                ImGraphicsExtractor.icon(ImIcons.EXCLAMATION_TRIANGLE) + " " + title);
         ImGui.spacing();
         for (String line : lines) {
             ImGui.textDisabled(line);

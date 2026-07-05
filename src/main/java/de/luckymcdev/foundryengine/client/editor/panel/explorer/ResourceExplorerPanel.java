@@ -49,7 +49,7 @@ public class ResourceExplorerPanel extends AbstractExplorerPanel {
 
     public ResourceExplorerPanel() {
         super(new Builder(Common.id("resource_browser"))
-                .icon(ImIcons.FA.FA_IMAGE)
+                .icon(ImIcons.IMAGE)
                 .shortcut(ImGuiShortcut.empty())
                 .category(PanelCategory.EDITOR_EXPLORER));
     }
@@ -127,7 +127,7 @@ public class ResourceExplorerPanel extends AbstractExplorerPanel {
         float spacing = ImGui.getStyle().getItemSpacingX();
         float searchWidth = ImGui.getContentRegionAvailX() - (buttonWidth + spacing) * 3 - spacing;
         ImGui.setNextItemWidth(Math.max(searchWidth, 60.0f));
-        ImGui.inputTextWithHint("##search", ImIcons.FA.FA_SEARCH + " Filter…", searchFilter);
+        ImGui.inputTextWithHint("##search", ImIcons.SEARCH + " Filter…", searchFilter);
 
         if (ImGui.isItemFocused() && ImGui.isKeyPressed(ImGuiKey.Escape)) {
             searchFilter.set("");
@@ -139,13 +139,13 @@ public class ResourceExplorerPanel extends AbstractExplorerPanel {
         }
 
         ImGui.sameLine();
-        if (ImGui.button(ImIcons.FA.FA_ARROW_ROTATE_RIGHT + "##refresh", buttonWidth, 0)) {
+        if (ImGui.button(ImIcons.ROTATE_RIGHT + "##refresh", buttonWidth, 0)) {
             refresh();
         }
         if (ImGui.isItemHovered()) ImGui.setTooltip("Refresh resource tree");
 
         ImGui.sameLine();
-        if (ImGui.button(ImIcons.FA.FA_ROTATE + "##reload", buttonWidth, 0)) {
+        if (ImGui.button(ImIcons.ROTATE + "##reload", buttonWidth, 0)) {
             reloadResources();
         }
         if (ImGui.isItemHovered()) ImGui.setTooltip("Reload all resources");
@@ -202,7 +202,7 @@ public class ResourceExplorerPanel extends AbstractExplorerPanel {
     @Override
     protected void renderResourceFile(Identifier id) {
         String fileName = id.getPath().substring(id.getPath().lastIndexOf('/') + 1);
-        String label = ImGraphicsExtractor.icon(ImIcons.FA.FA_FILE_CODE) + " " + fileName;
+        String label = ImGraphicsExtractor.icon(ImIcons.FILE_CODE) + " " + fileName;
         String nodeId = "##file_" + id;
 
         ImGui.treeNodeEx(
@@ -220,11 +220,11 @@ public class ResourceExplorerPanel extends AbstractExplorerPanel {
 
     private void renderFileContextMenu(Identifier id, String popupId) {
         if (ImGui.beginPopupContextItem(popupId)) {
-            if (ImGui.menuItem(ImIcons.FA.FA_EDIT + "  Open")) {
+            if (ImGui.menuItem(ImIcons.EDIT + "  Open")) {
                 openResource(id);
             }
             ImGui.separator();
-            if (ImGui.menuItem(ImIcons.FA.FA_COPY + "  Copy Identifier")) {
+            if (ImGui.menuItem(ImIcons.COPY + "  Copy Identifier")) {
                 ImGui.setClipboardText(id.toString());
             }
             ImGui.endPopup();

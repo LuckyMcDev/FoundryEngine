@@ -13,13 +13,13 @@ public class FileEndings {
     private static final Map<String, String> EXTENSION_TO_ICON = new HashMap<>();
 
     static {
-        registerIcon(ImGraphicsExtractor.icon(ImIcons.FA.FA_FILE_CODE), "java", "groovy", "glsl", "vsh", "fsh", "js");
-        registerIcon(ImGraphicsExtractor.icon(ImIcons.FA.FA_FILE_IMPORT), "json", "toml", "yaml", "yml");
-        registerIcon(ImGraphicsExtractor.icon(ImIcons.FA.FA_FILE_IMAGE), "png", "jpg", "jpeg", "tga");
-        registerIcon(ImGraphicsExtractor.icon(ImIcons.FA.FA_FILE_AUDIO), "ogg", "wav", "mp3");
-        registerIcon(ImGraphicsExtractor.icon(ImIcons.FA.FA_FILE_ZIPPER), "zip", "jar", "tar", "gz");
-        registerIcon(ImGraphicsExtractor.icon(ImIcons.FA.FA_FILE_TEXT), "txt", "log");
-        registerIcon(ImGraphicsExtractor.icon(ImIcons.FA.FA_FILE_PEN), "md");
+        registerIcon(ImGraphicsExtractor.icon(ImIcons.FILE_CODE), "java", "groovy", "glsl", "vsh", "fsh", "js");
+        registerIcon(ImGraphicsExtractor.icon(ImIcons.FILE_IMPORT), "json", "toml", "yaml", "yml");
+        registerIcon(ImGraphicsExtractor.icon(ImIcons.FILE_IMAGE), "png", "jpg", "jpeg", "tga");
+        registerIcon(ImGraphicsExtractor.icon(ImIcons.FILE_AUDIO), "ogg", "wav", "mp3");
+        registerIcon(ImGraphicsExtractor.icon(ImIcons.FILE_ZIPPER), "zip", "jar", "tar", "gz");
+        registerIcon(ImGraphicsExtractor.icon(ImIcons.FILE_TEXT), "txt", "log");
+        registerIcon(ImGraphicsExtractor.icon(ImIcons.FILE_PEN), "md");
     }
 
     private static void registerIcon(String icon, String... extensions) {
@@ -33,7 +33,7 @@ public class FileEndings {
      */
     public static String getFileIcon(String fileName) {
         String ext = getExtension(fileName);
-        return EXTENSION_TO_ICON.getOrDefault(ext, ImGraphicsExtractor.icon(ImIcons.FA.FA_FILE_O));
+        return EXTENSION_TO_ICON.getOrDefault(ext, ImGraphicsExtractor.icon(ImIcons.FILE_O));
     }
 
     public static String getExtension(String fileName) {

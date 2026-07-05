@@ -16,7 +16,7 @@ public class TextEditorTestPanel extends Panel {
 
     private TextEditorTestPanel() {
         super(new Builder(Common.id("text_editor_test"))
-                .icon(ImIcons.FA.FA_FILE_TEXT)
+                .icon(ImIcons.FILE_TEXT)
                 .category(PanelCategory.OPEN));
 
         editor = new ImGuiCoreTextEditor(null, null, EditorTheme.dark().build());

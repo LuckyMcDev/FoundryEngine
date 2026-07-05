@@ -29,7 +29,7 @@ public class GizmoTestPanel extends Panel {
 
 	private GizmoTestPanel() {
 		super(new Builder(Common.id("gizmo_test"))
-			.icon(ImIcons.FA.FA_CUBE)
+			.icon(ImIcons.CUBE)
 			.category(PanelCategory.OPEN));
 
 		this.modelMatrix = new Matrix4f();

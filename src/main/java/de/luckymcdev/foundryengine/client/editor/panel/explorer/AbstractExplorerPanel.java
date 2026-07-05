@@ -73,7 +73,7 @@ public abstract class AbstractExplorerPanel extends EditorPanel {
      * The node is shown with a cube icon and the namespace name.
      */
     protected void renderNamespaceNode(ExplorerNode.ResourceExplorerNode ns) {
-        String label = ImGraphicsExtractor.icon(ImIcons.FA.FA_CUBE) + " " + ns.name;
+        String label = ImGraphicsExtractor.icon(ImIcons.CUBE) + " " + ns.name;
         boolean open = ImGui.treeNodeEx("##ns_" + ns.name, ImGuiTreeNodeFlags.SpanAvailWidth, label);
         if (open) {
             renderResourceFolder(ns);
@@ -99,8 +99,8 @@ public abstract class AbstractExplorerPanel extends EditorPanel {
      * Renders a single collapsible sub-folder within a resource tree.
      */
     private void renderResourceSubFolder(ExplorerNode.ResourceExplorerNode folder) {
-        String openIcon = ImGraphicsExtractor.icon(ImIcons.FA.FA_FOLDER_OPEN);
-        String closedIcon = ImGraphicsExtractor.icon(ImIcons.FA.FA_FOLDER);
+        String openIcon = ImGraphicsExtractor.icon(ImIcons.FOLDER_OPEN);
+        String closedIcon = ImGraphicsExtractor.icon(ImIcons.FOLDER);
 
         boolean open = ImGui.treeNodeEx("##f_" + folder.name, ImGuiTreeNodeFlags.SpanAvailWidth, "");
         ImGui.sameLine();
@@ -118,7 +118,7 @@ public abstract class AbstractExplorerPanel extends EditorPanel {
      */
     protected void renderResourceFile(Identifier id) {
         String fileName = id.getPath().substring(id.getPath().lastIndexOf('/') + 1);
-        String label = ImGraphicsExtractor.icon(ImIcons.FA.FA_FILE_CODE) + " " + fileName;
+        String label = ImGraphicsExtractor.icon(ImIcons.FILE_CODE) + " " + fileName;
 
         ImGui.treeNodeEx(
                 "##file_" + id,
