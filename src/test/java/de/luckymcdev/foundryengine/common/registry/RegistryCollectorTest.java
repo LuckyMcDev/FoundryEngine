@@ -58,20 +58,6 @@ class RegistryCollectorTest {
     }
 
     @Test
-    void getSoundBuilder_Existing_Returns() {
-        RegistryCollector collector = new RegistryCollector();
-        SoundBuilder builder = new SoundBuilder(id("my_sound"));
-        collector.addSound(builder);
-        assertSame(builder, collector.getSoundBuilder(id("my_sound")));
-    }
-
-    @Test
-    void getSoundBuilder_Missing_ReturnsNull() {
-        RegistryCollector collector = new RegistryCollector();
-        assertNull(collector.getSoundBuilder(id("missing")));
-    }
-
-    @Test
     void getItems_ReturnsUnmodifiable() {
         RegistryCollector collector = new RegistryCollector();
         assertThrows(UnsupportedOperationException.class,

@@ -11,6 +11,7 @@ import de.luckymcdev.foundryengine.common.builder.block.BlockBuilder;
 import de.luckymcdev.foundryengine.common.builder.item.ItemBuilder;
 import de.luckymcdev.foundryengine.common.builder.recipe.RecipeBuilder;
 import de.luckymcdev.foundryengine.common.builder.sound.SoundBuilder;
+import de.luckymcdev.foundryengine.common.builder.tag.TagBuilder;
 import de.luckymcdev.foundryengine.common.bundle.Bundle;
 import de.luckymcdev.foundryengine.common.bundle.BundleExceptionHandler;
 import de.luckymcdev.foundryengine.common.event.data.BundleDataGenEvent;
@@ -45,155 +46,167 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 
 /**
  * Generates data (recipes, loot tables, models, etc.) for all loaded bundles.
  */
 public class BundleDataGenerator {
-    public static final Path OUTPUT_ROOT = Common.TEMP_DIR.resolve("instances").resolve(instanceKey()).resolve("bundles");
-    private static final Logger LOGGER = LogUtils.getLogger();
-    private static final Path generatedDataPath = OUTPUT_ROOT.resolve("data");
-    private static final Path generatedAssetsPath = OUTPUT_ROOT.resolve("assets");
+	public static final Path OUTPUT_ROOT = Common.TEMP_DIR.resolve("instances").resolve(instanceKey()).resolve("bundles");
+	private static final Logger LOGGER = LogUtils.getLogger();
+	private static final Path generatedDataPath = OUTPUT_ROOT.resolve("data");
+	private static final Path generatedAssetsPath = OUTPUT_ROOT.resolve("assets");
 
-    /**
-     * Returns the path where generated data files are placed.
-     */
-    public static Path getGeneratedDataPath() {
-        return generatedDataPath;
-    }
+	/**
+	 * Returns the path where generated data files are placed.
+	 */
+	public static Path getGeneratedDataPath() {
+		return generatedDataPath;
+	}
 
-    /**
-     * Returns the path where generated asset files are placed.
-     */
-    public static Path getGeneratedAssetsPath() {
-        return generatedAssetsPath;
-    }
+	/**
+	 * Returns the path where generated asset files are placed.
+	 */
+	public static Path getGeneratedAssetsPath() {
+		return generatedAssetsPath;
+	}
 
-    /**
-     * Runs data generation for all loaded bundles.
-     */
-    public static void runAll() {
-        prepareOutputDirectories();
-        for (Bundle bundle : Common.getBundleManager().getBundles()) {
-            run(bundle);
-        }
-        try {
-            LOGGER.info("Custom data generator running");
-            EngineDataGenerator customGen = new EngineDataGenerator(OUTPUT_ROOT);
-            LayeredRegistryAccess<RegistryLayer> layeredAccess = RegistryLayer.createRegistryAccess();
-            CompletableFuture<HolderLookup.Provider> lookupProvider = CompletableFuture.completedFuture(
-                    layeredAccess.compositeAccess()
-            );
-            NeoForge.EVENT_BUS.post(new BundleDataGenEvent(customGen, lookupProvider));
-            customGen.run();
-        } catch (IOException e) {
-            BundleExceptionHandler.handle("Custom Data Generator Crashed.", e);
-        }
-    }
+	/**
+	 * Runs data generation for all loaded bundles.
+	 */
+	public static void runAll() {
+		prepareOutputDirectories();
+		for (Bundle bundle : Common.getBundleManager().getBundles()) {
+			run(bundle);
+		}
+		try {
+			LOGGER.info("Custom data generator running");
+			EngineDataGenerator customGen = new EngineDataGenerator(OUTPUT_ROOT);
+			LayeredRegistryAccess<RegistryLayer> layeredAccess = RegistryLayer.createRegistryAccess();
+			CompletableFuture<HolderLookup.Provider> lookupProvider = CompletableFuture.completedFuture(
+				layeredAccess.compositeAccess()
+			);
+			NeoForge.EVENT_BUS.post(new BundleDataGenEvent(customGen, lookupProvider));
+			customGen.run();
+		} catch (IOException e) {
+			BundleExceptionHandler.handle("Custom Data Generator Crashed.", e);
+		}
+	}
 
-    /**
-     * Runs data generation for a single bundle.
-     */
-    public static void run(Bundle bundle) {
-        prepareOutputDirectories();
-        EngineDataGenerator gen = new EngineDataGenerator(OUTPUT_ROOT);
+	/**
+	 * Runs data generation for a single bundle.
+	 */
+	public static void run(Bundle bundle) {
+		prepareOutputDirectories();
+		EngineDataGenerator gen = new EngineDataGenerator(OUTPUT_ROOT);
 
-        LayeredRegistryAccess<RegistryLayer> layeredAccess = RegistryLayer.createRegistryAccess();
-        CompletableFuture<HolderLookup.Provider> lookupProvider = CompletableFuture.completedFuture(
-                layeredAccess.compositeAccess()
-        );
+		LayeredRegistryAccess<RegistryLayer> layeredAccess = RegistryLayer.createRegistryAccess();
+		CompletableFuture<HolderLookup.Provider> lookupProvider = CompletableFuture.completedFuture(
+			layeredAccess.compositeAccess()
+		);
 
-        RegistryCollector collector = Common.getRegistryCollector();
-        if (collector == null) return;
+		RegistryCollector collector = Common.getRegistryCollector();
+		if (collector == null) {
+			return;
+		}
 
-        PackOutput pOut = gen.getGenerator().getPackOutput();
-        Path outputRoot = gen.getOutput();
-        String namespace = bundle.info().id();
+		PackOutput pOut = gen.getGenerator().getPackOutput();
+		Path outputRoot = gen.getOutput();
+		String namespace = bundle.info().id();
 
-        List<BlockBuilder> blockBuilders = collector.getBlocks().stream()
-                .filter(b -> b.getId().getNamespace().equals(namespace) && b.shouldGenerateData())
-                .collect(Collectors.toList());
+		List<BlockBuilder> blockBuilders = collector.getBlocks().stream()
+			.filter(b -> b.getId().getNamespace().equals(namespace) && b.shouldGenerateData())
+			.toList();
 
-        List<ItemBuilder> itemBuilders = collector.getItems().stream()
-                .filter(b -> b.getId().getNamespace().equals(namespace) && b.shouldGenerateData())
-                .collect(Collectors.toList());
+		List<ItemBuilder> itemBuilders = collector.getItems().stream()
+			.filter(b -> b.getId().getNamespace().equals(namespace) && b.shouldGenerateData())
+			.toList();
 
-        List<RecipeBuilder> recipeBuilders = collector.getRecipes().stream()
-                .filter(b -> b.getId().getNamespace().equals(namespace) && b.shouldGenerateData())
-                .collect(Collectors.toList());
+		List<RecipeBuilder> recipeBuilders = collector.getRecipes().stream()
+			.filter(b -> b.getId().getNamespace().equals(namespace) && b.shouldGenerateData())
+			.toList();
 
-        List<SoundBuilder> soundBuilders = collector.getSounds().stream()
-                .filter(b -> b.getId().getNamespace().equals(namespace) && b.shouldGenerateData())
-                .collect(Collectors.toList());
+		List<SoundBuilder> soundBuilders = collector.getSounds().stream()
+			.filter(b -> b.getId().getNamespace().equals(namespace) && b.shouldGenerateData())
+			.toList();
 
-        try {
-            LOGGER.info(outputRoot.toAbsolutePath().toString());
+		List<TagBuilder<?>> tagBuilders = collector.getTags().stream()
+			.filter(b -> b.getId().getNamespace().equals(namespace) && b.shouldGenerateData())
+			.toList();
 
-            gen.addProvider(new EngineAdvancementProvider(
-                    pOut,
-                    lookupProvider,
-                    List.of(
-                            new EngineAdvancementSubProvider()
-                    )
-            ));
-            gen.addProvider(new EngineLootTableProvider(
-                    pOut,
-                    Set.of(),
-                    List.of(
-                            new LootTableProvider.SubProviderEntry(
-                                    registries -> new EngineLootTableSubProvider(registries),
-                                    LootContextParamSets.BLOCK
-                            )
-                    ),
-                    lookupProvider
-            ));
-            gen.addProvider(new EngineRecipeProvider.Runner(pOut, lookupProvider, namespace, recipeBuilders));
-            gen.addProvider(new EngineRecipePrioritiesProvider(pOut, lookupProvider, namespace));
-            gen.addProvider(new EngineBlockTagsProvider(pOut, lookupProvider, namespace));
-            gen.addProvider(new EngineItemTagsProvider(pOut, lookupProvider, namespace));
-            gen.addProvider(new EngineGlobalLootModifierProvider(pOut, lookupProvider, namespace));
+		try {
+			LOGGER.info(outputRoot.toAbsolutePath().toString());
 
-            if (FMLEnvironment.getDist().isClient()) {
-                gen.addProvider(new EngineLanguageProvider(pOut, "en_us", namespace, blockBuilders, itemBuilders, soundBuilders));
-                gen.addProvider(new EngineModelProvider(pOut, namespace, blockBuilders, itemBuilders));
-                gen.addProvider(new EngineEquipmentAssetProvider(pOut));
-                gen.addProvider(new EngineParticleDescriptionProvider(pOut));
-                gen.addProvider(new EngineSoundDefinitionsProvider(pOut, namespace, soundBuilders));
-            }
+			gen.addProvider(new EngineAdvancementProvider(
+				pOut,
+				lookupProvider,
+				List.of(
+					new EngineAdvancementSubProvider()
+				)
+			));
+			gen.addProvider(new EngineLootTableProvider(
+				pOut,
+				Set.of(),
+				List.of(
+					new LootTableProvider.SubProviderEntry(
+						registries -> new EngineLootTableSubProvider(registries),
+						LootContextParamSets.BLOCK
+					)
+				),
+				lookupProvider
+			));
+			gen.addProvider(new EngineRecipeProvider.Runner(pOut, lookupProvider, namespace, recipeBuilders));
+			gen.addProvider(new EngineRecipePrioritiesProvider(pOut, lookupProvider, namespace));
+			var blockTagBuilders = tagBuilders.stream()
+				.filter(b -> b.registry().equals(net.minecraft.core.registries.Registries.BLOCK))
+				.toList();
+		var itemTagBuilders = tagBuilders.stream()
+				.filter(b -> b.registry().equals(net.minecraft.core.registries.Registries.ITEM))
+				.toList();
 
-            gen.run();
-        } catch (IOException e) {
-            LOGGER.error("Failed to run data generator: {}", e.getMessage());
-        }
-    }
+		gen.addProvider(new EngineBlockTagsProvider(pOut, lookupProvider, namespace, blockTagBuilders));
+			gen.addProvider(new EngineItemTagsProvider(pOut, lookupProvider, namespace, itemTagBuilders));
+			gen.addProvider(new EngineGlobalLootModifierProvider(pOut, lookupProvider, namespace));
 
-    private static void prepareOutputDirectories() {
-        try {
-            try {
-                FileUtils.deleteDirectory(BundleDataGenerator.OUTPUT_ROOT.toFile());
-            } catch (IOException e) {
-                LOGGER.error("Could not clear Data Cache.");
-            }
-            Files.createDirectories(generatedDataPath);
-            Files.createDirectories(generatedAssetsPath);
-        } catch (IOException e) {
-            LOGGER.error("Failed to create generated pack directories: {}", e.getMessage());
-        }
-    }
+			if (FMLEnvironment.getDist().isClient()) {
+				gen.addProvider(new EngineLanguageProvider(pOut, "en_us", namespace, blockBuilders, itemBuilders, soundBuilders));
+				gen.addProvider(new EngineModelProvider(pOut, namespace, blockBuilders, itemBuilders));
+				gen.addProvider(new EngineEquipmentAssetProvider(pOut));
+				gen.addProvider(new EngineParticleDescriptionProvider(pOut));
+				gen.addProvider(new EngineSoundDefinitionsProvider(pOut, namespace, soundBuilders));
+			}
 
-    private static String instanceKey() {
-        String gameDir = Common.GAMEDIR.toString().toLowerCase(Locale.ROOT);
-        try {
-            byte[] digest = MessageDigest.getInstance("SHA-256").digest(gameDir.getBytes(StandardCharsets.UTF_8));
-            StringBuilder key = new StringBuilder("game-");
-            for (int i = 0; i < 8; i++) {
-                key.append(String.format(Locale.ROOT, "%02x", digest[i]));
-            }
-            return key.toString();
-        } catch (NoSuchAlgorithmException e) {
-            return "game-" + Integer.toUnsignedString(gameDir.hashCode(), 16);
-        }
-    }
+			gen.run();
+		} catch (IOException e) {
+			LOGGER.error("Failed to run data generator: {}", e.getMessage());
+		}
+	}
+
+	private static void prepareOutputDirectories() {
+		try {
+			try {
+				FileUtils.deleteDirectory(BundleDataGenerator.OUTPUT_ROOT.toFile());
+			} catch (IOException e) {
+				LOGGER.error("Could not clear Data Cache.");
+			}
+			Files.createDirectories(generatedDataPath);
+			Files.createDirectories(generatedAssetsPath);
+		} catch (IOException e) {
+			LOGGER.error("Failed to create generated pack directories: {}", e.getMessage());
+		}
+	}
+
+	private static String instanceKey() {
+		String gameDir = Common.GAMEDIR.toString().toLowerCase(Locale.ROOT);
+		try {
+			byte[] digest = MessageDigest.getInstance("SHA-256").digest(gameDir.getBytes(StandardCharsets.UTF_8));
+			StringBuilder key = new StringBuilder("game-");
+			for (int i = 0; i < 8; i++) {
+				key.append(String.format(Locale.ROOT, "%02x", digest[i]));
+			}
+			return key.toString();
+		} catch (NoSuchAlgorithmException e) {
+			return "game-" + Integer.toUnsignedString(gameDir.hashCode(), 16);
+		}
+	}
 }
