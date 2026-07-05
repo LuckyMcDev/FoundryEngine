@@ -12,6 +12,7 @@ import de.luckymcdev.foundryengine.client.node.NodePinType;
 import de.luckymcdev.foundryengine.client.node.NodeTypes;
 import de.luckymcdev.foundryengine.common.Common;
 import imgui.ImGui;
+import net.minecraft.network.chat.Component;
 
 import java.util.List;
 
@@ -52,8 +53,8 @@ public class NodeTestPanel extends EditorPanel {
             }
 
             @Override
-            public String getDisplayName() {
-                return "Root Evaluator";
+            public Component getDisplayName() {
+                return Component.translatable("node.foundryengine.root");
             }
 
             @Override

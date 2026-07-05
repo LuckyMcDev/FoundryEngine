@@ -1,7 +1,13 @@
 package de.luckymcdev.foundryengine.client.node.example;
 
-import de.luckymcdev.foundryengine.client.node.*;
+import de.luckymcdev.foundryengine.client.node.Node;
+import de.luckymcdev.foundryengine.client.node.NodeBuilder;
+import de.luckymcdev.foundryengine.client.node.NodePin;
+import de.luckymcdev.foundryengine.client.node.NodePinConnectionType;
+import de.luckymcdev.foundryengine.client.node.NodePinShape;
+import de.luckymcdev.foundryengine.client.node.NodeTypes;
 import imgui.ImGui;
+import net.minecraft.network.chat.Component;
 
 import java.util.List;
 
@@ -30,8 +36,8 @@ public class ConstantBuilder implements NodeBuilder<Double> {
     }
 
     @Override
-    public String getDisplayName() {
-        return "Constant";
+    public Component getDisplayName() {
+        return Component.translatable("node.foundryengine.constant");
     }
 
     @Override
