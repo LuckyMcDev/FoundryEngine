@@ -785,7 +785,9 @@ public class ExplorerPanel extends EditorPanel {
 			for (int i = 0; i < segments.length - 1; i++) {
 				current = current.children.computeIfAbsent(segments[i], k -> new ResourceTree());
 			}
-			current.resources.add(id);
+			if (!current.resources.contains(id)) {
+				current.resources.add(id);
+			}
 		}
 
 		void render(ResourceFileRenderer renderer) {

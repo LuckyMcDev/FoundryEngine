@@ -8,4 +8,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface FilePackResourcesAccessor {
 	@Accessor("prefix")
 	String engine$prefix();
+
+	@Accessor("zipFileAccess")
+	FilePackResources.SharedZipFileAccess engine$zipFileAccess();
 }
