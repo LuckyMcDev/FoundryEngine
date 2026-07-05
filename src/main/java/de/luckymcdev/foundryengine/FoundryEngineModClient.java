@@ -6,8 +6,6 @@ import de.luckymcdev.foundryengine.client.command.FoundryCommandsClient;
 import de.luckymcdev.foundryengine.client.debug.screen.BundleDebugEntry;
 import de.luckymcdev.foundryengine.client.debug.screen.GameStagesDebugEntry;
 import de.luckymcdev.foundryengine.client.editor.panel.NodeTestPanel;
-import de.luckymcdev.foundryengine.client.editor.panel.TestPanel;
-import de.luckymcdev.foundryengine.client.editor.panel.TextEditorTestPanel;
 import de.luckymcdev.foundryengine.client.editor.panel.cutscenes.CutscenePanel;
 import de.luckymcdev.foundryengine.client.editor.panel.cutscenes.CutsceneTimelinePanel;
 import de.luckymcdev.foundryengine.client.editor.panel.editor.AreaPanel;
@@ -16,6 +14,9 @@ import de.luckymcdev.foundryengine.client.editor.panel.editor.MainEditor;
 import de.luckymcdev.foundryengine.client.editor.panel.editor.RecipeEditorPanel;
 import de.luckymcdev.foundryengine.client.editor.panel.explorer.FileExplorerPanel;
 import de.luckymcdev.foundryengine.client.editor.panel.explorer.ResourceExplorerPanel;
+import de.luckymcdev.foundryengine.client.editor.panel.test.GizmoTestPanel;
+import de.luckymcdev.foundryengine.client.editor.panel.test.TestPanel;
+import de.luckymcdev.foundryengine.client.editor.panel.test.TextEditorTestPanel;
 import de.luckymcdev.foundryengine.client.editor.panel.tools.CataloguePanel;
 import de.luckymcdev.foundryengine.client.editor.panel.tools.ConsolePanel;
 import de.luckymcdev.foundryengine.client.editor.panel.tools.DevToolsPanel;
@@ -95,6 +96,7 @@ public class FoundryEngineModClient {
 		Client.getEditorManager().register(
 			TestPanel.INSTANCE,
 			TextEditorTestPanel.INSTANCE,
+			GizmoTestPanel.INSTANCE,
 			FileExplorerPanel.INSTANCE,
 			ResourceExplorerPanel.INSTANCE,
 			ConsolePanel.INSTANCE,
