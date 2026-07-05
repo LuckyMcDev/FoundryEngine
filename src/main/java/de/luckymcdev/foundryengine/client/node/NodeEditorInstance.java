@@ -12,239 +12,237 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import org.jetbrains.annotations.Nullable;
 
 public class NodeEditorInstance<T> {
-    public final NodePinType<T> type;
-    public final Node<T> root;
-    public final Int2ObjectMap<Node<T>> nodes;
-    public final Int2ObjectMap<NodePinInfo<T>> pins;
-    private final ImInt tempSrc;
-    private final ImInt tempDst;
-    public float miniMap;
-    public int lastId;
-    public NodeBuilder<T> rootBuilder;
-    private NodePinInfo<T> lastDroppedPin;
+	public final NodePinType<T> type;
+	public final Node<T> root;
+	public final Int2ObjectMap<Node<T>> nodes;
+	public final Int2ObjectMap<NodePinInfo<T>> pins;
+	private final ImInt tempSrc;
+	private final ImInt tempDst;
+	public float miniMap;
+	public int lastId;
+	public NodeBuilder<T> rootBuilder;
+	private NodePinInfo<T> lastDroppedPin;
 
-    public NodeEditorInstance(NodePinType<T> type) {
-        this.type = type;
-        this.root = new Node<>(type.singleRequiredInput);
-        this.nodes = new Int2ObjectLinkedOpenHashMap<>();
-        this.pins = new Int2ObjectLinkedOpenHashMap<>();
-        this.tempSrc = new ImInt();
-        this.tempDst = new ImInt();
-        this.miniMap = 0.1F;
-        this.lastId = 0;
-        addNode(root);
-    }
+	public NodeEditorInstance(NodePinType<T> type) {
+		this.type = type;
+		this.root = new Node<>(type.singleRequiredInput);
+		this.nodes = new Int2ObjectLinkedOpenHashMap<>();
+		this.pins = new Int2ObjectLinkedOpenHashMap<>();
+		this.tempSrc = new ImInt();
+		this.tempDst = new ImInt();
+		this.miniMap = 0.1F;
+		this.lastId = 0;
+		addNode(root);
+	}
 
-    public int nextId() {
-        return ++lastId;
-    }
+	public int nextId() {
+		return ++lastId;
+	}
 
-    public void addNode(Node<T> node) {
-        if (node.id == 0) {
-            node.id = nextId();
-        }
-        nodes.put(node.id, node);
-        for (var pin : node.inputPins) {
-            if (pin.id == 0) {
-                pin.id = nextId();
-            }
-            pins.put(pin.id, pin);
-        }
-        for (var pin : node.outputPins) {
-            if (pin.id == 0) {
-                pin.id = nextId();
-            }
-            pins.put(pin.id, pin);
-        }
-    }
+	public void addNode(Node<T> node) {
+		if (node.id == 0) {
+			node.id = nextId();
+		}
+		nodes.put(node.id, node);
+		for (var pin : node.inputPins) {
+			if (pin.id == 0) {
+				pin.id = nextId();
+			}
+			pins.put(pin.id, pin);
+		}
+		for (var pin : node.outputPins) {
+			if (pin.id == 0) {
+				pin.id = nextId();
+			}
+			pins.put(pin.id, pin);
+		}
+	}
 
-    private void removeNode(Node<T> node) {
-        if (node == root) return; // don't remove root
-        // Remove all pins of this node
-        for (var pin : node.inputPins) {
-            pins.remove(pin.id);
-            // Also clear any links from this input to an output (should be null anyway)
-        }
-        for (var pin : node.outputPins) {
-            pins.remove(pin.id);
-            // Break any links from other pins to this output
-            for (var other : pins.values()) {
-                if (other.inputLink == pin) {
-                    other.inputLink = null;
-                    other.inputLinkSelected = false;
-                }
-            }
-        }
-        nodes.remove(node.id);
-    }
+	private void removeNode(Node<T> node) {
+		if (node == root) return; // don't remove root
+		// Remove all pins of this node
+		for (var pin : node.inputPins) {
+			pins.remove(pin.id);
+		}
+		for (var pin : node.outputPins) {
+			pins.remove(pin.id);
+			// Break any links from other pins to this output
+			for (var other : pins.values()) {
+				if (other.inputLink == pin) {
+					other.inputLink = null;
+					other.inputLinkSelected = false;
+				}
+			}
+		}
+		nodes.remove(node.id);
+	}
 
-    private void dropNewNode(@Nullable Node<T> node) {
-        if (node == null || (node.inputPins.isEmpty() && node.outputPins.isEmpty())) {
-            return;
-        }
-        if (lastDroppedPin != null) {
-            for (var pin : node.outputPins) {
-                if (pin.pin.type() == lastDroppedPin.pin.type()) {
-                    pin.inputLink = lastDroppedPin;
-                    break;
-                }
-            }
-            lastDroppedPin = null;
-        }
-        addNode(node);
-    }
+	private void dropNewNode(@Nullable Node<T> node) {
+		if (node == null || (node.inputPins.isEmpty() && node.outputPins.isEmpty())) {
+			return;
+		}
+		if (lastDroppedPin != null) {
+			// If the pin we dragged from is an output, we need to match it against one of
+			// the new node's *input* pins (and vice versa) - not always outputPins.
+			boolean droppedIsOutput = lastDroppedPin.pin.connectionType() == NodePinConnectionType.OUTPUT;
+			var candidates = droppedIsOutput ? node.inputPins : node.outputPins;
 
-    public boolean content(ImGraphicsExtractor g) {
-        boolean update = false;
-        boolean mouseRightButton = ImGui.isMouseClicked(1);
+			for (var pin : candidates) {
+				if (pin.pin.type() == lastDroppedPin.pin.type()) {
+					if (droppedIsOutput) {
+						pin.inputLink = lastDroppedPin;
+					} else {
+						lastDroppedPin.inputLink = pin;
+					}
+					break;
+				}
+			}
+			lastDroppedPin = null;
+		}
+		addNode(node);
+	}
 
-        ImNodes.beginNodeEditor();
-        boolean nodeEditorHovered = ImNodes.isEditorHovered();
-        Node<T> removedNode = null;
+	public boolean content(ImGraphicsExtractor g) {
+		boolean update = false;
+		boolean mouseRightButton = ImGui.isMouseClicked(1);
 
-        for (var node : nodes.values()) {
-            ImNodes.beginNode(node.id);
-            ImNodes.beginNodeTitleBar();
+		ImNodes.beginNodeEditor();
+		boolean nodeEditorHovered = ImNodes.isEditorHovered();
+		Node<T> removedNode = null;
 
-            if (node.builder != null) {
-                if (ImGui.button(" "+ImIcons.FA.FA_CLOSE+" ")) {
-                    removedNode = node;
-                }
-                ImGui.sameLine();
-            }
+		for (var node : nodes.values()) {
+			ImNodes.beginNode(node.id);
+			ImNodes.beginNodeTitleBar();
 
-            String title = node.builder == null ? "Root" : node.builder.getDisplayName().getString();
-            ImGui.text(title);
-            ImNodes.endNodeTitleBar();
-            ImGui.pushItemWidth(130F);
+			if (node.builder != null) {
+				if (ImGui.button(" "+ImIcons.FA.FA_CLOSE+" ")) {
+					removedNode = node;
+				}
+				ImGui.sameLine();
+			}
 
-            if (node.builder != null) {
-                if (node.builder.render()) {
-                    update = true;
-                }
-            } else {
-                // Root node
-                ImGui.textUnformatted("Root Node");
-                ImGui.textUnformatted("Value:");
-                if (rootBuilder != null) {
-                    T value = rootBuilder.evaluate();
-                    ImGui.textUnformatted(String.valueOf(value));
-                } else {
-                    g.redTextIf("Invalid", true);
-                }
-            }
+			String title = node.builder == null ? "Root" : node.builder.getDisplayName().getString();
+			ImGui.text(title);
+			ImNodes.endNodeTitleBar();
+			ImGui.pushItemWidth(130F);
 
-            // Draw pins
-            for (var pin : node.inputPins) {
-                ImNodes.beginInputAttribute(pin.id, pin.pin.shape().id);
-                ImGui.textUnformatted(pin.pin.label());
-                ImNodes.endInputAttribute();
-            }
-            for (var pin : node.outputPins) {
-                ImNodes.beginOutputAttribute(pin.id, pin.pin.shape().id);
-                ImGui.textUnformatted(pin.pin.label());
-                ImNodes.endOutputAttribute();
-            }
+			if (node.builder != null) {
+				if (node.builder.render()) {
+					update = true;
+				}
+			} else {
+				// Root node
+				ImGui.textUnformatted("Root Node");
+				ImGui.textUnformatted("Value:");
+				if (rootBuilder != null) {
+					T value = rootBuilder.evaluate();
+					ImGui.textUnformatted(String.valueOf(value));
+				} else {
+					g.redTextIf("Invalid", true);
+				}
+			}
 
-            ImGui.popItemWidth();
-            ImNodes.endNode();
-        }
+			// Draw pins
+			for (var pin : node.inputPins) {
+				ImNodes.beginInputAttribute(pin.id, pin.pin.shape().id);
+				ImGui.textUnformatted(pin.pin.label());
+				ImNodes.endInputAttribute();
+			}
+			for (var pin : node.outputPins) {
+				ImNodes.beginOutputAttribute(pin.id, pin.pin.shape().id);
+				ImGui.textUnformatted(pin.pin.label());
+				ImNodes.endOutputAttribute();
+			}
 
-        // Draw links
-        for (var pin : pins.values()) {
-            if (pin.inputLink != null) {
-                ImNodes.link(pin.id, pin.inputLink.id, pin.id);
-            }
-        }
+			ImGui.popItemWidth();
+			ImNodes.endNode();
+		}
 
-        if (miniMap > 0F) {
-            ImNodes.miniMap(miniMap, ImNodesMiniMapLocation.TopRight);
-        }
+		// Draw links
+		for (var pin : pins.values()) {
+			if (pin.inputLink != null) {
+				ImNodes.link(pin.id, pin.inputLink.id, pin.id);
+			}
+		}
 
-        ImNodes.endNodeEditor();
+		if (miniMap > 0F) {
+			ImNodes.miniMap(miniMap, ImNodesMiniMapLocation.TopRight);
+		}
 
-        // Link creation
-        if (ImNodes.isLinkCreated(tempSrc, tempDst)) {
-            var src = pins.get(tempSrc.get());
-            var dst = pins.get(tempDst.get());
-            var in = src.pin.connectionType() == NodePinConnectionType.OUTPUT ? dst : src;
-            var out = src.pin.connectionType() == NodePinConnectionType.OUTPUT ? src : dst;
-            in.inputLink = out;
-            update = true;
-        }
+		ImNodes.endNodeEditor();
 
-        // Link dropped
-        if (ImNodes.isLinkDropped(tempSrc, false)) {
-            lastDroppedPin = pins.get(tempSrc.get());
-            ImGui.openPopup("###context-menu");
-        }
+		// Link creation
+		if (ImNodes.isLinkCreated(tempSrc, tempDst)) {
+			var src = pins.get(tempSrc.get());
+			var dst = pins.get(tempDst.get());
+			var in = src.pin.connectionType() == NodePinConnectionType.OUTPUT ? dst : src;
+			var out = src.pin.connectionType() == NodePinConnectionType.OUTPUT ? src : dst;
+			in.inputLink = out;
+			update = true;
+		}
 
-        if (nodeEditorHovered && mouseRightButton && !ImGui.isAnyItemHovered()) {
-            ImGui.openPopup("###context-menu");
-        }
+		// Link dropped
+		if (ImNodes.isLinkDropped(tempSrc, false)) {
+			lastDroppedPin = pins.get(tempSrc.get());
+			ImGui.openPopup("###context-menu");
+		}
 
-        // Context menu
-        if (ImGui.beginPopup("###context-menu")) {
-            for (var option : type.nodeOptions) {
-                if (ImGui.menuItem(option.name())) {
-                    NodeBuilder<T> builder = option.factory().get();
-                    Node<T> newNode = new Node<>(builder.getPins());
-                    newNode.setBuilder(builder);
-                    dropNewNode(newNode);
-                    update = true;
-                }
-            }
-            ImGui.endPopup();
-        }
+		if (nodeEditorHovered && mouseRightButton && !ImGui.isAnyItemHovered()) {
+			ImGui.openPopup("###context-menu");
+		}
 
-        if (lastDroppedPin != null && !ImGui.isPopupOpen("###context-menu")) {
-            lastDroppedPin = null;
-        }
+		// Context menu
+		if (ImGui.beginPopup("###context-menu")) {
+			for (var option : type.nodeOptions) {
+				if (ImGui.menuItem(option.name())) {
+					NodeBuilder<T> builder = option.factory().get();
+					Node<T> newNode = new Node<>(builder.getPins());
+					newNode.setBuilder(builder);
+					dropNewNode(newNode);
+					update = true;
+				}
+			}
+			ImGui.endPopup();
+		}
 
-        // Selection tracking
-        for (var node : nodes.values()) {
-            node.selected = ImNodes.isNodeSelected(node.id);
-        }
-        for (var pin : pins.values()) {
-            pin.inputLinkSelected = pin.inputLink != null && ImNodes.isLinkSelected(pin.id);
-        }
+		if (lastDroppedPin != null && !ImGui.isPopupOpen("###context-menu")) {
+			lastDroppedPin = null;
+		}
 
-        // Delete selected links with DEL
-        if (ImGui.isKeyDown(ImGuiKey.Delete)) {
-            for (var pin : pins.values()) {
-                if (pin.inputLinkSelected) {
-                    pin.inputLinkSelected = false;
-                    pin.inputLink = null;
-                    update = true;
-                }
-            }
-        }
+		// Selection tracking
+		for (var node : nodes.values()) {
+			node.selected = ImNodes.isNodeSelected(node.id);
+		}
+		for (var pin : pins.values()) {
+			pin.inputLinkSelected = pin.inputLink != null && ImNodes.isLinkSelected(pin.id);
+		}
 
-        // Delete node (and clean up)
-        if (removedNode != null) {
-            update = true;
-            // Break all links to this node's outputs (already done in removeNode, but we do it again for safety)
-            for (var pin : pins.values()) {
-                for (var oPin : removedNode.outputPins) {
-                    if (pin.inputLink == oPin) {
-                        pin.inputLink = null;
-                        pin.inputLinkSelected = false;
-                        break;
-                    }
-                }
-            }
-            removeNode(removedNode);
-        }
+		// Delete selected links with DEL
+		if (ImGui.isKeyDown(ImGuiKey.Delete)) {
+			for (var pin : pins.values()) {
+				if (pin.inputLinkSelected) {
+					pin.inputLinkSelected = false;
+					pin.inputLink = null;
+					update = true;
+				}
+			}
+		}
 
-        return update;
-    }
+		// Delete node
+		if (removedNode != null) {
+			update = true;
+			removeNode(removedNode);
+		}
 
-    public void clear() {
-        nodes.clear();
-        pins.clear();
-        for (var pin : root.inputPins) {
-            pin.inputLink = null;
-        }
-        addNode(root);
-    }
+		return update;
+	}
+
+	public void clear() {
+		nodes.clear();
+		pins.clear();
+		for (var pin : root.inputPins) {
+			pin.inputLink = null;
+		}
+		addNode(root);
+	}
 }
