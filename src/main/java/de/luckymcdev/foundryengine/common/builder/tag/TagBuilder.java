@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.common.builder.tag;
 
 import de.luckymcdev.foundryengine.common.builder.AbstractBuilder;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -10,6 +11,10 @@ import net.minecraft.tags.TagKey;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Use {@link BlockTagBuilder} and {@link ItemTagBuilder} or this with a Wildcard if you know what you're doing
+ * @param <T> the Type
+ */
 public class TagBuilder<T> extends AbstractBuilder<TagKey<T>> {
 	private final ResourceKey<? extends Registry<T>> registry;
 	private final List<TagEntry> entries = new ArrayList<>();
@@ -30,9 +35,17 @@ public class TagBuilder<T> extends AbstractBuilder<TagKey<T>> {
 		return this;
 	}
 
+	public TagBuilder<T> add(Holder<T> holder) {
+		return add(holder.unwrapKey().orElseThrow());
+	}
+
 	public TagBuilder<T> addOptional(ResourceKey<T> key) {
 		entries.add(TagEntry.optionalElement(key.identifier()));
 		return this;
+	}
+
+	public TagBuilder<T> addOptional(Holder<T> holder) {
+		return addOptional(holder.unwrapKey().orElseThrow());
 	}
 
 	public TagBuilder<T> addTag(TagKey<T> tag) {
@@ -48,6 +61,10 @@ public class TagBuilder<T> extends AbstractBuilder<TagKey<T>> {
 	public TagBuilder<T> remove(ResourceKey<T> key) {
 		removeEntries.add(TagEntry.element(key.identifier()));
 		return this;
+	}
+
+	public TagBuilder<T> remove(Holder<T> holder) {
+		return remove(holder.unwrapKey().orElseThrow());
 	}
 
 	public TagBuilder<T> removeTag(TagKey<T> tag) {
