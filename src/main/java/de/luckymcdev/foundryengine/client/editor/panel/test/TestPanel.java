@@ -1,8 +1,9 @@
-package de.luckymcdev.foundryengine.client.editor.panel;
+package de.luckymcdev.foundryengine.client.editor.panel.test;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
+import de.luckymcdev.foundryengine.client.editor.panel.Panel;
 import de.luckymcdev.foundryengine.client.editor.panel.tools.CataloguePanel;
 import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;

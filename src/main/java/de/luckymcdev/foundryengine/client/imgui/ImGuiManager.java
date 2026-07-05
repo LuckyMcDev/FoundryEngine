@@ -94,7 +94,7 @@ public final class ImGuiManager implements ResourceManagerReloadListener, Native
         imGuiImplGlfw.init(handle, true);
 
         io.setConfigDockingWithShift(true);
-        io.setConfigWindowsMoveFromTitleBarOnly(false);
+		io.setConfigWindowsMoveFromTitleBarOnly(true); // Sadly, this breaks when using gizmos
         io.setConfigMacOSXBehaviors(InputQuirks.ON_OSX);
 
         fontManager.loadFonts(resourceManager);
