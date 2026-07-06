@@ -24,8 +24,8 @@ public class Material {
 	private Vector3f ambientColor = new Vector3f(1, 1, 1);
 	private Vector3f diffuseColor = new Vector3f(1, 1, 1);
 	private Vector3f specularColor = new Vector3f(0, 0, 0);
-	private float shininess = 0f;
-	private float opacity = 1f;
+	private float shininess = 0.0f;
+	private float opacity = 1.0f;
 
 	/**
 	 * Resource location of the texture file referenced by {@code map_Kd}, if any.

@@ -15,7 +15,7 @@ import java.io.File;
 public class TextureViewerPanel extends EditorPanel {
 
 	private static final float MIN_ZOOM = 0.1f;
-	private static final float MAX_ZOOM = 15f;
+	private static final float MAX_ZOOM = 15.0f;
 	private static final int CHECKER_SIZE = 8;
 
 	private final Identifier textureIdentifier;
@@ -25,7 +25,7 @@ public class TextureViewerPanel extends EditorPanel {
 	private String sourcePath;
 
 	private boolean fitToWindow = true;
-	private float zoom = 1f;
+	private float zoom = 1.0f;
 
 	public TextureViewerPanel(Identifier id, Component title, Identifier identifier) {
 		super(new Builder(id, title)
@@ -64,7 +64,7 @@ public class TextureViewerPanel extends EditorPanel {
 	@Override
 	public void content(ImGraphicsExtractor g) {
 		if (image.glId() == -1 || image.width() <= 0 || image.height() <= 0) {
-			ImGui.textColored(1f, 0.4f, 0.4f, 1f, "Failed to load texture:");
+			ImGui.textColored(1.0f, 0.4f, 0.4f, 1.0f, "Failed to load texture:");
 			ImGui.textWrapped(sourcePath);
 			if (ImGui.button("Retry")) {
 				loadTexture();
@@ -75,8 +75,8 @@ public class TextureViewerPanel extends EditorPanel {
 		drawToolbar();
 		ImGui.separator();
 
-		float availWidth = Math.max(1f, ImGui.getContentRegionAvailX());
-		float availHeight = Math.max(1f, ImGui.getContentRegionAvailY());
+		float availWidth = Math.max(1.0f, ImGui.getContentRegionAvailX());
+		float availHeight = Math.max(1.0f, ImGui.getContentRegionAvailY());
 
 		float displayW;
 		float displayH;
@@ -93,7 +93,7 @@ public class TextureViewerPanel extends EditorPanel {
 			ImGuiWindowFlags.HorizontalScrollbar);
 
 		// Center horizontally if the image is narrower than the available space
-		float centerOffset = Math.max(0, (ImGui.getContentRegionAvailX() - displayW) / 2f);
+		float centerOffset = Math.max(0, (ImGui.getContentRegionAvailX() - displayW) / 2.0f);
 		if (centerOffset > 0) {
 			ImGui.setCursorPosX(ImGui.getCursorPosX() + centerOffset);
 		}
@@ -126,7 +126,7 @@ public class TextureViewerPanel extends EditorPanel {
 		if (ImGui.button(fitToWindow ? "Fit: On" : "Fit: Off")) {
 			fitToWindow = !fitToWindow;
 			if (!fitToWindow) {
-				zoom = 1f;
+				zoom = 1.0f;
 			}
 		}
 		ImGui.sameLine();
@@ -136,14 +136,14 @@ public class TextureViewerPanel extends EditorPanel {
 			zoom = Math.clamp(zoom - 0.25f, MIN_ZOOM, MAX_ZOOM);
 		}
 		ImGui.sameLine();
-		ImGui.text(String.format("%.0f%%", fitToWindow ? 100f : zoom * 100f));
+		ImGui.text(String.format("%.0f%%", fitToWindow ? 100.0f : zoom * 100.0f));
 		ImGui.sameLine();
 		if (ImGui.button("+")) {
 			zoom = Math.clamp(zoom + 0.25f, MIN_ZOOM, MAX_ZOOM);
 		}
 		ImGui.sameLine();
 		if (ImGui.button("100%")) {
-			zoom = 1f;
+			zoom = 1.0f;
 		}
 		ImGui.endDisabled();
 

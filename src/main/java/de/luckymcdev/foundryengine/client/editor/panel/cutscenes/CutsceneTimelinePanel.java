@@ -48,14 +48,14 @@ public class CutsceneTimelinePanel extends EditorPanel {
 	private final ImInt previewTick = new ImInt(0);
 	private final ImInt selectedAttachmentIndex = new ImInt(-1);
 	private final ImInt selectedAttachmentTypeIndex = new ImInt(0);
-	private final ImFloat effectAt = new ImFloat(0f);
+	private final ImFloat effectAt = new ImFloat(0.0f);
 	private final ImInt effectTypeIndex = new ImInt(0);
 	private final ImFloat effectIntroDuration = new ImFloat(0.1f);
 	private final ImFloat effectHoldDuration = new ImFloat(0.2f);
 	private final ImFloat effectOutroDuration = new ImFloat(0.1f);
 	private final ImInt effectEasingIndex = new ImInt(0);
 	private final ImString commandText = new ImString(256);
-	private final ImFloat commandDelay = new ImFloat(0f);
+	private final ImFloat commandDelay = new ImFloat(0.0f);
 	private float zoomPxPerTick = 6.0f;
 
 	private CutsceneTimelinePanel() {
@@ -81,7 +81,7 @@ public class CutsceneTimelinePanel extends EditorPanel {
 
 		List<Cutscene> cutscenes = CutsceneRenderer.getCutscenes();
 
-		ImGui.beginChild("##cs_tl_list", 220f, 0, true);
+		ImGui.beginChild("##cs_tl_list", 220.0f, 0, true);
 		try {
 			if (cutscenes.isEmpty()) {
 				ImGui.textDisabled("No cutscenes.");
@@ -306,19 +306,19 @@ public class CutsceneTimelinePanel extends EditorPanel {
 			totalTicks = 1;
 		}
 
-		float stripHeight = 90f;
+		float stripHeight = 90.0f;
 		ImGui.beginChild("##cs_tl_strip", 0, stripHeight, true, ImGuiWindowFlags.HorizontalScrollbar);
 		try {
 			float wheel = ImGui.getIO().getMouseWheel();
-			if (ImGui.isWindowHovered() && wheel != 0f) {
+			if (ImGui.isWindowHovered() && wheel != 0.0f) {
 				if (ImGui.getIO().getKeyCtrl()) {
 					zoomPxPerTick = Math.clamp(zoomPxPerTick + (wheel > 0 ? 1.0f : -1.0f), 1.0f, 20.0f);
 				} else {
-					ImGui.setScrollX(Math.max(0f, ImGui.getScrollX() - (wheel * 40f)));
+					ImGui.setScrollX(Math.max(0.0f, ImGui.getScrollX() - (wheel * 40.0f)));
 				}
 			}
 
-			float padding = 12f;
+			float padding = 12.0f;
 			float contentW = Math.max(ImGui.getContentRegionAvailX(), padding * 2 + (totalTicks * zoomPxPerTick));
 			float canvasH = stripHeight - ImGui.getStyle().getWindowPaddingY() * 2;
 
@@ -328,23 +328,23 @@ public class CutsceneTimelinePanel extends EditorPanel {
 			float minX = ImGui.getItemRectMin().x;
 			float minY = ImGui.getItemRectMin().y;
 			float maxY = ImGui.getItemRectMax().y;
-			float baseY = maxY - 18f;
-			float barTopY = minY + 8f;
+			float baseY = maxY - 18.0f;
+			float barTopY = minY + 8.0f;
 			float barHeight = 8;
 			float barBottomY = barTopY + barHeight;
 
-			draw.addLine(minX, baseY, minX + contentW, baseY, 0x40FFFFFF, 1f);
+			draw.addLine(minX, baseY, minX + contentW, baseY, 0x40FFFFFF, 1.0f);
 
 			int majorEvery = 20;
 			int minorEvery = 5;
 			for (int t = 0; t <= totalTicks; t += minorEvery) {
 				float x = minX + padding + (t * zoomPxPerTick);
 				boolean major = (t % majorEvery) == 0;
-				float h = major ? 18f : 10f;
+				float h = major ? 18.0f : 10.0f;
 				int col = major ? 0xA0FFFFFF : 0x60FFFFFF;
-				draw.addLine(x, baseY, x, baseY - h, col, 1f);
+				draw.addLine(x, baseY, x, baseY - h, col, 1.0f);
 				if (major) {
-					draw.addText(x + 2, baseY - h - 14f, 0xA0FFFFFF, String.valueOf(t));
+					draw.addText(x + 2, baseY - h - 14.0f, 0xA0FFFFFF, String.valueOf(t));
 				}
 			}
 
@@ -380,21 +380,21 @@ public class CutsceneTimelinePanel extends EditorPanel {
 			for (int i = 0; i < anchors; i++) {
 				int tick = Mth.clamp(anchorTicks[i], 0, totalTicks);
 				float x = minX + padding + (tick * zoomPxPerTick);
-				draw.addLine(x, minY + 18f, x, baseY, nodeCol, 2f);
+				draw.addLine(x, minY + 18.0f, x, baseY, nodeCol, 2.0f);
 
 				// Draw hold zone after interior anchors
 				if (i > 0 && i < anchors - 1) {
 					int holdEndTick = Mth.clamp(anchorTicks[i] + holdTicks.get(i), 0, totalTicks);
 					float hx1 = x;
 					float hx2 = minX + padding + (holdEndTick * zoomPxPerTick);
-					draw.addRectFilled(hx1, minY + 18f, hx2, baseY, holdCol);
+					draw.addRectFilled(hx1, minY + 18.0f, hx2, baseY, holdCol);
 				}
 			}
 
 			var attachments = c.getAttachments();
 			for (int i = 0; i < attachments.size(); i++) {
 				var att = attachments.get(i);
-				int startTick = computeTickForT(c, Math.clamp(att.getAt(), 0f, 1f), len, hs);
+				int startTick = computeTickForT(c, Math.clamp(att.getAt(), 0.0f, 1.0f), len, hs);
 				float duration = att.getDuration();
 				int durationTicks = Math.max(1, Math.round(duration * len));
 				float x = minX + padding + (startTick * zoomPxPerTick);
@@ -417,14 +417,14 @@ public class CutsceneTimelinePanel extends EditorPanel {
 				}
 
 				draw.addRectFilled(x, barTopY, x + w, barBottomY, color);
-				draw.addText(x + 2, barTopY - 6f, textColor, label);
+				draw.addText(x + 2, barTopY - 6.0f, textColor, label);
 				if (ImGui.isMouseHoveringRect(x, barTopY, x + w, barBottomY)) {
 					ImGui.setTooltip(att.getDisplayName() + " at=" + att.getAt() + ", duration=" + duration);
 				}
 			}
 
 			float playheadX = minX + padding + (previewTick.get() * zoomPxPerTick);
-			draw.addLine(playheadX, minY + 2f, playheadX, maxY - 2f, 0xFFFF6666, 2.5f);
+			draw.addLine(playheadX, minY + 2.0f, playheadX, maxY - 2.0f, 0xFFFF6666, 2.5f);
 
 			if (ImGui.isItemHovered() && (ImGui.isMouseDown(0) || ImGui.isMouseClicked(0))) {
 				float localX = ImGui.getMousePosX() - minX - padding;
@@ -435,11 +435,11 @@ public class CutsceneTimelinePanel extends EditorPanel {
 				int picked = -1;
 				for (int i = 0; i < attachments.size(); i++) {
 					var att = attachments.get(i);
-					int et = computeTickForT(c, Mth.clamp(att.getAt(), 0f, 1f), len, hs);
+					int et = computeTickForT(c, Mth.clamp(att.getAt(), 0.0f, 1.0f), len, hs);
 					float ex = minX + padding + (Mth.clamp(et, 0, totalTicks) * zoomPxPerTick);
 					float dur = att.getDuration();
 					float exEnd = ex + Math.max(zoomPxPerTick, (dur * len * zoomPxPerTick));
-					if (px >= ex - 4f && px <= exEnd + 4f) {
+					if (px >= ex - 4.0f && px <= exEnd + 4.0f) {
 						picked = i;
 						break;
 					}
@@ -476,7 +476,7 @@ public class CutsceneTimelinePanel extends EditorPanel {
 			int typeIdx = selectedAttachmentTypeIndex.get();
 			CutsceneAttachment newAtt;
 			if (typeIdx == 1) { // Command
-				newAtt = new CommandAttachment(at, "", 0f);
+				newAtt = new CommandAttachment(at, "", 0.0f);
 			} else { // Effect (default)
 				newAtt = new EffectAttachment(at, "cinematic", 0.1f, 0.2f, 0.1f, LerpType.LINEAR.name());
 			}
@@ -536,7 +536,7 @@ public class CutsceneTimelinePanel extends EditorPanel {
 		// Common: At position
 		ImGui.setNextItemWidth(120);
 		float[] at = new float[]{selectedAtt.getAt()};
-		ImGui.sliderFloat("At##cs_att_at", at, 0f, 1f);
+		ImGui.sliderFloat("At##cs_att_at", at, 0.0f, 1.0f);
 		selectedAtt.setAt(at[0]);
 
 		ImGui.sameLine();
@@ -588,43 +588,43 @@ public class CutsceneTimelinePanel extends EditorPanel {
 		ImInt introTicksInput = new ImInt(introTicks);
 		ImGui.setNextItemWidth(itemWidth);
 		if (ImGui.inputInt("Intro (ticks)##cs_eff_intro", introTicksInput)) {
-			eff.setIntroDuration(Math.max(0f, introTicksInput.get()) / (float) len);
+			eff.setIntroDuration(Math.max(0.0f, introTicksInput.get()) / (float) len);
 		}
 
 		int holdTicks = Math.max(0, Math.round(eff.getHoldDuration() * len));
 		ImInt holdTicksInput = new ImInt(holdTicks);
 		ImGui.setNextItemWidth(itemWidth);
 		if (ImGui.inputInt("Hold (ticks)##cs_eff_hold", holdTicksInput)) {
-			eff.setHoldDuration(Math.max(0f, holdTicksInput.get()) / (float) len);
+			eff.setHoldDuration(Math.max(0.0f, holdTicksInput.get()) / (float) len);
 		}
 
 		int outroTicks = Math.max(0, Math.round(eff.getOutroDuration() * len));
 		ImInt outroTicksInput = new ImInt(outroTicks);
 		ImGui.setNextItemWidth(itemWidth);
 		if (ImGui.inputInt("Outro (ticks)##cs_eff_outro", outroTicksInput)) {
-			eff.setOutroDuration(Math.max(0f, outroTicksInput.get()) / (float) len);
+			eff.setOutroDuration(Math.max(0.0f, outroTicksInput.get()) / (float) len);
 		}
 
 		if (ImGui.collapsingHeader("Relative Settings##eff")) {
 			ImGui.setNextItemWidth(itemWidth);
 			float introRel = eff.getIntroDuration();
 			ImFloat introRelInput = new ImFloat(introRel);
-			if (ImGui.sliderFloat("Intro##cs_eff_intro_rel", introRelInput.getData(), 0f, 1f, "%.2f")) {
-				eff.setIntroDuration(Math.max(0f, introRelInput.get()));
+			if (ImGui.sliderFloat("Intro##cs_eff_intro_rel", introRelInput.getData(), 0.0f, 1.0f, "%.2f")) {
+				eff.setIntroDuration(Math.max(0.0f, introRelInput.get()));
 			}
 
 			ImGui.setNextItemWidth(itemWidth);
 			float holdRel = eff.getHoldDuration();
 			ImFloat holdRelInput = new ImFloat(holdRel);
-			if (ImGui.sliderFloat("Hold##cs_eff_hold_rel", holdRelInput.getData(), 0f, 1f, "%.2f")) {
-				eff.setHoldDuration(Math.max(0f, holdRelInput.get()));
+			if (ImGui.sliderFloat("Hold##cs_eff_hold_rel", holdRelInput.getData(), 0.0f, 1.0f, "%.2f")) {
+				eff.setHoldDuration(Math.max(0.0f, holdRelInput.get()));
 			}
 
 			ImGui.setNextItemWidth(itemWidth);
 			float outroRel = eff.getOutroDuration();
 			ImFloat outroRelInput = new ImFloat(outroRel);
-			if (ImGui.sliderFloat("Outro##cs_eff_outro_rel", outroRelInput.getData(), 0f, 1f, "%.2f")) {
-				eff.setOutroDuration(Math.max(0f, outroRelInput.get()));
+			if (ImGui.sliderFloat("Outro##cs_eff_outro_rel", outroRelInput.getData(), 0.0f, 1.0f, "%.2f")) {
+				eff.setOutroDuration(Math.max(0.0f, outroRelInput.get()));
 			}
 		}
 
@@ -656,15 +656,15 @@ public class CutsceneTimelinePanel extends EditorPanel {
 		ImInt delayTicksInput = new ImInt(delayTicks);
 		ImGui.setNextItemWidth(itemWidth);
 		if (ImGui.inputInt("Delay (ticks)##cs_cmd_delay", delayTicksInput)) {
-			cmd.setDelay(Math.max(0f, delayTicksInput.get()) / (float) len);
+			cmd.setDelay(Math.max(0.0f, delayTicksInput.get()) / (float) len);
 		}
 
 		if (ImGui.collapsingHeader("Relative Settings##cmd")) {
 			ImGui.setNextItemWidth(itemWidth);
 			float delayRel = cmd.getDelay();
 			ImFloat delayRelInput = new ImFloat(delayRel);
-			if (ImGui.sliderFloat("Delay##cs_cmd_delay_rel", delayRelInput.getData(), 0f, 1f, "%.2f")) {
-				cmd.setDelay(Math.max(0f, delayRelInput.get()));
+			if (ImGui.sliderFloat("Delay##cs_cmd_delay_rel", delayRelInput.getData(), 0.0f, 1.0f, "%.2f")) {
+				cmd.setDelay(Math.max(0.0f, delayRelInput.get()));
 			}
 		}
 
@@ -690,9 +690,9 @@ public class CutsceneTimelinePanel extends EditorPanel {
 			}
 			effectTypeIndex.set(tIdx);
 
-			effectIntroDuration.set(Math.max(0f, eff.getIntroDuration()));
-			effectHoldDuration.set(Math.max(0f, eff.getHoldDuration()));
-			effectOutroDuration.set(Math.max(0f, eff.getOutroDuration()));
+			effectIntroDuration.set(Math.max(0.0f, eff.getIntroDuration()));
+			effectHoldDuration.set(Math.max(0.0f, eff.getHoldDuration()));
+			effectOutroDuration.set(Math.max(0.0f, eff.getOutroDuration()));
 
 			int eIdx = 0;
 			for (int i = 0; i < EASING_NAMES.length; i++) {
@@ -704,7 +704,7 @@ public class CutsceneTimelinePanel extends EditorPanel {
 			effectEasingIndex.set(eIdx);
 		} else if (att instanceof CommandAttachment cmd) {
 			commandText.set(cmd.getCommand() == null ? "" : cmd.getCommand());
-			commandDelay.set(Math.max(0f, cmd.getDelay()));
+			commandDelay.set(Math.max(0.0f, cmd.getDelay()));
 		}
 	}
 

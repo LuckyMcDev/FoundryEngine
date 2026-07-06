@@ -6,21 +6,21 @@ import org.joml.Matrix4f;
 
 public final class ImGuiGizmoCamera {
 
-	private float yaw = 45f;
-	private float pitch = 30f;
-	private float distance = 5f;
+	private float yaw = 45.0f;
+	private float pitch = 30.0f;
+	private float distance = 5.0f;
 	private float minDistance = 0.1f;
-	private float maxDistance = 500f;
+	private float maxDistance = 500.0f;
 
-	private float fovDeg = 45f;
+	private float fovDeg = 45.0f;
 	private float nearPlane = 0.1f;
-	private float farPlane = 500f;
+	private float farPlane = 500.0f;
 	private boolean orthographic = false;
-	private float orthoScale = 5f;
+	private float orthoScale = 5.0f;
 
 	private boolean isDraggingOrbit = false;
-	private float lastMouseX = 0f;
-	private float lastMouseY = 0f;
+	private float lastMouseX = 0.0f;
+	private float lastMouseY = 0.0f;
 
 	private float orbitSensitivity = 0.5f;
 	private float zoomSensitivity = 0.5f;
@@ -34,7 +34,7 @@ public final class ImGuiGizmoCamera {
 		}
 
 		float wheel = ImGui.getIO().getMouseWheel();
-		if (wheel != 0f) {
+		if (wheel != 0.0f) {
 			if (orthographic) {
 				orthoScale = Math.max(0.1f, orthoScale - wheel * zoomSensitivity);
 			} else {
@@ -52,7 +52,7 @@ public final class ImGuiGizmoCamera {
 				lastMouseY = my;
 			} else {
 				yaw += (mx - lastMouseX) * orbitSensitivity;
-				pitch = Math.clamp(pitch - (my - lastMouseY) * orbitSensitivity, -89f, 89f);
+				pitch = Math.clamp(pitch - (my - lastMouseY) * orbitSensitivity, -89.0f, 89.0f);
 				lastMouseX = mx;
 				lastMouseY = my;
 			}
@@ -67,13 +67,13 @@ public final class ImGuiGizmoCamera {
 
 	public Matrix4f buildViewMatrix(Matrix4f dst) {
 		return dst.identity()
-			.translate(0f, 0f, -distance)
+			.translate(0.0f, 0.0f, -distance)
 			.rotateX((float) Math.toRadians(pitch))
 			.rotateY((float) Math.toRadians(yaw));
 	}
 
 	public Matrix4f buildProjectionMatrix(Matrix4f dst, float viewW, float viewH) {
-		float aspect = (viewH > 0f) ? viewW / viewH : 1f;
+		float aspect = (viewH > 0.0f) ? viewW / viewH : 1.0f;
 		if (orthographic) {
 			float halfH = orthoScale;
 			float halfW = halfH * aspect;
@@ -83,12 +83,12 @@ public final class ImGuiGizmoCamera {
 	}
 
 	public void syncFromViewMatrix(Matrix4f view) {
-		float newPitch = (float) Math.toDegrees(Math.asin(Math.max(-1f, Math.min(1f, view.m12()))));
+		float newPitch = (float) Math.toDegrees(Math.asin(Math.max(-1.0f, Math.min(1.0f, view.m12()))));
 		float newYaw = (float) Math.toDegrees(Math.atan2(-view.m02(), view.m00()));
 		float newDist = -view.m23();
 
 		if (Float.isFinite(newPitch) && Float.isFinite(newYaw)) {
-			pitch = Math.max(-89f, Math.min(89f, newPitch));
+			pitch = Math.max(-89.0f, Math.min(89.0f, newPitch));
 			yaw = newYaw;
 		}
 		if (newDist > minDistance && newDist < maxDistance) {
@@ -97,9 +97,9 @@ public final class ImGuiGizmoCamera {
 	}
 
 	public void reset() {
-		yaw = 45f;
-		pitch = 30f;
-		distance = 5f;
+		yaw = 45.0f;
+		pitch = 30.0f;
+		distance = 5.0f;
 		isDraggingOrbit = false;
 	}
 
@@ -117,7 +117,7 @@ public final class ImGuiGizmoCamera {
 	}
 
 	public ImGuiGizmoCamera setPitch(float v) {
-		pitch = Math.clamp(v, -89f, 89f);
+		pitch = Math.clamp(v, -89.0f, 89.0f);
 		return this;
 	}
 

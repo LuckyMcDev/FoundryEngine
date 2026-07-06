@@ -27,7 +27,7 @@ import java.util.Optional;
 public class RecipeEditorPanel extends EditorPanel {
 	public static final RecipeEditorPanel INSTANCE = new RecipeEditorPanel();
 
-	private static final float TEXTURE_SCALE = 2f;
+	private static final float TEXTURE_SCALE = 2.0f;
 	private static final float GUI_TEX_WIDTH = 176;
 	private static final float GUI_TEX_HEIGHT = 166;
 	private static final float SLOT_TEX_SIZE = 18;
@@ -143,7 +143,7 @@ public class RecipeEditorPanel extends EditorPanel {
 		boolean hovered = ImGui.isItemHovered();
 
 		if (hovered) {
-			drawList.addRect(screenX, screenY, screenX + size, screenY + size, SLOT_HOVER_BORDER, 0f, 0, 2f);
+			drawList.addRect(screenX, screenY, screenX + size, screenY + size, SLOT_HOVER_BORDER, 0.0f, 0, 2.0f);
 			CataloguePanel.acceptDrop(data -> {
 				slots.put(key, new SlotData(data.id(), 1));
 				loadItemTexture(data.id());

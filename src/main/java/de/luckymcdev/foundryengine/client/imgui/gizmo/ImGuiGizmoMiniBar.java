@@ -13,11 +13,11 @@ public final class ImGuiGizmoMiniBar {
 
 	private final Set<Integer> disabledOps = new HashSet<>();
 	private Anchor anchor = Anchor.BOTTOM_LEFT;
-	private float marginX = 8f;
-	private float marginY = 8f;
-	private float buttonW = 26f;
-	private float buttonH = 22f;
-	private float spacing = 2f;
+	private float marginX = 8.0f;
+	private float marginY = 8.0f;
+	private float buttonW = 26.0f;
+	private float buttonH = 22.0f;
+	private float spacing = 2.0f;
 
 	private boolean showTranslate = true;
 	private boolean showRotate = true;
@@ -169,24 +169,24 @@ public final class ImGuiGizmoMiniBar {
 			return;
 		}
 
-		float barW = count * (buttonW + spacing) - spacing + 8f;
-		float barH = buttonH + 8f;
+		float barW = count * (buttonW + spacing) - spacing + 8.0f;
+		float barH = buttonH + 8.0f;
 
 		float posX = wx + marginX;
 		float posY = anchor == Anchor.TOP_LEFT ? wy + marginY : wy + wh - barH - marginY;
 
 		ImGui.setNextWindowPos(posX, posY);
 		ImGui.setNextWindowSize(barW, barH);
-		ImGui.setNextWindowBgAlpha(((theme.miniBarBgArgb >>> 24) & 0xFF) / 255f);
+		ImGui.setNextWindowBgAlpha(((theme.miniBarBgArgb >>> 24) & 0xFF) / 255.0f);
 
 		int flags = ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize
 			| ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoMove
 			| ImGuiWindowFlags.NoSavedSettings;
 
 		ImGui.pushStyleVar(ImGuiStyleVar.WindowRounding, theme.miniBarRounding);
-		ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, 4f, 4f);
-		ImGui.pushStyleVar(ImGuiStyleVar.ItemSpacing, spacing, 0f);
-		ImGui.pushStyleVar(ImGuiStyleVar.WindowBorderSize, 1f);
+		ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, 4.0f, 4.0f);
+		ImGui.pushStyleVar(ImGuiStyleVar.ItemSpacing, spacing, 0.0f);
+		ImGui.pushStyleVar(ImGuiStyleVar.WindowBorderSize, 1.0f);
 		ImGuiGizmoTheme.pushColor(ImGuiCol.WindowBg, theme.miniBarBgArgb);
 		ImGuiGizmoTheme.pushColor(ImGuiCol.Border, theme.miniBarBorderArgb);
 
@@ -248,8 +248,8 @@ public final class ImGuiGizmoMiniBar {
 			ImGuiGizmoTheme.pushColor(ImGuiCol.Text, theme.miniBarTextInactiveArgb);
 		}
 
-		ImGui.pushStyleVar(ImGuiStyleVar.FrameRounding, theme.miniBarRounding - 1f);
-		ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, 0f, 0f);
+		ImGui.pushStyleVar(ImGuiStyleVar.FrameRounding, theme.miniBarRounding - 1.0f);
+		ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, 0.0f, 0.0f);
 
 		if (ImGui.button(label + "##minibar_" + op, buttonW, buttonH)) {
 			selectedOperation = op;

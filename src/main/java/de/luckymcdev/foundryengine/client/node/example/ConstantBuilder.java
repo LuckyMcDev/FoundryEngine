@@ -25,7 +25,7 @@ public class ConstantBuilder implements NodeBuilder<Double> {
 	@Override
 	public boolean render() {
 		float[] val = {(float) value};
-		boolean changed = ImGui.sliderFloat("Value", val, -10f, 10f);
+		boolean changed = ImGui.sliderFloat("Value", val, -10.0f, 10.0f);
 		if (changed) {
 			value = val[0];
 		}

@@ -15,13 +15,13 @@ public class CommandAttachment extends CutsceneAttachment {
 	public CommandAttachment(float at, String command, float delay) {
 		super(at, TYPE);
 		this.command = command == null ? "" : command;
-		this.delay = Math.max(0f, delay);
+		this.delay = Math.max(0.0f, delay);
 	}
 
 	public static CommandAttachment fromNbt(CompoundTag tag) {
-		float at = tag.getFloatOr("At", 0f);
+		float at = tag.getFloatOr("At", 0.0f);
 		String command = tag.getStringOr("Command", "");
-		float delay = tag.getFloatOr("Delay", 0f);
+		float delay = tag.getFloatOr("Delay", 0.0f);
 		return new CommandAttachment(at, command, delay);
 	}
 
@@ -62,14 +62,14 @@ public class CommandAttachment extends CutsceneAttachment {
 	}
 
 	public void setDelay(float delay) {
-		this.delay = Math.max(0f, delay);
+		this.delay = Math.max(0.0f, delay);
 	}
 
 	/**
 	 * Returns the effective trigger time (at + delay) in normalized form.
 	 */
 	public float getEffectiveAt() {
-		return Math.min(1f, at + delay);
+		return Math.min(1.0f, at + delay);
 	}
 
 	/**

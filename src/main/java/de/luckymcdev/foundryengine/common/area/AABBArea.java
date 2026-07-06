@@ -32,14 +32,14 @@ public class AABBArea extends Area {
 			Identifier.parse(tag.getString("dimension").orElse("minecraft:overworld"))
 		);
 		Vec3 min = new Vec3(
-			tag.getDouble("minX").orElse(0D),
-			tag.getDouble("minY").orElse(0D),
-			tag.getDouble("minZ").orElse(0D)
+			tag.getDouble("minX").orElse(0.0D),
+			tag.getDouble("minY").orElse(0.0D),
+			tag.getDouble("minZ").orElse(0.0D)
 		);
 		Vec3 max = new Vec3(
-			tag.getDouble("maxX").orElse(0D),
-			tag.getDouble("maxY").orElse(0D),
-			tag.getDouble("maxZ").orElse(0D)
+			tag.getDouble("maxX").orElse(0.0D),
+			tag.getDouble("maxY").orElse(0.0D),
+			tag.getDouble("maxZ").orElse(0.0D)
 		);
 		Color color = new Color(tag.getInt("color").orElse(DEFAULT_COLOR.argb()));
 		return new AABBArea(id, new AABB(min, max), dimension, color);

@@ -43,6 +43,6 @@ public enum PanelCategory {
 	}
 
 	public String getMenuLabel() {
-		return getDisplayName() + " " + ImGraphicsExtractor.icon(this.icon);
+		return displayName + " " + ImGraphicsExtractor.icon(this.icon);
 	}
 }

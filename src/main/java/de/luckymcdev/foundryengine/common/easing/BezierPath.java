@@ -13,7 +13,7 @@ import java.util.ArrayList;
  */
 public class BezierPath {
 	private static final int LUT_RESOLUTION = 100;
-	private static final double DISTANCE_EPSILON = 1e-6;
+	private static final double DISTANCE_EPSILON = 1.0e-6;
 	private final double[] lutDistances = new double[LUT_RESOLUTION];
 	public ArrayList<BezierSpline> splines = new ArrayList<>();
 	private boolean lutValid = false;

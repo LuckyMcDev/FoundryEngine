@@ -8,7 +8,7 @@ public interface ImStyleColorConsumer {
 	void setStyleCol(int key, int r, int g, int b, int a);
 
 	default void setStyleCol(int key, float r, float g, float b, float a) {
-		setStyleCol(key, (int) (r * 255F), (int) (g * 255F), (int) (b * 255F), (int) (a * 255F));
+		setStyleCol(key, (int) (r * 255.0F), (int) (g * 255.0F), (int) (b * 255.0F), (int) (a * 255.0F));
 	}
 
 	default void setStyleCol(int key, int argb) {
@@ -16,7 +16,7 @@ public interface ImStyleColorConsumer {
 	}
 
 	default void setStyleCol(int key, Color value) {
-		setStyleCol(key, (int) (value.r() * 255F), (int) (value.g() * 255F), (int) (value.b() * 255F), (int) (value.a() * 255F));
+		setStyleCol(key, (int) (value.r() * 255.0F), (int) (value.g() * 255.0F), (int) (value.b() * 255.0F), (int) (value.a() * 255.0F));
 	}
 
 	default void copyStyleColFrom(int key, int from) {

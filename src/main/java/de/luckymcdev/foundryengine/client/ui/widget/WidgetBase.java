@@ -15,12 +15,12 @@ public class WidgetBase {
 	WidgetBase parent;
 
 	UIVec position;
-	float rotation = 0f;
+	float rotation = 0.0f;
 	UIVec size;
 
 	Vector2i offset = new Vector2i(0, 0);
 
-	Vec2 anchorPoint = new Vec2(0f, 0f);
+	Vec2 anchorPoint = new Vec2(0.0f, 0.0f);
 	int zIndex = 0;
 
 	boolean focused = false;
@@ -133,7 +133,7 @@ public class WidgetBase {
 	}
 
 	public <T extends WidgetBase> T setAnchorPoint(Vec2 anchorPoint) {
-		this.anchorPoint = new Vec2(Math.clamp(anchorPoint.x, 0f, 1f), Math.clamp(anchorPoint.y, 0f, 1f));
+		this.anchorPoint = new Vec2(Math.clamp(anchorPoint.x, 0.0f, 1.0f), Math.clamp(anchorPoint.y, 0.0f, 1.0f));
 		return (T) this;
 	}
 
@@ -218,7 +218,7 @@ public class WidgetBase {
 	}
 
 	public void updateArea() {
-		this.updateArea(this.parent.getArea());
+		this.updateArea(this.parent.uiArea);
 	}
 
 	public void updateArea(UIArea parentArea) {
@@ -268,7 +268,7 @@ public class WidgetBase {
 
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
 		for (WidgetBase child : this.children) {
-			if (child.isEnabled()) {
+			if (child.enabled) {
 				if (child.mouseClicked(mouseX, mouseY, button)) {
 					return true;
 				}
@@ -279,7 +279,7 @@ public class WidgetBase {
 
 	public boolean mouseReleased(double mouseX, double mouseY, int button) {
 		for (WidgetBase child : this.children) {
-			if (child.isEnabled()) {
+			if (child.enabled) {
 				if (child.mouseReleased(mouseX, mouseY, button)) {
 					return true;
 				}
@@ -290,7 +290,7 @@ public class WidgetBase {
 
 	public boolean mouseDragged(double mouseX, double mouseY, int button, double dx, double dy) {
 		for (WidgetBase child : this.children) {
-			if (child.isEnabled()) {
+			if (child.enabled) {
 				if (child.mouseDragged(mouseX, mouseY, button, dx, dy)) {
 					return true;
 				}
@@ -301,7 +301,7 @@ public class WidgetBase {
 
 	public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
 		for (WidgetBase child : this.children) {
-			if (child.isEnabled()) {
+			if (child.enabled) {
 				if (child.mouseScrolled(mouseX, mouseY, scrollX, scrollY)) {
 					return true;
 				}
@@ -312,7 +312,7 @@ public class WidgetBase {
 
 	public boolean keyPressed(int key, int scanCode, int modifiers) {
 		for (WidgetBase child : this.children) {
-			if (child.isEnabled()) {
+			if (child.enabled) {
 				if (child.keyPressed(key, scanCode, modifiers)) {
 					return true;
 				}
@@ -323,7 +323,7 @@ public class WidgetBase {
 
 	public boolean keyReleased(int key, int scanCode, int modifiers) {
 		for (WidgetBase child : this.children) {
-			if (child.isEnabled()) {
+			if (child.enabled) {
 				if (child.keyReleased(key, scanCode, modifiers)) {
 					return true;
 				}
@@ -334,7 +334,7 @@ public class WidgetBase {
 
 	public boolean charTyped(char c, int modifiers) {
 		for (WidgetBase child : this.children) {
-			if (child.isEnabled()) {
+			if (child.enabled) {
 				if (child.charTyped(c, modifiers)) {
 					return true;
 				}
@@ -344,18 +344,18 @@ public class WidgetBase {
 	}
 
 	private int getDepth(WidgetBase current, int depth) {
-		if (current.getParent() == null) {
+		if (current.parent == null) {
 			return depth;
 		}
-		return getDepth(current.getParent(), depth + 1);
+		return getDepth(current.parent, depth + 1);
 	}
 
 	float getRenderDepth() {
-		return getZIndex() * 0.1f + getDepth(this, 0) * 0.001f + this.getParent().getChildren().indexOf(this) * 0.00001f;
+		return zIndex * 0.1f + getDepth(this, 0) * 0.001f + this.parent.children.indexOf(this) * 0.00001f;
 	}
 
 	public void render(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float tickDelta, boolean debug) {
-		if (!isVisible()) {
+		if (!visible) {
 			return;
 		}
 		renderBackground(guiGraphics, mouseX, mouseY, tickDelta, debug);

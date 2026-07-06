@@ -40,13 +40,13 @@ public class Cutscene {
 		ListTag rotList = tag.getListOrEmpty("Rotations");
 		for (int i = 0; i < rotList.size(); i++) {
 			CompoundTag rotTag = rotList.getCompoundOrEmpty(i);
-			float pitch = rotTag.getFloatOr("Pitch", 0f);
-			float yaw = rotTag.getFloatOr("Yaw", 0f);
+			float pitch = rotTag.getFloatOr("Pitch", 0.0f);
+			float yaw = rotTag.getFloatOr("Yaw", 0.0f);
 			rots.add(new Vec2(pitch, yaw));
 		}
 
-		Vec2 initRot = new Vec2(tag.getFloatOr("InitPitch", 0f), tag.getFloatOr("InitYaw", 0f));
-		Vec2 finalRot = new Vec2(tag.getFloatOr("FinalPitch", 0f), tag.getFloatOr("FinalYaw", 0f));
+		Vec2 initRot = new Vec2(tag.getFloatOr("InitPitch", 0.0f), tag.getFloatOr("InitYaw", 0.0f));
+		Vec2 finalRot = new Vec2(tag.getFloatOr("FinalPitch", 0.0f), tag.getFloatOr("FinalYaw", 0.0f));
 
 		Cutscene cutscene = new Cutscene(name, initRot, finalRot, path);
 		cutscene.color = new Color(tag.getIntOr("Color", defaultColorFromName(name).argb()));
@@ -90,7 +90,7 @@ public class Cutscene {
 				// If there was a command, create a separate CommandAttachment
 				String cmd = effTag.getStringOr("Command", "");
 				if (!cmd.isBlank()) {
-					CommandAttachment cmdAtt = new CommandAttachment(eff.getAt(), cmd, 0f);
+					CommandAttachment cmdAtt = new CommandAttachment(eff.getAt(), cmd, 0.0f);
 					cutscene.attachments.add(cmdAtt);
 				}
 			}
@@ -107,7 +107,7 @@ public class Cutscene {
 		}
 		int h = name.hashCode();
 		// Stable, high-contrast-ish palette via HSV.
-		float hue = ((h >>> 1) & 0xFFFF) / 65535f;
+		float hue = ((h >>> 1) & 0xFFFF) / 65535.0f;
 		int rgb = Mth.hsvToRgb(hue, 0.65f, 0.95f); // 0xRRGGBB
 		return new Color(0xFF000000 | rgb);
 	}
@@ -161,10 +161,10 @@ public class Cutscene {
 			return anchorRotations.getFirst();
 		}
 
-		if (t <= 0f) {
+		if (t <= 0.0f) {
 			return anchorRotations.getFirst();
 		}
-		if (t >= 1f) {
+		if (t >= 1.0f) {
 			return anchorRotations.getLast();
 		}
 
@@ -180,7 +180,7 @@ public class Cutscene {
 
 		double a = keys[seg];
 		double b = keys[seg + 1];
-		float local = (float) ((b - a) <= 1e-6 ? 0.0 : ((t - a) / (b - a)));
+		float local = (float) ((b - a) <= 1.0e-6 ? 0.0 : ((t - a) / (b - a)));
 
 		Vec2 r1 = anchorRotations.get(seg);
 		Vec2 r2 = anchorRotations.get(seg + 1);
@@ -433,7 +433,7 @@ public class Cutscene {
 			return;
 		}
 		for (int i = 0; i < anchors; i++) {
-			float t = anchors == 1 ? 0f : (i / (float) (anchors - 1));
+			float t = anchors == 1 ? 0.0f : (i / (float) (anchors - 1));
 			float pitch = Mth.rotLerp(t, init.x, fin.x);
 			float yaw = Mth.rotLerp(t, init.y, fin.y);
 			anchorRotations.add(new Vec2(pitch, yaw));
@@ -517,7 +517,7 @@ public class Cutscene {
 	public float computeProgress(float ageTicks, float motionLengthTicks, float holdStartTicks, float holdEndTicks) {
 		int anchorCount = anchorHoldTicks.size();
 		if (anchorCount <= 1) {
-			return anchorCount == 0 ? 0f : (ageTicks < holdStartTicks ? 0f : 1f);
+			return anchorCount == 0 ? 0.0f : (ageTicks < holdStartTicks ? 0.0f : 1.0f);
 		}
 
 		double[] keys = getAnchorDistanceKeys();
@@ -530,21 +530,21 @@ public class Cutscene {
 
 		float total = holdStartTicks + motionLengthTicks + totalAnchorHolds + holdEndTicks;
 		if (total <= 0) {
-			return 0f;
+			return 0.0f;
 		}
 
 		if (ageTicks <= 0) {
-			return 0f;
+			return 0.0f;
 		}
 		if (ageTicks >= total) {
-			return 1f;
+			return 1.0f;
 		}
 
 		float elapsed = ageTicks;
 
 		// Phase: holdStart
 		if (elapsed < holdStartTicks) {
-			return 0f;
+			return 0.0f;
 		}
 		elapsed -= holdStartTicks;
 
@@ -564,7 +564,7 @@ public class Cutscene {
 
 			// Motion in this segment
 			if (elapsed < segDuration) {
-				float localT = segDuration > 0 ? elapsed / segDuration : 0f;
+				float localT = segDuration > 0 ? elapsed / segDuration : 0.0f;
 				return (float) (keys[seg] + localT * (keys[seg + 1] - keys[seg]));
 			}
 			elapsed -= segDuration;
@@ -580,7 +580,7 @@ public class Cutscene {
 			}
 		}
 
-		return 1f;
+		return 1.0f;
 	}
 
 	public ArrayList<Integer> getAnchorHoldTicks() {

@@ -29,7 +29,7 @@ public class MtlParser {
 		try {
 			MtlParser parser = new MtlParser();
 			parser.parseMtlFile(mtlLocation, resourceO.get());
-			return Optional.of(parser.getMaterials());
+			return Optional.of(parser.materials);
 		} catch (IOException e) {
 			Common.LOGGER.error("Error parsing mtllib: {}", mtlLocation, e);
 			return Optional.empty();
@@ -38,7 +38,7 @@ public class MtlParser {
 
 	private static Vector3f parseVec3(String rest) {
 		String[] parts = rest.split("\\s+");
-		float x = parseFloatSafe(parts.length > 0 ? parts[0] : "1", 1f);
+		float x = parseFloatSafe(parts.length > 0 ? parts[0] : "1", 1.0f);
 		float y = parseFloatSafe(parts.length > 1 ? parts[1] : String.valueOf(x), x);
 		float z = parseFloatSafe(parts.length > 2 ? parts[2] : String.valueOf(x), x);
 		return new Vector3f(x, y, z);
@@ -114,9 +114,9 @@ public class MtlParser {
 				case "Ka" -> ifCurrent(m -> m.setAmbientColor(parseVec3(rest)));
 				case "Kd" -> ifCurrent(m -> m.setDiffuseColor(parseVec3(rest)));
 				case "Ks" -> ifCurrent(m -> m.setSpecularColor(parseVec3(rest)));
-				case "Ns" -> ifCurrent(m -> m.setShininess(parseFloatSafe(rest, 0f)));
-				case "d" -> ifCurrent(m -> m.setOpacity(parseFloatSafe(rest, 1f)));
-				case "Tr" -> ifCurrent(m -> m.setOpacity(1f - parseFloatSafe(rest, 0f)));
+				case "Ns" -> ifCurrent(m -> m.setShininess(parseFloatSafe(rest, 0.0f)));
+				case "d" -> ifCurrent(m -> m.setOpacity(parseFloatSafe(rest, 1.0f)));
+				case "Tr" -> ifCurrent(m -> m.setOpacity(1.0f - parseFloatSafe(rest, 0.0f)));
 				case "map_Kd" -> ifCurrent(m -> m.setDiffuseTexturePath(resolveRelative(mtlLocation, lastToken(rest))));
 			}
 		}

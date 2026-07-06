@@ -39,7 +39,7 @@ public class BezierEasing extends Easing {
 	@Override
 	public float ease(float value, float min, float max, float time) {
 		// Normalize time to 0.0 - 1.0 range
-		float t = Mth.clamp(value / time, 0f, 1f);
+		float t = Mth.clamp(value / time, 0.0f, 1.0f);
 
 		// Solve for the Y value given the X (normalized time)
 		float easedT = getBezierT(t);
@@ -62,11 +62,11 @@ public class BezierEasing extends Easing {
 		float t = x;
 		for (int i = 0; i < 8; i++) {
 			float currentX = getCubic(t, x1, x2) - x;
-			if (Math.abs(currentX) < 1e-6) {
+			if (Math.abs(currentX) < 1.0e-6) {
 				break;
 			}
 			float derivative = getDerivative(t, x1, x2);
-			if (Math.abs(derivative) < 1e-6) {
+			if (Math.abs(derivative) < 1.0e-6) {
 				break;
 			}
 			t -= currentX / derivative;

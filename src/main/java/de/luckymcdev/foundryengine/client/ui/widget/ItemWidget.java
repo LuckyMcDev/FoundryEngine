@@ -33,8 +33,8 @@ public class ItemWidget extends WidgetBase {
 			guiGraphics.fill(RenderPipelines.GUI, drawArea.x, drawArea.y, drawArea.x + drawArea.width, drawArea.y + drawArea.height, 0xFF000000);
 		}
 		guiGraphics.pose().pushMatrix();
-		float scaleX = drawArea.width / 16f;
-		float scaleY = drawArea.height / 16f;
+		float scaleX = drawArea.width / 16.0f;
+		float scaleY = drawArea.height / 16.0f;
 		guiGraphics.pose().translate(drawArea.x, drawArea.y);
 		guiGraphics.pose().scale(scaleX, scaleY);
 		guiGraphics.item(this.item, 0, 0);

@@ -76,7 +76,7 @@ public class ObjObject {
 		for (Face face : faces) {
 			centroid.add(face.getCentroid());
 		}
-		centroid.mul(1f / faces.size());
+		centroid.mul(1.0f / faces.size());
 		return centroid;
 	}
 

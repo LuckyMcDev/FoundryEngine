@@ -64,7 +64,7 @@ public final class Client {
 	public static final Matrix4f INVERSE_WORLD = new Matrix4f();
 	public static final Matrix4f PERSPECTIVE = new Matrix4f();
 	public static final Matrix4f FRUSTUM = new Matrix4f();
-	public static final MutableFloat DEPTH_FAR = new MutableFloat(65536F);
+	public static final MutableFloat DEPTH_FAR = new MutableFloat(65536.0F);
 	public static final MutableFloat DEPTH_NEAR = new MutableFloat(0.05F);
 	public static final KeyMapping.Category EDITOR_CATEGORY = new KeyMapping.Category(Common.id("editor"));
 	public static final KeyMapping EDITOR_KEY = new KeyMapping(

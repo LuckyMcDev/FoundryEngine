@@ -198,9 +198,9 @@ public abstract class Panel {
 				flags |= ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoDecoration;
 			}
 
-			ImGui.setNextWindowSizeConstraints(0F, 0F, 600F, Client.getWindow().getHeight() - 80F);
+			ImGui.setNextWindowSizeConstraints(0.0F, 0.0F, 600.0F, Client.getWindow().getHeight() - 80.0F);
 		} else {
-			ImGui.setNextWindowSizeConstraints(160F, 90F, Float.MAX_VALUE, Float.MAX_VALUE);
+			ImGui.setNextWindowSizeConstraints(160.0F, 90.0F, Float.MAX_VALUE, Float.MAX_VALUE);
 		}
 
 		onPreWindow();

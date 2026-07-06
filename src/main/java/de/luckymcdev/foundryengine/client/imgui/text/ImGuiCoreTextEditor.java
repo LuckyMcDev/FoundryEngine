@@ -50,13 +50,13 @@ public final class ImGuiCoreTextEditor {
 	private boolean usePreferredColumn = false;
 	private boolean readOnly = false;
 	private boolean isDragging = false;
-	private float textStart = 60f;
+	private float textStart = 60.0f;
 	private ImVec2 contentOrigin = new ImVec2(0, 0);
 	private ImVec2 drawCursorPos = new ImVec2(0, 0);
 	private boolean drawCursorPosReady = false;
-	private float maxLineWidth = 0f;
+	private float maxLineWidth = 0.0f;
 	private long blinkEpoch = System.currentTimeMillis();
-	private float editorScrollY = 0f;
+	private float editorScrollY = 0.0f;
 	private long lastClickTime = 0;
 	private int clickCount = 0;
 
@@ -191,7 +191,7 @@ public final class ImGuiCoreTextEditor {
 		colorizer.invalidateAll();
 		undoStack.clear();
 		redoStack.clear();
-		maxLineWidth = 0f;
+		maxLineWidth = 0.0f;
 		if (autocomplete != null) {
 			autocomplete.hide();
 		}
@@ -256,7 +256,7 @@ public final class ImGuiCoreTextEditor {
 			return;
 		}
 		this.theme = newTheme;
-		maxLineWidth = 0f;
+		maxLineWidth = 0.0f;
 	}
 
 	public void setProvider(IAutocompleteProvider provider) {
@@ -273,7 +273,7 @@ public final class ImGuiCoreTextEditor {
 			setColorizer(colorizer);
 			setProvider(provider);
 		}
-		getColorizer().invalidateAll();
+		colorizer.invalidateAll();
 	}
 
 	public void resetBlink() {
@@ -366,11 +366,11 @@ public final class ImGuiCoreTextEditor {
 		dl.addLine(origin.x + textStart - 4, origin.y - scrollY,
 			origin.x + textStart - 4,
 			origin.y - scrollY + lines.size() * lineHeight,
-			EditorTheme.toImU32(theme.gutterSeparatorColor), 1f);
+			EditorTheme.toImU32(theme.gutterSeparatorColor), 1.0f);
 
 		colorizer.colorizeVisibleLines(lines, firstLine, lastLine);
 
-		float newMaxWidth = 0f;
+		float newMaxWidth = 0.0f;
 		EditorCoordinates normStart = normSelStart();
 		EditorCoordinates normEnd = normSelEnd();
 
@@ -428,7 +428,7 @@ public final class ImGuiCoreTextEditor {
 		maxLineWidth = Math.max(maxLineWidth, newMaxWidth);
 
 		// +100 so the cursor never sits flush against the scroll edge
-		ImGui.dummy(textStart + maxLineWidth + 100f, lines.size() * lineHeight);
+		ImGui.dummy(textStart + maxLineWidth + 100.0f, lines.size() * lineHeight);
 
 		if (!isResizing && canInput) {
 			handleMouse(charWidth, lineHeight, hovered, mouseOverAC);
@@ -1212,7 +1212,7 @@ public final class ImGuiCoreTextEditor {
 			float glyphW = (ln.get(i).ch == '\t')
 				? nextTabStop(x, charWidth, theme.tabSize) - x
 				: charWidth;
-			if (relX < x + glyphW / 2f) {
+			if (relX < x + glyphW / 2.0f) {
 				break;
 			}
 			x += glyphW;

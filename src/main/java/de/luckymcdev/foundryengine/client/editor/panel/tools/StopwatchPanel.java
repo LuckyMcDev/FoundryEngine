@@ -28,7 +28,7 @@ public class StopwatchPanel extends EditorPanel {
 
 	@Override
 	protected void onPreWindow() {
-		ImGui.setNextWindowSizeConstraints(260f, 0f, 600f, Float.MAX_VALUE);
+		ImGui.setNextWindowSizeConstraints(260.0f, 0.0f, 600.0f, Float.MAX_VALUE);
 	}
 
 	@Override
@@ -46,7 +46,7 @@ public class StopwatchPanel extends EditorPanel {
 		float avail = ImGui.getContentRegionAvailX();
 		ImGui.setCursorPosX(ImGui.getCursorPosX() + Math.max(0, (avail - textW) / 2));
 		ImGui.textColored(running ? 0xFF4CAF50 : 0xFFCCCCCC, timeStr);
-		ImGui.setWindowFontScale(1f);
+		ImGui.setWindowFontScale(1.0f);
 
 		ImGui.spacing();
 		ImGui.separator();

@@ -5,19 +5,19 @@ import de.luckymcdev.foundryengine.common.util.color.Color;
 public enum ImColorVariant {
 	DEFAULT("default", "Default", new Color(0x664296FA), new Color(0xFF4296FA), new Color(0xFF0F87FA), Color.WHITE),
 	GRAY("gray", "Gray", new Color(166, 166, 166, 150), new Color(166, 166, 166, 255), new Color(191, 191, 191, 255), Color.WHITE),
-	RED("red", "Red", Color.hsb(0, 0.8F, 0.8F, 150), Color.hsb(0, 0.8F, 0.8F, 255), Color.hsb(0, 0.9F, 0.9F, 255), Color.hsb(0, 0.67F, 1F, 255)),
-	ORANGE("orange", "Orange", Color.hsb(30F / 360F, 0.8F, 0.8F, 150), Color.hsb(30F / 360F, 0.8F, 0.8F, 255), Color.hsb(30F / 360F, 0.9F, 0.9F, 255), Color.hsb(30F / 360F, 0.67F, 1F, 255)),
-	YELLOW("yellow", "Yellow", Color.hsb(55F / 360F, 0.8F, 0.8F, 150), Color.hsb(55F / 360F, 0.8F, 0.8F, 255), Color.hsb(55F / 360F, 0.9F, 0.9F, 255), Color.hsb(55F / 360F, 0.67F, 1F, 255)),
-	LIME("lime", "Lime", Color.hsb(84F / 360F, 0.8F, 0.8F, 150), Color.hsb(84F / 360F, 0.8F, 0.8F, 255), Color.hsb(84F / 360F, 0.9F, 0.9F, 255), Color.hsb(84F / 360F, 0.67F, 1F, 255)),
-	GREEN("green", "Green", Color.hsb(124F / 360F, 0.8F, 0.8F, 150), Color.hsb(124F / 360F, 0.8F, 0.8F, 255), Color.hsb(124F / 360F, 0.9F, 0.9F, 255), Color.hsb(124F / 360F, 0.67F, 1F, 255)),
-	TEAL("teal", "Teal", Color.hsb(165F / 360F, 0.8F, 0.8F, 150), Color.hsb(165F / 360F, 0.8F, 0.8F, 255), Color.hsb(165F / 360F, 0.9F, 0.9F, 255), Color.hsb(165F / 360F, 0.67F, 1F, 255)),
-	CYAN("cyan", "Cyan", Color.hsb(180F / 360F, 0.8F, 0.8F, 150), Color.hsb(180F / 360F, 0.8F, 0.8F, 255), Color.hsb(180F / 360F, 0.9F, 0.9F, 255), Color.hsb(180F / 360F, 0.67F, 1F, 255)),
-	BLUE("blue", "Blue", Color.hsb(205F / 360F, 0.8F, 0.8F, 150), Color.hsb(205F / 360F, 0.8F, 0.8F, 255), Color.hsb(205F / 360F, 0.9F, 0.9F, 255), Color.hsb(205F / 360F, 0.67F, 1F, 255)),
-	DARK_BLUE("dark_blue", "Dark Blue", Color.hsb(225F / 360F, 0.8F, 0.8F, 150), Color.hsb(225F / 360F, 0.8F, 0.8F, 255), Color.hsb(225F / 360F, 0.9F, 0.9F, 255), Color.hsb(225F / 360F, 0.67F, 1F, 255)),
-	DARK_PURPLE("dark_purple", "Dark Purple", Color.hsb(255F / 360F, 0.8F, 0.8F, 150), Color.hsb(255F / 360F, 0.8F, 0.8F, 255), Color.hsb(255F / 360F, 0.9F, 0.9F, 255), Color.hsb(255F / 360F, 0.67F, 1F, 255)),
-	PURPLE("purple", "Purple", Color.hsb(280F / 360F, 0.8F, 0.8F, 150), Color.hsb(280F / 360F, 0.8F, 0.8F, 255), Color.hsb(280F / 360F, 0.9F, 0.9F, 255), Color.hsb(280F / 360F, 0.67F, 1F, 255)),
-	MAGENTA("magenta", "Magenta", Color.hsb(300F / 360F, 0.8F, 0.8F, 150), Color.hsb(300F / 360F, 0.8F, 0.8F, 255), Color.hsb(300F / 360F, 0.9F, 0.9F, 255), Color.hsb(300F / 360F, 0.67F, 1F, 255)),
-	ROSE("rose", "Rose", Color.hsb(330F / 360F, 0.8F, 0.8F, 150), Color.hsb(330F / 360F, 0.8F, 0.8F, 255), Color.hsb(330F / 360F, 0.9F, 0.9F, 255), Color.hsb(330F / 360F, 0.67F, 1F, 255));
+	RED("red", "Red", Color.hsb(0, 0.8F, 0.8F, 150), Color.hsb(0, 0.8F, 0.8F, 255), Color.hsb(0, 0.9F, 0.9F, 255), Color.hsb(0, 0.67F, 1.0F, 255)),
+	ORANGE("orange", "Orange", Color.hsb(30.0F / 360.0F, 0.8F, 0.8F, 150), Color.hsb(30.0F / 360.0F, 0.8F, 0.8F, 255), Color.hsb(30.0F / 360.0F, 0.9F, 0.9F, 255), Color.hsb(30.0F / 360.0F, 0.67F, 1.0F, 255)),
+	YELLOW("yellow", "Yellow", Color.hsb(55.0F / 360.0F, 0.8F, 0.8F, 150), Color.hsb(55.0F / 360.0F, 0.8F, 0.8F, 255), Color.hsb(55.0F / 360.0F, 0.9F, 0.9F, 255), Color.hsb(55.0F / 360.0F, 0.67F, 1.0F, 255)),
+	LIME("lime", "Lime", Color.hsb(84.0F / 360.0F, 0.8F, 0.8F, 150), Color.hsb(84.0F / 360.0F, 0.8F, 0.8F, 255), Color.hsb(84.0F / 360.0F, 0.9F, 0.9F, 255), Color.hsb(84.0F / 360.0F, 0.67F, 1.0F, 255)),
+	GREEN("green", "Green", Color.hsb(124.0F / 360.0F, 0.8F, 0.8F, 150), Color.hsb(124.0F / 360.0F, 0.8F, 0.8F, 255), Color.hsb(124.0F / 360.0F, 0.9F, 0.9F, 255), Color.hsb(124.0F / 360.0F, 0.67F, 1.0F, 255)),
+	TEAL("teal", "Teal", Color.hsb(165.0F / 360.0F, 0.8F, 0.8F, 150), Color.hsb(165.0F / 360.0F, 0.8F, 0.8F, 255), Color.hsb(165.0F / 360.0F, 0.9F, 0.9F, 255), Color.hsb(165.0F / 360.0F, 0.67F, 1.0F, 255)),
+	CYAN("cyan", "Cyan", Color.hsb(180.0F / 360.0F, 0.8F, 0.8F, 150), Color.hsb(180.0F / 360.0F, 0.8F, 0.8F, 255), Color.hsb(180.0F / 360.0F, 0.9F, 0.9F, 255), Color.hsb(180.0F / 360.0F, 0.67F, 1.0F, 255)),
+	BLUE("blue", "Blue", Color.hsb(205.0F / 360.0F, 0.8F, 0.8F, 150), Color.hsb(205.0F / 360.0F, 0.8F, 0.8F, 255), Color.hsb(205.0F / 360.0F, 0.9F, 0.9F, 255), Color.hsb(205.0F / 360.0F, 0.67F, 1.0F, 255)),
+	DARK_BLUE("dark_blue", "Dark Blue", Color.hsb(225.0F / 360.0F, 0.8F, 0.8F, 150), Color.hsb(225.0F / 360.0F, 0.8F, 0.8F, 255), Color.hsb(225.0F / 360.0F, 0.9F, 0.9F, 255), Color.hsb(225.0F / 360.0F, 0.67F, 1.0F, 255)),
+	DARK_PURPLE("dark_purple", "Dark Purple", Color.hsb(255.0F / 360.0F, 0.8F, 0.8F, 150), Color.hsb(255.0F / 360.0F, 0.8F, 0.8F, 255), Color.hsb(255.0F / 360.0F, 0.9F, 0.9F, 255), Color.hsb(255.0F / 360.0F, 0.67F, 1.0F, 255)),
+	PURPLE("purple", "Purple", Color.hsb(280.0F / 360.0F, 0.8F, 0.8F, 150), Color.hsb(280.0F / 360.0F, 0.8F, 0.8F, 255), Color.hsb(280.0F / 360.0F, 0.9F, 0.9F, 255), Color.hsb(280.0F / 360.0F, 0.67F, 1.0F, 255)),
+	MAGENTA("magenta", "Magenta", Color.hsb(300.0F / 360.0F, 0.8F, 0.8F, 150), Color.hsb(300.0F / 360.0F, 0.8F, 0.8F, 255), Color.hsb(300.0F / 360.0F, 0.9F, 0.9F, 255), Color.hsb(300.0F / 360.0F, 0.67F, 1.0F, 255)),
+	ROSE("rose", "Rose", Color.hsb(330.0F / 360.0F, 0.8F, 0.8F, 150), Color.hsb(330.0F / 360.0F, 0.8F, 0.8F, 255), Color.hsb(330.0F / 360.0F, 0.9F, 0.9F, 255), Color.hsb(330.0F / 360.0F, 0.67F, 1.0F, 255));
 
 	public static final ImColorVariant[] VALUES = values();
 

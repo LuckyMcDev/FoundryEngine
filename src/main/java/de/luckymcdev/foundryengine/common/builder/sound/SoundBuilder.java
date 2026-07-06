@@ -10,7 +10,7 @@ import java.util.List;
 
 public class SoundBuilder extends AbstractBuilder<SoundEvent> {
 	private final List<SoundFileEntry> soundFiles = new ArrayList<>();
-	private float fixedRange = -1f;
+	private float fixedRange = -1.0f;
 	private String subtitle = null;
 	private boolean replace = false;
 
@@ -59,7 +59,7 @@ public class SoundBuilder extends AbstractBuilder<SoundEvent> {
 	}
 
 	public SoundEvent build() {
-		return fixedRange > 0f ? SoundEvent.createFixedRangeEvent(id, fixedRange)
+		return fixedRange > 0.0f ? SoundEvent.createFixedRangeEvent(id, fixedRange)
 			: SoundEvent.createVariableRangeEvent(id);
 	}
 

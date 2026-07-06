@@ -56,7 +56,7 @@ public final class PostEffectEntry {
 	private int fadeOutTicks;
 	private boolean enabled = false;
 	private boolean active = false;
-	private float intensity = 0f;
+	private float intensity = 0.0f;
 	private boolean wasConditionMet = false;
 	private PostChainConfig cachedBasePipeline;
 	private PostChain ownedProcessor;
@@ -193,7 +193,7 @@ public final class PostEffectEntry {
 			}
 		}
 
-		if (intensity <= 0f) {
+		if (intensity <= 0.0f) {
 			active = false;
 			wasConditionMet = false;
 			closeOwned();
@@ -229,15 +229,15 @@ public final class PostEffectEntry {
 	private void updateIntensity(boolean conditionMet, float deltaTick) {
 		if (conditionMet) {
 			if (fadeInTicks > 0) {
-				intensity = Math.min(1f, intensity + deltaTick / fadeInTicks);
+				intensity = Math.min(1.0f, intensity + deltaTick / fadeInTicks);
 			} else {
-				intensity = 1f;
+				intensity = 1.0f;
 			}
 		} else {
 			if (fadeOutTicks > 0) {
-				intensity = Math.max(0f, intensity - deltaTick / fadeOutTicks);
+				intensity = Math.max(0.0f, intensity - deltaTick / fadeOutTicks);
 			} else {
-				intensity = 0f;
+				intensity = 0.0f;
 			}
 		}
 	}

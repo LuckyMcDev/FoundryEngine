@@ -47,7 +47,7 @@ public class RuntimeLevelConfig {
 	 * Sets the clock manager constructor to {@link RuntimeClockManager} with provided clock states as the default.
 	 *
 	 * @param clockStates The clock states to initialize the clock manager from
-	 * @return The same instance of {@link RuntimeLevelConfig}
+	 * @return The same instance of
 	 */
 	public RuntimeLevelConfig setClockManagerConstructor(PackedClockStates clockStates) {
 		this.clockManagerConstructor = s -> new RuntimeClockManager(clockStates, s);
@@ -58,7 +58,7 @@ public class RuntimeLevelConfig {
 	 * Sets the clock manager constructor
 	 *
 	 * @param clockManagerConstructor The clock manager constructor to use
-	 * @return The same instance of {@link RuntimeLevelConfig}
+	 * @return The same instance of
 	 */
 	public RuntimeLevelConfig setClockManagerConstructor(Function<BooleanSupplier, RuntimeClockManager> clockManagerConstructor) {
 		this.clockManagerConstructor = clockManagerConstructor;
@@ -69,7 +69,7 @@ public class RuntimeLevelConfig {
 	 * Sets the level dimension type
 	 *
 	 * @param dimensionType The dimension type to use
-	 * @return The same instance of {@link RuntimeLevelConfig}
+	 * @return The same instance of
 	 */
 	public RuntimeLevelConfig setDimensionType(Holder<DimensionType> dimensionType) {
 		this.dimensionType = dimensionType;
@@ -81,7 +81,7 @@ public class RuntimeLevelConfig {
 	 * Sets the level dimension type
 	 *
 	 * @param dimensionType The dimension type to use
-	 * @return The same instance of {@link RuntimeLevelConfig}
+	 * @return The same instance of
 	 */
 	public RuntimeLevelConfig setDimensionType(ResourceKey<DimensionType> dimensionType) {
 		this.dimensionTypeKey = dimensionType;
@@ -99,7 +99,7 @@ public class RuntimeLevelConfig {
 	 * <i>The gamerule does not have effect if {@link RuntimeLevelConfig#mirrorOverworldGameRules} is set to true</i>
 	 *
 	 * @param shouldTickTime Whenever the level should tick the time
-	 * @return The same instance of {@link RuntimeLevelConfig}
+	 * @return The same instance of
 	 */
 	public RuntimeLevelConfig setShouldTickTime(boolean shouldTickTime) {
 		this.shouldTickTime = shouldTickTime;
@@ -114,7 +114,7 @@ public class RuntimeLevelConfig {
 	 *
 	 * @param key   The gamerule to modify
 	 * @param value The value of the gamerule
-	 * @return The same instance of {@link RuntimeLevelConfig}
+	 * @return The same instance of
 	 */
 	public <T> RuntimeLevelConfig setGameRule(GameRule<T> key, T value) {
 		this.gameRules.set(key, value);
@@ -125,7 +125,7 @@ public class RuntimeLevelConfig {
 	 * Defines if the level should follow the overworld gamerules or not
 	 *
 	 * @param mirror Whenever it should mirror or not
-	 * @return The same instance of {@link RuntimeLevelConfig}
+	 * @return The same instance of
 	 */
 	public RuntimeLevelConfig setMirrorOverworldGameRules(boolean mirror) {
 		this.mirrorOverworldGameRules = mirror;
@@ -136,7 +136,7 @@ public class RuntimeLevelConfig {
 	 * Defines if the level should follow the overworld difficulty or not
 	 *
 	 * @param mirror Whenever it should mirror or not
-	 * @return The same instance of {@link RuntimeLevelConfig}
+	 * @return The same instance of
 	 */
 	public RuntimeLevelConfig setMirrorOverworldDifficulty(boolean mirror) {
 		this.mirrorOverworldDifficulty = mirror;
@@ -147,7 +147,7 @@ public class RuntimeLevelConfig {
 	 * Defines if the level should follow the overworld clock values or not
 	 *
 	 * @param mirror Whenever it should mirror or not
-	 * @return The same instance of {@link RuntimeLevelConfig}
+	 * @return The same instance of
 	 */
 	public RuntimeLevelConfig setMirrorOverworldClocks(boolean mirror) {
 		this.mirrorOverworldClocks = mirror;
@@ -158,7 +158,7 @@ public class RuntimeLevelConfig {
 	 * Defines if the level is a flat level or not
 	 *
 	 * @param state If the level should be flat, not flat or use the default value
-	 * @return The same instance of {@link RuntimeLevelConfig}
+	 * @return The same instance of
 	 */
 	public RuntimeLevelConfig setFlat(TriState state) {
 		this.flat = state;
@@ -169,7 +169,7 @@ public class RuntimeLevelConfig {
 	 * Defines if the level is a flat level or not
 	 *
 	 * @param state If the level should be flat or not
-	 * @return The same instance of {@link RuntimeLevelConfig}
+	 * @return The same instance of
 	 */
 	public RuntimeLevelConfig setFlat(boolean state) {
 		return this.setFlat(TriState.from(state));
@@ -183,7 +183,7 @@ public class RuntimeLevelConfig {
 	 * Sets the level seed
 	 *
 	 * @param seed The level seed to use
-	 * @return The same instance of {@link RuntimeLevelConfig}
+	 * @return The same instance of
 	 */
 	public RuntimeLevelConfig setSeed(long seed) {
 		this.seed = seed;
@@ -223,7 +223,7 @@ public class RuntimeLevelConfig {
 	 * Sets the level chunk generator
 	 *
 	 * @param generator The chunk generator to use
-	 * @return The same instance of {@link RuntimeLevelConfig}
+	 * @return The same instance of
 	 */
 	public RuntimeLevelConfig setGenerator(ChunkGenerator generator) {
 		this.generator = generator;
@@ -238,7 +238,7 @@ public class RuntimeLevelConfig {
 	 * Sets the level constructor
 	 *
 	 * @param constructor The level constructor to use
-	 * @return The same instance of {@link RuntimeLevelConfig}
+	 * @return The same instance of
 	 */
 	public RuntimeLevelConfig setLevelConstructor(RuntimeLevel.Constructor constructor) {
 		this.levelConstructor = constructor;
@@ -264,7 +264,7 @@ public class RuntimeLevelConfig {
 	 * Sets the level difficulty
 	 *
 	 * @param difficulty The difficulty to use
-	 * @return The same instance of {@link RuntimeLevelConfig}
+	 * @return The same instance of
 	 */
 	public RuntimeLevelConfig setDifficulty(Difficulty difficulty) {
 		this.difficulty = difficulty;
@@ -302,7 +302,7 @@ public class RuntimeLevelConfig {
 	 * Sets the level's game time
 	 *
 	 * @param gameTime The new time of the game
-	 * @return The same instance of {@link RuntimeLevelConfig}
+	 * @return The same instance of
 	 */
 	public RuntimeLevelConfig setGameTime(long gameTime) {
 		this.gameTime = gameTime;

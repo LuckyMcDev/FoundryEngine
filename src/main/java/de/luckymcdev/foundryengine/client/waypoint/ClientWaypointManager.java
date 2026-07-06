@@ -61,7 +61,7 @@ public class ClientWaypointManager {
 
 			font.drawInBatch(
 				icon,
-				-prefixWidth / 2f, -10f,
+				-prefixWidth / 2.0f, -10.0f,
 				color.argb(),
 				false,
 				iconMv,
@@ -76,7 +76,7 @@ public class ClientWaypointManager {
 
 			font.drawInBatch(
 				distText,
-				-distWidth / 2f, 2f,
+				-distWidth / 2.0f, 2.0f,
 				0xFFFFFFFF,
 				false,
 				textMv,

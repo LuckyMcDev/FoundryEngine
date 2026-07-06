@@ -70,7 +70,7 @@ public final class UniformSuppliers {
 	public static Supplier<List<UniformValue>> playerHealth() {
 		return () -> {
 			Player player = Minecraft.getInstance().player;
-			float hp = player != null ? player.getHealth() : 0f;
+			float hp = player != null ? player.getHealth() : 0.0f;
 			return List.of(new UniformValue.FloatUniform(hp));
 		};
 	}
@@ -78,7 +78,7 @@ public final class UniformSuppliers {
 	public static Supplier<List<UniformValue>> playerHealthNorm() {
 		return () -> {
 			Player player = Minecraft.getInstance().player;
-			float hp = player != null ? player.getHealth() / player.getMaxHealth() : 0f;
+			float hp = player != null ? player.getHealth() / player.getMaxHealth() : 0.0f;
 			return List.of(new UniformValue.FloatUniform(hp));
 		};
 	}
@@ -86,7 +86,7 @@ public final class UniformSuppliers {
 	public static Supplier<List<UniformValue>> playerAir() {
 		return () -> {
 			Player player = Minecraft.getInstance().player;
-			float air = player != null ? player.getAirSupply() : 0f;
+			float air = player != null ? player.getAirSupply() : 0.0f;
 			return List.of(new UniformValue.FloatUniform(air));
 		};
 	}
@@ -95,7 +95,7 @@ public final class UniformSuppliers {
 		return () -> {
 			Player player = Minecraft.getInstance().player;
 			if (player == null) {
-				return List.of(new UniformValue.FloatUniform(0f));
+				return List.of(new UniformValue.FloatUniform(0.0f));
 			}
 			float norm = (float) player.getAirSupply() / player.getMaxAirSupply();
 			return List.of(new UniformValue.FloatUniform(norm));
@@ -104,21 +104,21 @@ public final class UniformSuppliers {
 
 	public static Supplier<List<UniformValue>> sinTime(float speed) {
 		return () -> {
-			float t = (System.currentTimeMillis() / 1000f) * speed;
+			float t = (System.currentTimeMillis() / 1000.0f) * speed;
 			return List.of(new UniformValue.FloatUniform((float) Math.sin(t)));
 		};
 	}
 
 	public static Supplier<List<UniformValue>> cosTime(float speed) {
 		return () -> {
-			float t = (System.currentTimeMillis() / 1000f) * speed;
+			float t = (System.currentTimeMillis() / 1000.0f) * speed;
 			return List.of(new UniformValue.FloatUniform((float) Math.cos(t)));
 		};
 	}
 
 	public static Supplier<List<UniformValue>> pingPong(float min, float max, float speed) {
 		return () -> {
-			float t = (System.currentTimeMillis() / 1000f) * speed;
+			float t = (System.currentTimeMillis() / 1000.0f) * speed;
 			float range = max - min;
 			float ping = Math.abs((t % (range * 2)) - range);
 			return List.of(new UniformValue.FloatUniform(min + ping));
