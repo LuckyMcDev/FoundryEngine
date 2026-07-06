@@ -160,11 +160,11 @@ public class BundleDataGenerator {
 			var blockTagBuilders = tagBuilders.stream()
 				.filter(b -> b.registry().equals(net.minecraft.core.registries.Registries.BLOCK))
 				.toList();
-		var itemTagBuilders = tagBuilders.stream()
+			var itemTagBuilders = tagBuilders.stream()
 				.filter(b -> b.registry().equals(net.minecraft.core.registries.Registries.ITEM))
 				.toList();
 
-		gen.addProvider(new EngineBlockTagsProvider(pOut, lookupProvider, namespace, blockTagBuilders));
+			gen.addProvider(new EngineBlockTagsProvider(pOut, lookupProvider, namespace, blockTagBuilders));
 			gen.addProvider(new EngineItemTagsProvider(pOut, lookupProvider, namespace, itemTagBuilders));
 			gen.addProvider(new EngineGlobalLootModifierProvider(pOut, lookupProvider, namespace));
 

@@ -68,8 +68,12 @@ public record ServerBoundExplorerPacket(
 
 	@Override
 	public void handleServer(IPayloadContext ctx) {
-		if (!(ctx.player() instanceof ServerPlayer player)) return;
-		if (!PermissionChecks.COMMANDS_OWNER.check(player.permissions())) return;
+		if (!(ctx.player() instanceof ServerPlayer player)) {
+			return;
+		}
+		if (!PermissionChecks.COMMANDS_OWNER.check(player.permissions())) {
+			return;
+		}
 
 		switch (action) {
 			case REQUEST_FILE_LIST -> handleFileList(player);
@@ -83,10 +87,14 @@ public record ServerBoundExplorerPacket(
 	private void handleFileList(ServerPlayer player) {
 		Path serverRoot = Common.DIRECTORY;
 		Path resolved = serverRoot.resolve(path).normalize();
-		if (!resolved.startsWith(serverRoot)) return;
+		if (!resolved.startsWith(serverRoot)) {
+			return;
+		}
 
 		File rootFile = resolved.toFile();
-		if (!rootFile.exists() || !rootFile.isDirectory()) return;
+		if (!rootFile.exists() || !rootFile.isDirectory()) {
+			return;
+		}
 
 		List<ClientBoundExplorerPacket.RemoteEntry> entries = new ArrayList<>();
 		collectEntries(serverRoot, rootFile, entries);
@@ -97,19 +105,27 @@ public record ServerBoundExplorerPacket(
 
 	private void collectEntries(Path serverRoot, File dir, List<ClientBoundExplorerPacket.RemoteEntry> out) {
 		File[] children = dir.listFiles();
-		if (children == null) return;
+		if (children == null) {
+			return;
+		}
 		for (File child : children) {
 			String relative = serverRoot.relativize(child.toPath().normalize()).toString().replace('\\', '/');
 			out.add(new ClientBoundExplorerPacket.RemoteEntry(relative, child.isDirectory()));
-			if (child.isDirectory()) collectEntries(serverRoot, child, out);
+			if (child.isDirectory()) {
+				collectEntries(serverRoot, child, out);
+			}
 		}
 	}
 
 	private void handleFileContent(ServerPlayer player) {
 		Path serverRoot = Common.DIRECTORY;
 		Path target = serverRoot.resolve(path).normalize();
-		if (!target.startsWith(serverRoot)) return;
-		if (!Files.isRegularFile(target)) return;
+		if (!target.startsWith(serverRoot)) {
+			return;
+		}
+		if (!Files.isRegularFile(target)) {
+			return;
+		}
 
 		try {
 			String content = Files.readString(target);
@@ -145,7 +161,9 @@ public record ServerBoundExplorerPacket(
 
 	private void handleResourceList(ServerPlayer player) {
 		MinecraftServer server = player.level().getServer();
-		if (server == null) return;
+		if (server == null) {
+			return;
+		}
 
 		List<String> resources = new ArrayList<>();
 		try {
@@ -161,11 +179,15 @@ public record ServerBoundExplorerPacket(
 
 	private void handleResourceContent(ServerPlayer player) {
 		Identifier id = Identifier.tryParse(path);
-		if (id == null) return;
+		if (id == null) {
+			return;
+		}
 
 		try {
 			var opt = player.level().getServer().getResourceManager().getResource(id);
-			if (opt.isEmpty()) return;
+			if (opt.isEmpty()) {
+				return;
+			}
 
 			try (InputStream in = opt.get().open();
 			     BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {

@@ -12,125 +12,125 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 
 public abstract class EngineScreen extends Screen {
-    private final WidgetBase root;
-    private final boolean debug;
-    float tick = 0f;
-    long lastNanos = 0;
+	private final WidgetBase root;
+	private final boolean debug;
+	float tick = 0f;
+	long lastNanos = 0;
 
-    protected EngineScreen(boolean debug) {
-        super(Component.empty());
-        this.root = new WidgetBase(new UIVec(0, 0, 0, 0), new UIVec(1, 1, 0, 0));
-        this.debug = debug;
-    }
+	protected EngineScreen(boolean debug) {
+		super(Component.empty());
+		this.root = new WidgetBase(new UIVec(0, 0, 0, 0), new UIVec(1, 1, 0, 0));
+		this.debug = debug;
+	}
 
-    public EngineScreen() {
-        this(false);
-    }
+	public EngineScreen() {
+		this(false);
+	}
 
-    public boolean shouldDebug() {
-        return this.debug;
-    }
+	public boolean shouldDebug() {
+		return this.debug;
+	}
 
-    @Override
-    protected void init() {
-        lastNanos = System.nanoTime();
-        this.root.onInit();
-        this.root.updateArea(new UIArea(0, 0, this.width, this.height));
-    }
+	@Override
+	protected void init() {
+		lastNanos = System.nanoTime();
+		this.root.onInit();
+		this.root.updateArea(new UIArea(0, 0, this.width, this.height));
+	}
 
-    public void addWidgets(WidgetBase... widgets) {
-        for (WidgetBase widget : widgets) {
-            this.root.addWidget(widget);
-        }
-    }
+	public void addWidgets(WidgetBase... widgets) {
+		for (WidgetBase widget : widgets) {
+			this.root.addWidget(widget);
+		}
+	}
 
-    public void addWidget(WidgetBase widget) {
-        this.root.addWidget(widget);
-    }
+	public void addWidget(WidgetBase widget) {
+		this.root.addWidget(widget);
+	}
 
-    public void removeWidget(WidgetBase widget) {
-        this.root.removeWidget(widget);
-    }
+	public void removeWidget(WidgetBase widget) {
+		this.root.removeWidget(widget);
+	}
 
-    @Override
-    public void resize(int width, int height) {
-        super.resize(width, height);
-        this.root.updateArea(new UIArea(0, 0, width, height));
-    }
+	@Override
+	public void resize(int width, int height) {
+		super.resize(width, height);
+		this.root.updateArea(new UIArea(0, 0, width, height));
+	}
 
-    @Override
-    public final void tick() {
-        this.root.preTick();
-        doTick();
-        this.root.tick();
-    }
+	@Override
+	public final void tick() {
+		this.root.preTick();
+		doTick();
+		this.root.tick();
+	}
 
-    public void doTick() {
-    }
+	public void doTick() {
+	}
 
-    private void renderWidget(WidgetBase widget, GuiGraphicsExtractor graphics, int mouseX, int mouseY, float tickDelta) {
-        widget.preRender(graphics, mouseX, mouseY, tickDelta, this.debug);
-        widget.render(graphics, mouseX, mouseY, tickDelta, this.debug);
-        widget.postRender(graphics, mouseX, mouseY, tickDelta, this.debug);
+	private void renderWidget(WidgetBase widget, GuiGraphicsExtractor graphics, int mouseX, int mouseY, float tickDelta) {
+		widget.preRender(graphics, mouseX, mouseY, tickDelta, this.debug);
+		widget.render(graphics, mouseX, mouseY, tickDelta, this.debug);
+		widget.postRender(graphics, mouseX, mouseY, tickDelta, this.debug);
 
-        widget.preRenderChild(graphics, mouseX, mouseY, tickDelta);
-        for (WidgetBase child : widget.getChildren()) {
-            renderWidget(child, graphics, mouseX, mouseY, tickDelta);
-        }
-        widget.postRenderChild(graphics, mouseX, mouseY, tickDelta);
-    }
+		widget.preRenderChild(graphics, mouseX, mouseY, tickDelta);
+		for (WidgetBase child : widget.getChildren()) {
+			renderWidget(child, graphics, mouseX, mouseY, tickDelta);
+		}
+		widget.postRenderChild(graphics, mouseX, mouseY, tickDelta);
+	}
 
-    @Override
-    public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
-        long diffNanos = System.nanoTime() - lastNanos;
-        tick += diffNanos / 50_000_000f;
-        float tickDelta = tick - Mth.floor(tick);
-        lastNanos = System.nanoTime();
+	@Override
+	public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+		long diffNanos = System.nanoTime() - lastNanos;
+		tick += diffNanos / 50_000_000f;
+		float tickDelta = tick - Mth.floor(tick);
+		lastNanos = System.nanoTime();
 
-        renderWidget(this.root, guiGraphics, mouseX, mouseY, tickDelta);
-    }
+		renderWidget(this.root, guiGraphics, mouseX, mouseY, tickDelta);
+	}
 
-    @Override
-    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-        // Extract data from MouseButtonEvent
-        this.root.mouseClicked(event.x(), event.y(), event.button());
-        return super.mouseClicked(event, doubleClick);
-    }
+	@Override
+	public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+		// Extract data from MouseButtonEvent
+		this.root.mouseClicked(event.x(), event.y(), event.button());
+		return super.mouseClicked(event, doubleClick);
+	}
 
-    @Override
-    public boolean mouseReleased(MouseButtonEvent event) {
-        this.root.mouseReleased(event.x(), event.y(), event.button());
-        return super.mouseReleased(event);
-    }
+	@Override
+	public boolean mouseReleased(MouseButtonEvent event) {
+		this.root.mouseReleased(event.x(), event.y(), event.button());
+		return super.mouseReleased(event);
+	}
 
-    @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
-        this.root.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
-        return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
-    }
+	@Override
+	public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+		this.root.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+		return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+	}
 
-    @Override
-    public boolean mouseDragged(MouseButtonEvent event, double dx, double dy) {
-        this.root.mouseDragged(event.x(), event.y(), event.button(), dx, dy);
-        return super.mouseDragged(event, dx, dy);
-    }
+	@Override
+	public boolean mouseDragged(MouseButtonEvent event, double dx, double dy) {
+		this.root.mouseDragged(event.x(), event.y(), event.button(), dx, dy);
+		return super.mouseDragged(event, dx, dy);
+	}
 
-    @Override
-    public boolean keyPressed(KeyEvent event) {
-        this.root.keyPressed(event.key(), event.scancode(), event.modifiers());
-        return super.keyPressed(event);
-    }
+	@Override
+	public boolean keyPressed(KeyEvent event) {
+		this.root.keyPressed(event.key(), event.scancode(), event.modifiers());
+		return super.keyPressed(event);
+	}
 
-    @Override
-    public boolean keyReleased(KeyEvent event) {
-        this.root.keyReleased(event.key(), event.scancode(), event.modifiers());
-        return super.keyReleased(event);
-    }
+	@Override
+	public boolean keyReleased(KeyEvent event) {
+		this.root.keyReleased(event.key(), event.scancode(), event.modifiers());
+		return super.keyReleased(event);
+	}
 
-    @Override
-    public boolean charTyped(CharacterEvent event) {
-        //TODO: Find a better fix for this?
-        this.root.charTyped(event.codepointAsString().charAt(0), 0);
-        return super.charTyped(event);
-    }
+	@Override
+	public boolean charTyped(CharacterEvent event) {
+		//TODO: Find a better fix for this?
+		this.root.charTyped(event.codepointAsString().charAt(0), 0);
+		return super.charTyped(event);
+	}
 }

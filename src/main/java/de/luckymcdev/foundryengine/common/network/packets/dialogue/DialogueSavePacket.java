@@ -17,38 +17,42 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
  */
 public record DialogueSavePacket(CompoundTag data) implements AbstractPacket<DialogueSavePacket> {
 
-    public static final Definition<DialogueSavePacket> DEFINITION = new Definition<>(
-            AbstractPacket.createType(Common.id("dialogue_save")),
-            PacketBounds.SERVER,
-            StreamCodec.composite(ByteBufCodecs.COMPOUND_TAG, DialogueSavePacket::data, DialogueSavePacket::new),
-            null,
-            DialogueSavePacket::handleServer
-    );
+	public static final Definition<DialogueSavePacket> DEFINITION = new Definition<>(
+		AbstractPacket.createType(Common.id("dialogue_save")),
+		PacketBounds.SERVER,
+		StreamCodec.composite(ByteBufCodecs.COMPOUND_TAG, DialogueSavePacket::data, DialogueSavePacket::new),
+		null,
+		DialogueSavePacket::handleServer
+	);
 
-    @Override
-    public Type<DialogueSavePacket> getType() {
-        return DEFINITION.type();
-    }
+	@Override
+	public Type<DialogueSavePacket> getType() {
+		return DEFINITION.type();
+	}
 
-    @Override
-    public PacketBounds getBoundTo() {
-        return DEFINITION.bounds();
-    }
+	@Override
+	public PacketBounds getBoundTo() {
+		return DEFINITION.bounds();
+	}
 
-    @Override
-    public StreamCodec<RegistryFriendlyByteBuf, DialogueSavePacket> getCodec() {
-        return DEFINITION.codec();
-    }
+	@Override
+	public StreamCodec<RegistryFriendlyByteBuf, DialogueSavePacket> getCodec() {
+		return DEFINITION.codec();
+	}
 
-    @Override
-    public void handleServer(IPayloadContext ctx) {
-        ctx.enqueueWork(() -> {
-            if (!(ctx.player() instanceof ServerPlayer player)) return;
-            if (!PermissionChecks.COMMANDS_GAMEMASTER.check(player.permissions())) return;
-            var mgr = Common.getDialogueManager();
-            mgr.applyNbt(data);
-            mgr.save();
-            mgr.syncToAll();
-        });
-    }
+	@Override
+	public void handleServer(IPayloadContext ctx) {
+		ctx.enqueueWork(() -> {
+			if (!(ctx.player() instanceof ServerPlayer player)) {
+				return;
+			}
+			if (!PermissionChecks.COMMANDS_GAMEMASTER.check(player.permissions())) {
+				return;
+			}
+			var mgr = Common.getDialogueManager();
+			mgr.applyNbt(data);
+			mgr.save();
+			mgr.syncToAll();
+		});
+	}
 }

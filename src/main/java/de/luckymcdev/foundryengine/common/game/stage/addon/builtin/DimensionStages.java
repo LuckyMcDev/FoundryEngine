@@ -11,24 +11,24 @@ import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
 
 public class DimensionStages extends StageAddon<ResourceKey<Level>> {
 
-    @Override
-    protected String getObjectType() {
-        return "dimension";
-    }
+	@Override
+	protected String getObjectType() {
+		return "dimension";
+	}
 
-    @SubscribeEvent(priority = EventPriority.HIGH)
-    public void onDimensionChange(EntityTravelToDimensionEvent event) {
-        Entity entity = event.getEntity();
+	@SubscribeEvent(priority = EventPriority.HIGH)
+	public void onDimensionChange(EntityTravelToDimensionEvent event) {
+		Entity entity = event.getEntity();
 
-        if (!(entity instanceof Player player)) {
-            return;
-        }
+		if (!(entity instanceof Player player)) {
+			return;
+		}
 
-        ResourceKey<Level> destination = event.getDimension();
+		ResourceKey<Level> destination = event.getDimension();
 
-        if (!canAccess(player, destination)) {
-            event.setCanceled(true);
-            player.sendOverlayMessage(getMissingStagesMessage(player, destination));
-        }
-    }
+		if (!canAccess(player, destination)) {
+			event.setCanceled(true);
+			player.sendOverlayMessage(getMissingStagesMessage(player, destination));
+		}
+	}
 }

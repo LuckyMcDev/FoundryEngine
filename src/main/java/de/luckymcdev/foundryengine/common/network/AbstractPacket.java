@@ -14,33 +14,33 @@ import java.util.function.BiConsumer;
  */
 public interface AbstractPacket<T extends AbstractPacket<T>> extends CustomPacketPayload {
 
-    static <T extends CustomPacketPayload> Type<T> createType(Identifier id) {
-        return new Type<>(id);
-    }
+	static <T extends CustomPacketPayload> Type<T> createType(Identifier id) {
+		return new Type<>(id);
+	}
 
-    @Override
-    default Type<? extends CustomPacketPayload> type() {
-        return getType();
-    }
+	@Override
+	default Type<? extends CustomPacketPayload> type() {
+		return getType();
+	}
 
-    Type<T> getType();
+	Type<T> getType();
 
-    PacketBounds getBoundTo();
+	PacketBounds getBoundTo();
 
-    StreamCodec<RegistryFriendlyByteBuf, T> getCodec();
+	StreamCodec<RegistryFriendlyByteBuf, T> getCodec();
 
-    default void handleClient(IPayloadContext ctx) {
-    }
+	default void handleClient(IPayloadContext ctx) {
+	}
 
-    default void handleServer(IPayloadContext ctx) {
-    }
+	default void handleServer(IPayloadContext ctx) {
+	}
 
-    record Definition<T extends AbstractPacket<T>>(
-            Type<T> type,
-            PacketBounds bounds,
-            StreamCodec<RegistryFriendlyByteBuf, T> codec,
-            @Nullable BiConsumer<T, IPayloadContext> clientHandler,
-            @Nullable BiConsumer<T, IPayloadContext> serverHandler
-    ) {
-    }
+	record Definition<T extends AbstractPacket<T>>(
+		Type<T> type,
+		PacketBounds bounds,
+		StreamCodec<RegistryFriendlyByteBuf, T> codec,
+		@Nullable BiConsumer<T, IPayloadContext> clientHandler,
+		@Nullable BiConsumer<T, IPayloadContext> serverHandler
+	) {
+	}
 }

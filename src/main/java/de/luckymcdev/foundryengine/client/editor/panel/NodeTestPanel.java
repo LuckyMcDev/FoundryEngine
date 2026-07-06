@@ -17,58 +17,58 @@ import net.minecraft.network.chat.Component;
 import java.util.List;
 
 public class NodeTestPanel extends EditorPanel {
-    public static final NodeTestPanel INSTANCE = new NodeTestPanel();
+	public static final NodeTestPanel INSTANCE = new NodeTestPanel();
 
-    private final NodeEditorInstance<Double> editor;
-    private final NodeBuilder<Double> rootEvalBuilder;
+	private final NodeEditorInstance<Double> editor;
+	private final NodeBuilder<Double> rootEvalBuilder;
 
-    protected NodeTestPanel() {
-        super(new Builder(Common.id("node_test_panel"))
-                .icon(ImIcons.BLUETOOTH)
-                .category(PanelCategory.EDITOR)
-        );
+	protected NodeTestPanel() {
+		super(new Builder(Common.id("node_test_panel"))
+			.icon(ImIcons.BLUETOOTH)
+			.category(PanelCategory.EDITOR)
+		);
 
-        NodePinType<Double> doubleType = NodeTypes.DOUBLE;
+		NodePinType<Double> doubleType = NodeTypes.DOUBLE;
 
-        editor = new NodeEditorInstance<>(doubleType);
+		editor = new NodeEditorInstance<>(doubleType);
 
-        rootEvalBuilder = new NodeBuilder<>() {
-            @Override
-            public List<NodePin<Double>> getPins() {
-                return List.of();
-            }
+		rootEvalBuilder = new NodeBuilder<>() {
+			@Override
+			public List<NodePin<Double>> getPins() {
+				return List.of();
+			}
 
-            @Override
-            public boolean render() {
-                return false;
-            }
+			@Override
+			public boolean render() {
+				return false;
+			}
 
-            @Override
-            public Double evaluate() {
-                var rootInput = editor.root.inputPins.get(0);
-                if (rootInput.inputLink != null) {
-                    return rootInput.inputLink.node.builder.evaluate();
-                }
-                return 0.0;
-            }
+			@Override
+			public Double evaluate() {
+				var rootInput = editor.root.inputPins.get(0);
+				if (rootInput.inputLink != null) {
+					return rootInput.inputLink.node.builder.evaluate();
+				}
+				return 0.0;
+			}
 
-            @Override
-            public Component getDisplayName() {
-                return Component.translatable("node.foundryengine.root");
-            }
+			@Override
+			public Component getDisplayName() {
+				return Component.translatable("node.foundryengine.root");
+			}
 
-            @Override
-            public void setNode(Node<Double> node) {
-            }
-        };
+			@Override
+			public void setNode(Node<Double> node) {
+			}
+		};
 
-        editor.rootBuilder = rootEvalBuilder;
-    }
+		editor.rootBuilder = rootEvalBuilder;
+	}
 
-    @Override
-    public void content(ImGraphicsExtractor g) {
-        editor.content(g);
-        ImGui.separator();
-        ImGui.text("Final value: " + editor.rootBuilder.evaluate());
-    }
+	@Override
+	public void content(ImGraphicsExtractor g) {
+		editor.content(g);
+		ImGui.separator();
+		ImGui.text("Final value: " + editor.rootBuilder.evaluate());
+	}
 }

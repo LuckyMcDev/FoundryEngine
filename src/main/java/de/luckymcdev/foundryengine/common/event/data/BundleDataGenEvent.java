@@ -8,23 +8,23 @@ import net.neoforged.bus.api.Event;
 import java.util.concurrent.CompletableFuture;
 
 public class BundleDataGenEvent extends Event {
-    private final EngineDataGenerator generator;
-    private final CompletableFuture<HolderLookup.Provider> lookup;
+	private final EngineDataGenerator generator;
+	private final CompletableFuture<HolderLookup.Provider> lookup;
 
-    public BundleDataGenEvent(EngineDataGenerator generator, CompletableFuture<HolderLookup.Provider> lookup) {
-        this.generator = generator;
-        this.lookup = lookup;
-    }
+	public BundleDataGenEvent(EngineDataGenerator generator, CompletableFuture<HolderLookup.Provider> lookup) {
+		this.generator = generator;
+		this.lookup = lookup;
+	}
 
-    public EngineDataGenerator getGenerator() {
-        return generator;
-    }
+	public EngineDataGenerator getGenerator() {
+		return generator;
+	}
 
-    public CompletableFuture<HolderLookup.Provider> getLookup() {
-        return lookup;
-    }
+	public CompletableFuture<HolderLookup.Provider> getLookup() {
+		return lookup;
+	}
 
-    public void addProvider(DataProvider provider) {
-        generator.addProvider(provider);
-    }
+	public void addProvider(DataProvider provider) {
+		generator.addProvider(provider);
+	}
 }

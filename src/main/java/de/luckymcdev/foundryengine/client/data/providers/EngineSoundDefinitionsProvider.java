@@ -9,39 +9,43 @@ import net.neoforged.neoforge.common.data.SoundDefinitionsProvider;
 import java.util.List;
 
 public class EngineSoundDefinitionsProvider extends SoundDefinitionsProvider {
-    private final List<SoundBuilder> soundBuilders;
+	private final List<SoundBuilder> soundBuilders;
 
-    public EngineSoundDefinitionsProvider(PackOutput output, String namespace, List<SoundBuilder> soundBuilders) {
-        super(output, namespace);
-        this.soundBuilders = soundBuilders;
-    }
+	public EngineSoundDefinitionsProvider(PackOutput output, String namespace, List<SoundBuilder> soundBuilders) {
+		super(output, namespace);
+		this.soundBuilders = soundBuilders;
+	}
 
-    @Override
-    public void registerSounds() {
-        for (SoundBuilder builder : soundBuilders) {
-            SoundEvent sound = builder.get();
-            SoundDefinition def = definition();
-            if (builder.getSubtitle() != null) {
-                def.subtitle(builder.getSubtitle());
-            }
-            def.replace(builder.isReplace());
+	@Override
+	public void registerSounds() {
+		for (SoundBuilder builder : soundBuilders) {
+			SoundEvent sound = builder.get();
+			SoundDefinition def = definition();
+			if (builder.getSubtitle() != null) {
+				def.subtitle(builder.getSubtitle());
+			}
+			def.replace(builder.isReplace());
 
-            if (builder.getSoundFiles().isEmpty()) {
-                def.with(sound(sound.location()));
-            } else {
-                for (var entry : builder.getSoundFiles()) {
-                    SoundDefinition.Sound soundEntry = sound(entry.location())
-                            .volume(entry.volume())
-                            .pitch(entry.pitch())
-                            .weight(entry.weight());
-                    if (entry.stream()) soundEntry.stream();
-                    soundEntry.attenuationDistance(entry.attenuationDistance());
-                    if (entry.preload()) soundEntry.preload();
-                    def.with(soundEntry);
-                }
-            }
+			if (builder.getSoundFiles().isEmpty()) {
+				def.with(sound(sound.location()));
+			} else {
+				for (var entry : builder.getSoundFiles()) {
+					SoundDefinition.Sound soundEntry = sound(entry.location())
+						.volume(entry.volume())
+						.pitch(entry.pitch())
+						.weight(entry.weight());
+					if (entry.stream()) {
+						soundEntry.stream();
+					}
+					soundEntry.attenuationDistance(entry.attenuationDistance());
+					if (entry.preload()) {
+						soundEntry.preload();
+					}
+					def.with(soundEntry);
+				}
+			}
 
-            add(sound, def);
-        }
-    }
+			add(sound, def);
+		}
+	}
 }

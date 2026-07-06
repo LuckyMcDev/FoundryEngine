@@ -9,6 +9,6 @@ import org.spongepowered.asm.mixin.gen.Invoker;
  */
 @Mixin(AbstractSelectionList.class)
 public interface AbstractSelectionListAccessor<E extends AbstractSelectionList.Entry<E>> {
-    @Invoker("addEntry")
-    int invokeAddEntry(E entry);
+	@Invoker("addEntry")
+	int invokeAddEntry(E entry);
 }

@@ -15,71 +15,73 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 public record WaypointPacket(String action, int x, int y, int z, String icon, String name,
                              Color color) implements AbstractPacket<WaypointPacket> {
 
-    public static final Type<WaypointPacket> TYPE = AbstractPacket.createType(Common.id("waypoint_packet"));
+	public static final Type<WaypointPacket> TYPE = AbstractPacket.createType(Common.id("waypoint_packet"));
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, WaypointPacket> CODEC = StreamCodec.composite(
-            ByteBufCodecs.STRING_UTF8, WaypointPacket::action,
-            ByteBufCodecs.INT, WaypointPacket::x,
-            ByteBufCodecs.INT, WaypointPacket::y,
-            ByteBufCodecs.INT, WaypointPacket::z,
-            ByteBufCodecs.STRING_UTF8, WaypointPacket::icon,
-            ByteBufCodecs.STRING_UTF8, WaypointPacket::name,
-            ByteBufCodecs.INT.map(Color::new, Color::argb), WaypointPacket::color,
-            WaypointPacket::new
-    );
+	public static final StreamCodec<RegistryFriendlyByteBuf, WaypointPacket> CODEC = StreamCodec.composite(
+		ByteBufCodecs.STRING_UTF8, WaypointPacket::action,
+		ByteBufCodecs.INT, WaypointPacket::x,
+		ByteBufCodecs.INT, WaypointPacket::y,
+		ByteBufCodecs.INT, WaypointPacket::z,
+		ByteBufCodecs.STRING_UTF8, WaypointPacket::icon,
+		ByteBufCodecs.STRING_UTF8, WaypointPacket::name,
+		ByteBufCodecs.INT.map(Color::new, Color::argb), WaypointPacket::color,
+		WaypointPacket::new
+	);
 
-    public static final Definition<WaypointPacket> DEFINITION = new Definition<>(
-            TYPE,
-            PacketBounds.SERVER,
-            CODEC,
-            null,
-            (packet, ctx) -> handleServer(packet, ctx)
-    );
+	public static final Definition<WaypointPacket> DEFINITION = new Definition<>(
+		TYPE,
+		PacketBounds.SERVER,
+		CODEC,
+		null,
+		(packet, ctx) -> handleServer(packet, ctx)
+	);
 
-    private static void handleServer(WaypointPacket packet, IPayloadContext ctx) {
-        ctx.enqueueWork(() -> {
-            if (!(ctx.player() instanceof ServerPlayer player)) return;
-            ServerLevel level = player.level();
-            var manager = Common.getWaypointManager();
+	private static void handleServer(WaypointPacket packet, IPayloadContext ctx) {
+		ctx.enqueueWork(() -> {
+			if (!(ctx.player() instanceof ServerPlayer player)) {
+				return;
+			}
+			ServerLevel level = player.level();
+			var manager = Common.getWaypointManager();
 
-            switch (packet.action()) {
-                case "ADD" -> manager.addWaypoint(level,
-                        new Waypoint(packet.name(), packet.icon(), packet.x(), packet.y(), packet.z(), packet.color()));
-                case "REMOVE" -> manager.removeWaypoint(level, packet.x(), packet.y(), packet.z());
-                case "CLEAR" -> manager.clearWaypoints(level);
-                default -> {
-                    return;
-                }
-            }
+			switch (packet.action()) {
+				case "ADD" -> manager.addWaypoint(level,
+					new Waypoint(packet.name(), packet.icon(), packet.x(), packet.y(), packet.z(), packet.color()));
+				case "REMOVE" -> manager.removeWaypoint(level, packet.x(), packet.y(), packet.z());
+				case "CLEAR" -> manager.clearWaypoints(level);
+				default -> {
+					return;
+				}
+			}
 
-            manager.syncToAll();
-        });
-    }
+			manager.syncToAll();
+		});
+	}
 
-    public static WaypointPacket add(int x, int y, int z, String name, String icon, Color color) {
-        return new WaypointPacket("ADD", x, y, z, icon, name, color);
-    }
+	public static WaypointPacket add(int x, int y, int z, String name, String icon, Color color) {
+		return new WaypointPacket("ADD", x, y, z, icon, name, color);
+	}
 
-    public static WaypointPacket remove(int x, int y, int z) {
-        return new WaypointPacket("REMOVE", x, y, z, "", "", new Color(0));
-    }
+	public static WaypointPacket remove(int x, int y, int z) {
+		return new WaypointPacket("REMOVE", x, y, z, "", "", new Color(0));
+	}
 
-    public static WaypointPacket clear() {
-        return new WaypointPacket("CLEAR", 0, 0, 0, "", "", new Color(0));
-    }
+	public static WaypointPacket clear() {
+		return new WaypointPacket("CLEAR", 0, 0, 0, "", "", new Color(0));
+	}
 
-    @Override
-    public Type<WaypointPacket> getType() {
-        return TYPE;
-    }
+	@Override
+	public Type<WaypointPacket> getType() {
+		return TYPE;
+	}
 
-    @Override
-    public PacketBounds getBoundTo() {
-        return PacketBounds.SERVER;
-    }
+	@Override
+	public PacketBounds getBoundTo() {
+		return PacketBounds.SERVER;
+	}
 
-    @Override
-    public StreamCodec<RegistryFriendlyByteBuf, WaypointPacket> getCodec() {
-        return CODEC;
-    }
+	@Override
+	public StreamCodec<RegistryFriendlyByteBuf, WaypointPacket> getCodec() {
+		return CODEC;
+	}
 }

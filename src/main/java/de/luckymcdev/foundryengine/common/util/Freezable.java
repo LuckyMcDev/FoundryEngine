@@ -7,39 +7,41 @@ package de.luckymcdev.foundryengine.common.util;
  * @param <T> the type of value.
  */
 public class Freezable<T> {
-    private boolean frozen;
-    private T value;
+	private boolean frozen;
+	private T value;
 
-    public Freezable(T value) {
-        this.value = value;
-    }
+	public Freezable(T value) {
+		this.value = value;
+	}
 
-    /**
-     * Returns true if this value is frozen (immutable).
-     */
-    public boolean frozen() {
-        return frozen;
-    }
+	/**
+	 * Returns true if this value is frozen (immutable).
+	 */
+	public boolean frozen() {
+		return frozen;
+	}
 
-    /**
-     * Freezes this value, preventing further modifications.
-     */
-    public void freeze() {
-        this.frozen = true;
-    }
+	/**
+	 * Freezes this value, preventing further modifications.
+	 */
+	public void freeze() {
+		this.frozen = true;
+	}
 
-    /**
-     * Sets the value if not frozen.
-     */
-    public void setValue(T value) {
-        if (frozen()) return;
-        this.value = value;
-    }
+	/**
+	 * Sets the value if not frozen.
+	 */
+	public void setValue(T value) {
+		if (frozen()) {
+			return;
+		}
+		this.value = value;
+	}
 
-    /**
-     * Returns the current value.
-     */
-    public T value() {
-        return value;
-    }
+	/**
+	 * Returns the current value.
+	 */
+	public T value() {
+		return value;
+	}
 }

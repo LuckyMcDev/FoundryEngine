@@ -12,30 +12,30 @@ import java.util.List;
  * Creates TOML content from BundleInfo.
  */
 public class BundleTomlWriter {
-    private BundleTomlWriter() {
-        throw new UtilityClassException();
-    }
+	private BundleTomlWriter() {
+		throw new UtilityClassException();
+	}
 
-    public static String write(List<BundleInfo> bundles) {
-        CommentedConfig config = TomlFormat.instance().createConfig();
-        List<CommentedConfig> bundleList = new ArrayList<>();
+	public static String write(List<BundleInfo> bundles) {
+		CommentedConfig config = TomlFormat.instance().createConfig();
+		List<CommentedConfig> bundleList = new ArrayList<>();
 
-        for (BundleInfo info : bundles) {
-            CommentedConfig entry = TomlFormat.instance().createConfig();
-            entry.set("bundleId", info.id());
-            entry.set("displayName", info.displayName());
-            entry.set("version", info.versionInfo().toString());
-            entry.set("authors", String.join(", ", info.authors()));
+		for (BundleInfo info : bundles) {
+			CommentedConfig entry = TomlFormat.instance().createConfig();
+			entry.set("bundleId", info.id());
+			entry.set("displayName", info.displayName());
+			entry.set("version", info.versionInfo().toString());
+			entry.set("authors", String.join(", ", info.authors()));
 
-            List<String> depStrings = info.dependencies().stream()
-                    .map(d -> d.type().name().toLowerCase() + ":" + d.id() + "@" + d.version())
-                    .toList();
+			List<String> depStrings = info.dependencies().stream()
+				.map(d -> d.type().name().toLowerCase() + ":" + d.id() + "@" + d.version())
+				.toList();
 
-            entry.set("dependencies", depStrings);
-            bundleList.add(entry);
-        }
+			entry.set("dependencies", depStrings);
+			bundleList.add(entry);
+		}
 
-        config.set("bundles", bundleList);
-        return TomlFormat.instance().createWriter().writeToString(config);
-    }
+		config.set("bundles", bundleList);
+		return TomlFormat.instance().createWriter().writeToString(config);
+	}
 }

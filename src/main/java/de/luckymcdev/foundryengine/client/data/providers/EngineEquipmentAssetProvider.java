@@ -10,11 +10,11 @@ import java.util.function.BiConsumer;
 
 public class EngineEquipmentAssetProvider extends EquipmentAssetProvider {
 
-    public EngineEquipmentAssetProvider(PackOutput output) {
-        super(output);
-    }
+	public EngineEquipmentAssetProvider(PackOutput output) {
+		super(output);
+	}
 
-    @Override
-    protected void registerModels(BiConsumer<ResourceKey<EquipmentAsset>, EquipmentClientInfo> output) {
-    }
+	@Override
+	protected void registerModels(BiConsumer<ResourceKey<EquipmentAsset>, EquipmentClientInfo> output) {
+	}
 }

@@ -12,47 +12,49 @@ import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record ServerBoundChangeWeatherPacket(
-        String weatherType) implements AbstractPacket<ServerBoundChangeWeatherPacket> {
+	String weatherType) implements AbstractPacket<ServerBoundChangeWeatherPacket> {
 
-    public static final Definition<ServerBoundChangeWeatherPacket> DEFINITION = new Definition<>(
-            AbstractPacket.createType(Common.id("change_weather")),
-            PacketBounds.SERVER,
-            StreamCodec.composite(
-                    ByteBufCodecs.STRING_UTF8, ServerBoundChangeWeatherPacket::weatherType,
-                    ServerBoundChangeWeatherPacket::new
-            ),
-            null,
-            ServerBoundChangeWeatherPacket::handleServer
-    );
+	public static final Definition<ServerBoundChangeWeatherPacket> DEFINITION = new Definition<>(
+		AbstractPacket.createType(Common.id("change_weather")),
+		PacketBounds.SERVER,
+		StreamCodec.composite(
+			ByteBufCodecs.STRING_UTF8, ServerBoundChangeWeatherPacket::weatherType,
+			ServerBoundChangeWeatherPacket::new
+		),
+		null,
+		ServerBoundChangeWeatherPacket::handleServer
+	);
 
-    @Override
-    public Type<ServerBoundChangeWeatherPacket> getType() {
-        return DEFINITION.type();
-    }
+	@Override
+	public Type<ServerBoundChangeWeatherPacket> getType() {
+		return DEFINITION.type();
+	}
 
-    @Override
-    public PacketBounds getBoundTo() {
-        return DEFINITION.bounds();
-    }
+	@Override
+	public PacketBounds getBoundTo() {
+		return DEFINITION.bounds();
+	}
 
-    @Override
-    public StreamCodec<RegistryFriendlyByteBuf, ServerBoundChangeWeatherPacket> getCodec() {
-        return DEFINITION.codec();
-    }
+	@Override
+	public StreamCodec<RegistryFriendlyByteBuf, ServerBoundChangeWeatherPacket> getCodec() {
+		return DEFINITION.codec();
+	}
 
-    @Override
-    public void handleServer(IPayloadContext ctx) {
-        if (ctx.player() instanceof ServerPlayer player) {
-            if (!PermissionChecks.COMMANDS_GAMEMASTER.check(player.permissions())) return;
+	@Override
+	public void handleServer(IPayloadContext ctx) {
+		if (ctx.player() instanceof ServerPlayer player) {
+			if (!PermissionChecks.COMMANDS_GAMEMASTER.check(player.permissions())) {
+				return;
+			}
 
-            MinecraftServer server = player.level().getServer();
-            int duration = 6000;
+			MinecraftServer server = player.level().getServer();
+			int duration = 6000;
 
-            switch (weatherType) {
-                case "clear" -> server.setWeatherParameters(0, duration, false, false);
-                case "rain" -> server.setWeatherParameters(0, duration, true, false);
-                case "thunder" -> server.setWeatherParameters(0, duration, true, true);
-            }
-        }
-    }
+			switch (weatherType) {
+				case "clear" -> server.setWeatherParameters(0, duration, false, false);
+				case "rain" -> server.setWeatherParameters(0, duration, true, false);
+				case "thunder" -> server.setWeatherParameters(0, duration, true, true);
+			}
+		}
+	}
 }

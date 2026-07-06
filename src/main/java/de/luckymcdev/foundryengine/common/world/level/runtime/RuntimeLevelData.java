@@ -5,28 +5,28 @@ import net.minecraft.world.level.storage.DerivedLevelData;
 import net.minecraft.world.level.storage.WorldData;
 
 public class RuntimeLevelData extends DerivedLevelData {
-    final RuntimeLevelConfig config;
+	final RuntimeLevelConfig config;
 
-    public RuntimeLevelData(WorldData worldData, RuntimeLevelConfig config) {
-        super(worldData, worldData.overworldData());
-        this.config = config;
-    }
+	public RuntimeLevelData(WorldData worldData, RuntimeLevelConfig config) {
+		super(worldData, worldData.overworldData());
+		this.config = config;
+	}
 
-    @Override
-    public long getGameTime() {
-        return this.config.getGameTime();
-    }
+	@Override
+	public long getGameTime() {
+		return this.config.getGameTime();
+	}
 
-    @Override
-    public void setGameTime(long time) {
-        this.config.setGameTime(time);
-    }
+	@Override
+	public void setGameTime(long time) {
+		this.config.setGameTime(time);
+	}
 
-    @Override
-    public Difficulty getDifficulty() {
-        if (this.config.shouldMirrorOverworldDifficulty()) {
-            return super.getDifficulty();
-        }
-        return this.config.getDifficulty();
-    }
+	@Override
+	public Difficulty getDifficulty() {
+		if (this.config.shouldMirrorOverworldDifficulty()) {
+			return super.getDifficulty();
+		}
+		return this.config.getDifficulty();
+	}
 }

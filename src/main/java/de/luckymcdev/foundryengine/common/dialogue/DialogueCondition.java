@@ -8,5 +8,5 @@ import net.minecraft.server.level.ServerPlayer;
  */
 @FunctionalInterface
 public interface DialogueCondition {
-    boolean test(ServerPlayer player, DialogueSession session);
+	boolean test(ServerPlayer player, DialogueSession session);
 }

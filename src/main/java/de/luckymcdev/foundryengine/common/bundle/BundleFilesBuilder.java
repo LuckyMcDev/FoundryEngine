@@ -18,48 +18,48 @@ import java.util.stream.Stream;
  * Utility class for building BundleFiles from a root directory.
  */
 public class BundleFilesBuilder {
-    private static final Logger LOGGER = LogUtils.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 
-    public BundleFiles build(Path root, @Nullable FileSystem zipFs) {
-        Path assets = root.resolve("assets");
-        Path data = root.resolve("data");
+	public BundleFiles build(Path root, @Nullable FileSystem zipFs) {
+		Path assets = root.resolve("assets");
+		Path data = root.resolve("data");
 
-        Path scriptsRoot = root.resolve("scripts");
-        Path clientScripts = scriptsRoot.resolve("client");
-        Path commonScripts = scriptsRoot.resolve("common");
-        Path serverScripts = scriptsRoot.resolve("server");
+		Path scriptsRoot = root.resolve("scripts");
+		Path clientScripts = scriptsRoot.resolve("client");
+		Path commonScripts = scriptsRoot.resolve("common");
+		Path serverScripts = scriptsRoot.resolve("server");
 
-        List<Path> scriptCollection = new ArrayList<>();
-        scriptCollection.addAll(findScripts(clientScripts));
-        scriptCollection.addAll(findScripts(commonScripts));
-        scriptCollection.addAll(findScripts(serverScripts));
+		List<Path> scriptCollection = new ArrayList<>();
+		scriptCollection.addAll(findScripts(clientScripts));
+		scriptCollection.addAll(findScripts(commonScripts));
+		scriptCollection.addAll(findScripts(serverScripts));
 
-        BundleFiles.ScriptFiles scriptFiles = new BundleFiles.ScriptFiles(
-                scriptsRoot,
-                clientScripts,
-                commonScripts,
-                serverScripts,
-                List.copyOf(scriptCollection)
-        );
+		BundleFiles.ScriptFiles scriptFiles = new BundleFiles.ScriptFiles(
+			scriptsRoot,
+			clientScripts,
+			commonScripts,
+			serverScripts,
+			List.copyOf(scriptCollection)
+		);
 
-        Path saves = root.resolve("saves");
+		Path saves = root.resolve("saves");
 
-        return new BundleFiles(root, assets, data, scriptFiles, saves, zipFs);
-    }
+		return new BundleFiles(root, assets, data, scriptFiles, saves, zipFs);
+	}
 
-    private List<Path> findScripts(final Path directory) {
-        if (!Files.exists(directory) || !Files.isDirectory(directory)) {
-            return Collections.emptyList();
-        }
+	private List<Path> findScripts(final Path directory) {
+		if (!Files.exists(directory) || !Files.isDirectory(directory)) {
+			return Collections.emptyList();
+		}
 
-        try (Stream<Path> files = Files.walk(directory)) {
-            return files
-                    .filter(Files::isRegularFile)
-                    .filter(f -> !Files.isDirectory(f))
-                    .toList();
-        } catch (IOException e) {
-            LOGGER.error("Failed to find scripts in: {}", directory, e);
-            return Collections.emptyList();
-        }
-    }
+		try (Stream<Path> files = Files.walk(directory)) {
+			return files
+				.filter(Files::isRegularFile)
+				.filter(f -> !Files.isDirectory(f))
+				.toList();
+		} catch (IOException e) {
+			LOGGER.error("Failed to find scripts in: {}", directory, e);
+			return Collections.emptyList();
+		}
+	}
 }

@@ -61,11 +61,21 @@ public final class JsonColorizer extends AbstractBaseColorizer {
 	}
 
 	private Color resolveColor(Matcher m) {
-		if (m.group(1) != null) return COLOR_STRING;
-		if (m.group(2) != null) return COLOR_KEYWORD;
-		if (m.group(3) != null) return COLOR_NUMBER;
-		if (m.group(4) != null) return COLOR_COMMENT;
-		if (m.group(5) != null) return COLOR_PUNCTUATION;
+		if (m.group(1) != null) {
+			return COLOR_STRING;
+		}
+		if (m.group(2) != null) {
+			return COLOR_KEYWORD;
+		}
+		if (m.group(3) != null) {
+			return COLOR_NUMBER;
+		}
+		if (m.group(4) != null) {
+			return COLOR_COMMENT;
+		}
+		if (m.group(5) != null) {
+			return COLOR_PUNCTUATION;
+		}
 		return COLOR_DEFAULT;
 	}
 }

@@ -24,105 +24,105 @@ import java.io.File;
 import java.io.IOException;
 
 public class RuntimeLevelManager {
-    private final MinecraftServer server;
-    private final MinecraftServerAccess serverAccess;
+	private final MinecraftServer server;
+	private final MinecraftServerAccess serverAccess;
 
-    public RuntimeLevelManager(MinecraftServer server) {
-        this.server = server;
-        this.serverAccess = (MinecraftServerAccess) server;
-    }
+	public RuntimeLevelManager(MinecraftServer server) {
+		this.server = server;
+		this.serverAccess = (MinecraftServerAccess) server;
+	}
 
-    private static MappedRegistry<LevelStem> getDimensionsRegistry(MinecraftServer server) {
-        RegistryAccess registryManager = server.registries().compositeAccess();
-        return (MappedRegistry<LevelStem>) registryManager.lookupOrThrow(Registries.LEVEL_STEM);
-    }
+	private static MappedRegistry<LevelStem> getDimensionsRegistry(MinecraftServer server) {
+		RegistryAccess registryManager = server.registries().compositeAccess();
+		return (MappedRegistry<LevelStem>) registryManager.lookupOrThrow(Registries.LEVEL_STEM);
+	}
 
-    public RuntimeLevel add(ResourceKey<Level> levelKey, RuntimeLevelConfig config, RuntimeLevel.Style style) {
-        LevelStem options = config.createDimensionOptions(this.server);
+	public RuntimeLevel add(ResourceKey<Level> levelKey, RuntimeLevelConfig config, RuntimeLevel.Style style) {
+		LevelStem options = config.createDimensionOptions(this.server);
 
-        if (style == RuntimeLevel.Style.TEMPORARY) {
-            ((EngineDimensionOptions) (Object) options).engine$setSave(false);
-        }
-        ((EngineDimensionOptions) (Object) options).engine$setSaveProperties(false);
+		if (style == RuntimeLevel.Style.TEMPORARY) {
+			((EngineDimensionOptions) (Object) options).engine$setSave(false);
+		}
+		((EngineDimensionOptions) (Object) options).engine$setSaveProperties(false);
 
-        MappedRegistry<LevelStem> dimensionsRegistry = getDimensionsRegistry(this.server);
-        try (var _ = RemoveFromRegistry.thaw(dimensionsRegistry)) {
-            var key = ResourceKey.create(Registries.LEVEL_STEM, levelKey.identifier());
-            if (!dimensionsRegistry.containsKey(key)) {
-                dimensionsRegistry.register(key, options, RegistrationInfo.BUILT_IN);
-            }
-        }
+		MappedRegistry<LevelStem> dimensionsRegistry = getDimensionsRegistry(this.server);
+		try (var _ = RemoveFromRegistry.thaw(dimensionsRegistry)) {
+			var key = ResourceKey.create(Registries.LEVEL_STEM, levelKey.identifier());
+			if (!dimensionsRegistry.containsKey(key)) {
+				dimensionsRegistry.register(key, options, RegistrationInfo.BUILT_IN);
+			}
+		}
 
-        RuntimeLevel level = config.getLevelConstructor().createLevel(this.server, levelKey, config, style);
+		RuntimeLevel level = config.getLevelConstructor().createLevel(this.server, levelKey, config, style);
 
-        this.serverAccess.getLevels().put(level.dimension(), level);
-        NeoForge.EVENT_BUS.post(new LevelEvent.Load(level));
+		this.serverAccess.getLevels().put(level.dimension(), level);
+		NeoForge.EVENT_BUS.post(new LevelEvent.Load(level));
 
-        // tick the level to ensure it is ready for use right away
-        level.tick(() -> true);
+		// tick the level to ensure it is ready for use right away
+		level.tick(() -> true);
 
-        return level;
-    }
+		return level;
+	}
 
-    public void delete(ServerLevel level) {
-        ResourceKey<Level> dimensionKey = level.dimension();
+	public void delete(ServerLevel level) {
+		ResourceKey<Level> dimensionKey = level.dimension();
 
-        if (this.serverAccess.getLevels().remove(dimensionKey, level)) {
-            NeoForge.EVENT_BUS.post(new LevelEvent.Unload(level));
+		if (this.serverAccess.getLevels().remove(dimensionKey, level)) {
+			NeoForge.EVENT_BUS.post(new LevelEvent.Unload(level));
 
-            MappedRegistry<LevelStem> dimensionsRegistry = getDimensionsRegistry(this.server);
-            this.unregister((RuntimeLevel) level, dimensionKey, dimensionsRegistry, true);
+			MappedRegistry<LevelStem> dimensionsRegistry = getDimensionsRegistry(this.server);
+			this.unregister((RuntimeLevel) level, dimensionKey, dimensionsRegistry, true);
 
-            LevelStorageSource.LevelStorageAccess session = this.serverAccess.getStorageSource();
-            File levelDirectory = session.getDimensionPath(dimensionKey).toFile();
-            if (levelDirectory.exists()) {
-                try {
-                    FileUtils.deleteDirectory(levelDirectory);
-                } catch (IOException e) {
-                    EngineLevels.LOGGER.warn("Failed to delete level directory", e);
-                    try {
-                        FileUtils.forceDeleteOnExit(levelDirectory);
-                    } catch (IOException ignored) {
-                    }
-                }
-            }
-        }
-    }
+			LevelStorageSource.LevelStorageAccess session = this.serverAccess.getStorageSource();
+			File levelDirectory = session.getDimensionPath(dimensionKey).toFile();
+			if (levelDirectory.exists()) {
+				try {
+					FileUtils.deleteDirectory(levelDirectory);
+				} catch (IOException e) {
+					EngineLevels.LOGGER.warn("Failed to delete level directory", e);
+					try {
+						FileUtils.forceDeleteOnExit(levelDirectory);
+					} catch (IOException ignored) {
+					}
+				}
+			}
+		}
+	}
 
-    public void unload(ServerLevel level) {
-        ResourceKey<Level> dimensionKey = level.dimension();
+	public void unload(ServerLevel level) {
+		ResourceKey<Level> dimensionKey = level.dimension();
 
-        if (this.serverAccess.getLevels().remove(dimensionKey, level)) {
-            level.save(new ProgressListener() {
-                @Override
-                public void progressStartNoAbort(Component title) {
-                }
+		if (this.serverAccess.getLevels().remove(dimensionKey, level)) {
+			level.save(new ProgressListener() {
+				@Override
+				public void progressStartNoAbort(Component title) {
+				}
 
-                @Override
-                public void progressStart(Component title) {
-                }
+				@Override
+				public void progressStart(Component title) {
+				}
 
-                @Override
-                public void progressStage(Component task) {
-                }
+				@Override
+				public void progressStage(Component task) {
+				}
 
-                @Override
-                public void progressStagePercentage(int percentage) {
-                }
+				@Override
+				public void progressStagePercentage(int percentage) {
+				}
 
-                @Override
-                public void stop() {
-                }
-            }, true, false);
+				@Override
+				public void stop() {
+				}
+			}, true, false);
 
-            NeoForge.EVENT_BUS.post(new LevelEvent.Unload(level));
+			NeoForge.EVENT_BUS.post(new LevelEvent.Unload(level));
 
-            MappedRegistry<LevelStem> dimensionsRegistry = getDimensionsRegistry(RuntimeLevelManager.this.server);
-            this.unregister((RuntimeLevel) level, dimensionKey, dimensionsRegistry, false);
-        }
-    }
+			MappedRegistry<LevelStem> dimensionsRegistry = getDimensionsRegistry(RuntimeLevelManager.this.server);
+			this.unregister((RuntimeLevel) level, dimensionKey, dimensionsRegistry, false);
+		}
+	}
 
-    private void unregister(RuntimeLevel level, ResourceKey<Level> dimensionKey, MappedRegistry<LevelStem> dimensionsRegistry, boolean alwaysDelete) {
-        RemoveFromRegistry.remove(dimensionsRegistry, dimensionKey.identifier());
-    }
+	private void unregister(RuntimeLevel level, ResourceKey<Level> dimensionKey, MappedRegistry<LevelStem> dimensionsRegistry, boolean alwaysDelete) {
+		RemoveFromRegistry.remove(dimensionsRegistry, dimensionKey.identifier());
+	}
 }

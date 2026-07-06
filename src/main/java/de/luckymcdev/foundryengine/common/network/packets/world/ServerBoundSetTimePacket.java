@@ -12,39 +12,41 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record ServerBoundSetTimePacket(int timeValue) implements AbstractPacket<ServerBoundSetTimePacket> {
 
-    public static final Definition<ServerBoundSetTimePacket> DEFINITION = new Definition<>(
-            AbstractPacket.createType(Common.id("set_time")),
-            PacketBounds.SERVER,
-            StreamCodec.composite(ByteBufCodecs.VAR_INT, ServerBoundSetTimePacket::timeValue, ServerBoundSetTimePacket::new),
-            null,
-            ServerBoundSetTimePacket::handleServer
-    );
+	public static final Definition<ServerBoundSetTimePacket> DEFINITION = new Definition<>(
+		AbstractPacket.createType(Common.id("set_time")),
+		PacketBounds.SERVER,
+		StreamCodec.composite(ByteBufCodecs.VAR_INT, ServerBoundSetTimePacket::timeValue, ServerBoundSetTimePacket::new),
+		null,
+		ServerBoundSetTimePacket::handleServer
+	);
 
-    @Override
-    public Type<ServerBoundSetTimePacket> getType() {
-        return DEFINITION.type();
-    }
+	@Override
+	public Type<ServerBoundSetTimePacket> getType() {
+		return DEFINITION.type();
+	}
 
-    @Override
-    public PacketBounds getBoundTo() {
-        return DEFINITION.bounds();
-    }
+	@Override
+	public PacketBounds getBoundTo() {
+		return DEFINITION.bounds();
+	}
 
-    @Override
-    public StreamCodec<RegistryFriendlyByteBuf, ServerBoundSetTimePacket> getCodec() {
-        return DEFINITION.codec();
-    }
+	@Override
+	public StreamCodec<RegistryFriendlyByteBuf, ServerBoundSetTimePacket> getCodec() {
+		return DEFINITION.codec();
+	}
 
-    @Override
-    public void handleServer(IPayloadContext ctx) {
-        if (ctx.player() instanceof ServerPlayer player) {
+	@Override
+	public void handleServer(IPayloadContext ctx) {
+		if (ctx.player() instanceof ServerPlayer player) {
 
-            if (!PermissionChecks.COMMANDS_GAMEMASTER.check(player.permissions())) return;
+			if (!PermissionChecks.COMMANDS_GAMEMASTER.check(player.permissions())) {
+				return;
+			}
 
-            player.level().dimensionTypeRegistration().value().defaultClock().ifPresent(clock -> {
-                player.level().clockManager().setTotalTicks(clock, timeValue);
-                Common.LOGGER.info("Player {} set time to {}", player.getName().getString(), timeValue);
-            });
-        }
-    }
+			player.level().dimensionTypeRegistration().value().defaultClock().ifPresent(clock -> {
+				player.level().clockManager().setTotalTicks(clock, timeValue);
+				Common.LOGGER.info("Player {} set time to {}", player.getName().getString(), timeValue);
+			});
+		}
+	}
 }

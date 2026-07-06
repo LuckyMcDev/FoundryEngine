@@ -17,86 +17,90 @@ import java.util.Set;
 public class ItemStages extends StageAddon<Item> {
 
 
-    @Override
-    protected String getObjectType() {
-        return "item";
-    }
+	@Override
+	protected String getObjectType() {
+		return "item";
+	}
 
-    @SubscribeEvent(priority = EventPriority.HIGH)
-    public void onItemUse(PlayerInteractEvent.RightClickItem event) {
-        Player player = event.getEntity();
-        ItemStack stack = event.getItemStack();
+	@SubscribeEvent(priority = EventPriority.HIGH)
+	public void onItemUse(PlayerInteractEvent.RightClickItem event) {
+		Player player = event.getEntity();
+		ItemStack stack = event.getItemStack();
 
-        if (!canAccess(player, stack.getItem())) {
-            event.setCanceled(true);
-            player.sendSystemMessage(getMissingStagesMessage(player, stack.getItem()));
-        }
-    }
+		if (!canAccess(player, stack.getItem())) {
+			event.setCanceled(true);
+			player.sendSystemMessage(getMissingStagesMessage(player, stack.getItem()));
+		}
+	}
 
-    @SubscribeEvent(priority = EventPriority.HIGH)
-    public void onItemUseOnBlock(PlayerInteractEvent.RightClickBlock event) {
-        Player player = event.getEntity();
-        ItemStack stack = event.getItemStack();
+	@SubscribeEvent(priority = EventPriority.HIGH)
+	public void onItemUseOnBlock(PlayerInteractEvent.RightClickBlock event) {
+		Player player = event.getEntity();
+		ItemStack stack = event.getItemStack();
 
-        if (!canAccess(player, stack.getItem())) {
-            event.setCanceled(true);
-            player.sendSystemMessage(getMissingStagesMessage(player, stack.getItem()));
-        }
-    }
+		if (!canAccess(player, stack.getItem())) {
+			event.setCanceled(true);
+			player.sendSystemMessage(getMissingStagesMessage(player, stack.getItem()));
+		}
+	}
 
-    @SubscribeEvent(priority = EventPriority.HIGH)
-    public void onItemUseOnEntity(PlayerInteractEvent.EntityInteract event) {
-        Player player = event.getEntity();
-        ItemStack stack = event.getItemStack();
+	@SubscribeEvent(priority = EventPriority.HIGH)
+	public void onItemUseOnEntity(PlayerInteractEvent.EntityInteract event) {
+		Player player = event.getEntity();
+		ItemStack stack = event.getItemStack();
 
-        if (!canAccess(player, stack.getItem())) {
-            event.setCanceled(true);
-            player.sendSystemMessage(getMissingStagesMessage(player, stack.getItem()));
-        }
-    }
+		if (!canAccess(player, stack.getItem())) {
+			event.setCanceled(true);
+			player.sendSystemMessage(getMissingStagesMessage(player, stack.getItem()));
+		}
+	}
 
-    @SubscribeEvent(priority = EventPriority.HIGH)
-    public void onItemCrafted(PlayerEvent.ItemCraftedEvent event) {
-        Player player = event.getEntity();
-        ItemStack stack = event.getCrafting();
+	@SubscribeEvent(priority = EventPriority.HIGH)
+	public void onItemCrafted(PlayerEvent.ItemCraftedEvent event) {
+		Player player = event.getEntity();
+		ItemStack stack = event.getCrafting();
 
-        if (!canAccess(player, stack.getItem())) {
-            stack.setCount(0);
-            player.sendSystemMessage(getMissingStagesMessage(player, stack.getItem()));
-        }
-    }
+		if (!canAccess(player, stack.getItem())) {
+			stack.setCount(0);
+			player.sendSystemMessage(getMissingStagesMessage(player, stack.getItem()));
+		}
+	}
 
-    @SubscribeEvent(priority = EventPriority.HIGH)
-    public void onItemSmelted(PlayerEvent.ItemSmeltedEvent event) {
-        Player player = event.getEntity();
-        ItemStack stack = event.getSmelting();
+	@SubscribeEvent(priority = EventPriority.HIGH)
+	public void onItemSmelted(PlayerEvent.ItemSmeltedEvent event) {
+		Player player = event.getEntity();
+		ItemStack stack = event.getSmelting();
 
-        if (!canAccess(player, stack.getItem())) {
-            stack.setCount(0);
-            player.sendSystemMessage(getMissingStagesMessage(player, stack.getItem()));
-        }
-    }
+		if (!canAccess(player, stack.getItem())) {
+			stack.setCount(0);
+			player.sendSystemMessage(getMissingStagesMessage(player, stack.getItem()));
+		}
+	}
 
-    @SubscribeEvent(priority = EventPriority.LOW)
-    public void onItemTooltip(ItemTooltipEvent event) {
-        ItemStack stack = event.getItemStack();
-        Player player = event.getEntity();
-        if (player == null) return;
+	@SubscribeEvent(priority = EventPriority.LOW)
+	public void onItemTooltip(ItemTooltipEvent event) {
+		ItemStack stack = event.getItemStack();
+		Player player = event.getEntity();
+		if (player == null) {
+			return;
+		}
 
-        Item item = stack.getItem();
-        if (isAccessible(item)) return;
+		Item item = stack.getItem();
+		if (isAccessible(item)) {
+			return;
+		}
 
-        Set<String> required = getRequiredStages(item);
-        Set<String> missing = getMissingStages(player, item);
+		Set<String> required = getRequiredStages(item);
+		Set<String> missing = getMissingStages(player, item);
 
-        if (!required.isEmpty() && !missing.isEmpty()) {
-            event.getToolTip().add(Component.empty());
-            event.getToolTip().add(Component.translatable("foundryengine.stage.required_header").withStyle(ChatFormatting.GOLD));
+		if (!required.isEmpty() && !missing.isEmpty()) {
+			event.getToolTip().add(Component.empty());
+			event.getToolTip().add(Component.translatable("foundryengine.stage.required_header").withStyle(ChatFormatting.GOLD));
 
-            for (String stage : required) {
-                ChatFormatting color = !missing.contains(stage) ? ChatFormatting.GREEN : ChatFormatting.RED;
-                event.getToolTip().add(Component.literal(stage).withStyle(color));
-            }
-        }
-    }
+			for (String stage : required) {
+				ChatFormatting color = !missing.contains(stage) ? ChatFormatting.GREEN : ChatFormatting.RED;
+				event.getToolTip().add(Component.literal(stage).withStyle(color));
+			}
+		}
+	}
 }

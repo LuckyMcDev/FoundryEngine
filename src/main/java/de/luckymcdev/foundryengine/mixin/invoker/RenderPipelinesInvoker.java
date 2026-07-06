@@ -12,11 +12,11 @@ import org.spongepowered.asm.mixin.gen.Invoker;
  */
 @Mixin(RenderPipelines.class)
 public interface RenderPipelinesInvoker {
-    /**
-     * Registers a custom render pipeline via the Invoker.
-     */
-    @Invoker("register")
-    static RenderPipeline register(RenderPipeline pipeline) {
-        throw new NoMixinException(RenderPipelinesInvoker.class);
-    }
+	/**
+	 * Registers a custom render pipeline via the Invoker.
+	 */
+	@Invoker("register")
+	static RenderPipeline register(RenderPipeline pipeline) {
+		throw new NoMixinException(RenderPipelinesInvoker.class);
+	}
 }

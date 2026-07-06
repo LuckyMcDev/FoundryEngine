@@ -12,6 +12,6 @@ import java.util.List;
  */
 @Mixin(targets = "net.neoforged.neoforge.client.gui.ModListScreen$InfoPanel")
 public interface InfoPanelAccessor {
-    @Invoker("setInfo")
-    void invokeSetInfo(List<String> lines, Identifier logoPath, Size2i logoDims);
+	@Invoker("setInfo")
+	void invokeSetInfo(List<String> lines, Identifier logoPath, Size2i logoDims);
 }

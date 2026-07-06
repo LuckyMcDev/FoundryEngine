@@ -20,20 +20,20 @@ import java.util.concurrent.CompletableFuture;
  */
 @Mixin(ReloadCommand.class)
 public class ReloadCommandMixin {
-    @Shadow
-    @Final
-    private static Logger LOGGER;
+	@Shadow
+	@Final
+	private static Logger LOGGER;
 
-    /**
-     * Wraps reloadResources to send a success message after reload completes.
-     */
-    @WrapOperation(
-            method = "reloadPacks",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;reloadResources(Ljava/util/Collection;)Ljava/util/concurrent/CompletableFuture;")
-    )
-    private static CompletableFuture<Void> engine$wrapReloadResources(MinecraftServer instance, Collection<String> packs, Operation<CompletableFuture<Void>> original, Collection<String> selectedPacks, CommandSourceStack source) {
-        return original.call(instance, packs).thenRun(() -> {
-            source.sendSuccess(() -> Component.translatable("command.foundryengine.reload.success"), false);
-        });
-    }
+	/**
+	 * Wraps reloadResources to send a success message after reload completes.
+	 */
+	@WrapOperation(
+		method = "reloadPacks",
+		at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;reloadResources(Ljava/util/Collection;)Ljava/util/concurrent/CompletableFuture;")
+	)
+	private static CompletableFuture<Void> engine$wrapReloadResources(MinecraftServer instance, Collection<String> packs, Operation<CompletableFuture<Void>> original, Collection<String> selectedPacks, CommandSourceStack source) {
+		return original.call(instance, packs).thenRun(() -> {
+			source.sendSuccess(() -> Component.translatable("command.foundryengine.reload.success"), false);
+		});
+	}
 }

@@ -15,45 +15,51 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record GiveItemPacket(String itemId) implements AbstractPacket<GiveItemPacket> {
 
-    public static final Definition<GiveItemPacket> DEFINITION = new Definition<>(
-            AbstractPacket.createType(Common.id("give_item")),
-            PacketBounds.SERVER,
-            StreamCodec.composite(
-                    ByteBufCodecs.STRING_UTF8, GiveItemPacket::itemId,
-                    GiveItemPacket::new
-            ),
-            null,
-            GiveItemPacket::handleServer
-    );
+	public static final Definition<GiveItemPacket> DEFINITION = new Definition<>(
+		AbstractPacket.createType(Common.id("give_item")),
+		PacketBounds.SERVER,
+		StreamCodec.composite(
+			ByteBufCodecs.STRING_UTF8, GiveItemPacket::itemId,
+			GiveItemPacket::new
+		),
+		null,
+		GiveItemPacket::handleServer
+	);
 
-    @Override
-    public Type<GiveItemPacket> getType() {
-        return DEFINITION.type();
-    }
+	@Override
+	public Type<GiveItemPacket> getType() {
+		return DEFINITION.type();
+	}
 
-    @Override
-    public PacketBounds getBoundTo() {
-        return DEFINITION.bounds();
-    }
+	@Override
+	public PacketBounds getBoundTo() {
+		return DEFINITION.bounds();
+	}
 
-    @Override
-    public StreamCodec<RegistryFriendlyByteBuf, GiveItemPacket> getCodec() {
-        return DEFINITION.codec();
-    }
+	@Override
+	public StreamCodec<RegistryFriendlyByteBuf, GiveItemPacket> getCodec() {
+		return DEFINITION.codec();
+	}
 
-    @Override
-    public void handleServer(IPayloadContext ctx) {
-        if (!(ctx.player() instanceof ServerPlayer player)) return;
-        if (!PermissionChecks.COMMANDS_GAMEMASTER.check(player.permissions())) return;
+	@Override
+	public void handleServer(IPayloadContext ctx) {
+		if (!(ctx.player() instanceof ServerPlayer player)) {
+			return;
+		}
+		if (!PermissionChecks.COMMANDS_GAMEMASTER.check(player.permissions())) {
+			return;
+		}
 
-        Identifier location = Identifier.tryParse(itemId);
-        if (location == null) return;
+		Identifier location = Identifier.tryParse(itemId);
+		if (location == null) {
+			return;
+		}
 
-        BuiltInRegistries.ITEM.getOptional(location).ifPresent(item -> {
-            ItemStack stack = new ItemStack(item, 1);
-            if (!player.getInventory().add(stack)) {
-                player.drop(stack, false);
-            }
-        });
-    }
+		BuiltInRegistries.ITEM.getOptional(location).ifPresent(item -> {
+			ItemStack stack = new ItemStack(item, 1);
+			if (!player.getInventory().add(stack)) {
+				player.drop(stack, false);
+			}
+		});
+	}
 }

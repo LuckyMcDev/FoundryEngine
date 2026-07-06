@@ -15,46 +15,46 @@ import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 public class LootStages extends StageAddon<ResourceKey<LootTable>> {
 
 
-    @Override
-    protected String getObjectType() {
-        return "loot table";
-    }
+	@Override
+	protected String getObjectType() {
+		return "loot table";
+	}
 
-    @SubscribeEvent(priority = EventPriority.HIGH)
-    public void onLivingDrops(LivingDropsEvent event) {
-        if (!(event.getSource().getEntity() instanceof Player player)) {
-            return;
-        }
+	@SubscribeEvent(priority = EventPriority.HIGH)
+	public void onLivingDrops(LivingDropsEvent event) {
+		if (!(event.getSource().getEntity() instanceof Player player)) {
+			return;
+		}
 
-        event.getEntity().getLootTable().ifPresent(lootTable -> {
-            if (isAccessible(lootTable)) {
-                return;
-            }
+		event.getEntity().getLootTable().ifPresent(lootTable -> {
+			if (isAccessible(lootTable)) {
+				return;
+			}
 
-            if (!canAccess(player, lootTable)) {
-                event.getDrops().clear();
-                player.sendSystemMessage(getMissingStagesMessage(player, lootTable));
-            }
-        });
-    }
+			if (!canAccess(player, lootTable)) {
+				event.getDrops().clear();
+				player.sendSystemMessage(getMissingStagesMessage(player, lootTable));
+			}
+		});
+	}
 
-    @SubscribeEvent(priority = EventPriority.HIGH)
-    public void onPlayerInteract(PlayerInteractEvent.RightClickBlock event) {
-        BlockEntity be = event.getLevel().getBlockEntity(event.getPos());
+	@SubscribeEvent(priority = EventPriority.HIGH)
+	public void onPlayerInteract(PlayerInteractEvent.RightClickBlock event) {
+		BlockEntity be = event.getLevel().getBlockEntity(event.getPos());
 
-        if (be instanceof RandomizableContainerBlockEntity container) {
-            ResourceKey<LootTable> lootTable = container.getLootTable();
-            Common.LOGGER.info("randomizable block entity!");
+		if (be instanceof RandomizableContainerBlockEntity container) {
+			ResourceKey<LootTable> lootTable = container.getLootTable();
+			Common.LOGGER.info("randomizable block entity!");
 
-            if (lootTable == null || isAccessible(lootTable)) {
-                return;
-            }
+			if (lootTable == null || isAccessible(lootTable)) {
+				return;
+			}
 
-            Player player = event.getEntity();
-            if (!canAccess(player, lootTable)) {
-                event.setCanceled(true);
-                player.sendSystemMessage(getMissingStagesMessage(player, lootTable));
-            }
-        }
-    }
+			Player player = event.getEntity();
+			if (!canAccess(player, lootTable)) {
+				event.setCanceled(true);
+				player.sendSystemMessage(getMissingStagesMessage(player, lootTable));
+			}
+		}
+	}
 }

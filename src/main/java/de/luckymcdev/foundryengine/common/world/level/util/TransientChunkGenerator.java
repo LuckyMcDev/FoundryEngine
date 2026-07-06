@@ -23,20 +23,20 @@ import java.util.function.Function;
  * @see EngineLevels#openTemporaryLevel(RuntimeLevelConfig)
  */
 public abstract class TransientChunkGenerator extends ChunkGenerator {
-    public static final MapCodec<? extends ChunkGenerator> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
-            RegistryOps.retrieveElement(Biomes.THE_VOID)
-    ).apply(i, VoidChunkGenerator::new));
+	public static final MapCodec<? extends ChunkGenerator> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+		RegistryOps.retrieveElement(Biomes.THE_VOID)
+	).apply(i, VoidChunkGenerator::new));
 
-    public TransientChunkGenerator(BiomeSource biomeSource) {
-        super(biomeSource);
-    }
+	public TransientChunkGenerator(BiomeSource biomeSource) {
+		super(biomeSource);
+	}
 
-    public TransientChunkGenerator(BiomeSource biomeSource, Function<Holder<Biome>, BiomeGenerationSettings> generationSettingsGetter) {
-        super(biomeSource, generationSettingsGetter);
-    }
+	public TransientChunkGenerator(BiomeSource biomeSource, Function<Holder<Biome>, BiomeGenerationSettings> generationSettingsGetter) {
+		super(biomeSource, generationSettingsGetter);
+	}
 
-    @Override
-    protected final MapCodec<? extends ChunkGenerator> codec() {
-        return CODEC;
-    }
+	@Override
+	protected final MapCodec<? extends ChunkGenerator> codec() {
+		return CODEC;
+	}
 }

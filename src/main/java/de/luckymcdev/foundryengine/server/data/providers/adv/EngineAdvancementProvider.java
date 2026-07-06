@@ -10,7 +10,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class EngineAdvancementProvider extends AdvancementProvider {
 
-    public EngineAdvancementProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries, List<AdvancementSubProvider> subProviders) {
-        super(output, registries, subProviders);
-    }
+	public EngineAdvancementProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries, List<AdvancementSubProvider> subProviders) {
+		super(output, registries, subProviders);
+	}
 }

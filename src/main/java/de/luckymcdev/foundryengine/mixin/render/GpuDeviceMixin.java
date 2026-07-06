@@ -13,15 +13,15 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(GpuDevice.class)
 public class GpuDeviceMixin implements EngineGpuDevice {
 
-    @Shadow
-    @Final
-    private GpuDeviceBackend backend;
+	@Shadow
+	@Final
+	private GpuDeviceBackend backend;
 
-    /**
-     * Returns the GPU device backend.
-     */
-    @Override
-    public GpuDeviceBackend engine$getBackend() {
-        return backend;
-    }
+	/**
+	 * Returns the GPU device backend.
+	 */
+	@Override
+	public GpuDeviceBackend engine$getBackend() {
+		return backend;
+	}
 }

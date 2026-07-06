@@ -9,7 +9,7 @@ import java.util.Map;
 
 @ApiStatus.Internal
 public interface ServerClockManagerExtension {
-    default Map<Holder<WorldClock>, ServerClockManager.ClockInstance> engine$getClocks() {
-        throw new UnsupportedOperationException("Implemented via Mixin.");
-    }
+	default Map<Holder<WorldClock>, ServerClockManager.ClockInstance> engine$getClocks() {
+		throw new UnsupportedOperationException("Implemented via Mixin.");
+	}
 }

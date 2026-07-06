@@ -6,8 +6,8 @@ package de.luckymcdev.foundryengine.interfaces;
  * @param <T> the target type this interface wraps
  */
 public interface EngineInterface<T> {
-    @SuppressWarnings("unchecked")
-    default T engine$self() {
-        return (T) this;
-    }
+	@SuppressWarnings("unchecked")
+	default T engine$self() {
+		return (T) this;
+	}
 }

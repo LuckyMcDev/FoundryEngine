@@ -15,15 +15,15 @@ import java.util.List;
  * This class is only loaded on the physical client.
  */
 public class FoundryCommandsClient {
-    private static final List<EngineCommand> COMMANDS = List.of(
-            new GenerateIconsCommand()
-    );
+	private static final List<EngineCommand> COMMANDS = List.of(
+		new GenerateIconsCommand()
+	);
 
-    public static void registerAll(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext context) {
-        LiteralArgumentBuilder<CommandSourceStack> engineRoot = Commands.literal("engine");
-        for (EngineCommand command : COMMANDS) {
-            engineRoot.then(command.build(context));
-        }
-        dispatcher.register(engineRoot);
-    }
+	public static void registerAll(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext context) {
+		LiteralArgumentBuilder<CommandSourceStack> engineRoot = Commands.literal("engine");
+		for (EngineCommand command : COMMANDS) {
+			engineRoot.then(command.build(context));
+		}
+		dispatcher.register(engineRoot);
+	}
 }

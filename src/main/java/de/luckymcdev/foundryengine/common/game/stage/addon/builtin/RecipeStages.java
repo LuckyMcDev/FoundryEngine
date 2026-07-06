@@ -10,17 +10,17 @@ import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 // TODO
 public class RecipeStages extends StageAddon<Identifier> {
 
-    @Override
-    protected String getObjectType() {
-        return "Recipe";
-    }
+	@Override
+	protected String getObjectType() {
+		return "Recipe";
+	}
 
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onItemCrafted(PlayerEvent.ItemCraftedEvent event) {
-    }
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
+	public void onItemCrafted(PlayerEvent.ItemCraftedEvent event) {
+	}
 
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onItemSmelted(PlayerInteractEvent.ItemSmeltedEvent event) {
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
+	public void onItemSmelted(PlayerInteractEvent.ItemSmeltedEvent event) {
 
-    }
+	}
 }

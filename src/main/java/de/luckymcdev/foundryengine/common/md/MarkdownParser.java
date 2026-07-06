@@ -16,34 +16,36 @@ import java.util.List;
  * Utility class for parsing Markdown into Minecraft Components.
  */
 public class MarkdownParser {
-    private static final Logger LOGGER = LogUtils.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 
-    private static final Parser PARSER = Parser.builder()
-            .extensions(List.of(
-                    TablesExtension.create(),
-                    StrikethroughExtension.create(),
-                    AutolinkExtension.create()
-            ))
-            .build();
+	private static final Parser PARSER = Parser.builder()
+		.extensions(List.of(
+			TablesExtension.create(),
+			StrikethroughExtension.create(),
+			AutolinkExtension.create()
+		))
+		.build();
 
-    /**
-     * Parse Markdown string into a Minecraft Component.
-     *
-     * @param markdown The Markdown text to parse
-     * @return A formatted MutableComponent, or red error text if parsing fails
-     */
-    public static MutableComponent parse(String markdown) {
-        if (markdown.isEmpty()) return Component.literal("");
+	/**
+	 * Parse Markdown string into a Minecraft Component.
+	 *
+	 * @param markdown The Markdown text to parse
+	 * @return A formatted MutableComponent, or red error text if parsing fails
+	 */
+	public static MutableComponent parse(String markdown) {
+		if (markdown.isEmpty()) {
+			return Component.literal("");
+		}
 
-        try {
-            Node document = PARSER.parse(markdown);
-            MarkdownComponentVisitor visitor = new MarkdownComponentVisitor();
-            document.accept(visitor);
-            return visitor.getComponent();
-        } catch (Exception e) {
-            LOGGER.error("Failed to parse markdown", e);
-            return Component.literal(markdown)
-                    .withStyle(style -> style.withColor(0xFF0000));
-        }
-    }
+		try {
+			Node document = PARSER.parse(markdown);
+			MarkdownComponentVisitor visitor = new MarkdownComponentVisitor();
+			document.accept(visitor);
+			return visitor.getComponent();
+		} catch (Exception e) {
+			LOGGER.error("Failed to parse markdown", e);
+			return Component.literal(markdown)
+				.withStyle(style -> style.withColor(0xFF0000));
+		}
+	}
 }

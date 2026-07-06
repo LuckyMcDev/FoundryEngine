@@ -19,43 +19,49 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  */
 @Mixin(Camera.class)
 public abstract class CutsceneCameraMixin {
-    @Shadow
-    private Vec3 position;
+	@Shadow
+	private Vec3 position;
 
-    @Shadow
-    @Final
-    private BlockPos.MutableBlockPos blockPosition;
+	@Shadow
+	@Final
+	private BlockPos.MutableBlockPos blockPosition;
 
-    @Shadow
-    protected abstract void setRotation(float yRot, float xRot);
+	@Shadow
+	protected abstract void setRotation(float yRot, float xRot);
 
-    /**
-     * Injects before isDetached to detach camera when player is far from cutscene camera.
-     */
-    @Inject(method = "isDetached", at = @At("HEAD"), cancellable = true)
-    private void engine$detachCameraDuringCutscene(CallbackInfoReturnable<Boolean> cir) {
-        if (Client.getCutsceneManager().isCameraOverrideDisabled()) return;
-        var player = Minecraft.getInstance().player;
-        if (player == null) return;
+	/**
+	 * Injects before isDetached to detach camera when player is far from cutscene camera.
+	 */
+	@Inject(method = "isDetached", at = @At("HEAD"), cancellable = true)
+	private void engine$detachCameraDuringCutscene(CallbackInfoReturnable<Boolean> cir) {
+		if (Client.getCutsceneManager().isCameraOverrideDisabled()) {
+			return;
+		}
+		var player = Minecraft.getInstance().player;
+		if (player == null) {
+			return;
+		}
 
-        Vec3 cam = Client.getCutsceneManager().getPos();
-        if (!player.getEyePosition().closerThan(cam, ClientCutsceneManager.RENDER_PLAYER_RANGE)) {
-            cir.setReturnValue(true);
-        }
-    }
+		Vec3 cam = Client.getCutsceneManager().getPos();
+		if (!player.getEyePosition().closerThan(cam, ClientCutsceneManager.RENDER_PLAYER_RANGE)) {
+			cir.setReturnValue(true);
+		}
+	}
 
-    /**
-     * Injects at tail of setPosition to override camera with cutscene manager values.
-     */
-    @Inject(method = "setPosition(Lnet/minecraft/world/phys/Vec3;)V", at = @At("TAIL"))
-    private void engine$overridePosition(Vec3 ignored, CallbackInfo ci) {
-        if (Client.getCutsceneManager().isCameraOverrideDisabled()) return;
+	/**
+	 * Injects at tail of setPosition to override camera with cutscene manager values.
+	 */
+	@Inject(method = "setPosition(Lnet/minecraft/world/phys/Vec3;)V", at = @At("TAIL"))
+	private void engine$overridePosition(Vec3 ignored, CallbackInfo ci) {
+		if (Client.getCutsceneManager().isCameraOverrideDisabled()) {
+			return;
+		}
 
-        Vec3 newPos = Client.getCutsceneManager().getPos();
-        var newRot = Client.getCutsceneManager().getRot();
+		Vec3 newPos = Client.getCutsceneManager().getPos();
+		var newRot = Client.getCutsceneManager().getRot();
 
-        this.position = newPos;
-        this.blockPosition.set(newPos.x, newPos.y, newPos.z);
-        this.setRotation(newRot.y, newRot.x);
-    }
+		this.position = newPos;
+		this.blockPosition.set(newPos.x, newPos.y, newPos.z);
+		this.setRotation(newRot.y, newRot.x);
+	}
 }

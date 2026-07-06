@@ -15,15 +15,15 @@ import org.spongepowered.asm.mixin.injection.At;
  */
 @Mixin(TimeCommand.class)
 public class TimeCommandMixin {
-    /**
-     * Wraps clockManager() lookup in time commands to use the command source's level clock.
-     */
-    @WrapOperation(
-            method = {"suggestTimeMarkers", "queryTime", "setTotalTicks", "addTime", "setTimeToTimeMarker", "setPaused", "setRate", "queryTimelineTicks", "queryTimelineRepetitions"},
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;clockManager()Lnet/minecraft/world/clock/ServerClockManager;")
-    )
-    private static ServerClockManager useRuntimeClockManager(MinecraftServer instance, Operation<ServerClockManager> original, @Local(argsOnly = true) CommandSourceStack source) {
-        return source.getLevel().clockManager();
-    }
+	/**
+	 * Wraps clockManager() lookup in time commands to use the command source's level clock.
+	 */
+	@WrapOperation(
+		method = {"suggestTimeMarkers", "queryTime", "setTotalTicks", "addTime", "setTimeToTimeMarker", "setPaused", "setRate", "queryTimelineTicks", "queryTimelineRepetitions"},
+		at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;clockManager()Lnet/minecraft/world/clock/ServerClockManager;")
+	)
+	private static ServerClockManager useRuntimeClockManager(MinecraftServer instance, Operation<ServerClockManager> original, @Local(argsOnly = true) CommandSourceStack source) {
+		return source.getLevel().clockManager();
+	}
 
 }

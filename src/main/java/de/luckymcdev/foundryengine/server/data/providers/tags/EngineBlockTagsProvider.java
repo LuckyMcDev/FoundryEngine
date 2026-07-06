@@ -12,23 +12,23 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class EngineBlockTagsProvider extends BlockTagsProvider {
-    private final String namespace;
-    private final Collection<TagBuilder<?>> tagBuilders;
+	private final String namespace;
+	private final Collection<TagBuilder<?>> tagBuilders;
 
-    public EngineBlockTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, String namespace) {
-        this(output, lookupProvider, namespace, List.of());
-    }
+	public EngineBlockTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, String namespace) {
+		this(output, lookupProvider, namespace, List.of());
+	}
 
-    public EngineBlockTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, String namespace, Collection<TagBuilder<?>> tagBuilders) {
-        super(output, lookupProvider, namespace);
-        this.namespace = namespace;
-        this.tagBuilders = tagBuilders;
-    }
+	public EngineBlockTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, String namespace, Collection<TagBuilder<?>> tagBuilders) {
+		super(output, lookupProvider, namespace);
+		this.namespace = namespace;
+		this.tagBuilders = tagBuilders;
+	}
 
-    @Override
-    protected void addTags(HolderLookup.Provider registries) {
-        for (var tagBuilder : tagBuilders) {
-            tagBuilder.applyTo(getOrCreateRawBuilder((TagKey<Block>) tagBuilder.getOrCreate()));
-        }
-    }
+	@Override
+	protected void addTags(HolderLookup.Provider registries) {
+		for (var tagBuilder : tagBuilders) {
+			tagBuilder.applyTo(getOrCreateRawBuilder((TagKey<Block>) tagBuilder.getOrCreate()));
+		}
+	}
 }

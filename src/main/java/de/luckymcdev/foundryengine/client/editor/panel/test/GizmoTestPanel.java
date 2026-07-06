@@ -54,7 +54,9 @@ public class GizmoTestPanel extends Panel {
 
 	@Override
 	public void content(ImGraphicsExtractor g) {
-		if (!requireLocal()) return;
+		if (!requireLocal()) {
+			return;
+		}
 
 		ImGui.text("Gizmo Configuration");
 		ImGui.separator();

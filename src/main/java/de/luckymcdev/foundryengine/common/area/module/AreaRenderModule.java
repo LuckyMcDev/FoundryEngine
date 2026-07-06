@@ -8,5 +8,5 @@ import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Experimental
 public interface AreaRenderModule extends AreaModule {
-    void render(ClientLevel level, Area area, PoseStack poseStack, MultiBufferSource buffer, float partialTick);
+	void render(ClientLevel level, Area area, PoseStack poseStack, MultiBufferSource buffer, float partialTick);
 }

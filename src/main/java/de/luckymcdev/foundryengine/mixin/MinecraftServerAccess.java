@@ -12,9 +12,9 @@ import java.util.Map;
 
 @Mixin(MinecraftServer.class)
 public interface MinecraftServerAccess {
-    @Accessor
-    Map<ResourceKey<Level>, ServerLevel> getLevels();
+	@Accessor
+	Map<ResourceKey<Level>, ServerLevel> getLevels();
 
-    @Accessor
-    LevelStorageSource.LevelStorageAccess getStorageSource();
+	@Accessor
+	LevelStorageSource.LevelStorageAccess getStorageSource();
 }

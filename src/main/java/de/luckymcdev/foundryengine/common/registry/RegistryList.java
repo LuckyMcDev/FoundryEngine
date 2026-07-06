@@ -8,29 +8,29 @@ import java.util.stream.Stream;
  * A registry interface for ordered lists of values with freeze support.
  */
 public interface RegistryList<V> {
-    void add(V value);
+	void add(V value);
 
-    void remove(V value);
+	void remove(V value);
 
-    void remove(int index);
+	void remove(int index);
 
-    V get(int index);
+	V get(int index);
 
-    Collection<V> values();
+	Collection<V> values();
 
-    boolean contains(V value);
+	boolean contains(V value);
 
-    boolean isFrozen();
+	boolean isFrozen();
 
-    void freeze();
+	void freeze();
 
-    void unfreeze();
+	void unfreeze();
 
-    void forEach(Consumer<? super V> action);
+	void forEach(Consumer<? super V> action);
 
-    Stream<V> stream();
+	Stream<V> stream();
 
-    void clear();
+	void clear();
 
-    int size();
+	int size();
 }

@@ -8,12 +8,12 @@ import org.spongepowered.asm.mixin.Overwrite;
 @Mixin(BlockEntityRenderer.class)
 public interface BlockEntityRendererMixin {
 
-    /**
-     * @author LuckyMcDev
-     * reason: To change the distance, Block Entities are rendered.
-     */
-    @Overwrite
-    default int getViewDistance() {
-        return ClientConfig.getComputedBlockEntityRenderDistance();
-    }
+	/**
+	 * @author LuckyMcDev
+	 * reason: To change the distance, Block Entities are rendered.
+	 */
+	@Overwrite
+	default int getViewDistance() {
+		return ClientConfig.getComputedBlockEntityRenderDistance();
+	}
 }

@@ -12,28 +12,28 @@ import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
  */
 public final class Config {
 
-    public static void registerClient(ModContainer container) {
-        container.registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC);
-        container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
-    }
+	public static void registerClient(ModContainer container) {
+		container.registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC);
+		container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
+	}
 
-    public static void registerServer(ModContainer container) {
-        container.registerConfig(ModConfig.Type.SERVER, ServerConfig.SPEC);
-    }
+	public static void registerServer(ModContainer container) {
+		container.registerConfig(ModConfig.Type.SERVER, ServerConfig.SPEC);
+	}
 
-    public static void registerCommon(ModContainer container) {
-        container.registerConfig(ModConfig.Type.COMMON, CommonConfig.SPEC);
-    }
+	public static void registerCommon(ModContainer container) {
+		container.registerConfig(ModConfig.Type.COMMON, CommonConfig.SPEC);
+	}
 
-    public static void registerStartup(ModContainer container) {
-        container.registerConfig(ModConfig.Type.STARTUP, StartupConfig.SPEC);
-    }
+	public static void registerStartup(ModContainer container) {
+		container.registerConfig(ModConfig.Type.STARTUP, StartupConfig.SPEC);
+	}
 
-    @SubscribeEvent
-    public static void onLoad(final ModConfigEvent.Loading event) {
-    }
+	@SubscribeEvent
+	public static void onLoad(final ModConfigEvent.Loading event) {
+	}
 
-    @SubscribeEvent
-    public static void onReload(final ModConfigEvent.Reloading event) {
-    }
+	@SubscribeEvent
+	public static void onReload(final ModConfigEvent.Reloading event) {
+	}
 }

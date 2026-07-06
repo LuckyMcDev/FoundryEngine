@@ -20,28 +20,28 @@ import java.util.Map;
 
 @Mixin(MinecraftServer.class)
 public abstract class MinecraftServerMixin {
-    @Shadow
-    @Final
-    private Map<ResourceKey<Level>, ServerLevel> levels;
-    @Shadow
-    @Final
-    private ServerClockManager clockManager;
+	@Shadow
+	@Final
+	private Map<ResourceKey<Level>, ServerLevel> levels;
+	@Shadow
+	@Final
+	private ServerClockManager clockManager;
 
-    @Shadow
-    @Deprecated
-    public abstract GameRules getGlobalGameRules();
+	@Shadow
+	@Deprecated
+	public abstract GameRules getGlobalGameRules();
 
-    @ModifyExpressionValue(method = "tickChildren", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;getWorldArray()[Lnet/minecraft/server/level/ServerLevel;"))
-    private ServerLevel[] engine$copyBeforeTicking(ServerLevel[] original) {
-        return original.clone();
-    }
+	@ModifyExpressionValue(method = "tickChildren", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;getWorldArray()[Lnet/minecraft/server/level/ServerLevel;"))
+	private ServerLevel[] engine$copyBeforeTicking(ServerLevel[] original) {
+		return original.clone();
+	}
 
-    @WrapOperation(method = "onGameRuleChanged", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/players/PlayerList;broadcastAll(Lnet/minecraft/network/protocol/Packet;)V"))
-    private void forceGameRunTimeSynchronization(PlayerList instance, Packet<?> packet, Operation<Void> original) {
-        for (ServerLevel level : this.levels.values()) {
-            if (level.clockManager() == this.clockManager) {
-                instance.broadcastAll(packet, level.dimension());
-            }
-        }
-    }
+	@WrapOperation(method = "onGameRuleChanged", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/players/PlayerList;broadcastAll(Lnet/minecraft/network/protocol/Packet;)V"))
+	private void forceGameRunTimeSynchronization(PlayerList instance, Packet<?> packet, Operation<Void> original) {
+		for (ServerLevel level : this.levels.values()) {
+			if (level.clockManager() == this.clockManager) {
+				instance.broadcastAll(packet, level.dimension());
+			}
+		}
+	}
 }

@@ -9,11 +9,11 @@ import java.io.IOException;
  */
 public interface BundleScriptEngine {
 
-    String fileExtension();
+	String fileExtension();
 
-    void initialize(BundleFiles files) throws IOException;
+	void initialize(BundleFiles files) throws IOException;
 
-    Class<?> loadClass(String scriptName) throws Exception;
+	Class<?> loadClass(String scriptName) throws Exception;
 
-    void close();
+	void close();
 }

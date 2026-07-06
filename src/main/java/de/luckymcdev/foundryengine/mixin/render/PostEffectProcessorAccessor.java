@@ -13,6 +13,6 @@ import java.util.List;
 @Mixin(PostChain.class)
 public interface PostEffectProcessorAccessor {
 
-    @Accessor("passes")
-    List<PostPass> engine$getPasses();
+	@Accessor("passes")
+	List<PostPass> engine$getPasses();
 }

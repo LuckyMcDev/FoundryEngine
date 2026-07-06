@@ -21,38 +21,38 @@ import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 @Mixin(KeyboardHandler.class)
 public class KeyboardHandlerMixin implements EngineKeyboardHandler {
 
-    /**
-     * Cancels keyboard events when ImGui captures the keyboard, and handles editor/menu toggle hotkeys.
-     */
-    @Inject(method = "keyPress", at = @At("HEAD"), cancellable = true)
-    public void engine$keyPress(long handle, int action, KeyEvent event, CallbackInfo ci) {
-        if (Client.getImGuiManager().shouldInterceptKeyboard() || Client.getImGuiManager().shouldInterceptMouse()) {
-            ci.cancel();
-            return;
-        }
+	/**
+	 * Cancels keyboard events when ImGui captures the keyboard, and handles editor/menu toggle hotkeys.
+	 */
+	@Inject(method = "keyPress", at = @At("HEAD"), cancellable = true)
+	public void engine$keyPress(long handle, int action, KeyEvent event, CallbackInfo ci) {
+		if (Client.getImGuiManager().shouldInterceptKeyboard() || Client.getImGuiManager().shouldInterceptMouse()) {
+			ci.cancel();
+			return;
+		}
 
-        if (handle == Client.getWindow().handle() && action == GLFW_PRESS && Client.MENU_BAR_KEY.matches(event)) {
-            Client.getImGuiManager().toggleMenuBar();
-        }
+		if (handle == Client.getWindow().handle() && action == GLFW_PRESS && Client.MENU_BAR_KEY.matches(event)) {
+			Client.getImGuiManager().toggleMenuBar();
+		}
 
-        if (handle == Client.getWindow().handle() && action == GLFW_PRESS && Client.EDITOR_KEY.matches(event)) {
-            if (event.hasControlDown()) {
-                Client.getImGuiManager().enable();
-                Minecraft.getInstance().setScreen(new EditorScreen(true));
-            } else {
-                Client.getImGuiManager().toggle();
-            }
-        }
-    }
+		if (handle == Client.getWindow().handle() && action == GLFW_PRESS && Client.EDITOR_KEY.matches(event)) {
+			if (event.hasControlDown()) {
+				Client.getImGuiManager().enable();
+				Minecraft.getInstance().setScreen(new EditorScreen(true));
+			} else {
+				Client.getImGuiManager().toggle();
+			}
+		}
+	}
 
-    /**
-     * Cancels char-typed events when ImGui captures the keyboard.
-     */
-    @Override
-    @Inject(method = "charTyped", at = @At("HEAD"), cancellable = true)
-    public void engine$charTyped(long handle, CharacterEvent event, CallbackInfo ci) {
-        if (Client.getImGuiManager().shouldInterceptKeyboard() || Client.getImGuiManager().shouldInterceptMouse()) {
-            ci.cancel();
-        }
-    }
+	/**
+	 * Cancels char-typed events when ImGui captures the keyboard.
+	 */
+	@Override
+	@Inject(method = "charTyped", at = @At("HEAD"), cancellable = true)
+	public void engine$charTyped(long handle, CharacterEvent event, CallbackInfo ci) {
+		if (Client.getImGuiManager().shouldInterceptKeyboard() || Client.getImGuiManager().shouldInterceptMouse()) {
+			ci.cancel();
+		}
+	}
 }

@@ -13,20 +13,20 @@ import net.minecraft.network.chat.Component;
  */
 public class ReloadCommand implements EngineCommand {
 
-    @Override
-    public LiteralArgumentBuilder<CommandSourceStack> build(CommandBuildContext buildContext) {
-        return Commands.literal("reload")
-                .requires(this::isAdmin)
-                .executes(context -> {
-                    CommandSourceStack source = context.getSource();
-                    try {
-                        Common.getBundleManager().reload();
-                        source.sendSuccess(() -> Component.literal("Scripts reloaded successfully!"), true);
-                        return 1;
-                    } catch (RuntimeException e) {
-                        source.sendFailure(Component.literal("Failed to reload scripts: " + e.getMessage()));
-                        return 0;
-                    }
-                });
-    }
+	@Override
+	public LiteralArgumentBuilder<CommandSourceStack> build(CommandBuildContext buildContext) {
+		return Commands.literal("reload")
+			.requires(this::isAdmin)
+			.executes(context -> {
+				CommandSourceStack source = context.getSource();
+				try {
+					Common.getBundleManager().reload();
+					source.sendSuccess(() -> Component.literal("Scripts reloaded successfully!"), true);
+					return 1;
+				} catch (RuntimeException e) {
+					source.sendFailure(Component.literal("Failed to reload scripts: " + e.getMessage()));
+					return 0;
+				}
+			});
+	}
 }

@@ -8,7 +8,7 @@ import java.util.function.Consumer;
 
 public record EngineAdvancementSubProvider() implements AdvancementSubProvider {
 
-    @Override
-    public void generate(HolderLookup.Provider registries, Consumer<AdvancementHolder> output) {
-    }
+	@Override
+	public void generate(HolderLookup.Provider registries, Consumer<AdvancementHolder> output) {
+	}
 }

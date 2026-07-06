@@ -20,82 +20,82 @@ import java.util.List;
 
 public class WaypointCommand implements EngineCommand {
 
-    @Override
-    public LiteralArgumentBuilder<CommandSourceStack> build(CommandBuildContext buildContext) {
-        return Commands.literal("waypoint")
-                .requires(this::isGamemaster)
-                .then(Commands.literal("add")
-                        .then(Commands.argument("pos", BlockPosArgument.blockPos())
-                                .then(Commands.argument("name", StringArgumentType.word())
-                                        .executes(ctx -> addWaypoint(ctx, "I", new Color(0xFF40C0C0)))
-                                        .then(Commands.argument("icon", StringArgumentType.word())
-                                                .executes(ctx -> addWaypoint(ctx, StringArgumentType.getString(ctx, "icon"), new Color(0xFF40C0C0)))
-                                                .then(Commands.argument("color", IntegerArgumentType.integer())
-                                                        .executes(ctx -> addWaypoint(ctx,
-                                                                StringArgumentType.getString(ctx, "icon"),
-                                                                new Color(IntegerArgumentType.getInteger(ctx, "color")))))))))
-                .then(Commands.literal("remove")
-                        .then(Commands.argument("pos", BlockPosArgument.blockPos())
-                                .executes(this::removeWaypoint)))
-                .then(Commands.literal("clear")
-                        .executes(this::clearWaypoints))
-                .then(Commands.literal("list")
-                        .executes(this::listWaypoints));
-    }
+	@Override
+	public LiteralArgumentBuilder<CommandSourceStack> build(CommandBuildContext buildContext) {
+		return Commands.literal("waypoint")
+			.requires(this::isGamemaster)
+			.then(Commands.literal("add")
+				.then(Commands.argument("pos", BlockPosArgument.blockPos())
+					.then(Commands.argument("name", StringArgumentType.word())
+						.executes(ctx -> addWaypoint(ctx, "I", new Color(0xFF40C0C0)))
+						.then(Commands.argument("icon", StringArgumentType.word())
+							.executes(ctx -> addWaypoint(ctx, StringArgumentType.getString(ctx, "icon"), new Color(0xFF40C0C0)))
+							.then(Commands.argument("color", IntegerArgumentType.integer())
+								.executes(ctx -> addWaypoint(ctx,
+									StringArgumentType.getString(ctx, "icon"),
+									new Color(IntegerArgumentType.getInteger(ctx, "color")))))))))
+			.then(Commands.literal("remove")
+				.then(Commands.argument("pos", BlockPosArgument.blockPos())
+					.executes(this::removeWaypoint)))
+			.then(Commands.literal("clear")
+				.executes(this::clearWaypoints))
+			.then(Commands.literal("list")
+				.executes(this::listWaypoints));
+	}
 
-    private int addWaypoint(CommandContext<CommandSourceStack> ctx, String icon, Color color) throws CommandSyntaxException {
-        CommandSourceStack source = ctx.getSource();
-        ServerLevel level = source.getLevel();
-        BlockPos pos = BlockPosArgument.getBlockPos(ctx, "pos");
-        String name = StringArgumentType.getString(ctx, "name");
+	private int addWaypoint(CommandContext<CommandSourceStack> ctx, String icon, Color color) throws CommandSyntaxException {
+		CommandSourceStack source = ctx.getSource();
+		ServerLevel level = source.getLevel();
+		BlockPos pos = BlockPosArgument.getBlockPos(ctx, "pos");
+		String name = StringArgumentType.getString(ctx, "name");
 
-        var manager = Common.getWaypointManager();
-        manager.addWaypoint(level, new Waypoint(name, icon, pos.getX(), pos.getY(), pos.getZ(), color));
-        manager.syncToAll();
-        sendSuccess(ctx, "Added waypoint [" + name + "] at " + pos.toShortString(), true);
-        return 1;
-    }
+		var manager = Common.getWaypointManager();
+		manager.addWaypoint(level, new Waypoint(name, icon, pos.getX(), pos.getY(), pos.getZ(), color));
+		manager.syncToAll();
+		sendSuccess(ctx, "Added waypoint [" + name + "] at " + pos.toShortString(), true);
+		return 1;
+	}
 
-    private int removeWaypoint(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
-        CommandSourceStack source = ctx.getSource();
-        ServerLevel level = source.getLevel();
-        BlockPos pos = BlockPosArgument.getBlockPos(ctx, "pos");
+	private int removeWaypoint(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+		CommandSourceStack source = ctx.getSource();
+		ServerLevel level = source.getLevel();
+		BlockPos pos = BlockPosArgument.getBlockPos(ctx, "pos");
 
-        var manager = Common.getWaypointManager();
-        if (manager.removeWaypoint(level, pos.getX(), pos.getY(), pos.getZ())) {
-            manager.syncToAll();
-            sendSuccess(ctx, "Removed waypoint at " + pos.toShortString(), true);
-            return 1;
-        }
-        sendFailure(ctx, "No waypoint found at " + pos.toShortString());
-        return 0;
-    }
+		var manager = Common.getWaypointManager();
+		if (manager.removeWaypoint(level, pos.getX(), pos.getY(), pos.getZ())) {
+			manager.syncToAll();
+			sendSuccess(ctx, "Removed waypoint at " + pos.toShortString(), true);
+			return 1;
+		}
+		sendFailure(ctx, "No waypoint found at " + pos.toShortString());
+		return 0;
+	}
 
-    private int clearWaypoints(CommandContext<CommandSourceStack> ctx) {
-        CommandSourceStack source = ctx.getSource();
-        ServerLevel level = source.getLevel();
+	private int clearWaypoints(CommandContext<CommandSourceStack> ctx) {
+		CommandSourceStack source = ctx.getSource();
+		ServerLevel level = source.getLevel();
 
-        var manager = Common.getWaypointManager();
-        manager.clearWaypoints(level);
-        manager.syncToAll();
-        sendSuccess(ctx, "All waypoints cleared.", true);
-        return 1;
-    }
+		var manager = Common.getWaypointManager();
+		manager.clearWaypoints(level);
+		manager.syncToAll();
+		sendSuccess(ctx, "All waypoints cleared.", true);
+		return 1;
+	}
 
-    private int listWaypoints(CommandContext<CommandSourceStack> ctx) {
-        CommandSourceStack source = ctx.getSource();
-        ServerLevel level = source.getLevel();
+	private int listWaypoints(CommandContext<CommandSourceStack> ctx) {
+		CommandSourceStack source = ctx.getSource();
+		ServerLevel level = source.getLevel();
 
-        List<Waypoint> waypoints = Common.getWaypointManager().getWaypoints(level.dimension());
-        if (waypoints.isEmpty()) {
-            sendInfo(ctx, "No waypoints in this dimension.");
-            return 1;
-        }
+		List<Waypoint> waypoints = Common.getWaypointManager().getWaypoints(level.dimension());
+		if (waypoints.isEmpty()) {
+			sendInfo(ctx, "No waypoints in this dimension.");
+			return 1;
+		}
 
-        sendInfo(ctx, "Waypoints (" + waypoints.size() + "):");
-        for (Waypoint w : waypoints) {
-            sendInfo(ctx, "  [" + w.name() + "] at (" + w.x() + ", " + w.y() + ", " + w.z() + ")");
-        }
-        return 1;
-    }
+		sendInfo(ctx, "Waypoints (" + waypoints.size() + "):");
+		for (Waypoint w : waypoints) {
+			sendInfo(ctx, "  [" + w.name() + "] at (" + w.x() + ", " + w.y() + ", " + w.z() + ")");
+		}
+		return 1;
+	}
 }

@@ -10,46 +10,46 @@ import net.minecraft.world.phys.Vec2;
 import org.slf4j.Logger;
 
 public class ExampleScreen extends EngineScreen {
-    public static final Logger LOGGER = LogUtils.getLogger();
+	public static final Logger LOGGER = LogUtils.getLogger();
 
-    public ExampleScreen() {
-        super(true);
-    }
+	public ExampleScreen() {
+		super(true);
+	}
 
-    @Override
-    protected void init() {
-        PanelWidget panel = new PanelWidget(
-                new UIVec(0.25, 0.25, 0, 0),
-                new UIVec(0.5, 0.5, 0, 0)
-        );
+	@Override
+	protected void init() {
+		PanelWidget panel = new PanelWidget(
+			new UIVec(0.25, 0.25, 0, 0),
+			new UIVec(0.5, 0.5, 0, 0)
+		);
 
-        panel.setBackgroundColor(Color.LIGHT_GRAY);
-        panel.setBorder(Color.RED, 2);
+		panel.setBackgroundColor(Color.LIGHT_GRAY);
+		panel.setBorder(Color.RED, 2);
 
-        ButtonWidget button = new ButtonWidget(
-                new UIVec(0.5, 0.5, 0, 0),
-                new UIVec(0, 0, 100, 20),
-                (mouseX, mouseY, btn) -> {
-                    LOGGER.debug("Button clicked! Mouse: {} {} | Button ID: {}", mouseX, mouseY, btn);
-                    Client.getPlayer().connection.sendChat("HELLO");
-                }
-        );
+		ButtonWidget button = new ButtonWidget(
+			new UIVec(0.5, 0.5, 0, 0),
+			new UIVec(0, 0, 100, 20),
+			(mouseX, mouseY, btn) -> {
+				LOGGER.debug("Button clicked! Mouse: {} {} | Button ID: {}", mouseX, mouseY, btn);
+				Client.getPlayer().connection.sendChat("HELLO");
+			}
+		);
 
-        button.setBackgroundColor(Color.DARK_GRAY);
-        button.setHoverColor(Color.LIGHT_GRAY);
-        button.setBorderColor(Color.BLACK);
+		button.setBackgroundColor(Color.DARK_GRAY);
+		button.setHoverColor(Color.LIGHT_GRAY);
+		button.setBorderColor(Color.BLACK);
 
-        button.setAnchorPoint(new Vec2(0.5f, 0.5f));
+		button.setAnchorPoint(new Vec2(0.5f, 0.5f));
 
-        panel.addWidget(button);
+		panel.addWidget(button);
 
-        this.addWidgets(panel);
+		this.addWidgets(panel);
 
-        super.init();
-    }
+		super.init();
+	}
 
-    @Override
-    public boolean isPauseScreen() {
-        return false;
-    }
+	@Override
+	public boolean isPauseScreen() {
+		return false;
+	}
 }

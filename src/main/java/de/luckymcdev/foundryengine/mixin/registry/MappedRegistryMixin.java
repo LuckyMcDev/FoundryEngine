@@ -5,7 +5,11 @@ import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.common.world.level.RemoveFromRegistry;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import it.unimi.dsi.fastutil.objects.Reference2IntMap;
-import net.minecraft.core.*;
+import net.minecraft.core.Holder;
+import net.minecraft.core.MappedRegistry;
+import net.minecraft.core.RegistrationInfo;
+import net.minecraft.core.Registry;
+import net.minecraft.core.WritableRegistry;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import org.slf4j.Logger;
@@ -24,88 +28,88 @@ import java.util.stream.Stream;
  */
 @Mixin(MappedRegistry.class)
 public abstract class MappedRegistryMixin<T> implements RemoveFromRegistry<T>, WritableRegistry<T> {
-    @Unique
-    private static final Logger engine$LOGGER = LogUtils.getLogger();
+	@Unique
+	private static final Logger engine$LOGGER = LogUtils.getLogger();
 
-    @Shadow
-    @Final
-    private Map<T, Holder.Reference<T>> byValue;
-    @Shadow
-    @Final
-    private Map<Identifier, Holder.Reference<T>> byLocation;
-    @Shadow
-    @Final
-    private Map<ResourceKey<T>, Holder.Reference<T>> byKey;
-    @Shadow
-    @Final
-    private Map<ResourceKey<T>, RegistrationInfo> registrationInfos;
-    @Shadow
-    @Final
-    private ObjectList<Holder.Reference<T>> byId;
-    @Shadow
-    @Final
-    private Reference2IntMap<T> toId;
-    @Shadow
-    @Final
-    private ResourceKey<? extends Registry<T>> key;
-    @Shadow
-    private boolean frozen;
+	@Shadow
+	@Final
+	private Map<T, Holder.Reference<T>> byValue;
+	@Shadow
+	@Final
+	private Map<Identifier, Holder.Reference<T>> byLocation;
+	@Shadow
+	@Final
+	private Map<ResourceKey<T>, Holder.Reference<T>> byKey;
+	@Shadow
+	@Final
+	private Map<ResourceKey<T>, RegistrationInfo> registrationInfos;
+	@Shadow
+	@Final
+	private ObjectList<Holder.Reference<T>> byId;
+	@Shadow
+	@Final
+	private Reference2IntMap<T> toId;
+	@Shadow
+	@Final
+	private ResourceKey<? extends Registry<T>> key;
+	@Shadow
+	private boolean frozen;
 
-    /**
-     * Removes a registry entry by value.
-     */
-    @Override
-    public boolean engine$remove(T entry) {
-        var registryEntry = this.byValue.get(entry);
-        int rawId = this.toId.removeInt(entry);
-        if (rawId == -1) {
-            return false;
-        }
+	/**
+	 * Removes a registry entry by value.
+	 */
+	@Override
+	public boolean engine$remove(T entry) {
+		var registryEntry = this.byValue.get(entry);
+		int rawId = this.toId.removeInt(entry);
+		if (rawId == -1) {
+			return false;
+		}
 
-        try {
-            this.byKey.remove(registryEntry.key());
-            this.byLocation.remove(registryEntry.key().identifier());
-            this.byValue.remove(entry);
-            this.byId.set(rawId, null);
-            this.registrationInfos.remove(this.key);
+		try {
+			this.byKey.remove(registryEntry.key());
+			this.byLocation.remove(registryEntry.key().identifier());
+			this.byValue.remove(entry);
+			this.byId.set(rawId, null);
+			this.registrationInfos.remove(this.key);
 
-            return true;
-        } catch (Throwable e) {
-            engine$LOGGER.error("Could not remove entry", e);
-            return false;
-        }
-    }
+			return true;
+		} catch (Throwable e) {
+			engine$LOGGER.error("Could not remove entry", e);
+			return false;
+		}
+	}
 
-    /**
-     * Removes a registry entry by its identifier key.
-     */
-    @Override
-    public boolean engine$remove(Identifier key) {
-        var entry = this.byLocation.get(key);
-        return entry != null && entry.isBound() && this.engine$remove(entry.value());
-    }
+	/**
+	 * Removes a registry entry by its identifier key.
+	 */
+	@Override
+	public boolean engine$remove(Identifier key) {
+		var entry = this.byLocation.get(key);
+		return entry != null && entry.isBound() && this.engine$remove(entry.value());
+	}
 
-    /**
-     * Sets the frozen state of this registry.
-     */
-    @Override
-    public void engine$setFrozen(boolean value) {
-        this.frozen = value;
-    }
+	/**
+	 * Sets the frozen state of this registry.
+	 */
+	@Override
+	public void engine$setFrozen(boolean value) {
+		this.frozen = value;
+	}
 
-    /**
-     * Returns whether this registry is frozen.
-     */
-    @Override
-    public boolean engine$isFrozen() {
-        return this.frozen;
-    }
+	/**
+	 * Returns whether this registry is frozen.
+	 */
+	@Override
+	public boolean engine$isFrozen() {
+		return this.frozen;
+	}
 
-    /**
-     * Filters null entries from the element stream.
-     */
-    @ModifyReturnValue(method = "listElements", at = @At("RETURN"))
-    public Stream<Holder.Reference<T>> fixEntryStream(Stream<Holder.Reference<T>> original) {
-        return original.filter(Objects::nonNull);
-    }
+	/**
+	 * Filters null entries from the element stream.
+	 */
+	@ModifyReturnValue(method = "listElements", at = @At("RETURN"))
+	public Stream<Holder.Reference<T>> fixEntryStream(Stream<Holder.Reference<T>> original) {
+		return original.filter(Objects::nonNull);
+	}
 }

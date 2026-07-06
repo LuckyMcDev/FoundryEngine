@@ -16,31 +16,31 @@ import java.nio.file.FileSystem;
 import java.nio.file.Path;
 
 public class BundleFactory {
-    private static final Logger LOGGER = LogUtils.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 
-    private final BundleScriptLoader scriptLoader;
-    private final IEventBus modBus;
-    private final Path configDirectory;
+	private final BundleScriptLoader scriptLoader;
+	private final IEventBus modBus;
+	private final Path configDirectory;
 
-    public BundleFactory(IEventBus modBus, Path configDirectory) {
-        this.scriptLoader = new BundleScriptLoader();
-        this.modBus = modBus;
-        this.configDirectory = configDirectory;
-    }
+	public BundleFactory(IEventBus modBus, Path configDirectory) {
+		this.scriptLoader = new BundleScriptLoader();
+		this.modBus = modBus;
+		this.configDirectory = configDirectory;
+	}
 
-    public Bundle createBundle(BundleInfo info, Path bundleDir, @Nullable FileSystem zipFs) throws IOException {
-        BundleFiles files = BundleFiles.builder().build(bundleDir, zipFs);
+	public Bundle createBundle(BundleInfo info, Path bundleDir, @Nullable FileSystem zipFs) throws IOException {
+		BundleFiles files = BundleFiles.builder().build(bundleDir, zipFs);
 
-        BundleScriptEngineRegistry registry = new BundleScriptEngineRegistry();
-        registry.initializeAll(files);
+		BundleScriptEngineRegistry registry = new BundleScriptEngineRegistry();
+		registry.initializeAll(files);
 
-        BundleCreativeModeTab creativeTab = new BundleCreativeModeTab(info.id(), modBus);
-        BundleConfig config = new BundleConfig(info.id(), configDirectory);
+		BundleCreativeModeTab creativeTab = new BundleCreativeModeTab(info.id(), modBus);
+		BundleConfig config = new BundleConfig(info.id(), configDirectory);
 
-        return new Bundle(info, files, registry, creativeTab, config);
-    }
+		return new Bundle(info, files, registry, creativeTab, config);
+	}
 
-    public BundleScriptLoader getScriptLoader() {
-        return scriptLoader;
-    }
+	public BundleScriptLoader getScriptLoader() {
+		return scriptLoader;
+	}
 }

@@ -25,140 +25,142 @@ import java.util.List;
  * Starts capturing the Log at {@link FMLConstructModEvent}
  */
 public class ConsolePanel extends EditorPanel {
-    public static final ConsolePanel INSTANCE = new ConsolePanel();
+	public static final ConsolePanel INSTANCE = new ConsolePanel();
 
-    private final ImString filter = new ImString(256);
-    private final List<LogEntry> filteredCache = new ArrayList<>();
-    private final ImString commandInput = new ImString(256);
-    private String lastFilterText = "";
-    private int lastLogSize = -1;
-    private boolean autoScroll = true;
+	private final ImString filter = new ImString(256);
+	private final List<LogEntry> filteredCache = new ArrayList<>();
+	private final ImString commandInput = new ImString(256);
+	private String lastFilterText = "";
+	private int lastLogSize = -1;
+	private boolean autoScroll = true;
 
-    private ConsolePanel() {
-        super(new Builder(Common.id("console"))
-                .icon(ImIcons.TERMINAL)
-                .category(PanelCategory.TOOLS)
-                .menuBar(true));
-    }
+	private ConsolePanel() {
+		super(new Builder(Common.id("console"))
+			.icon(ImIcons.TERMINAL)
+			.category(PanelCategory.TOOLS)
+			.menuBar(true));
+	}
 
-    private List<LogEntry> getFilteredLogs() {
-        String currentFilter = filter.get().toLowerCase();
-        int currentSize = EngineLogAppender.Holder.get().getHistory().size();
+	private List<LogEntry> getFilteredLogs() {
+		String currentFilter = filter.get().toLowerCase();
+		int currentSize = EngineLogAppender.Holder.get().getHistory().size();
 
-        // Only re-filter if something actually changed
-        if (!currentFilter.equals(lastFilterText) || currentSize != lastLogSize) {
-            filteredCache.clear();
-            for (LogEntry entry : EngineLogAppender.Holder.get().getHistory()) {
-                if (currentFilter.isEmpty() ||
-                        entry.message().toLowerCase().contains(currentFilter) ||
-                        entry.logger().toLowerCase().contains(currentFilter)) {
-                    filteredCache.add(entry);
-                }
-            }
-            lastFilterText = currentFilter;
-            lastLogSize = currentSize;
-        }
-        return filteredCache;
-    }
+		// Only re-filter if something actually changed
+		if (!currentFilter.equals(lastFilterText) || currentSize != lastLogSize) {
+			filteredCache.clear();
+			for (LogEntry entry : EngineLogAppender.Holder.get().getHistory()) {
+				if (currentFilter.isEmpty() ||
+					entry.message().toLowerCase().contains(currentFilter) ||
+					entry.logger().toLowerCase().contains(currentFilter)) {
+					filteredCache.add(entry);
+				}
+			}
+			lastFilterText = currentFilter;
+			lastLogSize = currentSize;
+		}
+		return filteredCache;
+	}
 
-    @Override
-    public void content(ImGraphicsExtractor g) {
-        renderControls();
+	@Override
+	public void content(ImGraphicsExtractor g) {
+		renderControls();
 
-        List<LogEntry> logsToRender = getFilteredLogs();
+		List<LogEntry> logsToRender = getFilteredLogs();
 
-        g.scrollableRegion("##scrollingRegion", 0, -ImGui.getFrameHeightWithSpacing(), false, () -> {
-            for (LogEntry entry : logsToRender) {
-                boolean hasColor = pushLevelColor(entry.level());
-                ImGui.textUnformatted(entry.format());
-                if (hasColor) ImGui.popStyleColor();
-            }
+		g.scrollableRegion("##scrollingRegion", 0, -ImGui.getFrameHeightWithSpacing(), false, () -> {
+			for (LogEntry entry : logsToRender) {
+				boolean hasColor = pushLevelColor(entry.level());
+				ImGui.textUnformatted(entry.format());
+				if (hasColor) {
+					ImGui.popStyleColor();
+				}
+			}
 
-            if (autoScroll && ImGui.getScrollY() >= ImGui.getScrollMaxY()) {
-                ImGui.setScrollHereY(1.0f);
-            }
-        });
+			if (autoScroll && ImGui.getScrollY() >= ImGui.getScrollMaxY()) {
+				ImGui.setScrollHereY(1.0f);
+			}
+		});
 
-        ImGui.separator();
-        renderCommandInput();
-    }
+		ImGui.separator();
+		renderCommandInput();
+	}
 
-    private void renderControls() {
-        menuBar(() -> {
-            ImGui.setNextItemWidth(200);
-            ImGui.inputTextWithHint("##Filter", "Filter...", filter);
+	private void renderControls() {
+		menuBar(() -> {
+			ImGui.setNextItemWidth(200);
+			ImGui.inputTextWithHint("##Filter", "Filter...", filter);
 
-            ImGui.separator();
+			ImGui.separator();
 
-            if (ImGui.menuItem("Clear")) {
-                EngineLogAppender.Holder.get().clearHistory();
-            }
+			if (ImGui.menuItem("Clear")) {
+				EngineLogAppender.Holder.get().clearHistory();
+			}
 
-            ImGui.separator();
+			ImGui.separator();
 
-            if (ImGui.menuItem("Auto-scroll", "", autoScroll)) {
-                autoScroll = !autoScroll;
-            }
+			if (ImGui.menuItem("Auto-scroll", "", autoScroll)) {
+				autoScroll = !autoScroll;
+			}
 
-            ImGui.separator();
+			ImGui.separator();
 
-            if (ImGui.button("Copy To Clipboard")) {
-                StringBuilder sb = new StringBuilder();
-                for (LogEntry entry : filteredCache) {
-                    sb.append(entry.format()).append("\n");
-                }
-                ImGui.setClipboardText(sb.toString());
-            }
-        });
-    }
+			if (ImGui.button("Copy To Clipboard")) {
+				StringBuilder sb = new StringBuilder();
+				for (LogEntry entry : filteredCache) {
+					sb.append(entry.format()).append("\n");
+				}
+				ImGui.setClipboardText(sb.toString());
+			}
+		});
+	}
 
-    private void renderCommandInput() {
-        ImGui.setNextItemWidth(-1);
+	private void renderCommandInput() {
+		ImGui.setNextItemWidth(-1);
 
-        if (ImGui.inputTextWithHint("##CommandInput", "Enter command...", commandInput,
-                ImGuiInputTextFlags.EnterReturnsTrue)) {
-            executeCommand(commandInput.get());
-            commandInput.set("");
-        }
+		if (ImGui.inputTextWithHint("##CommandInput", "Enter command...", commandInput,
+			ImGuiInputTextFlags.EnterReturnsTrue)) {
+			executeCommand(commandInput.get());
+			commandInput.set("");
+		}
 
-        if (ImGui.isWindowFocused() && ImGui.isKeyPressed(ImGuiKey.Enter)) {
-            ImGui.setKeyboardFocusHere(-1);
-        }
-    }
+		if (ImGui.isWindowFocused() && ImGui.isKeyPressed(ImGuiKey.Enter)) {
+			ImGui.setKeyboardFocusHere(-1);
+		}
+	}
 
-    private void executeCommand(String command) {
-        if (command == null || command.trim().isEmpty()) {
-            return;
-        }
+	private void executeCommand(String command) {
+		if (command == null || command.trim().isEmpty()) {
+			return;
+		}
 
-        String trimmedCommand = command.trim();
+		String trimmedCommand = command.trim();
 
-        if (trimmedCommand.startsWith("/")) {
-            trimmedCommand = trimmedCommand.substring(1);
-        }
+		if (trimmedCommand.startsWith("/")) {
+			trimmedCommand = trimmedCommand.substring(1);
+		}
 
-        if (Client.getMc().getConnection() != null) {
-            Client.sendCommand(trimmedCommand);
-        }
-    }
+		if (Client.getMc().getConnection() != null) {
+			Client.sendCommand(trimmedCommand);
+		}
+	}
 
-    private boolean pushLevelColor(Level level) {
-        int levelInt = level.intLevel();
+	private boolean pushLevelColor(Level level) {
+		int levelInt = level.intLevel();
 
-        if (levelInt <= Level.ERROR.intLevel()) {
-            ImGui.pushStyleColor(ImGuiCol.Text, 1.0f, 0.33f, 0.33f, 1.0f);
-            return true;
-        } else if (levelInt == Level.WARN.intLevel()) {
-            ImGui.pushStyleColor(ImGuiCol.Text, 1.0f, 0.82f, 0.0f, 1.0f);
-            return true;
-        } else if (levelInt == Level.INFO.intLevel()) {
-            return false;
-        } else if (levelInt == Level.DEBUG.intLevel()) {
-            ImGui.pushStyleColor(ImGuiCol.Text, 0.44f, 0.85f, 1.0f, 1.0f);
-            return true;
-        } else {
-            ImGui.pushStyleColor(ImGuiCol.Text, 0.55f, 0.55f, 0.55f, 1.0f);
-            return true;
-        }
-    }
+		if (levelInt <= Level.ERROR.intLevel()) {
+			ImGui.pushStyleColor(ImGuiCol.Text, 1.0f, 0.33f, 0.33f, 1.0f);
+			return true;
+		} else if (levelInt == Level.WARN.intLevel()) {
+			ImGui.pushStyleColor(ImGuiCol.Text, 1.0f, 0.82f, 0.0f, 1.0f);
+			return true;
+		} else if (levelInt == Level.INFO.intLevel()) {
+			return false;
+		} else if (levelInt == Level.DEBUG.intLevel()) {
+			ImGui.pushStyleColor(ImGuiCol.Text, 0.44f, 0.85f, 1.0f, 1.0f);
+			return true;
+		} else {
+			ImGui.pushStyleColor(ImGuiCol.Text, 0.55f, 0.55f, 0.55f, 1.0f);
+			return true;
+		}
+	}
 }

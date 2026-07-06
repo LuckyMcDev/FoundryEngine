@@ -17,24 +17,24 @@ import org.slf4j.Logger;
  */
 @Mod(value = Common.MODID, dist = Dist.DEDICATED_SERVER)
 public class FoundryEngineModServer {
-    private static final Logger LOGGER = LogUtils.getLogger();
-    private static final IEventBus BUS = NeoForge.EVENT_BUS;
+	private static final Logger LOGGER = LogUtils.getLogger();
+	private static final IEventBus BUS = NeoForge.EVENT_BUS;
 
-    public FoundryEngineModServer(IEventBus modBus, ModContainer modContainer) {
-        modBus.addListener(this::onServerSetup);
+	public FoundryEngineModServer(IEventBus modBus, ModContainer modContainer) {
+		modBus.addListener(this::onServerSetup);
 
-        BUS.addListener(this::onAddReloadListeners);
+		BUS.addListener(this::onAddReloadListeners);
 
-        Config.registerServer(modContainer);
+		Config.registerServer(modContainer);
 
-        LOGGER.debug("FoundryEngineModServer initialized");
-    }
+		LOGGER.debug("FoundryEngineModServer initialized");
+	}
 
-    private void onServerSetup(FMLDedicatedServerSetupEvent event) {
-        LOGGER.debug("FoundryEngineModServer setup called");
-    }
+	private void onServerSetup(FMLDedicatedServerSetupEvent event) {
+		LOGGER.debug("FoundryEngineModServer setup called");
+	}
 
-    private void onAddReloadListeners(AddServerReloadListenersEvent event) {
-        event.addListener(Common.id("bundle_manager"), Common.getBundleManager());
-    }
+	private void onAddReloadListeners(AddServerReloadListenersEvent event) {
+		event.addListener(Common.id("bundle_manager"), Common.getBundleManager());
+	}
 }

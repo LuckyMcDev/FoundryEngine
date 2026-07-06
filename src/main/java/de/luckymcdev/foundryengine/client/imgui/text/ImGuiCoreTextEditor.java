@@ -251,6 +251,14 @@ public final class ImGuiCoreTextEditor {
 		return theme;
 	}
 
+	public void setTheme(EditorTheme newTheme) {
+		if (newTheme == null) {
+			return;
+		}
+		this.theme = newTheme;
+		maxLineWidth = 0f;
+	}
+
 	public void setProvider(IAutocompleteProvider provider) {
 		this.autocomplete = provider != null ? new EditorAutocomplete(provider) : null;
 	}
@@ -266,12 +274,6 @@ public final class ImGuiCoreTextEditor {
 			setProvider(provider);
 		}
 		getColorizer().invalidateAll();
-	}
-
-	public void setTheme(EditorTheme newTheme) {
-		if (newTheme == null) return;
-		this.theme = newTheme;
-		maxLineWidth = 0f;
 	}
 
 	public void resetBlink() {
