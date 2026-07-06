@@ -3,6 +3,7 @@ package de.luckymcdev.foundryengine;
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.command.FoundryCommandsClient;
+import de.luckymcdev.foundryengine.client.command.suggest.nbt.NbtSuggestions;
 import de.luckymcdev.foundryengine.client.debug.screen.BundleDebugEntry;
 import de.luckymcdev.foundryengine.client.debug.screen.GameStagesDebugEntry;
 import de.luckymcdev.foundryengine.client.editor.panel.NodeTestPanel;
@@ -90,6 +91,7 @@ public class FoundryEngineModClient {
 	}
 
 	private void onClientSetup(FMLClientSetupEvent event) {
+		NbtSuggestions.init();
 		LOGGER.debug("FoundryEngineModClient setup called");
 		ModPathBroadcaster.broadcast();
 		Client.getEditorManager().register(

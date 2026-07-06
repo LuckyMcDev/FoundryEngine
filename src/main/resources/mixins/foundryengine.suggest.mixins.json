@@ -1,0 +1,18 @@
+{
+	"required": true,
+	"minVersion": "0.8",
+	"package": "de.luckymcdev.foundryengine.mixin.suggest.nbt",
+	"compatibilityLevel": "JAVA_21",
+	"client": [
+		"BlockStateParserMixin",
+		"ComponentArgumentMixin",
+		"CompoundTagArgumentMixin",
+		"EntitySelectorParserMixin",
+		"NbtPathArgumentMixin",
+		"NbtTagArgumentMixin",
+		"StyleArgumentMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}
