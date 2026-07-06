@@ -15,36 +15,36 @@ import org.jspecify.annotations.Nullable;
  */
 public class SimpleDebugScreenEntry implements DebugScreenEntry {
 
-    private final DebugEntryRenderer renderer;
+	private final DebugEntryRenderer renderer;
 
-    public SimpleDebugScreenEntry(DebugEntryRenderer renderer) {
-        this.renderer = renderer;
-    }
+	public SimpleDebugScreenEntry(DebugEntryRenderer renderer) {
+		this.renderer = renderer;
+	}
 
-    @Override
-    public void display(@NonNull DebugScreenDisplayer displayer,
-                        @Nullable Level level,
-                        @Nullable LevelChunk clientChunk,
-                        @Nullable LevelChunk serverChunk) {
+	@Override
+	public void display(@NonNull DebugScreenDisplayer displayer,
+	                    @Nullable Level level,
+	                    @Nullable LevelChunk clientChunk,
+	                    @Nullable LevelChunk serverChunk) {
 
-        if (level != null) {
-            renderer.render(displayer, level, clientChunk, serverChunk);
-        }
-    }
+		if (level != null) {
+			renderer.render(displayer, level, clientChunk, serverChunk);
+		}
+	}
 
-    @Override
-    public @NonNull DebugEntryCategory category() {
-        return DebugEntryCategory.SCREEN_TEXT;
-    }
+	@Override
+	public @NonNull DebugEntryCategory category() {
+		return DebugEntryCategory.SCREEN_TEXT;
+	}
 
-    @FunctionalInterface
-    public interface DebugEntryRenderer {
-        void render(
-                @NonNull DebugScreenDisplayer displayer,
-                @Nullable Level level,
-                @Nullable LevelChunk clientChunk,
-                @Nullable LevelChunk serverChunk
-        );
-    }
+	@FunctionalInterface
+	public interface DebugEntryRenderer {
+		void render(
+			@NonNull DebugScreenDisplayer displayer,
+			@Nullable Level level,
+			@Nullable LevelChunk clientChunk,
+			@Nullable LevelChunk serverChunk
+		);
+	}
 }
 

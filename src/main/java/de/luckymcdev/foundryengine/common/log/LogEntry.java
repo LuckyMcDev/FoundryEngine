@@ -12,10 +12,10 @@ import org.apache.logging.log4j.Level;
  * @param message   the log message
  */
 public record LogEntry(long timestamp, String thread, Level level, String logger, String message) {
-    /**
-     * Formats the log entry as a string with timestamp, thread, level, logger, and message.
-     */
-    public String format() {
-        return String.format("[%tT] [%s/%s] [%s]: %s", timestamp, thread, level, logger, message);
-    }
+	/**
+	 * Formats the log entry as a string with timestamp, thread, level, logger, and message.
+	 */
+	public String format() {
+		return String.format("[%tT] [%s/%s] [%s]: %s", timestamp, thread, level, logger, message);
+	}
 }

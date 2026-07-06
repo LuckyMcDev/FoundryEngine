@@ -20,46 +20,46 @@ import java.util.Objects;
  */
 public record BundleHashPacket(String clientHash) implements AbstractPacket<BundleHashPacket> {
 
-    public static final Definition<BundleHashPacket> DEFINITION = new Definition<>(
-            AbstractPacket.createType(Common.id("bundle_hash_packet")),
-            PacketBounds.SERVER,
-            StreamCodec.composite(ByteBufCodecs.STRING_UTF8, BundleHashPacket::clientHash, BundleHashPacket::new),
-            null,
-            BundleHashPacket::handleServer
-    );
+	public static final Definition<BundleHashPacket> DEFINITION = new Definition<>(
+		AbstractPacket.createType(Common.id("bundle_hash_packet")),
+		PacketBounds.SERVER,
+		StreamCodec.composite(ByteBufCodecs.STRING_UTF8, BundleHashPacket::clientHash, BundleHashPacket::new),
+		null,
+		BundleHashPacket::handleServer
+	);
 
-    @Override
-    public Type<BundleHashPacket> getType() {
-        return DEFINITION.type();
-    }
+	@Override
+	public Type<BundleHashPacket> getType() {
+		return DEFINITION.type();
+	}
 
-    @Override
-    public PacketBounds getBoundTo() {
-        return DEFINITION.bounds();
-    }
+	@Override
+	public PacketBounds getBoundTo() {
+		return DEFINITION.bounds();
+	}
 
-    @Override
-    public StreamCodec<RegistryFriendlyByteBuf, BundleHashPacket> getCodec() {
-        return DEFINITION.codec();
-    }
+	@Override
+	public StreamCodec<RegistryFriendlyByteBuf, BundleHashPacket> getCodec() {
+		return DEFINITION.codec();
+	}
 
-    @Override
-    public void handleServer(IPayloadContext ctx) {
-        ctx.enqueueWork(() -> {
-            try {
-                String serverHash = FolderHash.hashFolder(Common.BUNDLES);
-                if (!Objects.equals(clientHash, serverHash)) {
-                    if (ctx.player() instanceof ServerPlayer player) {
-                        player.sendSystemMessage(Component.translatable("foundryengine.bundle.mismatch"));
-                        Common.LOGGER.warn("Bundle hash mismatch for player {}: Client={} Server={}",
-                                player.getScoreboardName(), clientHash, serverHash);
-                    }
-                } else {
-                    Common.LOGGER.info("Bundle hash verified on server");
-                }
-            } catch (IOException | NoSuchAlgorithmException e) {
-                Common.LOGGER.error("Failed to verify bundle hash on server", e);
-            }
-        });
-    }
+	@Override
+	public void handleServer(IPayloadContext ctx) {
+		ctx.enqueueWork(() -> {
+			try {
+				String serverHash = FolderHash.hashFolder(Common.BUNDLES);
+				if (!Objects.equals(clientHash, serverHash)) {
+					if (ctx.player() instanceof ServerPlayer player) {
+						player.sendSystemMessage(Component.translatable("foundryengine.bundle.mismatch"));
+						Common.LOGGER.warn("Bundle hash mismatch for player {}: Client={} Server={}",
+							player.getScoreboardName(), clientHash, serverHash);
+					}
+				} else {
+					Common.LOGGER.info("Bundle hash verified on server");
+				}
+			} catch (IOException | NoSuchAlgorithmException e) {
+				Common.LOGGER.error("Failed to verify bundle hash on server", e);
+			}
+		});
+	}
 }

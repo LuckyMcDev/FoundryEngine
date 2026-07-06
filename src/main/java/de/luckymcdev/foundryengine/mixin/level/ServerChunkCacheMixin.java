@@ -15,17 +15,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  */
 @Mixin(ServerChunkCache.class)
 public class ServerChunkCacheMixin {
-    @Shadow
-    @Final
-    ServerLevel level;
+	@Shadow
+	@Final
+	ServerLevel level;
 
-    /**
-     * Cancels pollTask when the owning level should not tick.
-     */
-    @Inject(method = "pollTask", at = @At("HEAD"), cancellable = true)
-    private void executeQueuedTasks(CallbackInfoReturnable<Boolean> ci) {
-        if (!((EngineLevelAccess) this.level).engine$shouldTick()) {
-            ci.setReturnValue(false);
-        }
-    }
+	/**
+	 * Cancels pollTask when the owning level should not tick.
+	 */
+	@Inject(method = "pollTask", at = @At("HEAD"), cancellable = true)
+	private void executeQueuedTasks(CallbackInfoReturnable<Boolean> ci) {
+		if (!((EngineLevelAccess) this.level).engine$shouldTick()) {
+			ci.setReturnValue(false);
+		}
+	}
 }

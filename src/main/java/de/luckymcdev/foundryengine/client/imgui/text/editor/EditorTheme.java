@@ -188,7 +188,9 @@ public final class EditorTheme {
 	}
 
 	public static EditorTheme getThemeByName(String name) {
-		if(!THEME_NAMES.contains(name)) return EditorTheme.dark().build();
+		if (!THEME_NAMES.contains(name)) {
+			return EditorTheme.dark().build();
+		}
 
 		return switch (name) {
 			case "dark" -> EditorTheme.dark().build();
@@ -207,7 +209,9 @@ public final class EditorTheme {
 	public static String getAvailableThemeNames() {
 		StringBuilder names = new StringBuilder();
 		for (String theme : THEME_NAMES) {
-			if (!names.isEmpty()) names.append(", ");
+			if (!names.isEmpty()) {
+				names.append(", ");
+			}
 			names.append(theme);
 		}
 		return names.toString();

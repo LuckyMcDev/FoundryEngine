@@ -15,72 +15,74 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 
 public class ItemModificationEvent extends Event {
-    private static final Map<Item, Map<DataComponentType<?>, Object>> OVERRIDES = new IdentityHashMap<>();
-    private static ModifyDefaultComponentsEvent currentEvent;
+	private static final Map<Item, Map<DataComponentType<?>, Object>> OVERRIDES = new IdentityHashMap<>();
+	private static ModifyDefaultComponentsEvent currentEvent;
 
-    private final Item item;
+	private final Item item;
 
-    public ItemModificationEvent(Item item) {
-        this.item = item;
-    }
+	public ItemModificationEvent(Item item) {
+		this.item = item;
+	}
 
-    @ApiStatus.Internal
-    public static void bind(ModifyDefaultComponentsEvent event) {
-        currentEvent = event;
-        OVERRIDES.clear();
-    }
+	@ApiStatus.Internal
+	public static void bind(ModifyDefaultComponentsEvent event) {
+		currentEvent = event;
+		OVERRIDES.clear();
+	}
 
-    @ApiStatus.Internal
-    public static void flush() {
-        if (currentEvent == null) return;
-        OVERRIDES.forEach((item, overrides) -> {
-            currentEvent.modify(item, (components, context, itemToModify) -> {
-                for (var entry : overrides.entrySet()) {
-                    @SuppressWarnings("unchecked")
-                    var type = (DataComponentType<Object>) entry.getKey();
-                    components.set(type, entry.getValue());
-                }
-            });
-        });
-        OVERRIDES.clear();
-        currentEvent = null;
-    }
+	@ApiStatus.Internal
+	public static void flush() {
+		if (currentEvent == null) {
+			return;
+		}
+		OVERRIDES.forEach((item, overrides) -> {
+			currentEvent.modify(item, (components, context, itemToModify) -> {
+				for (var entry : overrides.entrySet()) {
+					@SuppressWarnings("unchecked")
+					var type = (DataComponentType<Object>) entry.getKey();
+					components.set(type, entry.getValue());
+				}
+			});
+		});
+		OVERRIDES.clear();
+		currentEvent = null;
+	}
 
-    public Item getItem() {
-        return item;
-    }
+	public Item getItem() {
+		return item;
+	}
 
-    public ItemModificationEvent setMaxStackSize(int size) {
-        overrides().put(DataComponents.MAX_STACK_SIZE, size);
-        return this;
-    }
+	public ItemModificationEvent setMaxStackSize(int size) {
+		overrides().put(DataComponents.MAX_STACK_SIZE, size);
+		return this;
+	}
 
-    public ItemModificationEvent setMaxDamage(int damage) {
-        overrides().put(DataComponents.MAX_DAMAGE, damage);
-        return this;
-    }
+	public ItemModificationEvent setMaxDamage(int damage) {
+		overrides().put(DataComponents.MAX_DAMAGE, damage);
+		return this;
+	}
 
-    public ItemModificationEvent setUnbreakable() {
-        overrides().put(DataComponents.UNBREAKABLE, Unit.INSTANCE);
-        return this;
-    }
+	public ItemModificationEvent setUnbreakable() {
+		overrides().put(DataComponents.UNBREAKABLE, Unit.INSTANCE);
+		return this;
+	}
 
-    public ItemModificationEvent setFood(FoodProperties food) {
-        overrides().put(DataComponents.FOOD, food);
-        return this;
-    }
+	public ItemModificationEvent setFood(FoodProperties food) {
+		overrides().put(DataComponents.FOOD, food);
+		return this;
+	}
 
-    public ItemModificationEvent setTool(Tool tool) {
-        overrides().put(DataComponents.TOOL, tool);
-        return this;
-    }
+	public ItemModificationEvent setTool(Tool tool) {
+		overrides().put(DataComponents.TOOL, tool);
+		return this;
+	}
 
-    public ItemModificationEvent setAttributeModifiers(ItemAttributeModifiers modifiers) {
-        overrides().put(DataComponents.ATTRIBUTE_MODIFIERS, modifiers);
-        return this;
-    }
+	public ItemModificationEvent setAttributeModifiers(ItemAttributeModifiers modifiers) {
+		overrides().put(DataComponents.ATTRIBUTE_MODIFIERS, modifiers);
+		return this;
+	}
 
-    private Map<DataComponentType<?>, Object> overrides() {
-        return OVERRIDES.computeIfAbsent(item, k -> new IdentityHashMap<>());
-    }
+	private Map<DataComponentType<?>, Object> overrides() {
+		return OVERRIDES.computeIfAbsent(item, k -> new IdentityHashMap<>());
+	}
 }

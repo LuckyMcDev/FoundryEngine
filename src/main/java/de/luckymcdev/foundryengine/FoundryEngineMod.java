@@ -99,284 +99,286 @@ import java.util.List;
  */
 @Mod(value = Common.MODID)
 public class FoundryEngineMod {
-    private static final Logger LOGGER = LogUtils.getLogger();
-    private static final IEventBus BUS = NeoForge.EVENT_BUS;
-    public static @Nullable ArtifactVersion modVersion;
-    private static @Nullable IEventBus modBus;
+	private static final Logger LOGGER = LogUtils.getLogger();
+	private static final IEventBus BUS = NeoForge.EVENT_BUS;
+	public static @Nullable ArtifactVersion modVersion;
+	private static @Nullable IEventBus modBus;
 
-    public FoundryEngineMod(IEventBus modBus, ModContainer modContainer) {
-        FoundryEngineMod.modBus = modBus;
-        FoundryEngineMod.modVersion = modContainer.getModInfo().getVersion();
+	public FoundryEngineMod(IEventBus modBus, ModContainer modContainer) {
+		FoundryEngineMod.modBus = modBus;
+		FoundryEngineMod.modVersion = modContainer.getModInfo().getVersion();
 
-        registerModBus(modBus);
-        registerInternalEvents();
-        registerModEventHandlers(modBus);
-        registerNeoForgeEventHandlers();
+		registerModBus(modBus);
+		registerInternalEvents();
+		registerModEventHandlers(modBus);
+		registerNeoForgeEventHandlers();
 
-        Config.registerCommon(modContainer);
-        Config.registerStartup(modContainer);
+		Config.registerCommon(modContainer);
+		Config.registerStartup(modContainer);
 
-        if (StartupConfig.CLEAR_DATA_CACHE.get()) {
-            try {
-                FileUtils.deleteDirectory(BundleDataGenerator.OUTPUT_ROOT.toFile());
-            } catch (IOException e) {
-                LOGGER.error("Could not clear Data Cache.");
-            }
-            StartupConfig.CLEAR_DATA_CACHE.set(false);
-        }
+		if (StartupConfig.CLEAR_DATA_CACHE.get()) {
+			try {
+				FileUtils.deleteDirectory(BundleDataGenerator.OUTPUT_ROOT.toFile());
+			} catch (IOException e) {
+				LOGGER.error("Could not clear Data Cache.");
+			}
+			StartupConfig.CLEAR_DATA_CACHE.set(false);
+		}
 
-        LOGGER.info("""
-                        
-                        ███████╗███████╗
-                        ██╔════╝██╔════╝  Foundry Engine {}
-                        █████╗  █████╗    Running on NeoForge {}
-                        ██╔══╝  ██╔══╝    Minecraft {}
-                        ██║     ███████╗  Platform {}
-                        ╚═╝     ╚══════╝""",
-                modVersion,
-                NeoForgeVersion.getVersion(),
-                SharedConstants.getCurrentVersion().name(),
-                Util.getPlatform().name());
-    }
+		LOGGER.info("""
+				
+				███████╗███████╗
+				██╔════╝██╔════╝  Foundry Engine {}
+				█████╗  █████╗    Running on NeoForge {}
+				██╔══╝  ██╔══╝    Minecraft {}
+				██║     ███████╗  Platform {}
+				╚═╝     ╚══════╝""",
+			modVersion,
+			NeoForgeVersion.getVersion(),
+			SharedConstants.getCurrentVersion().name(),
+			Util.getPlatform().name());
+	}
 
-    /**
-     * Returns the mod event bus for internal use.
-     */
-    @ApiStatus.Internal
-    public static @Nullable IEventBus getModBus() {
-        return modBus;
-    }
+	/**
+	 * Returns the mod event bus for internal use.
+	 */
+	@ApiStatus.Internal
+	public static @Nullable IEventBus getModBus() {
+		return modBus;
+	}
 
-    private void registerModBus(IEventBus modBus) {
-        Common.getGameStageHandler().register(modBus);
-    }
+	private void registerModBus(IEventBus modBus) {
+		Common.getGameStageHandler().register(modBus);
+	}
 
-    private void registerInternalEvents() {
-        BlockEvents.Internal.register(BUS);
-        BundleEvents.Internal.register(BUS);
-        ClientEvents.Internal.register(BUS);
-        CommandEvents.Internal.register(BUS);
-        EntityEvents.Internal.register(BUS);
-        ItemEvents.Internal.register(BUS);
-        LevelEvents.Internal.register(BUS);
-        NetworkEvents.Internal.register(BUS);
-        PlayerEvents.Internal.register(BUS);
-        RecipeEvents.Internal.register(BUS);
-        ServerEvents.Internal.register(BUS);
-        StageEvents.Internal.register(BUS);
-        GameEvents.Internal.register(BUS);
-        SlotEvents.Internal.register(BUS);
-        AreaEvents.Internal.register(BUS);
-        DialogueEvents.Internal.register(BUS);
-    }
+	private void registerInternalEvents() {
+		BlockEvents.Internal.register(BUS);
+		BundleEvents.Internal.register(BUS);
+		ClientEvents.Internal.register(BUS);
+		CommandEvents.Internal.register(BUS);
+		EntityEvents.Internal.register(BUS);
+		ItemEvents.Internal.register(BUS);
+		LevelEvents.Internal.register(BUS);
+		NetworkEvents.Internal.register(BUS);
+		PlayerEvents.Internal.register(BUS);
+		RecipeEvents.Internal.register(BUS);
+		ServerEvents.Internal.register(BUS);
+		StageEvents.Internal.register(BUS);
+		GameEvents.Internal.register(BUS);
+		SlotEvents.Internal.register(BUS);
+		AreaEvents.Internal.register(BUS);
+		DialogueEvents.Internal.register(BUS);
+	}
 
-    private void registerModEventHandlers(IEventBus modBus) {
-        modBus.addListener(EventPriority.LOWEST, this::onRegisterEvent);
-        modBus.addListener(this::onCommonSetup);
-        modBus.addListener(this::onConstruct);
-        modBus.addListener(this::onAddPackFinders);
-        modBus.addListener(this::onRegisterPayloadHandlers);
-        modBus.addListener(this::onClientSetup);
-        modBus.addListener(this::onDedicatedServerSetup);
-        modBus.addListener(this::onPostInit);
-        modBus.addListener(EventPriority.LOWEST, this::onLoadComplete);
-        modBus.addListener(this::onItemModification);
-        modBus.addListener(this::onEngineRegister);
-        modBus.addListener(Config::onLoad);
-        modBus.addListener(Config::onReload);
-    }
+	private void registerModEventHandlers(IEventBus modBus) {
+		modBus.addListener(EventPriority.LOWEST, this::onRegisterEvent);
+		modBus.addListener(this::onCommonSetup);
+		modBus.addListener(this::onConstruct);
+		modBus.addListener(this::onAddPackFinders);
+		modBus.addListener(this::onRegisterPayloadHandlers);
+		modBus.addListener(this::onClientSetup);
+		modBus.addListener(this::onDedicatedServerSetup);
+		modBus.addListener(this::onPostInit);
+		modBus.addListener(EventPriority.LOWEST, this::onLoadComplete);
+		modBus.addListener(this::onItemModification);
+		modBus.addListener(this::onEngineRegister);
+		modBus.addListener(Config::onLoad);
+		modBus.addListener(Config::onReload);
+	}
 
-    private void registerNeoForgeEventHandlers() {
-        BUS.addListener(this::onRegisterCommands);
-        BUS.addListener(this::onServerAboutToStart);
-        BUS.addListener(this::onServerStarting);
-        BUS.addListener(this::onServerStarted);
-        BUS.addListener(this::onServerStopping);
-        BUS.addListener(this::onServerTick);
+	private void registerNeoForgeEventHandlers() {
+		BUS.addListener(this::onRegisterCommands);
+		BUS.addListener(this::onServerAboutToStart);
+		BUS.addListener(this::onServerStarting);
+		BUS.addListener(this::onServerStarted);
+		BUS.addListener(this::onServerStopping);
+		BUS.addListener(this::onServerTick);
 
-        BUS.addListener(this::onLevelTick);
+		BUS.addListener(this::onLevelTick);
 
-        BUS.addListener(this::onPlayerDisconnect);
-        BUS.addListener(this::onPlayerChangedDimension);
-    }
+		BUS.addListener(this::onPlayerDisconnect);
+		BUS.addListener(this::onPlayerChangedDimension);
+	}
 
-    private void onRegisterEvent(RegisterEvent event) {
-        event.register(Registries.CHUNK_GENERATOR, helper -> {
-            helper.register(Common.id("void"), VoidChunkGenerator.CODEC);
-            helper.register(Common.id("transient"), TransientChunkGenerator.CODEC);
-        });
-    }
+	private void onRegisterEvent(RegisterEvent event) {
+		event.register(Registries.CHUNK_GENERATOR, helper -> {
+			helper.register(Common.id("void"), VoidChunkGenerator.CODEC);
+			helper.register(Common.id("transient"), TransientChunkGenerator.CODEC);
+		});
+	}
 
-    private void onEngineRegister(RegisterEvent event) {
-        if (modBus == null) return;
-        RegistryCollector collector = new RegistryCollector();
-        Common.setRegistryCollector(collector);
-        RegistryEvent registryEvent = new RegistryEvent(event, collector);
-        modBus.post(registryEvent);
-        BundleEvents.Internal.postRegistry(registryEvent);
-    }
+	private void onEngineRegister(RegisterEvent event) {
+		if (modBus == null) {
+			return;
+		}
+		RegistryCollector collector = new RegistryCollector();
+		Common.setRegistryCollector(collector);
+		RegistryEvent registryEvent = new RegistryEvent(event, collector);
+		modBus.post(registryEvent);
+		BundleEvents.Internal.postRegistry(registryEvent);
+	}
 
-    private void onConstruct(FMLConstructModEvent event) {
-        try {
-            Common.getBundleManager().discover(Common.BUNDLES);
-        } catch (IOException e) {
-            LOGGER.error("Error while loading bundles: {}", e);
-        }
+	private void onConstruct(FMLConstructModEvent event) {
+		try {
+			Common.getBundleManager().discover(Common.BUNDLES);
+		} catch (IOException e) {
+			LOGGER.error("Error while loading bundles: {}", e);
+		}
 
-        EngineLogAppender.Holder.addAppender();
-    }
+		EngineLogAppender.Holder.addAppender();
+	}
 
-    private void onCommonSetup(FMLCommonSetupEvent event) {
-        BundleEvents.Internal.postCommonSetup(event);
-        BundleDataGenerator.runAll();
+	private void onCommonSetup(FMLCommonSetupEvent event) {
+		BundleEvents.Internal.postCommonSetup(event);
+		BundleDataGenerator.runAll();
 
-        var network = Common.getNetworkManager();
-        network.register(TestPacket.DEFINITION);
-        network.register(ServerBoundSetTimePacket.DEFINITION);
-        network.register(ServerBoundChangeWeatherPacket.DEFINITION);
-        network.register(ServerBoundExplorerPacket.DEFINITION);
-        network.register(ClientBoundExplorerPacket.DEFINITION);
-        network.register(ServerBoundTeleportPacket.DEFINITION);
-        network.register(ServerBoundSpawnEntityPacket.DEFINITION);
-        network.register(BundleHashPacket.DEFINITION);
-        network.register(CutscenePacket.DEFINITION);
-        network.register(ScreenEffectPacket.DEFINITION);
-        network.register(CutsceneCommandPacket.DEFINITION);
-        network.register(GiveItemPacket.DEFINITION);
-        network.register(LinearizeCutscenePacket.DEFINITION);
-        network.register(AreaPacket.DEFINITION);
-        network.register(WaypointPacket.DEFINITION);
-        network.register(SavedDataSyncPacket.DEFINITION);
-        network.register(ClientboundDialoguePacket.DEFINITION);
-        network.register(ServerboundDialoguePacket.DEFINITION);
-        network.register(DialogueSavePacket.DEFINITION);
-    }
+		var network = Common.getNetworkManager();
+		network.register(TestPacket.DEFINITION);
+		network.register(ServerBoundSetTimePacket.DEFINITION);
+		network.register(ServerBoundChangeWeatherPacket.DEFINITION);
+		network.register(ServerBoundExplorerPacket.DEFINITION);
+		network.register(ClientBoundExplorerPacket.DEFINITION);
+		network.register(ServerBoundTeleportPacket.DEFINITION);
+		network.register(ServerBoundSpawnEntityPacket.DEFINITION);
+		network.register(BundleHashPacket.DEFINITION);
+		network.register(CutscenePacket.DEFINITION);
+		network.register(ScreenEffectPacket.DEFINITION);
+		network.register(CutsceneCommandPacket.DEFINITION);
+		network.register(GiveItemPacket.DEFINITION);
+		network.register(LinearizeCutscenePacket.DEFINITION);
+		network.register(AreaPacket.DEFINITION);
+		network.register(WaypointPacket.DEFINITION);
+		network.register(SavedDataSyncPacket.DEFINITION);
+		network.register(ClientboundDialoguePacket.DEFINITION);
+		network.register(ServerboundDialoguePacket.DEFINITION);
+		network.register(DialogueSavePacket.DEFINITION);
+	}
 
-    private void onClientSetup(FMLClientSetupEvent event) {
-        BundleEvents.Internal.postClientSetup(event);
-    }
+	private void onClientSetup(FMLClientSetupEvent event) {
+		BundleEvents.Internal.postClientSetup(event);
+	}
 
-    private void onDedicatedServerSetup(FMLDedicatedServerSetupEvent event) {
-        BundleEvents.Internal.postDedicatedServerSetup(event);
-    }
+	private void onDedicatedServerSetup(FMLDedicatedServerSetupEvent event) {
+		BundleEvents.Internal.postDedicatedServerSetup(event);
+	}
 
-    private void onPostInit(InterModProcessEvent event) {
-        BundleEvents.Internal.postPostInit(event);
-    }
+	private void onPostInit(InterModProcessEvent event) {
+		BundleEvents.Internal.postPostInit(event);
+	}
 
-    private void onAddPackFinders(AddPackFindersEvent event) {
-        PackType type = event.getPackType();
-        var bundlesRepo = new DynamicPackRepository(
-                type,
-                "foundryengine/bundles",
-                "FoundryEngine: Bundles",
-                "Foundry Engine Bundle Resource Files",
-                () -> Common.getBundleManager().getBundles().stream()
-                        .map(b -> type == PackType.CLIENT_RESOURCES
-                                ? b.bundleFiles().assets()
-                                : b.bundleFiles().data())
-                        .filter(Files::exists)
-                        .toList(),
-                Pack.Position.TOP,
-                false
-        );
-        var bundlesGeneratedRepo = new DynamicPackRepository(
-                type,
-                "foundryengine/bundles_generated",
-                "FoundryEngine: Generated",
-                "Foundry Engine Generated Resource Files",
-                () -> {
-                    Path path = type == PackType.CLIENT_RESOURCES
-                            ? BundleDataGenerator.getGeneratedAssetsPath()
-                            : BundleDataGenerator.getGeneratedDataPath();
-                    return Files.exists(path) ? List.of(path) : List.of();
-                },
-                Pack.Position.BOTTOM,
-                true
-        );
-        event.addRepositorySource(bundlesRepo);
-        event.addRepositorySource(bundlesGeneratedRepo);
-    }
+	private void onAddPackFinders(AddPackFindersEvent event) {
+		PackType type = event.getPackType();
+		var bundlesRepo = new DynamicPackRepository(
+			type,
+			"foundryengine/bundles",
+			"FoundryEngine: Bundles",
+			"Foundry Engine Bundle Resource Files",
+			() -> Common.getBundleManager().getBundles().stream()
+				.map(b -> type == PackType.CLIENT_RESOURCES
+					? b.bundleFiles().assets()
+					: b.bundleFiles().data())
+				.filter(Files::exists)
+				.toList(),
+			Pack.Position.TOP,
+			false
+		);
+		var bundlesGeneratedRepo = new DynamicPackRepository(
+			type,
+			"foundryengine/bundles_generated",
+			"FoundryEngine: Generated",
+			"Foundry Engine Generated Resource Files",
+			() -> {
+				Path path = type == PackType.CLIENT_RESOURCES
+					? BundleDataGenerator.getGeneratedAssetsPath()
+					: BundleDataGenerator.getGeneratedDataPath();
+				return Files.exists(path) ? List.of(path) : List.of();
+			},
+			Pack.Position.BOTTOM,
+			true
+		);
+		event.addRepositorySource(bundlesRepo);
+		event.addRepositorySource(bundlesGeneratedRepo);
+	}
 
-    private void onRegisterPayloadHandlers(RegisterPayloadHandlersEvent event) {
-        Common.getNetworkManager().handleRegistration(event);
-    }
+	private void onRegisterPayloadHandlers(RegisterPayloadHandlersEvent event) {
+		Common.getNetworkManager().handleRegistration(event);
+	}
 
-    private void onLoadComplete(FMLLoadCompleteEvent event) {
-        event.enqueueWork(() -> {
-            for (Block block : BuiltInRegistries.BLOCK) {
-                var e = new BlockModificationEvent(block);
-                BUS.post(e);
-            }
-        });
-    }
+	private void onLoadComplete(FMLLoadCompleteEvent event) {
+		event.enqueueWork(() -> {
+			for (Block block : BuiltInRegistries.BLOCK) {
+				var e = new BlockModificationEvent(block);
+				BUS.post(e);
+			}
+		});
+	}
 
-    private void onItemModification(ModifyDefaultComponentsEvent event) {
-        ItemModificationEvent.bind(event);
-        for (Item item : BuiltInRegistries.ITEM) {
-            var e = new ItemModificationEvent(item);
-            BUS.post(e);
-        }
-        ItemModificationEvent.flush();
-    }
+	private void onItemModification(ModifyDefaultComponentsEvent event) {
+		ItemModificationEvent.bind(event);
+		for (Item item : BuiltInRegistries.ITEM) {
+			var e = new ItemModificationEvent(item);
+			BUS.post(e);
+		}
+		ItemModificationEvent.flush();
+	}
 
-    private void onRegisterCommands(RegisterCommandsEvent event) {
-        FoundryCommands.registerAll(event.getDispatcher(), event.getBuildContext());
-    }
+	private void onRegisterCommands(RegisterCommandsEvent event) {
+		FoundryCommands.registerAll(event.getDispatcher(), event.getBuildContext());
+	}
 
-    private void onServerAboutToStart(ServerAboutToStartEvent event) {
-        Common.getBundleManager().setServer(event.getServer());
-    }
+	private void onServerAboutToStart(ServerAboutToStartEvent event) {
+		Common.getBundleManager().setServer(event.getServer());
+	}
 
-    private void onServerStarting(ServerStartingEvent event) {
-        Common.getSavedDataManager().load();
-        Common.getWaypointManager().load();
-        Common.getAreaManager().load();
-        Common.getCutsceneManager().load();
-        Common.getDialogueManager().load();
-        Common.getBundleManager().loadServerScripts();
-    }
+	private void onServerStarting(ServerStartingEvent event) {
+		Common.getSavedDataManager().load();
+		Common.getWaypointManager().load();
+		Common.getAreaManager().load();
+		Common.getCutsceneManager().load();
+		Common.getDialogueManager().load();
+		Common.getBundleManager().loadServerScripts();
+	}
 
-    private void onServerStarted(ServerStartedEvent event) {
-        event.getServer().getPlayerList().getPlayers().forEach(player -> {
-            Common.getSavedDataManager().syncToPlayer(player);
-        });
-    }
+	private void onServerStarted(ServerStartedEvent event) {
+		event.getServer().getPlayerList().getPlayers().forEach(player -> {
+			Common.getSavedDataManager().syncToPlayer(player);
+		});
+	}
 
-    private void onServerStopping(ServerStoppingEvent event) {
-        Common.getGameManager().stopAll();
-        Common.getWaypointManager().save();
-        Common.getAreaManager().save();
-        Common.getCutsceneManager().save();
-        Common.getDialogueManager().save();
-        Common.getSavedDataManager().save();
-        Common.getBundleManager().setServer(null);
-    }
+	private void onServerStopping(ServerStoppingEvent event) {
+		Common.getGameManager().stopAll();
+		Common.getWaypointManager().save();
+		Common.getAreaManager().save();
+		Common.getCutsceneManager().save();
+		Common.getDialogueManager().save();
+		Common.getSavedDataManager().save();
+		Common.getBundleManager().setServer(null);
+	}
 
-    private void onServerTick(ServerTickEvent.Post event) {
-        var server = event.getServer();
-        Common.getCutsceneSessionManager().tick(server);
-        Common.getGameStageHandler().onPlayerTick(event);
-        ServerScreenEffectManager.tick();
-        for (var level : server.getAllLevels()) {
-            Common.getGameManager().tickServer(server, level);
-        }
-    }
+	private void onServerTick(ServerTickEvent.Post event) {
+		var server = event.getServer();
+		Common.getCutsceneSessionManager().tick(server);
+		Common.getGameStageHandler().onPlayerTick(event);
+		ServerScreenEffectManager.tick();
+		for (var level : server.getAllLevels()) {
+			Common.getGameManager().tickServer(server, level);
+		}
+	}
 
-    private void onLevelTick(LevelTickEvent.Post event) {
-        Common.getGameManager().tickCommon(event.getLevel());
-        Common.getAreaManager().onLevelTick(event);
-    }
+	private void onLevelTick(LevelTickEvent.Post event) {
+		Common.getGameManager().tickCommon(event.getLevel());
+		Common.getAreaManager().onLevelTick(event);
+	}
 
-    private void onPlayerDisconnect(PlayerEvent.PlayerLoggedOutEvent event) {
-        if (event.getEntity() instanceof ServerPlayer player) {
-            Common.getDialogueManager().onPlayerDisconnect(player);
-        }
-    }
+	private void onPlayerDisconnect(PlayerEvent.PlayerLoggedOutEvent event) {
+		if (event.getEntity() instanceof ServerPlayer player) {
+			Common.getDialogueManager().onPlayerDisconnect(player);
+		}
+	}
 
-    private void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
-        if (event.getEntity() instanceof ServerPlayer player) {
-            Common.getSavedDataManager().syncToPlayer(player);
-        }
-    }
+	private void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
+		if (event.getEntity() instanceof ServerPlayer player) {
+			Common.getSavedDataManager().syncToPlayer(player);
+		}
+	}
 }

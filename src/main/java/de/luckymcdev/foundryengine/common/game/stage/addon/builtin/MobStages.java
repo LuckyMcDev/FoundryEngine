@@ -16,87 +16,87 @@ import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 public class MobStages extends StageAddon<EntityType<?>> {
 
 
-    @Override
-    protected String getObjectType() {
-        return "entity";
-    }
+	@Override
+	protected String getObjectType() {
+		return "entity";
+	}
 
-    @SubscribeEvent(priority = EventPriority.HIGH)
-    public void onMobSpawn(MobSpawnEvent.SpawnPlacementCheck event) {
-        EntityType<?> type = event.getEntityType();
+	@SubscribeEvent(priority = EventPriority.HIGH)
+	public void onMobSpawn(MobSpawnEvent.SpawnPlacementCheck event) {
+		EntityType<?> type = event.getEntityType();
 
-        if (isAccessible(type)) {
-            return;
-        }
+		if (isAccessible(type)) {
+			return;
+		}
 
-        event.setResult(MobSpawnEvent.SpawnPlacementCheck.Result.FAIL);
-    }
+		event.setResult(MobSpawnEvent.SpawnPlacementCheck.Result.FAIL);
+	}
 
-    @SubscribeEvent(priority = EventPriority.HIGH)
-    public void onAttackEntity(AttackEntityEvent event) {
-        Player player = event.getEntity();
-        Entity target = event.getTarget();
+	@SubscribeEvent(priority = EventPriority.HIGH)
+	public void onAttackEntity(AttackEntityEvent event) {
+		Player player = event.getEntity();
+		Entity target = event.getTarget();
 
-        if (!(target instanceof LivingEntity)) {
-            return;
-        }
+		if (!(target instanceof LivingEntity)) {
+			return;
+		}
 
-        EntityType<?> type = target.getType();
+		EntityType<?> type = target.getType();
 
-        if (!canAccess(player, type)) {
-            event.setCanceled(true);
-            player.sendSystemMessage(getMissingStagesMessage(player, type));
-        }
-    }
+		if (!canAccess(player, type)) {
+			event.setCanceled(true);
+			player.sendSystemMessage(getMissingStagesMessage(player, type));
+		}
+	}
 
-    @SubscribeEvent(priority = EventPriority.HIGH)
-    public void onEntityInteract(PlayerInteractEvent.EntityInteract event) {
-        Player player = event.getEntity();
-        Entity target = event.getTarget();
+	@SubscribeEvent(priority = EventPriority.HIGH)
+	public void onEntityInteract(PlayerInteractEvent.EntityInteract event) {
+		Player player = event.getEntity();
+		Entity target = event.getTarget();
 
-        if (!(target instanceof LivingEntity)) {
-            return;
-        }
+		if (!(target instanceof LivingEntity)) {
+			return;
+		}
 
-        EntityType<?> type = target.getType();
+		EntityType<?> type = target.getType();
 
-        if (!canAccess(player, type)) {
-            event.setCanceled(true);
-            player.sendSystemMessage(getMissingStagesMessage(player, type));
-        }
-    }
+		if (!canAccess(player, type)) {
+			event.setCanceled(true);
+			player.sendSystemMessage(getMissingStagesMessage(player, type));
+		}
+	}
 
-    @SubscribeEvent(priority = EventPriority.HIGH)
-    public void onMobTarget(LivingChangeTargetEvent event) {
-        LivingEntity entity = event.getEntity();
-        LivingEntity newTarget = event.getNewAboutToBeSetTarget();
+	@SubscribeEvent(priority = EventPriority.HIGH)
+	public void onMobTarget(LivingChangeTargetEvent event) {
+		LivingEntity entity = event.getEntity();
+		LivingEntity newTarget = event.getNewAboutToBeSetTarget();
 
-        if (!(newTarget instanceof Player player)) {
-            return;
-        }
+		if (!(newTarget instanceof Player player)) {
+			return;
+		}
 
-        EntityType<?> type = entity.getType();
+		EntityType<?> type = entity.getType();
 
-        if (!canAccess(player, type)) {
-            event.setCanceled(true);
-        }
-    }
+		if (!canAccess(player, type)) {
+			event.setCanceled(true);
+		}
+	}
 
-    @SubscribeEvent(priority = EventPriority.NORMAL)
-    public void onMobTick(MobDespawnEvent event) {
-        LivingEntity entity = event.getEntity();
-        EntityType<?> type = entity.getType();
+	@SubscribeEvent(priority = EventPriority.NORMAL)
+	public void onMobTick(MobDespawnEvent event) {
+		LivingEntity entity = event.getEntity();
+		EntityType<?> type = entity.getType();
 
-        if (isAccessible(type)) {
-            return;
-        }
+		if (isAccessible(type)) {
+			return;
+		}
 
-        boolean anyPlayerCanSee = entity.level().players().stream()
-                .filter(player -> player.distanceToSqr(entity) < 64 * 64)
-                .anyMatch(player -> canAccess(player, type));
+		boolean anyPlayerCanSee = entity.level().players().stream()
+			.filter(player -> player.distanceToSqr(entity) < 64 * 64)
+			.anyMatch(player -> canAccess(player, type));
 
-        if (!anyPlayerCanSee) {
-            event.setResult(MobDespawnEvent.Result.ALLOW);
-        }
-    }
+		if (!anyPlayerCanSee) {
+			event.setResult(MobDespawnEvent.Result.ALLOW);
+		}
+	}
 }

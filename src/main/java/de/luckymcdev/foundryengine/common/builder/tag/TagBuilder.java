@@ -13,6 +13,7 @@ import java.util.List;
 
 /**
  * Use {@link BlockTagBuilder} and {@link ItemTagBuilder} or this with a Wildcard if you know what you're doing
+ *
  * @param <T> the Type
  */
 public class TagBuilder<T> extends AbstractBuilder<TagKey<T>> {

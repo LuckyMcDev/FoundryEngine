@@ -59,7 +59,9 @@ public class NodeEditorInstance<T> {
 	}
 
 	private void removeNode(Node<T> node) {
-		if (node == root) return; // don't remove root
+		if (node == root) {
+			return; // don't remove root
+		}
 		// Remove all pins of this node
 		for (var pin : node.inputPins) {
 			pins.remove(pin.id);
@@ -115,7 +117,7 @@ public class NodeEditorInstance<T> {
 			ImNodes.beginNodeTitleBar();
 
 			if (node.builder != null) {
-				if (ImGui.button(" "+ImIcons.CLOSE+" ")) {
+				if (ImGui.button(" " + ImIcons.CLOSE + " ")) {
 					removedNode = node;
 				}
 				ImGui.sameLine();

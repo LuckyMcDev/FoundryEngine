@@ -12,9 +12,9 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(ShaderManager.class)
 public interface ShaderLoaderAccessor {
 
-    @Accessor("postChainProjection")
-    Projection engine$getProjection();
+	@Accessor("postChainProjection")
+	Projection engine$getProjection();
 
-    @Accessor("postChainProjectionMatrixBuffer")
-    ProjectionMatrixBuffer engine$getProjectionMatrixBuffer();
+	@Accessor("postChainProjectionMatrixBuffer")
+	ProjectionMatrixBuffer engine$getProjectionMatrixBuffer();
 }

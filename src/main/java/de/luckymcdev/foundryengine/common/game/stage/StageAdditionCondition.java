@@ -7,5 +7,5 @@ import net.minecraft.world.entity.player.Player;
  */
 @FunctionalInterface
 public interface StageAdditionCondition {
-    boolean test(Player player);
+	boolean test(Player player);
 }

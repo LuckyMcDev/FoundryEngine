@@ -11,27 +11,27 @@ import org.jspecify.annotations.NonNull;
 import java.util.function.BooleanSupplier;
 
 public class CustomLevel extends RuntimeLevel {
-    private final RecipeManager recipeManager;
-    private long dynSeed;
+	private final RecipeManager recipeManager;
+	private long dynSeed;
 
-    public CustomLevel(MinecraftServer server, ResourceKey<Level> registryKey, RuntimeLevelConfig config, RuntimeLevel.Style style) {
-        super(server, registryKey, config, style);
-        this.recipeManager = new RecipeManager(server.registryAccess());
-    }
+	public CustomLevel(MinecraftServer server, ResourceKey<Level> registryKey, RuntimeLevelConfig config, RuntimeLevel.Style style) {
+		super(server, registryKey, config, style);
+		this.recipeManager = new RecipeManager(server.registryAccess());
+	}
 
-    @Override
-    public void tick(@NonNull BooleanSupplier shouldKeepTicking) {
-        this.dynSeed = this.random.nextLong();
-        super.tick(shouldKeepTicking);
-    }
+	@Override
+	public void tick(@NonNull BooleanSupplier shouldKeepTicking) {
+		this.dynSeed = this.random.nextLong();
+		super.tick(shouldKeepTicking);
+	}
 
-    @Override
-    public @NonNull RecipeManager recipeAccess() {
-        return this.recipeManager;
-    }
+	@Override
+	public @NonNull RecipeManager recipeAccess() {
+		return this.recipeManager;
+	}
 
-    @Override
-    public long getSeed() {
-        return this.dynSeed;
-    }
+	@Override
+	public long getSeed() {
+		return this.dynSeed;
+	}
 }

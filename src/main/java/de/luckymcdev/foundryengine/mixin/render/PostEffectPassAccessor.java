@@ -13,6 +13,6 @@ import java.util.Map;
 @Mixin(PostPass.class)
 public interface PostEffectPassAccessor {
 
-    @Accessor("customUniforms")
-    Map<String, GpuBuffer> engine$getUniformBuffers();
+	@Accessor("customUniforms")
+	Map<String, GpuBuffer> engine$getUniformBuffers();
 }

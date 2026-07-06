@@ -16,173 +16,173 @@ import java.util.List;
 import java.util.Map;
 
 public class ObjParser {
-    private final List<Vector3f> vertices = new ArrayList<>();
-    private final List<Vector3f> normals = new ArrayList<>();
-    private final List<Vector2f> uvs = new ArrayList<>();
-    private final List<Face> faces = new ArrayList<>();
-    private final Map<String, ObjObject> objects = new LinkedHashMap<>();
-    private final Map<String, Material> materials = new LinkedHashMap<>();
+	private final List<Vector3f> vertices = new ArrayList<>();
+	private final List<Vector3f> normals = new ArrayList<>();
+	private final List<Vector2f> uvs = new ArrayList<>();
+	private final List<Face> faces = new ArrayList<>();
+	private final Map<String, ObjObject> objects = new LinkedHashMap<>();
+	private final Map<String, Material> materials = new LinkedHashMap<>();
 
-    private ObjObject currentObject;
-    private String currentObjectName = "default";
-    private Material currentMaterial = Material.MISSING;
-    private Identifier objLocation;
+	private ObjObject currentObject;
+	private String currentObjectName = "default";
+	private Material currentMaterial = Material.MISSING;
+	private Identifier objLocation;
 
-    public void parseObjFile(Resource resource) throws IOException {
-        parseObjFile(null, resource);
-    }
+	public void parseObjFile(Resource resource) throws IOException {
+		parseObjFile(null, resource);
+	}
 
-    public void parseObjFile(Identifier objLocation, Resource resource) throws IOException {
-        this.objLocation = objLocation;
-        currentObject = new ObjObject(currentObjectName);
-        objects.put(currentObjectName, currentObject);
+	public void parseObjFile(Identifier objLocation, Resource resource) throws IOException {
+		this.objLocation = objLocation;
+		currentObject = new ObjObject(currentObjectName);
+		objects.put(currentObjectName, currentObject);
 
-        InputStream inputStream = resource.open();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+		InputStream inputStream = resource.open();
+		BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
-        String line;
-        while ((line = reader.readLine()) != null) {
-            line = line.trim();
-            if (line.isEmpty() || line.startsWith("#")) {
-                continue;
-            }
-            if (line.startsWith("o ")) {
-                parseO(line);
-            } else if (line.startsWith("v ")) {
-                parseV(line);
-            } else if (line.startsWith("vn ")) {
-                parseVn(line);
-            } else if (line.startsWith("vt ")) {
-                parseVt(line);
-            } else if (line.startsWith("f ")) {
-                parseF(line);
-            } else if (line.startsWith("mtllib ")) {
-                parseMtllib(line);
-            } else if (line.startsWith("usemtl ")) {
-                parseUsemtl(line);
-            }
-        }
-        reader.close();
-    }
+		String line;
+		while ((line = reader.readLine()) != null) {
+			line = line.trim();
+			if (line.isEmpty() || line.startsWith("#")) {
+				continue;
+			}
+			if (line.startsWith("o ")) {
+				parseO(line);
+			} else if (line.startsWith("v ")) {
+				parseV(line);
+			} else if (line.startsWith("vn ")) {
+				parseVn(line);
+			} else if (line.startsWith("vt ")) {
+				parseVt(line);
+			} else if (line.startsWith("f ")) {
+				parseF(line);
+			} else if (line.startsWith("mtllib ")) {
+				parseMtllib(line);
+			} else if (line.startsWith("usemtl ")) {
+				parseUsemtl(line);
+			}
+		}
+		reader.close();
+	}
 
-    private void parseO(String line) {
-        String[] tokens = line.split("\\s+", 2);
-        currentObjectName = tokens.length > 1 ? tokens[1] : "unnamed";
-        currentObject = objects.get(currentObjectName);
+	private void parseO(String line) {
+		String[] tokens = line.split("\\s+", 2);
+		currentObjectName = tokens.length > 1 ? tokens[1] : "unnamed";
+		currentObject = objects.get(currentObjectName);
 
-        if (currentObject == null) {
-            currentObject = new ObjObject(currentObjectName);
-            objects.put(currentObjectName, currentObject);
-        }
-    }
+		if (currentObject == null) {
+			currentObject = new ObjObject(currentObjectName);
+			objects.put(currentObjectName, currentObject);
+		}
+	}
 
-    private void parseV(String line) {
-        String[] tokens = line.split("\\s+");
-        float x = Float.parseFloat(tokens[1]);
-        float y = Float.parseFloat(tokens[2]);
-        float z = Float.parseFloat(tokens[3]);
-        vertices.add(new Vector3f(x, y, z));
-    }
+	private void parseV(String line) {
+		String[] tokens = line.split("\\s+");
+		float x = Float.parseFloat(tokens[1]);
+		float y = Float.parseFloat(tokens[2]);
+		float z = Float.parseFloat(tokens[3]);
+		vertices.add(new Vector3f(x, y, z));
+	}
 
-    private void parseVn(String line) {
-        String[] tokens = line.split("\\s+");
-        float x = Float.parseFloat(tokens[1]);
-        float y = Float.parseFloat(tokens[2]);
-        float z = Float.parseFloat(tokens[3]);
-        normals.add(new Vector3f(x, y, z));
-    }
+	private void parseVn(String line) {
+		String[] tokens = line.split("\\s+");
+		float x = Float.parseFloat(tokens[1]);
+		float y = Float.parseFloat(tokens[2]);
+		float z = Float.parseFloat(tokens[3]);
+		normals.add(new Vector3f(x, y, z));
+	}
 
-    private void parseVt(String line) {
-        String[] tokens = line.split("\\s+");
-        float u = Float.parseFloat(tokens[1]);
-        float v = Float.parseFloat(tokens[2]);
-        uvs.add(new Vector2f(u, v));
-    }
+	private void parseVt(String line) {
+		String[] tokens = line.split("\\s+");
+		float u = Float.parseFloat(tokens[1]);
+		float v = Float.parseFloat(tokens[2]);
+		uvs.add(new Vector2f(u, v));
+	}
 
-    private void parseF(String line) {
-        Face face = getFace(line);
-        faces.add(face);
-        currentObject.addFace(face);
-    }
+	private void parseF(String line) {
+		Face face = getFace(line);
+		faces.add(face);
+		currentObject.addFace(face);
+	}
 
-    private void parseMtllib(String line) {
-        if (objLocation == null) {
-            Common.LOGGER.warn("mtllib directive found but no objLocation was provided to parseObjFile — skipping: {}", line);
-            return;
-        }
-        String[] tokens = line.split("\\s+", 2);
-        if (tokens.length < 2) {
-            return;
-        }
-        for (String ref : tokens[1].trim().split("\\s+")) {
-            MtlParser.loadFromObj(objLocation, ref).ifPresent(materials::putAll);
-        }
-    }
+	private void parseMtllib(String line) {
+		if (objLocation == null) {
+			Common.LOGGER.warn("mtllib directive found but no objLocation was provided to parseObjFile — skipping: {}", line);
+			return;
+		}
+		String[] tokens = line.split("\\s+", 2);
+		if (tokens.length < 2) {
+			return;
+		}
+		for (String ref : tokens[1].trim().split("\\s+")) {
+			MtlParser.loadFromObj(objLocation, ref).ifPresent(materials::putAll);
+		}
+	}
 
-    private void parseUsemtl(String line) {
-        String[] tokens = line.split("\\s+", 2);
-        String name = tokens.length > 1 ? tokens[1].trim() : "";
-        currentMaterial = materials.getOrDefault(name, Material.MISSING);
-        if (currentMaterial == Material.MISSING && !name.isEmpty()) {
-            Common.LOGGER.warn("usemtl referenced unknown material '{}' — using default", name);
-        }
-    }
+	private void parseUsemtl(String line) {
+		String[] tokens = line.split("\\s+", 2);
+		String name = tokens.length > 1 ? tokens[1].trim() : "";
+		currentMaterial = materials.getOrDefault(name, Material.MISSING);
+		if (currentMaterial == Material.MISSING && !name.isEmpty()) {
+			Common.LOGGER.warn("usemtl referenced unknown material '{}' — using default", name);
+		}
+	}
 
-    private Face getFace(String line) {
-        String[] tokens = line.trim().split("\\s+");
-        List<Vertex> faceVertices = new ArrayList<>();
+	private Face getFace(String line) {
+		String[] tokens = line.trim().split("\\s+");
+		List<Vertex> faceVertices = new ArrayList<>();
 
-        for (int i = 1; i < tokens.length; i++) {
-            String[] parts = tokens[i].split("/");
+		for (int i = 1; i < tokens.length; i++) {
+			String[] parts = tokens[i].split("/");
 
-            int vertexIndex = Integer.parseInt(parts[0]) - 1;
-            int textureIndex = (parts.length > 1 && !parts[1].isEmpty()) ? Integer.parseInt(parts[1]) - 1 : -1;
-            int normalIndex = (parts.length > 2 && !parts[2].isEmpty()) ? Integer.parseInt(parts[2]) - 1 : -1;
+			int vertexIndex = Integer.parseInt(parts[0]) - 1;
+			int textureIndex = (parts.length > 1 && !parts[1].isEmpty()) ? Integer.parseInt(parts[1]) - 1 : -1;
+			int normalIndex = (parts.length > 2 && !parts[2].isEmpty()) ? Integer.parseInt(parts[2]) - 1 : -1;
 
-            Vector3f position = safeGetVertex(vertexIndex);
-            Vector3f normal = safeGetNormal(normalIndex);
-            Vector2f uv = safeGetUV(textureIndex);
+			Vector3f position = safeGetVertex(vertexIndex);
+			Vector3f normal = safeGetNormal(normalIndex);
+			Vector2f uv = safeGetUV(textureIndex);
 
-            faceVertices.add(new Vertex(position, normal, uv));
-        }
+			faceVertices.add(new Vertex(position, normal, uv));
+		}
 
-        return new Face(faceVertices, currentMaterial);
-    }
+		return new Face(faceVertices, currentMaterial);
+	}
 
-    private Vector3f safeGetNormal(int index) {
-        if (index >= 0 && index < normals.size()) {
-            return normals.get(index);
-        }
-        return new Vector3f(0, 0, 0);
-    }
+	private Vector3f safeGetNormal(int index) {
+		if (index >= 0 && index < normals.size()) {
+			return normals.get(index);
+		}
+		return new Vector3f(0, 0, 0);
+	}
 
-    private Vector2f safeGetUV(int index) {
-        if (index >= 0 && index < uvs.size()) {
-            return uvs.get(index);
-        }
-        return new Vector2f(0, 0);
-    }
+	private Vector2f safeGetUV(int index) {
+		if (index >= 0 && index < uvs.size()) {
+			return uvs.get(index);
+		}
+		return new Vector2f(0, 0);
+	}
 
-    private Vector3f safeGetVertex(int index) {
-        if (index >= 0 && index < vertices.size()) {
-            return vertices.get(index);
-        }
-        throw new IllegalArgumentException("Invalid vertex index: " + index);
-    }
+	private Vector3f safeGetVertex(int index) {
+		if (index >= 0 && index < vertices.size()) {
+			return vertices.get(index);
+		}
+		throw new IllegalArgumentException("Invalid vertex index: " + index);
+	}
 
-    public List<Face> getFaces() {
-        return faces;
-    }
+	public List<Face> getFaces() {
+		return faces;
+	}
 
-    public Map<String, ObjObject> getObjects() {
-        return objects;
-    }
+	public Map<String, ObjObject> getObjects() {
+		return objects;
+	}
 
-    public ObjObject getObject(String name) {
-        return objects.get(name);
-    }
+	public ObjObject getObject(String name) {
+		return objects.get(name);
+	}
 
-    public Map<String, Material> getMaterials() {
-        return materials;
-    }
+	public Map<String, Material> getMaterials() {
+		return materials;
+	}
 }

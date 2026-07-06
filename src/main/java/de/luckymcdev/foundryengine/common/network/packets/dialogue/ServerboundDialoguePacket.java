@@ -14,76 +14,80 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
  * Carries a SELECT_OPTION / ADVANCE_NEXT / END action and an optional optionId.
  */
 public record ServerboundDialoguePacket(
-        Action action,
-        String optionId
+	Action action,
+	String optionId
 ) implements AbstractPacket<ServerboundDialoguePacket> {
 
-    public static final Type<ServerboundDialoguePacket> TYPE = AbstractPacket.createType(Common.id("dialogue_server"));
-    public static final StreamCodec<RegistryFriendlyByteBuf, ServerboundDialoguePacket> CODEC = StreamCodec.composite(
-            ByteBufCodecs.VAR_INT.map(Action::fromOrdinal, Action::ordinal), ServerboundDialoguePacket::action,
-            ByteBufCodecs.STRING_UTF8, ServerboundDialoguePacket::optionId,
-            ServerboundDialoguePacket::new
-    );
-    public static final Definition<ServerboundDialoguePacket> DEFINITION = new Definition<>(
-            TYPE,
-            PacketBounds.SERVER,
-            CODEC,
-            null,
-            (packet, ctx) -> handleServer(packet, ctx)
-    );
+	public static final Type<ServerboundDialoguePacket> TYPE = AbstractPacket.createType(Common.id("dialogue_server"));
+	public static final StreamCodec<RegistryFriendlyByteBuf, ServerboundDialoguePacket> CODEC = StreamCodec.composite(
+		ByteBufCodecs.VAR_INT.map(Action::fromOrdinal, Action::ordinal), ServerboundDialoguePacket::action,
+		ByteBufCodecs.STRING_UTF8, ServerboundDialoguePacket::optionId,
+		ServerboundDialoguePacket::new
+	);
+	public static final Definition<ServerboundDialoguePacket> DEFINITION = new Definition<>(
+		TYPE,
+		PacketBounds.SERVER,
+		CODEC,
+		null,
+		(packet, ctx) -> handleServer(packet, ctx)
+	);
 
-    public static ServerboundDialoguePacket selectOption(String optionId) {
-        return new ServerboundDialoguePacket(Action.SELECT_OPTION, optionId);
-    }
+	public static ServerboundDialoguePacket selectOption(String optionId) {
+		return new ServerboundDialoguePacket(Action.SELECT_OPTION, optionId);
+	}
 
-    public static ServerboundDialoguePacket advanceNext() {
-        return new ServerboundDialoguePacket(Action.ADVANCE_NEXT, "");
-    }
+	public static ServerboundDialoguePacket advanceNext() {
+		return new ServerboundDialoguePacket(Action.ADVANCE_NEXT, "");
+	}
 
-    public static ServerboundDialoguePacket end() {
-        return new ServerboundDialoguePacket(Action.END, "");
-    }
+	public static ServerboundDialoguePacket end() {
+		return new ServerboundDialoguePacket(Action.END, "");
+	}
 
-    private static void handleServer(ServerboundDialoguePacket packet, IPayloadContext ctx) {
-        ctx.enqueueWork(() -> {
-            if (!(ctx.player() instanceof ServerPlayer player)) return;
-            var dialogueManager = Common.getDialogueManager();
-            switch (packet.action()) {
-                case SELECT_OPTION -> {
-                    dialogueManager.selectOption(player, packet.optionId());
-                }
-                case ADVANCE_NEXT -> {
-                    dialogueManager.advanceNext(player);
-                }
-                case END -> {
-                    dialogueManager.endDialogue(player);
-                }
-            }
-        });
-    }
+	private static void handleServer(ServerboundDialoguePacket packet, IPayloadContext ctx) {
+		ctx.enqueueWork(() -> {
+			if (!(ctx.player() instanceof ServerPlayer player)) {
+				return;
+			}
+			var dialogueManager = Common.getDialogueManager();
+			switch (packet.action()) {
+				case SELECT_OPTION -> {
+					dialogueManager.selectOption(player, packet.optionId());
+				}
+				case ADVANCE_NEXT -> {
+					dialogueManager.advanceNext(player);
+				}
+				case END -> {
+					dialogueManager.endDialogue(player);
+				}
+			}
+		});
+	}
 
-    @Override
-    public Type<ServerboundDialoguePacket> getType() {
-        return TYPE;
-    }
+	@Override
+	public Type<ServerboundDialoguePacket> getType() {
+		return TYPE;
+	}
 
-    @Override
-    public PacketBounds getBoundTo() {
-        return PacketBounds.SERVER;
-    }
+	@Override
+	public PacketBounds getBoundTo() {
+		return PacketBounds.SERVER;
+	}
 
-    @Override
-    public StreamCodec<RegistryFriendlyByteBuf, ServerboundDialoguePacket> getCodec() {
-        return CODEC;
-    }
+	@Override
+	public StreamCodec<RegistryFriendlyByteBuf, ServerboundDialoguePacket> getCodec() {
+		return CODEC;
+	}
 
-    public enum Action {
-        SELECT_OPTION, ADVANCE_NEXT, END;
+	public enum Action {
+		SELECT_OPTION, ADVANCE_NEXT, END;
 
-        public static Action fromOrdinal(int ordinal) {
-            var values = values();
-            if (ordinal < 0 || ordinal >= values.length) return END;
-            return values[ordinal];
-        }
-    }
+		public static Action fromOrdinal(int ordinal) {
+			var values = values();
+			if (ordinal < 0 || ordinal >= values.length) {
+				return END;
+			}
+			return values[ordinal];
+		}
+	}
 }

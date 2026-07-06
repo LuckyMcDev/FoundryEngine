@@ -12,23 +12,23 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class EngineItemTagsProvider extends ItemTagsProvider {
-    private final String namespace;
-    private final Collection<TagBuilder<?>> tagBuilders;
+	private final String namespace;
+	private final Collection<TagBuilder<?>> tagBuilders;
 
-    public EngineItemTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, String namespace) {
-        this(output, lookupProvider, namespace, List.of());
-    }
+	public EngineItemTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, String namespace) {
+		this(output, lookupProvider, namespace, List.of());
+	}
 
-    public EngineItemTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, String namespace, Collection<TagBuilder<?>> tagBuilders) {
-        super(output, lookupProvider, namespace);
-        this.namespace = namespace;
-        this.tagBuilders = tagBuilders;
-    }
+	public EngineItemTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, String namespace, Collection<TagBuilder<?>> tagBuilders) {
+		super(output, lookupProvider, namespace);
+		this.namespace = namespace;
+		this.tagBuilders = tagBuilders;
+	}
 
-    @Override
-    protected void addTags(HolderLookup.Provider registries) {
-        for (var tagBuilder : tagBuilders) {
-            tagBuilder.applyTo(getOrCreateRawBuilder((TagKey<Item>) tagBuilder.getOrCreate()));
-        }
-    }
+	@Override
+	protected void addTags(HolderLookup.Provider registries) {
+		for (var tagBuilder : tagBuilders) {
+			tagBuilder.applyTo(getOrCreateRawBuilder((TagKey<Item>) tagBuilder.getOrCreate()));
+		}
+	}
 }

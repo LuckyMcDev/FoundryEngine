@@ -5,12 +5,12 @@ package de.luckymcdev.foundryengine.common.exceptions;
  * {@link de.luckymcdev.foundryengine.interfaces}
  */
 public class NoMixinException extends IllegalStateException {
-    /**
-     * Constructs a new {@link NoMixinException}
-     *
-     * @param thisObject object whose method should have been implemented.
-     */
-    public NoMixinException(Object thisObject) {
-        super("A mixin should have implemented this method! Missing in " + thisObject.getClass().getName());
-    }
+	/**
+	 * Constructs a new {@link NoMixinException}
+	 *
+	 * @param thisObject object whose method should have been implemented.
+	 */
+	public NoMixinException(Object thisObject) {
+		super("A mixin should have implemented this method! Missing in " + thisObject.getClass().getName());
+	}
 }

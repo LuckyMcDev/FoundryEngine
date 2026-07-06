@@ -8,5 +8,5 @@ import net.minecraft.server.level.ServerPlayer;
  */
 @FunctionalInterface
 public interface DialogueAction {
-    void execute(ServerPlayer player, DialogueSession session);
+	void execute(ServerPlayer player, DialogueSession session);
 }

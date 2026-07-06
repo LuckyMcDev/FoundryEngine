@@ -10,6 +10,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(GlBuffer.class)
 public interface GlGpuBufferAccessor {
 
-    @Accessor("handle")
-    int engine$getId();
+	@Accessor("handle")
+	int engine$getId();
 }

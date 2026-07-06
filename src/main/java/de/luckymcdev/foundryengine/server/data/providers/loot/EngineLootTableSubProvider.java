@@ -9,10 +9,10 @@ import java.util.function.BiConsumer;
 
 public class EngineLootTableSubProvider implements LootTableSubProvider {
 
-    public EngineLootTableSubProvider(HolderLookup.Provider registries) {
-    }
+	public EngineLootTableSubProvider(HolderLookup.Provider registries) {
+	}
 
-    @Override
-    public void generate(BiConsumer<ResourceKey<LootTable>, LootTable.Builder> output) {
-    }
+	@Override
+	public void generate(BiConsumer<ResourceKey<LootTable>, LootTable.Builder> output) {
+	}
 }

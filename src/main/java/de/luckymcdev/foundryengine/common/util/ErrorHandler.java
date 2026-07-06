@@ -9,28 +9,28 @@ import org.slf4j.Logger;
  * Centralized error handler for script errors with server broadcast support.
  */
 public final class ErrorHandler {
-    private static final Logger LOGGER = LogUtils.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 
-    private ErrorHandler() {
-    }
+	private ErrorHandler() {
+	}
 
-    /**
-     * Logs and broadcasts a script error to the server's players.
-     */
-    public static void handleScriptError(String context, Throwable error) {
-        LOGGER.error("Uncaught error in {}", context, error);
+	/**
+	 * Logs and broadcasts a script error to the server's players.
+	 */
+	public static void handleScriptError(String context, Throwable error) {
+		LOGGER.error("Uncaught error in {}", context, error);
 
-        var server = ServerLifecycleHooks.getCurrentServer();
-        String loc = error.getStackTrace().length > 0
-                ? " (" + error.getStackTrace()[0].getFileName() + ":" + error.getStackTrace()[0].getLineNumber() + ")"
-                : "";
+		var server = ServerLifecycleHooks.getCurrentServer();
+		String loc = error.getStackTrace().length > 0
+			? " (" + error.getStackTrace()[0].getFileName() + ":" + error.getStackTrace()[0].getLineNumber() + ")"
+			: "";
 
-        String message = "§c[Script Error] " + context + ": " + error + loc;
+		String message = "§c[Script Error] " + context + ": " + error + loc;
 
-        if (server != null) {
-            server.getPlayerList().broadcastSystemMessage(Component.literal(message), false);
-        } else {
-            LOGGER.error("{} (no server): {}", context, error.toString());
-        }
-    }
+		if (server != null) {
+			server.getPlayerList().broadcastSystemMessage(Component.literal(message), false);
+		} else {
+			LOGGER.error("{} (no server): {}", context, error.toString());
+		}
+	}
 }

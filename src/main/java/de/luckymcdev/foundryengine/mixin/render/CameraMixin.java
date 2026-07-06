@@ -17,32 +17,32 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Camera.class)
 public abstract class CameraMixin {
 
-    @Shadow
-    private float depthFar;
+	@Shadow
+	private float depthFar;
 
-    @Shadow
-    private void setupPerspective(float zNear, float zFar, float fov, float width, float height) {
-    }
+	@Shadow
+	private void setupPerspective(float zNear, float zFar, float fov, float width, float height) {
+	}
 
-    /**
-     * Injects after depthFar field write to override with Client.DEPTH_FAR.
-     */
-    @Inject(
-            method = "update",
-            at = @At(value = "FIELD", target = "Lnet/minecraft/client/Camera;depthFar:F", opcode = Opcodes.PUTFIELD, shift = At.Shift.AFTER)
-    )
-    private void overrideDepthFar(DeltaTracker deltaTracker, CallbackInfo ci) {
-        this.depthFar = Client.DEPTH_FAR.floatValue();
-    }
+	/**
+	 * Injects after depthFar field write to override with Client.DEPTH_FAR.
+	 */
+	@Inject(
+		method = "update",
+		at = @At(value = "FIELD", target = "Lnet/minecraft/client/Camera;depthFar:F", opcode = Opcodes.PUTFIELD, shift = At.Shift.AFTER)
+	)
+	private void overrideDepthFar(DeltaTracker deltaTracker, CallbackInfo ci) {
+		this.depthFar = Client.DEPTH_FAR.floatValue();
+	}
 
-    /**
-     * Redirects setupPerspective to use Client.DEPTH_NEAR and Client.DEPTH_FAR.
-     */
-    @Redirect(
-            method = "update",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setupPerspective(FFFFF)V")
-    )
-    private void overrideSetupPerspective(Camera instance, float zNear, float zFar, float fov, float width, float height) {
-        ((CameraMixin) (Object) instance).setupPerspective(Client.DEPTH_NEAR.floatValue(), Client.DEPTH_FAR.floatValue(), fov, width, height);
-    }
+	/**
+	 * Redirects setupPerspective to use Client.DEPTH_NEAR and Client.DEPTH_FAR.
+	 */
+	@Redirect(
+		method = "update",
+		at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setupPerspective(FFFFF)V")
+	)
+	private void overrideSetupPerspective(Camera instance, float zNear, float zFar, float fov, float width, float height) {
+		((CameraMixin) (Object) instance).setupPerspective(Client.DEPTH_NEAR.floatValue(), Client.DEPTH_FAR.floatValue(), fov, width, height);
+	}
 }

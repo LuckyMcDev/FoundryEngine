@@ -6,15 +6,17 @@ package de.luckymcdev.foundryengine.common.dialogue;
  * {@link #CHAT} prints dialogue to the chat window.
  */
 public enum DialogueDisplayMode {
-    SCREEN, CHAT;
+	SCREEN, CHAT;
 
-    /**
-     * @param ordinal 0-based enum index
-     * @return the matching enum constant, or {@link #SCREEN} if out of range
-     */
-    public static DialogueDisplayMode fromOrdinal(int ordinal) {
-        var values = values();
-        if (ordinal < 0 || ordinal >= values.length) return SCREEN;
-        return values[ordinal];
-    }
+	/**
+	 * @param ordinal 0-based enum index
+	 * @return the matching enum constant, or {@link #SCREEN} if out of range
+	 */
+	public static DialogueDisplayMode fromOrdinal(int ordinal) {
+		var values = values();
+		if (ordinal < 0 || ordinal >= values.length) {
+			return SCREEN;
+		}
+		return values[ordinal];
+	}
 }

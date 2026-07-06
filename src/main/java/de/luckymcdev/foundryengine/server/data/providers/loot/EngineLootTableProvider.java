@@ -12,7 +12,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class EngineLootTableProvider extends LootTableProvider {
 
-    public EngineLootTableProvider(PackOutput output, Set<ResourceKey<LootTable>> requiredTables, List<SubProviderEntry> subProviders, CompletableFuture<HolderLookup.Provider> registries) {
-        super(output, requiredTables, subProviders, registries);
-    }
+	public EngineLootTableProvider(PackOutput output, Set<ResourceKey<LootTable>> requiredTables, List<SubProviderEntry> subProviders, CompletableFuture<HolderLookup.Provider> registries) {
+		super(output, requiredTables, subProviders, registries);
+	}
 }

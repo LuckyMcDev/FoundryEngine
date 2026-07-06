@@ -9,25 +9,25 @@ import net.minecraft.world.level.gamerules.GameRules;
 import org.jetbrains.annotations.Nullable;
 
 public final class GameRuleStore {
-    private final Reference2ObjectMap<GameRule<?>, Object> rules = new Reference2ObjectOpenHashMap<>();
+	private final Reference2ObjectMap<GameRule<?>, Object> rules = new Reference2ObjectOpenHashMap<>();
 
-    public <T> void set(GameRule<T> key, T value) {
-        this.rules.put(key, value);
-    }
+	public <T> void set(GameRule<T> key, T value) {
+		this.rules.put(key, value);
+	}
 
-    public <T> T get(GameRule<T> key) {
-        return (T) this.rules.get(key);
-    }
+	public <T> T get(GameRule<T> key) {
+		return (T) this.rules.get(key);
+	}
 
-    public boolean contains(GameRule<?> key) {
-        return this.rules.containsKey(key);
-    }
+	public boolean contains(GameRule<?> key) {
+		return this.rules.containsKey(key);
+	}
 
-    @SuppressWarnings("unchecked")
-    public void applyTo(GameRules rules, @Nullable MinecraftServer server) {
-        Reference2ObjectMaps.fastForEach(this.rules, entry -> {
-            rules.set((GameRule<? super Object>) entry.getKey(), entry.getValue(), server);
-        });
+	@SuppressWarnings("unchecked")
+	public void applyTo(GameRules rules, @Nullable MinecraftServer server) {
+		Reference2ObjectMaps.fastForEach(this.rules, entry -> {
+			rules.set((GameRule<? super Object>) entry.getKey(), entry.getValue(), server);
+		});
 
-    }
+	}
 }

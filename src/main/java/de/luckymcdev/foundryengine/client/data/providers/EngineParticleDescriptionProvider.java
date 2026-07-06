@@ -5,11 +5,11 @@ import net.neoforged.neoforge.client.data.ParticleDescriptionProvider;
 
 public class EngineParticleDescriptionProvider extends ParticleDescriptionProvider {
 
-    public EngineParticleDescriptionProvider(PackOutput output) {
-        super(output);
-    }
+	public EngineParticleDescriptionProvider(PackOutput output) {
+		super(output);
+	}
 
-    @Override
-    protected void addDescriptions() {
-    }
+	@Override
+	protected void addDescriptions() {
+	}
 }

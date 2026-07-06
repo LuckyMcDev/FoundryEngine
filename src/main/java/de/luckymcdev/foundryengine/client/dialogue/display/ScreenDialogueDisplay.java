@@ -33,281 +33,305 @@ import java.util.List;
  * Screen-based dialogue display using the widget system (EngineScreen + PanelWidget / ButtonWidget / TextWidget).
  */
 public class ScreenDialogueDisplay implements IDialogueDisplay {
-    private @Nullable DialogueScreen currentScreen;
+	private @Nullable DialogueScreen currentScreen;
 
-    @Override
-    public void showDialogue(Identifier treeId, DialogueSession session, DialogueNode node) {
-        currentScreen = new DialogueScreen(node, session.getStyle());
-        Client.setScreen(currentScreen);
-    }
+	@Override
+	public void showDialogue(Identifier treeId, DialogueSession session, DialogueNode node) {
+		currentScreen = new DialogueScreen(node, session.getStyle());
+		Client.setScreen(currentScreen);
+	}
 
-    @Override
-    public void advanceDialogue(Identifier treeId, DialogueSession session, DialogueNode node) {
-        if (currentScreen != null) {
-            currentScreen.setStyle(session.getStyle());
-            currentScreen.updateNode(node);
-        } else {
-            showDialogue(treeId, session, node);
-        }
-    }
+	@Override
+	public void advanceDialogue(Identifier treeId, DialogueSession session, DialogueNode node) {
+		if (currentScreen != null) {
+			currentScreen.setStyle(session.getStyle());
+			currentScreen.updateNode(node);
+		} else {
+			showDialogue(treeId, session, node);
+		}
+	}
 
-    @Override
-    public void endDialogue(Identifier treeId) {
-        if (currentScreen != null) currentScreen = null;
-        var mc = Client.getMc();
-        if (mc.screen instanceof DialogueScreen) mc.setScreen(null);
-    }
+	@Override
+	public void endDialogue(Identifier treeId) {
+		if (currentScreen != null) {
+			currentScreen = null;
+		}
+		var mc = Client.getMc();
+		if (mc.screen instanceof DialogueScreen) {
+			mc.setScreen(null);
+		}
+	}
 
-    @Override
-    public boolean isActive() {
-        return currentScreen != null;
-    }
+	@Override
+	public boolean isActive() {
+		return currentScreen != null;
+	}
 
-    private static class DialogueScreen extends EngineScreen {
-        private static final double CHARS_PER_SECOND = 45.0;
-        private static final double MAX_PANEL_HEIGHT_FRACTION = 0.28;
+	private static class DialogueScreen extends EngineScreen {
+		private static final double CHARS_PER_SECOND = 45.0;
+		private static final double MAX_PANEL_HEIGHT_FRACTION = 0.28;
 
-        private final List<ButtonWidget> optionButtons = new ArrayList<>();
-        private DialogueNode node;
-        private DialogueStyle style;
-        private boolean widgetsBuilt;
-        private PanelWidget dialogueBox;
-        private TextWidget speakerText;
-        private TextWidget dialogueText;
-        private PanelWidget optionsBox;
-        private ButtonWidget navButton;
-        private String fullText = "";
-        private long typewriterStartNanos;
-        private int lastVisibleCharCount = 0;
-        private boolean typewriterDone;
-        private boolean optionsRevealed;
+		private final List<ButtonWidget> optionButtons = new ArrayList<>();
+		private DialogueNode node;
+		private DialogueStyle style;
+		private boolean widgetsBuilt;
+		private PanelWidget dialogueBox;
+		private TextWidget speakerText;
+		private TextWidget dialogueText;
+		private PanelWidget optionsBox;
+		private ButtonWidget navButton;
+		private String fullText = "";
+		private long typewriterStartNanos;
+		private int lastVisibleCharCount = 0;
+		private boolean typewriterDone;
+		private boolean optionsRevealed;
 
-        DialogueScreen(DialogueNode node, DialogueStyle style) {
-            this.node = node;
-            this.style = style;
-            this.widgetsBuilt = false;
-        }
+		DialogueScreen(DialogueNode node, DialogueStyle style) {
+			this.node = node;
+			this.style = style;
+			this.widgetsBuilt = false;
+		}
 
-        void setStyle(DialogueStyle s) {
-            this.style = s;
-        }
+		void setStyle(DialogueStyle s) {
+			this.style = s;
+		}
 
-        void updateNode(DialogueNode n) {
-            this.node = n;
-            startTypewriter();
-            if (widgetsBuilt) rebuildOptions();
-        }
+		void updateNode(DialogueNode n) {
+			this.node = n;
+			startTypewriter();
+			if (widgetsBuilt) {
+				rebuildOptions();
+			}
+		}
 
-        @Override
-        protected void init() {
-            buildLayout();
-            if (fullText.isEmpty() && !widgetsBuilt) {
-                startTypewriter();
-            } else {
-                applyVisibleText(lastVisibleCharCount);
-            }
-            rebuildOptions();
-            widgetsBuilt = true;
-            super.init();
-        }
+		@Override
+		protected void init() {
+			buildLayout();
+			if (fullText.isEmpty() && !widgetsBuilt) {
+				startTypewriter();
+			} else {
+				applyVisibleText(lastVisibleCharCount);
+			}
+			rebuildOptions();
+			widgetsBuilt = true;
+			super.init();
+		}
 
-        private int resolvePanelHeight() {
-            int configured = style.getPanelHeight();
-            int capped = (int) (this.height * MAX_PANEL_HEIGHT_FRACTION);
-            return Math.clamp(capped, 60, configured);
-        }
+		private int resolvePanelHeight() {
+			int configured = style.getPanelHeight();
+			int capped = (int) (this.height * MAX_PANEL_HEIGHT_FRACTION);
+			return Math.clamp(capped, 60, configured);
+		}
 
-        private void buildLayout() {
-            var m = style.getMargin();
-            var ph = resolvePanelHeight();
+		private void buildLayout() {
+			var m = style.getMargin();
+			var ph = resolvePanelHeight();
 
-            dialogueBox = new PanelWidget(
-                    new UIVec(0, 1, m, -m),
-                    new UIVec(0.75, 0, 0, ph)
-            );
-            dialogueBox.setAnchorPoint(new Vec2(0, 1));
-            dialogueBox.setBackgroundColor(style.getDialogueBackground());
-            dialogueBox.setBorder(style.getDialogueBorder(), style.getDialogueBorderWidth());
+			dialogueBox = new PanelWidget(
+				new UIVec(0, 1, m, -m),
+				new UIVec(0.75, 0, 0, ph)
+			);
+			dialogueBox.setAnchorPoint(new Vec2(0, 1));
+			dialogueBox.setBackgroundColor(style.getDialogueBackground());
+			dialogueBox.setBorder(style.getDialogueBorder(), style.getDialogueBorderWidth());
 
-            speakerText = new TextWidget(
-                    new UIVec(0, 0, 10, 8),
-                    new UIVec(1, 0, -20, 14)
-            );
-            speakerText.setFontSize(style.getSpeakerFontSize());
-            dialogueBox.addWidget(speakerText);
+			speakerText = new TextWidget(
+				new UIVec(0, 0, 10, 8),
+				new UIVec(1, 0, -20, 14)
+			);
+			speakerText.setFontSize(style.getSpeakerFontSize());
+			dialogueBox.addWidget(speakerText);
 
-            dialogueText = new TextWidget(
-                    new UIVec(0, 0, 10, 26),
-                    new UIVec(1, 1, -20, -34)
-            );
-            dialogueText.setFontSize(style.getDialogueFontSize());
-            dialogueBox.addWidget(dialogueText);
+			dialogueText = new TextWidget(
+				new UIVec(0, 0, 10, 26),
+				new UIVec(1, 1, -20, -34)
+			);
+			dialogueText.setFontSize(style.getDialogueFontSize());
+			dialogueBox.addWidget(dialogueText);
 
-            this.addWidget(dialogueBox);
+			this.addWidget(dialogueBox);
 
-            optionsBox = new PanelWidget(
-                    new UIVec(1, 1, -m, -m),
-                    new UIVec(0.25, 0, 0, ph)
-            );
-            optionsBox.setAnchorPoint(new Vec2(1, 1));
-            optionsBox.setBackgroundColor(style.getOptionsBackground());
-            optionsBox.setBorder(style.getOptionsBorder(), style.getOptionsBorderWidth());
-            this.addWidget(optionsBox);
+			optionsBox = new PanelWidget(
+				new UIVec(1, 1, -m, -m),
+				new UIVec(0.25, 0, 0, ph)
+			);
+			optionsBox.setAnchorPoint(new Vec2(1, 1));
+			optionsBox.setBackgroundColor(style.getOptionsBackground());
+			optionsBox.setBorder(style.getOptionsBorder(), style.getOptionsBorderWidth());
+			this.addWidget(optionsBox);
 
-            updateSpeaker();
-        }
+			updateSpeaker();
+		}
 
-        private void updateSpeaker() {
-            if (node == null) return;
-            speakerText.setText(Component.literal("<" + node.getSpeaker() + ">").withStyle(s -> s.withColor(node.getSpeakerColor())));
-        }
+		private void updateSpeaker() {
+			if (node == null) {
+				return;
+			}
+			speakerText.setText(Component.literal("<" + node.getSpeaker() + ">").withStyle(s -> s.withColor(node.getSpeakerColor())));
+		}
 
-        private void startTypewriter() {
-            fullText = node != null ? node.getText() : "";
-            typewriterStartNanos = System.nanoTime();
-            typewriterDone = fullText.isEmpty();
-            optionsRevealed = typewriterDone;
-            lastVisibleCharCount = 0;
-            updateSpeaker();
-            applyVisibleText(typewriterDone ? fullText.length() : 0);
-        }
+		private void startTypewriter() {
+			fullText = node != null ? node.getText() : "";
+			typewriterStartNanos = System.nanoTime();
+			typewriterDone = fullText.isEmpty();
+			optionsRevealed = typewriterDone;
+			lastVisibleCharCount = 0;
+			updateSpeaker();
+			applyVisibleText(typewriterDone ? fullText.length() : 0);
+		}
 
-        private void tickTypewriter() {
-            if (typewriterDone || fullText.isEmpty()) return;
+		private void tickTypewriter() {
+			if (typewriterDone || fullText.isEmpty()) {
+				return;
+			}
 
-            double elapsedSeconds = (System.nanoTime() - typewriterStartNanos) / 1_000_000_000.0;
-            int visibleChars = (int) (elapsedSeconds * CHARS_PER_SECOND);
+			double elapsedSeconds = (System.nanoTime() - typewriterStartNanos) / 1_000_000_000.0;
+			int visibleChars = (int) (elapsedSeconds * CHARS_PER_SECOND);
 
-            if (visibleChars >= fullText.length()) {
-                visibleChars = fullText.length();
-                typewriterDone = true;
-            }
+			if (visibleChars >= fullText.length()) {
+				visibleChars = fullText.length();
+				typewriterDone = true;
+			}
 
-            int newChars = visibleChars - lastVisibleCharCount;
-            if (newChars > 0) {
-                SoundEvent typewriterSound = SoundEvents.POINTED_DRIPSTONE_DRIP_WATER;
-                for (int i = 0; i < newChars; i++) {
-                    Minecraft.getInstance().getSoundManager().play(
-                            SimpleSoundInstance.forUI(typewriterSound, 0.4f, 0.9f)
-                    );
-                }
-            }
-            lastVisibleCharCount = visibleChars;
+			int newChars = visibleChars - lastVisibleCharCount;
+			if (newChars > 0) {
+				SoundEvent typewriterSound = SoundEvents.POINTED_DRIPSTONE_DRIP_WATER;
+				for (int i = 0; i < newChars; i++) {
+					Minecraft.getInstance().getSoundManager().play(
+						SimpleSoundInstance.forUI(typewriterSound, 0.4f, 0.9f)
+					);
+				}
+			}
+			lastVisibleCharCount = visibleChars;
 
-            applyVisibleText(visibleChars);
+			applyVisibleText(visibleChars);
 
-            if (typewriterDone && !optionsRevealed) {
-                optionsRevealed = true;
-                if (widgetsBuilt) rebuildOptions();
-            }
-        }
+			if (typewriterDone && !optionsRevealed) {
+				optionsRevealed = true;
+				if (widgetsBuilt) {
+					rebuildOptions();
+				}
+			}
+		}
 
-        private void applyVisibleText(int visibleChars) {
-            String shown = fullText.substring(0, Math.min(visibleChars, fullText.length()));
-            dialogueText.setText(Component.literal(shown));
-        }
+		private void applyVisibleText(int visibleChars) {
+			String shown = fullText.substring(0, Math.min(visibleChars, fullText.length()));
+			dialogueText.setText(Component.literal(shown));
+		}
 
-        void skipTypewriter() {
-            if (typewriterDone) return;
-            typewriterDone = true;
-            lastVisibleCharCount = fullText.length();
-            applyVisibleText(fullText.length());
-            if (!optionsRevealed) {
-                optionsRevealed = true;
-                if (widgetsBuilt) rebuildOptions();
-            }
-        }
+		void skipTypewriter() {
+			if (typewriterDone) {
+				return;
+			}
+			typewriterDone = true;
+			lastVisibleCharCount = fullText.length();
+			applyVisibleText(fullText.length());
+			if (!optionsRevealed) {
+				optionsRevealed = true;
+				if (widgetsBuilt) {
+					rebuildOptions();
+				}
+			}
+		}
 
-        private void rebuildOptions() {
-            for (var btn : optionButtons) optionsBox.removeWidget(btn);
-            optionButtons.clear();
-            if (navButton != null) {
-                optionsBox.removeWidget(navButton);
-                navButton = null;
-            }
+		private void rebuildOptions() {
+			for (var btn : optionButtons) {
+				optionsBox.removeWidget(btn);
+			}
+			optionButtons.clear();
+			if (navButton != null) {
+				optionsBox.removeWidget(navButton);
+				navButton = null;
+			}
 
-            if (node == null) return;
+			if (node == null) {
+				return;
+			}
 
-            if (!optionsRevealed) return;
+			if (!optionsRevealed) {
+				return;
+			}
 
-            var bt = style.getButtonHeight();
-            var gap = style.getOptionGap();
-            var options = node.getOptions();
+			var bt = style.getButtonHeight();
+			var gap = style.getOptionGap();
+			var options = node.getOptions();
 
-            if (options.isEmpty()) {
-                boolean hasNext = node.getNextNodeId() != null && !node.getNextNodeId().isBlank();
-                navButton = new ButtonWidget(
-                        new UIVec(0.5, 0.5, 0, 0),
-                        new UIVec(0.9, 0, 0, bt),
-                        (mx, my, btn) -> ClientPacketDistributor.sendToServer(
-                                hasNext ? ServerboundDialoguePacket.advanceNext() : ServerboundDialoguePacket.end())
-                );
-                navButton.setAnchorPoint(new Vec2(0.5f, 0.5f));
-                navButton.setBackgroundColor(style.getNavButtonBackground());
-                navButton.setHoverColor(style.getNavButtonHover());
-                navButton.setBorderColor(style.getNavButtonBorder());
+			if (options.isEmpty()) {
+				boolean hasNext = node.getNextNodeId() != null && !node.getNextNodeId().isBlank();
+				navButton = new ButtonWidget(
+					new UIVec(0.5, 0.5, 0, 0),
+					new UIVec(0.9, 0, 0, bt),
+					(mx, my, btn) -> ClientPacketDistributor.sendToServer(
+						hasNext ? ServerboundDialoguePacket.advanceNext() : ServerboundDialoguePacket.end())
+				);
+				navButton.setAnchorPoint(new Vec2(0.5f, 0.5f));
+				navButton.setBackgroundColor(style.getNavButtonBackground());
+				navButton.setHoverColor(style.getNavButtonHover());
+				navButton.setBorderColor(style.getNavButtonBorder());
 
-                var label = new TextWidget(
-                        new UIVec(0.5, 0.5, 0, 0),
-                        new UIVec(0.85, 0, 0, bt)
-                );
-                label.setAnchorPoint(new Vec2(0.5f, 0.5f));
-                label.setAlignment(Enums.Alignment.CENTER);
-                label.setFontSize(style.getOptionFontSize());
-                label.setText(Component.literal(hasNext ? "Next ->" : "[End Dialogue]"));
-                navButton.addWidget(label);
-                optionsBox.addWidget(navButton);
-            } else {
-                int y = 8;
-                for (var opt : options) {
-                    var btn = new ButtonWidget(
-                            new UIVec(0, 0, 8, y),
-                            new UIVec(1, 0, -16, bt),
-                            (mx, my, b) -> ClientPacketDistributor.sendToServer(
-                                    ServerboundDialoguePacket.selectOption(opt.getId()))
-                    );
-                    btn.setBackgroundColor(style.getButtonBackground());
-                    btn.setHoverColor(style.getButtonHover());
-                    btn.setBorderColor(style.getButtonBorder());
+				var label = new TextWidget(
+					new UIVec(0.5, 0.5, 0, 0),
+					new UIVec(0.85, 0, 0, bt)
+				);
+				label.setAnchorPoint(new Vec2(0.5f, 0.5f));
+				label.setAlignment(Enums.Alignment.CENTER);
+				label.setFontSize(style.getOptionFontSize());
+				label.setText(Component.literal(hasNext ? "Next ->" : "[End Dialogue]"));
+				navButton.addWidget(label);
+				optionsBox.addWidget(navButton);
+			} else {
+				int y = 8;
+				for (var opt : options) {
+					var btn = new ButtonWidget(
+						new UIVec(0, 0, 8, y),
+						new UIVec(1, 0, -16, bt),
+						(mx, my, b) -> ClientPacketDistributor.sendToServer(
+							ServerboundDialoguePacket.selectOption(opt.getId()))
+					);
+					btn.setBackgroundColor(style.getButtonBackground());
+					btn.setHoverColor(style.getButtonHover());
+					btn.setBorderColor(style.getButtonBorder());
 
-                    var label = new TextWidget(
-                            new UIVec(0, 0, 4, 3),
-                            new UIVec(1, 0, -8, 16)
-                    );
-                    label.setFontSize(style.getOptionFontSize());
-                    label.setText(Component.literal(opt.getText()));
+					var label = new TextWidget(
+						new UIVec(0, 0, 4, 3),
+						new UIVec(1, 0, -8, 16)
+					);
+					label.setFontSize(style.getOptionFontSize());
+					label.setText(Component.literal(opt.getText()));
 
-                    btn.addWidget(label);
-                    optionButtons.add(btn);
-                    optionsBox.addWidget(btn);
-                    y += bt + gap;
-                }
-            }
+					btn.addWidget(label);
+					optionButtons.add(btn);
+					optionsBox.addWidget(btn);
+					y += bt + gap;
+				}
+			}
 
-            if (widgetsBuilt) {
-                for (var child : optionsBox.getChildren()) child.onInit();
-                optionsBox.updateArea();
-            }
-        }
+			if (widgetsBuilt) {
+				for (var child : optionsBox.getChildren()) {
+					child.onInit();
+				}
+				optionsBox.updateArea();
+			}
+		}
 
-        @Override
-        public void extractBackground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
-            tickTypewriter();
-            guiGraphics.fill(RenderPipelines.GUI, 0, 0, this.width, this.height, style.getOverlayColor().argb());
-        }
+		@Override
+		public void extractBackground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+			tickTypewriter();
+			guiGraphics.fill(RenderPipelines.GUI, 0, 0, this.width, this.height, style.getOverlayColor().argb());
+		}
 
-        @Override
-        public boolean isPauseScreen() {
-            return false;
-        }
+		@Override
+		public boolean isPauseScreen() {
+			return false;
+		}
 
-        @Override
-        public boolean keyPressed(KeyEvent event) {
-            if (event.key() == InputConstants.KEY_SPACE) {
-                skipTypewriter();
-            }
-            return super.keyPressed(event);
-        }
-    }
+		@Override
+		public boolean keyPressed(KeyEvent event) {
+			if (event.key() == InputConstants.KEY_SPACE) {
+				skipTypewriter();
+			}
+			return super.keyPressed(event);
+		}
+	}
 
 }

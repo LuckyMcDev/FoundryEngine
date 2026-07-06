@@ -32,183 +32,185 @@ import java.util.concurrent.locks.ReentrantLock;
  * </ul>
  */
 public class BundleManager implements ResourceManagerReloadListener {
-    private static final Logger LOGGER = LogUtils.getLogger();
-    private final ReentrantLock reloadLock = new ReentrantLock();
-    private final GenericRegistry<String, Bundle> bundles = new GenericRegistry<>();
-    private final BundleDiscovery bundleDiscovery;
-    private final BundleScriptLoader scriptLoader;
-    private final BundleLifecycleDispatcher lifecycleDispatcher = new BundleLifecycleDispatcher();
-    private volatile boolean reloading = false;
-    private @Nullable MinecraftServer server;
+	private static final Logger LOGGER = LogUtils.getLogger();
+	private final ReentrantLock reloadLock = new ReentrantLock();
+	private final GenericRegistry<String, Bundle> bundles = new GenericRegistry<>();
+	private final BundleDiscovery bundleDiscovery;
+	private final BundleScriptLoader scriptLoader;
+	private final BundleLifecycleDispatcher lifecycleDispatcher = new BundleLifecycleDispatcher();
+	private volatile boolean reloading = false;
+	private @Nullable MinecraftServer server;
 
-    public BundleManager(IEventBus modBus, Path configDirectory) {
-        BundleFactory bundleFactory = new BundleFactory(modBus, configDirectory);
-        this.scriptLoader = bundleFactory.getScriptLoader();
-        this.bundleDiscovery = new BundleDiscovery(bundleFactory, this::register);
-    }
+	public BundleManager(IEventBus modBus, Path configDirectory) {
+		BundleFactory bundleFactory = new BundleFactory(modBus, configDirectory);
+		this.scriptLoader = bundleFactory.getScriptLoader();
+		this.bundleDiscovery = new BundleDiscovery(bundleFactory, this::register);
+	}
 
-    public void setServer(@Nullable MinecraftServer server) {
-        this.server = server;
-    }
+	public void setServer(@Nullable MinecraftServer server) {
+		this.server = server;
+	}
 
-    /**
-     * Registers a bundle and immediately loads its common-side scripts.
-     */
-    public void register(Bundle bundle) {
-        bundles.register(bundle.info().id(), bundle);
-        try {
-            bundle.loadCommon(scriptLoader);
-        } catch (Exception e) {
-            BundleExceptionHandler.handle(
-                    "Failed to load common scripts for bundle '" + bundle.info().id() + "'", e);
-        }
-        lifecycleDispatcher.fireLoaded(bundle);
-        LOGGER.debug("Registered Bundle: {} with Info: {}", bundle.info().id(), bundle.info());
-    }
+	/**
+	 * Registers a bundle and immediately loads its common-side scripts.
+	 */
+	public void register(Bundle bundle) {
+		bundles.register(bundle.info().id(), bundle);
+		try {
+			bundle.loadCommon(scriptLoader);
+		} catch (Exception e) {
+			BundleExceptionHandler.handle(
+				"Failed to load common scripts for bundle '" + bundle.info().id() + "'", e);
+		}
+		lifecycleDispatcher.fireLoaded(bundle);
+		LOGGER.debug("Registered Bundle: {} with Info: {}", bundle.info().id(), bundle.info());
+	}
 
-    /**
-     * Loads client-side scripts for all registered bundles.
-     * Call this from {@code FoundryEngineModClient} during client setup.
-     */
-    public void loadClientScripts() {
-        for (Bundle bundle : bundles.values()) {
-            try {
-                bundle.loadClient(scriptLoader);
-            } catch (Exception e) {
-                BundleExceptionHandler.handle(
-                        "Failed to load client scripts for bundle '" + bundle.info().id() + "'", e);
-            }
-        }
-    }
+	/**
+	 * Loads client-side scripts for all registered bundles.
+	 * Call this from {@code FoundryEngineModClient} during client setup.
+	 */
+	public void loadClientScripts() {
+		for (Bundle bundle : bundles.values()) {
+			try {
+				bundle.loadClient(scriptLoader);
+			} catch (Exception e) {
+				BundleExceptionHandler.handle(
+					"Failed to load client scripts for bundle '" + bundle.info().id() + "'", e);
+			}
+		}
+	}
 
-    /**
-     * Loads server-side scripts for all registered bundles.
-     * Call this from {@code FoundryEngineModServer} during server setup.
-     */
-    public void loadServerScripts() {
-        for (Bundle bundle : bundles.values()) {
-            try {
-                bundle.loadServer(scriptLoader);
-            } catch (Exception e) {
-                BundleExceptionHandler.handle(
-                        "Failed to load server scripts for bundle '" + bundle.info().id() + "'", e);
-            }
-        }
-    }
+	/**
+	 * Loads server-side scripts for all registered bundles.
+	 * Call this from {@code FoundryEngineModServer} during server setup.
+	 */
+	public void loadServerScripts() {
+		for (Bundle bundle : bundles.values()) {
+			try {
+				bundle.loadServer(scriptLoader);
+			} catch (Exception e) {
+				BundleExceptionHandler.handle(
+					"Failed to load server scripts for bundle '" + bundle.info().id() + "'", e);
+			}
+		}
+	}
 
-    /**
-     * Removes and cleans up a bundle, including closing its ZIP FileSystem if applicable.
-     */
-    public void remove(Bundle bundle) {
-        bundles.remove(bundle.info().id());
-        unloadBundle(bundle);
-    }
+	/**
+	 * Removes and cleans up a bundle, including closing its ZIP FileSystem if applicable.
+	 */
+	public void remove(Bundle bundle) {
+		bundles.remove(bundle.info().id());
+		unloadBundle(bundle);
+	}
 
-    /**
-     * Discovers and loads all bundles from the specified directory.
-     */
-    public void discover(Path directory) throws IOException {
-        bundleDiscovery.discover(directory);
-    }
+	/**
+	 * Discovers and loads all bundles from the specified directory.
+	 */
+	public void discover(Path directory) throws IOException {
+		bundleDiscovery.discover(directory);
+	}
 
-    /**
-     * Returns all currently loaded bundles.
-     */
-    public Collection<Bundle> getBundles() {
-        return bundles.values();
-    }
+	/**
+	 * Returns all currently loaded bundles.
+	 */
+	public Collection<Bundle> getBundles() {
+		return bundles.values();
+	}
 
-    /**
-     * Retrieves a bundle by its ID.
-     */
-    public Bundle getBundle(String id) {
-        return bundles.get(id);
-    }
+	/**
+	 * Retrieves a bundle by its ID.
+	 */
+	public Bundle getBundle(String id) {
+		return bundles.get(id);
+	}
 
-    /**
-     * Reloads all bundles by clearing all script event callbacks, unloading current
-     * bundles, rediscovering them from disk, and re-loading common + server scripts.
-     */
-    public void reload() {
-        if (reloading) return;
-        reloadLock.lock();
-        try {
-            reloading = true;
-            LOGGER.info("Reloading FoundryEngine Bundles...");
-            lifecycleDispatcher.fireReloadStarted();
+	/**
+	 * Reloads all bundles by clearing all script event callbacks, unloading current
+	 * bundles, rediscovering them from disk, and re-loading common + server scripts.
+	 */
+	public void reload() {
+		if (reloading) {
+			return;
+		}
+		reloadLock.lock();
+		try {
+			reloading = true;
+			LOGGER.info("Reloading FoundryEngine Bundles...");
+			lifecycleDispatcher.fireReloadStarted();
 
-            Common.clearEvents();
+			Common.clearEvents();
 
-            unloadAllBundles();
-            bundles.clear();
+			unloadAllBundles();
+			bundles.clear();
 
-            try {
-                discover(Common.BUNDLES);
-            } catch (IOException e) {
-                BundleExceptionHandler.handle("Failed to reload bundles", e);
-            }
+			try {
+				discover(Common.BUNDLES);
+			} catch (IOException e) {
+				BundleExceptionHandler.handle("Failed to reload bundles", e);
+			}
 
-            loadServerScripts();
+			loadServerScripts();
 
-            if (server != null) {
-                var dispatcher = server.getCommands().getDispatcher();
-                var selection = Commands.CommandSelection.ALL;
-                var buildContext = CommandBuildContext.simple(server.registryAccess(), server.getWorldData().enabledFeatures());
-                NeoForge.EVENT_BUS.post(new RegisterCommandsEvent(dispatcher, selection, buildContext));
-            }
+			if (server != null) {
+				var dispatcher = server.getCommands().getDispatcher();
+				var selection = Commands.CommandSelection.ALL;
+				var buildContext = CommandBuildContext.simple(server.registryAccess(), server.getWorldData().enabledFeatures());
+				NeoForge.EVENT_BUS.post(new RegisterCommandsEvent(dispatcher, selection, buildContext));
+			}
 
-            lifecycleDispatcher.fireReloadCompleted();
-        } finally {
-            reloading = false;
-            reloadLock.unlock();
-        }
-    }
+			lifecycleDispatcher.fireReloadCompleted();
+		} finally {
+			reloading = false;
+			reloadLock.unlock();
+		}
+	}
 
-    private void unloadAllBundles() {
-        for (Bundle bundle : bundles.values()) {
-            unloadBundle(bundle);
-        }
-    }
+	private void unloadAllBundles() {
+		for (Bundle bundle : bundles.values()) {
+			unloadBundle(bundle);
+		}
+	}
 
-    /**
-     * Unloads a single bundle: saves config, calls onUnload on all entrypoints,
-     * and closes the ZIP FileSystem if present.
-     */
-    private void unloadBundle(Bundle bundle) {
-        lifecycleDispatcher.firePreUnload(bundle);
-        try {
-            if (bundle.bundleConfig().isLoaded()) {
-                bundle.bundleConfig().save();
-            }
-            bundle.unload();
-        } finally {
-            lifecycleDispatcher.fireUnloaded(bundle);
-            closeFileSystem(bundle);
-        }
-    }
+	/**
+	 * Unloads a single bundle: saves config, calls onUnload on all entrypoints,
+	 * and closes the ZIP FileSystem if present.
+	 */
+	private void unloadBundle(Bundle bundle) {
+		lifecycleDispatcher.firePreUnload(bundle);
+		try {
+			if (bundle.bundleConfig().isLoaded()) {
+				bundle.bundleConfig().save();
+			}
+			bundle.unload();
+		} finally {
+			lifecycleDispatcher.fireUnloaded(bundle);
+			closeFileSystem(bundle);
+		}
+	}
 
-    private void closeFileSystem(Bundle bundle) {
-        FileSystem fs = bundle.bundleFiles().zipFileSystem();
-        if (bundle.bundleFiles().hasZipFileSystem()) {
-            try {
-                fs.close();
-            } catch (IOException e) {
-                LOGGER.warn("Failed to close ZIP FileSystem for bundle '{}': {}",
-                        bundle.info().id(), e.getLocalizedMessage());
-            }
-        }
-    }
+	private void closeFileSystem(Bundle bundle) {
+		FileSystem fs = bundle.bundleFiles().zipFileSystem();
+		if (bundle.bundleFiles().hasZipFileSystem()) {
+			try {
+				fs.close();
+			} catch (IOException e) {
+				LOGGER.warn("Failed to close ZIP FileSystem for bundle '{}': {}",
+					bundle.info().id(), e.getLocalizedMessage());
+			}
+		}
+	}
 
-    public BundleLifecycleDispatcher getLifecycleDispatcher() {
-        return lifecycleDispatcher;
-    }
+	public BundleLifecycleDispatcher getLifecycleDispatcher() {
+		return lifecycleDispatcher;
+	}
 
-    public BundleDiscovery getBundleDiscovery() {
-        return bundleDiscovery;
-    }
+	public BundleDiscovery getBundleDiscovery() {
+		return bundleDiscovery;
+	}
 
-    @Override
-    public void onResourceManagerReload(ResourceManager resourceManager) {
-        this.reload();
-    }
+	@Override
+	public void onResourceManagerReload(ResourceManager resourceManager) {
+		this.reload();
+	}
 }

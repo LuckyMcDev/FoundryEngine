@@ -4,5 +4,5 @@ import de.luckymcdev.foundryengine.common.area.Area;
 import net.minecraft.server.level.ServerLevel;
 
 public interface AreaTickModule extends AreaModule {
-    void tick(ServerLevel level, Area area);
+	void tick(ServerLevel level, Area area);
 }

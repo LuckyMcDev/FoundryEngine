@@ -58,7 +58,8 @@ public class CodeEditor extends EditorPanel {
 			.menuBar(true));
 		this.fileName = label.getString();
 		this.oldSource = source;
-		this.saveCallback = (_, _) -> {};
+		this.saveCallback = (_, _) -> {
+		};
 		this.currentThemeName = ClientConfig.TEXT_EDITOR_THEME.get();
 		String ext = extensionFrom(fileName);
 		ImGuiCoreTextEditor.Language lang = ImGuiCoreTextEditor.Language.from(ext);
@@ -93,7 +94,9 @@ public class CodeEditor extends EditorPanel {
 	}
 
 	public void setTheme(String themeName) {
-		if (!EditorTheme.THEME_NAMES.contains(themeName)) return;
+		if (!EditorTheme.THEME_NAMES.contains(themeName)) {
+			return;
+		}
 		this.currentThemeName = themeName;
 		EditorTheme theme = EditorTheme.getThemeByName(themeName);
 		textEditor.setTheme(theme);

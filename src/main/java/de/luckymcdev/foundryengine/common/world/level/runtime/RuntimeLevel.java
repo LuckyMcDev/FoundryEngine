@@ -21,97 +21,97 @@ import java.util.List;
 import java.util.concurrent.Executor;
 
 public class RuntimeLevel extends ServerLevel {
-    public final Style style;
-    @Nullable
-    private final GameRules rules;
-    @Nullable
-    private final ServerClockManager clockManager;
-    private boolean flat;
+	public final Style style;
+	@Nullable
+	private final GameRules rules;
+	@Nullable
+	private final ServerClockManager clockManager;
+	private boolean flat;
 
-    protected RuntimeLevel(MinecraftServer server, ResourceKey<Level> dimension, RuntimeLevelConfig config, Style style) {
-        LevelStem dimensionOptions = config.createDimensionOptions(server);
-        GameRules gameRules = null;
-        if (!config.shouldMirrorOverworldGameRules()) {
-            gameRules = new GameRules(server.getWorldData().enabledFeatures());
-            config.getGameRules().applyTo(gameRules, null);
-        } else {
-            gameRules = null;
-        }
+	protected RuntimeLevel(MinecraftServer server, ResourceKey<Level> dimension, RuntimeLevelConfig config, Style style) {
+		LevelStem dimensionOptions = config.createDimensionOptions(server);
+		GameRules gameRules = null;
+		if (!config.shouldMirrorOverworldGameRules()) {
+			gameRules = new GameRules(server.getWorldData().enabledFeatures());
+			config.getGameRules().applyTo(gameRules, null);
+		} else {
+			gameRules = null;
+		}
 
-        this.clockManager = config.getClockManager(server, gameRules != null ? gameRules : server.getGameRules());
-        this.style = style;
+		this.clockManager = config.getClockManager(server, gameRules != null ? gameRules : server.getGameRules());
+		this.style = style;
 
-        super(
-                server, Util.backgroundExecutor(), ((MinecraftServerAccess) server).getStorageSource(),
-                new RuntimeLevelData(server.getWorldData(), config),
-                dimension,
-                dimensionOptions,
-                false,
-                BiomeManager.obfuscateSeed(config.getSeed()),
-                ImmutableList.of(),
-                config.shouldTickTime()
-        );
-        this.flat = config.isFlat().toBoolean(super.isFlat());
-        this.rules = gameRules;
-    }
+		super(
+			server, Util.backgroundExecutor(), ((MinecraftServerAccess) server).getStorageSource(),
+			new RuntimeLevelData(server.getWorldData(), config),
+			dimension,
+			dimensionOptions,
+			false,
+			BiomeManager.obfuscateSeed(config.getSeed()),
+			ImmutableList.of(),
+			config.shouldTickTime()
+		);
+		this.flat = config.isFlat().toBoolean(super.isFlat());
+		this.rules = gameRules;
+	}
 
-    protected RuntimeLevel(MinecraftServer server, Executor executor, LevelStorageSource.LevelStorageAccess levelStorage, ServerLevelData levelData, ResourceKey<Level> dimension,
-                           LevelStem levelStem, boolean isDebug, long biomeZoomSeed, List<CustomSpawner> customSpawners, boolean tickTime, Style style,
-                           @Nullable GameRules gameRules, @Nullable ServerClockManager clockManager) {
-        this.style = style;
-        this.rules = gameRules;
-        this.clockManager = clockManager;
-        super(server, executor, levelStorage, levelData, dimension, levelStem, isDebug, biomeZoomSeed, customSpawners, tickTime);
-    }
+	protected RuntimeLevel(MinecraftServer server, Executor executor, LevelStorageSource.LevelStorageAccess levelStorage, ServerLevelData levelData, ResourceKey<Level> dimension,
+	                       LevelStem levelStem, boolean isDebug, long biomeZoomSeed, List<CustomSpawner> customSpawners, boolean tickTime, Style style,
+	                       @Nullable GameRules gameRules, @Nullable ServerClockManager clockManager) {
+		this.style = style;
+		this.rules = gameRules;
+		this.clockManager = clockManager;
+		super(server, executor, levelStorage, levelData, dimension, levelStem, isDebug, biomeZoomSeed, customSpawners, tickTime);
+	}
 
-    @Override
-    public GameRules getGameRules() {
-        if (this.rules != null) {
-            return this.rules;
-        }
-        return super.getGameRules();
-    }
+	@Override
+	public GameRules getGameRules() {
+		if (this.rules != null) {
+			return this.rules;
+		}
+		return super.getGameRules();
+	}
 
-    @Override
-    public long getSeed() {
-        return this.getRuntimeLevelData().config.getSeed();
-    }
+	@Override
+	public long getSeed() {
+		return this.getRuntimeLevelData().config.getSeed();
+	}
 
-    @Override
-    protected void tickTime() {
-        this.getRuntimeLevelData().setGameTime(this.getServer().overworld().getGameTime());
-        if (this.tickTime && this.clockManager instanceof RuntimeClockManager clockManager) {
-            clockManager.tickFromLevel(this);
-        }
-    }
+	@Override
+	protected void tickTime() {
+		this.getRuntimeLevelData().setGameTime(this.getServer().overworld().getGameTime());
+		if (this.tickTime && this.clockManager instanceof RuntimeClockManager clockManager) {
+			clockManager.tickFromLevel(this);
+		}
+	}
 
-    @Override
-    public void save(@Nullable ProgressListener progressListener, boolean flush, boolean enabled) {
-        if (this.style == Style.PERSISTENT || !flush) {
-            super.save(progressListener, flush, enabled);
-        }
-    }
+	@Override
+	public void save(@Nullable ProgressListener progressListener, boolean flush, boolean enabled) {
+		if (this.style == Style.PERSISTENT || !flush) {
+			super.save(progressListener, flush, enabled);
+		}
+	}
 
-    @Override
-    public boolean isFlat() {
-        return this.flat;
-    }
+	@Override
+	public boolean isFlat() {
+		return this.flat;
+	}
 
-    private RuntimeLevelData getRuntimeLevelData() {
-        return (RuntimeLevelData) this.levelData;
-    }
+	private RuntimeLevelData getRuntimeLevelData() {
+		return (RuntimeLevelData) this.levelData;
+	}
 
-    @Override
-    public ServerClockManager clockManager() {
-        return this.clockManager != null ? this.clockManager : super.clockManager();
-    }
+	@Override
+	public ServerClockManager clockManager() {
+		return this.clockManager != null ? this.clockManager : super.clockManager();
+	}
 
-    public enum Style {
-        PERSISTENT,
-        TEMPORARY
-    }
+	public enum Style {
+		PERSISTENT,
+		TEMPORARY
+	}
 
-    public interface Constructor {
-        RuntimeLevel createLevel(MinecraftServer server, ResourceKey<Level> registryKey, RuntimeLevelConfig config, Style style);
-    }
+	public interface Constructor {
+		RuntimeLevel createLevel(MinecraftServer server, ResourceKey<Level> registryKey, RuntimeLevelConfig config, Style style);
+	}
 }

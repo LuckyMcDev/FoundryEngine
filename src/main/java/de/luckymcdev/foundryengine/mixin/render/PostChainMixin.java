@@ -19,29 +19,33 @@ import java.util.Map;
 @Mixin(PostChain.class)
 public abstract class PostChainMixin implements EnginePostChain {
 
-    @Shadow
-    public abstract void addToFrame(FrameGraphBuilder frame, int screenWidth, int screenHeight, PostChain.TargetBundle providedTargets);
+	@Shadow
+	public abstract void addToFrame(FrameGraphBuilder frame, int screenWidth, int screenHeight, PostChain.TargetBundle providedTargets);
 
-    /**
-     * Processes the post chain with the given external render targets.
-     */
-    @Unique
-    @Override
-    public void engine$process(Map<Identifier, RenderTarget> externalTargets, GraphicsResourceAllocator resourceAllocator) {
-        if (externalTargets.isEmpty()) return;
-        FrameGraphBuilder frame = new FrameGraphBuilder();
-        LevelTargetBundle bundle = new LevelTargetBundle();
+	/**
+	 * Processes the post chain with the given external render targets.
+	 */
+	@Unique
+	@Override
+	public void engine$process(Map<Identifier, RenderTarget> externalTargets, GraphicsResourceAllocator resourceAllocator) {
+		if (externalTargets.isEmpty()) {
+			return;
+		}
+		FrameGraphBuilder frame = new FrameGraphBuilder();
+		LevelTargetBundle bundle = new LevelTargetBundle();
 
-        RenderTarget mainTarget = externalTargets.get(LevelTargetBundle.MAIN_TARGET_ID);
-        if (mainTarget == null) return;
+		RenderTarget mainTarget = externalTargets.get(LevelTargetBundle.MAIN_TARGET_ID);
+		if (mainTarget == null) {
+			return;
+		}
 
-        for (Map.Entry<Identifier, RenderTarget> entry : externalTargets.entrySet()) {
-            Identifier id = entry.getKey();
-            RenderTarget target = entry.getValue();
-            bundle.replace(id, frame.importExternal(id.toString(), target));
-        }
+		for (Map.Entry<Identifier, RenderTarget> entry : externalTargets.entrySet()) {
+			Identifier id = entry.getKey();
+			RenderTarget target = entry.getValue();
+			bundle.replace(id, frame.importExternal(id.toString(), target));
+		}
 
-        this.addToFrame(frame, mainTarget.width, mainTarget.height, bundle);
-        frame.execute(resourceAllocator);
-    }
+		this.addToFrame(frame, mainTarget.width, mainTarget.height, bundle);
+		frame.execute(resourceAllocator);
+	}
 }

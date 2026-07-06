@@ -16,16 +16,18 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(ChunkMap.class)
 public class ChunkMapMixin {
 
-    /**
-     * Wraps the NoiseGeneratorSettings.dummy() call to use the chunk generator's provided settings.
-     */
-    @WrapOperation(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/levelgen/NoiseGeneratorSettings;dummy()Lnet/minecraft/world/level/levelgen/NoiseGeneratorSettings;"))
-    private NoiseGeneratorSettings engine$useProvidedChunkGeneratorSettings(Operation<NoiseGeneratorSettings> original, @Local(argsOnly = true) ChunkGenerator chunkGenerator) {
-        if (chunkGenerator instanceof ChunkGeneratorSettingsProvider provider) {
-            NoiseGeneratorSettings settings = provider.getSettings();
-            if (settings != null) return settings;
-        }
+	/**
+	 * Wraps the NoiseGeneratorSettings.dummy() call to use the chunk generator's provided settings.
+	 */
+	@WrapOperation(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/levelgen/NoiseGeneratorSettings;dummy()Lnet/minecraft/world/level/levelgen/NoiseGeneratorSettings;"))
+	private NoiseGeneratorSettings engine$useProvidedChunkGeneratorSettings(Operation<NoiseGeneratorSettings> original, @Local(argsOnly = true) ChunkGenerator chunkGenerator) {
+		if (chunkGenerator instanceof ChunkGeneratorSettingsProvider provider) {
+			NoiseGeneratorSettings settings = provider.getSettings();
+			if (settings != null) {
+				return settings;
+			}
+		}
 
-        return original.call();
-    }
+		return original.call();
+	}
 }

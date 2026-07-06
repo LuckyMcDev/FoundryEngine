@@ -20,24 +20,26 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ItemInHandRenderer.class)
 public abstract class ItemInHandRendererMixin {
 
-    @Invoker("renderPlayerArm")
-    abstract void invokeRenderPlayerArm(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int light,
-                                        float equippedProgress, float swingProgress, HumanoidArm arm);
+	@Invoker("renderPlayerArm")
+	abstract void invokeRenderPlayerArm(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int light,
+	                                    float equippedProgress, float swingProgress, HumanoidArm arm);
 
-    /**
-     * Injects at tail of renderArmWithItem to render the offhand arm when empty.
-     */
-    @Inject(method = "renderArmWithItem", at = @At("TAIL"))
-    private void renderOffhandArmWhenEmpty(AbstractClientPlayer player, float f, float g, InteractionHand hand, float swingProgress, ItemStack stack, float equippedProgress,
-                                           PoseStack poseStack, SubmitNodeCollector submitNodeCollector,
-                                           int light, CallbackInfo ci) {
+	/**
+	 * Injects at tail of renderArmWithItem to render the offhand arm when empty.
+	 */
+	@Inject(method = "renderArmWithItem", at = @At("TAIL"))
+	private void renderOffhandArmWhenEmpty(AbstractClientPlayer player, float f, float g, InteractionHand hand, float swingProgress, ItemStack stack, float equippedProgress,
+	                                       PoseStack poseStack, SubmitNodeCollector submitNodeCollector,
+	                                       int light, CallbackInfo ci) {
 
 
-        if (!ClientConfig.RENDER_OFFHAND.getAsBoolean()) return;
+		if (!ClientConfig.RENDER_OFFHAND.getAsBoolean()) {
+			return;
+		}
 
-        if (hand == InteractionHand.OFF_HAND && stack.isEmpty()) {
-            HumanoidArm offArm = player.getMainArm().getOpposite();
-            invokeRenderPlayerArm(poseStack, submitNodeCollector, light, equippedProgress, swingProgress, offArm);
-        }
-    }
+		if (hand == InteractionHand.OFF_HAND && stack.isEmpty()) {
+			HumanoidArm offArm = player.getMainArm().getOpposite();
+			invokeRenderPlayerArm(poseStack, submitNodeCollector, light, equippedProgress, swingProgress, offArm);
+		}
+	}
 }

@@ -9,15 +9,15 @@ import org.spongepowered.asm.mixin.gen.Accessor;
  */
 @Mixin(ServerClockManager.ClockInstance.class)
 public interface ClockInstanceAccessor {
-    @Accessor
-    boolean isPaused();
+	@Accessor
+	boolean isPaused();
 
-    @Accessor
-    long getTotalTicks();
+	@Accessor
+	long getTotalTicks();
 
-    @Accessor
-    float getPartialTick();
+	@Accessor
+	float getPartialTick();
 
-    @Accessor
-    float getRate();
+	@Accessor
+	float getRate();
 }

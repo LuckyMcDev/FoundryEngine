@@ -10,39 +10,39 @@ import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
 import org.jetbrains.annotations.ApiStatus;
 
 public class SlotEvents {
-    public static final EventGroupHolder<AbstractContainerMenu> MODIFICATION = new EventGroupHolder<>();
+	public static final EventGroupHolder<AbstractContainerMenu> MODIFICATION = new EventGroupHolder<>();
 
-    public static void modification(EventCallback<AbstractContainerMenu> callback) {
-        MODIFICATION.register(callback);
-    }
+	public static void modification(EventCallback<AbstractContainerMenu> callback) {
+		MODIFICATION.register(callback);
+	}
 
-    @ApiStatus.Internal
-    public static class Internal {
-        static {
-            Common.registerEventClear(Internal::clear);
-        }
+	@ApiStatus.Internal
+	public static class Internal {
+		static {
+			Common.registerEventClear(Internal::clear);
+		}
 
-        public static void register(IEventBus bus) {
-            bus.addListener(Internal::onContainerOpen);
-            bus.addListener(Internal::onScreenInit);
-        }
+		public static void register(IEventBus bus) {
+			bus.addListener(Internal::onContainerOpen);
+			bus.addListener(Internal::onScreenInit);
+		}
 
-        private static void onContainerOpen(PlayerContainerEvent.Open event) {
-            MODIFICATION.post(event.getContainer());
-        }
+		private static void onContainerOpen(PlayerContainerEvent.Open event) {
+			MODIFICATION.post(event.getContainer());
+		}
 
-        private static void onScreenInit(ScreenEvent.Init.Post event) {
-            var screen = event.getScreen();
-            if (screen instanceof AbstractContainerScreen<?> containerScreen) {
-                var player = Minecraft.getInstance().player;
-                if (player != null) {
-                    MODIFICATION.post(containerScreen.getMenu());
-                }
-            }
-        }
+		private static void onScreenInit(ScreenEvent.Init.Post event) {
+			var screen = event.getScreen();
+			if (screen instanceof AbstractContainerScreen<?> containerScreen) {
+				var player = Minecraft.getInstance().player;
+				if (player != null) {
+					MODIFICATION.post(containerScreen.getMenu());
+				}
+			}
+		}
 
-        public static void clear() {
-            MODIFICATION.clear();
-        }
-    }
+		public static void clear() {
+			MODIFICATION.clear();
+		}
+	}
 }

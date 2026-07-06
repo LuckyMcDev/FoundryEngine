@@ -13,50 +13,52 @@ import imgui.ImGui;
  * Uses lazy initialization to handle potential timing issues with Client initialization.
  */
 public class MainMenu {
-    private final GenericRegistry<String, MenuSection> menuSections = new GenericRegistry<>();
-    private ShortcutHandler shortcutHandler;
+	private final GenericRegistry<String, MenuSection> menuSections = new GenericRegistry<>();
+	private ShortcutHandler shortcutHandler;
 
-    public void register() {
-        var editor = Client.getEditorManager();
-        this.shortcutHandler = new ShortcutHandler(editor);
+	public void register() {
+		var editor = Client.getEditorManager();
+		this.shortcutHandler = new ShortcutHandler(editor);
 
-        for (PanelCategory category : PanelCategory.values()) {
-            if (isSubCategory(category)) continue;
+		for (PanelCategory category : PanelCategory.values()) {
+			if (isSubCategory(category)) {
+				continue;
+			}
 
-            this.register(category.name().toLowerCase(),
-                    new CategoryMenuSection(editor, category, category.getMenuLabel()));
-        }
-    }
+			this.register(category.name().toLowerCase(),
+				new CategoryMenuSection(editor, category, category.getMenuLabel()));
+		}
+	}
 
-    private boolean isSubCategory(PanelCategory category) {
-        return category.name().contains("_");
-    }
+	private boolean isSubCategory(PanelCategory category) {
+		return category.name().contains("_");
+	}
 
-    public void register(String name, MenuSection section) {
-        this.menuSections.register(name, section);
-    }
+	public void register(String name, MenuSection section) {
+		this.menuSections.register(name, section);
+	}
 
-    public void remove(String name) {
-        this.menuSections.remove(name);
-    }
+	public void remove(String name) {
+		this.menuSections.remove(name);
+	}
 
-    public void render() {
-        if (ImGui.beginMainMenuBar()) {
-            var g = Client.getImGraphics();
-            g.pushStack();
-            menuSections.forEach(MenuSection::render);
-            g.popStack();
+	public void render() {
+		if (ImGui.beginMainMenuBar()) {
+			var g = Client.getImGraphics();
+			g.pushStack();
+			menuSections.forEach(MenuSection::render);
+			g.popStack();
 
-            ImGui.endMainMenuBar();
-        }
-    }
+			ImGui.endMainMenuBar();
+		}
+	}
 
-    public void handleShortcuts() {
-        shortcutHandler.handleShortcuts();
-    }
+	public void handleShortcuts() {
+		shortcutHandler.handleShortcuts();
+	}
 
-    public void handleRender() {
-        handleShortcuts();
-        render();
-    }
+	public void handleRender() {
+		handleShortcuts();
+		render();
+	}
 }

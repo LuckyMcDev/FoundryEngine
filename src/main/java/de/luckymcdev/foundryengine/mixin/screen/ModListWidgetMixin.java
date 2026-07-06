@@ -17,18 +17,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ModListWidget.class)
 public abstract class ModListWidgetMixin {
 
-    @Shadow
-    private ModListScreen parent;
+	@Shadow
+	private ModListScreen parent;
 
-    /**
-     * Injects at tail of refreshList to append bundle entries to the mod list.
-     */
-    @Inject(method = "refreshList", at = @At("TAIL"))
-    private void foundry$appendBundleEntries(CallbackInfo ci) {
-        @SuppressWarnings("unchecked")
-        AbstractSelectionListAccessor<BundleListEntry> accessor = (AbstractSelectionListAccessor<BundleListEntry>) this;
-        for (Bundle bundle : Common.getBundleManager().getBundles()) {
-            accessor.invokeAddEntry(new BundleListEntry(bundle, parent));
-        }
-    }
+	/**
+	 * Injects at tail of refreshList to append bundle entries to the mod list.
+	 */
+	@Inject(method = "refreshList", at = @At("TAIL"))
+	private void foundry$appendBundleEntries(CallbackInfo ci) {
+		@SuppressWarnings("unchecked")
+		AbstractSelectionListAccessor<BundleListEntry> accessor = (AbstractSelectionListAccessor<BundleListEntry>) this;
+		for (Bundle bundle : Common.getBundleManager().getBundles()) {
+			accessor.invokeAddEntry(new BundleListEntry(bundle, parent));
+		}
+	}
 }

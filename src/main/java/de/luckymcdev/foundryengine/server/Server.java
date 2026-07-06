@@ -16,45 +16,47 @@ import java.util.concurrent.CompletableFuture;
  * Only use this class from dedicated server or logical server contexts.
  */
 public final class Server {
-    private Server() {
-    }
+	private Server() {
+	}
 
-    /**
-     * Returns the current {@link MinecraftServer}, or {@code null} if none is running.
-     */
-    public static @Nullable MinecraftServer getServer() {
-        return ServerLifecycleHooks.getCurrentServer();
-    }
+	/**
+	 * Returns the current {@link MinecraftServer}, or {@code null} if none is running.
+	 */
+	public static @Nullable MinecraftServer getServer() {
+		return ServerLifecycleHooks.getCurrentServer();
+	}
 
-    /**
-     * Returns the server's {@link RecipeManager}, or {@code null} if the server is not running.
-     */
-    public static @Nullable RecipeManager getRecipeManager() {
-        MinecraftServer server = getServer();
-        return server != null ? server.getRecipeManager() : null;
-    }
+	/**
+	 * Returns the server's {@link RecipeManager}, or {@code null} if the server is not running.
+	 */
+	public static @Nullable RecipeManager getRecipeManager() {
+		MinecraftServer server = getServer();
+		return server != null ? server.getRecipeManager() : null;
+	}
 
-    /**
-     * Reloads all server resources, picking up any newly available data packs.
-     * Returns a completed future immediately if no server is running.
-     */
-    public static CompletableFuture<Void> reloadResources() {
-        MinecraftServer server = getServer();
-        if (server == null) return CompletableFuture.completedFuture(null);
+	/**
+	 * Reloads all server resources, picking up any newly available data packs.
+	 * Returns a completed future immediately if no server is running.
+	 */
+	public static CompletableFuture<Void> reloadResources() {
+		MinecraftServer server = getServer();
+		if (server == null) {
+			return CompletableFuture.completedFuture(null);
+		}
 
-        PackRepository repo = server.getPackRepository();
-        WorldData worldData = server.getWorldData();
-        Collection<String> selected = new ArrayList<>(repo.getSelectedIds());
+		PackRepository repo = server.getPackRepository();
+		WorldData worldData = server.getWorldData();
+		Collection<String> selected = new ArrayList<>(repo.getSelectedIds());
 
-        repo.reload();
-        Collection<String> available = new ArrayList<>(repo.getAvailableIds());
-        for (String pack : available) {
-            if (!worldData.getDataConfiguration().dataPacks().getDisabled().contains(pack)
-                    && !selected.contains(pack)) {
-                selected.add(pack);
-            }
-        }
+		repo.reload();
+		Collection<String> available = new ArrayList<>(repo.getAvailableIds());
+		for (String pack : available) {
+			if (!worldData.getDataConfiguration().dataPacks().getDisabled().contains(pack)
+				&& !selected.contains(pack)) {
+				selected.add(pack);
+			}
+		}
 
-        return server.reloadResources(selected);
-    }
+		return server.reloadResources(selected);
+	}
 }

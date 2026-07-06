@@ -62,12 +62,24 @@ public final class TomlColorizer extends AbstractBaseColorizer {
 	}
 
 	private Color resolveColor(Matcher m) {
-		if (m.group(1) != null) return COLOR_STRING;
-		if (m.group(2) != null) return COLOR_COMMENT;
-		if (m.group(3) != null) return COLOR_BOOLEAN;
-		if (m.group(4) != null) return COLOR_NUMBER;
-		if (m.group(5) != null) return COLOR_SECTION;
-		if (m.group(6) != null) return COLOR_KEY;
+		if (m.group(1) != null) {
+			return COLOR_STRING;
+		}
+		if (m.group(2) != null) {
+			return COLOR_COMMENT;
+		}
+		if (m.group(3) != null) {
+			return COLOR_BOOLEAN;
+		}
+		if (m.group(4) != null) {
+			return COLOR_NUMBER;
+		}
+		if (m.group(5) != null) {
+			return COLOR_SECTION;
+		}
+		if (m.group(6) != null) {
+			return COLOR_KEY;
+		}
 		return COLOR_DEFAULT;
 	}
 }
