@@ -7,6 +7,7 @@ import imgui.ImGui;
 public class EditorPanel extends Panel {
     private String statusMessage = "";
     private long statusExpiry = 0L;
+    private boolean beganChild = false;
 
     protected EditorPanel(Builder builder) {
         super(builder);
@@ -25,12 +26,15 @@ public class EditorPanel extends Panel {
     protected void onPreContent() {
         if (hasStatus()) {
             ImGui.beginChild("##editor_content_scroll", 0, -getStatusReservedHeight(), false);
+            beganChild = true;
+        } else {
+            beganChild = false;
         }
     }
 
     @Override
     protected void onPostContent() {
-        if (hasStatus()) {
+        if (beganChild) {
             ImGui.endChild();
         }
         renderStatus();
