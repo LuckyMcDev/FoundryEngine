@@ -38,6 +38,8 @@ config = "mixins/${mod_id}.clock.mixins.json"
 config = "mixins/${mod_id}.world.mixins.json"
 [[mixins]]
 config = "mixins/${mod_id}.slot.mixins.json"
+[[mixins]]
+config = "mixins/${mod_id}.suggest.mixins.json"
 
 #[[accessTransformers]]
 #"META-INF/accesstransformer.cfg"

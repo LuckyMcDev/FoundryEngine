@@ -38,3 +38,4 @@ FoundryEngine provides a collection of game-engine-style systems that run alongs
 
 - [Easing Functions](easing) — 31 Penner easing functions plus CSS-style BezierEasing
 - [Commands](commands) — Complete `/engine` command reference
+- [NBT Command Suggestions](nbt-suggestions) — Tab-completion for NBT in vanilla commands

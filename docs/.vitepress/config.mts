@@ -66,6 +66,7 @@ export default defineConfig({
                         { text: 'Easing Functions', link: '/concepts/systems/easing' },
                         { text: 'Markdown Rendering', link: '/concepts/systems/markdown' },
                         { text: 'Commands', link: '/concepts/systems/commands' },
+	                    {text: 'NBT Command Suggestions', link: '/concepts/systems/nbt-suggestions'},
                         { text: 'Dialogue System', link: '/concepts/systems/dialogue' },
                         { text: 'Blueprints', link: '/concepts/systems/blueprints' }
                     ]
@@ -101,6 +102,7 @@ export default defineConfig({
                         { text: 'Easing Functions', link: '/concepts/systems/easing' },
                         { text: 'Markdown Rendering', link: '/concepts/systems/markdown' },
                         { text: 'Commands', link: '/concepts/systems/commands' },
+	                    {text: 'NBT Command Suggestions', link: '/concepts/systems/nbt-suggestions'},
                         { text: 'Dialogue System', link: '/concepts/systems/dialogue' },
                         { text: 'Blueprints', link: '/concepts/systems/blueprints' }
                     ]
