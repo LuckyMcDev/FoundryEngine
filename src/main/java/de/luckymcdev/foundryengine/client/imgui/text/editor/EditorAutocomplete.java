@@ -16,9 +16,9 @@ import java.util.List;
 // Hovering it never steals keyboard focus from the editor.
 public final class EditorAutocomplete {
 	private static final int MAX_VISIBLE = 8;
-	private static final float POPUP_WIDTH = 360f;
-	private static final float ITEM_HEIGHT = 22f;
-	private static final float ICON_COL_W = 26f;
+	private static final float POPUP_WIDTH = 360.0f;
+	private static final float ITEM_HEIGHT = 22.0f;
+	private static final float ICON_COL_W = 26.0f;
 
 	private static final Color COL_BG = Color.ofABGR(0xF0191919);
 	private static final Color COL_BORDER = Color.ofABGR(0xFF3A3A3A);
@@ -34,7 +34,7 @@ public final class EditorAutocomplete {
 	private int selectedIdx = 0;
 	private int scrollOffset = 0;
 	private String prefix = "";
-	private float editorPanelTop = 0f;
+	private float editorPanelTop = 0.0f;
 	private float editorPanelBottom = Float.MAX_VALUE;
 
 	public EditorAutocomplete(IAutocompleteProvider provider) {
@@ -184,8 +184,8 @@ public final class EditorAutocomplete {
 		float totalHeight = y2 - y;
 
 		ImDrawList dl = ImGui.getForegroundDrawList();
-		dl.addRectFilled(x, y, x2, y2, EditorTheme.toImU32(COL_BG), 5f);
-		dl.addRect(x, y, x2, y2, EditorTheme.toImU32(COL_BORDER), 5f, 0, 1.5f);
+		dl.addRectFilled(x, y, x2, y2, EditorTheme.toImU32(COL_BG), 5.0f);
+		dl.addRect(x, y, x2, y2, EditorTheme.toImU32(COL_BORDER), 5.0f, 0, 1.5f);
 
 		ImVec2 mp = ImGui.getMousePos();
 		boolean mouseIn = mp.x >= x && mp.x <= x2 && mp.y >= y && mp.y <= y2;
@@ -215,13 +215,13 @@ public final class EditorAutocomplete {
 
 			if (hovering) {
 				selectedIdx = idx;
-				dl.addRectFilled(x + 2, iy, x2 - 2, iy + ITEM_HEIGHT, EditorTheme.toImU32(COL_HOVERED), 3f);
+				dl.addRectFilled(x + 2, iy, x2 - 2, iy + ITEM_HEIGHT, EditorTheme.toImU32(COL_HOVERED), 3.0f);
 				if (ImGui.isMouseClicked(0)) {
 					accept(cursor, lines, editor);
 					accepted = true;
 				}
 			} else if (idx == selectedIdx) {
-				dl.addRectFilled(x + 2, iy, x2 - 2, iy + ITEM_HEIGHT, EditorTheme.toImU32(COL_SELECTED), 3f);
+				dl.addRectFilled(x + 2, iy, x2 - 2, iy + ITEM_HEIGHT, EditorTheme.toImU32(COL_SELECTED), 3.0f);
 			}
 
 			float tx = x + 8;
@@ -233,7 +233,7 @@ public final class EditorAutocomplete {
 
 			String tag = item.type();
 			float tagWidth = ImGui.getFont().calcTextSizeA(fontSize * 0.85f, Float.MAX_VALUE, -1, tag).x;
-			float tagRightPad = items.size() > MAX_VISIBLE ? 18f : 8f;
+			float tagRightPad = items.size() > MAX_VISIBLE ? 18.0f : 8.0f;
 			dl.addText(x2 - tagWidth - tagRightPad, ty, EditorTheme.toImU32(COL_TYPE), tag);
 		}
 
@@ -243,8 +243,8 @@ public final class EditorAutocomplete {
 			float thumbH = (float) MAX_VISIBLE / items.size() * sbH;
 			float maxOff = items.size() - MAX_VISIBLE;
 			float thumbY = y + 2 + (scrollOffset / maxOff) * (sbH - thumbH);
-			dl.addRectFilled(sbX, y + 2, sbX + 4, y + totalHeight - 2, EditorTheme.toImU32(COL_SCROLLBG), 2f);
-			dl.addRectFilled(sbX, thumbY, sbX + 4, thumbY + thumbH, EditorTheme.toImU32(COL_SCROLLFG), 2f);
+			dl.addRectFilled(sbX, y + 2, sbX + 4, y + totalHeight - 2, EditorTheme.toImU32(COL_SCROLLBG), 2.0f);
+			dl.addRectFilled(sbX, thumbY, sbX + 4, thumbY + thumbH, EditorTheme.toImU32(COL_SCROLLFG), 2.0f);
 		}
 
 		return accepted;

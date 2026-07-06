@@ -22,9 +22,9 @@ public final class ImGuiGizmoMatrices {
 
 	static void identity(float[] m) {
 		for (int i = 0; i < 16; i++) {
-			m[i] = 0f;
+			m[i] = 0.0f;
 		}
-		m[0] = m[5] = m[10] = m[15] = 1f;
+		m[0] = m[5] = m[10] = m[15] = 1.0f;
 	}
 
 	static void fromMatrix4f(Matrix4f src, float[] dst) {
@@ -135,7 +135,7 @@ public final class ImGuiGizmoMatrices {
 		}
 
 		public void drawGrid(float cellSize) {
-			drawGrid(cellSize, 10f);
+			drawGrid(cellSize, 10.0f);
 		}
 
 		public void reanchor() {
@@ -162,7 +162,7 @@ public final class ImGuiGizmoMatrices {
 			float[] before = matrices.view.clone();
 			ImGuizmo.viewManipulate(matrices.view, armLength, cubeX, cubeY, cubeW, cubeH, bgColor);
 			for (int i = 0; i < 16; i++) {
-				if (Math.abs(before[i] - matrices.view[i]) > 1e-5f) {
+				if (Math.abs(before[i] - matrices.view[i]) > 1.0e-5f) {
 					return true;
 				}
 			}

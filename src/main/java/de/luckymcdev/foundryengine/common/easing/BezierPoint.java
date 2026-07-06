@@ -83,13 +83,13 @@ public class BezierPoint {
 	 */
 	public void setPos(Vec3 newPos) {
 		if (!this.isSinglePoint()) {
-			if (this.isTangent()) {
+			if (this.isTangent) {
 				if (!this.path.isPointFirstOrLast(this.getRoot())) {
-					this.getMirrorTangent().pos = this.getRoot().getPos().subtract(newPos.subtract(this.getRoot().getPos()));
+					this.getMirrorTangent().pos = this.getRoot().pos.subtract(newPos.subtract(this.getRoot().pos));
 				}
 			} else {
 				List<BezierPoint> tangents = this.getTangents();
-				Vec3 offset = tangents.getFirst().getPos().subtract(this.getPos());
+				Vec3 offset = tangents.getFirst().pos.subtract(this.pos);
 				tangents.get(0).pos = newPos.add(offset);
 				if (!this.isEnd()) {
 					tangents.get(1).pos = newPos.subtract(offset);
@@ -158,7 +158,7 @@ public class BezierPoint {
 	 * Returns the anchor point this tangent belongs to (null if this is an anchor).
 	 */
 	public BezierPoint getRoot() {
-		if (!this.isTangent()) {
+		if (!this.isTangent) {
 			return null;
 		}
 		ArrayList<BezierPoint> points = this.path.getPoints();
@@ -171,7 +171,7 @@ public class BezierPoint {
 	 * Returns the mirrored tangent point on the opposite side of the anchor.
 	 */
 	public BezierPoint getMirrorTangent() {
-		if (!this.isTangent() || this.path.isPointFirstOrLast(this.getRoot())) {
+		if (!this.isTangent || this.path.isPointFirstOrLast(this.getRoot())) {
 			return null;
 		}
 		ArrayList<BezierPoint> points = this.path.getPoints();

@@ -35,8 +35,8 @@ public class CutscenePanel extends EditorPanel {
 	private final ImString newName = new ImString(64);
 
 	private final ImInt selectedNodeIndex = new ImInt(0);
-	private final ImFloat selectedNodePitch = new ImFloat(0f);
-	private final ImFloat selectedNodeYaw = new ImFloat(0f);
+	private final ImFloat selectedNodePitch = new ImFloat(0.0f);
+	private final ImFloat selectedNodeYaw = new ImFloat(0.0f);
 
 	private int lastSelectedCutsceneIndex = Integer.MIN_VALUE;
 	private int selectedIndex = -1;
@@ -84,7 +84,7 @@ public class CutscenePanel extends EditorPanel {
 	}
 
 	private void renderLeftPanel(List<Cutscene> cutscenes) {
-		ImGui.beginChild("##cutscene_list", 180f, 0, true);
+		ImGui.beginChild("##cutscene_list", 180.0f, 0, true);
 
 		if (showNewForm) {
 			renderNewCutsceneForm();

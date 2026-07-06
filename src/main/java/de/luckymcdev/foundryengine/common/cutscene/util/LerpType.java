@@ -46,9 +46,9 @@ public enum LerpType implements LerpOperation<Float> {
 	@Override
 	public Float compute(Float t) {
 		if (t == null) {
-			return 0f;
+			return 0.0f;
 		}
-		float clamped = Mth.clamp(t, 0f, 1f);
-		return easing.ease(clamped, 0f, 1f, 1f);
+		float clamped = Mth.clamp(t, 0.0f, 1.0f);
+		return easing.ease(clamped, 0.0f, 1.0f, 1.0f);
 	}
 }

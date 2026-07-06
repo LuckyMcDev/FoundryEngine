@@ -38,7 +38,7 @@ public enum Priority {
 	 * @return comparator for sorting objects by priority
 	 */
 	public static <T> Comparator<T> comparing(java.util.function.Function<? super T, Priority> keyExtractor) {
-		return Comparator.comparingInt(obj -> keyExtractor.apply(obj).getValue());
+		return Comparator.comparingInt(obj -> keyExtractor.apply(obj).value);
 	}
 
 	/**
@@ -48,7 +48,7 @@ public enum Priority {
 	 * @return reverse comparator for sorting objects by priority
 	 */
 	public static Comparator<Object> comparingReversed(Function<Object, Priority> keyExtractor) {
-		return Comparator.comparingInt(obj -> keyExtractor.apply(obj).getValue()).reversed();
+		return Comparator.comparingInt(obj -> keyExtractor.apply(obj).value).reversed();
 	}
 
 	/**

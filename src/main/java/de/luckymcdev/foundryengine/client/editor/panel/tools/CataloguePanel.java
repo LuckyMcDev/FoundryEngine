@@ -35,7 +35,7 @@ import java.util.stream.Stream;
 
 public class CataloguePanel extends EditorPanel {
 	public static final CataloguePanel INSTANCE = new CataloguePanel();
-	private static final float ITEM_SIZE = 64f;
+	private static final float ITEM_SIZE = 64.0f;
 	private static final Identifier NAMETAG_ID = Identifier.parse("minecraft:name_tag");
 	private static final Identifier BUCKET_ID = Identifier.parse("minecraft:water_bucket");
 	private static final Identifier SPAWNER_ID = Identifier.parse("minecraft:spawner");

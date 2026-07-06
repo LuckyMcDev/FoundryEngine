@@ -42,14 +42,14 @@ public class GizmoTestPanel extends Panel {
 			.setCamera(camera);
 
 		ImGuiGizmoMiniBar miniBar = new ImGuiGizmoMiniBar(ImGuiGizmoMiniBar.Anchor.TOP_LEFT)
-			.setButtonSize(30f, 26f);
+			.setButtonSize(30.0f, 26.0f);
 		gizmo.setMiniBar(miniBar);
 
 		resetMatrix();
 	}
 
 	private void resetMatrix() {
-		modelMatrix.identity().scale(2f);
+		modelMatrix.identity().scale(2.0f);
 	}
 
 	@Override

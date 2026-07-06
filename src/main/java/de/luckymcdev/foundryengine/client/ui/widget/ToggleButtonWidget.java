@@ -50,8 +50,8 @@ public class ToggleButtonWidget extends ButtonWidget {
 	void renderBackground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float tickDelta, boolean debug) {
 		UIArea drawArea = this.getRenderArea(tickDelta);
 		Color drawColor = backgroundColor;
-		if (this.isPressed()) {
-			drawColor = this.getToggledColor();
+		if (this.pressed) {
+			drawColor = this.toggledColor;
 		}
 		if (this.contains(mouseX, mouseY)) {
 			drawColor = this.getHoverColor();

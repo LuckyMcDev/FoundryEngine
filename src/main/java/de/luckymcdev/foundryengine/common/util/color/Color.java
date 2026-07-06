@@ -77,50 +77,50 @@ public class Color {
 
 
 	public static Color hsb(float hue, float saturation, float brightness, int alpha) {
-		if (saturation <= 0F) {
-			int c = (int) (brightness * 255F + 0.5F);
+		if (saturation <= 0.0F) {
+			int c = (int) (brightness * 255.0F + 0.5F);
 			return of(alpha, c, c, c);
 		}
 
 		int r = 0;
 		int g = 0;
 		int b = 0;
-		float h = (hue - (float) Math.floor(hue)) * 6F;
+		float h = (hue - (float) Math.floor(hue)) * 6.0F;
 		float f = h - (float) Math.floor(h);
-		float p = brightness * (1F - saturation);
-		float q = brightness * (1F - saturation * f);
-		float t = brightness * (1F - saturation * (1F - f));
+		float p = brightness * (1.0F - saturation);
+		float q = brightness * (1.0F - saturation * f);
+		float t = brightness * (1.0F - saturation * (1.0F - f));
 
 		switch ((int) h) {
 			case 0:
-				r = (int) (brightness * 255F + 0.5F);
-				g = (int) (t * 255F + 0.5F);
-				b = (int) (p * 255F + 0.5F);
+				r = (int) (brightness * 255.0F + 0.5F);
+				g = (int) (t * 255.0F + 0.5F);
+				b = (int) (p * 255.0F + 0.5F);
 				break;
 			case 1:
-				r = (int) (q * 255F + 0.5F);
-				g = (int) (brightness * 255F + 0.5F);
-				b = (int) (p * 255F + 0.5F);
+				r = (int) (q * 255.0F + 0.5F);
+				g = (int) (brightness * 255.0F + 0.5F);
+				b = (int) (p * 255.0F + 0.5F);
 				break;
 			case 2:
-				r = (int) (p * 255F + 0.5F);
-				g = (int) (brightness * 255F + 0.5F);
-				b = (int) (t * 255F + 0.5F);
+				r = (int) (p * 255.0F + 0.5F);
+				g = (int) (brightness * 255.0F + 0.5F);
+				b = (int) (t * 255.0F + 0.5F);
 				break;
 			case 3:
-				r = (int) (p * 255F + 0.5F);
-				g = (int) (q * 255F + 0.5F);
-				b = (int) (brightness * 255F + 0.5F);
+				r = (int) (p * 255.0F + 0.5F);
+				g = (int) (q * 255.0F + 0.5F);
+				b = (int) (brightness * 255.0F + 0.5F);
 				break;
 			case 4:
-				r = (int) (t * 255F + 0.5F);
-				g = (int) (p * 255F + 0.5F);
-				b = (int) (brightness * 255F + 0.5F);
+				r = (int) (t * 255.0F + 0.5F);
+				g = (int) (p * 255.0F + 0.5F);
+				b = (int) (brightness * 255.0F + 0.5F);
 				break;
 			case 5:
-				r = (int) (brightness * 255F + 0.5F);
-				g = (int) (p * 255F + 0.5F);
-				b = (int) (q * 255F + 0.5F);
+				r = (int) (brightness * 255.0F + 0.5F);
+				g = (int) (p * 255.0F + 0.5F);
+				b = (int) (q * 255.0F + 0.5F);
 		}
 
 		return of(alpha, r, g, b);
@@ -162,7 +162,7 @@ public class Color {
 	}
 
 	public static Color of(float a, float r, float g, float b) {
-		return of((int) (a * 255F), (int) (r * 255F), (int) (g * 255F), (int) (b * 255F));
+		return of((int) (a * 255.0F), (int) (r * 255.0F), (int) (g * 255.0F), (int) (b * 255.0F));
 	}
 
 	/**

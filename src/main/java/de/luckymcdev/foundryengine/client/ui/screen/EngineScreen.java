@@ -14,7 +14,7 @@ import net.minecraft.util.Mth;
 public abstract class EngineScreen extends Screen {
 	private final WidgetBase root;
 	private final boolean debug;
-	float tick = 0f;
+	float tick = 0.0f;
 	long lastNanos = 0;
 
 	protected EngineScreen(boolean debug) {
@@ -83,7 +83,7 @@ public abstract class EngineScreen extends Screen {
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
 		long diffNanos = System.nanoTime() - lastNanos;
-		tick += diffNanos / 50_000_000f;
+		tick += diffNanos / 50_000_000.0f;
 		float tickDelta = tick - Mth.floor(tick);
 		lastNanos = System.nanoTime();
 

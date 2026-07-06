@@ -49,7 +49,7 @@ public final class ImGuiGizmoConfig {
 		return new Builder()
 			.withOperation(Operation.UNIVERSAL)
 			.withMode(Mode.WORLD)
-			.withGridSize(1f)
+			.withGridSize(1.0f)
 			.withShowGrid(true)
 			.withShowViewCube(true);
 	}
@@ -58,7 +58,7 @@ public final class ImGuiGizmoConfig {
 		return new Builder()
 			.withOperation(Operation.TRANSLATE)
 			.withMode(Mode.LOCAL)
-			.withGridSize(1f)
+			.withGridSize(1.0f)
 			.withShowGrid(true)
 			.withShowViewCube(true);
 	}
@@ -67,7 +67,7 @@ public final class ImGuiGizmoConfig {
 		return new Builder()
 			.withOperation(Operation.ROTATE)
 			.withMode(Mode.LOCAL)
-			.withGridSize(1f)
+			.withGridSize(1.0f)
 			.withShowGrid(false)
 			.withShowViewCube(true);
 	}
@@ -76,7 +76,7 @@ public final class ImGuiGizmoConfig {
 		return new Builder()
 			.withOperation(Operation.SCALEU)
 			.withMode(Mode.LOCAL)
-			.withGridSize(1f)
+			.withGridSize(1.0f)
 			.withShowGrid(true)
 			.withShowViewCube(true);
 	}
@@ -86,7 +86,7 @@ public final class ImGuiGizmoConfig {
 			.withOperation(Operation.BOUNDS)
 			.withMode(Mode.LOCAL)
 			.withLocalBounds(new float[]{-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f})
-			.withGridSize(1f)
+			.withGridSize(1.0f)
 			.withShowGrid(true)
 			.withShowViewCube(true);
 	}
@@ -95,7 +95,7 @@ public final class ImGuiGizmoConfig {
 		return new Builder()
 			.withOperation(Operation.ROTATE)
 			.withMode(Mode.WORLD)
-			.withGridSize(1f)
+			.withGridSize(1.0f)
 			.withShowGrid(false)
 			.withShowViewCube(true)
 			.withLightMode(true);
@@ -146,15 +146,15 @@ public final class ImGuiGizmoConfig {
 		private boolean snapTranslation = false;
 		private float snapTranslationStep = 0.25f;
 		private boolean snapRotation = false;
-		private float snapRotationDeg = 15f;
+		private float snapRotationDeg = 15.0f;
 		private boolean snapScale = false;
 		private float snapScaleStep = 0.1f;
 		private float[] localBounds = null;
 		private float[] boundsSnap = null;
-		private float gridSize = 1f;
+		private float gridSize = 1.0f;
 		private boolean showGrid = true;
 		private boolean showViewCube = true;
-		private float viewCubeArmLength = 8f;
+		private float viewCubeArmLength = 8.0f;
 		private boolean orthographic = false;
 		private boolean lockTransform = false;
 		private boolean lockView = false;

@@ -27,8 +27,8 @@ import java.util.ArrayList;
 
 public class DialogueEditorPanel extends EditorPanel {
 	public static final DialogueEditorPanel INSTANCE = new DialogueEditorPanel();
-	private static final float TREE_PANEL_WIDTH = 220f;
-	private static final float SECTION_SPACING = 8f;
+	private static final float TREE_PANEL_WIDTH = 220.0f;
+	private static final float SECTION_SPACING = 8.0f;
 	private static final float ACCENT_R = 0.33f, ACCENT_G = 0.62f, ACCENT_B = 1.0f;
 
 	private final ArrayList<DialogueTree> trees = new ArrayList<>();
@@ -148,12 +148,12 @@ public class DialogueEditorPanel extends EditorPanel {
 
 	private void renderNewTreeForm() {
 		ImGui.beginChild("##new_tree_form", 0, 64, true);
-		ImGui.textColored(ACCENT_R, ACCENT_G, ACCENT_B, 1f, "New Tree");
+		ImGui.textColored(ACCENT_R, ACCENT_G, ACCENT_B, 1.0f, "New Tree");
 		ImGui.setNextItemWidth(-1);
 		boolean done = ImGui.inputTextWithHint("##ntid", "namespace:path", newTreeId, ImGuiInputTextFlags.EnterReturnsTrue);
 
 		float avail = ImGui.getContentRegionAvailX();
-		float half = (avail - ImGui.getStyle().getItemSpacingX()) / 2f;
+		float half = (avail - ImGui.getStyle().getItemSpacingX()) / 2.0f;
 
 		boolean create = ImGui.button("Create", half, 0) || done;
 		ImGui.sameLine();
@@ -206,7 +206,7 @@ public class DialogueEditorPanel extends EditorPanel {
 	}
 
 	private void renderTreeHeader(DialogueTree tree) {
-		ImGui.pushStyleColor(ImGuiCol.Text, ACCENT_R, ACCENT_G, ACCENT_B, 1f);
+		ImGui.pushStyleColor(ImGuiCol.Text, ACCENT_R, ACCENT_G, ACCENT_B, 1.0f);
 		ImGui.text(ImIcons.COMMENT + "  " + tree.getId());
 		ImGui.popStyleColor();
 
@@ -252,7 +252,7 @@ public class DialogueEditorPanel extends EditorPanel {
 		if (showResetConfirm) {
 			ImGui.spacing();
 			ImGui.beginChild("##reset_confirm", 0, 50, true);
-			ImGui.textColored(0.75f, 0.20f, 0.20f, 1f,
+			ImGui.textColored(0.75f, 0.20f, 0.20f, 1.0f,
 				"Reset all style settings for this tree to defaults?");
 			if (ImGui.button("Yes, Reset")) {
 				resetStyleToDefaults(tree);
@@ -476,7 +476,7 @@ public class DialogueEditorPanel extends EditorPanel {
 
 	private void renderNewNodeForm(DialogueTree tree) {
 		ImGui.beginChild("##new_node_form", 0, 60, true);
-		ImGui.textColored(ACCENT_R, ACCENT_G, ACCENT_B, 1f, "New Node");
+		ImGui.textColored(ACCENT_R, ACCENT_G, ACCENT_B, 1.0f, "New Node");
 
 		ImGui.setNextItemWidth(140);
 		ImGui.inputTextWithHint("##nnid", "node id", newNodeId);
@@ -573,7 +573,7 @@ public class DialogueEditorPanel extends EditorPanel {
 
 	private void renderNewOptionForm(DialogueNode node) {
 		ImGui.beginChild("##new_option_form", 0, 60, true);
-		ImGui.textColored(ACCENT_R, ACCENT_G, ACCENT_B, 1f, "New Option");
+		ImGui.textColored(ACCENT_R, ACCENT_G, ACCENT_B, 1.0f, "New Option");
 
 		ImGui.setNextItemWidth(260);
 		ImGui.inputTextWithHint("##not", "option text", newOptionText);
@@ -624,7 +624,7 @@ public class DialogueEditorPanel extends EditorPanel {
 
 			ImGui.beginChild("##opt_row" + i, 0, 64, true);
 
-			ImGui.textColored(ACCENT_R, ACCENT_G, ACCENT_B, 1f, ImIcons.ARROW_RIGHT + " Option " + (i + 1));
+			ImGui.textColored(ACCENT_R, ACCENT_G, ACCENT_B, 1.0f, ImIcons.ARROW_RIGHT + " Option " + (i + 1));
 			ImGui.sameLine(ImGui.getContentRegionAvailX() + ImGui.getCursorPosX() - 24);
 			g.pushStack();
 			g.setRedButton();
@@ -674,10 +674,10 @@ public class DialogueEditorPanel extends EditorPanel {
 			editText.set(node.getText());
 			editNextNode.set(node.getNextNodeId() != null ? node.getNextNodeId() : "");
 			int c = node.getSpeakerColor();
-			editSpeakerColor[0] = ((c >> 16) & 0xFF) / 255f;
-			editSpeakerColor[1] = ((c >> 8) & 0xFF) / 255f;
-			editSpeakerColor[2] = (c & 0xFF) / 255f;
-			editSpeakerColor[3] = 1f;
+			editSpeakerColor[0] = ((c >> 16) & 0xFF) / 255.0f;
+			editSpeakerColor[1] = ((c >> 8) & 0xFF) / 255.0f;
+			editSpeakerColor[2] = (c & 0xFF) / 255.0f;
+			editSpeakerColor[3] = 1.0f;
 		} else {
 			editSpeaker.set("");
 			editText.set("");

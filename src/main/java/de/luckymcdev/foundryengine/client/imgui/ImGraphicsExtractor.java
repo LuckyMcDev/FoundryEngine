@@ -440,7 +440,7 @@ public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorCons
 	}
 
 	public boolean button(String label, @Nullable ImColorVariant variant) {
-		return button(label, variant, 0F);
+		return button(label, variant, 0.0F);
 	}
 
 	public boolean button(String label, @Nullable ImColorVariant variant, float width) {
@@ -448,7 +448,7 @@ public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorCons
 			pushStack();
 			setButton(variant);
 		}
-		boolean clicked = ImGui.button(label, width, 0F);
+		boolean clicked = ImGui.button(label, width, 0.0F);
 		if (variant != null) {
 			popStack();
 		}
@@ -547,9 +547,9 @@ public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorCons
 	}
 
 	public void displayIcon(ImIcon icon) {
-		ImGui.setWindowFontScale(2f);
+		ImGui.setWindowFontScale(2.0f);
 		ImGui.text(icon.iconText(""));
-		ImGui.setWindowFontScale(1f);
+		ImGui.setWindowFontScale(1.0f);
 	}
 
 	public void textCentered(String text, float width) {
@@ -558,7 +558,7 @@ public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorCons
 	}
 
 	public void centered(Runnable runnable, float itemWidth, float totalWidth) {
-		float posX = ImGui.getCursorPosX() + (totalWidth - itemWidth) / 2f;
+		float posX = ImGui.getCursorPosX() + (totalWidth - itemWidth) / 2.0f;
 		ImGui.setCursorPosX(posX);
 		runnable.run();
 	}
@@ -647,7 +647,7 @@ public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorCons
 		ImGui.dummy(0, 24);
 		float avail = ImGui.getContentRegionAvailX();
 		float textW = ImGui.calcTextSize(text).x;
-		ImGui.setCursorPosX(Math.max(0, (avail - textW) / 2f));
+		ImGui.setCursorPosX(Math.max(0, (avail - textW) / 2.0f));
 		ImGui.textDisabled(text);
 	}
 
@@ -672,10 +672,10 @@ public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorCons
 
 	public boolean colorEdit4Int(String label, int[] rgba) {
 		float[] f = new float[]{
-			((rgba[0] >> 16) & 0xFF) / 255f,
-			((rgba[0] >> 8) & 0xFF) / 255f,
-			(rgba[0] & 0xFF) / 255f,
-			((rgba[0] >> 24) & 0xFF) / 255f
+			((rgba[0] >> 16) & 0xFF) / 255.0f,
+			((rgba[0] >> 8) & 0xFF) / 255.0f,
+			(rgba[0] & 0xFF) / 255.0f,
+			((rgba[0] >> 24) & 0xFF) / 255.0f
 		};
 		ImGui.setNextItemWidth(180);
 		if (ImGui.colorEdit4(label, f, ImGuiColorEditFlags.NoInputs)) {
@@ -765,7 +765,7 @@ public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorCons
 		private int pushedStyle = 0;
 		private int pushedColors = 0;
 		private int pushedItemFlags = 0;
-		private float currentFontScale = 1F;
+		private float currentFontScale = 1.0F;
 		private FloatList pushedFontScales = null;
 	}
 

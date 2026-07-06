@@ -22,11 +22,11 @@ public class KeyframeSequence<T> {
 		}
 
 		if (progress <= keyframes.getFirst().timepoint) {
-			return new InterpolationContext<>(keyframes.getFirst().value, keyframes.getFirst().value, 0f, Easing.LINEAR);
+			return new InterpolationContext<>(keyframes.getFirst().value, keyframes.getFirst().value, 0.0f, Easing.LINEAR);
 		}
 
 		if (progress >= keyframes.getLast().timepoint) {
-			return new InterpolationContext<>(keyframes.getLast().value, keyframes.getLast().value, 1f, Easing.LINEAR);
+			return new InterpolationContext<>(keyframes.getLast().value, keyframes.getLast().value, 1.0f, Easing.LINEAR);
 		}
 
 		for (int i = 0; i < keyframes.size() - 1; i++) {

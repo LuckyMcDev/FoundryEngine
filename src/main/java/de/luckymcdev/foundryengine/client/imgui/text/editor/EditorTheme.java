@@ -50,11 +50,11 @@ public final class EditorTheme {
 			.withSelectionColor(Color.ofABGR(0x804060C0))
 			.withCursorColor(Color.ofABGR(0xFFE0E0E0))
 			.withCursorBlinkMs(1000)
-			.withCursorWidth(2f)
+			.withCursorWidth(2.0f)
 			.withLineNumberColor(Color.ofABGR(0xFF858585))
 			.withGutterSeparatorColor(Color.ofABGR(0xFF2A2A2A))
-			.withGutterPaddingRight(10f)
-			.withHScrollbarHeight(10f)
+			.withGutterPaddingRight(10.0f)
+			.withHScrollbarHeight(10.0f)
 			.withLineSpacing(1.0f)
 			.withTabSize(4);
 	}
@@ -66,11 +66,11 @@ public final class EditorTheme {
 			.withSelectionColor(Color.ofABGR(0x8049483E))
 			.withCursorColor(Color.ofABGR(0xFFF8F8F2))
 			.withCursorBlinkMs(1000)
-			.withCursorWidth(2f)
+			.withCursorWidth(2.0f)
 			.withLineNumberColor(Color.ofABGR(0xFF75715E))
 			.withGutterSeparatorColor(Color.ofABGR(0xFF3E3D32))
-			.withGutterPaddingRight(10f)
-			.withHScrollbarHeight(10f)
+			.withGutterPaddingRight(10.0f)
+			.withHScrollbarHeight(10.0f)
 			.withLineSpacing(1.0f)
 			.withTabSize(4);
 	}
@@ -82,11 +82,11 @@ public final class EditorTheme {
 			.withSelectionColor(Color.ofABGR(0x18000000))
 			.withCursorColor(Color.ofABGR(0xFF1A1A1A))
 			.withCursorBlinkMs(1000)
-			.withCursorWidth(2f)
+			.withCursorWidth(2.0f)
 			.withLineNumberColor(Color.ofABGR(0xFF999999))
 			.withGutterSeparatorColor(Color.ofABGR(0xFFDDDDDD))
-			.withGutterPaddingRight(10f)
-			.withHScrollbarHeight(10f)
+			.withGutterPaddingRight(10.0f)
+			.withHScrollbarHeight(10.0f)
 			.withLineSpacing(1.0f)
 			.withTabSize(4);
 	}
@@ -98,11 +98,11 @@ public final class EditorTheme {
 			.withSelectionColor(Color.ofABGR(0x8044475A))
 			.withCursorColor(Color.ofABGR(0xFFF8F8F2))
 			.withCursorBlinkMs(1000)
-			.withCursorWidth(2f)
+			.withCursorWidth(2.0f)
 			.withLineNumberColor(Color.ofABGR(0xFF6272A4))
 			.withGutterSeparatorColor(Color.ofABGR(0xFF44475A))
-			.withGutterPaddingRight(10f)
-			.withHScrollbarHeight(10f)
+			.withGutterPaddingRight(10.0f)
+			.withHScrollbarHeight(10.0f)
 			.withLineSpacing(1.0f)
 			.withTabSize(4);
 	}
@@ -114,11 +114,11 @@ public final class EditorTheme {
 			.withSelectionColor(Color.ofABGR(0x60D0C088))
 			.withCursorColor(Color.ofABGR(0xFFF4EFEC))
 			.withCursorBlinkMs(1000)
-			.withCursorWidth(2f)
+			.withCursorWidth(2.0f)
 			.withLineNumberColor(Color.ofABGR(0xFF6A564C))
 			.withGutterSeparatorColor(Color.ofABGR(0xFF5E4C43))
-			.withGutterPaddingRight(10f)
-			.withHScrollbarHeight(10f)
+			.withGutterPaddingRight(10.0f)
+			.withHScrollbarHeight(10.0f)
 			.withLineSpacing(1.0f)
 			.withTabSize(4);
 	}
@@ -130,11 +130,11 @@ public final class EditorTheme {
 			.withSelectionColor(Color.ofABGR(0x60586E75))
 			.withCursorColor(Color.ofABGR(0xFF839496))
 			.withCursorBlinkMs(1000)
-			.withCursorWidth(2f)
+			.withCursorWidth(2.0f)
 			.withLineNumberColor(Color.ofABGR(0xFF586E75))
 			.withGutterSeparatorColor(Color.ofABGR(0xFF073642))
-			.withGutterPaddingRight(10f)
-			.withHScrollbarHeight(10f)
+			.withGutterPaddingRight(10.0f)
+			.withHScrollbarHeight(10.0f)
 			.withLineSpacing(1.0f)
 			.withTabSize(4);
 	}
@@ -146,11 +146,11 @@ public final class EditorTheme {
 			.withSelectionColor(Color.ofABGR(0x5093A1A1))
 			.withCursorColor(Color.ofABGR(0xFF657B83))
 			.withCursorBlinkMs(1000)
-			.withCursorWidth(2f)
+			.withCursorWidth(2.0f)
 			.withLineNumberColor(Color.ofABGR(0xFF93A1A1))
 			.withGutterSeparatorColor(Color.ofABGR(0xFFEEE8D5))
-			.withGutterPaddingRight(10f)
-			.withHScrollbarHeight(10f)
+			.withGutterPaddingRight(10.0f)
+			.withHScrollbarHeight(10.0f)
 			.withLineSpacing(1.0f)
 			.withTabSize(4);
 	}
@@ -162,11 +162,11 @@ public final class EditorTheme {
 			.withSelectionColor(Color.ofABGR(0x603E4450))
 			.withCursorColor(Color.ofABGR(0xFFABB2BF))
 			.withCursorBlinkMs(1000)
-			.withCursorWidth(2f)
+			.withCursorWidth(2.0f)
 			.withLineNumberColor(Color.ofABGR(0xFF4B5263))
 			.withGutterSeparatorColor(Color.ofABGR(0xFF3B4048))
-			.withGutterPaddingRight(10f)
-			.withHScrollbarHeight(10f)
+			.withGutterPaddingRight(10.0f)
+			.withHScrollbarHeight(10.0f)
 			.withLineSpacing(1.0f)
 			.withTabSize(4);
 	}
@@ -178,11 +178,11 @@ public final class EditorTheme {
 			.withSelectionColor(Color.ofABGR(0x500489E0))
 			.withCursorColor(Color.ofABGR(0xFF24292E))
 			.withCursorBlinkMs(1000)
-			.withCursorWidth(2f)
+			.withCursorWidth(2.0f)
 			.withLineNumberColor(Color.ofABGR(0xFF959DA5))
 			.withGutterSeparatorColor(Color.ofABGR(0xFFE1E4E8))
-			.withGutterPaddingRight(10f)
-			.withHScrollbarHeight(10f)
+			.withGutterPaddingRight(10.0f)
+			.withHScrollbarHeight(10.0f)
 			.withLineSpacing(1.0f)
 			.withTabSize(4);
 	}
@@ -264,11 +264,11 @@ public final class EditorTheme {
 		private Color selectionColor = Color.ofABGR(0x804060C0);
 		private Color cursorColor = Color.ofABGR(0xFFE0E0E0);
 		private int cursorBlinkMs = 1000;
-		private float cursorWidth = 2f;
+		private float cursorWidth = 2.0f;
 		private Color lineNumberColor = Color.ofABGR(0xFF858585);
 		private Color gutterSeparatorColor = Color.ofABGR(0xFF2A2A2A);
-		private float gutterPaddingRight = 10f;
-		private float hScrollbarHeight = 10f;
+		private float gutterPaddingRight = 10.0f;
+		private float hScrollbarHeight = 10.0f;
 		private float lineSpacing = 1.0f;
 		private int tabSize = 4;
 

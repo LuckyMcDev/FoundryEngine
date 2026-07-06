@@ -281,11 +281,11 @@ public abstract class Easing {
 			if ((value /= time) < (1 / 2.75f)) {
 				return max * (7.5625f * value * value) + min;
 			} else if (value < (2 / 2.75f)) {
-				return max * (7.5625f * (value -= (1.5f / 2.75f)) * value + .75f) + min;
+				return max * (7.5625f * (value -= (1.5f / 2.75f)) * value + 0.75f) + min;
 			} else if (value < (2.5f / 2.75f)) {
-				return max * (7.5625f * (value -= (2.25f / 2.75f)) * value + .9375f) + min;
+				return max * (7.5625f * (value -= (2.25f / 2.75f)) * value + 0.9375f) + min;
 			} else {
-				return max * (7.5625f * (value -= (2.625f / 2.75f)) * value + .984375f) + min;
+				return max * (7.5625f * (value -= (2.625f / 2.75f)) * value + 0.984375f) + min;
 			}
 		}
 	};
@@ -305,9 +305,9 @@ public abstract class Easing {
 	public static final Easing BOUNCE_IN_OUT = new Easing("bounceInOut") {
 		public float ease(float value, float min, float max, float time) {
 			if (value < time / 2) {
-				return Easing.BOUNCE_IN.ease(value * 2, 0, max, time) * .5f + min;
+				return Easing.BOUNCE_IN.ease(value * 2, 0, max, time) * 0.5f + min;
 			}
-			return Easing.BOUNCE_OUT.ease(value * 2 - time, 0, max, time) * .5f + max * .5f + min;
+			return Easing.BOUNCE_OUT.ease(value * 2 - time, 0, max, time) * 0.5f + max * 0.5f + min;
 		}
 	};
 
@@ -460,7 +460,7 @@ public abstract class Easing {
 		 * @param name the name of this easing
 		 */
 		public Elastic(String name) {
-			this(name, -1f, 0f);
+			this(name, -1.0f, 0.0f);
 		}
 
 		/**
@@ -531,7 +531,7 @@ public abstract class Easing {
 				return min + max;
 			}
 			if (p == 0) {
-				p = time * .3f;
+				p = time * 0.3f;
 			}
 			float s = 0;
 			if (a < Math.abs(max)) {
@@ -575,7 +575,7 @@ public abstract class Easing {
 				return min + max;
 			}
 			if (p == 0) {
-				p = time * .3f;
+				p = time * 0.3f;
 			}
 			float s = 0;
 			if (a < Math.abs(max)) {
@@ -619,19 +619,19 @@ public abstract class Easing {
 				return min + max;
 			}
 			if (p == 0) {
-				p = time * (.3f * 1.5f);
+				p = time * (0.3f * 1.5f);
 			}
 			float s = 0;
 			if (a < Math.abs(max)) {
 				a = max;
-				s = p / 4f;
+				s = p / 4.0f;
 			} else {
 				s = p / (float) (2 * Math.PI) * (float) Math.asin(max / a);
 			}
 			if (value < 1) {
-				return -.5f * (a * (float) Math.pow(2, 10 * (value -= 1)) * (float) Math.sin((value * time - s) * (2 * Math.PI) / p)) + min;
+				return -0.5f * (a * (float) Math.pow(2, 10 * (value -= 1)) * (float) Math.sin((value * time - s) * (2 * Math.PI) / p)) + min;
 			}
-			return a * (float) Math.pow(2, -10 * (value -= 1)) * (float) Math.sin((value * time - s) * (2 * Math.PI) / p) * .5f + max + min;
+			return a * (float) Math.pow(2, -10 * (value -= 1)) * (float) Math.sin((value * time - s) * (2 * Math.PI) / p) * 0.5f + max + min;
 		}
 	}
 

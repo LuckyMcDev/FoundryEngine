@@ -69,28 +69,28 @@ public final class ImGuiGizmoTheme {
 			.withBackgroundArgb(0xE6120D0A)
 			.withBorderArgb(0xCC7A5020)
 			.withBorderThickness(1.5f)
-			.withBorderRounding(5f)
+			.withBorderRounding(5.0f)
 			.withGridColor(0xFF443830)
-			.withDefaultGridSize(1f)
+			.withDefaultGridSize(1.0f)
 			.withGridVisible(true)
 			.withViewCubeBackground(0x00000000)
-			.withViewCubeSize(80f)
+			.withViewCubeSize(80.0f)
 			.withOverlayTextArgb(0xFF998880)
 			.withMiniBarBgArgb(0xD1100C09)
 			.withMiniBarBorderArgb(0xCC503820)
-			.withMiniBarRounding(4f)
+			.withMiniBarRounding(4.0f)
 			.withMiniBarButtonActiveArgb(0xF2622810)
 			.withMiniBarButtonActiveHoverArgb(0xF27A3818)
 			.withMiniBarButtonInactiveArgb(0xE61A1008)
 			.withMiniBarButtonInactiveHoverArgb(0xE6281A0E)
 			.withMiniBarTextActiveArgb(0xFFF5E8D8)
 			.withMiniBarTextInactiveArgb(0xFF806050)
-			.withTranslationLineThickness(3f)
-			.withTranslationLineArrowSize(6f)
-			.withRotationLineThickness(2f)
-			.withRotationOuterLineThickness(3f)
-			.withScaleLineThickness(3f)
-			.withScaleLineCircleSize(6f);
+			.withTranslationLineThickness(3.0f)
+			.withTranslationLineArrowSize(6.0f)
+			.withRotationLineThickness(2.0f)
+			.withRotationOuterLineThickness(3.0f)
+			.withScaleLineThickness(3.0f)
+			.withScaleLineCircleSize(6.0f);
 	}
 
 	public static Builder warm() {
@@ -98,35 +98,35 @@ public final class ImGuiGizmoTheme {
 			.withBackgroundArgb(0xE6150E08)
 			.withBorderArgb(0xCCA06030)
 			.withBorderThickness(1.5f)
-			.withBorderRounding(5f)
+			.withBorderRounding(5.0f)
 			.withGridColor(0xFF504030)
-			.withDefaultGridSize(1f)
+			.withDefaultGridSize(1.0f)
 			.withGridVisible(true)
 			.withViewCubeBackground(0x00000000)
-			.withViewCubeSize(80f)
+			.withViewCubeSize(80.0f)
 			.withOverlayTextArgb(0xFF998878)
 			.withMiniBarBgArgb(0xE6302622)
 			.withMiniBarBorderArgb(0xCCA09060)
-			.withMiniBarRounding(5f)
+			.withMiniBarRounding(5.0f)
 			.withMiniBarButtonActiveArgb(0xF2306070)
 			.withMiniBarButtonActiveHoverArgb(0xF2408090)
 			.withMiniBarButtonInactiveArgb(0xE6403830)
 			.withMiniBarButtonInactiveHoverArgb(0xE6504840)
 			.withMiniBarTextActiveArgb(0xFF88C8D8)
 			.withMiniBarTextInactiveArgb(0xFF907868)
-			.withTranslationLineThickness(3f)
-			.withTranslationLineArrowSize(6f)
-			.withRotationLineThickness(2f)
-			.withRotationOuterLineThickness(3f)
-			.withScaleLineThickness(3f)
-			.withScaleLineCircleSize(6f);
+			.withTranslationLineThickness(3.0f)
+			.withTranslationLineArrowSize(6.0f)
+			.withRotationLineThickness(2.0f)
+			.withRotationOuterLineThickness(3.0f)
+			.withScaleLineThickness(3.0f)
+			.withScaleLineCircleSize(6.0f);
 	}
 
 	public static void pushColor(int slot, int abgr) {
-		float a = ((abgr >>> 24) & 0xFF) / 255f;
-		float b = ((abgr >>> 16) & 0xFF) / 255f;
-		float g = ((abgr >>> 8) & 0xFF) / 255f;
-		float r = (abgr & 0xFF) / 255f;
+		float a = ((abgr >>> 24) & 0xFF) / 255.0f;
+		float b = ((abgr >>> 16) & 0xFF) / 255.0f;
+		float g = ((abgr >>> 8) & 0xFF) / 255.0f;
+		float r = (abgr & 0xFF) / 255.0f;
 		imgui.ImGui.pushStyleColor(slot, r, g, b, a);
 	}
 
@@ -248,28 +248,28 @@ public final class ImGuiGizmoTheme {
 		private int backgroundArgb = 0xE6120D0A;
 		private int borderArgb = 0xCC7A5020;
 		private float borderThickness = 1.5f;
-		private float borderRounding = 5f;
+		private float borderRounding = 5.0f;
 		private int gridColor = 0xFF443830;
-		private float defaultGridSize = 1f;
+		private float defaultGridSize = 1.0f;
 		private boolean gridVisible = true;
 		private int viewCubeBackground = 0x00000000;
-		private float viewCubeSize = 80f;
+		private float viewCubeSize = 80.0f;
 		private int overlayTextArgb = 0xFF998880;
 		private int miniBarBgArgb = 0xD1100C09;
 		private int miniBarBorderArgb = 0xCC503820;
-		private float miniBarRounding = 4f;
+		private float miniBarRounding = 4.0f;
 		private int miniBarButtonActiveArgb = 0xF2622810;
 		private int miniBarButtonActiveHoverArgb = 0xF27A3818;
 		private int miniBarButtonInactiveArgb = 0xE61A1008;
 		private int miniBarButtonInactiveHoverArgb = 0xE6281A0E;
 		private int miniBarTextActiveArgb = 0xFFF5E8D8;
 		private int miniBarTextInactiveArgb = 0xFF806050;
-		private float translationLineThickness = 3f;
-		private float translationLineArrowSize = 6f;
-		private float rotationLineThickness = 2f;
-		private float rotationOuterLineThickness = 3f;
-		private float scaleLineThickness = 3f;
-		private float scaleLineCircleSize = 6f;
+		private float translationLineThickness = 3.0f;
+		private float translationLineArrowSize = 6.0f;
+		private float rotationLineThickness = 2.0f;
+		private float rotationOuterLineThickness = 3.0f;
+		private float scaleLineThickness = 3.0f;
+		private float scaleLineCircleSize = 6.0f;
 
 		public Builder withBackgroundArgb(int c) {
 			backgroundArgb = c;

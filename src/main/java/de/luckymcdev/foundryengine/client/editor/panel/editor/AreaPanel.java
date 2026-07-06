@@ -28,10 +28,10 @@ import java.util.Map;
 public class AreaPanel extends EditorPanel {
 	public static final AreaPanel INSTANCE = new AreaPanel();
 
-	private static final float LEFT_PANEL_WIDTH = 240f;
-	private static final float CREATE_FORM_MIN_HEIGHT = 90f;
-	private static final float CREATE_FORM_MAX_HEIGHT = 500f;
-	private static final float SPLITTER_HEIGHT = 6f;
+	private static final float LEFT_PANEL_WIDTH = 240.0f;
+	private static final float CREATE_FORM_MIN_HEIGHT = 90.0f;
+	private static final float CREATE_FORM_MAX_HEIGHT = 500.0f;
+	private static final float SPLITTER_HEIGHT = 6.0f;
 	private final ImString newAreaName = new ImString(64);
 	private final ImInt areaSizeX = new ImInt(5);
 	private final ImInt areaSizeY = new ImInt(4);
@@ -41,7 +41,7 @@ public class AreaPanel extends EditorPanel {
 	private final ImBoolean creatingBlockArea = new ImBoolean(false);
 	private float[] newAreaColor;
 	private int selectedIndex = -1;
-	private float createFormHeight = 240f;
+	private float createFormHeight = 240.0f;
 
 	private AreaPanel() {
 		super(new Builder(Common.id("area_panel"))

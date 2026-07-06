@@ -44,7 +44,7 @@ public class ClientCutsceneManager {
 
 	private boolean previewActive = false;
 	private Cutscene previewCutscene = null;
-	private float previewT = 0f;
+	private float previewT = 0.0f;
 
 	public void clientTick() {
 		Minecraft mc = Minecraft.getInstance();
@@ -62,13 +62,13 @@ public class ClientCutsceneManager {
 		}
 		previewActive = cutscene != null;
 		previewCutscene = cutscene;
-		previewT = Mth.clamp(t, 0f, 1f);
+		previewT = Mth.clamp(t, 0.0f, 1.0f);
 	}
 
 	public void clearPreview() {
 		previewActive = false;
 		previewCutscene = null;
-		previewT = 0f;
+		previewT = 0.0f;
 	}
 
 	public boolean isCameraOverrideDisabled() {
@@ -196,7 +196,7 @@ public class ClientCutsceneManager {
 		currentLerpType = queuedCutscene.lerpType;
 		holdTimeStart = queuedCutscene.holdStart;
 		holdTimeEnd = queuedCutscene.holdEnd;
-		currentAgeInTicks = 0f;
+		currentAgeInTicks = 0.0f;
 		cutsceneQueue.removeFirst();
 	}
 
@@ -213,7 +213,7 @@ public class ClientCutsceneManager {
 		public final UUID startPlayerUuid;
 		public final UUID endPlayerUuid;
 
-		private float lastEffectT = -1f;
+		private float lastEffectT = -1.0f;
 		private boolean[] firedEffects = null;
 		private boolean[] firedCommands = null;
 
@@ -261,7 +261,7 @@ public class ClientCutsceneManager {
 				firedCommands = new boolean[commands.size()];
 			}
 
-			if (rawT + 1e-6f < lastEffectT) {
+			if (rawT + 1.0e-6f < lastEffectT) {
 				if (firedEffects != null) {
 					Arrays.fill(firedEffects, false);
 				}
@@ -277,7 +277,7 @@ public class ClientCutsceneManager {
 					continue;
 				}
 				EffectAttachment eff = effects.get(i);
-				if (rawT + 1e-6f < eff.getAt()) {
+				if (rawT + 1.0e-6f < eff.getAt()) {
 					continue;
 				}
 				firedEffects[i] = true;
@@ -296,7 +296,7 @@ public class ClientCutsceneManager {
 					continue;
 				}
 				CommandAttachment cmd = commands.get(i);
-				if (rawT + 1e-6f < cmd.getEffectiveAt()) {
+				if (rawT + 1.0e-6f < cmd.getEffectiveAt()) {
 					continue;
 				}
 				firedCommands[i] = true;

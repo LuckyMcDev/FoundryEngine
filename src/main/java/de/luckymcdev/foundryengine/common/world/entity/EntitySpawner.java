@@ -19,7 +19,7 @@ public final class EntitySpawner {
 		EntityType<T> entityType,
 		Vec3 pos
 	) {
-		return spawnServer(level, entityType, pos, 0f, 0f, null);
+		return spawnServer(level, entityType, pos, 0.0f, 0.0f, null);
 	}
 
 	public static <T extends Entity> T spawnServer(
@@ -28,7 +28,7 @@ public final class EntitySpawner {
 		Vec3 pos,
 		Consumer<T> configurator
 	) {
-		return spawnServer(level, entityType, pos, 0f, 0f, configurator);
+		return spawnServer(level, entityType, pos, 0.0f, 0.0f, configurator);
 	}
 
 	public static <T extends Entity> T spawnServer(

@@ -56,7 +56,7 @@ public class TextWidget extends WidgetBase {
 		List<FormattedCharSequence> wrapped = Minecraft.getInstance().font.split(this.text, drawArea.width);
 		double yOff = 0;
 		if (alignment.getYAlignment() == Enums.YAlignment.MIDDLE) {
-			yOff = drawArea.height / 2d - fontSize * wrapped.size() / 2;
+			yOff = drawArea.height / 2.0d - fontSize * wrapped.size() / 2;
 		}
 		if (alignment.getYAlignment() == Enums.YAlignment.BOTTOM) {
 			yOff = drawArea.height - fontSize * wrapped.size();
@@ -67,15 +67,15 @@ public class TextWidget extends WidgetBase {
 			switch (alignment.getXAlignment()) {
 				case LEFT -> {
 					guiGraphics.pose().translate(drawArea.x, drawArea.y + (float) yOff);
-					guiGraphics.pose().scale((float) fontSize / 9f, (float) fontSize / 9f);
+					guiGraphics.pose().scale((float) fontSize / 9.0f, (float) fontSize / 9.0f);
 				}
 				case CENTER -> {
-					guiGraphics.pose().translate(drawArea.x + (drawArea.width - lineWidth) / 2f, drawArea.y + (float) yOff);
-					guiGraphics.pose().scale((float) fontSize / 9f, (float) fontSize / 9f);
+					guiGraphics.pose().translate(drawArea.x + (drawArea.width - lineWidth) / 2.0f, drawArea.y + (float) yOff);
+					guiGraphics.pose().scale((float) fontSize / 9.0f, (float) fontSize / 9.0f);
 				}
 				case RIGHT -> {
 					guiGraphics.pose().translate(drawArea.x + drawArea.width - lineWidth, drawArea.y + (float) yOff);
-					guiGraphics.pose().scale((float) fontSize / 9f, (float) fontSize / 9f);
+					guiGraphics.pose().scale((float) fontSize / 9.0f, (float) fontSize / 9.0f);
 				}
 			}
 			if (debug) {

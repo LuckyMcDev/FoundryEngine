@@ -42,7 +42,7 @@ public class ImGuiImplGl3 {
 	protected Data data = null;
 
 	/**
-	 * Method to do an initialization of the {@link ImGuiImplGl3} state.
+	 * Method to do an initialization of the  state.
 	 * It SHOULD be called before calling of the {@link ImGuiImplGl3#renderDrawData(ImDrawData)} method.
 	 * <p>
 	 * Method takes an argument, which should be a valid GLSL string with the version to use.
@@ -155,7 +155,7 @@ public class ImGuiImplGl3 {
 	}
 
 	/**
-	 * Method to do an initialization of the {@link ImGuiImplGl3} state.
+	 * Method to do an initialization of the  state.
 	 * It SHOULD be called before calling of the {@link ImGuiImplGl3#renderDrawData(ImDrawData)} method.
 	 * <p>
 	 * Unlike in the {@link #init(String)} method, here the glslVersion argument is omitted.

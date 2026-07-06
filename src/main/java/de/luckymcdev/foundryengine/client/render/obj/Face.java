@@ -160,7 +160,7 @@ public record Face(List<Vertex> vertices, Material material) {
 		for (Vertex vertex : vertices) {
 			centroid.add(vertex.position());
 		}
-		centroid.mul(1f / vertices.size());
+		centroid.mul(1.0f / vertices.size());
 		return centroid;
 	}
 }

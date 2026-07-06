@@ -17,17 +17,17 @@ public final class ImGuiGizmoScreen {
 	private ImGuiGizmoTheme theme;
 	private ImGuiGizmoCamera camera;
 	private ImGuiGizmoMiniBar miniBar;
-	private float width = 0f;
-	private float height = 0f;
+	private float width = 0.0f;
+	private float height = 0.0f;
 	private int textureId = -1;
 	private boolean flipTextureY = true;
 	private boolean wasUsedLastFrame = false;
 
 	// -1 means fall through to config value
 	private int runtimeOperation = -1;
-	private float runtimeGridSize = -1f;
+	private float runtimeGridSize = -1.0f;
 
-	private float modelScale = 1f;
+	private float modelScale = 1.0f;
 
 	public ImGuiGizmoScreen(String id) {
 		this.id = id;
@@ -75,14 +75,14 @@ public final class ImGuiGizmoScreen {
 
 	public void render() {
 		ImVec2 avail = ImGui.getContentRegionAvail();
-		float w = Math.max(1f, width > 0f ? width : avail.x);
-		float h = Math.max(1f, height > 0f ? height : avail.y);
+		float w = Math.max(1.0f, width > 0.0f ? width : avail.x);
+		float h = Math.max(1.0f, height > 0.0f ? height : avail.y);
 
 		ImGuiGizmoTheme.pushColor(ImGuiCol.ChildBg, theme.backgroundArgb);
 		ImGuiGizmoTheme.pushColor(ImGuiCol.Border, theme.borderArgb);
 		ImGui.pushStyleVar(ImGuiStyleVar.ChildRounding, theme.borderRounding);
 		ImGui.pushStyleVar(ImGuiStyleVar.ChildBorderSize, theme.borderThickness);
-		ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, 0f, 0f);
+		ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, 0.0f, 0.0f);
 
 		boolean childOk = ImGui.beginChild("##ImguiGizmoScreen_" + id, w, h, true,
 			ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse);
@@ -105,16 +105,16 @@ public final class ImGuiGizmoScreen {
 		boolean isOrtho = config.orthographic || camera.isOrthographic();
 		ImGuiGizmoMatrices.Context ctx = matrices.beginContext(isOrtho, wx, wy, ww, wh);
 
-		float gs = runtimeGridSize > 0f ? runtimeGridSize : config.gridSize;
+		float gs = runtimeGridSize > 0.0f ? runtimeGridSize : config.gridSize;
 		if (config.showGrid) {
 			ctx.drawGrid(gs);
 		}
 
 		if (textureId > 0) {
-			float v0 = flipTextureY ? 1f : 0f;
-			float v1 = flipTextureY ? 0f : 1f;
-			ImGui.setCursorPos(0f, 0f);
-			ImGui.image(textureId, ww, wh, 0f, v0, 1f, v1);
+			float v0 = flipTextureY ? 1.0f : 0.0f;
+			float v1 = flipTextureY ? 0.0f : 1.0f;
+			ImGui.setCursorPos(0.0f, 0.0f);
+			ImGui.image(textureId, ww, wh, 0.0f, v0, 1.0f, v1);
 			ctx.reanchor();
 		}
 
@@ -168,7 +168,7 @@ public final class ImGuiGizmoScreen {
 
 	// Re-normalises the rotation columns and reapplies modelScale after the gizmo may have modified them.
 	private void applyModelScale() {
-		if (modelScale == 1f) {
+		if (modelScale == 1.0f) {
 			return;
 		}
 		float[] raw = matrices.modelRaw();

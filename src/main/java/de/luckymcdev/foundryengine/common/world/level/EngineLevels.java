@@ -69,10 +69,10 @@ public final class EngineLevels {
 	}
 
 	/**
-	 * Gets the {@link EngineLevels} instance for the given server instance.
+	 * Gets the  instance for the given server instance.
 	 *
 	 * @param server the server to work with
-	 * @return the {@link EngineLevels} instance to work with runtime dimensions
+	 * @return the  instance to work with runtime dimensions
 	 */
 	public static EngineLevels get(MinecraftServer server) {
 		Preconditions.checkState(server.isSameThread(), "cannot create levels from off-thread!");

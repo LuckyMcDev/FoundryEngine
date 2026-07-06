@@ -19,25 +19,25 @@ public class EffectAttachment extends CutsceneAttachment {
 	public EffectAttachment(float at, String effectName, float introDuration, float holdDuration, float outroDuration, String lerpType) {
 		super(at, TYPE);
 		this.effectName = effectName == null ? "none" : effectName;
-		this.introDuration = Math.max(0f, introDuration);
-		this.holdDuration = Math.max(0f, holdDuration);
-		this.outroDuration = Math.max(0f, outroDuration);
+		this.introDuration = Math.max(0.0f, introDuration);
+		this.holdDuration = Math.max(0.0f, holdDuration);
+		this.outroDuration = Math.max(0.0f, outroDuration);
 		this.lerpType = (lerpType == null || lerpType.isBlank()) ? LerpType.LINEAR.name() : lerpType;
 	}
 
 	public static EffectAttachment fromNbt(CompoundTag tag) {
-		float at = tag.getFloatOr("At", 0f);
+		float at = tag.getFloatOr("At", 0.0f);
 		String effectName = tag.getStringOr("EffectName", "none");
-		float intro = tag.getFloatOr("IntroDuration", -1f);
-		float hold = tag.getFloatOr("HoldDuration", -1f);
-		float outro = tag.getFloatOr("OutroDuration", -1f);
+		float intro = tag.getFloatOr("IntroDuration", -1.0f);
+		float hold = tag.getFloatOr("HoldDuration", -1.0f);
+		float outro = tag.getFloatOr("OutroDuration", -1.0f);
 		String lerp = tag.getStringOr("LerpType", LerpType.LINEAR.name());
 
-		if (intro < 0f || hold < 0f || outro < 0f) {
+		if (intro < 0.0f || hold < 0.0f || outro < 0.0f) {
 			int oldIntro = tag.getIntOr("Intro", 0);
 			int oldHold = tag.getIntOr("Hold", 0);
 			int oldOutro = tag.getIntOr("Outro", 0);
-			float defaultLen = 60f;
+			float defaultLen = 60.0f;
 			intro = oldIntro / defaultLen;
 			hold = oldHold / defaultLen;
 			outro = oldOutro / defaultLen;
@@ -85,7 +85,7 @@ public class EffectAttachment extends CutsceneAttachment {
 	}
 
 	public void setIntroDuration(float introDuration) {
-		this.introDuration = Math.max(0f, introDuration);
+		this.introDuration = Math.max(0.0f, introDuration);
 	}
 
 	public float getHoldDuration() {
@@ -93,7 +93,7 @@ public class EffectAttachment extends CutsceneAttachment {
 	}
 
 	public void setHoldDuration(float holdDuration) {
-		this.holdDuration = Math.max(0f, holdDuration);
+		this.holdDuration = Math.max(0.0f, holdDuration);
 	}
 
 	public float getOutroDuration() {
@@ -101,7 +101,7 @@ public class EffectAttachment extends CutsceneAttachment {
 	}
 
 	public void setOutroDuration(float outroDuration) {
-		this.outroDuration = Math.max(0f, outroDuration);
+		this.outroDuration = Math.max(0.0f, outroDuration);
 	}
 
 	public String getLerpType() {

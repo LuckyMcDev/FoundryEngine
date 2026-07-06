@@ -126,7 +126,7 @@ public class NodeEditorInstance<T> {
 			String title = node.builder == null ? "Root" : node.builder.getDisplayName().getString();
 			ImGui.text(title);
 			ImNodes.endNodeTitleBar();
-			ImGui.pushItemWidth(130F);
+			ImGui.pushItemWidth(130.0F);
 
 			if (node.builder != null) {
 				if (node.builder.render()) {
@@ -167,7 +167,7 @@ public class NodeEditorInstance<T> {
 			}
 		}
 
-		if (miniMap > 0F) {
+		if (miniMap > 0.0F) {
 			ImNodes.miniMap(miniMap, ImNodesMiniMapLocation.TopRight);
 		}
 

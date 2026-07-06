@@ -6,7 +6,7 @@ package de.luckymcdev.foundryengine.common.exceptions;
  */
 public class NoMixinException extends IllegalStateException {
 	/**
-	 * Constructs a new {@link NoMixinException}
+	 * Constructs a new
 	 *
 	 * @param thisObject object whose method should have been implemented.
 	 */

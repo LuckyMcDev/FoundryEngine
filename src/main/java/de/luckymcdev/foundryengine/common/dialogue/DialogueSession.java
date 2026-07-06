@@ -38,7 +38,7 @@ public class DialogueSession {
 		if (tag.getBooleanOr("Ended", false)) {
 			session.end();
 		}
-		session.setDisplayMode(DialogueDisplayMode.fromOrdinal(tag.getIntOr("DisplayMode", 0)));
+		session.displayMode = DialogueDisplayMode.fromOrdinal(tag.getIntOr("DisplayMode", 0));
 		if (tag.contains("Style")) {
 			session.style = DialogueStyle.fromNbt(tag.getCompoundOrEmpty("Style"));
 		}

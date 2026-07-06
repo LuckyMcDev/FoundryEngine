@@ -24,7 +24,7 @@ public abstract class CutsceneAttachment {
 	protected String type;
 
 	protected CutsceneAttachment(float at, String type) {
-		this.at = Mth.clamp(at, 0f, 1f);
+		this.at = Mth.clamp(at, 0.0f, 1.0f);
 		this.type = type == null ? "unknown" : type;
 	}
 
@@ -33,7 +33,7 @@ public abstract class CutsceneAttachment {
 	}
 
 	public void setAt(float at) {
-		this.at = Mth.clamp(at, 0f, 1f);
+		this.at = Mth.clamp(at, 0.0f, 1.0f);
 	}
 
 	public String getType() {
