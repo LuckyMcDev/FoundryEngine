@@ -1,9 +1,11 @@
 package de.luckymcdev.foundryengine.client.command.suggest.nbt;
 
+import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -11,10 +13,11 @@ import java.util.concurrent.CompletableFuture;
 
 public class NbtSuggestionEngine {
 	public static CompletableFuture<Suggestions> suggest(String rootType, SuggestionsBuilder builder) {
+		SuggestionData.clear();
 		String remaining = builder.getRemaining();
 		if (remaining.isEmpty()) {
 			suggestCompoundStart(builder, rootType);
-			return builder.buildFuture();
+			return captureData(builder.buildFuture());
 		}
 
 		Context ctx = parseContext(remaining);
@@ -34,7 +37,17 @@ public class NbtSuggestionEngine {
 			case LIST_END -> builder.suggest("]");
 		}
 
-		return builder.buildFuture();
+		return captureData(builder.buildFuture());
+	}
+
+	private static CompletableFuture<Suggestions> captureData(CompletableFuture<Suggestions> future) {
+		Suggestions suggestions = future.join();
+		for (Suggestion s : suggestions.getList()) {
+			if (s.getTooltip() instanceof NbtSuggestionComponent(String text, int priority)) {
+				SuggestionData.store(s.getText(), text, priority);
+			}
+		}
+		return future;
 	}
 
 	private static @Nullable Context parseContext(String input) {
@@ -46,6 +59,7 @@ public class NbtSuggestionEngine {
 		int braceDepth = 0;
 		int bracketDepth = 0;
 		List<String> compoundPath = new ArrayList<>();
+		ArrayDeque<String> listFieldStack = new ArrayDeque<>();
 
 		for (int i = 0; i < length; i++) {
 			char c = input.charAt(i);
@@ -69,7 +83,6 @@ public class NbtSuggestionEngine {
 
 			if (c == '{') {
 				braceDepth++;
-				lastCommaOrBrace = i;
 				if (braceDepth > 1) {
 					String fn = findFieldBeforeBrace(input, i);
 					if (fn != null) {
@@ -84,10 +97,18 @@ public class NbtSuggestionEngine {
 				}
 			} else if (c == '[') {
 				bracketDepth++;
-				lastCommaOrBrace = i;
+				if (lastColon > lastCommaOrBrace && bracketDepth == 1) {
+					String fn = extractFieldName(input, lastColon);
+					if (fn != null) {
+						listFieldStack.push(fn);
+					}
+				}
 			} else if (c == ']') {
 				bracketDepth--;
 				lastCommaOrBrace = i;
+				if (!listFieldStack.isEmpty()) {
+					listFieldStack.pop();
+				}
 			} else if (c == ':') {
 				lastColon = i;
 			} else if (c == ',') {
@@ -97,6 +118,17 @@ public class NbtSuggestionEngine {
 
 		if (braceDepth < 0 || bracketDepth < 0) {
 			return null;
+		}
+
+		if (bracketDepth > 0) {
+			int lastNonWs = length - 1;
+			while (lastNonWs >= 0 && input.charAt(lastNonWs) == ' ') {
+				lastNonWs--;
+			}
+			if (lastNonWs >= 0 && (input.charAt(lastNonWs) == ',' || input.charAt(lastNonWs) == '[')) {
+				String listField = listFieldStack.peek();
+				return new Context(Phase.LIST_ENTRY, "", listField, length, compoundPath);
+			}
 		}
 
 		if (input.endsWith(",")) {
@@ -251,12 +283,19 @@ public class NbtSuggestionEngine {
 				text += field.type() == NbtSuggestions.NbtType.COMPOUND ? "{" : "[";
 			}
 
+			int priority = SuggestionData.Entry.NORMAL;
+			if (NbtSuggestions.isIrrelevant(field.name())) {
+				priority = SuggestionData.Entry.IRRELEVANT;
+			} else if (NbtSuggestions.isRecommended(field.name())) {
+				priority = SuggestionData.Entry.RECOMMENDED;
+			}
+
 			String subtext = field.type().name().toLowerCase(Locale.ROOT);
 			if (!field.subtext().isEmpty()) {
 				subtext += " " + field.subtext();
 			}
 
-			builder.suggest(text, new NbtSuggestionComponent(subtext));
+			builder.suggest(text, new NbtSuggestionComponent(subtext, priority));
 		}
 	}
 
@@ -285,7 +324,12 @@ public class NbtSuggestionEngine {
 		List<NbtSuggestions.FieldDef> fields = resolveFields(rootType, ctx.compoundPath);
 		for (NbtSuggestions.FieldDef field : fields) {
 			if (field.name().equals(fieldName)) {
-				suggestValueForType(builder, field.type(), field, "");
+				NbtSuggestions.NbtType elementType = field.elementType();
+				if (elementType != null) {
+					suggestValueForType(builder, elementType, field, "");
+				} else {
+					builder.suggest("{");
+				}
 				return;
 			}
 		}
@@ -316,6 +360,20 @@ public class NbtSuggestionEngine {
 	}
 
 	private static void suggestValueForType(SuggestionsBuilder builder, NbtSuggestions.NbtType type, @Nullable NbtSuggestions.FieldDef field, String prefix) {
+		if (field != null && field.subtype() != NbtSuggestions.Subtype.NONE
+			&& (type == NbtSuggestions.NbtType.ENUM || type == NbtSuggestions.NbtType.STRING || type == NbtSuggestions.NbtType.RESOURCE_LOCATION)) {
+			List<String> values = field.subtype().getValues();
+			if (!values.isEmpty()) {
+				String subtext = field.subtype().name().toLowerCase(Locale.ROOT);
+				for (String v : values) {
+					if (v.toLowerCase(Locale.ROOT).startsWith(prefix.toLowerCase(Locale.ROOT))) {
+						builder.suggest(v, new NbtSuggestionComponent(subtext, SuggestionData.Entry.NORMAL));
+					}
+				}
+				return;
+			}
+		}
+
 		switch (type) {
 			case BOOLEAN:
 				if ("true".startsWith(prefix) || prefix.isEmpty()) {
@@ -389,6 +447,8 @@ public class NbtSuggestionEngine {
 			case LIST:
 				builder.suggest("[\n]");
 				break;
+			case RESOURCE_LOCATION:
+				break;
 			case ENUM:
 				if (field != null) {
 					String enumKey = field.subtext().isBlank() ? field.name() : field.subtext();
@@ -396,7 +456,7 @@ public class NbtSuggestionEngine {
 					if (values != null) {
 						for (String v : values) {
 							if (v.toLowerCase(Locale.ROOT).startsWith(prefix.toLowerCase(Locale.ROOT))) {
-								builder.suggest(v, new NbtSuggestionComponent("enum"));
+								builder.suggest(v, new NbtSuggestionComponent("enum", SuggestionData.Entry.NORMAL));
 							}
 						}
 					}

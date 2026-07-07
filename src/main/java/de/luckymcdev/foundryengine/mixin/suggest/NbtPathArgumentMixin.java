@@ -1,4 +1,4 @@
-package de.luckymcdev.foundryengine.mixin.suggest.nbt;
+package de.luckymcdev.foundryengine.mixin.suggest;
 
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;

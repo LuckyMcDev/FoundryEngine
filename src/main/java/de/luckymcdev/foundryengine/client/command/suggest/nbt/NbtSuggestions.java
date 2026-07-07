@@ -1,5 +1,6 @@
 package de.luckymcdev.foundryengine.client.command.suggest.nbt;
 
+import de.luckymcdev.foundryengine.mixin.suggest.EntitySelectorAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.commands.arguments.coordinates.Coordinates;
@@ -9,6 +10,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.permissions.PermissionSet;
@@ -37,6 +39,8 @@ import java.util.Set;
 public class NbtSuggestions {
 	private static final Map<String, List<FieldDef>> ROOT_FIELDS = new LinkedHashMap<>();
 	private static final Map<String, List<String>> ENUM_VALUES = new HashMap<>();
+	private static final Set<String> IRRELEVANT_FIELDS = new HashSet<>();
+	private static final Set<String> RECOMMENDED_FIELDS = new HashSet<>();
 
 	public static void init() {
 		registerBlockEntityFields();
@@ -45,6 +49,7 @@ public class NbtSuggestions {
 		registerItemComponentFields();
 		registerEnumValues();
 		scanModdedRegistries();
+		registerPriorityFields();
 	}
 
 	public static @Nullable List<FieldDef> getFields(String type) {
@@ -53,6 +58,14 @@ public class NbtSuggestions {
 
 	public static @Nullable List<String> getEnumValues(String enumName) {
 		return ENUM_VALUES.get(enumName);
+	}
+
+	public static boolean isIrrelevant(String fieldName) {
+		return IRRELEVANT_FIELDS.contains(fieldName);
+	}
+
+	public static boolean isRecommended(String fieldName) {
+		return RECOMMENDED_FIELDS.contains(fieldName);
 	}
 
 	public static String getFieldSubtext(String type, String fieldName) {
@@ -87,6 +100,14 @@ public class NbtSuggestions {
 		return new FieldDef(name, type, desc);
 	}
 
+	private static FieldDef common(String name, NbtType type, String desc, Subtype subtype) {
+		return new FieldDef(name, type, desc, subtype);
+	}
+
+	private static FieldDef common(String name, NbtType type, String desc, NbtType elementType) {
+		return new FieldDef(name, type, desc, elementType);
+	}
+
 	private static List<FieldDef> commonBlockFields() {
 		return List.of(
 			common("CustomName", NbtType.STRING, "JSON text component"),
@@ -96,9 +117,9 @@ public class NbtSuggestions {
 
 	private static List<FieldDef> commonEntityFields() {
 		return List.of(
-			common("Pos", NbtType.LIST, "[x, y, z]"),
-			common("Rotation", NbtType.LIST, "[yaw, pitch]"),
-			common("Motion", NbtType.LIST, "[dx, dy, dz]"),
+			common("Pos", NbtType.LIST, "[x, y, z]", NbtType.DOUBLE),
+			common("Rotation", NbtType.LIST, "[yaw, pitch]", NbtType.DOUBLE),
+			common("Motion", NbtType.LIST, "[dx, dy, dz]", NbtType.DOUBLE),
 			common("OnGround", NbtType.BOOLEAN, ""),
 			common("NoGravity", NbtType.BOOLEAN, ""),
 			common("FallDistance", NbtType.FLOAT, ""),
@@ -109,9 +130,9 @@ public class NbtSuggestions {
 			common("Silent", NbtType.BOOLEAN, ""),
 			common("Invulnerable", NbtType.BOOLEAN, ""),
 			common("Glowing", NbtType.BOOLEAN, ""),
-			common("Tags", NbtType.LIST, "string list"),
+			common("Tags", NbtType.LIST, "string list", NbtType.STRING),
 			common("Command", NbtType.STRING, "command to run"),
-			common("Passengers", NbtType.LIST, "entity list"),
+			common("Passengers", NbtType.LIST, "entity list", NbtType.COMPOUND),
 			common("id", NbtType.STRING, "entity identifier"),
 			common("UUID", NbtType.UUID, "")
 		);
@@ -119,7 +140,7 @@ public class NbtSuggestions {
 
 	private static void registerBlockEntityFields() {
 		FieldDef[] furnace = {
-			common("Items", NbtType.LIST, "item stack list"),
+			common("Items", NbtType.LIST, "item stack list", NbtType.COMPOUND),
 			common("RecipesUsed", NbtType.COMPOUND, "recipe -> count map"),
 			common("CookTimeTotal", NbtType.INT, "total cook time"),
 			common("CookTime", NbtType.INT, "cook progress"),
@@ -133,7 +154,7 @@ public class NbtSuggestions {
 		register("block/minecraft:smoker", furnace);
 
 		register("block/minecraft:chest",
-			common("Items", NbtType.LIST, "item stack list"),
+			common("Items", NbtType.LIST, "item stack list", NbtType.COMPOUND),
 			common("LootTable", NbtType.STRING, "loot table ID"),
 			common("LootTableSeed", NbtType.LONG, ""),
 			common("CustomName", NbtType.STRING, ""),
@@ -142,13 +163,13 @@ public class NbtSuggestions {
 		register("block/minecraft:barrel", "chest");
 		register("block/minecraft:shulker_box", "chest");
 		register("block/minecraft:hopper",
-			common("Items", NbtType.LIST, "item stack list"),
+			common("Items", NbtType.LIST, "item stack list", NbtType.COMPOUND),
 			common("TransferCooldown", NbtType.INT, ""),
 			common("CustomName", NbtType.STRING, ""),
 			common("Lock", NbtType.STRING, "")
 		);
 		register("block/minecraft:dispenser",
-			common("Items", NbtType.LIST, "item stack list"),
+			common("Items", NbtType.LIST, "item stack list", NbtType.COMPOUND),
 			common("CustomName", NbtType.STRING, ""),
 			common("Lock", NbtType.STRING, "")
 		);
@@ -156,7 +177,7 @@ public class NbtSuggestions {
 
 		register("block/minecraft:mob_spawner",
 			common("SpawnData", NbtType.COMPOUND, "spawn entry"),
-			common("SpawnPotentials", NbtType.LIST, "spawn potential list"),
+			common("SpawnPotentials", NbtType.LIST, "spawn potential list", NbtType.COMPOUND),
 			common("SpawnCount", NbtType.SHORT, ""),
 			common("SpawnRange", NbtType.SHORT, ""),
 			common("RequiredPlayerRange", NbtType.SHORT, ""),
@@ -196,13 +217,13 @@ public class NbtSuggestions {
 				new FieldDef("Properties", NbtType.COMPOUND, "texture properties")
 			)),
 			common("CustomName", NbtType.STRING, ""),
-			common("note_block_sound", NbtType.STRING, "sound event ID")
+			common("note_block_sound", NbtType.RESOURCE_LOCATION, "sound event ID", Subtype.SOUND_EVENT)
 		);
 		register("block/minecraft:player_head", "block/minecraft:skull");
 
 		List<FieldDef> signTextChildren = List.of(
 			new FieldDef("messages", NbtType.LIST, "string[4]"),
-			new FieldDef("color", NbtType.ENUM, "DyeColor"),
+			new FieldDef("color", NbtType.ENUM, "DyeColor", Subtype.DYE_COLOR),
 			new FieldDef("has_glowing_text", NbtType.BOOLEAN, "")
 		);
 		register("block/minecraft:sign",
@@ -210,7 +231,7 @@ public class NbtSuggestions {
 			common("Text2", NbtType.STRING, "JSON text"),
 			common("Text3", NbtType.STRING, "JSON text"),
 			common("Text4", NbtType.STRING, "JSON text"),
-			common("Color", NbtType.ENUM, "color"),
+			common("Color", NbtType.ENUM, "color", Subtype.DYE_COLOR),
 			common("GlowingText", NbtType.BOOLEAN, ""),
 			new FieldDef("front_text", NbtType.COMPOUND, "", signTextChildren),
 			new FieldDef("back_text", NbtType.COMPOUND, "", signTextChildren)
@@ -225,7 +246,7 @@ public class NbtSuggestions {
 		);
 
 		register("block/minecraft:brewing_stand",
-			common("Items", NbtType.LIST, "item stack list"),
+			common("Items", NbtType.LIST, "item stack list", NbtType.COMPOUND),
 			common("BrewTime", NbtType.INT, ""),
 			common("Fuel", NbtType.INT, ""),
 			common("CustomName", NbtType.STRING, ""),
@@ -243,7 +264,7 @@ public class NbtSuggestions {
 		register("block/minecraft:note_block",
 			common("note", NbtType.BYTE, "pitch 0-24"),
 			common("powered", NbtType.BOOLEAN, ""),
-			common("instrument", NbtType.ENUM, "instrument")
+			common("instrument", NbtType.ENUM, "instrument", Subtype.INSTRUMENT)
 		);
 
 		register("block/minecraft:comparator",
@@ -255,7 +276,7 @@ public class NbtSuggestions {
 		);
 
 		register("block/minecraft:beehive",
-			common("Bees", NbtType.LIST, "bee data list"),
+			common("Bees", NbtType.LIST, "bee data list", NbtType.COMPOUND),
 			common("honey_level", NbtType.INT, ""),
 			common("flower_pos", NbtType.COMPOUND, "flower position"),
 			common("sedated", NbtType.BOOLEAN, "")
@@ -278,7 +299,7 @@ public class NbtSuggestions {
 		);
 
 		register("block/minecraft:sculk_catalyst",
-			common("cursors", NbtType.LIST, "sculk cursor list")
+			common("cursors", NbtType.LIST, "sculk cursor list", NbtType.COMPOUND)
 		);
 
 		register("block/minecraft:sculk_shrieker",
@@ -308,7 +329,7 @@ public class NbtSuggestions {
 		);
 
 		register("block/minecraft:bed",
-			common("color", NbtType.ENUM, "DyeColor")
+			common("color", NbtType.ENUM, "DyeColor", Subtype.DYE_COLOR)
 		);
 
 		register("block/minecraft:conduit",
@@ -332,9 +353,9 @@ public class NbtSuggestions {
 			common("sizeX", NbtType.INT, ""),
 			common("sizeY", NbtType.INT, ""),
 			common("sizeZ", NbtType.INT, ""),
-			common("rotation", NbtType.ENUM, "rotation"),
-			common("mirror", NbtType.ENUM, "mirror"),
-			common("mode", NbtType.ENUM, "mode"),
+			common("rotation", NbtType.ENUM, "rotation", Subtype.ROTATION),
+			common("mirror", NbtType.ENUM, "mirror", Subtype.MIRROR),
+			common("mode", NbtType.ENUM, "mode", Subtype.STRUCTURE_MODE),
 			common("powered", NbtType.BOOLEAN, ""),
 			common("ignoreEntities", NbtType.BOOLEAN, ""),
 			common("showair", NbtType.BOOLEAN, ""),
@@ -354,7 +375,7 @@ public class NbtSuggestions {
 			common("normal_config", NbtType.COMPOUND, ""),
 			common("ominous_config", NbtType.COMPOUND, ""),
 			common("spawn_data", NbtType.COMPOUND, ""),
-			common("registered_players", NbtType.LIST, "UUID list"),
+			common("registered_players", NbtType.LIST, "UUID list", NbtType.UUID),
 			common("cooldown_length", NbtType.INT, ""),
 			common("total_mobs_spawned", NbtType.INT, ""),
 			common("simulated_players", NbtType.INT, ""),
@@ -390,13 +411,13 @@ public class NbtSuggestions {
 			common("AttackTime", NbtType.SHORT, ""),
 			common("PersistenceRequired", NbtType.BOOLEAN, ""),
 			common("Leash", NbtType.COMPOUND, "leash holder UUID"),
-			common("HandDropChances", NbtType.LIST, "float list"),
-			common("ArmorDropChances", NbtType.LIST, "float list"),
-			common("HandItems", NbtType.LIST, "item list"),
-			common("ArmorItems", NbtType.LIST, "item list"),
-			common("ActiveEffects", NbtType.LIST, "effect list"),
+			common("HandDropChances", NbtType.LIST, "float list", NbtType.FLOAT),
+			common("ArmorDropChances", NbtType.LIST, "float list", NbtType.FLOAT),
+			common("HandItems", NbtType.LIST, "item list", NbtType.COMPOUND),
+			common("ArmorItems", NbtType.LIST, "item list", NbtType.COMPOUND),
+			common("ActiveEffects", NbtType.LIST, "effect list", NbtType.COMPOUND),
 			common("Brain", NbtType.COMPOUND, "brain memory"),
-			common("Attributes", NbtType.LIST, "attribute list"),
+			common("Attributes", NbtType.LIST, "attribute list", NbtType.COMPOUND),
 			common("CanPickUpLoot", NbtType.BOOLEAN, ""),
 			common("CanBreakDoors", NbtType.BOOLEAN, ""),
 			common("FromSpawner", NbtType.BOOLEAN, ""),
@@ -419,6 +440,7 @@ public class NbtSuggestions {
 		register("entity/minecraft:skeleton",
 			common("StrayConversionTime", NbtType.INT, "")
 		);
+		register("entity/minecraft:stray", "entity/minecraft:skeleton");
 
 		register("entity/minecraft:creeper",
 			common("Fuse", NbtType.SHORT, ""),
@@ -441,12 +463,12 @@ public class NbtSuggestions {
 
 		register("entity/minecraft:villager",
 			new FieldDef("VillagerData", NbtType.COMPOUND, "type/profession/level", List.of(
-				new FieldDef("type", NbtType.STRING, "villager type ID"),
-				new FieldDef("profession", NbtType.STRING, "profession ID", null),
+				new FieldDef("type", NbtType.RESOURCE_LOCATION, "villager type ID", Subtype.VILLAGER_TYPE),
+				new FieldDef("profession", NbtType.RESOURCE_LOCATION, "profession ID", Subtype.VILLAGER_PROFESSION),
 				new FieldDef("level", NbtType.INT, "1-5")
 			)),
-			common("Gossips", NbtType.LIST, "gossip entries"),
-			common("Inventory", NbtType.LIST, "item list"),
+			common("Gossips", NbtType.LIST, "gossip entries", NbtType.COMPOUND),
+			common("Inventory", NbtType.LIST, "item list", NbtType.COMPOUND),
 			common("Offers", NbtType.COMPOUND, "trade offers"),
 			common("Xp", NbtType.INT, ""),
 			common("LastRestock", NbtType.LONG, ""),
@@ -473,7 +495,7 @@ public class NbtSuggestions {
 			common("CollarColor", NbtType.BYTE, ""),
 			common("Sitting", NbtType.BOOLEAN, ""),
 			common("Trusting", NbtType.LIST, ""),
-			common("variant", NbtType.ENUM, "CatVariant")
+			common("variant", NbtType.RESOURCE_LOCATION, "CatVariant", Subtype.CAT_VARIANT)
 		);
 
 		register("entity/minecraft:horse",
@@ -481,7 +503,7 @@ public class NbtSuggestions {
 			common("HasArmor", NbtType.BOOLEAN, ""),
 			common("HasSaddle", NbtType.BOOLEAN, ""),
 			common("Tame", NbtType.BOOLEAN, ""),
-			common("Items", NbtType.LIST, "item list"),
+			common("Items", NbtType.LIST, "item list", NbtType.COMPOUND),
 			common("variant", NbtType.INT, "horse variant"),
 			common("armorItem", NbtType.COMPOUND, "armor item"),
 			common("saddleItem", NbtType.COMPOUND, "saddle item")
@@ -491,7 +513,7 @@ public class NbtSuggestions {
 
 		register("entity/minecraft:llama",
 			common("ChestedHorse", NbtType.BOOLEAN, ""),
-			common("Items", NbtType.LIST, ""),
+			common("Items", NbtType.LIST, "", NbtType.COMPOUND),
 			common("variant", NbtType.INT, "llama variant"),
 			common("Strength", NbtType.INT, ""),
 			common("DecorItem", NbtType.COMPOUND, "carpet item"),
@@ -499,7 +521,7 @@ public class NbtSuggestions {
 		);
 
 		register("entity/minecraft:fox",
-			common("Trusting", NbtType.LIST, "UUID list"),
+			common("Trusting", NbtType.LIST, "UUID list", NbtType.UUID),
 			common("Sleeping", NbtType.BOOLEAN, ""),
 			common("Sitting", NbtType.BOOLEAN, ""),
 			common("Crouching", NbtType.BOOLEAN, ""),
@@ -528,7 +550,7 @@ public class NbtSuggestions {
 		);
 
 		register("entity/minecraft:allay",
-			common("Inventory", NbtType.LIST, "item list"),
+			common("Inventory", NbtType.LIST, "item list", NbtType.COMPOUND),
 			common("DuplicationCooldown", NbtType.LONG, ""),
 			common("CanDuplicate", NbtType.BOOLEAN, ""),
 			common("brain", NbtType.COMPOUND, "")
@@ -568,8 +590,8 @@ public class NbtSuggestions {
 		register("entity/minecraft:glow_item_frame", "entity/minecraft:item_frame");
 
 		register("entity/minecraft:painting",
-			common("variant", NbtType.STRING, "painting variant ID"),
-			common("Motive", NbtType.STRING, "")
+			common("variant", NbtType.RESOURCE_LOCATION, "painting variant ID", Subtype.PAINTING_VARIANT),
+			common("Motive", NbtType.RESOURCE_LOCATION, "", Subtype.PAINTING_VARIANT)
 		);
 
 		register("entity/minecraft:armor_stand",
@@ -592,7 +614,7 @@ public class NbtSuggestions {
 		);
 
 		register("entity/minecraft:boat",
-			common("Type", NbtType.ENUM, "WoodType"),
+			common("Type", NbtType.ENUM, "WoodType", Subtype.WOOD_TYPE),
 			common("LeftEngineTank", NbtType.COMPOUND, ""),
 			common("RightEngineTank", NbtType.COMPOUND, "")
 		);
@@ -600,7 +622,7 @@ public class NbtSuggestions {
 		register("entity/minecraft:chest_boat",
 			common("LootTable", NbtType.STRING, ""),
 			common("LootTableSeed", NbtType.LONG, ""),
-			common("Items", NbtType.LIST, "")
+			common("Items", NbtType.LIST, "", NbtType.COMPOUND)
 		);
 
 		register("entity/minecraft:minecart",
@@ -609,7 +631,7 @@ public class NbtSuggestions {
 			common("DisplayOffset", NbtType.INT, "")
 		);
 		register("entity/minecraft:chest_minecart",
-			common("Items", NbtType.LIST, ""),
+			common("Items", NbtType.LIST, "", NbtType.COMPOUND),
 			common("LootTable", NbtType.STRING, ""),
 			common("LootTableSeed", NbtType.LONG, "")
 		);
@@ -620,7 +642,7 @@ public class NbtSuggestions {
 		);
 		register("entity/minecraft:hopper_minecart",
 			common("Enabled", NbtType.BOOLEAN, ""),
-			common("Items", NbtType.LIST, "")
+			common("Items", NbtType.LIST, "", NbtType.COMPOUND)
 		);
 		register("entity/minecraft:spawner_minecart", common("SpawnData", NbtType.COMPOUND, ""));
 
@@ -642,8 +664,8 @@ public class NbtSuggestions {
 
 		register("entity/minecraft:fireball",
 			common("ExplosionPower", NbtType.INT, ""),
-			common("power", NbtType.LIST, "velocity"),
-			common("direction", NbtType.LIST, "velocity")
+			common("power", NbtType.LIST, "velocity", NbtType.DOUBLE),
+			common("direction", NbtType.LIST, "velocity", NbtType.DOUBLE)
 		);
 		register("entity/minecraft:small_fireball", "entity/minecraft:fireball");
 		register("entity/minecraft:dragon_fireball", "entity/minecraft:fireball");
@@ -693,7 +715,7 @@ public class NbtSuggestions {
 			common("RadiusOnUse", NbtType.FLOAT, ""),
 			common("RadiusPerTick", NbtType.FLOAT, ""),
 			common("Particle", NbtType.COMPOUND, "particle data"),
-			common("Effects", NbtType.LIST, "effect list"),
+			common("Effects", NbtType.LIST, "effect list", NbtType.COMPOUND),
 			common("Color", NbtType.INT, ""),
 			common("Age", NbtType.INT, ""),
 			common("Owner", NbtType.UUID, "")
@@ -710,7 +732,7 @@ public class NbtSuggestions {
 		register("entity/minecraft:wandering_trader",
 			common("WanderTarget", NbtType.COMPOUND, "position"),
 			common("DespawnDelay", NbtType.INT, ""),
-			common("Inventory", NbtType.LIST, ""),
+			common("Inventory", NbtType.LIST, "", NbtType.COMPOUND),
 			common("Offers", NbtType.COMPOUND, "")
 		);
 
@@ -721,16 +743,16 @@ public class NbtSuggestions {
 		);
 
 		register("entity/minecraft:breeze",
-			common("WindCharges", NbtType.LIST, ""),
+			common("WindCharges", NbtType.LIST, "", NbtType.COMPOUND),
 			common("AttackTarget", NbtType.COMPOUND, "")
 		);
 
 		register("entity/minecraft:breeze_wind_charge",
-			common("power", NbtType.LIST, "velocity")
+			common("power", NbtType.LIST, "velocity", NbtType.DOUBLE)
 		);
 
 		register("entity/minecraft:wind_charge",
-			common("power", NbtType.LIST, "velocity")
+			common("power", NbtType.LIST, "velocity", NbtType.DOUBLE)
 		);
 
 		register("entity/minecraft:bogged",
@@ -784,6 +806,21 @@ public class NbtSuggestions {
 		register("item_components", componentFields);
 	}
 
+	private static void registerPriorityFields() {
+		IRRELEVANT_FIELDS.addAll(Set.of(
+			"CustomName", "Lock", "Pos", "Rotation", "Motion",
+			"OnGround", "NoGravity", "FallDistance", "Fire", "Air",
+			"CustomNameVisible", "Silent", "Invulnerable", "Glowing",
+			"Tags", "Passengers", "id", "UUID", "Command"
+		));
+		RECOMMENDED_FIELDS.addAll(Set.of(
+			"VillagerData", "Offers", "Brain", "Inventory", "Items",
+			"ArmorItems", "HandItems", "ActiveEffects", "Attributes",
+			"Fuse", "ExplosionRadius", "SpawnData", "SpawnPotentials",
+			"SkullOwner", "BlockEntityTag", "EntityTag"
+		));
+	}
+
 	private static void registerEnumValues() {
 		var dyeColors = Arrays.stream(DyeColor.values())
 			.map(DyeColor::getSerializedName).toList();
@@ -823,13 +860,13 @@ public class NbtSuggestions {
 		for (var entry : BuiltInRegistries.BLOCK_ENTITY_TYPE.entrySet()) {
 			Identifier id = entry.getKey().identifier();
 			if (!id.getNamespace().equals("minecraft") && !ROOT_FIELDS.containsKey("block/" + id)) {
-				register("block/" + id, NbtSuggestions.commonBlockFields().toArray(FieldDef[]::new));
+				register("block/" + id, commonBlockFields());
 			}
 		}
 		for (var entry : BuiltInRegistries.ENTITY_TYPE.entrySet()) {
 			Identifier id = entry.getKey().identifier();
 			if (!id.getNamespace().equals("minecraft") && !ROOT_FIELDS.containsKey("entity/" + id)) {
-				register("entity/" + id, commonEntityFields().toArray(FieldDef[]::new));
+				register("entity/" + id, commonEntityFields());
 			}
 		}
 	}
@@ -860,35 +897,27 @@ public class NbtSuggestions {
 			return null;
 		}
 
-		try {
-			var typeField = EntitySelector.class.getDeclaredField("type");
-			typeField.setAccessible(true);
-			Object typeTest = typeField.get(selector);
-			if (typeTest instanceof EntityType<?> entityType) {
-				return "entity/" + EntityType.getKey(entityType);
-			}
+		EntitySelectorAccessor accessor = (EntitySelectorAccessor) selector;
+		var typeTest = accessor.getType();
+		if (typeTest instanceof EntityType<?> entityType) {
+			return "entity/" + EntityType.getKey(entityType);
+		}
 
-			var uuidField = EntitySelector.class.getDeclaredField("entityUUID");
-			uuidField.setAccessible(true);
-			java.util.UUID uuid = (java.util.UUID) uuidField.get(selector);
-			if (uuid != null) {
-				Entity entity = level.getEntity(uuid);
-				if (entity != null) {
-					return "entity/" + EntityType.getKey(entity.getType());
+		java.util.UUID uuid = accessor.getEntityUUID();
+		if (uuid != null) {
+			Entity entity = level.getEntity(uuid);
+			if (entity != null) {
+				return "entity/" + EntityType.getKey(entity.getType());
+			}
+		}
+
+		String playerName = accessor.getPlayerName();
+		if (playerName != null) {
+			for (Player player : level.players()) {
+				if (player.getGameProfile().name().equals(playerName)) {
+					return "entity/" + EntityType.getKey(EntityType.PLAYER);
 				}
 			}
-
-			var nameField = EntitySelector.class.getDeclaredField("playerName");
-			nameField.setAccessible(true);
-			String playerName = (String) nameField.get(selector);
-			if (playerName != null) {
-				for (Player player : level.players()) {
-					if (player.getGameProfile().name().equals(playerName)) {
-						return "entity/" + EntityType.getKey(EntityType.PLAYER);
-					}
-				}
-			}
-		} catch (Exception ignored) {
 		}
 
 		return null;
@@ -934,7 +963,8 @@ public class NbtSuggestions {
 	public enum NbtType {
 		BYTE("b"), SHORT("s"), INT(""), LONG("l"), FLOAT("f"), DOUBLE("d"),
 		STRING(""), BOOLEAN(""), COMPOUND(""), LIST(""),
-		BYTE_ARRAY(""), INT_ARRAY(""), LONG_ARRAY(""), UUID(""), ENUM("");
+		BYTE_ARRAY(""), INT_ARRAY(""), LONG_ARRAY(""), UUID(""), ENUM(""),
+		RESOURCE_LOCATION("");
 
 		public final String suffix;
 
@@ -943,9 +973,139 @@ public class NbtSuggestions {
 		}
 	}
 
-	public record FieldDef(String name, NbtType type, String subtext, @Nullable List<FieldDef> children) {
+	public enum Subtype {
+		NONE,
+		ENTITY_TYPE,
+		BLOCK,
+		ITEM,
+		BLOCK_ENTITY_TYPE,
+		SOUND_EVENT,
+		MOB_EFFECT,
+		ENCHANTMENT,
+		ATTRIBUTE,
+		PARTICLE_TYPE,
+		FLUID,
+		VILLAGER_TYPE,
+		VILLAGER_PROFESSION,
+		PAINTING_VARIANT,
+		CAT_VARIANT,
+		FROG_VARIANT,
+		INSTRUMENT,
+		DYE_COLOR,
+		ROTATION,
+		MIRROR,
+		STRUCTURE_MODE,
+		WOOD_TYPE,
+		FACING;
+
+		private static final List<String> CAT_VARIANT_VALUES = List.of(
+			"minecraft:tabby", "minecraft:tuxedo", "minecraft:red", "minecraft:siamese",
+			"minecraft:british", "minecraft:calico", "minecraft:persian", "minecraft:ragdoll",
+			"minecraft:white", "minecraft:jellie", "minecraft:black", "minecraft:all_black"
+		);
+		private static final List<String> FROG_VARIANT_VALUES = List.of(
+			"minecraft:temperate", "minecraft:warm", "minecraft:cold"
+		);
+		private static final List<String> ENCHANTMENT_VALUES = List.of(
+			"minecraft:protection", "minecraft:fire_protection", "minecraft:feather_falling",
+			"minecraft:blast_protection", "minecraft:projectile_protection", "minecraft:respiration",
+			"minecraft:aqua_affinity", "minecraft:thorns", "minecraft:depth_strider",
+			"minecraft:frost_walker", "minecraft:binding_curse", "minecraft:soul_speed",
+			"minecraft:swift_sneak", "minecraft:sharpness", "minecraft:smite", "minecraft:bane_of_arthropods",
+			"minecraft:knockback", "minecraft:fire_aspect", "minecraft:looting", "minecraft:sweeping_edge",
+			"minecraft:efficiency", "minecraft:silk_touch", "minecraft:unbreaking", "minecraft:fortune",
+			"minecraft:power", "minecraft:punch", "minecraft:flame", "minecraft:infinity",
+			"minecraft:luck_of_the_sea", "minecraft:lure", "minecraft:loyalty", "minecraft:impaling",
+			"minecraft:riptide", "minecraft:channeling", "minecraft:multishot", "minecraft:quick_charge",
+			"minecraft:piercing", "minecraft:mending", "minecraft:vanishing_curse", "minecraft:wind_burst",
+			"minecraft:density", "minecraft:breach"
+		);
+		private static final List<String> PAINTING_VARIANT_VALUES = List.of(
+			"minecraft:alban", "minecraft:aztec", "minecraft:aztec2", "minecraft:bomb",
+			"minecraft:burning_skull", "minecraft:bust", "minecraft:courbet", "minecraft:creebet",
+			"minecraft:donkey_kong", "minecraft:earth", "minecraft:fighters", "minecraft:fire",
+			"minecraft:graham", "minecraft:kebab", "minecraft:match", "minecraft:pigscene",
+			"minecraft:plant", "minecraft:pointer", "minecraft:pool", "minecraft:sea",
+			"minecraft:skeleton", "minecraft:skull_and_roses", "minecraft:stage", "minecraft:sunset",
+			"minecraft:void", "minecraft:wanderer", "minecraft:wasteland", "minecraft:water",
+			"minecraft:wind", "minecraft:wither"
+		);
+		private static final List<String> INSTRUMENT_VALUES = List.of(
+			"minecraft:ponder_goat_horn", "minecraft:sing_goat_horn", "minecraft:seek_goat_horn",
+			"minecraft:feel_goat_horn", "minecraft:admire_goat_horn", "minecraft:call_goat_horn",
+			"minecraft:yearn_goat_horn", "minecraft:dream_goat_horn"
+		);
+		private static final List<String> WOOD_TYPE_VALUES = List.of(
+			"oak", "spruce", "birch", "jungle", "acacia", "dark_oak",
+			"mangrove", "cherry", "bamboo", "crimson", "warped"
+		);
+		private static final List<String> FACING_VALUES = List.of(
+			"down", "up", "north", "south", "west", "east"
+		);
+
+		private static List<String> dynamicRegistryValues(ResourceKey<? extends Registry<?>> key, List<String> fallback) {
+			ClientLevel level = Minecraft.getInstance().level;
+			if (level != null) {
+				var lookup = level.registryAccess().lookup(key);
+				if (lookup.isPresent()) {
+					return lookup.get().keySet().stream().map(Identifier::toString).sorted().toList();
+				}
+			}
+			return fallback;
+		}
+
+		private static <T> List<String> resourceKeys(Registry<T> registry) {
+			return registry.keySet().stream().map(Identifier::toString).sorted().toList();
+		}
+
+		private static <T> List<String> enumNames(T[] values, java.util.function.Function<T, String> namer) {
+			return Arrays.stream(values).map(namer).toList();
+		}
+
+		public List<String> getValues() {
+			return switch (this) {
+				case ENTITY_TYPE -> resourceKeys(BuiltInRegistries.ENTITY_TYPE);
+				case BLOCK -> resourceKeys(BuiltInRegistries.BLOCK);
+				case ITEM -> resourceKeys(BuiltInRegistries.ITEM);
+				case BLOCK_ENTITY_TYPE -> resourceKeys(BuiltInRegistries.BLOCK_ENTITY_TYPE);
+				case SOUND_EVENT -> resourceKeys(BuiltInRegistries.SOUND_EVENT);
+				case MOB_EFFECT -> resourceKeys(BuiltInRegistries.MOB_EFFECT);
+				case ENCHANTMENT -> dynamicRegistryValues(Registries.ENCHANTMENT, ENCHANTMENT_VALUES);
+				case ATTRIBUTE -> resourceKeys(BuiltInRegistries.ATTRIBUTE);
+				case PARTICLE_TYPE -> resourceKeys(BuiltInRegistries.PARTICLE_TYPE);
+				case FLUID -> resourceKeys(BuiltInRegistries.FLUID);
+				case VILLAGER_TYPE -> resourceKeys(BuiltInRegistries.VILLAGER_TYPE);
+				case VILLAGER_PROFESSION -> resourceKeys(BuiltInRegistries.VILLAGER_PROFESSION);
+				case PAINTING_VARIANT -> dynamicRegistryValues(Registries.PAINTING_VARIANT, PAINTING_VARIANT_VALUES);
+				case INSTRUMENT -> dynamicRegistryValues(Registries.INSTRUMENT, INSTRUMENT_VALUES);
+				case DYE_COLOR -> enumNames(DyeColor.values(), DyeColor::getSerializedName);
+				case ROTATION -> enumNames(Rotation.values(), Enum::name);
+				case MIRROR -> enumNames(Mirror.values(), Enum::name);
+				case STRUCTURE_MODE -> enumNames(StructureMode.values(), Enum::name);
+				case CAT_VARIANT -> dynamicRegistryValues(Registries.CAT_VARIANT, CAT_VARIANT_VALUES);
+				case FROG_VARIANT -> dynamicRegistryValues(Registries.FROG_VARIANT, FROG_VARIANT_VALUES);
+				case WOOD_TYPE -> WOOD_TYPE_VALUES;
+				case FACING -> FACING_VALUES;
+				default -> List.of();
+			};
+		}
+	}
+
+	public record FieldDef(String name, NbtType type, String subtext, @Nullable List<FieldDef> children, Subtype subtype, @Nullable NbtType elementType) {
 		public FieldDef(String name, NbtType type, String subtext) {
-			this(name, type, subtext, null);
+			this(name, type, subtext, null, Subtype.NONE, null);
+		}
+
+		public FieldDef(String name, NbtType type, String subtext, @Nullable List<FieldDef> children) {
+			this(name, type, subtext, children, Subtype.NONE, null);
+		}
+
+		public FieldDef(String name, NbtType type, String subtext, Subtype subtype) {
+			this(name, type, subtext, null, subtype, null);
+		}
+
+		public FieldDef(String name, NbtType type, String subtext, NbtType elementType) {
+			this(name, type, subtext, null, Subtype.NONE, elementType);
 		}
 	}
 }
