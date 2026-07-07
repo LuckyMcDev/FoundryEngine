@@ -1,4 +1,4 @@
-package de.luckymcdev.foundryengine.mixin.suggest.nbt;
+package de.luckymcdev.foundryengine.mixin.suggest;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.suggestion.Suggestions;
