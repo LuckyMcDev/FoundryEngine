@@ -1,6 +1,6 @@
 # Builders
 
-Builders are the primary way to create and register game content in FoundryEngine. Each builder wraps a NeoForge registry and provides a fluent API.
+Builders are the main way to create and register game content in FoundryEngine. Each builder wraps a NeoForge registry and provides a fluent API.
 
 All builders extend `AbstractBuilder<T>` (`de.luckymcdev.foundryengine.common.builder.AbstractBuilder`):
 
@@ -21,13 +21,13 @@ All builders extend `AbstractBuilder<T>` (`de.luckymcdev.foundryengine.common.bu
 
 Creates custom `Item` instances. The default factory produces `EngineItem`, which supports callback-based event hooks.
 
-### Static Factory
+### Static factory
 
 ```groovy
 ItemBuilder.create(Identifier.fromNamespaceAndPath("mybundle", "my_item"))
 ```
 
-### Configuration Methods
+### Configuration methods
 
 All methods return `ItemBuilder` for fluent chaining.
 
@@ -41,7 +41,7 @@ All methods return `ItemBuilder` for fluent chaining.
 | `component(String, T)` | Add a data component by string key |
 | `generateData(boolean)` | Toggle auto data generation |
 
-### Callback Hooks
+### Callback hooks
 
 ```groovy
 ItemBuilder.create(id("wand"))
@@ -75,7 +75,7 @@ ItemBuilder.create(id("wand"))
 | `releaseUsing(cb)` | `ReleaseUsingCallback` | `ItemStack, Level, LivingEntity, int remainingTime` | `boolean` |
 | `onCraftedPostProcess(cb)` | `OnCraftedPostProcessCallback` | `ItemStack, Level` | `void` |
 
-### Complete Example
+### Complete example
 
 ```groovy
 ItemBuilder.create(id("my_item"))
@@ -118,7 +118,7 @@ BlockBuilder.create(Identifier.fromNamespaceAndPath("mybundle", "my_block"))
 | `itemProperties(UnaryOperator<Item.Properties>)` | Modify block item properties |
 | `generateData(boolean)` | Toggle auto data generation |
 
-### Block Callback Hooks
+### Block callback hooks
 
 ```groovy
 BlockBuilder.create(id("magic_block"))
@@ -145,7 +145,7 @@ BlockBuilder.create(id("magic_block"))
 | `playerDestroy(cb)` | `PlayerDestroyCallback` | `Level, Player, BlockPos, BlockState, BlockEntity, ItemStack` | `void` |
 | `handlePrecipitation(cb)` | `HandlePrecipitationCallback` | `BlockState, Level, BlockPos, Biome.Precipitation` | `void` |
 
-### Item Callback Hooks on Blocks
+### Item callback hooks on blocks
 
 BlockBuilder also exposes item callbacks that apply to the block's item form:
 
@@ -192,7 +192,7 @@ BlockBuilder.create(id("hot_plate"))
 
 Creates all recipe types. Used for data generation via `RecipeResult`.
 
-### Static Factories
+### Static factories
 
 | Factory | Description |
 |---|---|
@@ -206,7 +206,7 @@ Creates all recipe types. Used for data generation via `RecipeResult`.
 | `RecipeBuilder.smithingTransform(id, result)` | Smithing table transform |
 | `RecipeBuilder.smithingTrim(id)` | Smithing table trim |
 
-### Universal Methods
+### Universal methods
 
 | Method | Description |
 |---|---|
@@ -216,7 +216,7 @@ Creates all recipe types. Used for data generation via `RecipeResult`.
 | `unlockedBy(String, Criterion)` | Unlock criterion |
 | `generateData(boolean)` | Toggle auto data generation |
 
-### Shaped Recipe
+### Shaped recipe
 
 | Method | Description |
 |---|---|
@@ -224,7 +224,7 @@ Creates all recipe types. Used for data generation via `RecipeResult`.
 | `define(char, ItemLike)` | Define a pattern key |
 | `define(char, Ingredient)` | Define a pattern key as ingredient |
 
-### Shapeless Recipe
+### Shapeless recipe
 
 | Method | Description |
 |---|---|
@@ -233,7 +233,7 @@ Creates all recipe types. Used for data generation via `RecipeResult`.
 | `requires(Ingredient)` | Add an ingredient |
 | `requires(Ingredient, int)` | Add multiple of an ingredient |
 
-### Cooking Recipes (smelting, blasting, smoking, campfireCooking)
+### Cooking recipes (smelting, blasting, smoking, campfireCooking)
 
 | Method | Description |
 |---|---|
@@ -260,7 +260,7 @@ Creates all recipe types. Used for data generation via `RecipeResult`.
 | `template(ItemLike)` | Smithing template |
 | `template(Ingredient)` | Smithing template ingredient |
 
-### Complete Examples
+### Complete examples
 
 ```groovy
 RecipeBuilder.shaped(id("test_shaped"), Items.DIAMOND_SWORD)
@@ -315,7 +315,7 @@ SoundBuilder.create(Identifier.fromNamespaceAndPath("mybundle", "my_sound"))
 
 The full `addSound` parameters are: `location`, `volume`, `pitch`, `weight`, `stream`, `attenuationDistance`, `preload`.
 
-### Complete Example
+### Complete example
 
 ```groovy
 SoundBuilder.create(id("my_music"))
@@ -369,7 +369,7 @@ ParticleBuilder.create(Identifier.fromNamespaceAndPath("mybundle", "my_particle"
 
 Enum with values: `OPAQUE`, `TRANSLUCENT`
 
-### Complete Example
+### Complete example
 
 ```groovy
 ParticleBuilder.create(id("sparkle"))
@@ -396,7 +396,7 @@ BundleEvents.registry {
 }
 ```
 
-## Data Generation
+## Data generation
 
 By default, each builder auto-generates asset/data files (models, recipes, blockstates, sound JSONs, etc.). You can disable this per-builder:
 
@@ -405,7 +405,7 @@ BlockBuilder.create(id("custom_block"))
     .generateData(false)
 ```
 
-## See Also
+## See also
 
-- [Registries](registries) — How builders interact with the registry system
-- [Events](events) — Adding behavior via event hooks
+- [Registries](registries) -- How builders interact with the registry system
+- [Events](events) -- Adding behavior via event hooks

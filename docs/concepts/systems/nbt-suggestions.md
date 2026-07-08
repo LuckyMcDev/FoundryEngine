@@ -1,8 +1,8 @@
-# NBT Command Suggestions
+# NBT command suggestions
 
-FoundryEngine adds smart tab-completion for NBT data in Minecraft commands. When typing NBT inside `/data`, `/summon`, `/setblock`, `/give`, `/item`, entity selectors, or any command that accepts NBT, the mod suggests valid field names, values, and structure based on the target type.
+FoundryEngine adds tab-completion for NBT data in Minecraft commands. When typing NBT inside `/data`, `/summon`, `/setblock`, `/give`, `/item`, entity selectors, or any command that accepts NBT, the mod suggests valid field names, values, and structure based on the target type.
 
-## Supported Contexts
+## Supported contexts
 
 | Context                                    | What Gets Suggestions                                   |
 |--------------------------------------------|---------------------------------------------------------|
@@ -16,26 +16,26 @@ FoundryEngine adds smart tab-completion for NBT data in Minecraft commands. When
 | `@e[tag=, nbt=]` / `@p[tag=, nbt=]`        | NBT matching the selector's entity type                 |
 | `{<field>: ` (after any `:`)               | Field values based on NBT type                          |
 
-## How It Works
+## How it works
 
 The system uses mixins to intercept Brigadier's suggestion engine at the points where Minecraft parses NBT arguments:
 
-- **`CompoundTagArgument`** — top-level `{...}` in `/data`, `/summon`, etc.
-- **`NbtTagArgument`** — raw NBT compounds in `/data merge`
-- **`NbtPathArgument`** — NBT paths like `{Items[0].tag}`
-- **`ComponentArgument`** — JSON text components `{"text":"hello"}`
-- **`StyleArgument`** — text component style objects `{"bold":true}`
-- **`BlockStateParser`** — block entity NBT in `/setblock`
-- **`EntitySelectorParser`** — NBT within entity selectors
-- **`ItemParser$State`** — data component IDs when typing `components:{...}` in `/give` or `/item`
+- **`CompoundTagArgument`** -- top-level `{...}` in `/data`, `/summon`, etc.
+- **`NbtTagArgument`** -- raw NBT compounds in `/data merge`
+- **`NbtPathArgument`** -- NBT paths like `{Items[0].tag}`
+- **`ComponentArgument`** -- JSON text components `{"text":"hello"}`
+- **`StyleArgument`** -- text component style objects `{"bold":true}`
+- **`BlockStateParser`** -- block entity NBT in `/setblock`
+- **`EntitySelectorParser`** -- NBT within entity selectors
+- **`ItemParser$State`** -- data component IDs when typing `components:{...}` in `/give` or `/item`
 
-The parser (`NbtSuggestionEngine`) reads the current cursor position, tracks brace/bracket depth and compound nesting, and determines whether you're typing a field name, value, list entry, or closing bracket — then provides context-appropriate suggestions.
+The parser (`NbtSuggestionEngine`) reads the current cursor position, tracks brace/bracket depth and compound nesting, and determines whether you are typing a field name, value, list entry, or closing bracket. It then provides context-appropriate suggestions.
 
 Each suggestion carries a **subtext** (type hint shown on the right) and a **priority** via `SuggestionData`, a static map that stores `(subtext, priority)` per `Suggestion` object. The `SuggestionsListMixin` reads this data to render subtext, dim irrelevant suggestions, and sort by priority.
 
-## Registered NBT Fields
+## Registered NBT fields
 
-### Block Entities
+### Block entities
 
 All vanilla block entities are registered with their known NBT fields. Modded block entity types are auto-detected from the registry and get a default set of common block entity fields.
 
@@ -48,7 +48,7 @@ Common block entity fields available on most supported blocks:
 
 ### Entities
 
-Vanilla entities have per-type field registrations (e.g., `zombie` gets `IsBaby`, `DrownedConversionTime`; `villager` gets `VillagerData`, `Offers`, `Gossips`). Modded entity types are auto-detected and get common entity fields:
+Vanilla entities have per-type field registrations (e.g. `zombie` gets `IsBaby`, `DrownedConversionTime`; `villager` gets `VillagerData`, `Offers`, `Gossips`). Modded entity types are auto-detected and get common entity fields:
 
 | Field          | Type    | Description         |
 |----------------|---------|---------------------|
@@ -75,7 +75,7 @@ Vanilla entities have per-type field registrations (e.g., `zombie` gets `IsBaby`
 
 Item component names are derived dynamically from the `minecraft:data_component_type` registry and suggested inside `components:{...}` blocks.
 
-## Subtype & Registry-Driven Value Suggestions
+## Subtype and registry-driven value suggestions
 
 Instead of static enum maps, field definitions carry a `Subtype` that determines how values are suggested. When you type a value for a subtype-aware field, the engine queries the appropriate registry at runtime:
 
@@ -91,9 +91,9 @@ Instead of static enum maps, field definitions carry a `Subtype` that determines
 | `note_block_sound` (skull)      | `SOUND_EVENT`                            | `BuiltInRegistries.SOUND_EVENT`          |
 | `Type` (boat)                   | `WOOD_TYPE`                              | Static hardcoded list                    |
 
-For dynamic datapack registries (`ENCHANTMENT`, `PAINTING_VARIANT`, `CAT_VARIANT`, `FROG_VARIANT`, `INSTRUMENT`), the engine first attempts a runtime lookup via `Level.registryAccess()`. If no world is loaded (e.g., title screen), it falls back to a built-in hardcoded list. This means suggestions always reflect the actual datapack content when connected to a world.
+For dynamic datapack registries (`ENCHANTMENT`, `PAINTING_VARIANT`, `CAT_VARIANT`, `FROG_VARIANT`, `INSTRUMENT`), the engine first attempts a runtime lookup via `Level.registryAccess()`. If no world is loaded (e.g. title screen), it falls back to a built-in hardcoded list. This means suggestions always reflect the actual datapack content when connected to a world.
 
-## Suggestion Prioritization & Display
+## Suggestion prioritization and display
 
 The `SuggestionData` system assigns each suggestion a priority:
 
@@ -111,18 +111,18 @@ The `SuggestionsListMixin` hooks the rendering of the suggestion dropdown to:
 
 Stale `SuggestionData` is cleared at the start of each `CommandSuggestions.updateCommandInfo()` call via `CommandSuggestionsMixin`.
 
-## Item Data Component Suggestions
+## Item data component suggestions
 
 Item bracket syntax (`/give @s minecraft:diamond[unbreakable:...]`) is handled natively by Minecraft's `ItemParser.State`. The vanilla client already provides data component ID suggestions. The NBT suggestion system only handles NBT arguments (`{...}`) as used in `/data merge`, `/summon`, etc.
 
-## JSON Text Component Suggestions
+## JSON text component suggestions
 
 Inside JSON text components (`{"text":"..."}`), the system suggests all valid component keys (`text`, `translate`, `with`, `score`, `selector`, `keybind`, `nbt`, `extra`, `color`, `font`, `bold`, `italic`, etc.) and provides value suggestions:
 
-- `color` — all valid ChatFormatting color names
-- `font` — known font resource locations
-- `bold`, `italic`, `underlined`, `strikethrough`, `obfuscated` — `true`
-- `text` / `translate` / `insertion` — empty string template
-- `selector` — `@p`
+- `color` -- all valid ChatFormatting color names
+- `font` -- known font resource locations
+- `bold`, `italic`, `underlined`, `strikethrough`, `obfuscated` -- `true`
+- `text` / `translate` / `insertion` -- empty string template
+- `selector` -- `@p`
 
 Style objects embedded in components (`"style": {...}`) get the same treatment independently.

@@ -1,10 +1,10 @@
-# Game Stages
+# Game stages
 
-Game Stages let you gate content behind named progression milestones. Add stages to players, and use them to control access to items, mobs, dimensions, loot, and recipes.
+Game Stages let you gate content behind named progression milestones. Add stages to players and use them to control access to items, mobs, dimensions, loot, and recipes.
 
-## How Stages Work
+## How stages work
 
-A stage is a string name (like `"boss_defeated"` or `"tutorial_complete"`). Players either have a stage or don't. When adding a stage, the engine fires cancellable events so other code can veto the addition.
+A stage is a string name (like `"boss_defeated"` or `"tutorial_complete"`). Players either have a stage or do not. When adding a stage, the engine fires cancellable events so other code can veto the addition.
 
 ```
 Player joined -> has no stages
@@ -92,7 +92,7 @@ PlayerEvents.tick {
 }
 ```
 
-### Stage Events
+### Stage events
 
 Stage changes fire NeoForge events:
 
@@ -119,7 +119,7 @@ void onStageAdded(GameStageEvent.Added event) {
 }
 ```
 
-### Deferred Stage Addition
+### Deferred stage addition
 
 Add a condition that's checked automatically on player tick:
 
@@ -145,8 +145,8 @@ Common.getAreaManager().registerModuleType(new AreaEnterModule() {
 })
 ```
 
-## See Also
+## See also
 
-- [Areas](areas) — Trigger stage changes when entering zones
-- [Instanced Worlds](instanced-worlds) — Gate dimension access
-- [Commands](commands) — Stage management commands
+- [Areas](areas) -- Trigger stage changes when entering zones
+- [Instanced Worlds](instanced-worlds) -- Gate dimension access
+- [Commands](commands) -- Stage management commands

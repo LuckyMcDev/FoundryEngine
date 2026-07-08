@@ -1,6 +1,6 @@
 # Blueprints
 
-> **⚠️ Blueprint system has been temporarily removed.** The node-based visual scripting system is being reworked for a better solution. This page exists for historical reference only — the system is not available in the current release.
+> **⚠️ Blueprint system has been temporarily removed.** The node-based visual scripting system is being reworked. This page exists for historical reference only. The system is not available in the current release.
 
 Blueprints were node-based visual scripts that let you define game logic without writing code. They were serialized as JSON files with the `.febp` extension.
 

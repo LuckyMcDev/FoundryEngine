@@ -26,7 +26,7 @@ You register the **builder object**, not the raw output. The engine handles regi
 | `it.sounds(SoundBuilder...)` | Sound events |
 | `it.particles(ParticleBuilder...)` | Particle types |
 
-## See Also
+## See also
 
-- [Builders](builders) — Full builder API reference
-- [Events](events) — More about `BundleEvents.registry`
+- [Builders](builders) -- Full builder API reference
+- [Events](events) -- More about `BundleEvents.registry`

@@ -1,4 +1,4 @@
-# Markdown Rendering
+# Markdown rendering
 
 FoundryEngine can render GitHub-Flavored Markdown as formatted Minecraft `Component` text for display in a scrollable in-game screen.
 
@@ -28,7 +28,7 @@ Minecraft.getInstance().setScreen(new MdScreen(
 ))
 ```
 
-## Supported Markdown Features
+## Supported markdown features
 
 | Element         | Markdown      | Rendering                         |
 |-----------------|---------------|-----------------------------------|
@@ -46,13 +46,13 @@ Minecraft.getInstance().setScreen(new MdScreen(
 | Tables          | `\| col \|`   | `│` separators, bold headers      |
 | Thematic Break  | `---`         | `─` repeated 50 times             |
 
-## Use Cases
+## Use cases
 
-- **In-game documentation** — Display help text, guides, or changelogs
-- **Tutorials** — Show interactive tutorials with clickable links
-- **Debug output** — View formatted registry dumps
-- **Bundle documentation** — Readme files displayed from within the game
+- **In-game documentation** -- Display help text, guides, or changelogs
+- **Tutorials** -- Show interactive tutorials with clickable links
+- **Debug output** -- View formatted registry dumps
+- **Bundle documentation** -- Readme files displayed from within the game
 
-## See Also
+## See also
 
-- [Commands](commands) — `/engine dump` outputs registry data as markdown
+- [Commands](commands) -- `/engine dump` outputs registry data as markdown

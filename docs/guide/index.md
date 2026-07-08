@@ -1,4 +1,4 @@
-# Installation Guide
+# Installation guide
 
 Install Minecraft, NeoForge, and FoundryEngine to start building bundles.
 
@@ -36,7 +36,7 @@ Follow the [NeoForge client installation guide](https://docs.neoforged.net/users
 2. Place the `.jar` into your instance's `mods/` folder
 3. Launch Minecraft with the NeoForge profile
 
-## Verifying Installation
+## Verifying installation
 
 On first launch, FoundryEngine creates a `FoundryEngine/` folder inside your Minecraft directory:
 
@@ -48,12 +48,12 @@ On first launch, FoundryEngine creates a `FoundryEngine/` folder inside your Min
     └── .cache/           # Internal cache
 ```
 
-If you see this folder, the mod loaded successfully. You can also check the Mods menu — FoundryEngine **0.1.1** should appear in the list.
+If you see this folder, the mod loaded successfully. You can also check the Mods menu. FoundryEngine **0.1.1** should appear in the list.
 
-## What's Next
+## What's next
 
 Now that FoundryEngine is installed, create your first bundle:
 
-- [Getting Started: Your First Bundle](getting-started) — Step-by-step tutorial
-- [Concepts Overview](/concepts/core/) — Understand bundles, scripts, events, and more
-- [Examples](/examples/) — See working code for items, blocks, recipes, and events
+- [Getting Started: Your First Bundle](getting-started) -- Step-by-step tutorial
+- [Concepts Overview](/concepts/core/) -- Understand bundles, scripts, events, and more
+- [Examples](/examples/) -- See working code for items, blocks, recipes, and events

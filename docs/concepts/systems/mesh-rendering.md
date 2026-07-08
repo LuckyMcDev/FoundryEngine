@@ -1,12 +1,12 @@
-# Mesh Rendering & OBJ
+# Mesh rendering and OBJ
 
-FoundryEngine includes a custom mesh rendering engine alongside OBJ model loading support, providing direct GPU rendering outside Minecraft's standard pipeline.
+FoundryEngine includes a custom mesh rendering engine alongside OBJ model loading support for direct GPU rendering outside Minecraft's standard pipeline.
 
 ## MeshRenderer
 
 The `MeshRenderer` is a low-level rendering engine that uses a `MappableRingBuffer` for efficient vertex upload. Access via `Client.getMeshRenderer()`.
 
-### Two Rendering Paths
+### Two rendering paths
 
 #### Immediate draw()
 
@@ -122,7 +122,7 @@ obj.setScale(2.0f);
 
 The transform is applied as a local model matrix when rendering.
 
-## Shader System
+## Shader system
 
 The engine ships 20+ shaders under `assets/foundryengine/shaders/`:
 
@@ -177,7 +177,7 @@ WorldGizmo.renderOutline(aabb, Color.GREEN);
 boolean hovered = WorldGizmo.isHovered(position, eye, look);
 ```
 
-## Using Custom Pipelines
+## Using custom pipelines
 
 Create a custom pipeline JSON at `assets/foundryengine/pipeline/[name].json`:
 
@@ -192,8 +192,8 @@ Create a custom pipeline JSON at `assets/foundryengine/pipeline/[name].json`:
 
 Then reference it via `EngineRenderPipelines` or build programmatically with `RenderPipeline.builder()`.
 
-## See Also
+## See also
 
-- [Post-Processing](post-processing) — Shader effects
-- [Editor](editor) — In-world editing handles
-- [Particles](particles) — Particle rendering
+- [Post-Processing](post-processing) -- Shader effects
+- [Editor](editor) -- In-world editing handles
+- [Particles](particles) -- Particle rendering

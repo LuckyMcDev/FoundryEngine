@@ -1,14 +1,14 @@
-# Commands Reference
+# Commands reference
 
 All FoundryEngine commands are registered under `/engine` and require specific permission levels.
 
-## Permission Levels
+## Permission levels
 
-| Level | Name | Description |
-|-------|------|-------------|
-| Any | — | No special permission required |
-| Gamemaster | — | Can manage cutscenes and waypoints |
-| Admin | op | Can manage stages, reload, and dump |
+| Level      | Name | Description                         |
+|------------|------|-------------------------------------|
+| Any        | -    | No special permission required      |
+| Gamemaster | -    | Can manage cutscenes and waypoints  |
+| Admin      | op   | Can manage stages, reload, and dump |
 
 ## cutscene
 
@@ -24,11 +24,11 @@ Manage and play cutscenes.
 | `cancel <player>` | Gamemaster | Cancel a player's active cutscene |
 | `resetAll confirm` | Gamemaster | Remove all cutscenes (requires `confirm`) |
 
-### Play Parameters
+### Play parameters
 
-- `length` — duration in ticks (overrides default)
-- `easing` — `LINEAR`, `SINE_IN/OUT/IN_OUT`, `CUBIC_IN/OUT/IN_OUT`, `QUINT_IN/OUT/IN_OUT`, `BOUNCE_IN/OUT/IN_OUT`
-- `holdStart` / `holdEnd` — ticks to hold at path start/end
+- `length` -- duration in ticks (overrides default)
+- `easing` -- `LINEAR`, `SINE_IN/OUT/IN_OUT`, `CUBIC_IN/OUT/IN_OUT`, `QUINT_IN/OUT/IN_OUT`, `BOUNCE_IN/OUT/IN_OUT`
+- `holdStart` / `holdEnd` -- ticks to hold at path start/end
 
 ## waypoint
 
@@ -78,7 +78,7 @@ Apply post-processing effects to players.
 
 **Permission**: Admin
 
-Reloads all bundles — calls `onUnload()` on all entrypoints, then re-discovers and reloads everything.
+Reloads all bundles. Calls `onUnload()` on all entrypoints, then re-discovers and reloads everything.
 
 ## hand
 
@@ -128,10 +128,10 @@ Development/testing commands.
 | `world delete\|unload <name>` | Admin | Delete or unload a test world |
 | `fake spawn` | Admin | Spawn a test mannequin |
 
-## See Also
+## See also
 
-- [Cutscenes](cutscenes) — Cutscene creation and playback
-- [Waypoints](waypoints) — In-world markers
-- [Stages](stages) — Game stages system
-- [Instanced Worlds](instanced-worlds) — Runtime dimensions
-- [Post-Processing](post-processing) — Screen effects
+- [Cutscenes](cutscenes) -- Cutscene creation and playback
+- [Waypoints](waypoints) -- In-world markers
+- [Stages](stages) -- Game stages system
+- [Instanced Worlds](instanced-worlds) -- Runtime dimensions
+- [Post-Processing](post-processing) -- Screen effects

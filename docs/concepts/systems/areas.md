@@ -1,6 +1,6 @@
 # Areas
 
-Areas are spatial zones that can be extended with **modules** — reusable stateless singletons that define behaviour per zone. They replace the old event-based API with a modular, composable system.
+Areas are spatial zones that can be extended with **modules**. These are reusable stateless singletons that define behaviour per zone. They replace the old event-based API with a modular, composable system.
 
 ## Area Shapes
 
@@ -232,8 +232,8 @@ class Entrypoint implements BundleEntrypoint {
 }
 ```
 
-## See Also
+## See also
 
-- [Cutscenes](cutscenes) — Trigger cinematics with area events
-- [Stages](stages) — Gate content based on area entry
-- [Editor](editor) — Area editor panel
+- [Cutscenes](cutscenes) -- Trigger cinematics with area events
+- [Stages](stages) -- Gate content based on area entry
+- [Editor](editor) -- Area editor panel

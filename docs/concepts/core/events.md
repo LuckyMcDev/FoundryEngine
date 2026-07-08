@@ -1,6 +1,6 @@
 # Events
 
-FoundryEngine exposes a rich event system for reacting to nearly everything in the game. Events can be subscribed to from Groovy scripts or Java addons.
+FoundryEngine exposes an event system for reacting to nearly everything in the game. Events can be subscribed to from Groovy scripts or Java addons.
 
 All API events are in package `de.luckymcdev.foundryengine.common.event` unless noted otherwise.
 
@@ -47,9 +47,9 @@ ServerEvents.started { /* no data */ }   // signal only
 
 For every event class listed below, the `it` object in your closure corresponds to the **wrapped event type**. For standard NeoForge events wrapped by the API, `it` provides all the getters of that event class. Use your IDE's auto-complete or check the NeoForge documentation for the full list of available properties.
 
-### Custom Events
+### Custom events
 
-Listen for any NeoForge event class, even those FoundryEngine does not explicitly wrap:
+Listen for any NeoForge event class, even ones FoundryEngine does not explicitly wrap:
 
 ```groovy
 BundleEvents.custom(LivingDeathEvent.class, {
@@ -354,7 +354,7 @@ Dialogue tree traversal events.
 
 ---
 
-## Using Events in Groovy Scripts
+## Using events in Groovy scripts
 
 ```groovy
 package mybundle
@@ -385,7 +385,7 @@ class Entrypoint implements BundleEntrypoint {
 }
 ```
 
-## Internal / Addon Events
+## Internal and addon events
 
 These events are available for Java addon developers using NeoForge's event bus directly.
 
@@ -393,7 +393,7 @@ These events are available for Java addon developers using NeoForge's event bus 
 
 Package: `de.luckymcdev.foundryengine.common.event.modification.TitleScreenModifyEvent`
 
-`ICancellableEvent` — Fired when title screen buttons are being created. Can cancel `SINGLEPLAYER`, `MULTIPLAYER`, or `REALMS` buttons.
+`ICancellableEvent` -- Fired when title screen buttons are being created. Can cancel `SINGLEPLAYER`, `MULTIPLAYER`, or `REALMS` buttons.
 
 ```java
 @SubscribeEvent
@@ -431,6 +431,6 @@ Package: `de.luckymcdev.foundryengine.common.event.modification.ItemModification
 
 Builder-pattern modification of item properties post-registration. See [ItemEvents](#itemevents).
 
-## See Also
+## See also
 
-- [Builders](builders) — Creating content that can be registered
+- [Builders](builders) -- Creating content that can be registered

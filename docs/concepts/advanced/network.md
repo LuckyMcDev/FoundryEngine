@@ -1,4 +1,4 @@
-# Network Packets
+# Network packets
 
 FoundryEngine includes a custom packet system built on NeoForge's payload network. Packets are registered through `NetworkManager` and use codec-based serialization via `StreamCodec<RegistryFriendlyByteBuf, T>`.
 
@@ -117,7 +117,7 @@ network.sendToPlayer(somePacket, player)
 network.sendToAllPlayers(broadcastPacket)
 ```
 
-## See Also
+## See also
 
-- [Events](../core/events) — NetworkEvents for connection lifecycle
-- [Editor](../systems/editor) — Editor packets for panel synchronization
+- [Events](../core/events) -- NetworkEvents for connection lifecycle
+- [Editor](../systems/editor) -- Editor packets for panel synchronization

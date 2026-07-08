@@ -1,4 +1,4 @@
-# Java Addon API
+# Java addon API
 
 FoundryEngine exposes events and builders for Java addon developers through NeoForge's event bus. All API events are in the package `de.luckymcdev.foundryengine.common.event` and builders in `de.luckymcdev.foundryengine.common.builder`. Subscribe using `@SubscribeEvent` on the appropriate bus.
 
@@ -110,9 +110,9 @@ public void onDataGen(BundleDataGenEvent event) {
 }
 ```
 
-## See Also
+## See also
 
-- [Events](../core/events) — Full event reference for all API events
-- [Builders](../core/builders) — Builder reference for creating content
-- [Editor](../systems/editor) — Panel registration and editor extension
-- [Data Generation](data-generation) — Bundle data generation system
+- [Events](../core/events) -- Full event reference for all API events
+- [Builders](../core/builders) -- Builder reference for creating content
+- [Editor](../systems/editor) -- Panel registration and editor extension
+- [Data Generation](data-generation) -- Bundle data generation system

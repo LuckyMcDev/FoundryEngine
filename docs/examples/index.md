@@ -1,6 +1,6 @@
 # Examples
 
-This page contains complete working examples organized by category. All examples use the Groovy bundle scripting API.
+This page contains working examples organized by category. All examples use the Groovy bundle scripting API.
 
 ## Items
 
@@ -572,9 +572,9 @@ class Entrypoint implements BundleEntrypoint {
 }
 ```
 
-## See Also
+## See also
 
 - The `ExampleBundles/testbundle` directory in the repository for a complete working bundle with items, blocks, all 9 recipe types, sounds, commands, and event listeners.
 - [Concepts Overview](../concepts/core/) for detailed documentation on every feature.
-- [Builders](../concepts/core/builders) — Full builder API reference
-- [Events](../concepts/core/events) — Full event API reference
+- [Builders](../concepts/core/builders) -- Full builder API reference
+- [Events](../concepts/core/events) -- Full event API reference

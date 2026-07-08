@@ -1,12 +1,12 @@
-# Getting Started: Your First Bundle
+# Getting started: your first bundle
 
-This tutorial walks you through creating a bundle that adds a custom item and a crafting recipe — all without writing a single line of Java.
+This tutorial walks you through creating a bundle that adds a custom item and a crafting recipe without writing any Java.
 
 If you haven't read about [Bundles](/concepts/core/bundles) yet, start there to understand the core concept.
 
-## What Is a Bundle?
+## What is a bundle?
 
-A **bundle** is a self-contained mod packaged as a folder. It combines Groovy scripts, resource pack files, and data pack files under one roof. No Java compilation, no Gradle build — plain files and a reload command.
+A **bundle** is a self-contained mod packaged as a folder. It combines Groovy scripts, resource pack files, and data pack files. No Java compilation, no Gradle build. Just plain files and a reload command.
 
 Bundles can register:
 
@@ -19,7 +19,7 @@ Bundles can register:
 
 - Minecraft 26.1.x with NeoForge 26.1.x and FoundryEngine installed ([Installation Guide](index))
 
-## Choose a Workspace
+## Choose a workspace
 
 You have two options. This tutorial uses the **in-game folder** approach (no build tools needed).
 
@@ -30,7 +30,7 @@ You have two options. This tutorial uses the **in-game folder** approach (no bui
 
 See [Workspaces](workspaces) for a detailed comparison.
 
-## Create the Bundle Folder
+## Create the bundle folder
 
 Navigate to your Minecraft directory and create a folder for your bundle:
 
@@ -51,7 +51,7 @@ my-first-bundle/
 
 Scripts inside each side folder must be in a sub-package matching your bundle namespace. For example, if your `bundleId` is `my_first_bundle`, scripts go under `scripts/common/my_first_bundle/`.
 
-## Write the Bundle Manifest
+## Write the bundle manifest
 
 Create `my-first-bundle.bundles.toml`:
 
@@ -68,7 +68,7 @@ dependencies = [
 ]
 ```
 
-### Manifest Fields
+### Manifest fields
 
 | Field          | Description                              |
 |----------------|------------------------------------------|
@@ -80,9 +80,9 @@ dependencies = [
 | `description`  | Shown in the mods menu                   |
 | `dependencies` | Required mods and bundles (`"mod:..."` / `"bundle:..."`) |
 
-## Create the Entrypoint Script
+## Create the entrypoint script
 
-The entrypoint is the bridge between the engine and your Groovy code. Create `scripts/common/my_first_bundle/Entrypoint.groovy`:
+The entrypoint connects the engine to your Groovy code. Create `scripts/common/my_first_bundle/Entrypoint.groovy`:
 
 ```groovy
 package my_first_bundle
@@ -118,9 +118,9 @@ class Entrypoint implements BundleEntrypoint {
 }
 ```
 
-This entrypoint prints a message when loaded and unloaded — nothing more yet.
+This entrypoint prints a message when loaded and unloaded. Nothing more yet.
 
-## Add a Custom Item
+## Add a custom item
 
 Add an item definition above `onLoad()`. Place these lines right after the `id()` helper and before `onLoad()`:
 
@@ -139,7 +139,7 @@ This creates a gem-like item that:
 - Shows as **Uncommon** rarity (blue text)
 - Stacks up to 16
 
-## Final Entrypoint
+## Final entrypoint
 
 Your complete `Entrypoint.groovy` should look like this:
 
@@ -185,9 +185,9 @@ class Entrypoint implements BundleEntrypoint {
 }
 ```
 
-## Test Your Bundle
+## Test your bundle
 
-### In-Game Folder
+### In-game folder
 
 1. Save all files
 2. Launch Minecraft
@@ -195,9 +195,9 @@ class Entrypoint implements BundleEntrypoint {
 
 The mod will discover your bundle, compile the entrypoint, and register the item and recipe. You should see `My First Bundle loaded!` in the log.
 
-Open your creative inventory — your item appears under the **FoundryEngine** tab. Open the crafting table and arrange two diamonds vertically with a stick below to craft it.
+Open your creative inventory. Your item appears under the **FoundryEngine** tab. Open the crafting table and arrange two diamonds vertically with a stick below to craft it.
 
-### Template Project
+### Template project
 
 If you're using the [template project](workspaces):
 
@@ -206,7 +206,7 @@ If you're using the [template project](workspaces):
 ./gradlew runClient
 ```
 
-## Complete Bundle Structure
+## Complete bundle structure
 
 ```
 .minecraft/FoundryEngine/bundles/my-first-bundle/
@@ -253,10 +253,10 @@ my-first-bundle/
 | Changes not appearing | Script not recompiled | Run `/engine reload` again |
 | Item missing from inventory | Not registered | Check `BundleEvents.registry {}` in `onLoad()` |
 
-## Next Steps
+## Next steps
 
-- [Workspaces](workspaces) — Compare in-game folder vs template project
-- [Builders](/concepts/core/builders) — Add blocks, sounds, particles, and more recipe types
-- [Events](/concepts/core/events) — React to player join, block break, and other game events
-- [Scripts](/concepts/core/scripts) — Deep dive into the Groovy scripting system
-- [Examples](/examples/) — Complete working examples
+- [Workspaces](workspaces) -- Compare in-game folder vs template project
+- [Builders](/concepts/core/builders) -- Add blocks, sounds, particles, and more recipe types
+- [Events](/concepts/core/events) -- React to player join, block break, and other game events
+- [Scripts](/concepts/core/scripts) -- Deep dive into the Groovy scripting system
+- [Examples](/examples/) -- Complete working examples

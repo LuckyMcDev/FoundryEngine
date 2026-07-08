@@ -23,7 +23,7 @@ scripts/
 
 Each folder can have its own entrypoint implementing `BundleEntrypoint`. You do not need one for every folder — only the sides your bundle requires. The engine loads each side's entrypoint independently.
 
-## See Also
+## See also
 
-- [Scripts & Entrypoints](scripts) — Writing scripts for each side
-- [Events](events) — Some events are side-specific
+- [Scripts and Entrypoints](scripts) -- Writing scripts for each side
+- [Events](events) -- Some events are side-specific

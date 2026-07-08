@@ -1,10 +1,10 @@
-# Post-Processing Effects
+# Post-processing effects
 
-FoundryEngine includes a priority-based shader post-processing system that lets you apply custom effects to the game view. Effects are registered through `Client.getPostEffectManager()` and rendered at configurable phases in the frame.
+FoundryEngine includes a priority-based shader post-processing system for applying custom effects to the game view. Effects are registered through `Client.getPostEffectManager()` and rendered at configurable phases in the frame.
 
-## Getting Started
+## Getting started
 
-### Registering an Effect
+### Registering an effect
 
 The `id` must match a pipeline JSON file under `assets/foundryengine/post_effect/[name].json`.
 
@@ -37,7 +37,7 @@ PostEffectHandle handle = mgr.register(
 );
 ```
 
-### Runtime Control
+### Runtime control
 
 ```java
 handle.disable();
@@ -62,11 +62,11 @@ mgr.getCircle();     // Circle wipe
 mgr.getCinematic();  // Cinematic bars
 ```
 
-## Pipeline JSON Format
+## Pipeline JSON format
 
 Place pipeline descriptors at `assets/[namespace]/post_effect/[name].json`.
 
-### One-Pass Effect
+### One-pass effect
 
 ```json
 {
@@ -84,7 +84,7 @@ Place pipeline descriptors at `assets/[namespace]/post_effect/[name].json`.
 }
 ```
 
-### Two-Pass Effect (most common)
+### Two-pass effect (most common)
 
 When you need an intermediate framebuffer, use the swap target pattern:
 
@@ -140,7 +140,7 @@ When you need an intermediate framebuffer, use the swap target pattern:
 | `type` | `"float"`, `"int"`, `"vec2"`, `"vec3"`, `"vec4"`, `"mat4"` |
 | `value` | Default value (number for scalars, array for vectors/matrices) |
 
-## GLSL Shader Conventions
+## GLSL shader conventions
 
 ### File Location
 
@@ -192,7 +192,7 @@ Automatically populated by the engine.
 out vec4 fragColor;
 ```
 
-### Complete Example (Sepia)
+### Complete example (sepia)
 
 ```glsl
 #version 330
@@ -443,8 +443,8 @@ UniformSuppliers.ofVec4(Supplier<Vector4fc>)
 UniformSuppliers.ofMat4(Supplier<Matrix4fc>)
 ```
 
-## See Also
+## See also
 
-- [Editor](editor) — Effects panel for toggling effects at runtime
-- [Easing Functions](easing) — Easing types for effect transitions
-- [Commands](commands) — Screeneffect command
+- [Editor](editor) -- Effects panel for toggling effects at runtime
+- [Easing Functions](easing) -- Easing types for effect transitions
+- [Commands](commands) -- Screeneffect command

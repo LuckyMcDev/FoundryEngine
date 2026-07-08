@@ -1,6 +1,6 @@
-# Easing Functions
+# Easing functions
 
-FoundryEngine includes Robert Penner's 31 easing functions for smooth animations, plus CSS-style cubic bezier easings. They're used throughout the engine — in particle keyframes, cutscene playback, screen effects, and builders.
+FoundryEngine includes Robert Penner's 31 easing functions for smooth animations, plus CSS-style cubic bezier easings. They are used throughout the engine in particle keyframes, cutscene playback, screen effects, and builders.
 
 ## Core Method
 
@@ -82,15 +82,15 @@ new ParticleScaleData(new KeyframeSequence<Float>()
 builder.color(Color.RED, Color.BLUE, BezierEasing.EASE_IN_OUT)
 ```
 
-## Used By
+## Used by
 
-- **Particles** — Keyframe-driven colour, scale, position, velocity, rotation over lifetime
-- **Cutscenes** — Camera path interpolation, hold start/end transitions
-- **Post-Processing** — Screen effect intro/hold/outro transitions
-- **Builders** — Item, block, and effect animations
+- **Particles** -- Keyframe-driven colour, scale, position, velocity, rotation over lifetime
+- **Cutscenes** -- Camera path interpolation, hold start/end transitions
+- **Post-Processing** -- Screen effect intro/hold/outro transitions
+- **Builders** -- Item, block, and effect animations
 
-## See Also
+## See also
 
-- [Particles](particles) — Keyframe-driven particle animations
-- [Cutscenes](cutscenes) — Cutscene playback easing
-- [Post-Processing](post-processing) — Screen effect transitions
+- [Particles](particles) -- Keyframe-driven particle animations
+- [Cutscenes](cutscenes) -- Cutscene playback easing
+- [Post-Processing](post-processing) -- Screen effect transitions
