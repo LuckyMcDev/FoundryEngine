@@ -1,6 +1,6 @@
 # Bundles
 
-A **Bundle** is the fundamental packaging unit in FoundryEngine. It is a self-contained mod that combines a resource pack, a data pack, Groovy scripts, blueprints, and optionally custom items, blocks, recipes, sounds, and particles — all without compiling any Java code.
+A **Bundle** is the fundamental packaging unit in FoundryEngine. It combines a resource pack, a data pack, Groovy scripts, blueprints, and optionally custom items, blocks, recipes, sounds, and particles without compiling any Java code.
 
 ## Folder Structure
 
@@ -67,21 +67,21 @@ Bundles can define the following content types via the [Builder API](builders) a
 
 ## Lifecycle
 
-1. **Discovery** — Bundles are read from `FoundryEngine/bundles/` in the run directory
-2. **Registration** — `BundleEvents.registry {}` registers all items, blocks, recipes, sounds, and particles
-3. **Loading** — Entrypoint scripts fire `onLoad()` for each bundle
-4. **Runtime** — Events, blueprints, and scripts operate during gameplay
-5. **Unload** — `/engine reload` triggers `onUnload()` and re-discovers bundles
+1. **Discovery** -- Bundles are read from `FoundryEngine/bundles/` in the run directory
+2. **Registration** -- `BundleEvents.registry {}` registers all items, blocks, recipes, sounds, and particles
+3. **Loading** -- Entrypoint scripts fire `onLoad()` for each bundle
+4. **Runtime** -- Events, blueprints, and scripts operate during gameplay
+5. **Unload** -- `/engine reload` triggers `onUnload()` and re-discovers bundles
 
 ## Distribution
 
 Bundles are distributed as folders (no ZIP needed). Users place them in the `FoundryEngine/bundles/` directory.
 
-## See Also
+## See also
 
-- [Scripts & Entrypoints](scripts) — How to write bundle scripts
-- [Builders](builders) — Creating items, blocks, recipes, sounds, and particles
-- [Registries](registries) — Registering custom content
-- [Dependencies](dependencies) — Bundle and mod dependency syntax
-- [Events](events) — Reacting to game events from your bundle
-- [Sides](sides) — Client/server separation for scripts
+- [Scripts and Entrypoints](scripts) -- How to write bundle scripts
+- [Builders](builders) -- Creating items, blocks, recipes, sounds, and particles
+- [Registries](registries) -- Registering custom content
+- [Dependencies](dependencies) -- Bundle and mod dependency syntax
+- [Events](events) -- Reacting to game events from your bundle
+- [Sides](sides) -- Client/server separation for scripts

@@ -1,4 +1,4 @@
-# FoundryEngine Markdown Test
+# FoundryEngine Markdown test
 
 Welcome to the **FoundryEngine Markdown Viewer**.
 
@@ -6,7 +6,7 @@ This screen renders *GitHub Flavored Markdown (GFM)* inside a Minecraft GUI.
 
 ---
 
-## Text Formatting
+## Text formatting
 
 Normal text
 

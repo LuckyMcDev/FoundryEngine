@@ -1,6 +1,6 @@
-# In-Game Editor
+# In-game editor
 
-FoundryEngine includes a full Dear ImGui-based in-game editor with dockable panels, theming, and in-world editing tools. It's the primary interface for building content without leaving the game.
+FoundryEngine includes a Dear ImGui-based in-game editor with dockable panels, theming, and in-world editing tools. It is the primary interface for building content without leaving the game.
 
 ## Opening the Editor
 
@@ -62,7 +62,7 @@ The in-world cutscene editor lets you:
 - Add timeline attachments: screen effects and server commands
 - Preview playback at any speed
 
-## In-World Editing
+## In-world editing
 
 When holding the editor item, in-world editing tools activate:
 
@@ -99,9 +99,9 @@ Client.getEditorManager().register(panel);
 
 Panels extend `de.luckymcdev.foundryengine.client.editor.panel.Panel` and override `content()` for ImGui drawing and `tick()` for per-frame logic.
 
-## See Also
+## See also
 
-- [Blueprints](blueprints) — Visual scripting format
-- [Cutscenes](cutscenes) — Cutscene creation and editing
-- [Areas](areas) — Area zone management
-- [Waypoints](waypoints) — Waypoint management
+- [Blueprints](blueprints) -- Visual scripting format
+- [Cutscenes](cutscenes) -- Cutscene creation and editing
+- [Areas](areas) -- Area zone management
+- [Waypoints](waypoints) -- Waypoint management

@@ -1,6 +1,6 @@
-# Game Sessions
+# Game sessions
 
-Game sessions provide stateful, persistent game logic with automatic lifecycle management and data persistence — ideal for minigames, custom game modes, or anything that needs to maintain state across play sessions.
+Game sessions provide stateful, persistent game logic with automatic lifecycle management and data persistence. Useful for minigames, custom game modes, or anything that needs to maintain state across play sessions.
 
 ## Core Components
 
@@ -253,8 +253,8 @@ def session = new GameSession(Common.id("mymod", "timer"), data)
 Common.getGameManager().register(worldName, session)
 ```
 
-## See Also
+## See also
 
-- [Stages](stages) — Progression framework
-- [Bundles](../core/bundles) — Bundle lifecycle integration
-- [Events](../core/events) — Game session events
+- [Stages](stages) -- Progression framework
+- [Bundles](../core/bundles) -- Bundle lifecycle integration
+- [Events](../core/events) -- Game session events

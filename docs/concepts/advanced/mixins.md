@@ -1,10 +1,10 @@
-# Mixin Architecture
+# Mixin architecture
 
-FoundryEngine uses over 40 mixin classes to inject hooks into Minecraft's core systems. These patches provide the foundation for all engine features — from rendering and input to world management and UI.
+FoundryEngine uses over 40 mixin classes to inject hooks into Minecraft's core systems. These patches provide the foundation for engine features from rendering and input to world management and UI.
 
 Mixins are organized by target area in the `de.luckymcdev.foundryengine.mixin` package.
 
-## Minecraft Lifecycle
+## Minecraft lifecycle
 
 | Mixin                     | Target                   | Purpose                                     |
 |---------------------------|--------------------------|---------------------------------------------|
@@ -99,17 +99,17 @@ Mixins are organized by target area in the `de.luckymcdev.foundryengine.mixin` p
 |----------------|----------|--------------------------|
 | `SlotMixin`    | `Slot`   | Slot interaction hooks   |
 
-## Engine Interfaces
+## Engine interfaces
 
 FoundryEngine uses mixin-injected interfaces to allow runtime property modification without subclassing:
 
-- **`EngineBlockBehavior`** — injected into `BlockBehaviour`, provides runtime hooks for `BlockModificationEvent`
-- **`EngineBlockStateBehavior`** — injected into `BlockStateBase`, provides per-state property overrides for light emission, destroy speed, and requires-tool
+- **`EngineBlockBehavior`** -- injected into `BlockBehaviour`, provides runtime hooks for `BlockModificationEvent`
+- **`EngineBlockStateBehavior`** -- injected into `BlockStateBase`, provides per-state property overrides for light emission, destroy speed, and requires-tool
 
-These interfaces are what power the `BlockModificationEvent` and `ItemModificationEvent` systems, allowing any block or item to be modified at runtime regardless of its original implementation.
+These interfaces power the `BlockModificationEvent` and `ItemModificationEvent` systems, letting any block or item be modified at runtime regardless of its original implementation.
 
-## See Also
+## See also
 
-- [Addon API](addon-api) — BlockModificationEvent, ItemModificationEvent
-- [Data Generation](data-generation) — Provider architecture
-- [Events](../core/events) — Full event reference
+- [Addon API](addon-api) -- BlockModificationEvent, ItemModificationEvent
+- [Data Generation](data-generation) -- Provider architecture
+- [Events](../core/events) -- Full event reference

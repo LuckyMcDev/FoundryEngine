@@ -1,6 +1,6 @@
-# Editor Themes
+# Editor themes
 
-FoundryEngine's Dear ImGui editor supports full theming via the `ImTheme` interface. Seven built-in themes are available, and custom themes can be created and registered.
+FoundryEngine's Dear ImGui editor supports theming via the `ImTheme` interface. Seven built-in themes are available, and custom themes can be created and registered.
 
 ## ImTheme Interface
 
@@ -85,7 +85,7 @@ public class MyCustomTheme implements ImTheme {
 
 Themes can be registered by adding to `ImThemes.ALL` or via the theme registration system.
 
-## See Also
+## See also
 
-- [Editor](../systems/editor) — Full editor documentation and panel listing
-- [Config](../core/config) — ClientConfig reference
+- [Editor](../systems/editor) -- Full editor documentation and panel listing
+- [Config](../core/config) -- ClientConfig reference

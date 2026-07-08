@@ -1,4 +1,4 @@
-# Data Generation
+# Data generation
 
 FoundryEngine includes a bundle data generation system that automatically creates assets and data files from your builders. It runs during `FMLConstructModEvent` and `FMLCommonSetupEvent` phases.
 
@@ -18,7 +18,7 @@ EngineDataGenerator
 
 Generated output goes to a temp directory at `<gameDir>/FoundryEngine/temp/instances/<hash>/bundles/`.
 
-## Bundle Data Generation Loop
+## Bundle data generation loop
 
 For each bundle, `BundleDataGenerator.run(bundle)`:
 
@@ -27,7 +27,7 @@ For each bundle, `BundleDataGenerator.run(bundle)`:
 3. Registers and runs server-side and client-side providers
 4. Fires `BundleDataGenEvent` for custom provider registration
 
-## Server Providers
+## Server providers
 
 | Provider                          | Generates                              |
 |-----------------------------------|----------------------------------------|
@@ -38,7 +38,7 @@ For each bundle, `BundleDataGenerator.run(bundle)`:
 | `EngineItemTagsProvider`          | Item tag JSONs                         |
 | `EngineGlobalLootModifierProvider`| Global loot modifier JSONs             |
 
-## Client Providers
+## Client providers
 
 | Provider                             | Generates                                |
 |--------------------------------------|------------------------------------------|
@@ -94,8 +94,8 @@ public void onDataGen(BundleDataGenEvent event) {
 
 Generated data is served to the game via `DynamicPackRepository`, which mounts the generated pack output as a virtual resource pack and data pack. This means generated models, recipes, and other assets are immediately available without restarting.
 
-## See Also
+## See also
 
-- [Bundles](../core/bundles) — Bundle structure and lifecycle
-- [Builders](../core/builders) — Builder reference (generateData toggle)
-- [Events](../core/events) — BundleEvents.dataGen for Groovy usage
+- [Bundles](../core/bundles) -- Bundle structure and lifecycle
+- [Builders](../core/builders) -- Builder reference (generateData toggle)
+- [Events](../core/events) -- BundleEvents.dataGen for Groovy usage

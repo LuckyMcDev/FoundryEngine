@@ -1,8 +1,8 @@
-# Custom Particles
+# Custom particles
 
 > **⚠️ Particle system will be reworked.** The current keyframe-driven system is planned to be replaced with support for **Bedrock particle definitions** (Snowstorm format). The current API will continue working but expect breaking changes in a future release.
 
-FoundryEngine's particle system goes beyond simple particle types. It uses a keyframe-driven animation system that lets you define how a particle's colour, scale, position, velocity, and rotation change over its lifetime.
+FoundryEngine's particle system uses a keyframe-driven animation system. It lets you define how a particle's colour, scale, position, velocity, and rotation change over its lifetime.
 
 ## ParticleBuilder
 
@@ -40,7 +40,7 @@ ParticleBuilder.create(Common.id("sparkle"))
 | `rotationData(KeyframedParticleData)` | Full keyframe rotation control |
 | `speedData(KeyframedParticleData)` | Full keyframe speed control |
 
-## Keyframe Sequences
+## Keyframe sequences
 
 For full control, use the keyframe data objects directly:
 
@@ -88,7 +88,7 @@ Each keyframe has:
 | `ParticlePositionData` | `Vector3d` | Position offset over lifetime |
 | `ParticleRotationData` | `Float` | Rotation over lifetime |
 
-## Spawning Particles
+## Spawning particles
 
 Particles created with `ParticleBuilder` are registered through `BundleEvents.registry`:
 
@@ -129,8 +129,8 @@ ParticleBuilder.create(Common.id("explosion"))
         .add(3.0f, 1f, Easing.QUAD_OUT)))
 ```
 
-## See Also
+## See also
 
-- [Builders](../core/builders) — ParticleBuilder full method reference
-- [Easing Functions](easing) — Complete easing function reference
-- [Registries](../core/registries) — Registering particle types
+- [Builders](../core/builders) -- ParticleBuilder full method reference
+- [Easing Functions](easing) -- Complete easing function reference
+- [Registries](../core/registries) -- Registering particle types

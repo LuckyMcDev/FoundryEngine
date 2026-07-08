@@ -1,4 +1,4 @@
-# Dialogue System
+# Dialogue system
 
 FoundryEngine includes a branching dialogue system for creating NPC conversations, quest dialogues, and interactive storytelling. Dialogues are defined as trees of nodes with speaker text, player options, conditions, and actions.
 
@@ -117,8 +117,8 @@ if (session != null) {
 }
 ```
 
-## See Also
+## See also
 
-- [Events](../core/events) — DialogueEvents reference
-- [Commands](commands) — `/engine dialogue` command
-- [In-Game Editor](editor) — Dialogue Editor panel for visual editing
+- [Events](../core/events) -- DialogueEvents reference
+- [Commands](commands) -- `/engine dialogue` command
+- [In-Game Editor](editor) -- Dialogue Editor panel for visual editing

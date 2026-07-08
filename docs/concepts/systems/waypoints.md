@@ -1,8 +1,8 @@
 # Waypoints
 
-Waypoints are persistent, coloured in-world markers with a name, icon, and position. They're useful for navigation, marking points of interest, or building a fast-travel system.
+Waypoints are persistent, coloured in-world markers with a name, icon, and position. Useful for navigation, marking points of interest, or building a fast-travel system.
 
-## Creating a Waypoint
+## Creating a waypoint
 
 ```groovy
 import de.luckymcdev.foundryengine.common.waypoint.Waypoint
@@ -37,7 +37,7 @@ manager.removeWaypoint(level, 100, 64, -200)
 manager.clearWaypoints(level)
 ```
 
-## Waypoint Properties
+## Waypoint properties
 
 | Property | Type | Description |
 |----------|------|-------------|
@@ -46,7 +46,7 @@ manager.clearWaypoints(level)
 | `x`, `y`, `z` | `int` | Block position |
 | `color` | `int` | ARGB hex colour |
 
-### Colour Format
+### Colour format
 
 Colours use ARGB hex format: `0xAARRGGBB`. For example:
 - `0xFFFF0000` — opaque red
@@ -66,7 +66,7 @@ Colours use ARGB hex format: `0xAARRGGBB`. For example:
 | `/engine waypoint clear` | Clear all waypoints |
 | `/engine waypoint list` | List all waypoints |
 
-## See Also
+## See also
 
-- [Editor](editor) — Waypoint panel in the editor
-- [Commands](commands) — Full waypoint command reference
+- [Editor](editor) -- Waypoint panel in the editor
+- [Commands](commands) -- Full waypoint command reference

@@ -1,9 +1,9 @@
-# Instanced Worlds
+# Instanced worlds
 
 FoundryEngine provides two world instancing systems:
 
-1. **Runtime Levels** — Create dimensions on-the-fly with full control over chunk generation, game rules, clock behaviour, and difficulty
-2. **Bundle World Instancing** — Worlds stored in a bundle's `saves/` folder are automatically instanced to a temporary directory at runtime, keeping the original bundle files untouched
+1. **Runtime Levels** -- Create dimensions on-the-fly with control over chunk generation, game rules, clock behaviour, and difficulty
+2. **Bundle World Instancing** -- Worlds stored in a bundle's `saves/` folder are automatically instanced to a temporary directory at runtime, keeping the original bundle files untouched
 
 ## Runtime Levels
 
@@ -44,16 +44,16 @@ This is useful for:
 
 The instancing is automatic — place your world data in `saves/<world_name>/` inside your bundle folder and reference it normally in your scripts.
 
-## Temporary vs Persistent
+## Temporary vs persistent
 
-| Type | Behaviour |
-|------|-----------|
-| `TEMPORARY` | Created at runtime, deleted on server stop. Ideal for dungeons, minigames, instanced player areas. |
+| Type         | Behaviour                                                                                                    |
+|--------------|--------------------------------------------------------------------------------------------------------------|
+| `TEMPORARY`  | Created at runtime, deleted on server stop. Good for dungeons, minigames, instanced player areas.            |
 | `PERSISTENT` | Persists across restarts. All blocks, entities, and data are saved. Must be re-opened manually each startup. |
 
 ## RuntimeLevelConfig
 
-The config builder gives you full control over the dimension:
+The config builder gives you control over the dimension:
 
 | Method | Description |
 |--------|-------------|
@@ -131,8 +131,8 @@ handle.unload()
 - **Skyblock-style**: Void worlds with custom island generation
 - **Testing**: Isolated dimensions for development
 
-## See Also
+## See also
 
-- [Commands](commands) — `/engine test world` for testing worlds
-- [Areas](areas) — Trigger dimension travel with spatial zones
-- [Stages](stages) — Gate dimension access with progression
+- [Commands](commands) -- `/engine test world` for testing worlds
+- [Areas](areas) -- Trigger dimension travel with spatial zones
+- [Stages](stages) -- Gate dimension access with progression

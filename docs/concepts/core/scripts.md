@@ -91,8 +91,8 @@ scripts/
 
 Each folder can have its own entrypoint. You don't need all three — only the sides your bundle requires.
 
-## See Also
+## See also
 
-- [Bundles](bundles) — Bundle structure and lifecycle
-- [Sides](sides) — Client/server separation
-- [Events](events) — Using events inside entrypoints
+- [Bundles](bundles) -- Bundle structure and lifecycle
+- [Sides](sides) -- Client/server separation
+- [Events](events) -- Using events inside entrypoints

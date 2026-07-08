@@ -1,8 +1,8 @@
-# Cutscene System
+# Cutscene system
 
-The cutscene system lets you create Bezier-curve camera animations with timeline-based screen effects and server commands. Cutscenes are defined per-dimension, edited in-world with visual handles, and played back with full player control locking.
+The cutscene system lets you create Bezier-curve camera animations with timeline-based screen effects and server commands. Cutscenes are defined per dimension, edited in-world with visual handles, and played back with player control locking.
 
-> Use the in-game cutscene editor for visual editing — the code API is for advanced or scripted scenarios.
+> Use the in-game cutscene editor for visual editing. The code API is for advanced or scripted scenarios.
 
 ## Architecture
 
@@ -148,8 +148,8 @@ Common.getAreaManager().registerModuleType(new AreaEnterModule() {
 })
 ```
 
-## See Also
+## See also
 
-- [Editor](editor) — Cutscene editor panels
-- [Easing Functions](easing) — Available easing types
-- [Areas](areas) — Trigger cutscenes with spatial zones
+- [Editor](editor) -- Cutscene editor panels
+- [Easing Functions](easing) -- Available easing types
+- [Areas](areas) -- Trigger cutscenes with spatial zones
