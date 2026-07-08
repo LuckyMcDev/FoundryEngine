@@ -8,6 +8,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 
+import java.nio.file.Path;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -17,7 +18,9 @@ import java.util.function.Consumer;
 public class GameSession {
 	final GameData data;
 	private final Identifier id;
-	private GameState state = GameState.STOPPED;
+	boolean started;
+	private GameState publicState = SimpleState.LOBBY;
+	private boolean autoStart;
 
 	private Consumer<Level> commonTickHandler = level -> {
 	};
@@ -28,6 +31,8 @@ public class GameSession {
 	private Runnable startingHandler = () -> {
 	};
 	private Runnable stoppingHandler = () -> {
+	};
+	private Runnable initHandler = () -> {
 	};
 
 	public GameSession(Identifier id, GameData data) {
@@ -50,14 +55,33 @@ public class GameSession {
 	}
 
 	/**
-	 * Returns the current lifecycle state of this session.
+	 * Returns the game-defined public state.
 	 */
-	public GameState state() {
-		return state;
+	public GameState publicState() {
+		return publicState;
 	}
 
-	void state(GameState state) {
-		this.state = state;
+	/**
+	 * Sets the game-defined public state.
+	 */
+	public GameSession publicState(GameState publicState) {
+		this.publicState = publicState;
+		return this;
+	}
+
+	/**
+	 * Returns true if this session should auto-start when the world loads.
+	 */
+	public boolean autoStart() {
+		return autoStart;
+	}
+
+	/**
+	 * Sets whether this session should auto-start when the world loads.
+	 */
+	public GameSession autoStart(boolean autoStart) {
+		this.autoStart = autoStart;
+		return this;
 	}
 
 	/**
@@ -93,6 +117,13 @@ public class GameSession {
 	 */
 	public void onStopping() {
 		stoppingHandler.run();
+	}
+
+	/**
+	 * Called once when the session data is first initialized.
+	 */
+	public void onInit() {
+		initHandler.run();
 	}
 
 	/**
@@ -136,10 +167,33 @@ public class GameSession {
 	}
 
 	/**
+	 * Sets the one-time initialization handler for this session.
+	 */
+	public GameSession onInit(Runnable handler) {
+		this.initHandler = handler;
+		return this;
+	}
+
+	/**
 	 * Loads the session data from persistent storage.
 	 */
 	public void load() {
 		data.loadFrom(Common.GAME);
+		flushInit();
+	}
+
+	/**
+	 * Loads the session data from a world-specific directory.
+	 */
+	public void load(Path dataDir) {
+		data.loadFrom(dataDir);
+		flushInit();
+	}
+
+	private void flushInit() {
+		if (data.isInitialized()) {
+			onInit();
+		}
 	}
 
 	/**
@@ -150,9 +204,10 @@ public class GameSession {
 	}
 
 	/**
-	 * Returns true if the session is currently running.
+	 * Saves the session data to a world-specific directory.
 	 */
-	public boolean isRunning() {
-		return state.isRunning();
+	public void save(Path dataDir) {
+		data.saveTo(dataDir);
 	}
+
 }

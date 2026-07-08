@@ -17,8 +17,10 @@ import java.nio.file.Path;
  */
 public class GameData {
 	private static final Logger LOGGER = LogUtils.getLogger();
+	private static final String INITIALIZED_KEY = "_initialized";
 	private final Identifier identifier;
 	private CompoundTag data = new CompoundTag();
+	private @Nullable Runnable initHandler;
 
 	public GameData(Identifier identifier) {
 		this.identifier = identifier;
@@ -43,6 +45,28 @@ public class GameData {
 	 */
 	public void data(CompoundTag data) {
 		this.data = data;
+	}
+
+	/**
+	 * Returns true if this data has been initialized at least once.
+	 */
+	public boolean isInitialized() {
+		return data.getBoolean(INITIALIZED_KEY).orElse(false);
+	}
+
+	/**
+	 * Sets the initialization flag for this data.
+	 */
+	public void setInitialized(boolean initialized) {
+		data.putBoolean(INITIALIZED_KEY, initialized);
+	}
+
+	/**
+	 * Registers a callback that fires once when the data is first loaded from disk.
+	 */
+	public GameData onInit(Runnable handler) {
+		this.initHandler = handler;
+		return this;
 	}
 
 	/**
@@ -109,6 +133,12 @@ public class GameData {
 		if (tag.contains("data")) {
 			tag.getCompound("data").ifPresent(loaded -> data = loaded);
 		}
+		if (!isInitialized()) {
+			if (initHandler != null) {
+				initHandler.run();
+			}
+			setInitialized(true);
+		}
 	}
 
 	/**
@@ -135,6 +165,11 @@ public class GameData {
 			if (Files.exists(path)) {
 				CompoundTag tag = NbtIo.readCompressed(path, NbtAccounter.defaultQuota());
 				onLoad(tag);
+			} else {
+				if (initHandler != null) {
+					initHandler.run();
+				}
+				setInitialized(true);
 			}
 		} catch (IOException e) {
 			LOGGER.error("Failed to load game data [{}]", identifier, e);
