@@ -3,6 +3,7 @@ package de.luckymcdev.foundryengine.common.network.packets.explorer;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.network.AbstractPacket;
 import de.luckymcdev.foundryengine.common.network.PacketBounds;
+import de.luckymcdev.foundryengine.common.network.codecs.ActionCodec;
 import de.luckymcdev.foundryengine.common.util.PackResourceScanner;
 import de.luckymcdev.foundryengine.common.util.PermissionChecks;
 import io.netty.buffer.ByteBuf;
@@ -34,10 +35,7 @@ public record ServerBoundExplorerPacket(
 	String payload
 ) implements AbstractPacket<ServerBoundExplorerPacket> {
 
-	private static final StreamCodec<ByteBuf, Action> ACTION_CODEC = ByteBufCodecs.VAR_INT.map(
-		i -> Action.values()[i],
-		a -> a.ordinal()
-	);
+	private static final StreamCodec<ByteBuf, Action> ACTION_CODEC = ActionCodec.streamCodec(Action.values(), Action.REQUEST_FILE_LIST);
 	public static final Definition<ServerBoundExplorerPacket> DEFINITION = new Definition<>(
 		AbstractPacket.createType(Common.id("server_explorer")),
 		PacketBounds.SERVER,

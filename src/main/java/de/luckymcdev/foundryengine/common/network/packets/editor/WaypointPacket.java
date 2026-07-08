@@ -3,6 +3,7 @@ package de.luckymcdev.foundryengine.common.network.packets.editor;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.network.AbstractPacket;
 import de.luckymcdev.foundryengine.common.network.PacketBounds;
+import de.luckymcdev.foundryengine.common.network.codecs.ActionCodec;
 import de.luckymcdev.foundryengine.common.util.color.Color;
 import de.luckymcdev.foundryengine.common.waypoint.Waypoint;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -12,13 +13,20 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record WaypointPacket(String action, int x, int y, int z, String icon, String name,
-                             Color color) implements AbstractPacket<WaypointPacket> {
+public record WaypointPacket(
+	Action action,
+	int x,
+	int y,
+	int z,
+	String icon,
+	String name,
+	Color color
+) implements AbstractPacket<WaypointPacket> {
 
 	public static final Type<WaypointPacket> TYPE = AbstractPacket.createType(Common.id("waypoint_packet"));
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, WaypointPacket> CODEC = StreamCodec.composite(
-		ByteBufCodecs.STRING_UTF8, WaypointPacket::action,
+		ActionCodec.streamCodec(Action.values(), Action.ADD), WaypointPacket::action,
 		ByteBufCodecs.INT, WaypointPacket::x,
 		ByteBufCodecs.INT, WaypointPacket::y,
 		ByteBufCodecs.INT, WaypointPacket::z,
@@ -45,13 +53,10 @@ public record WaypointPacket(String action, int x, int y, int z, String icon, St
 			var manager = Common.getWaypointManager();
 
 			switch (packet.action()) {
-				case "ADD" -> manager.addWaypoint(level,
+				case ADD -> manager.addWaypoint(level,
 					new Waypoint(packet.name(), packet.icon(), packet.x(), packet.y(), packet.z(), packet.color()));
-				case "REMOVE" -> manager.removeWaypoint(level, packet.x(), packet.y(), packet.z());
-				case "CLEAR" -> manager.clearWaypoints(level);
-				default -> {
-					return;
-				}
+				case REMOVE -> manager.removeWaypoint(level, packet.x(), packet.y(), packet.z());
+				case CLEAR -> manager.clearWaypoints(level);
 			}
 
 			manager.syncToAll();
@@ -59,15 +64,15 @@ public record WaypointPacket(String action, int x, int y, int z, String icon, St
 	}
 
 	public static WaypointPacket add(int x, int y, int z, String name, String icon, Color color) {
-		return new WaypointPacket("ADD", x, y, z, icon, name, color);
+		return new WaypointPacket(Action.ADD, x, y, z, icon, name, color);
 	}
 
 	public static WaypointPacket remove(int x, int y, int z) {
-		return new WaypointPacket("REMOVE", x, y, z, "", "", new Color(0));
+		return new WaypointPacket(Action.REMOVE, x, y, z, "", "", new Color(0));
 	}
 
 	public static WaypointPacket clear() {
-		return new WaypointPacket("CLEAR", 0, 0, 0, "", "", new Color(0));
+		return new WaypointPacket(Action.CLEAR, 0, 0, 0, "", "", new Color(0));
 	}
 
 	@Override
@@ -83,5 +88,9 @@ public record WaypointPacket(String action, int x, int y, int z, String icon, St
 	@Override
 	public StreamCodec<RegistryFriendlyByteBuf, WaypointPacket> getCodec() {
 		return CODEC;
+	}
+
+	public enum Action {
+		ADD, REMOVE, CLEAR
 	}
 }

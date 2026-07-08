@@ -66,10 +66,6 @@ network.register(new AbstractPacket.Definition<>(
 
 ## Packet Types
 
-### Test
-
-- **TestPacket** — used for testing the network system
-
 ### Bundle Sync
 
 - **BundleHashPacket** — syncs bundle hashes between client and server for bundle validation

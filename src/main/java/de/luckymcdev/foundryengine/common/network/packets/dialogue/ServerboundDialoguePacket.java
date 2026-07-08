@@ -3,6 +3,7 @@ package de.luckymcdev.foundryengine.common.network.packets.dialogue;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.network.AbstractPacket;
 import de.luckymcdev.foundryengine.common.network.PacketBounds;
+import de.luckymcdev.foundryengine.common.network.codecs.ActionCodec;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -20,7 +21,7 @@ public record ServerboundDialoguePacket(
 
 	public static final Type<ServerboundDialoguePacket> TYPE = AbstractPacket.createType(Common.id("dialogue_server"));
 	public static final StreamCodec<RegistryFriendlyByteBuf, ServerboundDialoguePacket> CODEC = StreamCodec.composite(
-		ByteBufCodecs.VAR_INT.map(Action::fromOrdinal, Action::ordinal), ServerboundDialoguePacket::action,
+		ActionCodec.streamCodec(Action.values(), Action.END), ServerboundDialoguePacket::action,
 		ByteBufCodecs.STRING_UTF8, ServerboundDialoguePacket::optionId,
 		ServerboundDialoguePacket::new
 	);
@@ -80,14 +81,6 @@ public record ServerboundDialoguePacket(
 	}
 
 	public enum Action {
-		SELECT_OPTION, ADVANCE_NEXT, END;
-
-		public static Action fromOrdinal(int ordinal) {
-			var values = values();
-			if (ordinal < 0 || ordinal >= values.length) {
-				return END;
-			}
-			return values[ordinal];
-		}
+		SELECT_OPTION, ADVANCE_NEXT, END
 	}
 }
