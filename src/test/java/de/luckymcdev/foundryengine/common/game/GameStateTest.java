@@ -2,63 +2,34 @@ package de.luckymcdev.foundryengine.common.game;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GameStateTest {
 
-    @Test
-    void isStarting_Starting_True() {
-        assertTrue(GameState.STARTING.isStarting());
-    }
+	@Test
+	void simpleState_Lobby_IsActive() {
+		assertTrue(SimpleState.LOBBY.isActive());
+	}
 
-    @Test
-    void isStarting_Other_False() {
-        assertFalse(GameState.RUNNING.isStarting());
-        assertFalse(GameState.STOPPING.isStarting());
-        assertFalse(GameState.STOPPED.isStarting());
-    }
+	@Test
+	void simpleState_Playing_IsActive() {
+		assertTrue(SimpleState.PLAYING.isActive());
+	}
 
-    @Test
-    void isRunning_Running_True() {
-        assertTrue(GameState.RUNNING.isRunning());
-    }
+	@Test
+	void simpleState_Finished_NotActive() {
+		assertFalse(SimpleState.FINISHED.isActive());
+	}
 
-    @Test
-    void isRunning_Other_False() {
-        assertFalse(GameState.STARTING.isRunning());
-        assertFalse(GameState.STOPPING.isRunning());
-        assertFalse(GameState.STOPPED.isRunning());
-    }
+	@Test
+	void simpleState_Stopped_NotActive() {
+		assertFalse(SimpleState.STOPPED.isActive());
+	}
 
-    @Test
-    void isStopping_Stopping_True() {
-        assertTrue(GameState.STOPPING.isStopping());
-    }
-
-    @Test
-    void isStopping_Other_False() {
-        assertFalse(GameState.STARTING.isStopping());
-        assertFalse(GameState.RUNNING.isStopping());
-        assertFalse(GameState.STOPPED.isStopping());
-    }
-
-    @Test
-    void isStopped_Stopped_True() {
-        assertTrue(GameState.STOPPED.isStopped());
-    }
-
-    @Test
-    void isStopped_Other_False() {
-        assertFalse(GameState.STARTING.isStopped());
-        assertFalse(GameState.RUNNING.isStopped());
-        assertFalse(GameState.STOPPING.isStopped());
-    }
-
-    @Test
-    void stateOrder_MatchesLifecycle() {
-        assertEquals(0, GameState.STARTING.ordinal());
-        assertEquals(1, GameState.RUNNING.ordinal());
-        assertEquals(2, GameState.STOPPING.ordinal());
-        assertEquals(3, GameState.STOPPED.ordinal());
-    }
+	@Test
+	void customState_ImplementsInterface() {
+		GameState custom = () -> true;
+		assertTrue(custom.isActive());
+	}
 }

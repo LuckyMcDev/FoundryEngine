@@ -22,36 +22,24 @@ public abstract class GameSessionEvent extends Event {
 	}
 
 	public static class Starting extends GameSessionEvent implements ICancellableEvent {
-		/**
-		 * Fired when a session is about to start, cancellable.
-		 */
 		public Starting(Identifier sessionId) {
 			super(sessionId);
 		}
 	}
 
 	public static class Started extends GameSessionEvent {
-		/**
-		 * Fired after a session has started.
-		 */
 		public Started(Identifier sessionId) {
 			super(sessionId);
 		}
 	}
 
 	public static class Stopping extends GameSessionEvent implements ICancellableEvent {
-		/**
-		 * Fired when a session is about to stop, cancellable.
-		 */
 		public Stopping(Identifier sessionId) {
 			super(sessionId);
 		}
 	}
 
 	public static class Stopped extends GameSessionEvent {
-		/**
-		 * Fired after a session has stopped.
-		 */
 		public Stopped(Identifier sessionId) {
 			super(sessionId);
 		}

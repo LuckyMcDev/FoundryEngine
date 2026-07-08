@@ -47,6 +47,7 @@ import de.luckymcdev.foundryengine.common.world.level.util.TransientChunkGenerat
 import de.luckymcdev.foundryengine.common.world.level.util.VoidChunkGenerator;
 import de.luckymcdev.foundryengine.config.Config;
 import de.luckymcdev.foundryengine.config.StartupConfig;
+import de.luckymcdev.foundryengine.mixin.MinecraftServerAccess;
 import de.luckymcdev.foundryengine.server.command.FoundryCommands;
 import de.luckymcdev.foundryengine.server.packs.DynamicPackRepository;
 import net.minecraft.SharedConstants;
@@ -58,6 +59,7 @@ import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.util.Util;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.storage.LevelStorageSource;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -338,7 +340,13 @@ public class FoundryEngineMod {
 	}
 
 	private void onServerStarted(ServerStartedEvent event) {
-		event.getServer().getPlayerList().getPlayers().forEach(player -> {
+		var server = event.getServer();
+		String worldName = server.getWorldData().getLevelName();
+		LevelStorageSource.LevelStorageAccess storageAccess = ((MinecraftServerAccess) server).getStorageSource();
+		Path worldDataPath = storageAccess.getLevelDirectory().path().resolve("foundryengine").resolve("game");
+		Common.getGameManager().setWorldDataPath(worldName, worldDataPath);
+		Common.getGameManager().autoStartAll(worldName);
+		server.getPlayerList().getPlayers().forEach(player -> {
 			Common.getSavedDataManager().syncToPlayer(player);
 		});
 	}

@@ -498,15 +498,15 @@ public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorCons
 		return open;
 	}
 
-	public <E> ImUpdate combo(String label, Object[] selected, String noneLabel, Iterable<? extends E> options, Function<E, String> nameFunction) {
-		var result = ImUpdate.NONE;
+	public <E> boolean combo(String label, Object[] selected, String noneLabel, Iterable<? extends E> options, Function<E, String> nameFunction) {
+		var changed = false;
 		if (ImGui.beginCombo(label, selected[0] == null ? (noneLabel.isEmpty() ? "None" : noneLabel) : nameFunction.apply((E) selected[0]), ImGuiInputTextFlags.None)) {
 			int i = 0;
 			if (!noneLabel.isEmpty()) {
 				boolean isSelected = selected[0] == null;
 				if (ImGui.selectable(noneLabel + "###" + i, isSelected)) {
 					selected[0] = null;
-					result = ImUpdate.FULL;
+					changed = true;
 				}
 				if (isSelected) {
 					ImGui.setItemDefaultFocus();
@@ -518,7 +518,7 @@ public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorCons
 				var itemLabel = nameFunction.apply(option);
 				if (ImGui.selectable(itemLabel + "###" + i, isSelected)) {
 					selected[0] = option;
-					result = ImUpdate.FULL;
+					changed = true;
 				}
 				if (isSelected) {
 					ImGui.setItemDefaultFocus();
@@ -527,10 +527,10 @@ public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorCons
 			}
 			ImGui.endCombo();
 		}
-		return result;
+		return changed;
 	}
 
-	public <E> ImUpdate combo(String label, Object[] selected, String noneLabel, E[] options, Function<E, String> nameFunction) {
+	public <E> boolean combo(String label, Object[] selected, String noneLabel, E[] options, Function<E, String> nameFunction) {
 		return combo(label, selected, noneLabel, Arrays.asList(options), nameFunction);
 	}
 
