@@ -10,6 +10,15 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
 
 public class DimensionStages extends StageAddon<ResourceKey<Level>> {
+	private boolean bypassCreative = true;
+
+	public boolean isBypassCreative() {
+		return bypassCreative;
+	}
+
+	public void setBypassCreative(boolean bypass) {
+		this.bypassCreative = bypass;
+	}
 
 	@Override
 	protected String getObjectType() {
@@ -24,7 +33,11 @@ public class DimensionStages extends StageAddon<ResourceKey<Level>> {
 			return;
 		}
 
-		ResourceKey<Level> destination = event.getDimension();
+		if (bypassCreative && player.isCreative()) {
+			return;
+		}
+
+		var destination = event.getDimension();
 
 		if (!canAccess(player, destination)) {
 			event.setCanceled(true);

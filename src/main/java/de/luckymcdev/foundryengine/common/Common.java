@@ -11,6 +11,7 @@ import de.luckymcdev.foundryengine.common.dialogue.DialogueManager;
 import de.luckymcdev.foundryengine.common.exceptions.UtilityClassException;
 import de.luckymcdev.foundryengine.common.game.GameManager;
 import de.luckymcdev.foundryengine.common.game.stage.GameStageHandler;
+import de.luckymcdev.foundryengine.common.game.stage.table.StageTableManager;
 import de.luckymcdev.foundryengine.common.network.NetworkManager;
 import de.luckymcdev.foundryengine.common.registry.RegistryCollector;
 import de.luckymcdev.foundryengine.common.savedata.SavedDataManager;
@@ -52,6 +53,7 @@ public final class Common {
 	public static final Path CONFIG_FE = dir(DIRECTORY.resolve("config"));
 	private static final BundleManager BUNDLE_MANAGER = new BundleManager(FoundryEngineMod.getModBus(), CONFIG_FE);
 	private static final GameStageHandler GAME_STAGE_HANDLER = new GameStageHandler();
+	private static final StageTableManager STAGE_TABLE_MANAGER = new StageTableManager();
 	private static final NetworkManager NETWORK_MANAGER = new NetworkManager();
 	private static final AreaManager AREA_MANAGER = new AreaManager();
 	private static final CutsceneManager CUTSCENE_MANAGER = new CutsceneManager();
@@ -105,6 +107,13 @@ public final class Common {
 	 */
 	public static GameStageHandler getGameStageHandler() {
 		return GAME_STAGE_HANDLER;
+	}
+
+	/**
+	 * Returns the singleton {@link StageTableManager}.
+	 */
+	public static StageTableManager getStageTableManager() {
+		return STAGE_TABLE_MANAGER;
 	}
 
 	/**
