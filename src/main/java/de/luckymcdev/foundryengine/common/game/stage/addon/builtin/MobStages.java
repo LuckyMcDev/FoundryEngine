@@ -1,101 +1,215 @@
 package de.luckymcdev.foundryengine.common.game.stage.addon.builtin;
 
 import de.luckymcdev.foundryengine.common.game.stage.addon.StageAddon;
-import net.minecraft.world.entity.Entity;
+import de.luckymcdev.foundryengine.common.registry.GenericRegistry;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.ServerLevelAccessor;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
 import net.neoforged.neoforge.event.entity.living.MobDespawnEvent;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
-public class MobStages extends StageAddon<EntityType<?>> {
+import java.util.HashSet;
+import java.util.Set;
 
+public class MobStages extends StageAddon<EntityType<?>> {
+	private final GenericRegistry<EntityType<?>, EntityType<?>> replacements = new GenericRegistry<>();
+	private final Set<EntityType<?>> bypassSpawners = new HashSet<>();
+	private final GenericRegistry<EntityType<?>, Integer> spawnRanges = new GenericRegistry<>();
 
 	@Override
 	protected String getObjectType() {
 		return "entity";
 	}
 
+	public void addReplacement(EntityType<?> from, EntityType<?> to) {
+		replacements.register(from, to);
+	}
+
+	public void setBypassSpawner(EntityType<?> type, boolean bypass) {
+		if (bypass) {
+			bypassSpawners.add(type);
+		} else {
+			bypassSpawners.remove(type);
+		}
+	}
+
+	public void setSpawnRange(EntityType<?> type, int range) {
+		spawnRanges.register(type, range);
+	}
+
+	private int getSpawnRange(EntityType<?> type) {
+		var range = spawnRanges.get(type);
+		return range != null ? range : 64;
+	}
+
+	private boolean hasNearbyPlayerWithStage(ServerLevel level, BlockPos pos, EntityType<?> type) {
+		int range = getSpawnRange(type);
+		double rangeSq = range * range;
+		return level.players().stream()
+			.filter(p -> p.distanceToSqr(pos.getX(), pos.getY(), pos.getZ()) < rangeSq)
+			.anyMatch(p -> canAccess(p, type));
+	}
+
+	private boolean isLevelBlocked(ServerLevelAccessor levelAccessor, BlockPos pos, EntityType<?> type) {
+		if (!(levelAccessor instanceof ServerLevel serverLevel)) {
+			return false;
+		}
+		if (bypassSpawners.contains(type)) {
+			return false;
+		}
+		return !hasNearbyPlayerWithStage(serverLevel, pos, type);
+	}
+
 	@SubscribeEvent(priority = EventPriority.HIGH)
-	public void onMobSpawn(MobSpawnEvent.SpawnPlacementCheck event) {
-		EntityType<?> type = event.getEntityType();
+	public void onMobSpawnPositionCheck(MobSpawnEvent.PositionCheck event) {
+		var mob = event.getEntity();
+		var type = mob.getType();
 
 		if (isAccessible(type)) {
 			return;
 		}
 
-		event.setResult(MobSpawnEvent.SpawnPlacementCheck.Result.FAIL);
+		if (isLevelBlocked(event.getLevel(), new BlockPos((int) event.getX(), (int) event.getY(), (int) event.getZ()), type)) {
+			event.setResult(MobSpawnEvent.PositionCheck.Result.FAIL);
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.HIGH)
+	public void onMobSpawnerCheck(MobSpawnEvent.SpawnPlacementCheck event) {
+		var type = event.getEntityType();
+
+		if (isAccessible(type)) {
+			return;
+		}
+
+		if (bypassSpawners.contains(type) && event.getSpawnType() == EntitySpawnReason.SPAWNER) {
+			return;
+		}
+
+		if (!(event.getLevel() instanceof ServerLevel serverLevel)) {
+			event.setResult(MobSpawnEvent.SpawnPlacementCheck.Result.FAIL);
+			return;
+		}
+
+		if (!hasNearbyPlayerWithStage(serverLevel, event.getPos(), type)) {
+			event.setResult(MobSpawnEvent.SpawnPlacementCheck.Result.FAIL);
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.HIGH)
+	public void onEntityJoin(EntityJoinLevelEvent event) {
+		if (!(event.getEntity() instanceof Mob mob)) {
+			return;
+		}
+
+		var type = mob.getType();
+		var replacement = replacements.get(type);
+		if (replacement == null) {
+			return;
+		}
+
+		if (isAccessible(type)) {
+			return;
+		}
+
+		if (!(event.getLevel() instanceof ServerLevel serverLevel)) {
+			return;
+		}
+
+		var pos = mob.blockPosition();
+		if (!hasNearbyPlayerWithStage(serverLevel, pos, type)) {
+			event.setCanceled(true);
+			replacement.spawn(serverLevel, pos, EntitySpawnReason.EVENT);
+		}
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGH)
 	public void onAttackEntity(AttackEntityEvent event) {
-		Player player = event.getEntity();
-		Entity target = event.getTarget();
+		var player = event.getEntity();
+		var target = event.getTarget();
 
 		if (!(target instanceof LivingEntity)) {
 			return;
 		}
 
-		EntityType<?> type = target.getType();
-
-		if (!canAccess(player, type)) {
-			event.setCanceled(true);
-			player.sendSystemMessage(getMissingStagesMessage(player, type));
+		var type = target.getType();
+		if (isAccessible(type)) {
+			return;
 		}
+		if (canAccess(player, type)) {
+			return;
+		}
+
+		event.setCanceled(true);
+		player.sendSystemMessage(getMissingStagesMessage(player, type));
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGH)
 	public void onEntityInteract(PlayerInteractEvent.EntityInteract event) {
-		Player player = event.getEntity();
-		Entity target = event.getTarget();
+		var player = event.getEntity();
+		var target = event.getTarget();
 
 		if (!(target instanceof LivingEntity)) {
 			return;
 		}
 
-		EntityType<?> type = target.getType();
-
-		if (!canAccess(player, type)) {
-			event.setCanceled(true);
-			player.sendSystemMessage(getMissingStagesMessage(player, type));
+		var type = target.getType();
+		if (isAccessible(type)) {
+			return;
 		}
+		if (canAccess(player, type)) {
+			return;
+		}
+
+		event.setCanceled(true);
+		player.sendSystemMessage(getMissingStagesMessage(player, type));
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGH)
 	public void onMobTarget(LivingChangeTargetEvent event) {
-		LivingEntity entity = event.getEntity();
-		LivingEntity newTarget = event.getNewAboutToBeSetTarget();
+		var entity = event.getEntity();
+		var newTarget = event.getNewAboutToBeSetTarget();
 
 		if (!(newTarget instanceof Player player)) {
 			return;
 		}
 
-		EntityType<?> type = entity.getType();
-
-		if (!canAccess(player, type)) {
-			event.setCanceled(true);
+		var type = entity.getType();
+		if (isAccessible(type)) {
+			return;
 		}
+		if (canAccess(player, type)) {
+			return;
+		}
+
+		event.setCanceled(true);
 	}
 
 	@SubscribeEvent(priority = EventPriority.NORMAL)
-	public void onMobTick(MobDespawnEvent event) {
-		LivingEntity entity = event.getEntity();
-		EntityType<?> type = entity.getType();
+	public void onMobDespawn(MobDespawnEvent event) {
+		var mob = event.getEntity();
+		var type = mob.getType();
 
 		if (isAccessible(type)) {
 			return;
 		}
 
-		boolean anyPlayerCanSee = entity.level().players().stream()
-			.filter(player -> player.distanceToSqr(entity) < 64 * 64)
-			.anyMatch(player -> canAccess(player, type));
+		if (!(event.getLevel() instanceof ServerLevel serverLevel)) {
+			return;
+		}
 
-		if (!anyPlayerCanSee) {
+		if (!hasNearbyPlayerWithStage(serverLevel, mob.blockPosition(), type)) {
 			event.setResult(MobDespawnEvent.Result.ALLOW);
 		}
 	}

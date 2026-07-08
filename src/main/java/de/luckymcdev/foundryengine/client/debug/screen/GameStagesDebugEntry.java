@@ -17,9 +17,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Debug Entry to display info about owned Game Stages.
- */
 public class GameStagesDebugEntry implements DebugScreenEntry {
 	public static final Identifier GROUP = Common.id("gamestages");
 
@@ -33,10 +30,10 @@ public class GameStagesDebugEntry implements DebugScreenEntry {
 			return;
 		}
 
-		Set<String> stages = player.getData(Common.getGameStageHandler().ATTACHMENT);
+		Set<Identifier> stages = player.getData(Common.getGameStageHandler().ATTACHMENT);
 
 		infoLines.addFirst("Stages:");
-		infoLines.add(Arrays.toString(stages.toArray()));
+		infoLines.add(Arrays.toString(stages.stream().map(Identifier::toString).toArray()));
 
 		infoLines.forEach(displayer::addLine);
 	}
