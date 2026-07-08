@@ -6,6 +6,7 @@ import de.luckymcdev.foundryengine.common.dialogue.DialogueNode;
 import de.luckymcdev.foundryengine.common.dialogue.DialogueSession;
 import de.luckymcdev.foundryengine.common.network.AbstractPacket;
 import de.luckymcdev.foundryengine.common.network.PacketBounds;
+import de.luckymcdev.foundryengine.common.network.codecs.ActionCodec;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -27,7 +28,7 @@ public record ClientboundDialoguePacket(
 
 	public static final Type<ClientboundDialoguePacket> TYPE = AbstractPacket.createType(Common.id("dialogue_client"));
 	public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundDialoguePacket> CODEC = StreamCodec.composite(
-		ByteBufCodecs.VAR_INT.map(Action::fromOrdinal, Action::ordinal), ClientboundDialoguePacket::action,
+		ActionCodec.streamCodec(Action.values(), Action.SHOW), ClientboundDialoguePacket::action,
 		Identifier.STREAM_CODEC, ClientboundDialoguePacket::treeId,
 		ByteBufCodecs.COMPOUND_TAG, ClientboundDialoguePacket::session,
 		ByteBufCodecs.COMPOUND_TAG, ClientboundDialoguePacket::node,
@@ -90,14 +91,6 @@ public record ClientboundDialoguePacket(
 	}
 
 	public enum Action {
-		SHOW, ADVANCE, ENDED;
-
-		public static Action fromOrdinal(int ordinal) {
-			var values = values();
-			if (ordinal < 0 || ordinal >= values.length) {
-				return SHOW;
-			}
-			return values[ordinal];
-		}
+		SHOW, ADVANCE, ENDED
 	}
 }

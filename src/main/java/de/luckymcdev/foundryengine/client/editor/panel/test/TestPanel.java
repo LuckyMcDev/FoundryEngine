@@ -10,7 +10,6 @@ import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.client.ui.ExampleScreen;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.font.BuiltInFonts;
-import de.luckymcdev.foundryengine.common.network.packets.TestPacket;
 import de.luckymcdev.foundryengine.common.util.color.Color;
 import imgui.ImGui;
 import imgui.extension.imguiknobs.ImGuiKnobs;
@@ -60,10 +59,6 @@ public class TestPanel extends Panel {
 
 		ImGuiKnobs.knob("This Will Damage you if you press that button!", FLOAT, 0.0f, 10.0f);
 		ImGui.progressBar(FLOAT.get() / 10, ImGui.getContentRegionAvailX(), 0, "Progress");
-
-		if (ImGui.button("Press this!")) {
-			Common.getNetworkManager().sendToServer(new TestPacket(FLOAT.get()));
-		}
 
 		if (ImGui.button("Open Screen")) {
 			Client.setScreen(new ExampleScreen());

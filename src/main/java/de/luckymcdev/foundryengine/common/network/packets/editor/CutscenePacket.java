@@ -113,8 +113,7 @@ public record CutscenePacket(CompoundTag nbt) implements AbstractPacket<Cutscene
 			return;
 		}
 
-		String actionStr = this.nbt.getStringOr("Action", "");
-		CutsceneAction action = actionStr.isEmpty() ? null : CutsceneAction.valueOf(actionStr);
+		CutsceneAction action = CutsceneAction.fromString(this.nbt.getStringOr("Action", ""));
 		if (action == null) {
 			var list = new ArrayList<Cutscene>();
 			var nbtList = this.nbt.getListOrEmpty("CutsceneList");

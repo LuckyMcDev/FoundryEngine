@@ -25,7 +25,6 @@ import de.luckymcdev.foundryengine.common.event.modification.ItemModificationEve
 import de.luckymcdev.foundryengine.common.event.registry.RegistryEvent;
 import de.luckymcdev.foundryengine.common.log.EngineLogAppender;
 import de.luckymcdev.foundryengine.common.network.packets.BundleHashPacket;
-import de.luckymcdev.foundryengine.common.network.packets.TestPacket;
 import de.luckymcdev.foundryengine.common.network.packets.dialogue.ClientboundDialoguePacket;
 import de.luckymcdev.foundryengine.common.network.packets.dialogue.DialogueSavePacket;
 import de.luckymcdev.foundryengine.common.network.packets.dialogue.ServerboundDialoguePacket;
@@ -233,7 +232,6 @@ public class FoundryEngineMod {
 		BundleDataGenerator.runAll();
 
 		var network = Common.getNetworkManager();
-		network.register(TestPacket.DEFINITION);
 		network.register(ServerBoundSetTimePacket.DEFINITION);
 		network.register(ServerBoundChangeWeatherPacket.DEFINITION);
 		network.register(ServerBoundExplorerPacket.DEFINITION);

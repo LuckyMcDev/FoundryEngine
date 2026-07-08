@@ -7,6 +7,7 @@ import de.luckymcdev.foundryengine.common.area.BlockArea;
 import de.luckymcdev.foundryengine.common.network.AbstractPacket;
 import de.luckymcdev.foundryengine.common.network.PacketBounds;
 import de.luckymcdev.foundryengine.common.network.codecs.AABBCodec;
+import de.luckymcdev.foundryengine.common.network.codecs.ActionCodec;
 import de.luckymcdev.foundryengine.common.util.PermissionChecks;
 import de.luckymcdev.foundryengine.common.util.color.Color;
 import net.minecraft.core.BlockPos;
@@ -37,7 +38,7 @@ public record AreaPacket(
 	public static final Type<AreaPacket> TYPE = AbstractPacket.createType(Common.id("area_packet"));
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, AreaPacket> CODEC = StreamCodec.composite(
-		ByteBufCodecs.VAR_INT.map(Action::fromOrdinal, Action::ordinal), AreaPacket::action,
+		ActionCodec.streamCodec(Action.values(), Action.CREATE), AreaPacket::action,
 		Identifier.STREAM_CODEC, AreaPacket::id,
 		AABBCodec.INSTANCE, AreaPacket::bounds,
 		Identifier.STREAM_CODEC, AreaPacket::dimensionId,
@@ -183,11 +184,7 @@ public record AreaPacket(
 	}
 
 	public enum Action {
-		CREATE, UPDATE, REMOVE, REQUEST_SYNC;
-
-		public static Action fromOrdinal(int ordinal) {
-			return values()[ordinal];
-		}
+		CREATE, UPDATE, REMOVE, REQUEST_SYNC
 	}
 
 	public enum AreaType {

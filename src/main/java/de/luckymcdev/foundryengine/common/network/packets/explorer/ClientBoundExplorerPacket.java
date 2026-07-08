@@ -4,6 +4,7 @@ import de.luckymcdev.foundryengine.client.editor.panel.explorer.ExplorerPanel;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.network.AbstractPacket;
 import de.luckymcdev.foundryengine.common.network.PacketBounds;
+import de.luckymcdev.foundryengine.common.network.codecs.ActionCodec;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -25,10 +26,7 @@ public record ClientBoundExplorerPacket(
 		ByteBufCodecs.BOOL, RemoteEntry::isDirectory,
 		RemoteEntry::new
 	);
-	private static final StreamCodec<ByteBuf, Action> ACTION_CODEC = ByteBufCodecs.VAR_INT.map(
-		i -> Action.values()[i],
-		a -> a.ordinal()
-	);
+	private static final StreamCodec<ByteBuf, Action> ACTION_CODEC = ActionCodec.streamCodec(Action.values(), Action.FILE_LIST);
 	public static final Definition<ClientBoundExplorerPacket> DEFINITION = new Definition<>(
 		AbstractPacket.createType(Common.id("client_explorer")),
 		PacketBounds.CLIENT,
