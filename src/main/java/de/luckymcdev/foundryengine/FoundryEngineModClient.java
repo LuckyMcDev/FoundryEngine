@@ -21,6 +21,7 @@ import de.luckymcdev.foundryengine.client.editor.panel.tools.ConsolePanel;
 import de.luckymcdev.foundryengine.client.editor.panel.tools.DevToolsPanel;
 import de.luckymcdev.foundryengine.client.editor.panel.tools.EffectPanel;
 import de.luckymcdev.foundryengine.client.editor.panel.tools.MinecraftToolsPanel;
+import de.luckymcdev.foundryengine.client.editor.panel.tools.ProblemsPanel;
 import de.luckymcdev.foundryengine.client.editor.panel.tools.StopwatchPanel;
 import de.luckymcdev.foundryengine.client.editor.panel.tools.WaypointPanel;
 import de.luckymcdev.foundryengine.client.editor.panel.view.InfoPanel;
@@ -101,6 +102,7 @@ public class FoundryEngineModClient {
 			ConsolePanel.INSTANCE,
 			MinecraftToolsPanel.INSTANCE,
 			DevToolsPanel.INSTANCE,
+			ProblemsPanel.INSTANCE,
 			StopwatchPanel.INSTANCE,
 			InfoPanel.INSTANCE,
 			CataloguePanel.INSTANCE,

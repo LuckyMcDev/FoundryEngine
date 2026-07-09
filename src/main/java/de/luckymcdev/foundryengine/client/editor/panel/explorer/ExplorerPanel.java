@@ -120,12 +120,12 @@ public class ExplorerPanel extends EditorPanel {
 
 	public void receiveRemoteFileContent(String relativePath, String content) {
 		Identifier editorId = remoteFileEditorId(relativePath);
-		if (existingEditor(editorId) != null) {
+		if (Client.getEditorManager().getPanel(editorId) != null) {
 			return;
 		}
 
 		String fileName = fileNameFrom(relativePath);
-		CodeEditor editor = new CodeEditor(editorId, Component.literal(" Editor: [SERVER] " + fileName), content);
+		CodeEditor editor = new CodeEditor(editorId, Component.literal(fileName), content);
 		editor.applyLanguage(fileName);
 		editor.setSaveCallback((source, errors) ->
 			ClientPacketDistributor.sendToServer(new ServerBoundExplorerPacket(ServerBoundExplorerPacket.Action.SAVE_FILE, relativePath, source)));
@@ -153,12 +153,12 @@ public class ExplorerPanel extends EditorPanel {
 		}
 
 		Identifier editorId = generateEditorId("res_" + id.getNamespace(), id.getPath());
-		if (existingEditor(editorId) != null) {
+		if (Client.getEditorManager().getPanel(editorId) != null) {
 			return;
 		}
 
 		String fileName = id.getPath().contains("/") ? id.getPath().substring(id.getPath().lastIndexOf('/') + 1) : id.getPath();
-		CodeEditor editor = new CodeEditor(editorId, Component.literal(" Editor: " + id.getPath()), content);
+		CodeEditor editor = new CodeEditor(editorId, Component.literal(id.getPath()), content);
 		editor.getTextEditor().setReadOnly(true);
 		editor.forceReadOnly = true;
 		editor.applyLanguage(fileName);
@@ -356,7 +356,7 @@ public class ExplorerPanel extends EditorPanel {
 	private void renderRemoteFileItem(RemoteTree.Entry entry) {
 		String id = "##rfile_" + entry.relativePath;
 		String icon = FileEndings.getFileIcon(entry.name);
-		boolean open = isResourceOpen(remoteFileEditorId(entry.relativePath));
+		boolean open = Client.getEditorManager().getPanel(remoteFileEditorId(entry.relativePath)) != null;
 
 		if (open) {
 			ImGui.pushStyleColor(ImGuiCol.Text, ImGui.getStyle().getColor(ImGuiCol.CheckMark));
@@ -494,11 +494,13 @@ public class ExplorerPanel extends EditorPanel {
 		try {
 			String content = Files.readString(file.toPath());
 			Identifier editorId = fileToEditorId(file);
-			if (existingEditor(editorId) != null) {
+			Panel existing = Client.getEditorManager().getPanel(editorId);
+			if (existing != null) {
+				existing.open();
 				return;
 			}
 
-			CodeEditor editor = new CodeEditor(editorId, Component.literal(" Editor: [CLIENT] " + file.getName()), content);
+			CodeEditor editor = new CodeEditor(editorId, Component.literal(file.getName()), content);
 			editor.applyLanguage(file.getName());
 			editor.setSaveCallback((source, errors) -> {
 				try {
@@ -521,7 +523,7 @@ public class ExplorerPanel extends EditorPanel {
 			return;
 		}
 		Identifier editorId = generateEditorId("res_" + id.getNamespace(), id.getPath());
-		if (existingEditor(editorId) != null) {
+		if (Client.getEditorManager().getPanel(editorId) != null) {
 			return;
 		}
 
@@ -543,7 +545,8 @@ public class ExplorerPanel extends EditorPanel {
 		     BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
 			String content = reader.lines().collect(Collectors.joining("\n"));
 			String fileName = id.getPath().contains("/") ? id.getPath().substring(id.getPath().lastIndexOf('/') + 1) : id.getPath();
-			CodeEditor editor = new CodeEditor(generateEditorId("res_" + id.getNamespace(), id.getPath()), Component.literal(" Editor: " + id.getPath()), content);
+			Identifier editorId = generateEditorId("res_" + id.getNamespace(), id.getPath());
+			CodeEditor editor = new CodeEditor(editorId, Component.literal(id.getPath()), content);
 			editor.getTextEditor().setReadOnly(true);
 			editor.forceReadOnly = true;
 			editor.applyLanguage(fileName);
@@ -578,7 +581,7 @@ public class ExplorerPanel extends EditorPanel {
 
 	private void openRemoteFile(String relativePath) {
 		Identifier editorId = remoteFileEditorId(relativePath);
-		if (existingEditor(editorId) != null) {
+		if (Client.getEditorManager().getPanel(editorId) != null) {
 			return;
 		}
 		ClientPacketDistributor.sendToServer(new ServerBoundExplorerPacket(ServerBoundExplorerPacket.Action.REQUEST_FILE_CONTENT, relativePath, ""));
@@ -602,21 +605,8 @@ public class ExplorerPanel extends EditorPanel {
 		return Common.id(prefix + "_" + sanitized);
 	}
 
-	private @Nullable CodeEditor existingEditor(Identifier editorId) {
-		Panel panel = Client.getEditorManager().getPanel(editorId);
-		if (panel instanceof CodeEditor editor) {
-			editor.open();
-			return editor;
-		}
-		return null;
-	}
-
-	private boolean isResourceOpen(Identifier editorId) {
-		return Client.getEditorManager().getPanel(editorId) instanceof CodeEditor;
-	}
-
 	private boolean isFileOpen(File file) {
-		return isResourceOpen(fileToEditorId(file));
+		return Client.getEditorManager().getPanel(fileToEditorId(file)) != null;
 	}
 
 	private void renderLocalFileTooltip(File file, boolean isOpen) {

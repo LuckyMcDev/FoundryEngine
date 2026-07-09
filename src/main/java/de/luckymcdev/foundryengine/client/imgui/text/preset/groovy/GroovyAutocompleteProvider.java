@@ -66,11 +66,6 @@ public record GroovyAutocompleteProvider(GroovyColorizer colorizer) implements I
 
 	@Override
 	public boolean shouldSuppress(String prefix, List<List<EditorGlyph>> lines, EditorCoordinates cursor) {
-		if (cursor.line < lines.size()) {
-			List<EditorGlyph> line = lines.get(cursor.line);
-			int wordStart = cursor.column - prefix.length();
-			return wordStart > 0 && line.get(wordStart - 1).ch == '.';
-		}
 		return false;
 	}
 

@@ -1,7 +1,9 @@
 package de.luckymcdev.foundryengine.client.editor.panel.files;
 
+import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
+import de.luckymcdev.foundryengine.client.ide.compiler.DryRunCompiler;
 import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiShortcut;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
@@ -34,6 +36,7 @@ public class CodeEditor extends EditorPanel {
 	private static final float FONT_SCALE_MIN = 0.1f;
 	private static final float FONT_SCALE_MAX = 3.0f;
 	private static final float FONT_SCALE_STEP = 0.1f;
+	private static final long SYNTAX_CHECK_DEBOUNCE_NS = 2_000_000_000L;
 
 	private final ImGuiCoreTextEditor textEditor;
 	private final ImString findText = new ImString(256);
@@ -41,7 +44,8 @@ public class CodeEditor extends EditorPanel {
 	private final ImBoolean matchCase = new ImBoolean(false);
 	private final ImBoolean wholeWord = new ImBoolean(false);
 	public boolean forceReadOnly = false;
-	private String currentThemeName = "dark";
+	private final Identifier bufferId;
+	private String currentThemeName;
 	private String fileName;
 	private String oldSource;
 	private SaveCallback saveCallback;
@@ -49,6 +53,8 @@ public class CodeEditor extends EditorPanel {
 	private boolean showReplace = false;
 	private int gotoLineTarget = 1;
 	private float fontScale = 1.0f;
+	private long lastEditTime = 0;
+	private boolean syntaxCheckDirty = false;
 
 	public CodeEditor(Identifier id, Component label, String source) {
 		super(new Builder(id, label)
@@ -56,6 +62,7 @@ public class CodeEditor extends EditorPanel {
 			.shortcut(ImGuiShortcut.empty())
 			.category(PanelCategory.EDITOR_FILES)
 			.menuBar(true));
+		this.bufferId = id;
 		this.fileName = label.getString();
 		this.oldSource = source;
 		this.saveCallback = (_, _) -> {
@@ -66,6 +73,7 @@ public class CodeEditor extends EditorPanel {
 		EditorTheme theme = EditorTheme.getThemeByName(currentThemeName);
 		this.textEditor = ImGuiCoreTextEditor.createForLanguage(lang, theme);
 		this.textEditor.setText(source);
+		Client.getWorkspaceState().registerBuffer(bufferId, fileName, source);
 	}
 
 	private static String extensionFrom(String fileName) {
@@ -120,11 +128,13 @@ public class CodeEditor extends EditorPanel {
 		if (!requireLevelOnServer(PermissionLevel.OWNERS)) {
 			return;
 		}
+		Client.getWorkspaceState().setActiveBuffer(bufferId);
 		this.setUnsaved(isDirty() && !forceReadOnly);
 
 		renderMenuBar();
 		handleShortcuts();
 		renderFindBar();
+		handleSyntaxCheck();
 
 		float footerHeight = ImGui.getTextLineHeightWithSpacing()
 			+ ImGui.getStyle().getItemSpacingY() + 5.0f;
@@ -134,6 +144,8 @@ public class CodeEditor extends EditorPanel {
 		textEditor.render("##source", ImGui.getContentRegionAvailX(), editorHeight, false);
 		ImGui.setWindowFontScale(1.0f);
 
+		syncErrors();
+
 		renderStatusBar();
 		renderSavePopup();
 		renderGotoLinePopup();
@@ -141,10 +153,37 @@ public class CodeEditor extends EditorPanel {
 
 	@Override
 	public void onClosed() {
+		Client.getWorkspaceState().deregisterBuffer(bufferId);
 		if (isDirty() && !forceReadOnly) {
 			this.open();
 			ImGui.openPopup(POPUP_SAVE_CONFIRM);
 		}
+	}
+
+	private void handleSyntaxCheck() {
+		String currentText = textEditor.getText();
+		if (!currentText.equals(Client.getWorkspaceState().getBufferContent(bufferId))) {
+			Client.getWorkspaceState().updateBufferContent(bufferId, currentText);
+			lastEditTime = System.nanoTime();
+			syntaxCheckDirty = true;
+		}
+		if (syntaxCheckDirty && System.nanoTime() - lastEditTime >= SYNTAX_CHECK_DEBOUNCE_NS) {
+			syntaxCheckDirty = false;
+			String ext = extensionFrom(fileName);
+			if ("groovy".equals(ext) || "gvy".equals(ext) || "gy".equals(ext) || "gsh".equals(ext)) {
+				Int2ObjectMap<String> errors = DryRunCompiler.checkSyntax(currentText);
+				Client.getWorkspaceState().setBufferErrors(bufferId, errors);
+			}
+		}
+	}
+
+	private void syncErrors() {
+		Int2ObjectMap<String> errors = Client.getWorkspaceState().getBufferErrors(bufferId);
+		Int2ObjectMap<String> currentErrors = new Int2ObjectArrayMap<>();
+		for (var entry : errors.int2ObjectEntrySet()) {
+			currentErrors.put(entry.getIntKey(), entry.getValue());
+		}
+		textEditor.setErrors(currentErrors);
 	}
 
 	private void renderMenuBar() {
@@ -228,6 +267,21 @@ public class CodeEditor extends EditorPanel {
 				}
 				if (ImGui.menuItem("Go to Line\u2026", "Ctrl+G")) {
 					openGotoLine();
+				}
+				ImGui.endMenu();
+			}
+
+			if (ImGui.beginMenu("Code")) {
+				if (ImGui.menuItem("Check Syntax")) {
+					String currentText = textEditor.getText();
+					String ext = extensionFrom(fileName);
+					if ("groovy".equals(ext) || "gvy".equals(ext) || "gy".equals(ext) || "gsh".equals(ext)) {
+						Int2ObjectMap<String> errors = DryRunCompiler.checkSyntax(currentText);
+						Client.getWorkspaceState().setBufferErrors(bufferId, errors);
+					}
+				}
+				if (ImGui.menuItem("Clear Errors")) {
+					Client.getWorkspaceState().clearBufferErrors(bufferId);
 				}
 				ImGui.endMenu();
 			}
@@ -585,6 +639,10 @@ public class CodeEditor extends EditorPanel {
 
 	public void setSaveCallback(SaveCallback saveCallback) {
 		this.saveCallback = saveCallback;
+	}
+
+	public String getFileName() {
+		return fileName;
 	}
 
 	public ImGuiCoreTextEditor getTextEditor() {
