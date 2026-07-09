@@ -17,33 +17,24 @@ import java.util.List;
 import java.util.function.Function;
 
 /**
- * Loads and compiles bundle scripts into entrypoints using registered script engines.
+ * Loads and compiles Groovy bundle scripts into entrypoints.
  */
-public class BundleScriptLoader {
+public class GroovyScriptLoader {
 	private static final Logger LOGGER = LogUtils.getLogger();
 
-	/**
-	 * Loads common (environment-independent) scripts for the given bundle.
-	 */
-	public List<BundleEntrypoint> loadCommon(BundleFiles files, BundleScriptEngineRegistry registry, String bundleId) {
-		return load(files, registry, BundleFiles.ScriptFiles::common, "common", bundleId);
+	public List<BundleEntrypoint> loadCommon(BundleFiles files, GroovyBundleScriptEngine engine, String bundleId) {
+		return load(files, engine, BundleFiles.ScriptFiles::common, "common", bundleId);
 	}
 
-	/**
-	 * Loads client-side scripts for the given bundle.
-	 */
-	public List<BundleEntrypoint> loadClient(BundleFiles files, BundleScriptEngineRegistry registry, String bundleId) {
-		return load(files, registry, BundleFiles.ScriptFiles::client, "client", bundleId);
+	public List<BundleEntrypoint> loadClient(BundleFiles files, GroovyBundleScriptEngine engine, String bundleId) {
+		return load(files, engine, BundleFiles.ScriptFiles::client, "client", bundleId);
 	}
 
-	/**
-	 * Loads server-side scripts for the given bundle.
-	 */
-	public List<BundleEntrypoint> loadServer(BundleFiles files, BundleScriptEngineRegistry registry, String bundleId) {
-		return load(files, registry, BundleFiles.ScriptFiles::server, "server", bundleId);
+	public List<BundleEntrypoint> loadServer(BundleFiles files, GroovyBundleScriptEngine engine, String bundleId) {
+		return load(files, engine, BundleFiles.ScriptFiles::server, "server", bundleId);
 	}
 
-	private List<BundleEntrypoint> load(BundleFiles files, BundleScriptEngineRegistry registry,
+	private List<BundleEntrypoint> load(BundleFiles files, GroovyBundleScriptEngine engine,
 	                                    Function<BundleFiles.ScriptFiles, Path> pathGetter, String envName, String bundleId) {
 		List<BundleEntrypoint> entrypoints = new ArrayList<>();
 
@@ -52,11 +43,10 @@ public class BundleScriptLoader {
 		}
 
 		Path envPath = pathGetter.apply(files.scripts());
-		List<String> supported = registry.supportedExtensions();
 
 		List<Path> scriptPaths = files.scripts().collection().stream()
 			.filter(p -> p.startsWith(envPath))
-			.filter(p -> supported.stream().anyMatch(ext -> p.toString().endsWith(ext)))
+			.filter(p -> p.toString().endsWith(".groovy"))
 			.toList();
 
 		for (Path scriptPath : scriptPaths) {
@@ -64,7 +54,7 @@ public class BundleScriptLoader {
 			String filename = scriptPath.getFileName().toString();
 
 			try {
-				entrypoint = loadScriptClass(scriptPath, files, registry);
+				entrypoint = loadScriptClass(scriptPath, files, engine);
 			} catch (Exception e) {
 				LOGGER.warn("Failed to compile {} script '{}' for bundle '{}'", envName, filename, bundleId, e);
 				ModLoadingIssue issue = ModLoadingIssue.error(String.format(
@@ -98,9 +88,8 @@ public class BundleScriptLoader {
 	}
 
 	private @Nullable BundleEntrypoint loadScriptClass(Path scriptPath, BundleFiles files,
-	                                                   BundleScriptEngineRegistry registry) throws Exception {
+	                                                   GroovyBundleScriptEngine engine) throws Exception {
 		String scriptName = files.scripts().root().relativize(scriptPath).toString().replace('\\', '/');
-		BundleScriptEngine engine = registry.forFile(scriptName);
 		Class<?> scriptClass = engine.loadClass(scriptName);
 
 		if (BundleEntrypoint.class.isAssignableFrom(scriptClass)) {
