@@ -11,7 +11,6 @@ import de.luckymcdev.foundryengine.client.editor.panel.cutscenes.CutscenePanel;
 import de.luckymcdev.foundryengine.client.editor.panel.cutscenes.CutsceneTimelinePanel;
 import de.luckymcdev.foundryengine.client.editor.panel.editor.AreaPanel;
 import de.luckymcdev.foundryengine.client.editor.panel.editor.DialogueEditorPanel;
-import de.luckymcdev.foundryengine.client.editor.panel.editor.MainEditor;
 import de.luckymcdev.foundryengine.client.editor.panel.editor.RecipeEditorPanel;
 import de.luckymcdev.foundryengine.client.editor.panel.explorer.ExplorerPanel;
 import de.luckymcdev.foundryengine.client.editor.panel.test.GizmoTestPanel;
@@ -100,7 +99,6 @@ public class FoundryEngineModClient {
 			GizmoTestPanel.INSTANCE,
 			ExplorerPanel.INSTANCE,
 			ConsolePanel.INSTANCE,
-			MainEditor.INSTANCE,
 			MinecraftToolsPanel.INSTANCE,
 			DevToolsPanel.INSTANCE,
 			StopwatchPanel.INSTANCE,
