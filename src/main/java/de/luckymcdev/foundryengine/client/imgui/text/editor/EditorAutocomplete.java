@@ -94,19 +94,27 @@ public final class EditorAutocomplete {
 	}
 
 	public void update(EditorCoordinates cursor, List<List<EditorGlyph>> lines) {
+		update(cursor, lines, false);
+	}
+
+	public void update(EditorCoordinates cursor, List<List<EditorGlyph>> lines, boolean force) {
 		String word = currentWord(cursor, lines);
 		if (word.length() < provider.minPrefixLength()) {
-			hide();
+			if (!force) {
+				hide();
+			}
 			return;
 		}
-		if (provider.shouldSuppress(word, lines, cursor)) {
+		if (!force && provider.shouldSuppress(word, lines, cursor)) {
 			hide();
 			return;
 		}
 
 		List<AutocompleteItem> candidates = provider.getCandidates(word, lines, cursor);
 		if (candidates.isEmpty()) {
-			hide();
+			if (!force) {
+				hide();
+			}
 			return;
 		}
 

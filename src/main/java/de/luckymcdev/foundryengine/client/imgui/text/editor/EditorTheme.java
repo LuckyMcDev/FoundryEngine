@@ -19,6 +19,8 @@ public final class EditorTheme {
 	public final float cursorWidth;
 	public final Color lineNumberColor;
 	public final Color gutterSeparatorColor;
+	public final Color errorColor;
+	public final Color errorMarkerColor;
 	public final float gutterPaddingRight;
 	public final float hScrollbarHeight;
 	public final float lineSpacing;
@@ -33,6 +35,8 @@ public final class EditorTheme {
 		this.cursorWidth = b.cursorWidth;
 		this.lineNumberColor = b.lineNumberColor;
 		this.gutterSeparatorColor = b.gutterSeparatorColor;
+		this.errorColor = b.errorColor;
+		this.errorMarkerColor = b.errorMarkerColor;
 		this.gutterPaddingRight = b.gutterPaddingRight;
 		this.hScrollbarHeight = b.hScrollbarHeight;
 		this.lineSpacing = b.lineSpacing;
@@ -48,11 +52,13 @@ public final class EditorTheme {
 			.withBackgroundColor(Color.ofABGR(0xB2120D0A))
 			.withCurrentLineColor(Color.ofABGR(0x18FFFFFF))
 			.withSelectionColor(Color.ofABGR(0x804060C0))
-			.withCursorColor(Color.ofABGR(0xFFE0E0E0))
-			.withCursorBlinkMs(1000)
+			.withCursorColor(Color.ofABGR(0xCCE0E0E0))
+			.withCursorBlinkMs(0)
 			.withCursorWidth(2.0f)
 			.withLineNumberColor(Color.ofABGR(0xFF858585))
 			.withGutterSeparatorColor(Color.ofABGR(0xFF2A2A2A))
+			.withErrorColor(Color.ofABGR(0xFF3333FF))
+			.withErrorMarkerColor(Color.ofABGR(0xFF5555FF))
 			.withGutterPaddingRight(10.0f)
 			.withHScrollbarHeight(10.0f)
 			.withLineSpacing(1.0f)
@@ -64,11 +70,13 @@ public final class EditorTheme {
 			.withBackgroundColor(Color.ofABGR(0xE6272822))
 			.withCurrentLineColor(Color.ofABGR(0x20FFFFFF))
 			.withSelectionColor(Color.ofABGR(0x8049483E))
-			.withCursorColor(Color.ofABGR(0xFFF8F8F2))
-			.withCursorBlinkMs(1000)
+			.withCursorColor(Color.ofABGR(0xCCF8F8F2))
+			.withCursorBlinkMs(0)
 			.withCursorWidth(2.0f)
 			.withLineNumberColor(Color.ofABGR(0xFF75715E))
 			.withGutterSeparatorColor(Color.ofABGR(0xFF3E3D32))
+			.withErrorColor(Color.ofABGR(0xFF3333FF))
+			.withErrorMarkerColor(Color.ofABGR(0xFF5555FF))
 			.withGutterPaddingRight(10.0f)
 			.withHScrollbarHeight(10.0f)
 			.withLineSpacing(1.0f)
@@ -80,11 +88,13 @@ public final class EditorTheme {
 			.withBackgroundColor(Color.ofABGR(0xFFFAFAFA))
 			.withCurrentLineColor(Color.ofABGR(0x18000000))
 			.withSelectionColor(Color.ofABGR(0x18000000))
-			.withCursorColor(Color.ofABGR(0xFF1A1A1A))
-			.withCursorBlinkMs(1000)
+			.withCursorColor(Color.ofABGR(0xCC1A1A1A))
+			.withCursorBlinkMs(0)
 			.withCursorWidth(2.0f)
 			.withLineNumberColor(Color.ofABGR(0xFF999999))
 			.withGutterSeparatorColor(Color.ofABGR(0xFFDDDDDD))
+			.withErrorColor(Color.ofABGR(0xFF3333FF))
+			.withErrorMarkerColor(Color.ofABGR(0xFF5555FF))
 			.withGutterPaddingRight(10.0f)
 			.withHScrollbarHeight(10.0f)
 			.withLineSpacing(1.0f)
@@ -96,11 +106,13 @@ public final class EditorTheme {
 			.withBackgroundColor(Color.ofABGR(0xFF36272A))
 			.withCurrentLineColor(Color.ofABGR(0x2044475A))
 			.withSelectionColor(Color.ofABGR(0x8044475A))
-			.withCursorColor(Color.ofABGR(0xFFF8F8F2))
-			.withCursorBlinkMs(1000)
+			.withCursorColor(Color.ofABGR(0xCCF8F8F2))
+			.withCursorBlinkMs(0)
 			.withCursorWidth(2.0f)
 			.withLineNumberColor(Color.ofABGR(0xFF6272A4))
 			.withGutterSeparatorColor(Color.ofABGR(0xFF44475A))
+			.withErrorColor(Color.ofABGR(0xFF3333FF))
+			.withErrorMarkerColor(Color.ofABGR(0xFF5555FF))
 			.withGutterPaddingRight(10.0f)
 			.withHScrollbarHeight(10.0f)
 			.withLineSpacing(1.0f)
@@ -112,11 +124,13 @@ public final class EditorTheme {
 			.withBackgroundColor(Color.ofABGR(0xFF40342E))
 			.withCurrentLineColor(Color.ofABGR(0x3052423B))
 			.withSelectionColor(Color.ofABGR(0x60D0C088))
-			.withCursorColor(Color.ofABGR(0xFFF4EFEC))
-			.withCursorBlinkMs(1000)
+			.withCursorColor(Color.ofABGR(0xCCF4EFEC))
+			.withCursorBlinkMs(0)
 			.withCursorWidth(2.0f)
 			.withLineNumberColor(Color.ofABGR(0xFF6A564C))
 			.withGutterSeparatorColor(Color.ofABGR(0xFF5E4C43))
+			.withErrorColor(Color.ofABGR(0xFF3333FF))
+			.withErrorMarkerColor(Color.ofABGR(0xFF5555FF))
 			.withGutterPaddingRight(10.0f)
 			.withHScrollbarHeight(10.0f)
 			.withLineSpacing(1.0f)
@@ -128,11 +142,13 @@ public final class EditorTheme {
 			.withBackgroundColor(Color.ofABGR(0xFF362B00))
 			.withCurrentLineColor(Color.ofABGR(0x18FDF6E3))
 			.withSelectionColor(Color.ofABGR(0x60586E75))
-			.withCursorColor(Color.ofABGR(0xFF839496))
-			.withCursorBlinkMs(1000)
+			.withCursorColor(Color.ofABGR(0xCC839496))
+			.withCursorBlinkMs(0)
 			.withCursorWidth(2.0f)
 			.withLineNumberColor(Color.ofABGR(0xFF586E75))
 			.withGutterSeparatorColor(Color.ofABGR(0xFF073642))
+			.withErrorColor(Color.ofABGR(0xFF3333FF))
+			.withErrorMarkerColor(Color.ofABGR(0xFF5555FF))
 			.withGutterPaddingRight(10.0f)
 			.withHScrollbarHeight(10.0f)
 			.withLineSpacing(1.0f)
@@ -144,11 +160,13 @@ public final class EditorTheme {
 			.withBackgroundColor(Color.ofABGR(0xFFE3F6FD))
 			.withCurrentLineColor(Color.ofABGR(0x18000000))
 			.withSelectionColor(Color.ofABGR(0x5093A1A1))
-			.withCursorColor(Color.ofABGR(0xFF657B83))
-			.withCursorBlinkMs(1000)
+			.withCursorColor(Color.ofABGR(0xCC657B83))
+			.withCursorBlinkMs(0)
 			.withCursorWidth(2.0f)
 			.withLineNumberColor(Color.ofABGR(0xFF93A1A1))
 			.withGutterSeparatorColor(Color.ofABGR(0xFFEEE8D5))
+			.withErrorColor(Color.ofABGR(0xFF3333FF))
+			.withErrorMarkerColor(Color.ofABGR(0xFF5555FF))
 			.withGutterPaddingRight(10.0f)
 			.withHScrollbarHeight(10.0f)
 			.withLineSpacing(1.0f)
@@ -160,11 +178,13 @@ public final class EditorTheme {
 			.withBackgroundColor(Color.ofABGR(0xFF342C28))
 			.withCurrentLineColor(Color.ofABGR(0x202C313C))
 			.withSelectionColor(Color.ofABGR(0x603E4450))
-			.withCursorColor(Color.ofABGR(0xFFABB2BF))
-			.withCursorBlinkMs(1000)
+			.withCursorColor(Color.ofABGR(0xCCABB2BF))
+			.withCursorBlinkMs(0)
 			.withCursorWidth(2.0f)
 			.withLineNumberColor(Color.ofABGR(0xFF4B5263))
 			.withGutterSeparatorColor(Color.ofABGR(0xFF3B4048))
+			.withErrorColor(Color.ofABGR(0xFF3333FF))
+			.withErrorMarkerColor(Color.ofABGR(0xFF5555FF))
 			.withGutterPaddingRight(10.0f)
 			.withHScrollbarHeight(10.0f)
 			.withLineSpacing(1.0f)
@@ -176,8 +196,8 @@ public final class EditorTheme {
 			.withBackgroundColor(Color.ofABGR(0xFFFFFFFF))
 			.withCurrentLineColor(Color.ofABGR(0x14000000))
 			.withSelectionColor(Color.ofABGR(0x500489E0))
-			.withCursorColor(Color.ofABGR(0xFF24292E))
-			.withCursorBlinkMs(1000)
+			.withCursorColor(Color.ofABGR(0xCC24292E))
+			.withCursorBlinkMs(0)
 			.withCursorWidth(2.0f)
 			.withLineNumberColor(Color.ofABGR(0xFF959DA5))
 			.withGutterSeparatorColor(Color.ofABGR(0xFFE1E4E8))
@@ -233,6 +253,14 @@ public final class EditorTheme {
 		return toBuilder().withLineNumberColor(c).build();
 	}
 
+	public EditorTheme withErrorColor(Color c) {
+		return toBuilder().withErrorColor(c).build();
+	}
+
+	public EditorTheme withErrorMarkerColor(Color c) {
+		return toBuilder().withErrorMarkerColor(c).build();
+	}
+
 	public EditorTheme withLineSpacing(float s) {
 		return toBuilder().withLineSpacing(s).build();
 	}
@@ -251,6 +279,8 @@ public final class EditorTheme {
 		b.cursorWidth = cursorWidth;
 		b.lineNumberColor = lineNumberColor;
 		b.gutterSeparatorColor = gutterSeparatorColor;
+		b.errorColor = errorColor;
+		b.errorMarkerColor = errorMarkerColor;
 		b.gutterPaddingRight = gutterPaddingRight;
 		b.hScrollbarHeight = hScrollbarHeight;
 		b.lineSpacing = lineSpacing;
@@ -262,11 +292,13 @@ public final class EditorTheme {
 		private Color backgroundColor = Color.ofABGR(0xB2120D0A);
 		private Color currentLineColor = Color.ofABGR(0x18FFFFFF);
 		private Color selectionColor = Color.ofABGR(0x804060C0);
-		private Color cursorColor = Color.ofABGR(0xFFE0E0E0);
-		private int cursorBlinkMs = 1000;
+		private Color cursorColor = Color.ofABGR(0xCCE0E0E0);
+		private int cursorBlinkMs = 0;
 		private float cursorWidth = 2.0f;
 		private Color lineNumberColor = Color.ofABGR(0xFF858585);
 		private Color gutterSeparatorColor = Color.ofABGR(0xFF2A2A2A);
+		private Color errorColor = Color.ofABGR(0xFF3333FF);
+		private Color errorMarkerColor = Color.ofABGR(0xFF5555FF);
 		private float gutterPaddingRight = 10.0f;
 		private float hScrollbarHeight = 10.0f;
 		private float lineSpacing = 1.0f;
@@ -309,6 +341,16 @@ public final class EditorTheme {
 
 		public Builder withGutterSeparatorColor(Color c) {
 			gutterSeparatorColor = c;
+			return this;
+		}
+
+		public Builder withErrorColor(Color c) {
+			errorColor = c;
+			return this;
+		}
+
+		public Builder withErrorMarkerColor(Color c) {
+			errorMarkerColor = c;
 			return this;
 		}
 

@@ -21,8 +21,12 @@ import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiKey;
+import imgui.flag.ImGuiMouseCursor;
 import imgui.flag.ImGuiWindowFlags;
+import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.client.Minecraft;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -59,6 +63,7 @@ public final class ImGuiCoreTextEditor {
 	private float editorScrollY = 0.0f;
 	private long lastClickTime = 0;
 	private int clickCount = 0;
+	private Int2ObjectMap<String> errorLines = new Int2ObjectArrayMap<>();
 
 	public ImGuiCoreTextEditor(IEditorColorizer colorizer, IAutocompleteProvider provider, EditorTheme theme) {
 		this.colorizer = colorizer != null ? colorizer : new NullColorizer();
@@ -263,6 +268,18 @@ public final class ImGuiCoreTextEditor {
 		this.autocomplete = provider != null ? new EditorAutocomplete(provider) : null;
 	}
 
+	public void setErrors(@Nullable Int2ObjectMap<String> errors) {
+		this.errorLines = errors != null ? errors : new Int2ObjectArrayMap<>();
+	}
+
+	public void clearErrors() {
+		this.errorLines = new Int2ObjectArrayMap<>();
+	}
+
+	public Int2ObjectMap<String> getErrorLines() {
+		return errorLines;
+	}
+
 	public void setLanguage(Language language) {
 		if (language == null) {
 			setColorizer(new NullColorizer());
@@ -306,6 +323,10 @@ public final class ImGuiCoreTextEditor {
 		editorFocused = ImGui.isWindowFocused();
 		boolean focused = editorFocused;
 		boolean hovered = ImGui.isWindowHovered(imgui.flag.ImGuiHoveredFlags.ChildWindows);
+
+		if (hovered) {
+			ImGui.setMouseCursor(ImGuiMouseCursor.TextInput);
+		}
 
 		if (autocomplete != null) {
 			if (!focused) {
@@ -414,6 +435,21 @@ public final class ImGuiCoreTextEditor {
 			}
 			newMaxWidth = Math.max(newMaxWidth, x);
 
+			String errorMsg = errorLines.get(li + 1);
+			if (errorMsg != null) {
+				float gutterX = origin.x + textStart - numW - theme.gutterPaddingRight - 6;
+				dl.addText(gutterX, lineY, EditorTheme.toImU32(theme.errorMarkerColor), "\u25CF");
+				float waveY = lineY + lineHeight - 2;
+				float underlineStart = origin.x + textStart;
+				float underlineEnd = origin.x + textStart + (x > 0 ? x : charWidth);
+				for (float wx = underlineStart; wx < underlineEnd; wx += 6) {
+					dl.pathLineTo(wx, waveY);
+					dl.pathLineTo(wx + 3, waveY + 2);
+					dl.pathLineTo(wx + 6, waveY);
+					dl.pathStroke(EditorTheme.toImU32(theme.errorColor), 0, 1.0f);
+				}
+			}
+
 			if (li == cursor.line && focused && !readOnly) {
 				long now = System.currentTimeMillis();
 				boolean cursorVisible = theme.cursorBlinkMs == 0
@@ -439,8 +475,17 @@ public final class ImGuiCoreTextEditor {
 		boolean ctrl = ImGui.getIO().getKeyCtrl();
 		boolean shift = ImGui.getIO().getKeyShift();
 
-		if (autocomplete != null && autocomplete.handleKeyboard(cursor, lines, this)) {
-			return;
+		if (autocomplete != null) {
+			// Ctrl+Space forces autocomplete to show regardless of suppression
+			if (ctrl && ImGui.isKeyPressed(ImGuiKey.Space)) {
+				autocomplete.update(cursor, lines, true);
+				if (autocomplete.isVisible()) {
+					return;
+				}
+			}
+			if (autocomplete.handleKeyboard(cursor, lines, this)) {
+				return;
+			}
 		}
 
 		if (ImGui.isKeyPressed(ImGuiKey.LeftArrow)) {

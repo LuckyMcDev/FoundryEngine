@@ -15,6 +15,7 @@ import de.luckymcdev.foundryengine.client.editor.EditorController;
 import de.luckymcdev.foundryengine.client.editor.EditorManager;
 import de.luckymcdev.foundryengine.client.editor.MainMenu;
 import de.luckymcdev.foundryengine.client.icons.IconExporterLayer;
+import de.luckymcdev.foundryengine.client.ide.WorkspaceState;
 import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiManager;
 import de.luckymcdev.foundryengine.client.particle.ParticleManager;
@@ -95,6 +96,7 @@ public final class Client {
 	private static final EditorController EDITOR_CONTROLLER = new EditorController();
 	private static final ClientDialogueManager DIALOGUE_MANAGER = new ClientDialogueManager();
 	private static final IconExporterLayer ICON_EXPORTER_LAYER = new IconExporterLayer();
+	private static final WorkspaceState WORKSPACE_STATE = new WorkspaceState();
 
 	private Client() {
 		throw new UtilityClassException();
@@ -242,6 +244,13 @@ public final class Client {
 	 */
 	public static SkyboxManager getSkyboxManager() {
 		return SKYBOX_MANAGER;
+	}
+
+	/**
+	 * Returns the workspace state.
+	 */
+	public static WorkspaceState getWorkspaceState() {
+		return WORKSPACE_STATE;
 	}
 
 	/**
