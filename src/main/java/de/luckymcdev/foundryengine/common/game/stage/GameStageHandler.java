@@ -47,8 +47,7 @@ public class GameStageHandler {
 	private final RecipeStages RECIPES = new RecipeStages();
 	private final List<Map.Entry<StageAdditionCondition, Identifier>> PENDING_STAGES = new ArrayList<>();
 	private final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, Common.MODID);
-	@SuppressWarnings("unchecked")
-	private final Codec<Set<Identifier>> IDENTIFIER_SET_CODEC = (Codec<?>) Identifier.CODEC.listOf().xmap(
+	private final Codec<Set<Identifier>> IDENTIFIER_SET_CODEC = Identifier.CODEC.listOf().xmap(
 		HashSet::new,
 		ArrayList::new
 	);
