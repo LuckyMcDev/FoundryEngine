@@ -3,7 +3,7 @@ package de.luckymcdev.foundryengine.common.bundle;
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.registry.GenericRegistry;
-import de.luckymcdev.foundryengine.common.script.BundleScriptLoader;
+import de.luckymcdev.foundryengine.common.script.GroovyScriptLoader;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.Commands;
 import net.minecraft.server.MinecraftServer;
@@ -36,7 +36,7 @@ public class BundleManager implements ResourceManagerReloadListener {
 	private final ReentrantLock reloadLock = new ReentrantLock();
 	private final GenericRegistry<String, Bundle> bundles = new GenericRegistry<>();
 	private final BundleDiscovery bundleDiscovery;
-	private final BundleScriptLoader scriptLoader;
+	private final GroovyScriptLoader scriptLoader;
 	private final BundleLifecycleDispatcher lifecycleDispatcher = new BundleLifecycleDispatcher();
 	private volatile boolean reloading = false;
 	private @Nullable MinecraftServer server;
