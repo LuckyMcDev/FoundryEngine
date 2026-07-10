@@ -24,7 +24,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.permissions.PermissionLevel;
 import org.apache.commons.lang3.StringUtils;
+import org.jspecify.annotations.Nullable;
 
+import java.net.URL;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -55,8 +57,13 @@ public class CodeEditor extends EditorPanel {
 	private float fontScale = 1.0f;
 	private long lastEditTime = 0;
 	private boolean syntaxCheckDirty = false;
+	private final @Nullable URL scriptRoot;
 
 	public CodeEditor(Identifier id, Component label, String source) {
+		this(id, label, source, null);
+	}
+
+	public CodeEditor(Identifier id, Component label, String source, @Nullable URL scriptRoot) {
 		super(new Builder(id, label)
 			.icon(ImIcons.EDIT)
 			.shortcut(ImGuiShortcut.empty())
@@ -65,6 +72,7 @@ public class CodeEditor extends EditorPanel {
 		this.bufferId = id;
 		this.fileName = label.getString();
 		this.oldSource = source;
+		this.scriptRoot = scriptRoot;
 		this.saveCallback = (_, _) -> {
 		};
 		this.currentThemeName = ClientConfig.TEXT_EDITOR_THEME.get();
@@ -73,7 +81,7 @@ public class CodeEditor extends EditorPanel {
 		EditorTheme theme = EditorTheme.getThemeByName(currentThemeName);
 		this.textEditor = ImGuiCoreTextEditor.createForLanguage(lang, theme);
 		this.textEditor.setText(source);
-		Client.getWorkspaceState().registerBuffer(bufferId, fileName, source);
+		Client.getWorkspaceState().registerBuffer(bufferId, fileName, source, scriptRoot);
 	}
 
 	private static String extensionFrom(String fileName) {
@@ -171,7 +179,7 @@ public class CodeEditor extends EditorPanel {
 			syntaxCheckDirty = false;
 			String ext = extensionFrom(fileName);
 			if ("groovy".equals(ext) || "gvy".equals(ext) || "gy".equals(ext) || "gsh".equals(ext)) {
-				Int2ObjectMap<String> errors = DryRunCompiler.checkSyntax(currentText);
+				Int2ObjectMap<String> errors = DryRunCompiler.checkSyntax(currentText, scriptRoot);
 				Client.getWorkspaceState().setBufferErrors(bufferId, errors);
 			}
 		}
@@ -276,7 +284,7 @@ public class CodeEditor extends EditorPanel {
 					String currentText = textEditor.getText();
 					String ext = extensionFrom(fileName);
 					if ("groovy".equals(ext) || "gvy".equals(ext) || "gy".equals(ext) || "gsh".equals(ext)) {
-						Int2ObjectMap<String> errors = DryRunCompiler.checkSyntax(currentText);
+						Int2ObjectMap<String> errors = DryRunCompiler.checkSyntax(currentText, scriptRoot);
 						Client.getWorkspaceState().setBufferErrors(bufferId, errors);
 					}
 				}
