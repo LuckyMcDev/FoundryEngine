@@ -37,8 +37,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -88,6 +90,20 @@ public class ExplorerPanel extends EditorPanel {
 
 	private static String fileNameFrom(String path) {
 		return path.contains("/") ? path.substring(path.lastIndexOf('/') + 1) : path;
+	}
+
+	private static @Nullable URL scriptRootFor(File file) {
+		try {
+			Path path = file.toPath().toAbsolutePath();
+			for (int i = 0; i < path.getNameCount(); i++) {
+				if ("scripts".equals(path.getName(i).toString()) && i < path.getNameCount() - 1) {
+					Path root = path.getRoot().resolve(path.subpath(0, i + 1));
+					return root.toUri().toURL();
+				}
+			}
+		} catch (Exception ignored) {
+		}
+		return null;
 	}
 
 	private static Identifier fileToEditorId(File file) {
@@ -500,7 +516,8 @@ public class ExplorerPanel extends EditorPanel {
 				return;
 			}
 
-			CodeEditor editor = new CodeEditor(editorId, Component.literal(file.getName()), content);
+			URL scriptRoot = scriptRootFor(file);
+			CodeEditor editor = new CodeEditor(editorId, Component.literal(file.getName()), content, scriptRoot);
 			editor.applyLanguage(file.getName());
 			editor.setSaveCallback((source, errors) -> {
 				try {

@@ -232,14 +232,7 @@ public final class ImGuiFontManager {
 	 * Pushes a registered font onto the ImGui font stack.
 	 */
 	public void pushFont(Identifier id) {
-		ImGui.pushFont(getFont(id), 0.0F);
-	}
-
-	/**
-	 * Pushes a registered font onto the ImGui font stack.
-	 */
-	public void pushFont(Identifier id, int size) {
-		ImGui.pushFont(getFont(id), size);
+		ImGui.pushFont(getFont(id));
 	}
 
 	/**

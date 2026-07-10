@@ -31,6 +31,7 @@
   "panel.foundryengine.dialogue_editor": "Dialogue Editor",
 	"panel.foundryengine.code_editor": "Code Editor",
 	"panel.foundryengine.problems": "Problems",
+	"panel.foundryengine.outline": "Outline",
 
   "foundryengine.configuration.temp_directory_info": "Temp Directory",
   "foundryengine.configuration.temp_directory_info.tooltip": "Path to the temporary directory used by the engine.",

@@ -6,6 +6,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.resources.Identifier;
 import org.jspecify.annotations.Nullable;
 
+import java.net.URL;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -20,7 +21,7 @@ public final class WorkspaceState {
 	private @Nullable Identifier activeBufferId;
 
 	public void registerBuffer(Identifier id, String content) {
-		Buffer buf = new Buffer(id, id.toString(), null);
+		Buffer buf = new Buffer(id, id.toString(), null, null);
 		buffers.put(id, buf);
 		bufferContents.put(id, content);
 		activeBufferId = id;
@@ -28,11 +29,24 @@ public final class WorkspaceState {
 	}
 
 	public void registerBuffer(Identifier id, String filePath, String content) {
-		Buffer buf = new Buffer(id, filePath, null);
+		Buffer buf = new Buffer(id, filePath, null, null);
 		buffers.put(id, buf);
 		bufferContents.put(id, content);
 		activeBufferId = id;
 		notifyChange();
+	}
+
+	public void registerBuffer(Identifier id, String filePath, String content, @Nullable URL scriptRoot) {
+		Buffer buf = new Buffer(id, filePath, null, scriptRoot);
+		buffers.put(id, buf);
+		bufferContents.put(id, content);
+		activeBufferId = id;
+		notifyChange();
+	}
+
+	public @Nullable URL getBufferScriptRoot(Identifier id) {
+		Buffer buf = buffers.get(id);
+		return buf != null ? buf.scriptRoot() : null;
 	}
 
 	public void deregisterBuffer(Identifier id) {
@@ -135,6 +149,6 @@ public final class WorkspaceState {
 		}
 	}
 
-	public record Buffer(Identifier id, String filePath, CodeEditor editor) {
+	public record Buffer(Identifier id, String filePath, @Nullable CodeEditor editor, @Nullable URL scriptRoot) {
 	}
 }

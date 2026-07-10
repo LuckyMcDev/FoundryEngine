@@ -8,6 +8,8 @@ import de.luckymcdev.foundryengine.server.Server;
 import net.minecraft.network.chat.Component;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.ModLoadingIssue;
+import org.codehaus.groovy.control.MultipleCompilationErrorsException;
+import org.codehaus.groovy.control.messages.SyntaxErrorMessage;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -55,6 +57,23 @@ public class GroovyScriptLoader {
 
 			try {
 				entrypoint = loadScriptClass(scriptPath, files, engine);
+			} catch (MultipleCompilationErrorsException mce) {
+				for (var msg : mce.getErrorCollector().getErrors()) {
+					if (msg instanceof SyntaxErrorMessage sem) {
+						LOGGER.warn("Script error in '{}' ({},{}): {}", filename,
+							sem.getCause().getLine(), sem.getCause().getStartColumn(), sem.getCause().getMessage());
+					} else {
+						LOGGER.warn("Script error in '{}': {}", filename, msg);
+					}
+				}
+				LOGGER.warn("Failed to compile {} script '{}' for bundle '{}'", envName, filename, bundleId, mce);
+				ModLoadingIssue issue = ModLoadingIssue.error(String.format(
+					"Failed to compile %s script '%s' for bundle '%s': %s", envName, filename, bundleId, mce.getMessage()));
+				ModLoader.addLoadingIssue(issue);
+				if (Server.getServer() != null) {
+					String loc = mce.getStackTrace().length > 0 ? " (" + mce.getStackTrace()[0].getFileName() + ":" + mce.getStackTrace()[0].getLineNumber() + ")" : "";
+					Server.getServer().getPlayerList().broadcastSystemMessage(Component.literal("§c[Script Error] Compile " + envName + " script '" + filename + "' for bundle '" + bundleId + "': " + mce + loc), false);
+				}
 			} catch (Exception e) {
 				LOGGER.warn("Failed to compile {} script '{}' for bundle '{}'", envName, filename, bundleId, e);
 				ModLoadingIssue issue = ModLoadingIssue.error(String.format(
@@ -84,6 +103,16 @@ public class GroovyScriptLoader {
 		}
 
 		entrypoints.sort(Priority.comparing(BundleEntrypoint::getPriority));
+
+		int total = scriptPaths.size();
+		int loaded = entrypoints.size();
+		int failed = total - loaded;
+		if (failed > 0) {
+			LOGGER.warn("Bundle '{}' {} scripts: {} loaded, {} failed (of {})", bundleId, envName, loaded, failed, total);
+		} else {
+			LOGGER.info("Bundle '{}' {} scripts: {} loaded", bundleId, envName, loaded);
+		}
+
 		return entrypoints;
 	}
 

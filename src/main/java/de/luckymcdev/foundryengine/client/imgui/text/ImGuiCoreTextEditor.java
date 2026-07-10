@@ -9,8 +9,8 @@ import de.luckymcdev.foundryengine.client.imgui.text.editor.EditorState;
 import de.luckymcdev.foundryengine.client.imgui.text.editor.EditorTheme;
 import de.luckymcdev.foundryengine.client.imgui.text.preset.glsl.GLSLAutocompleteProvider;
 import de.luckymcdev.foundryengine.client.imgui.text.preset.glsl.GLSLColorizer;
-import de.luckymcdev.foundryengine.client.imgui.text.preset.groovy.GroovyAutocompleteProvider;
 import de.luckymcdev.foundryengine.client.imgui.text.preset.groovy.GroovyColorizer;
+import de.luckymcdev.foundryengine.client.imgui.text.preset.groovy.GroovyReflectionAutocompleteProvider;
 import de.luckymcdev.foundryengine.client.imgui.text.preset.json.JsonAutocompleteProvider;
 import de.luckymcdev.foundryengine.client.imgui.text.preset.json.JsonColorizer;
 import de.luckymcdev.foundryengine.client.imgui.text.preset.toml.TomlAutocompleteProvider;
@@ -1301,7 +1301,7 @@ public final class ImGuiCoreTextEditor {
 
 			@Override
 			public IAutocompleteProvider createProvider(IEditorColorizer colorizer) {
-				return new GroovyAutocompleteProvider((GroovyColorizer) colorizer);
+				return new GroovyReflectionAutocompleteProvider((GroovyColorizer) colorizer);
 			}
 		},
 

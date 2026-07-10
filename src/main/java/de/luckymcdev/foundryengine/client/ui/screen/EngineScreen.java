@@ -17,7 +17,7 @@ public abstract class EngineScreen extends Screen {
 	float tick = 0.0f;
 	long lastNanos = 0;
 
-	protected EngineScreen(boolean debug) {
+	public EngineScreen(boolean debug) {
 		super(Component.empty());
 		this.root = new WidgetBase(new UIVec(0, 0, 0, 0), new UIVec(1, 1, 0, 0));
 		this.debug = debug;

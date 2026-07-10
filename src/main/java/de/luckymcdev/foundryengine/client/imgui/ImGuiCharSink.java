@@ -71,7 +71,7 @@ public class ImGuiCharSink implements FormattedCharSink {
 	public void finish() {
 		if (!this.buffer.isEmpty()) {
 			ImGui.pushStyleVar(ImGuiStyleVar.ItemSpacing, 0, 0);
-			ImGui.pushFont(this.font, 0.0F);
+			ImGui.pushFont(this.font);
 			ImGui.textColored(0xFF000000 | (this.textColor & 0xFF0000) >> 16 | (this.textColor & 0xFF00) | (this.textColor & 0xFF) << 16, this.buffer.toString());
 			ImGui.popStyleVar();
 			this.buffer.setLength(0);

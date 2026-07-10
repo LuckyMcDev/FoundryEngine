@@ -411,7 +411,8 @@ public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorCons
 
 	public void setFontScale(float scale) {
 		var font = ImGui.getFont();
-		ImGui.pushFont(font, scale);
+		ImGui.pushFont(font);
+		ImGui.setWindowFontScale(scale);
 
 		if (stack.pushedFontScales == null) {
 			stack.pushedFontScales = new FloatArrayList(1);
