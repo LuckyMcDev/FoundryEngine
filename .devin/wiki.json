@@ -1,0 +1,150 @@
+{
+	"repo_notes": [
+		{
+			"content": "FoundryEngine is a NeoForge Minecraft mod that transforms Minecraft into a game engine. Package: de.luckymcdev.foundryengine. Java 25, Gradle build, NeoForge MDG v2.0.140. Single-project structure under src/main/java/.",
+			"author": "agent"
+		},
+		{
+			"content": "Architecture split: client/ (ImGui editor, rendering, particles, post-processing, skybox, gizmo, node graph), common/ (shared logic: events, builders, cutscenes, easing, network, blueprints, bundles, world, game, dialogue, waypoint, area, script, savedata), server/ (commands, dynamic packs), interfaces/ (mixin accessor interfaces), mixin/ (~45 mixins across 13 target areas).",
+			"author": "agent"
+		},
+		{
+			"content": "Singleton Managers: All accessed via Common.java static methods — BundleManager, GameStageHandler, NetworkManager, AreaManager, CutsceneManager, CutsceneSessionManager, SavedDataManager, WaypointManager, GameManager, DialogueManager, StageTableManager.",
+			"author": "agent"
+		},
+		{
+			"content": "Event buses: NeoForge.EVENT_BUS for system events, modBus (FoundryEngineMod.getModBus()) for mod-specific events. Custom event system with 18+ event types, EventGroup infrastructure. Events in common/event/, client/event/, server/event/ with registry/modification/data subdirectories.",
+			"author": "agent"
+		},
+		{
+			"content": "Bundle System: Modpack-as-code via Groovy scripts. ExampleBundles/ contains minimal (bootstrap) and testbundle (depends on minimal). Lifecycle: discovered in onConstruct -> Groovy executed via GroovyBundleScriptEngine -> events fire (onConstruct, onCommonSetup, onClientSetup, onDedicatedServerSetup, onPostInit). BundleManager + BundleLifecycleDispatcher manage runtime.",
+			"author": "agent"
+		},
+		{
+			"content": "Builder API (common/builder/): Fluent builders for blocks (BlockBuilder), items (ItemBuilder, ToolMaterialBuilder), recipes (RecipeBuilder), sounds (SoundBuilder), particles (ParticleBuilder), tags (TagBuilder, ItemTagBuilder, BlockTagBuilder).",
+			"author": "agent"
+		},
+		{
+			"content": "Network layer (common/network/): AbstractPacket<T> extending CustomPacketPayload with Definition<T> record. NetworkManager handles sendToServer/sendToPlayer/sendToAllPlayers via NeoForge PayloadRegistrar. PacketBounds for size validation. Registration in onCommonSetup, syncing in onServerStarted/onPlayerChangedDimension.",
+			"author": "agent"
+		},
+		{
+			"content": "Game Stage System (common/game/stage/): Progression gating with stage tables, conditions (StageTable, StageTableManager, StageEntry, StageCondition). Built-in addons: BlockStages, ItemStages, MobStages, RecipeStages, LootStages, DimensionStages. GameManager + GameSession for game lifecycle.",
+			"author": "agent"
+		},
+		{
+			"content": "ImGui Editor (client/editor/: EditorManager, EditorScreen, EditorController, MainMenu, AreaTool, CutsceneTool. Panels: 20+ panels across tools/, editor/, explorer/, files/, view/, cutscenes/, test/ directories. Themes: DarkTheme, ModernDarkTheme, CherryTheme, CatpuccinMochaTheme, BessDarkTheme, VeilTheme, VidlibTheme.",
+			"author": "agent"
+		},
+		{
+			"content": "ImGui Text Editor (client/imgui/text/): ImGuiCoreTextEditor with syntax highlighting for Groovy, JSON, GLSL, TOML. Autocomplete providers per language. Editor state, themes, glyph rendering.",
+			"author": "agent"
+		},
+		{
+			"content": "Node Graph Editor (client/node/): Visual node-based editing system with Node, NodeBuilder, NodeEditorInstance, NodePin types, NodePinShape, NodeTypes.",
+			"author": "agent"
+		},
+		{
+			"content": "Config system: Config orchestrator registering 4 NeoForge config types — CommonConfig (shared), ClientConfig (client-only, themes/fonts/rendering), ServerConfig (placeholder), StartupConfig (scripting/eval permissions).",
+			"author": "agent"
+		},
+		{
+			"content": "Interfaces (interfaces/): 12 engine accessor interfaces for runtime modification of Minecraft internals — EngineBlockBehavior, EngineBlockStateBehavior, EngineDimensionOptions, EngineGameRenderer, EngineGpuDevice, EngineKeyboardHandler, EngineLevelAccess, EngineLevelStorageSource, EngineMinecraft, EngineMouseHandler, EnginePostChain.",
+			"author": "agent"
+		},
+		{
+			"content": "Mixin scope: clock (tick system), command (vanilla commands), input (keyboard/mouse), invoker (render pipeline), level (world/chunk loading), registry, render (camera, post-processing, GPU, shaders, item rendering), resource (pack access), screen (title, containers, mod list), slot (inventory display), suggest (command autocomplete), world (block behavior).",
+			"author": "agent"
+		},
+		{
+			"content": "Dialogue system (common/dialogue/): Branching dialogue trees with DialogueTree, DialogueNode, DialogueOption, DialogueSession, DialogueEvent, DialogueAction, DialogueCondition, DialogueStyle, DialogueDisplayMode. Client rendering in client/dialogue/.",
+			"author": "agent"
+		},
+		{
+			"content": "Data generation: EngineDataGenerator + BundleDataGenerator run in FMLConstructModEvent + commonSetup. Outputs to src/generated/resources/. BundleDataGenerator uses BundleConfig specs. RunData via gradlew.bat runData is part of preCommit.",
+			"author": "agent"
+		},
+		{
+			"content": "Build commands: gradlew.bat build (full build), gradlew.bat preCommit (runData + build), gradlew.bat runClient/runServer, gradlew.bat gameTestServer, gradlew.bat test (JUnit 5), gradlew.bat runData, gradlew.bat copyExampleBundles.",
+			"author": "agent"
+		},
+		{
+			"content": "Key entry points: FoundryEngineMod.java (common init, ALL dist), FoundryEngineModClient.java (client init, CLIENT only), FoundryEngineModServer.java (server init, DEDICATED_SERVER only).",
+			"author": "agent"
+		},
+		{
+			"content": "Package-info generation: @NullMarked on all packages via generatePackageInfo. @ApiStatus.Internal for internal-only classes, @ApiStatus.Experimental for experimental features.",
+			"author": "agent"
+		}
+	],
+	"pages": [
+		{
+			"title": "Architecture Overview",
+			"purpose": "High-level project structure, package layout, and design philosophy of FoundryEngine",
+			"page_notes": [
+				{
+					"content": "Three-tier split: client/ (rendering/editor), common/ (shared logic/managers), server/ (commands/packs). Interfaces/ for mixin access. Mixin/ for patches.",
+					"author": "agent"
+				},
+				{
+					"content": "All singleton managers are static finals in Common.java initialized inline. Wired through event bus lifecycle hooks.",
+					"author": "agent"
+				}
+			]
+		},
+		{
+			"title": "Bundle System",
+			"purpose": "Modpack-as-code Groovy scripting system for content packs with dependency management and lifecycle hooks",
+			"parent": "Architecture Overview",
+			"page_notes": [
+				{
+					"content": "Bundles discovered in onConstruct, scripts executed via GroovyBundleScriptEngine. Lifecycle: onConstruct -> onCommonSetup -> onClientSetup -> onDedicatedServerSetup -> onPostInit.",
+					"author": "agent"
+				},
+				{
+					"content": "ExampleBundles/minimal (bootstrap, depends on neoforge) and testbundle (depends on minimal). TOML for metadata, Groovy scripts in scripts/ dirs.",
+					"author": "agent"
+				}
+			]
+		},
+		{
+			"title": "Event System",
+			"purpose": "Custom FoundryEngine events atop NeoForge event buses, with EventGroup infrastructure",
+			"parent": "Architecture Overview",
+			"page_notes": [
+				{
+					"content": "18+ event classes in common/event/, client/event/, server/event/. Subdirs: registry/, modification/, data/. RegistryEvent wraps NeoForge RegisterEvent for builder-based registration.",
+					"author": "agent"
+				}
+			]
+		},
+		{
+			"title": "ImGui Editor",
+			"purpose": "In-game IDE with panels, node graph editor, text editor, gizmo system, and theming",
+			"page_notes": [
+				{
+					"content": "Core: EditorManager panels via RegisterPanelEvent. Panels organized in tools/, editor/, explorer/, files/, view/, cutscenes/, test/ subdirs. 7 built-in themes.",
+					"author": "agent"
+				},
+				{
+					"content": "Text editor supports Groovy/JSON/GLSL/TOML syntax highlighting via IEditorColorizer and IAutocompleteProvider implementations.",
+					"author": "agent"
+				},
+				{
+					"content": "Node graph editor (client/node/) for visual scripting: Node, NodeBuilder, NodeEditorInstance, typed pins (NodePin, NodePinShape).",
+					"author": "agent"
+				}
+			]
+		},
+		{
+			"title": "Game Stage System",
+			"purpose": "Progression gating for blocks, items, mobs, recipes, loot, and dimensions through configurable stages",
+			"page_notes": [
+				{
+					"content": "StageTable -> StageTableManager -> StageEntry -> StageCondition. Built-in addons: BlockStages, ItemStages, MobStages, RecipeStages, LootStages, DimensionStages. StageAddon extension point for custom gating.",
+					"author": "agent"
+				}
+			]
+		}
+	]
+}

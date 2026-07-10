@@ -3,6 +3,8 @@
 A NeoForge mod that turns Minecraft into a game engine.
 Mod ID `foundryengine`, package `de.luckymcdev.foundryengine`.
 
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/LuckyMcDev/FoundryEngine)
+
 ## Features
 
 - **In-game editor** - ImGui-based editor with 18+ dockable panels for scene management, blueprints, cutscenes, areas, waypoints, code editing, file browsing, and more
