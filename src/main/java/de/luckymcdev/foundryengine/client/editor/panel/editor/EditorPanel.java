@@ -24,7 +24,7 @@ public class EditorPanel extends Panel {
 
 	@Override
 	protected void onPreContent() {
-		if (hasStatus()) {
+		if (hasStatus() && !hasMenuBar()) {
 			ImGui.beginChild("##editor_content_scroll", 0, -getStatusReservedHeight(), false);
 			beganChild = true;
 		} else {
