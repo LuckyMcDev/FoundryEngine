@@ -122,7 +122,10 @@ public class FoundryEngineModClient {
 			NodeTestPanel.INSTANCE,
 			DialogueEditorPanel.INSTANCE
 		);
-		event.enqueueWork(() -> Common.getBundleManager().loadClientScripts());
+		event.enqueueWork(() -> {
+			Common.getBundleManager().loadClientScripts();
+			//Minecraft.getInstance().reloadResourcePacks(); // This is if resourcepacks are still not enabled by defualt. Its a very stupid solution
+		});
 	}
 
 	private void onRegisterGuiLayers(RegisterGuiLayersEvent event) {

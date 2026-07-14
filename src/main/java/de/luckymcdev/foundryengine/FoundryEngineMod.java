@@ -282,17 +282,19 @@ public class FoundryEngineMod {
 			Pack.Position.TOP,
 			false
 		);
+		Path generatedPath = type == PackType.CLIENT_RESOURCES
+			? BundleDataGenerator.getGeneratedAssetsPath()
+			: BundleDataGenerator.getGeneratedDataPath();
+		try {
+			Files.createDirectories(generatedPath);
+		} catch (IOException ignored) {
+		}
 		var bundlesGeneratedRepo = new DynamicPackRepository(
 			type,
 			"foundryengine/bundles_generated",
 			"FoundryEngine: Generated",
 			"Foundry Engine Generated Resource Files",
-			() -> {
-				Path path = type == PackType.CLIENT_RESOURCES
-					? BundleDataGenerator.getGeneratedAssetsPath()
-					: BundleDataGenerator.getGeneratedDataPath();
-				return Files.exists(path) ? List.of(path) : List.of();
-			},
+			() -> List.of(generatedPath),
 			Pack.Position.BOTTOM,
 			true
 		);
