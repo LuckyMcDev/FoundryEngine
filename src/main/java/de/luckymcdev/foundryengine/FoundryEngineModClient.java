@@ -60,6 +60,8 @@ import net.neoforged.neoforge.client.event.RenderFrameEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import org.slf4j.Logger;
 
 import java.util.concurrent.CompletableFuture;
@@ -87,6 +89,8 @@ public class FoundryEngineModClient {
 		BUS.addListener(this::onLoggingIn);
 		BUS.addListener(this::onClientTickPre);
 		BUS.addListener(this::onRenderFramePost);
+		BUS.addListener(this::onItemTooltip);
+		BUS.addListener(this::onRightClickItem);
 
 		Config.registerClient(modContainer);
 	}
@@ -169,6 +173,14 @@ public class FoundryEngineModClient {
 	}
 
 	private void onRegisterDebugRenderers(RegisterDebugRenderersEvent event) {
+	}
+
+	private void onItemTooltip(ItemTooltipEvent event) {
+		Client.getItemCommandManager().handleItemTooltip(event);
+	}
+
+	private void onRightClickItem(PlayerInteractEvent.RightClickItem event) {
+		Client.getItemCommandManager().handleRightClick(event);
 	}
 
 	private void onRegisterCommands(RegisterClientCommandsEvent event) {

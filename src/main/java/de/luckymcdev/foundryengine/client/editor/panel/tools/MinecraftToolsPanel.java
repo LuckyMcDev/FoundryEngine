@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.client.editor.panel.tools;
 
 import de.luckymcdev.foundryengine.client.Client;
+import de.luckymcdev.foundryengine.client.command.ItemCommandManager;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
 import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
@@ -9,6 +10,7 @@ import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.network.packets.world.ServerBoundChangeWeatherPacket;
 import de.luckymcdev.foundryengine.common.network.packets.world.ServerBoundSetTimePacket;
 import imgui.ImGui;
+import imgui.type.ImString;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.protocol.game.ServerboundChangeGameModePacket;
 import net.minecraft.network.protocol.game.ServerboundSetGameRulePacket;
@@ -21,6 +23,7 @@ import java.util.List;
 
 public class MinecraftToolsPanel extends EditorPanel {
 	public static final MinecraftToolsPanel INSTANCE = new MinecraftToolsPanel();
+	public static final ImString COMMAND_INPUT = new ImString();
 
 	private MinecraftToolsPanel() {
 		super(new Builder(Common.id("minecraft_tools"))
@@ -50,6 +53,9 @@ public class MinecraftToolsPanel extends EditorPanel {
 
 		g.section("Weather");
 		weatherSelector(g);
+
+		g.section("Command Bindings");
+		commandBindings(g);
 
 		g.section("Metrics");
 		metrics(g);
@@ -91,6 +97,27 @@ public class MinecraftToolsPanel extends EditorPanel {
 
 	private long toMB(long bytes) {
 		return bytes / 1024L / 1024L;
+	}
+
+	private void commandBindings(ImGraphicsExtractor g) {
+		ImGui.text("Command Bindings");
+		var player = Client.getPlayer();
+		if (player == null) {
+			return;
+		}
+		var manager = Client.getItemCommandManager();
+		var heldItem = player.getMainHandItem();
+
+		ImGui.text("Currently Holding: ");
+		ImGui.sameLine();
+		g.component(heldItem.getDisplayName());
+
+		ImGui.text("Command To Set");
+		ImGui.inputText("##command_input", COMMAND_INPUT);
+
+		if (ImGui.button("Bind") && !heldItem.isEmpty()) {
+			manager.register(new ItemCommandManager.ItemCommand(heldItem, COMMAND_INPUT.get()));
+		}
 	}
 
 	private void timeSelector(ImGraphicsExtractor g) {

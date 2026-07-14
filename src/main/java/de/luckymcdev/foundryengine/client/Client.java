@@ -8,6 +8,7 @@ import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.client.area.AreaRenderer;
+import de.luckymcdev.foundryengine.client.command.ItemCommandManager;
 import de.luckymcdev.foundryengine.client.cutscene.ClientCutsceneManager;
 import de.luckymcdev.foundryengine.client.dialogue.ClientDialogueManager;
 import de.luckymcdev.foundryengine.client.editor.CutsceneTool;
@@ -95,6 +96,7 @@ public final class Client {
 	private static final SkyboxManager SKYBOX_MANAGER = new SkyboxManager();
 	private static final EditorController EDITOR_CONTROLLER = new EditorController();
 	private static final ClientDialogueManager DIALOGUE_MANAGER = new ClientDialogueManager();
+	private static final ItemCommandManager ITEM_COMMAND_MANAGER = new ItemCommandManager();
 	private static final IconExporterLayer ICON_EXPORTER_LAYER = new IconExporterLayer();
 	private static final WorkspaceState WORKSPACE_STATE = new WorkspaceState();
 
@@ -251,6 +253,10 @@ public final class Client {
 	 */
 	public static WorkspaceState getWorkspaceState() {
 		return WORKSPACE_STATE;
+	}
+
+	public static ItemCommandManager getItemCommandManager() {
+		return ITEM_COMMAND_MANAGER;
 	}
 
 	/**
