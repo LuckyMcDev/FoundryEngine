@@ -1,6 +1,5 @@
 package de.luckymcdev.foundryengine.common.network.packets.editor;
 
-import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.cutscene.model.Cutscene;
 import de.luckymcdev.foundryengine.common.cutscene.util.LerpType;
@@ -21,6 +20,8 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import java.util.ArrayList;
 
 public record CutscenePacket(CompoundTag nbt) implements AbstractPacket<CutscenePacket> {
+
+	public static java.util.function.Consumer<CutscenePacket> CLIENT_HANDLER;
 
 	public static final Definition<CutscenePacket> DEFINITION = new Definition<>(
 		AbstractPacket.createType(Common.id("cutscene_nbt")),
@@ -92,7 +93,7 @@ public record CutscenePacket(CompoundTag nbt) implements AbstractPacket<Cutscene
 
 	@Override
 	public void handleClient(IPayloadContext ctx) {
-		ctx.enqueueWork(() -> Client.getCutsceneManager().handlePacket(this));
+		ctx.enqueueWork(() -> CLIENT_HANDLER.accept(this));
 	}
 
 	@Override

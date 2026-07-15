@@ -1,6 +1,5 @@
 package de.luckymcdev.foundryengine.common.network.packets.sync;
 
-import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.network.AbstractPacket;
 import de.luckymcdev.foundryengine.common.network.PacketBounds;
@@ -47,8 +46,10 @@ public record ScreenEffectPacket(
 		return DEFINITION.codec();
 	}
 
+	public static java.util.function.Consumer<ScreenEffectPacket> CLIENT_HANDLER;
+
 	@Override
 	public void handleClient(IPayloadContext ctx) {
-		ctx.enqueueWork(() -> Client.getPostEffectManager().startScreenEffect(name(), introTicks(), holdTicks(), outroTicks(), lerpType()));
+		ctx.enqueueWork(() -> CLIENT_HANDLER.accept(this));
 	}
 }

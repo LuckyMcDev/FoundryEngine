@@ -86,8 +86,6 @@ public abstract class Area {
 
 	public abstract boolean contains(double x, double y, double z);
 
-	public abstract void drawDebugOutline();
-
 	public abstract CompoundTag writeToNbt();
 
 	public List<Identifier> moduleIds() {

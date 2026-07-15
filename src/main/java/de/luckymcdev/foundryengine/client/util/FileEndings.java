@@ -1,4 +1,4 @@
-package de.luckymcdev.foundryengine.common.util;
+package de.luckymcdev.foundryengine.client.util;
 
 import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;

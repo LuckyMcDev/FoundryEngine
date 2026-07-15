@@ -1,6 +1,5 @@
 package de.luckymcdev.foundryengine.common.network.packets.dialogue;
 
-import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.dialogue.DialogueNode;
 import de.luckymcdev.foundryengine.common.dialogue.DialogueSession;
@@ -25,6 +24,8 @@ public record ClientboundDialoguePacket(
 	CompoundTag session,
 	CompoundTag node
 ) implements AbstractPacket<ClientboundDialoguePacket> {
+
+	public static java.util.function.Consumer<ClientboundDialoguePacket> CLIENT_HANDLER;
 
 	public static final Type<ClientboundDialoguePacket> TYPE = AbstractPacket.createType(Common.id("dialogue_client"));
 	public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundDialoguePacket> CODEC = StreamCodec.composite(
@@ -55,24 +56,7 @@ public record ClientboundDialoguePacket(
 	}
 
 	private static void handleClient(ClientboundDialoguePacket packet, IPayloadContext ctx) {
-		ctx.enqueueWork(() -> {
-			var clientManager = Client.getDialogueManager();
-			switch (packet.action()) {
-				case SHOW -> {
-					var node = DialogueNode.fromNbt(packet.node());
-					var session = DialogueSession.fromNbt(packet.session());
-					clientManager.startDialogue(packet.treeId(), session, node);
-				}
-				case ADVANCE -> {
-					var node = DialogueNode.fromNbt(packet.node());
-					var session = DialogueSession.fromNbt(packet.session());
-					clientManager.advanceDialogue(session, node);
-				}
-				case ENDED -> {
-					clientManager.endDialogue();
-				}
-			}
-		});
+		ctx.enqueueWork(() -> CLIENT_HANDLER.accept(packet));
 	}
 
 	@Override

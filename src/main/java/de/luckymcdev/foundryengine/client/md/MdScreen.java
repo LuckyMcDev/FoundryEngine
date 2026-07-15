@@ -1,7 +1,8 @@
-package de.luckymcdev.foundryengine.common.md;
+package de.luckymcdev.foundryengine.client.md;
 
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.common.Common;
+import de.luckymcdev.foundryengine.common.md.MarkdownParser;
 import net.minecraft.client.gui.components.MultiLineTextWidget;
 import net.minecraft.client.gui.components.ScrollableLayout;
 import net.minecraft.client.gui.layouts.LinearLayout;

@@ -37,8 +37,14 @@ import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.client.render.EngineSceneDepth;
 import de.luckymcdev.foundryengine.client.waypoint.ClientWaypointManager;
 import de.luckymcdev.foundryengine.common.Common;
+import de.luckymcdev.foundryengine.common.dialogue.DialogueNode;
+import de.luckymcdev.foundryengine.common.dialogue.DialogueSession;
 import de.luckymcdev.foundryengine.common.network.packets.BundleHashPacket;
+import de.luckymcdev.foundryengine.common.network.packets.dialogue.ClientboundDialoguePacket;
+import de.luckymcdev.foundryengine.common.network.packets.editor.CutscenePacket;
 import de.luckymcdev.foundryengine.common.network.packets.editor.WaypointPacket;
+import de.luckymcdev.foundryengine.common.network.packets.explorer.ClientBoundExplorerPacket;
+import de.luckymcdev.foundryengine.common.network.packets.sync.ScreenEffectPacket;
 import de.luckymcdev.foundryengine.common.util.FolderHash;
 import de.luckymcdev.foundryengine.common.util.color.Color;
 import de.luckymcdev.foundryengine.config.Config;
@@ -103,6 +109,34 @@ public class FoundryEngineModClient {
 		NbtSuggestions.init();
 		LOGGER.debug("FoundryEngineModClient setup called");
 		ModPathBroadcaster.broadcast();
+
+		CutscenePacket.CLIENT_HANDLER = p -> Client.getCutsceneManager().handlePacket(p);
+		ClientboundDialoguePacket.CLIENT_HANDLER = p -> {
+			var clientManager = Client.getDialogueManager();
+			switch (p.action()) {
+				case SHOW -> {
+					var node = DialogueNode.fromNbt(p.node());
+					var session = DialogueSession.fromNbt(p.session());
+					clientManager.startDialogue(p.treeId(), session, node);
+				}
+				case ADVANCE -> {
+					var node = DialogueNode.fromNbt(p.node());
+					var session = DialogueSession.fromNbt(p.session());
+					clientManager.advanceDialogue(session, node);
+				}
+				case ENDED -> clientManager.endDialogue();
+			}
+		};
+		ScreenEffectPacket.CLIENT_HANDLER = p -> Client.getPostEffectManager().startScreenEffect(p.name(), p.introTicks(), p.holdTicks(), p.outroTicks(), p.lerpType());
+		ClientBoundExplorerPacket.CLIENT_HANDLER = p -> {
+			switch (p.action()) {
+				case FILE_LIST -> ExplorerPanel.INSTANCE.receiveRemoteFileList(p.entries());
+				case FILE_CONTENT -> ExplorerPanel.INSTANCE.receiveRemoteFileContent(p.path(), p.payload());
+				case RESOURCE_LIST -> ExplorerPanel.INSTANCE.receiveResourceList(p.resourceIds());
+				case RESOURCE_CONTENT -> ExplorerPanel.INSTANCE.receiveResourceContent(p.path(), p.payload());
+			}
+		};
+
 		Client.getEditorManager().register(
 			TestPanel.INSTANCE,
 			TextEditorTestPanel.INSTANCE,

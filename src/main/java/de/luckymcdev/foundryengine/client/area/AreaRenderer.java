@@ -1,10 +1,10 @@
 package de.luckymcdev.foundryengine.client.area;
 
+import de.luckymcdev.foundryengine.client.area.module.AreaRenderModule;
 import de.luckymcdev.foundryengine.client.gizmo.WorldGizmo;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.area.AABBArea;
 import de.luckymcdev.foundryengine.common.area.Area;
-import de.luckymcdev.foundryengine.common.area.module.AreaRenderModule;
 import de.luckymcdev.foundryengine.common.util.color.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -38,7 +38,7 @@ public class AreaRenderer {
 		Vec3 look = mc.player.getViewVector(1.0f);
 
 		for (Area area : areas) {
-			area.drawDebugOutline();
+			WorldGizmo.renderOutline(area.bounds(), area.color(), 4.0f);
 
 			if (area instanceof AABBArea) {
 				var b = area.bounds();

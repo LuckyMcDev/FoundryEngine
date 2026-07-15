@@ -1,6 +1,5 @@
 package de.luckymcdev.foundryengine.common.network.packets.explorer;
 
-import de.luckymcdev.foundryengine.client.editor.panel.explorer.ExplorerPanel;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.network.AbstractPacket;
 import de.luckymcdev.foundryengine.common.network.PacketBounds;
@@ -20,6 +19,8 @@ public record ClientBoundExplorerPacket(
 	List<RemoteEntry> entries,
 	List<String> resourceIds
 ) implements AbstractPacket<ClientBoundExplorerPacket> {
+
+	public static java.util.function.Consumer<ClientBoundExplorerPacket> CLIENT_HANDLER;
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, RemoteEntry> REMOTE_ENTRY_CODEC = StreamCodec.composite(
 		ByteBufCodecs.STRING_UTF8, RemoteEntry::relativePath,
@@ -59,14 +60,7 @@ public record ClientBoundExplorerPacket(
 
 	@Override
 	public void handleClient(IPayloadContext ctx) {
-		ctx.enqueueWork(() -> {
-			switch (action) {
-				case FILE_LIST -> ExplorerPanel.INSTANCE.receiveRemoteFileList(entries);
-				case FILE_CONTENT -> ExplorerPanel.INSTANCE.receiveRemoteFileContent(path, payload);
-				case RESOURCE_LIST -> ExplorerPanel.INSTANCE.receiveResourceList(resourceIds);
-				case RESOURCE_CONTENT -> ExplorerPanel.INSTANCE.receiveResourceContent(path, payload);
-			}
-		});
+		ctx.enqueueWork(() -> CLIENT_HANDLER.accept(this));
 	}
 
 	public enum Action {

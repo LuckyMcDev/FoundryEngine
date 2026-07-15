@@ -1,6 +1,5 @@
 package de.luckymcdev.foundryengine.common.area;
 
-import de.luckymcdev.foundryengine.client.gizmo.WorldGizmo;
 import de.luckymcdev.foundryengine.common.util.color.Color;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
@@ -72,11 +71,6 @@ public class AABBArea extends Area {
 	@Override
 	public boolean contains(double x, double y, double z) {
 		return bounds.contains(x, y, z);
-	}
-
-	@Override
-	public void drawDebugOutline() {
-		WorldGizmo.renderOutline(bounds, color(), 4.0f);
 	}
 
 	@Override
