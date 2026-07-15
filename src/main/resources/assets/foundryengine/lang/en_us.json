@@ -79,6 +79,7 @@
   "foundryengine.dialogue.ended": "§7Dialogue ended.",
 
   "foundryengine.bundle.mismatch": "§c Bundle mismatch! §7Your local bundles do not match the server's files. Please sync your 'bundles' folder.",
+	"command.foundryengine.reload.success": "Reloaded Successfully!",
 
   "node.foundryengine.add": "Add",
   "node.foundryengine.root": "Root Evaluator",
