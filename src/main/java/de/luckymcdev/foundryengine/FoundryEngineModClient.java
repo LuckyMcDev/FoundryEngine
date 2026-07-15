@@ -1,5 +1,7 @@
 package de.luckymcdev.foundryengine;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.command.FoundryCommandsClient;
@@ -29,6 +31,8 @@ import de.luckymcdev.foundryengine.client.editor.panel.view.InfoPanel;
 import de.luckymcdev.foundryengine.client.editor.panel.view.ThemeSelectorPanel;
 import de.luckymcdev.foundryengine.client.event.registry.RegistryEventClient;
 import de.luckymcdev.foundryengine.client.ext.ModPathBroadcaster;
+import de.luckymcdev.foundryengine.client.gizmo.GizmoBuffer;
+import de.luckymcdev.foundryengine.client.gizmo.GizmoRenderer;
 import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.client.render.EngineSceneDepth;
 import de.luckymcdev.foundryengine.client.waypoint.ClientWaypointManager;
@@ -207,10 +211,22 @@ public class FoundryEngineModClient {
 		var camState = event.getLevelRenderState().cameraRenderState;
 		Client.updateMain(camState.viewRotationMatrix, camState.projectionMatrix);
 
+		GizmoBuffer.startFrame();
+
 		Client.getCutsceneManager().renderTick();
 		Client.getEditorController().renderFeatures();
 		Client.getWaypointRenderer().renderWaypoints(event);
 		Client.getAreaRenderer().renderAreaModules(event);
+
+		var mc = Minecraft.getInstance();
+		var poseStack = new PoseStack();
+		var bufferSource = mc.renderBuffers().bufferSource();
+
+		var modelViewStack = RenderSystem.getModelViewStack();
+		modelViewStack.pushMatrix();
+		modelViewStack.mul(camState.viewRotationMatrix);
+		GizmoRenderer.render(poseStack, bufferSource, camState, camState.viewRotationMatrix);
+		modelViewStack.popMatrix();
 	}
 
 	private void onClientTickPre(ClientTickEvent.Pre event) {
