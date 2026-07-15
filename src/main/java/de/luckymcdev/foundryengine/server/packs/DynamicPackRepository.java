@@ -203,19 +203,19 @@ public class DynamicPackRepository implements RepositorySource {
 
 			for (Path root : roots) {
 				Path namespacePath = root.resolve(namespace);
-				if (!Files.isDirectory(namespacePath)) {
+				Path targetDir = namespacePath.resolve(prefix);
+
+				if (!Files.isDirectory(targetDir)) {
 					continue;
 				}
 
-				try (var files = Files.walk(namespacePath)) {
+				try (var files = Files.walk(targetDir)) {
 					files.filter(Files::isRegularFile).forEach(file -> {
 						String relative = namespacePath.relativize(file).toString().replace('\\', '/');
-						if (relative.startsWith(prefix)) {
-							output.accept(
-								Identifier.fromNamespaceAndPath(namespace, relative),
-								() -> Files.newInputStream(file)
-							);
-						}
+						output.accept(
+							Identifier.fromNamespaceAndPath(namespace, relative),
+							() -> Files.newInputStream(file)
+						);
 					});
 				} catch (IOException ignored) {
 				}
