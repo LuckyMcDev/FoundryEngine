@@ -1,12 +1,12 @@
 package de.luckymcdev.foundryengine.common.area;
 
-import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.area.module.AreaBlockModule;
 import de.luckymcdev.foundryengine.common.area.module.AreaEnterModule;
 import de.luckymcdev.foundryengine.common.area.module.AreaLeaveModule;
 import de.luckymcdev.foundryengine.common.area.module.AreaModule;
 import de.luckymcdev.foundryengine.common.area.module.AreaTickModule;
 import de.luckymcdev.foundryengine.common.area.preset.AreaPreset;
+import de.luckymcdev.foundryengine.common.savedata.SavedDataManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -35,12 +35,17 @@ import java.util.UUID;
 public class AreaManager {
 	public static final String SAVE_SECTION = "areas";
 	private static final int SPATIAL_CELL_SIZE = 32;
+	private final SavedDataManager savedDataManager;
 	private final Map<Identifier, AreaModule> moduleTypes = new HashMap<>();
 	private final Map<String, AreaPreset> presets = new HashMap<>();
 	private final Map<Identifier, Area> areasById = new HashMap<>();
 	private final Map<ResourceKey<Level>, List<Identifier>> areaIdsByDimension = new HashMap<>();
 	private final Map<ResourceKey<Level>, Map<Identifier, Set<UUID>>> lastMembersByDimension = new HashMap<>();
 	private final Map<ResourceKey<Level>, Map<Long, List<Area>>> areaSpatialIndex = new HashMap<>();
+
+	public AreaManager(SavedDataManager savedDataManager) {
+		this.savedDataManager = savedDataManager;
+	}
 
 	private static long spatialCellKey(int cellX, int cellZ) {
 		return ((long) cellX << 32) | (cellZ & 0xFFFFFFFFL);
@@ -161,19 +166,19 @@ public class AreaManager {
 	}
 
 	public void save() {
-		Common.getSavedDataManager().setSection(SAVE_SECTION, toNbt());
+		savedDataManager.setSection(SAVE_SECTION, toNbt());
 	}
 
 	public void load() {
-		fromNbt(Common.getSavedDataManager().getSection(SAVE_SECTION));
+		fromNbt(savedDataManager.getSection(SAVE_SECTION));
 	}
 
 	public void syncToAll() {
-		Common.getSavedDataManager().syncToAll();
+		savedDataManager.syncToAll();
 	}
 
 	public void syncToPlayer(ServerPlayer player) {
-		Common.getSavedDataManager().syncToPlayer(player);
+		savedDataManager.syncToPlayer(player);
 	}
 
 	public void onLevelTick(LevelTickEvent.Post event) {

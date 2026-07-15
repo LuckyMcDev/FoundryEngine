@@ -1,6 +1,6 @@
 package de.luckymcdev.foundryengine.common.waypoint;
 
-import de.luckymcdev.foundryengine.common.Common;
+import de.luckymcdev.foundryengine.common.savedata.SavedDataManager;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -17,7 +17,12 @@ import java.util.Map;
 
 public class WaypointManager {
 	public static final String SAVE_SECTION = "waypoints";
+	private final SavedDataManager savedDataManager;
 	private final Map<ResourceKey<Level>, List<Waypoint>> waypointsByDimension = new HashMap<>();
+
+	public WaypointManager(SavedDataManager savedDataManager) {
+		this.savedDataManager = savedDataManager;
+	}
 
 	public boolean isLoaded(ResourceKey<Level> dimension) {
 		return waypointsByDimension.containsKey(dimension);
@@ -93,14 +98,14 @@ public class WaypointManager {
 	}
 
 	public void syncToAll() {
-		Common.getSavedDataManager().syncToAll();
+		savedDataManager.syncToAll();
 	}
 
 	public void save() {
-		Common.getSavedDataManager().setSection(SAVE_SECTION, toNbt());
+		savedDataManager.setSection(SAVE_SECTION, toNbt());
 	}
 
 	public void load() {
-		fromNbt(Common.getSavedDataManager().getSection(SAVE_SECTION));
+		fromNbt(savedDataManager.getSection(SAVE_SECTION));
 	}
 }

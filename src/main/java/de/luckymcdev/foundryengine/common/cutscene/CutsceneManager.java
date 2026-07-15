@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.common.cutscene;
 
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.cutscene.model.Cutscene;
+import de.luckymcdev.foundryengine.common.savedata.SavedDataManager;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -21,7 +22,12 @@ import java.util.Map;
 
 public class CutsceneManager {
 	public static final String SAVE_SECTION = "cutscenes";
+	private final SavedDataManager savedDataManager;
 	private final Map<ResourceKey<Level>, List<Cutscene>> cutscenesByDimension = new HashMap<>();
+
+	public CutsceneManager(SavedDataManager savedDataManager) {
+		this.savedDataManager = savedDataManager;
+	}
 
 	public boolean isLoaded(ResourceKey<Level> dimension) {
 		return cutscenesByDimension.containsKey(dimension);
@@ -122,18 +128,18 @@ public class CutsceneManager {
 	}
 
 	public void save() {
-		Common.getSavedDataManager().setSection(SAVE_SECTION, toNbt());
+		savedDataManager.setSection(SAVE_SECTION, toNbt());
 	}
 
 	public void load() {
-		fromNbt(Common.getSavedDataManager().getSection(SAVE_SECTION));
+		fromNbt(savedDataManager.getSection(SAVE_SECTION));
 	}
 
 	public void syncToPlayer(ServerPlayer player) {
-		Common.getSavedDataManager().syncToPlayer(player);
+		savedDataManager.syncToPlayer(player);
 	}
 
 	public void syncToAll() {
-		Common.getSavedDataManager().syncToAll();
+		savedDataManager.syncToAll();
 	}
 }

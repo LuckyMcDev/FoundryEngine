@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.common.savedata;
 
 import de.luckymcdev.foundryengine.common.Common;
+import de.luckymcdev.foundryengine.common.network.NetworkManager;
 import de.luckymcdev.foundryengine.common.network.packets.sync.SavedDataSyncPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtAccounter;
@@ -13,7 +14,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 public class SavedDataManager {
+	private final NetworkManager networkManager;
 	private CompoundTag data = new CompoundTag();
+
+	public SavedDataManager(NetworkManager networkManager) {
+		this.networkManager = networkManager;
+	}
 
 	public void load() {
 		if (Files.exists(Common.ENGINE_DATA)) {
@@ -56,11 +62,11 @@ public class SavedDataManager {
 	}
 
 	public void syncToPlayer(ServerPlayer player) {
-		Common.getNetworkManager().sendToPlayer(new SavedDataSyncPacket(data.copy()), player);
+		networkManager.sendToPlayer(new SavedDataSyncPacket(data.copy()), player);
 	}
 
 	public void syncToAll() {
-		Common.getNetworkManager().sendToAllPlayers(new SavedDataSyncPacket(data.copy()));
+		networkManager.sendToAllPlayers(new SavedDataSyncPacket(data.copy()));
 	}
 
 }

@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.common.dialogue;
 
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.network.packets.dialogue.ClientboundDialoguePacket;
+import de.luckymcdev.foundryengine.common.savedata.SavedDataManager;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.Identifier;
@@ -19,7 +20,12 @@ import java.util.UUID;
 
 public class DialogueManager {
 	public static final String SAVE_SECTION = "dialogue";
+	private final SavedDataManager savedDataManager;
 	private final Map<Identifier, DialogueTree> trees = new LinkedHashMap<>();
+
+	public DialogueManager(SavedDataManager savedDataManager) {
+		this.savedDataManager = savedDataManager;
+	}
 	private final Map<UUID, DialogueSession> sessions = new HashMap<>();
 	private final Map<String, DialogueAction> actions = new LinkedHashMap<>();
 	private final Map<String, DialogueCondition> conditions = new LinkedHashMap<>();
@@ -169,7 +175,7 @@ public class DialogueManager {
 	}
 
 	public void syncToAll() {
-		Common.getSavedDataManager().syncToAll();
+		savedDataManager.syncToAll();
 	}
 
 	public CompoundTag toNbt() {
@@ -195,11 +201,11 @@ public class DialogueManager {
 	}
 
 	public void save() {
-		Common.getSavedDataManager().setSection(SAVE_SECTION, toNbt());
+		savedDataManager.setSection(SAVE_SECTION, toNbt());
 	}
 
 	public void load() {
-		applyNbt(Common.getSavedDataManager().getSection(SAVE_SECTION));
+		applyNbt(savedDataManager.getSection(SAVE_SECTION));
 	}
 
 	private void advanceTo(ServerPlayer player, DialogueSession session, DialogueTree tree, String targetNodeId) {

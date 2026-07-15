@@ -51,17 +51,18 @@ public final class Common {
 	public static final Path GAME = dir(CACHE.resolve("game"));
 	public static final Path ENGINE_DATA = CACHE.resolve("engine.dat");
 	public static final Path CONFIG_FE = dir(DIRECTORY.resolve("config"));
-	private static final BundleManager BUNDLE_MANAGER = new BundleManager(FoundryEngineMod.getModBus(), CONFIG_FE);
+	// Constructed in dependency order: leaves first, then those that depend on them
+	private static final NetworkManager NETWORK_MANAGER = new NetworkManager();
+	private static final SavedDataManager SAVED_DATA_MANAGER = new SavedDataManager(NETWORK_MANAGER);
 	private static final GameStageHandler GAME_STAGE_HANDLER = new GameStageHandler();
 	private static final StageTableManager STAGE_TABLE_MANAGER = new StageTableManager();
-	private static final NetworkManager NETWORK_MANAGER = new NetworkManager();
-	private static final AreaManager AREA_MANAGER = new AreaManager();
-	private static final CutsceneManager CUTSCENE_MANAGER = new CutsceneManager();
+	private static final AreaManager AREA_MANAGER = new AreaManager(SAVED_DATA_MANAGER);
+	private static final CutsceneManager CUTSCENE_MANAGER = new CutsceneManager(SAVED_DATA_MANAGER);
 	private static final CutsceneSessionManager CUTSCENE_SESSION_MANAGER = new CutsceneSessionManager();
-	private static final SavedDataManager SAVED_DATA_MANAGER = new SavedDataManager();
-	private static final WaypointManager WAYPOINT_MANAGER = new WaypointManager();
+	private static final WaypointManager WAYPOINT_MANAGER = new WaypointManager(SAVED_DATA_MANAGER);
+	private static final DialogueManager DIALOGUE_MANAGER = new DialogueManager(SAVED_DATA_MANAGER);
+	private static final BundleManager BUNDLE_MANAGER = new BundleManager(FoundryEngineMod.getModBus(), CONFIG_FE);
 	private static final GameManager GAME_MANAGER = new GameManager();
-	private static final DialogueManager DIALOGUE_MANAGER = new DialogueManager();
 	private static final List<Runnable> EVENT_CLEARERS = new ArrayList<>();
 	private static @Nullable RegistryCollector registryCollector;
 

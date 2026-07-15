@@ -1,11 +1,10 @@
 package de.luckymcdev.foundryengine.common.area;
 
+import de.luckymcdev.foundryengine.client.gizmo.WorldGizmo;
 import de.luckymcdev.foundryengine.common.util.color.Color;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.gizmos.GizmoStyle;
-import net.minecraft.gizmos.Gizmos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -77,7 +76,7 @@ public class AABBArea extends Area {
 
 	@Override
 	public void drawDebugOutline() {
-		Gizmos.cuboid(bounds, GizmoStyle.stroke(color().argb(), 4.0f));
+		WorldGizmo.renderOutline(bounds, color(), 4.0f);
 	}
 
 	@Override
