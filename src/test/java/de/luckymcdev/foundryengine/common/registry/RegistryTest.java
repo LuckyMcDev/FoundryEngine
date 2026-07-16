@@ -46,6 +46,15 @@ class RegistryTest {
         @Override public void forEach(Consumer<Integer> action) { map.values().forEach(action); }
         @Override public Stream<Integer> stream() { return map.values().stream(); }
         @Override public void clear() throws IllegalStateException { map.clear(); }
-        @Override public int size() { return map.size(); }
-    }
+
+		@Override
+	    public int size() {
+		    return map.size();
+	    }
+
+		@Override
+	    public boolean isEmpty() {
+		    return map.isEmpty();
+	    }
+	}
 }
