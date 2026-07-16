@@ -51,7 +51,6 @@ public final class Common {
 	public static final Path GAME = dir(CACHE.resolve("game"));
 	public static final Path ENGINE_DATA = CACHE.resolve("engine.dat");
 	public static final Path CONFIG_FE = dir(DIRECTORY.resolve("config"));
-	// Constructed in dependency order: leaves first, then those that depend on them
 	private static final NetworkManager NETWORK_MANAGER = new NetworkManager();
 	private static final SavedDataManager SAVED_DATA_MANAGER = new SavedDataManager(NETWORK_MANAGER);
 	private static final GameStageHandler GAME_STAGE_HANDLER = new GameStageHandler();
@@ -237,5 +236,42 @@ public final class Common {
 			}
 		}
 		return path;
+	}
+
+	/**
+	 * Resolves a user‑supplied path to its canonical form and ensures it lies inside
+	 * the Minecraft game directory. Symlinks are followed, and non‑existing paths
+	 * are safely resolved by canonicalizing their deepest existing ancestor.
+	 *
+	 * @param path the path to validate and resolve
+	 * @return the resolved, absolute, canonical path (if it exists), or a safe reconstruction
+	 * @throws IOException       if an I/O error occurs during canonicalization
+	 * @throws SecurityException if the resolved path is outside {@link #GAMEDIR}
+	 */
+	public static Path resolveAndValidate(Path path) throws IOException {
+		path = path.normalize().toAbsolutePath();
+		Path base = GAMEDIR.toRealPath();
+
+		Path resolved;
+		if (Files.exists(path)) {
+			resolved = path.toRealPath();
+		} else {
+			Path current = path;
+			while (current != null && !Files.exists(current)) {
+				current = current.getParent();
+			}
+			if (current == null) {
+				resolved = path;
+			} else {
+				Path realCurrent = current.toRealPath();
+				Path relative = current.relativize(path);
+				resolved = realCurrent.resolve(relative);
+			}
+		}
+
+		if (!resolved.startsWith(base)) {
+			throw new SecurityException("Resolved path " + resolved + " is outside the Minecraft directory " + base);
+		}
+		return resolved;
 	}
 }
