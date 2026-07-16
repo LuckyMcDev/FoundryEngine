@@ -220,11 +220,10 @@ public class FoundryEngineMod {
 			if (bundles.isEmpty()) {
 				return "None";
 			}
-			var sb = new StringBuilder();
-			sb.append(bundles.size()).append(" loaded\n");
+			var sb = new StringBuilder("\n");
 			for (var bundle : bundles) {
 				var info = bundle.info();
-				sb.append("  - ").append(info.id()).append(" v").append(info.versionInfo());
+				sb.append("\t\t- ").append(info.id()).append(" v").append(info.versionInfo());
 				if (!info.authors().isEmpty()) {
 					sb.append(" by ").append(String.join(", ", info.authors()));
 				}
@@ -238,10 +237,9 @@ public class FoundryEngineMod {
 			if (sessions.isEmpty()) {
 				return "None";
 			}
-			var sb = new StringBuilder();
-			sb.append(sessions.size()).append(" active\n");
+			var sb = new StringBuilder("\n");
 			for (var session : sessions) {
-				sb.append("  - ").append(session.id()).append('\n');
+				sb.append("\t\t- ").append(session.id()).append('\n');
 			}
 			return sb.toString().stripTrailing();
 		}, () -> Common.getGameManager().anySession());
