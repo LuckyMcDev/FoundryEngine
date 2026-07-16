@@ -14,6 +14,7 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import org.jspecify.annotations.Nullable;
@@ -48,8 +49,8 @@ public class BundleManager implements ResourceManagerReloadListener {
 	private volatile boolean reloading = false;
 	private @Nullable MinecraftServer server;
 
-	public BundleManager(IEventBus modBus, Path configDirectory) {
-		BundleFactory bundleFactory = new BundleFactory(modBus, configDirectory);
+	public BundleManager(IEventBus modBus) {
+		BundleFactory bundleFactory = new BundleFactory(modBus);
 		this.scriptLoader = bundleFactory.getScriptLoader();
 		this.bundleDiscovery = new BundleDiscovery(bundleFactory, this::register);
 	}
@@ -71,13 +72,17 @@ public class BundleManager implements ResourceManagerReloadListener {
 	 */
 	public void register(Bundle bundle) {
 		bundles.register(bundle.info().id(), bundle);
+		var container = createModContainer(bundle);
+		bundleContainers.add(container);
 		try {
 			bundle.loadCommon(scriptLoader);
 		} catch (Exception e) {
 			BundleExceptionHandler.handle(
 				"Failed to load common scripts for bundle '" + bundle.info().id() + "'", e);
 		}
-		bundleContainers.add(createModContainer(bundle));
+		var spec = bundle.configSpec().build();
+		container.setConfigSpec(spec);
+		container.registerConfig(ModConfig.Type.COMMON, spec);
 		lifecycleDispatcher.fireLoaded(bundle);
 		LOGGER.debug("Registered Bundle: {} with Info: {}", bundle.info().id(), bundle.info());
 	}
@@ -200,15 +205,12 @@ public class BundleManager implements ResourceManagerReloadListener {
 	}
 
 	/**
-	 * Unloads a single bundle: saves config, calls onUnload on all entrypoints,
+	 * Unloads a single bundle: calls onUnload on all entrypoints,
 	 * and closes the ZIP FileSystem if present.
 	 */
 	private void unloadBundle(Bundle bundle) {
 		lifecycleDispatcher.firePreUnload(bundle);
 		try {
-			if (bundle.bundleConfig().isLoaded()) {
-				bundle.bundleConfig().save();
-			}
 			bundle.unload();
 		} finally {
 			lifecycleDispatcher.fireUnloaded(bundle);

@@ -37,6 +37,7 @@ import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.client.render.EngineSceneDepth;
 import de.luckymcdev.foundryengine.client.waypoint.ClientWaypointManager;
 import de.luckymcdev.foundryengine.common.Common;
+import de.luckymcdev.foundryengine.common.bundle.modcompat.BundleModContainer;
 import de.luckymcdev.foundryengine.common.dialogue.DialogueNode;
 import de.luckymcdev.foundryengine.common.dialogue.DialogueSession;
 import de.luckymcdev.foundryengine.common.network.packets.BundleHashPacket;
@@ -68,6 +69,8 @@ import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.client.event.RenderFrameEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import net.neoforged.neoforge.client.gui.ConfigurationScreen;
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
@@ -162,7 +165,11 @@ public class FoundryEngineModClient {
 		);
 		event.enqueueWork(() -> {
 			Common.getBundleManager().loadClientScripts();
-			//Minecraft.getInstance().reloadResourcePacks(); // This is if resourcepacks are still not enabled by defualt. Its a very stupid solution
+			for (var container : Common.getBundleManager().getBundleContainers()) {
+				if (container instanceof BundleModContainer) {
+					container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
+				}
+			}
 		});
 	}
 

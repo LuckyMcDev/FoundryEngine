@@ -59,6 +59,8 @@ public class EngineLanguageProvider extends LanguageProvider {
 			add(item, formatTitleCase(builder.getId().getPath()));
 		}
 
+
+		// this should i guess be removed as its kinda stupid?
 		for (var type : BuiltInRegistries.ENTITY_TYPE) {
 			Identifier id = BuiltInRegistries.ENTITY_TYPE.getKey(type);
 			if (!id.getNamespace().equals(namespace)) {

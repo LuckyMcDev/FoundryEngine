@@ -61,7 +61,7 @@ public final class Common {
 	private static final CutsceneSessionManager CUTSCENE_SESSION_MANAGER = new CutsceneSessionManager();
 	private static final WaypointManager WAYPOINT_MANAGER = new WaypointManager(SAVED_DATA_MANAGER);
 	private static final DialogueManager DIALOGUE_MANAGER = new DialogueManager(SAVED_DATA_MANAGER);
-	private static final BundleManager BUNDLE_MANAGER = new BundleManager(FoundryEngineMod.getModBus(), CONFIG_FE);
+	private static final BundleManager BUNDLE_MANAGER = new BundleManager(FoundryEngineMod.getModBus());
 	private static final GameManager GAME_MANAGER = new GameManager();
 	private static final List<Runnable> EVENT_CLEARERS = new ArrayList<>();
 	private static @Nullable RegistryCollector registryCollector;

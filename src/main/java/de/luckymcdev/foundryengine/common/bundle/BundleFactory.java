@@ -1,6 +1,6 @@
 package de.luckymcdev.foundryengine.common.bundle;
 
-import de.luckymcdev.foundryengine.common.bundle.config.BundleConfig;
+import de.luckymcdev.foundryengine.common.bundle.config.BundleConfigSpec;
 import de.luckymcdev.foundryengine.common.bundle.info.BundleFiles;
 import de.luckymcdev.foundryengine.common.bundle.info.BundleInfo;
 import de.luckymcdev.foundryengine.common.bundle.registry.BundleCreativeModeTab;
@@ -17,12 +17,10 @@ public class BundleFactory {
 
 	private final GroovyScriptLoader scriptLoader;
 	private final IEventBus modBus;
-	private final Path configDirectory;
 
-	public BundleFactory(IEventBus modBus, Path configDirectory) {
+	public BundleFactory(IEventBus modBus) {
 		this.scriptLoader = new GroovyScriptLoader();
 		this.modBus = modBus;
-		this.configDirectory = configDirectory;
 	}
 
 	public Bundle createBundle(BundleInfo info, Path bundleDir, @Nullable FileSystem zipFs) throws IOException {
@@ -32,9 +30,8 @@ public class BundleFactory {
 		engine.initialize(files);
 
 		BundleCreativeModeTab creativeTab = new BundleCreativeModeTab(info.id(), modBus);
-		BundleConfig config = new BundleConfig(info.id(), configDirectory);
 
-		return new Bundle(info, files, engine, creativeTab, config);
+		return new Bundle(info, files, engine, creativeTab, new BundleConfigSpec());
 	}
 
 	public GroovyScriptLoader getScriptLoader() {

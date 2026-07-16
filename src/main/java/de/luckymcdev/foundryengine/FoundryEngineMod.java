@@ -263,6 +263,7 @@ public class FoundryEngineMod {
 		Common.setRegistryCollector(collector);
 		RegistryEvent registryEvent = new RegistryEvent(event, collector);
 		modBus.post(registryEvent);
+		//ModLoader.postEventWrapContainerInModOrder(registryEvent);
 		BundleEvents.Internal.postRegistry(registryEvent);
 	}
 

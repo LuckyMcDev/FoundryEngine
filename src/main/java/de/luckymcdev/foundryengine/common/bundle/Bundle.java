@@ -1,6 +1,6 @@
 package de.luckymcdev.foundryengine.common.bundle;
 
-import de.luckymcdev.foundryengine.common.bundle.config.BundleConfig;
+import de.luckymcdev.foundryengine.common.bundle.config.BundleConfigSpec;
 import de.luckymcdev.foundryengine.common.bundle.info.BundleFiles;
 import de.luckymcdev.foundryengine.common.bundle.info.BundleInfo;
 import de.luckymcdev.foundryengine.common.bundle.registry.BundleCreativeModeTab;
@@ -19,18 +19,18 @@ public class Bundle {
 	private final BundleFiles bundleFiles;
 	private final GroovyBundleScriptEngine scriptEngine;
 	private final BundleCreativeModeTab creativeModeTab;
-	private final BundleConfig bundleConfig;
+	private final BundleConfigSpec configSpec;
 	private final List<BundleEntrypoint> commonEntrypoints = new ArrayList<>();
 	private final List<BundleEntrypoint> clientEntrypoints = new ArrayList<>();
 	private final List<BundleEntrypoint> serverEntrypoints = new ArrayList<>();
 
 	public Bundle(BundleInfo info, BundleFiles bundleFiles, GroovyBundleScriptEngine scriptEngine,
-	              BundleCreativeModeTab creativeModeTab, BundleConfig bundleConfig) {
+	              BundleCreativeModeTab creativeModeTab, BundleConfigSpec configSpec) {
 		this.info = info;
 		this.bundleFiles = bundleFiles;
 		this.scriptEngine = scriptEngine;
 		this.creativeModeTab = creativeModeTab;
-		this.bundleConfig = bundleConfig;
+		this.configSpec = configSpec;
 	}
 
 	public void loadCommon(GroovyScriptLoader loader) {
@@ -79,8 +79,8 @@ public class Bundle {
 		return bundleFiles;
 	}
 
-	public BundleConfig bundleConfig() {
-		return bundleConfig;
+	public BundleConfigSpec configSpec() {
+		return configSpec;
 	}
 
 	public GroovyBundleScriptEngine scriptEngine() {
