@@ -1,5 +1,7 @@
 # FoundryEngine — Agent Instructions
 
+Before starting any work, list all available skills and what they could be used for in this context.
+
 ## Project
 NeoForge Minecraft mod (`foundryengine`) that turns MC into a game engine.
 - **Java**: 25

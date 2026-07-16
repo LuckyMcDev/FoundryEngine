@@ -4,6 +4,7 @@ import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.network.AbstractPacket;
 import de.luckymcdev.foundryengine.common.network.PacketBounds;
 import de.luckymcdev.foundryengine.common.network.codecs.ActionCodec;
+import de.luckymcdev.foundryengine.common.util.PermissionChecks;
 import de.luckymcdev.foundryengine.common.util.color.Color;
 import de.luckymcdev.foundryengine.common.waypoint.Waypoint;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -47,6 +48,9 @@ public record WaypointPacket(
 	private static void handleServer(WaypointPacket packet, IPayloadContext ctx) {
 		ctx.enqueueWork(() -> {
 			if (!(ctx.player() instanceof ServerPlayer player)) {
+				return;
+			}
+			if (!PermissionChecks.COMMANDS_GAMEMASTER.check(player.permissions())) {
 				return;
 			}
 			ServerLevel level = player.level();

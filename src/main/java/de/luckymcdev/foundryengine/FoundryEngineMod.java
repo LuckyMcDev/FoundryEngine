@@ -25,6 +25,7 @@ import de.luckymcdev.foundryengine.common.event.modification.ItemModificationEve
 import de.luckymcdev.foundryengine.common.event.registry.RegistryEvent;
 import de.luckymcdev.foundryengine.common.log.EngineLogAppender;
 import de.luckymcdev.foundryengine.common.network.packets.BundleHashPacket;
+import de.luckymcdev.foundryengine.common.network.packets.CustomDataPacket;
 import de.luckymcdev.foundryengine.common.network.packets.dialogue.ClientboundDialoguePacket;
 import de.luckymcdev.foundryengine.common.network.packets.dialogue.DialogueSavePacket;
 import de.luckymcdev.foundryengine.common.network.packets.dialogue.ServerboundDialoguePacket;
@@ -252,6 +253,7 @@ public class FoundryEngineMod {
 		network.register(ClientboundDialoguePacket.DEFINITION);
 		network.register(ServerboundDialoguePacket.DEFINITION);
 		network.register(DialogueSavePacket.DEFINITION);
+		network.register(CustomDataPacket.DEFINITION);
 	}
 
 	private void onClientSetup(FMLClientSetupEvent event) {

@@ -3,6 +3,7 @@ package de.luckymcdev.foundryengine.common.network.packets.world;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.network.AbstractPacket;
 import de.luckymcdev.foundryengine.common.network.PacketBounds;
+import de.luckymcdev.foundryengine.common.util.PermissionChecks;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -60,6 +61,9 @@ public record ServerBoundSpawnEntityPacket(
 	@Override
 	public void handleServer(IPayloadContext ctx) {
 		if (!(ctx.player() instanceof ServerPlayer serverPlayer)) {
+			return;
+		}
+		if (!PermissionChecks.COMMANDS_GAMEMASTER.check(serverPlayer.permissions())) {
 			return;
 		}
 
