@@ -22,6 +22,7 @@ import de.luckymcdev.foundryengine.common.event.StageEvents;
 import de.luckymcdev.foundryengine.common.event.modification.BlockModificationEvent;
 import de.luckymcdev.foundryengine.common.event.modification.ItemModificationEvent;
 import de.luckymcdev.foundryengine.common.event.registry.RegistryEvent;
+import de.luckymcdev.foundryengine.common.exceptions.EngineException;
 import de.luckymcdev.foundryengine.common.log.EngineLogAppender;
 import de.luckymcdev.foundryengine.common.network.packets.BundleHashPacket;
 import de.luckymcdev.foundryengine.common.network.packets.CustomDataPacket;
@@ -64,6 +65,7 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.CrashReportCallables;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -94,6 +96,7 @@ import org.slf4j.Logger;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -266,11 +269,28 @@ public class FoundryEngineMod {
 	private void onConstruct(FMLConstructModEvent event) {
 		try {
 			Common.getBundleManager().discover(Common.BUNDLES);
+			var bundleContainers = Common.getBundleManager().getBundleContainers();
+			if (!bundleContainers.isEmpty()) {
+				var modList = ModList.get();
+				List<ModContainer> allContainers = new ArrayList<>(modList.getSortedMods());
+				allContainers.addAll(bundleContainers);
+				setLoadedMods(allContainers);
+			}
 		} catch (IOException e) {
 			LOGGER.error("Error while loading bundles: {}", e);
 		}
 
 		EngineLogAppender.Holder.addAppender();
+	}
+
+	private void setLoadedMods(List<ModContainer> modContainers) {
+		try {
+			var method = ModList.class.getDeclaredMethod("setLoadedMods", List.class);
+			method.setAccessible(true);
+			method.invoke(ModList.get(), modContainers);
+		} catch (Exception e) {
+			throw new EngineException(e);
+		}
 	}
 
 	private void onCommonSetup(FMLCommonSetupEvent event) {

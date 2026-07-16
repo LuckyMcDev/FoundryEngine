@@ -3,17 +3,11 @@
   "minVersion": "0.8",
   "package": "de.luckymcdev.foundryengine.mixin.screen",
   "compatibilityLevel": "JAVA_25",
-  "mixins": [
-    "AbstractSelectionListAccessor"
-  ],
-  "client": [
-    "AbstractContainerScreenMixin",
-    "CreativeModeInventoryScreenSlotWrapperMixin",
-    "InfoPanelAccessor",
-    "ModListScreenMixin",
-    "ModListWidgetMixin",
-    "TitleScreenMixin"
-  ],
+	"client": [
+		"AbstractContainerScreenMixin",
+		"CreativeModeInventoryScreenSlotWrapperMixin",
+		"TitleScreenMixin"
+	],
   "injectors": {
     "defaultRequire": 1
   },

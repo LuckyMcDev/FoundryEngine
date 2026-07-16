@@ -2,6 +2,9 @@ package de.luckymcdev.foundryengine.common.bundle;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.common.Common;
+import de.luckymcdev.foundryengine.common.bundle.modcompat.BundleModContainer;
+import de.luckymcdev.foundryengine.common.bundle.modcompat.BundleModFileInfo;
+import de.luckymcdev.foundryengine.common.bundle.modcompat.BundleModInfo;
 import de.luckymcdev.foundryengine.common.registry.GenericRegistry;
 import de.luckymcdev.foundryengine.common.script.GroovyScriptLoader;
 import net.minecraft.commands.CommandBuildContext;
@@ -10,6 +13,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import org.jspecify.annotations.Nullable;
@@ -18,7 +22,9 @@ import org.slf4j.Logger;
 import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -35,6 +41,7 @@ public class BundleManager implements ResourceManagerReloadListener {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private final ReentrantLock reloadLock = new ReentrantLock();
 	private final GenericRegistry<String, Bundle> bundles = new GenericRegistry<>();
+	private final List<ModContainer> bundleContainers = new ArrayList<>();
 	private final BundleDiscovery bundleDiscovery;
 	private final GroovyScriptLoader scriptLoader;
 	private final BundleLifecycleDispatcher lifecycleDispatcher = new BundleLifecycleDispatcher();
@@ -51,6 +58,14 @@ public class BundleManager implements ResourceManagerReloadListener {
 		this.server = server;
 	}
 
+	private static BundleModContainer createModContainer(Bundle bundle) {
+		var bundleInfo = bundle.info();
+		var modInfo = new BundleModInfo(bundleInfo, null);
+		var owningFile = new BundleModFileInfo(modInfo, bundleInfo, modInfo);
+		modInfo.setOwningFile(owningFile);
+		return new BundleModContainer(modInfo, bundle);
+	}
+
 	/**
 	 * Registers a bundle and immediately loads its common-side scripts.
 	 */
@@ -62,8 +77,13 @@ public class BundleManager implements ResourceManagerReloadListener {
 			BundleExceptionHandler.handle(
 				"Failed to load common scripts for bundle '" + bundle.info().id() + "'", e);
 		}
+		bundleContainers.add(createModContainer(bundle));
 		lifecycleDispatcher.fireLoaded(bundle);
 		LOGGER.debug("Registered Bundle: {} with Info: {}", bundle.info().id(), bundle.info());
+	}
+
+	public List<ModContainer> getBundleContainers() {
+		return List.copyOf(bundleContainers);
 	}
 
 	/**

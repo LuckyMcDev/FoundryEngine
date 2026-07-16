@@ -19,8 +19,6 @@ config = "mixins/${mod_id}.resources.mixins.json"
 [[mixins]]
 config = "mixins/${mod_id}.input.mixins.json"
 [[mixins]]
-config = "mixins/${mod_id}.invoker.mixins.json"
-[[mixins]]
 config = "mixins/${mod_id}.mixins.json"
 [[mixins]]
 config = "mixins/${mod_id}.render.mixins.json"

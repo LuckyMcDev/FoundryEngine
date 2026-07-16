@@ -7,7 +7,7 @@ import com.mojang.blaze3d.platform.CompareOp;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import de.luckymcdev.foundryengine.common.Common;
-import de.luckymcdev.foundryengine.mixin.invoker.RenderPipelinesInvoker;
+import de.luckymcdev.foundryengine.mixin.render.RenderPipelinesInvoker;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 

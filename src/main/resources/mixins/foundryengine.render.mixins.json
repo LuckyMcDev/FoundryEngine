@@ -6,17 +6,18 @@
   "mixins": [
   ],
   "client": [
-    "BlockEntityRendererMixin",
-    "CameraMixin",
-    "CutsceneCameraMixin",
-    "GameRendererMixin",
-    "GlGpuBufferAccessor",
-    "GpuDeviceMixin",
-    "ItemInHandRendererMixin",
-    "PostChainMixin",
-    "PostEffectPassAccessor",
-    "PostEffectProcessorAccessor",
-    "ShaderLoaderAccessor"
+	  "BlockEntityRendererMixin",
+	  "CameraMixin",
+	  "CutsceneCameraMixin",
+	  "GameRendererMixin",
+	  "GlGpuBufferAccessor",
+	  "GpuDeviceMixin",
+	  "ItemInHandRendererMixin",
+	  "PostChainMixin",
+	  "PostEffectPassAccessor",
+	  "PostEffectProcessorAccessor",
+	  "RenderPipelinesInvoker",
+	  "ShaderLoaderAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
