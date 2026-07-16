@@ -120,6 +120,11 @@ public class GenericRegistry<K, V> implements Registry<K, V> {
 	}
 
 	@Override
+	public boolean isEmpty() {
+		return primaryLookup.isEmpty() || reverseLookup.isEmpty();
+	}
+
+	@Override
 	public void freeze() {
 		if (frozen) {
 			return;

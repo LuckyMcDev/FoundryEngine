@@ -4,7 +4,6 @@ import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.cutscene.util.ServerScreenEffectManager;
 import de.luckymcdev.foundryengine.common.data.BundleDataGenerator;
-
 import de.luckymcdev.foundryengine.common.event.BlockEvents;
 import de.luckymcdev.foundryengine.common.event.BundleEvents;
 import de.luckymcdev.foundryengine.common.event.ClientEvents;
@@ -63,6 +62,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.CrashReportCallables;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
@@ -114,6 +114,7 @@ public class FoundryEngineMod {
 		registerInternalEvents();
 		registerModEventHandlers(modBus);
 		registerNeoForgeEventHandlers();
+		registerCrashReportCallables();
 
 		Config.registerCommon(modContainer);
 		Config.registerStartup(modContainer);
@@ -211,6 +212,39 @@ public class FoundryEngineMod {
 
 		BUS.addListener(this::onPlayerDisconnect);
 		BUS.addListener(this::onPlayerChangedDimension);
+	}
+
+	private void registerCrashReportCallables() {
+		CrashReportCallables.registerCrashCallable("FoundryEngine Bundles", () -> {
+			var bundles = Common.getBundleManager().getBundles();
+			if (bundles.isEmpty()) {
+				return "None";
+			}
+			var sb = new StringBuilder();
+			sb.append(bundles.size()).append(" loaded\n");
+			for (var bundle : bundles) {
+				var info = bundle.info();
+				sb.append("  - ").append(info.id()).append(" v").append(info.versionInfo());
+				if (!info.authors().isEmpty()) {
+					sb.append(" by ").append(String.join(", ", info.authors()));
+				}
+				sb.append('\n');
+			}
+			return sb.toString().stripTrailing();
+		}, () -> Common.getBundleManager().anyBundles());
+
+		CrashReportCallables.registerCrashCallable("FoundryEngine Game Sessions", () -> {
+			var sessions = Common.getGameManager().getAllSessions();
+			if (sessions.isEmpty()) {
+				return "None";
+			}
+			var sb = new StringBuilder();
+			sb.append(sessions.size()).append(" active\n");
+			for (var session : sessions) {
+				sb.append("  - ").append(session.id()).append('\n');
+			}
+			return sb.toString().stripTrailing();
+		}, () -> Common.getGameManager().anySession());
 	}
 
 	private void onRegisterEvent(RegisterEvent event) {

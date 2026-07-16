@@ -146,6 +146,10 @@ public class GameManager implements BundleLifecycleListener {
 		return globalSessions.containsKey(id);
 	}
 
+	public boolean anySession() {
+		return !globalSessions.isEmpty() || !worlds.isEmpty();
+	}
+
 	/**
 	 * Returns the lifecycle state for the given world.
 	 */

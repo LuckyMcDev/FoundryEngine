@@ -75,6 +75,11 @@ public interface Registry<K, V> {
 	boolean isFrozen();
 
 	/**
+	 * Check if the registry is empty.
+	 */
+	boolean isEmpty();
+
+	/**
 	 * Freeze the registry, making it immutable.
 	 */
 	void freeze();

@@ -126,6 +126,13 @@ public class BundleManager implements ResourceManagerReloadListener {
 	}
 
 	/**
+	 * Returns true if any bundles have been loaded.
+	 */
+	public boolean anyBundles() {
+		return !bundles.isEmpty();
+	}
+
+	/**
 	 * Reloads all bundles by clearing all script event callbacks, unloading current
 	 * bundles, rediscovering them from disk, and re-loading common + server scripts.
 	 */
