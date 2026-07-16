@@ -260,10 +260,11 @@ Package: `de.luckymcdev.foundryengine.common.event.LevelEvents`
 
 Package: `de.luckymcdev.foundryengine.common.event.NetworkEvents`
 
-| Event | Description |
-|---|---|
-| `login(cb)` | Player network login |
-| `logout(cb)` | Player network logout |
+| Event                      | Description                            |
+|----------------------------|----------------------------------------|
+| `login(cb)`                | Player network login                   |
+| `logout(cb)`               | Player network logout                  |
+| `onCustomDataReceived(cb)` | CustomDataPacket received (both sides) |
 
 ---
 

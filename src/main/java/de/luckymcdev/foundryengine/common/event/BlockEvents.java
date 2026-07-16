@@ -71,6 +71,10 @@ public class BlockEvents {
 			FARMLAND_TRAMPLED.post(e);
 		}
 
+		public static void postNeighborNotify(BlockEvent.NeighborNotifyEvent e) {
+			NEIGHBOR_NOTIFY.post(e);
+		}
+
 		public static void postBlockModification(BlockModificationEvent event) {
 			BLOCK_MODIFICATION.post(event);
 		}
@@ -78,6 +82,7 @@ public class BlockEvents {
 		public static void register(IEventBus bus) {
 			bus.addListener(Internal::postBroken);
 			bus.addListener(Internal::postPlaced);
+			bus.addListener(Internal::postNeighborNotify);
 			bus.addListener(Internal::postLeftClicked);
 			bus.addListener(Internal::postRightClicked);
 			bus.addListener(Internal::postFarmlandTrampled);

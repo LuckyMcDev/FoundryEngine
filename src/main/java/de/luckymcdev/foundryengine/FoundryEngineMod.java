@@ -4,7 +4,7 @@ import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.cutscene.util.ServerScreenEffectManager;
 import de.luckymcdev.foundryengine.common.data.BundleDataGenerator;
-import de.luckymcdev.foundryengine.common.event.AreaEvents;
+
 import de.luckymcdev.foundryengine.common.event.BlockEvents;
 import de.luckymcdev.foundryengine.common.event.BundleEvents;
 import de.luckymcdev.foundryengine.common.event.ClientEvents;
@@ -151,6 +151,7 @@ public class FoundryEngineMod {
 
 	private void registerModBus(IEventBus modBus) {
 		Common.getGameStageHandler().register(modBus);
+		ClientEvents.Internal.registerModBus(modBus);
 	}
 
 	private void registerInternalEvents() {
@@ -168,7 +169,6 @@ public class FoundryEngineMod {
 		StageEvents.Internal.register(BUS);
 		GameEvents.Internal.register(BUS);
 		SlotEvents.Internal.register(BUS);
-		AreaEvents.Internal.register(BUS);
 		DialogueEvents.Internal.register(BUS);
 	}
 
@@ -197,6 +197,17 @@ public class FoundryEngineMod {
 		BUS.addListener(this::onServerTick);
 
 		BUS.addListener(this::onLevelTick);
+
+		BUS.addListener(Common.getAreaManager()::onBlockBreak);
+		BUS.addListener(Common.getAreaManager()::onBlockPlace);
+
+		var stages = Common.getGameStageHandler();
+		BUS.register(stages.blocks());
+		BUS.register(stages.dimensions());
+		BUS.register(stages.item());
+		BUS.register(stages.loot());
+		BUS.register(stages.mobs());
+		BUS.register(stages.recipes());
 
 		BUS.addListener(this::onPlayerDisconnect);
 		BUS.addListener(this::onPlayerChangedDimension);

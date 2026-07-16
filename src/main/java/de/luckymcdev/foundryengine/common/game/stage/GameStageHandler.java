@@ -73,12 +73,6 @@ public class GameStageHandler {
 	public void register(IEventBus modEventbus) {
 		LOGGER.debug("Registered {} GameStageHandler", Common.MODNAME);
 		ATTACHMENT_TYPES.register(modEventbus);
-		NeoForge.EVENT_BUS.register(BLOCKS);
-		NeoForge.EVENT_BUS.register(DIMENSIONS);
-		NeoForge.EVENT_BUS.register(ITEMS);
-		NeoForge.EVENT_BUS.register(LOOT);
-		NeoForge.EVENT_BUS.register(MOBS);
-		NeoForge.EVENT_BUS.register(RECIPES);
 	}
 
 	public StageRegistry getStageRegistry() {

@@ -2,7 +2,6 @@ package de.luckymcdev.foundryengine.common.event;
 
 import de.luckymcdev.foundryengine.common.Common;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.client.event.ClientChatReceivedEvent;
 import net.neoforged.neoforge.event.ServerChatEvent;
 import net.neoforged.neoforge.event.entity.player.AdvancementEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
@@ -19,8 +18,6 @@ public class PlayerEvents {
 	public static final EventGroupHolder<PlayerContainerEvent.Close> CHEST_CLOSED = new EventGroupHolder<>();
 	public static final EventGroupHolder<PlayerContainerEvent.Open> CHEST_OPENED = new EventGroupHolder<>();
 	public static final EventGroupHolder<PlayerEvent.PlayerRespawnEvent> RESPAWNED = new EventGroupHolder<>();
-	public static final EventGroupHolder<ClientChatReceivedEvent> DECORATE_CHAT = new EventGroupHolder<>();
-
 	public static void loggedIn(EventCallback<PlayerEvent.PlayerLoggedInEvent> cb) {
 		LOGGED_IN.register(cb);
 	}
@@ -51,10 +48,6 @@ public class PlayerEvents {
 
 	public static void respawned(EventCallback<PlayerEvent.PlayerRespawnEvent> cb) {
 		RESPAWNED.register(cb);
-	}
-
-	public static void decorateChat(EventCallback<ClientChatReceivedEvent> cb) {
-		DECORATE_CHAT.register(cb);
 	}
 
 	@ApiStatus.Internal
@@ -95,10 +88,6 @@ public class PlayerEvents {
 			RESPAWNED.post(e);
 		}
 
-		public static void postDecorateChat(ClientChatReceivedEvent e) {
-			DECORATE_CHAT.post(e);
-		}
-
 		public static void register(IEventBus bus) {
 			bus.addListener(Internal::postLoggedIn);
 			bus.addListener(Internal::postLoggedOut);
@@ -108,7 +97,6 @@ public class PlayerEvents {
 			bus.addListener(Internal::postChestClosed);
 			bus.addListener(Internal::postChestOpened);
 			bus.addListener(Internal::postRespawned);
-			bus.addListener(Internal::postDecorateChat);
 		}
 
 		public static void clear() {
@@ -120,7 +108,6 @@ public class PlayerEvents {
 			CHEST_CLOSED.clear();
 			CHEST_OPENED.clear();
 			RESPAWNED.clear();
-			DECORATE_CHAT.clear();
 		}
 	}
 }

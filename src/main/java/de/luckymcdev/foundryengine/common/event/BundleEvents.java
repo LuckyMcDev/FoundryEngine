@@ -10,7 +10,6 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
 import net.neoforged.fml.event.lifecycle.InterModProcessEvent;
 import net.neoforged.neoforge.event.VanillaGameEvent;
-import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 
@@ -25,7 +24,6 @@ public class BundleEvents {
 	public static final EventGroupHolder<FMLClientSetupEvent> CLIENT_SETUP = new EventGroupHolder<>();
 	public static final EventGroupHolder<FMLDedicatedServerSetupEvent> DEDICATED_SERVER_SETUP = new EventGroupHolder<>();
 	public static final EventGroupHolder<InterModProcessEvent> POST_INIT = new EventGroupHolder<>();
-	public static final EventGroupHolder<ServerAboutToStartEvent> SERVER_ABOUT_TO_START = new EventGroupHolder<>();
 	public static final EventGroupHolder<BundleDataGenEvent> DATA_GEN = new EventGroupHolder<>();
 	private static final Map<Class<?>, EventGroupHolder<?>> CUSTOM_EVENTS = new ConcurrentHashMap<>();
 	private static @Nullable IEventBus eventBus;
@@ -75,10 +73,6 @@ public class BundleEvents {
 		POST_INIT.register(callback);
 	}
 
-	public static void serverAboutToStart(EventCallback<ServerAboutToStartEvent> callback) {
-		SERVER_ABOUT_TO_START.register(callback);
-	}
-
 	public static void dataGen(EventCallback<BundleDataGenEvent> callback) {
 		DATA_GEN.register(callback);
 	}
@@ -113,10 +107,6 @@ public class BundleEvents {
 			POST_INIT.post(event);
 		}
 
-		public static void postServerAboutToStart(ServerAboutToStartEvent event) {
-			SERVER_ABOUT_TO_START.post(event);
-		}
-
 		public static void postDataGen(BundleDataGenEvent event) {
 			DATA_GEN.post(event);
 		}
@@ -124,7 +114,6 @@ public class BundleEvents {
 		public static void register(IEventBus bus) {
 			eventBus = bus;
 			bus.addListener(Internal::postVanillaGame);
-			bus.addListener(Internal::postServerAboutToStart);
 			bus.addListener(Internal::postDataGen);
 			CUSTOM_EVENTS.forEach((eventClass, holder) -> registerCustomOnBus(bus, eventClass));
 		}
@@ -146,7 +135,6 @@ public class BundleEvents {
 			DEDICATED_SERVER_SETUP.clear();
 			POST_INIT.clear();
 			DATA_GEN.clear();
-			SERVER_ABOUT_TO_START.clear();
 			CUSTOM_EVENTS.clear();
 		}
 	}

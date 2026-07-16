@@ -106,6 +106,67 @@ network.register(new AbstractPacket.Definition<>(
 - **ServerBoundSpawnEntityPacket** — client requests entity spawning
 - **ServerBoundTeleportPacket** — client requests player teleportation
 
+### Custom Data
+
+**CustomDataPacket** — a generic bidirectional packet carrying a `String` ID and a `CompoundTag` payload. Useful for ad-hoc communication without writing a dedicated packet class.
+
+```java
+// Sending (client -> server)
+var packet = new CustomDataPacket("my_feature", someTag);
+Common.
+
+getNetworkManager().
+
+sendToServer(packet);
+
+// Sending (server -> client)
+Common.
+
+getNetworkManager().
+
+sendToPlayer(packet, player);
+Common.
+
+getNetworkManager().
+
+sendToAllPlayers(packet);
+```
+
+Receiving posts a **CustomDataReceivedEvent** on the NeoForge event bus:
+
+```java
+NeoForge.EVENT_BUS.addListener(CustomDataReceivedEvent .class, event ->{
+        if(event.
+
+getId().
+
+equals("my_feature")){
+CompoundTag data = event.getData();
+// handle
+    }
+            });
+```
+
+The event is also bridgeable through `NetworkEvents`:
+
+```java
+NetworkEvents.onCustomDataReceived(event ->{
+        });
+```
+
+NeoForge `PlayerEvent` subevents use `player.level().isClientSide()` instead — see [Side checking](../core/events#side-checking).
+
+| Packet Field | Type          | Description          |
+|--------------|---------------|----------------------|
+| `id`         | `String`      | Arbitrary identifier |
+| `data`       | `CompoundTag` | NBT payload          |
+
+| Event Property | Type          | Description                |
+|----------------|---------------|----------------------------|
+| `getPlayer()`  | `Player`      | The player involved        |
+| `getId()`      | `String`      | The custom data identifier |
+| `getData()`    | `CompoundTag` | The NBT payload            |
+
 ## Usage
 
 Sending packets from scripts uses `Common.getNetworkManager()`:

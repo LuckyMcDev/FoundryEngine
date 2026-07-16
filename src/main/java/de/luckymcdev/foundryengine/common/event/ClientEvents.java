@@ -3,6 +3,7 @@ package de.luckymcdev.foundryengine.common.event;
 import de.luckymcdev.foundryengine.common.Common;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.client.event.ClientChatEvent;
+import net.neoforged.neoforge.client.event.ClientChatReceivedEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
@@ -19,6 +20,7 @@ public class ClientEvents {
 	public static final EventGroupHolder<ClientStoppedEvent> STOPPED = new EventGroupHolder<>();
 	public static final EventGroupHolder<ClientStoppingEvent> STOPPING = new EventGroupHolder<>();
 	public static final EventGroupHolder<ClientChatEvent> CHAT = new EventGroupHolder<>();
+	public static final EventGroupHolder<ClientChatReceivedEvent> CHAT_RECEIVED = new EventGroupHolder<>();
 	public static final EventGroupHolder<RegisterKeyMappingsEvent> KEY_MAPPINGS = new EventGroupHolder<>();
 	public static final EventGroupHolder<RenderGuiEvent.Post> RENDER_GUI = new EventGroupHolder<>();
 	public static final EventGroupHolder<RenderGuiLayerEvent.Post> RENDER_GUI_LAYER = new EventGroupHolder<>();
@@ -41,6 +43,10 @@ public class ClientEvents {
 
 	public static void chat(EventCallback<ClientChatEvent> cb) {
 		CHAT.register(cb);
+	}
+
+	public static void chatReceived(EventCallback<ClientChatReceivedEvent> cb) {
+		CHAT_RECEIVED.register(cb);
 	}
 
 	public static void keyMappings(EventCallback<RegisterKeyMappingsEvent> cb) {
@@ -93,6 +99,14 @@ public class ClientEvents {
 			CHAT.post(e);
 		}
 
+		public static void postChatReceived(ClientChatReceivedEvent e) {
+			CHAT_RECEIVED.post(e);
+		}
+
+		public static void postKeyMappings(RegisterKeyMappingsEvent e) {
+			KEY_MAPPINGS.post(e);
+		}
+
 		public static void postRenderGui(RenderGuiEvent.Post e) {
 			RENDER_GUI.post(e);
 		}
@@ -122,6 +136,7 @@ public class ClientEvents {
 			bus.addListener(Internal::postStopped);
 			bus.addListener(Internal::postStopping);
 			bus.addListener(Internal::postChat);
+			bus.addListener(Internal::postChatReceived);
 			bus.addListener(Internal::postRenderGui);
 			bus.addListener(Internal::postRenderGuiLayer);
 			bus.addListener(Internal::postRenderHand);
@@ -130,11 +145,16 @@ public class ClientEvents {
 			bus.addListener(Internal::postLoggedOut);
 		}
 
+		public static void registerModBus(IEventBus modBus) {
+			modBus.addListener(Internal::postKeyMappings);
+		}
+
 		public static void clear() {
 			TICK.clear();
 			STOPPED.clear();
 			STOPPING.clear();
 			CHAT.clear();
+			CHAT_RECEIVED.clear();
 			KEY_MAPPINGS.clear();
 			RENDER_GUI.clear();
 			RENDER_GUI_LAYER.clear();
