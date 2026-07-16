@@ -13,7 +13,7 @@ import imgui.flag.ImGuiBackendFlags;
 import imgui.flag.ImGuiConfigFlags;
 import imgui.flag.ImGuiViewportFlags;
 import imgui.type.ImInt;
-import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLCapabilities;
 
 import java.nio.ByteBuffer;
@@ -30,7 +30,7 @@ import static org.lwjgl.opengl.GL45.GL_CLIP_ORIGIN;
 
 /**
  * Ported ImGui OpenGL3 Backend tailored for Minecraft's Blaze3D GlStateManager
- * with safe Multi-Viewport support.
+ * with safe Multi-Viewport support. Supports OpenGL 3.3 and higher.
  */
 public class ImGuiImplGl3 {
 	protected static final String OS = System.getProperty("os.name", "generic").toLowerCase();
@@ -73,31 +73,17 @@ public class ImGuiImplGl3 {
 				data.glProfileIsES3 = true;
 			}
 
-			if (!data.glProfileIsES3 && data.glVersion >= 320) {
+			if (!data.glProfileIsES3) {
 				data.glProfileMask = GlStateManager._getInteger(GL_CONTEXT_PROFILE_MASK);
 			}
 			data.glProfileIsCompat = (data.glProfileMask & GL_CONTEXT_COMPATIBILITY_PROFILE_BIT) != 0;
-
-			if (data.glVersion < 330) {
-				try {
-					data.glCapabilities = GL.getCapabilities();
-				} catch (IllegalStateException ignored) {
-				}
-			}
 		}
 
-		if (data.glVersion >= 320) {
-			io.addBackendFlags(ImGuiBackendFlags.RendererHasVtxOffset);
-		}
-
+		io.addBackendFlags(ImGuiBackendFlags.RendererHasVtxOffset);
 		io.addBackendFlags(ImGuiBackendFlags.RendererHasViewports);
 
 		if (glslVersion == null) {
-			if (IS_APPLE) {
-				data.glslVersion = "#version 150";
-			} else {
-				data.glslVersion = "#version 130";
-			}
+			data.glslVersion = "#version 330 core";
 		} else {
 			data.glslVersion = glslVersion;
 		}
@@ -108,7 +94,7 @@ public class ImGuiImplGl3 {
 		}
 
 		data.hasPolygonMode = !data.glProfileIsES3;
-		data.hasBindSampler = data.glVersion >= 330 || data.glProfileIsES3;
+		data.hasBindSampler = true; // Always true for OpenGL >= 330 and ES 3
 		data.hasClipOrigin = data.glVersion >= 450;
 
 		if (ImGui.getIO().hasConfigFlags(ImGuiConfigFlags.ViewportsEnable)) {
@@ -158,7 +144,7 @@ public class ImGuiImplGl3 {
 			GlStateManager._enableScissorTest();
 		}
 
-		if (!data.glProfileIsES3 && data.glVersion >= 310) {
+		if (!data.glProfileIsES3) {
 			glDisable(GL_PRIMITIVE_RESTART);
 		}
 		if (data.hasPolygonMode) {
@@ -211,9 +197,7 @@ public class ImGuiImplGl3 {
 		}
 		glUniformMatrix4fv(data.attribLocationProjMtx, false, props.orthoProjMatrix);
 
-		if (data.hasBindSampler) {
-			glBindSampler(0, 0);
-		}
+		glBindSampler(0, 0);
 
 		if (renderingSecondaryViewport) {
 			glBindVertexArray(gVertexArrayObject);
@@ -264,9 +248,7 @@ public class ImGuiImplGl3 {
 
 		glGetIntegerv(GL_CURRENT_PROGRAM, props.lastProgram);
 		glGetIntegerv(GL_TEXTURE_BINDING_2D, props.lastTexture);
-		if (data.hasBindSampler) {
-			glGetIntegerv(GL_SAMPLER_BINDING, props.lastSampler);
-		}
+		glGetIntegerv(GL_SAMPLER_BINDING, props.lastSampler);
 		glGetIntegerv(GL_ARRAY_BUFFER_BINDING, props.lastArrayBuffer);
 		glGetIntegerv(GL_VERTEX_ARRAY_BINDING, props.lastVertexArrayObject);
 		if (data.hasPolygonMode) {
@@ -285,7 +267,7 @@ public class ImGuiImplGl3 {
 		props.lastEnableDepthTest = glIsEnabled(GL_DEPTH_TEST);
 		props.lastEnableStencilTest = glIsEnabled(GL_STENCIL_TEST);
 		props.lastEnableScissorTest = glIsEnabled(GL_SCISSOR_TEST);
-		if (!data.glProfileIsES3 && data.glVersion >= 310) {
+		if (!data.glProfileIsES3) {
 			props.lastEnablePrimitiveRestart = glIsEnabled(GL_PRIMITIVE_RESTART);
 		}
 
@@ -337,15 +319,7 @@ public class ImGuiImplGl3 {
 					GlStateManager._bindTexture((int) textureId);
 				}
 
-				if (data.glVersion >= 320) {
-					glDrawElementsBaseVertex(GL_TRIANGLES, elemCount, type, indices, vtxOffset);
-				} else {
-					if (renderingSecondaryViewport) {
-						glDrawElements(GL_TRIANGLES, elemCount, type, indices);
-					} else {
-						GlStateManager._drawElements(GlConst.GL_TRIANGLES, elemCount, type, indices);
-					}
-				}
+				glDrawElementsBaseVertex(GL_TRIANGLES, elemCount, type, indices, vtxOffset);
 			}
 		}
 
@@ -357,9 +331,7 @@ public class ImGuiImplGl3 {
 				glUseProgram(props.lastProgram[0]);
 			}
 			glBindTexture(GL_TEXTURE_2D, props.lastTexture[0]);
-			if (data.hasBindSampler) {
-				glBindSampler(0, props.lastSampler[0]);
-			}
+			glBindSampler(0, props.lastSampler[0]);
 			glActiveTexture(props.lastActiveTexture[0]);
 			glBindVertexArray(props.lastVertexArrayObject[0]);
 			glBindBuffer(GL_ARRAY_BUFFER, props.lastArrayBuffer[0]);
@@ -395,9 +367,7 @@ public class ImGuiImplGl3 {
 				GlStateManager._glUseProgram(props.lastProgram[0]);
 			}
 			GlStateManager._bindTexture(props.lastTexture[0]);
-			if (data.hasBindSampler) {
-				glBindSampler(0, props.lastSampler[0]);
-			}
+			glBindSampler(0, props.lastSampler[0]);
 			GlStateManager._activeTexture(props.lastActiveTexture[0]);
 			GlStateManager._glBindVertexArray(props.lastVertexArrayObject[0]);
 			GlStateManager._glBindBuffer(GlConst.GL_ARRAY_BUFFER, props.lastArrayBuffer[0]);
@@ -430,7 +400,7 @@ public class ImGuiImplGl3 {
 			}
 		}
 
-		if (!data.glProfileIsES3 && data.glVersion >= 310) {
+		if (!data.glProfileIsES3) {
 			if (props.lastEnablePrimitiveRestart) {
 				glEnable(GL_PRIMITIVE_RESTART);
 			} else {
@@ -440,16 +410,16 @@ public class ImGuiImplGl3 {
 
 		if (data.hasPolygonMode) {
 			if (renderingSecondaryViewport) {
-				if (data.glVersion <= 310 || data.glProfileIsCompat) {
+				if (data.glProfileIsCompat) {
 					glPolygonMode(GL_FRONT, props.lastPolygonMode[0]);
 					glPolygonMode(GL_BACK, props.lastPolygonMode[1]);
 				} else {
 					glPolygonMode(GL_FRONT_AND_BACK, props.lastPolygonMode[0]);
 				}
 			} else {
-				if (data.glVersion <= 310 || data.glProfileIsCompat) {
+				if (data.glProfileIsCompat) {
 					GlStateManager._polygonMode(GlConst.GL_FRONT, props.lastPolygonMode[0]);
-					GlStateManager._polygonMode(GL_BACK, props.lastPolygonMode[1]);
+					GlStateManager._polygonMode(GL11.GL_BACK, props.lastPolygonMode[1]); // WHY MOJANG WHY
 				} else {
 					GlStateManager._polygonMode(GlConst.GL_FRONT_AND_BACK, props.lastPolygonMode[0]);
 				}
@@ -539,10 +509,8 @@ public class ImGuiImplGl3 {
 		final int[] lastVertexArray = new int[1];
 		glGetIntegerv(GL_TEXTURE_BINDING_2D, lastTexture);
 		glGetIntegerv(GL_ARRAY_BUFFER_BINDING, lastArrayBuffer);
-		if (data.glVersion >= 210) {
-			glGetIntegerv(GL_PIXEL_UNPACK_BUFFER_BINDING, lastPixelUnpackBuffer);
-			GlStateManager._glBindBuffer(GlConst.GL_PIXEL_UNPACK_BUFFER, 0);
-		}
+		glGetIntegerv(GL_PIXEL_UNPACK_BUFFER_BINDING, lastPixelUnpackBuffer);
+		GlStateManager._glBindBuffer(GlConst.GL_PIXEL_UNPACK_BUFFER, 0);
 		glGetIntegerv(GL_VERTEX_ARRAY_BINDING, lastVertexArray);
 
 		final int glslVersionValue = parseGlslVersionString(data.glslVersion);
@@ -550,18 +518,15 @@ public class ImGuiImplGl3 {
 		final CharSequence vertexShader;
 		final CharSequence fragmentShader;
 
-		if (glslVersionValue < 130) {
-			vertexShader = vertexShaderGlsl120();
-			fragmentShader = fragmentShaderGlsl120();
-		} else if (glslVersionValue >= 410) {
+		if (glslVersionValue >= 410) {
 			vertexShader = vertexShaderGlsl410Core();
 			fragmentShader = fragmentShaderGlsl410Core();
 		} else if (glslVersionValue == 300) {
 			vertexShader = vertexShaderGlsl300es();
 			fragmentShader = fragmentShaderGlsl300es();
 		} else {
-			vertexShader = vertexShaderGlsl130();
-			fragmentShader = fragmentShaderGlsl130();
+			vertexShader = vertexShaderGlsl330Core();
+			fragmentShader = fragmentShaderGlsl330Core();
 		}
 
 		final int vertHandle = GlStateManager.glCreateShader(GlConst.GL_VERTEX_SHADER);
@@ -596,9 +561,7 @@ public class ImGuiImplGl3 {
 
 		GlStateManager._bindTexture(lastTexture[0]);
 		GlStateManager._glBindBuffer(GlConst.GL_ARRAY_BUFFER, lastArrayBuffer[0]);
-		if (data.glVersion >= 210) {
-			GlStateManager._glBindBuffer(GlConst.GL_PIXEL_UNPACK_BUFFER, lastPixelUnpackBuffer[0]);
-		}
+		GlStateManager._glBindBuffer(GlConst.GL_PIXEL_UNPACK_BUFFER, lastPixelUnpackBuffer[0]);
 		GlStateManager._glBindVertexArray(lastVertexArray[0]);
 
 		return true;
@@ -642,7 +605,7 @@ public class ImGuiImplGl3 {
 			return Integer.parseInt(m.group());
 		}
 
-		return 130;
+		return 330;
 	}
 
 	public void destroyDeviceObjects() {
@@ -669,120 +632,96 @@ public class ImGuiImplGl3 {
 		ImGui.destroyPlatformWindows();
 	}
 
-	protected String vertexShaderGlsl120() {
-		return data.glslVersion + "\n"
-			+ "uniform mat4 ProjMtx;\n"
-			+ "attribute vec2 Position;\n"
-			+ "attribute vec2 UV;\n"
-			+ "attribute vec4 Color;\n"
-			+ "varying vec2 Frag_UV;\n"
-			+ "varying vec4 Frag_Color;\n"
-			+ "void main()\n"
-			+ "{\n"
-			+ "    Frag_UV = UV;\n"
-			+ "    Frag_Color = Color;\n"
-			+ "    gl_Position = ProjMtx * vec4(Position.xy,0,1);\n"
-			+ "}\n";
+	protected String vertexShaderGlsl330Core() {
+		return data.glslVersion + "\n" + """
+			layout (location = 0) in vec2 Position;
+			layout (location = 1) in vec2 UV;
+			layout (location = 2) in vec4 Color;
+			uniform mat4 ProjMtx;
+			out vec2 Frag_UV;
+			out vec4 Frag_Color;
+			void main()
+			{
+			    Frag_UV = UV;
+			    Frag_Color = Color;
+			    gl_Position = ProjMtx * vec4(Position.xy,0,1);
+			}
+			""";
 	}
 
-	protected String vertexShaderGlsl130() {
-		return data.glslVersion + "\n"
-			+ "uniform mat4 ProjMtx;\n"
-			+ "in vec2 Position;\n"
-			+ "in vec2 UV;\n"
-			+ "in vec4 Color;\n"
-			+ "out vec2 Frag_UV;\n"
-			+ "out vec4 Frag_Color;\n"
-			+ "void main()\n"
-			+ "{\n"
-			+ "    Frag_UV = UV;\n"
-			+ "    Frag_Color = Color;\n"
-			+ "    gl_Position = ProjMtx * vec4(Position.xy,0,1);\n"
-			+ "}\n";
+	protected String fragmentShaderGlsl330Core() {
+		return data.glslVersion + "\n" + """
+			uniform sampler2D Texture;
+			in vec2 Frag_UV;
+			in vec4 Frag_Color;
+			layout (location = 0) out vec4 Out_Color;
+			void main()
+			{
+			    Out_Color = Frag_Color * texture(Texture, Frag_UV.st);
+			}
+			""";
 	}
 
 	private String vertexShaderGlsl300es() {
-		return data.glslVersion + "\n"
-			+ "precision highp float;\n"
-			+ "layout (location = 0) in vec2 Position;\n"
-			+ "layout (location = 1) in vec2 UV;\n"
-			+ "layout (location = 2) in vec4 Color;\n"
-			+ "uniform mat4 ProjMtx;\n"
-			+ "out vec2 Frag_UV;\n"
-			+ "out vec4 Frag_Color;\n"
-			+ "void main()\n"
-			+ "{\n"
-			+ "    Frag_UV = UV;\n"
-			+ "    Frag_Color = Color;\n"
-			+ "    gl_Position = ProjMtx * vec4(Position.xy,0,1);\n"
-			+ "}\n";
-	}
-
-	protected String vertexShaderGlsl410Core() {
-		return data.glslVersion + "\n"
-			+ "layout (location = 0) in vec2 Position;\n"
-			+ "layout (location = 1) in vec2 UV;\n"
-			+ "layout (location = 2) in vec4 Color;\n"
-			+ "uniform mat4 ProjMtx;\n"
-			+ "out vec2 Frag_UV;\n"
-			+ "out vec4 Frag_Color;\n"
-			+ "void main()\n"
-			+ "{\n"
-			+ "    Frag_UV = UV;\n"
-			+ "    Frag_Color = Color;\n"
-			+ "    gl_Position = ProjMtx * vec4(Position.xy,0,1);\n"
-			+ "}\n";
-	}
-
-	protected String fragmentShaderGlsl120() {
-		return data.glslVersion + "\n"
-			+ "#ifdef GL_ES\n"
-			+ "    precision mediump float;\n"
-			+ "#endif\n"
-			+ "uniform sampler2D Texture;\n"
-			+ "varying vec2 Frag_UV;\n"
-			+ "varying vec4 Frag_Color;\n"
-			+ "void main()\n"
-			+ "{\n"
-			+ "    gl_FragColor = Frag_Color * texture2D(Texture, Frag_UV.st);\n"
-			+ "}\n";
-	}
-
-	protected String fragmentShaderGlsl130() {
-		return data.glslVersion + "\n"
-			+ "uniform sampler2D Texture;\n"
-			+ "in vec2 Frag_UV;\n"
-			+ "in vec4 Frag_Color;\n"
-			+ "out vec4 Out_Color;\n"
-			+ "void main()\n"
-			+ "{\n"
-			+ "    Out_Color = Frag_Color * texture(Texture, Frag_UV.st);\n"
-			+ "}\n";
+		return data.glslVersion + "\n" + """
+			precision highp float;
+			layout (location = 0) in vec2 Position;
+			layout (location = 1) in vec2 UV;
+			layout (location = 2) in vec4 Color;
+			uniform mat4 ProjMtx;
+			out vec2 Frag_UV;
+			out vec4 Frag_Color;
+			void main()
+			{
+			    Frag_UV = UV;
+			    Frag_Color = Color;
+			    gl_Position = ProjMtx * vec4(Position.xy,0,1);
+			}
+			""";
 	}
 
 	protected String fragmentShaderGlsl300es() {
-		return data.glslVersion + "\n"
-			+ "precision mediump float;\n"
-			+ "uniform sampler2D Texture;\n"
-			+ "in vec2 Frag_UV;\n"
-			+ "in vec4 Frag_Color;\n"
-			+ "layout (location = 0) out vec4 Out_Color;\n"
-			+ "void main()\n"
-			+ "{\n"
-			+ "    Out_Color = Frag_Color * texture(Texture, Frag_UV.st);\n"
-			+ "}\n";
+		return data.glslVersion + "\n" + """
+			precision mediump float;
+			uniform sampler2D Texture;
+			in vec2 Frag_UV;
+			in vec4 Frag_Color;
+			layout (location = 0) out vec4 Out_Color;
+			void main()
+			{
+			    Out_Color = Frag_Color * texture(Texture, Frag_UV.st);
+			}
+			""";
+	}
+
+	protected String vertexShaderGlsl410Core() {
+		return data.glslVersion + "\n" + """
+			layout (location = 0) in vec2 Position;
+			layout (location = 1) in vec2 UV;
+			layout (location = 2) in vec4 Color;
+			uniform mat4 ProjMtx;
+			out vec2 Frag_UV;
+			out vec4 Frag_Color;
+			void main()
+			{
+			    Frag_UV = UV;
+			    Frag_Color = Color;
+			    gl_Position = ProjMtx * vec4(Position.xy,0,1);
+			}
+			""";
 	}
 
 	protected String fragmentShaderGlsl410Core() {
-		return data.glslVersion + "\n"
-			+ "in vec2 Frag_UV;\n"
-			+ "in vec4 Frag_Color;\n"
-			+ "uniform sampler2D Texture;\n"
-			+ "layout (location = 0) out vec4 Out_Color;\n"
-			+ "void main()\n"
-			+ "{\n"
-			+ "    Out_Color = Frag_Color * texture(Texture, Frag_UV.st);\n"
-			+ "}\n";
+		return data.glslVersion + "\n" + """
+			in vec2 Frag_UV;
+			in vec4 Frag_Color;
+			uniform sampler2D Texture;
+			layout (location = 0) out vec4 Out_Color;
+			void main()
+			{
+			    Out_Color = Frag_Color * texture(Texture, Frag_UV.st);
+			}
+			""";
 	}
 
 	/**
