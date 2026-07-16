@@ -1,15 +1,15 @@
 dependencies {
     def bundle = { String gav -> jarJar(api(implementation(gav))) }
 
-    runtimeOnly "maven.modrinth:spark:${spark_version}"
+	//runtimeOnly "maven.modrinth:spark:${spark_version}"
 
-	// Sodium - They need to fix their shit. Its broken
-	//compileOnly("maven.modrinth:AANobbMI:FVHjuQxV")
-	//runtimeOnly("maven.modrinth:AANobbMI:FVHjuQxV")
+	// Sodium
+	compileOnly("maven.modrinth:AANobbMI:UETw0GTI")
+	runtimeOnly("maven.modrinth:AANobbMI:UETw0GTI")
 
-	// Iris - same thing as above
-	//compileOnly("maven.modrinth:YL57xq9U:YEGDGnJM")
-	//runtimeOnly("maven.modrinth:YL57xq9U:YEGDGnJM")
+	// Iris
+	compileOnly("maven.modrinth:YL57xq9U:BO8hxvMR")
+	runtimeOnly("maven.modrinth:YL57xq9U:BO8hxvMR")
 
     // Testing dependencies
     testImplementation "org.junit.jupiter:junit-jupiter:${junit_version}"
