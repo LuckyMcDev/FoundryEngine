@@ -1,5 +1,7 @@
 package de.luckymcdev.foundryengine.client.imgui.backend;
 
+import com.mojang.blaze3d.opengl.GlConst;
+import com.mojang.blaze3d.opengl.GlStateManager;
 import imgui.ImDrawData;
 import imgui.ImFontAtlas;
 import imgui.ImGui;
@@ -19,7 +21,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL21.GL_PIXEL_UNPACK_BUFFER;
 import static org.lwjgl.opengl.GL21.GL_PIXEL_UNPACK_BUFFER_BINDING;
 import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.opengl.GL32.*;
@@ -28,11 +29,8 @@ import static org.lwjgl.opengl.GL33.glBindSampler;
 import static org.lwjgl.opengl.GL45.GL_CLIP_ORIGIN;
 
 /**
- * This class is a straightforward port of the
- * <a href="https://raw.githubusercontent.com/ocornut/imgui/32f4c234a8edd9a85b32a91c9e29afac15c50028/backends/imgui_impl_opengl3.cpp">imgui_impl_opengl3.cpp</a>.
- * <p>
- * It does support a backup and restoring of the GL state in the same way the original Dear ImGui code does.
- * Some of the very specific OpenGL variables may be ignored here,
+ * Ported ImGui OpenGL3 Backend tailored for Minecraft's Blaze3D GlStateManager
+ * with safe Multi-Viewport support.
  */
 public class ImGuiImplGl3 {
 	protected static final String OS = System.getProperty("os.name", "generic").toLowerCase();
@@ -41,31 +39,12 @@ public class ImGuiImplGl3 {
 	private final Properties props = new Properties();
 	protected Data data = null;
 
+	// Flag to track whether we are currently rendering a secondary viewport (external OS window)
+	private boolean renderingSecondaryViewport = false;
+
 	/**
-	 * Method to do an initialization of the  state.
+	 * Method to do an initialization of the state.
 	 * It SHOULD be called before calling of the {@link ImGuiImplGl3#renderDrawData(ImDrawData)} method.
-	 * <p>
-	 * Method takes an argument, which should be a valid GLSL string with the version to use.
-	 * <pre>
-	 * ----------------------------------------
-	 * OpenGL    GLSL      GLSL
-	 * version   version   string
-	 * ---------------------------------------
-	 *  2.0       110       "#version 110"
-	 *  2.1       120       "#version 120"
-	 *  3.0       130       "#version 130"
-	 *  3.1       140       "#version 140"
-	 *  3.2       150       "#version 150"
-	 *  3.3       330       "#version 330 core"
-	 *  4.0       400       "#version 400 core"
-	 *  4.1       410       "#version 410 core"
-	 *  4.2       420       "#version 410 core"
-	 *  4.3       430       "#version 430 core"
-	 *  ES 3.0    300       "#version 300 es"   = WebGL 2.0
-	 * ---------------------------------------
-	 * </pre>
-	 * <p>
-	 * If the argument is null, then a "#version 130" (150 for APPLE) string will be used by default.
 	 *
 	 * @param glslVersion string with the version of the GLSL
 	 * @return true when initialized
@@ -74,12 +53,12 @@ public class ImGuiImplGl3 {
 		data = newData();
 
 		final ImGuiIO io = ImGui.getIO();
-		io.setBackendRendererName("imgui-java_impl_opengl3");
+		io.setBackendRendererName("imgui-java_impl_opengl3_blaze3d");
 
 		{
-			final String glVersionStr = glGetString(GL_VERSION);
-			int major = glGetInteger(GL_MAJOR_VERSION);
-			int minor = glGetInteger(GL_MINOR_VERSION);
+			final String glVersionStr = GlStateManager._getString(GL_VERSION);
+			int major = GlStateManager._getInteger(GL_MAJOR_VERSION);
+			int minor = GlStateManager._getInteger(GL_MINOR_VERSION);
 			if (major == 0 && minor == 0) {
 				if (glVersionStr != null) {
 					final String[] parts = glVersionStr.split("\\.");
@@ -88,14 +67,14 @@ public class ImGuiImplGl3 {
 				}
 			}
 			data.glVersion = major * 100 + minor * 10;
-			data.maxTextureSize = glGetInteger(GL_MAX_TEXTURE_SIZE);
+			data.maxTextureSize = GlStateManager._getInteger(GlConst.GL_MAX_TEXTURE_SIZE);
 
 			if (glVersionStr != null && glVersionStr.startsWith("OpenGL ES 3")) {
 				data.glProfileIsES3 = true;
 			}
 
 			if (!data.glProfileIsES3 && data.glVersion >= 320) {
-				data.glProfileMask = glGetInteger(GL_CONTEXT_PROFILE_MASK);
+				data.glProfileMask = GlStateManager._getInteger(GL_CONTEXT_PROFILE_MASK);
 			}
 			data.glProfileIsCompat = (data.glProfileMask & GL_CONTEXT_COMPATIBILITY_PROFILE_BIT) != 0;
 
@@ -154,33 +133,40 @@ public class ImGuiImplGl3 {
 		return new Data();
 	}
 
-	/**
-	 * Method to do an initialization of the  state.
-	 * It SHOULD be called before calling of the {@link ImGuiImplGl3#renderDrawData(ImDrawData)} method.
-	 * <p>
-	 * Unlike in the {@link #init(String)} method, here the glslVersion argument is omitted.
-	 * Thus, a "#version 130" string will be used instead.
-	 *
-	 * @return true when initialized
-	 */
 	public boolean init() {
 		return init(null);
 	}
 
 	protected void setupRenderState(final ImDrawData drawData, final int fbWidth, final int fbHeight, final int gVertexArrayObject) {
-		glEnable(GL_BLEND);
-		glBlendEquation(GL_FUNC_ADD);
-		glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-		glDisable(GL_CULL_FACE);
-		glDisable(GL_DEPTH_TEST);
-		glDisable(GL_STENCIL_TEST);
-		glEnable(GL_SCISSOR_TEST);
+		if (renderingSecondaryViewport) {
+			// SECONDARY WINDOWS: Use raw GL to avoid corrupting GlStateManager's static cache
+			glEnable(GL_BLEND);
+			glBlendEquation(GL_FUNC_ADD);
+			glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+			glDisable(GL_CULL_FACE);
+			glDisable(GL_DEPTH_TEST);
+			glDisable(GL_STENCIL_TEST);
+			glEnable(GL_SCISSOR_TEST);
+		} else {
+			// MAIN WINDOW: Use GlStateManager so Minecraft's state cache stays perfectly in sync
+			GlStateManager._enableBlend();
+			glBlendEquation(GlConst.GL_FUNC_ADD);
+			GlStateManager._blendFuncSeparate(GlConst.GL_SRC_ALPHA, GlConst.GL_ONE_MINUS_SRC_ALPHA, GlConst.GL_ONE, GlConst.GL_ONE_MINUS_SRC_ALPHA);
+			GlStateManager._disableCull();
+			GlStateManager._disableDepthTest();
+			GlStateManager._disableStencilTest();
+			GlStateManager._enableScissorTest();
+		}
 
 		if (!data.glProfileIsES3 && data.glVersion >= 310) {
 			glDisable(GL_PRIMITIVE_RESTART);
 		}
 		if (data.hasPolygonMode) {
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			if (renderingSecondaryViewport) {
+				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			} else {
+				GlStateManager._polygonMode(GlConst.GL_FRONT_AND_BACK, GlConst.GL_FILL);
+			}
 		}
 
 		boolean clipOriginLowerLeft = true;
@@ -192,7 +178,12 @@ public class ImGuiImplGl3 {
 			}
 		}
 
-		glViewport(0, 0, fbWidth, fbHeight);
+		if (renderingSecondaryViewport) {
+			glViewport(0, 0, fbWidth, fbHeight);
+		} else {
+			GlStateManager._viewport(0, 0, fbWidth, fbHeight);
+		}
+
 		float L = drawData.getDisplayPosX();
 		float R = drawData.getDisplayPosX() + drawData.getDisplaySizeX();
 		float T = drawData.getDisplayPosY();
@@ -211,24 +202,40 @@ public class ImGuiImplGl3 {
 		props.orthoProjMatrix[13] = (T + B) / (B - T);
 		props.orthoProjMatrix[15] = 1.0f;
 
-		glUseProgram(data.shaderHandle);
-		glUniform1i(data.attribLocationTex, 0);
+		if (renderingSecondaryViewport) {
+			glUseProgram(data.shaderHandle);
+			glUniform1i(data.attribLocationTex, 0);
+		} else {
+			GlStateManager._glUseProgram(data.shaderHandle);
+			GlStateManager._glUniform1i(data.attribLocationTex, 0);
+		}
 		glUniformMatrix4fv(data.attribLocationProjMtx, false, props.orthoProjMatrix);
 
 		if (data.hasBindSampler) {
 			glBindSampler(0, 0);
 		}
 
-		glBindVertexArray(gVertexArrayObject);
-
-		glBindBuffer(GL_ARRAY_BUFFER, data.vboHandle);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, data.elementsHandle);
-		glEnableVertexAttribArray(data.attribLocationVtxPos);
-		glEnableVertexAttribArray(data.attribLocationVtxUV);
-		glEnableVertexAttribArray(data.attribLocationVtxColor);
-		glVertexAttribPointer(data.attribLocationVtxPos, 2, GL_FLOAT, false, ImDrawData.sizeOfImDrawVert(), 0);
-		glVertexAttribPointer(data.attribLocationVtxUV, 2, GL_FLOAT, false, ImDrawData.sizeOfImDrawVert(), 8);
-		glVertexAttribPointer(data.attribLocationVtxColor, 4, GL_UNSIGNED_BYTE, true, ImDrawData.sizeOfImDrawVert(), 16);
+		if (renderingSecondaryViewport) {
+			glBindVertexArray(gVertexArrayObject);
+			glBindBuffer(GL_ARRAY_BUFFER, data.vboHandle);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, data.elementsHandle);
+			glEnableVertexAttribArray(data.attribLocationVtxPos);
+			glEnableVertexAttribArray(data.attribLocationVtxUV);
+			glEnableVertexAttribArray(data.attribLocationVtxColor);
+			glVertexAttribPointer(data.attribLocationVtxPos, 2, GL_FLOAT, false, ImDrawData.sizeOfImDrawVert(), 0);
+			glVertexAttribPointer(data.attribLocationVtxUV, 2, GL_FLOAT, false, ImDrawData.sizeOfImDrawVert(), 8);
+			glVertexAttribPointer(data.attribLocationVtxColor, 4, GL_UNSIGNED_BYTE, true, ImDrawData.sizeOfImDrawVert(), 16);
+		} else {
+			GlStateManager._glBindVertexArray(gVertexArrayObject);
+			GlStateManager._glBindBuffer(GlConst.GL_ARRAY_BUFFER, data.vboHandle);
+			GlStateManager._glBindBuffer(GlConst.GL_ELEMENT_ARRAY_BUFFER, data.elementsHandle);
+			GlStateManager._enableVertexAttribArray(data.attribLocationVtxPos);
+			GlStateManager._enableVertexAttribArray(data.attribLocationVtxUV);
+			GlStateManager._enableVertexAttribArray(data.attribLocationVtxColor);
+			GlStateManager._vertexAttribPointer(data.attribLocationVtxPos, 2, GlConst.GL_FLOAT, false, ImDrawData.sizeOfImDrawVert(), 0);
+			GlStateManager._vertexAttribPointer(data.attribLocationVtxUV, 2, GlConst.GL_FLOAT, false, ImDrawData.sizeOfImDrawVert(), 8);
+			GlStateManager._vertexAttribPointer(data.attribLocationVtxColor, 4, GlConst.GL_UNSIGNED_BYTE, true, ImDrawData.sizeOfImDrawVert(), 16);
+		}
 	}
 
 	/**
@@ -248,7 +255,13 @@ public class ImGuiImplGl3 {
 		}
 
 		glGetIntegerv(GL_ACTIVE_TEXTURE, props.lastActiveTexture);
-		glActiveTexture(GL_TEXTURE0);
+
+		if (renderingSecondaryViewport) {
+			glActiveTexture(GL_TEXTURE0);
+		} else {
+			GlStateManager._activeTexture(GlConst.GL_TEXTURE0);
+		}
+
 		glGetIntegerv(GL_CURRENT_PROGRAM, props.lastProgram);
 		glGetIntegerv(GL_TEXTURE_BINDING_2D, props.lastTexture);
 		if (data.hasBindSampler) {
@@ -276,7 +289,7 @@ public class ImGuiImplGl3 {
 			props.lastEnablePrimitiveRestart = glIsEnabled(GL_PRIMITIVE_RESTART);
 		}
 
-		final int vertexArrayObject = glGenVertexArrays();
+		final int vertexArrayObject = renderingSecondaryViewport ? glGenVertexArrays() : GlStateManager._glGenVertexArrays();
 		setupRenderState(drawData, fbWidth, fbHeight, vertexArrayObject);
 
 		final float clipOffX = drawData.getDisplayPosX();
@@ -285,8 +298,13 @@ public class ImGuiImplGl3 {
 		final float clipScaleY = drawData.getFramebufferScaleY();
 
 		for (int n = 0; n < drawData.getCmdListsCount(); n++) {
-			glBufferData(GL_ARRAY_BUFFER, drawData.getCmdListVtxBufferData(n), GL_STREAM_DRAW);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, drawData.getCmdListIdxBufferData(n), GL_STREAM_DRAW);
+			if (renderingSecondaryViewport) {
+				glBufferData(GL_ARRAY_BUFFER, drawData.getCmdListVtxBufferData(n), GL_STREAM_DRAW);
+				glBufferData(GL_ELEMENT_ARRAY_BUFFER, drawData.getCmdListIdxBufferData(n), GL_STREAM_DRAW);
+			} else {
+				GlStateManager._glBufferData(GlConst.GL_ARRAY_BUFFER, drawData.getCmdListVtxBufferData(n), GlConst.GL_STREAM_DRAW);
+				GlStateManager._glBufferData(GlConst.GL_ELEMENT_ARRAY_BUFFER, drawData.getCmdListIdxBufferData(n), GlConst.GL_STREAM_DRAW);
+			}
 
 			for (int cmdIdx = 0; cmdIdx < drawData.getCmdListCmdBufferSize(n); cmdIdx++) {
 				drawData.getCmdListCmdBufferClipRect(props.clipRect, n, cmdIdx);
@@ -300,7 +318,11 @@ public class ImGuiImplGl3 {
 					continue;
 				}
 
-				glScissor((int) clipMinX, (int) (fbHeight - clipMaxY), (int) (clipMaxX - clipMinX), (int) (clipMaxY - clipMinY));
+				if (renderingSecondaryViewport) {
+					glScissor((int) clipMinX, (int) (fbHeight - clipMaxY), (int) (clipMaxX - clipMinX), (int) (clipMaxY - clipMinY));
+				} else {
+					GlStateManager._scissorBox((int) clipMinX, (int) (fbHeight - clipMaxY), (int) (clipMaxX - clipMinX), (int) (clipMaxY - clipMinY));
+				}
 
 				final long textureId = drawData.getCmdListCmdBufferTextureId(n, cmdIdx);
 				final int elemCount = drawData.getCmdListCmdBufferElemCount(n, cmdIdx);
@@ -309,12 +331,20 @@ public class ImGuiImplGl3 {
 				final long indices = idxOffset * (long) ImDrawData.sizeOfImDrawIdx();
 				final int type = ImDrawData.sizeOfImDrawIdx() == 2 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
 
-				glBindTexture(GL_TEXTURE_2D, (int) textureId);
+				if (renderingSecondaryViewport) {
+					glBindTexture(GL_TEXTURE_2D, (int) textureId);
+				} else {
+					GlStateManager._bindTexture((int) textureId);
+				}
 
 				if (data.glVersion >= 320) {
 					glDrawElementsBaseVertex(GL_TRIANGLES, elemCount, type, indices, vtxOffset);
 				} else {
-					glDrawElements(GL_TRIANGLES, elemCount, type, indices);
+					if (renderingSecondaryViewport) {
+						glDrawElements(GL_TRIANGLES, elemCount, type, indices);
+					} else {
+						GlStateManager._drawElements(GlConst.GL_TRIANGLES, elemCount, type, indices);
+					}
 				}
 			}
 		}
@@ -322,43 +352,84 @@ public class ImGuiImplGl3 {
 		glDeleteVertexArrays(vertexArrayObject);
 
 		// Restore modified GL state
-		if (props.lastProgram[0] == 0 || glIsProgram(props.lastProgram[0])) {
-			glUseProgram(props.lastProgram[0]);
-		}
-		glBindTexture(GL_TEXTURE_2D, props.lastTexture[0]);
-		if (data.hasBindSampler) {
-			glBindSampler(0, props.lastSampler[0]);
-		}
-		glActiveTexture(props.lastActiveTexture[0]);
-		glBindVertexArray(props.lastVertexArrayObject[0]);
-		glBindBuffer(GL_ARRAY_BUFFER, props.lastArrayBuffer[0]);
-		glBlendEquationSeparate(props.lastBlendEquationRgb[0], props.lastBlendEquationAlpha[0]);
-		glBlendFuncSeparate(props.lastBlendSrcRgb[0], props.lastBlendDstRgb[0], props.lastBlendSrcAlpha[0], props.lastBlendDstAlpha[0]);
-		if (props.lastEnableBlend) {
-			glEnable(GL_BLEND);
+		if (renderingSecondaryViewport) {
+			if (props.lastProgram[0] == 0 || glIsProgram(props.lastProgram[0])) {
+				glUseProgram(props.lastProgram[0]);
+			}
+			glBindTexture(GL_TEXTURE_2D, props.lastTexture[0]);
+			if (data.hasBindSampler) {
+				glBindSampler(0, props.lastSampler[0]);
+			}
+			glActiveTexture(props.lastActiveTexture[0]);
+			glBindVertexArray(props.lastVertexArrayObject[0]);
+			glBindBuffer(GL_ARRAY_BUFFER, props.lastArrayBuffer[0]);
+			glBlendEquationSeparate(props.lastBlendEquationRgb[0], props.lastBlendEquationAlpha[0]);
+			glBlendFuncSeparate(props.lastBlendSrcRgb[0], props.lastBlendDstRgb[0], props.lastBlendSrcAlpha[0], props.lastBlendDstAlpha[0]);
+			if (props.lastEnableBlend) {
+				glEnable(GL_BLEND);
+			} else {
+				glDisable(GL_BLEND);
+			}
+			if (props.lastEnableCullFace) {
+				glEnable(GL_CULL_FACE);
+			} else {
+				glDisable(GL_CULL_FACE);
+			}
+			if (props.lastEnableDepthTest) {
+				glEnable(GL_DEPTH_TEST);
+			} else {
+				glDisable(GL_DEPTH_TEST);
+			}
+			if (props.lastEnableStencilTest) {
+				glEnable(GL_STENCIL_TEST);
+			} else {
+				glDisable(GL_STENCIL_TEST);
+			}
+			if (props.lastEnableScissorTest) {
+				glEnable(GL_SCISSOR_TEST);
+			} else {
+				glDisable(GL_SCISSOR_TEST);
+			}
 		} else {
-			glDisable(GL_BLEND);
+			if (props.lastProgram[0] == 0 || glIsProgram(props.lastProgram[0])) {
+				GlStateManager._glUseProgram(props.lastProgram[0]);
+			}
+			GlStateManager._bindTexture(props.lastTexture[0]);
+			if (data.hasBindSampler) {
+				glBindSampler(0, props.lastSampler[0]);
+			}
+			GlStateManager._activeTexture(props.lastActiveTexture[0]);
+			GlStateManager._glBindVertexArray(props.lastVertexArrayObject[0]);
+			GlStateManager._glBindBuffer(GlConst.GL_ARRAY_BUFFER, props.lastArrayBuffer[0]);
+			glBlendEquationSeparate(props.lastBlendEquationRgb[0], props.lastBlendEquationAlpha[0]);
+			GlStateManager._blendFuncSeparate(props.lastBlendSrcRgb[0], props.lastBlendDstRgb[0], props.lastBlendSrcAlpha[0], props.lastBlendDstAlpha[0]);
+			if (props.lastEnableBlend) {
+				GlStateManager._enableBlend();
+			} else {
+				GlStateManager._disableBlend();
+			}
+			if (props.lastEnableCullFace) {
+				GlStateManager._enableCull();
+			} else {
+				GlStateManager._disableCull();
+			}
+			if (props.lastEnableDepthTest) {
+				GlStateManager._enableDepthTest();
+			} else {
+				GlStateManager._disableDepthTest();
+			}
+			if (props.lastEnableStencilTest) {
+				GlStateManager._enableStencilTest();
+			} else {
+				GlStateManager._disableStencilTest();
+			}
+			if (props.lastEnableScissorTest) {
+				GlStateManager._enableScissorTest();
+			} else {
+				GlStateManager._disableScissorTest();
+			}
 		}
-		if (props.lastEnableCullFace) {
-			glEnable(GL_CULL_FACE);
-		} else {
-			glDisable(GL_CULL_FACE);
-		}
-		if (props.lastEnableDepthTest) {
-			glEnable(GL_DEPTH_TEST);
-		} else {
-			glDisable(GL_DEPTH_TEST);
-		}
-		if (props.lastEnableStencilTest) {
-			glEnable(GL_STENCIL_TEST);
-		} else {
-			glDisable(GL_STENCIL_TEST);
-		}
-		if (props.lastEnableScissorTest) {
-			glEnable(GL_SCISSOR_TEST);
-		} else {
-			glDisable(GL_SCISSOR_TEST);
-		}
+
 		if (!data.glProfileIsES3 && data.glVersion >= 310) {
 			if (props.lastEnablePrimitiveRestart) {
 				glEnable(GL_PRIMITIVE_RESTART);
@@ -366,16 +437,32 @@ public class ImGuiImplGl3 {
 				glDisable(GL_PRIMITIVE_RESTART);
 			}
 		}
+
 		if (data.hasPolygonMode) {
-			if (data.glVersion <= 310 || data.glProfileIsCompat) {
-				glPolygonMode(GL_FRONT, props.lastPolygonMode[0]);
-				glPolygonMode(GL_BACK, props.lastPolygonMode[1]);
+			if (renderingSecondaryViewport) {
+				if (data.glVersion <= 310 || data.glProfileIsCompat) {
+					glPolygonMode(GL_FRONT, props.lastPolygonMode[0]);
+					glPolygonMode(GL_BACK, props.lastPolygonMode[1]);
+				} else {
+					glPolygonMode(GL_FRONT_AND_BACK, props.lastPolygonMode[0]);
+				}
 			} else {
-				glPolygonMode(GL_FRONT_AND_BACK, props.lastPolygonMode[0]);
+				if (data.glVersion <= 310 || data.glProfileIsCompat) {
+					GlStateManager._polygonMode(GlConst.GL_FRONT, props.lastPolygonMode[0]);
+					GlStateManager._polygonMode(GL_BACK, props.lastPolygonMode[1]);
+				} else {
+					GlStateManager._polygonMode(GlConst.GL_FRONT_AND_BACK, props.lastPolygonMode[0]);
+				}
 			}
 		}
-		glViewport(props.lastViewport[0], props.lastViewport[1], props.lastViewport[2], props.lastViewport[3]);
-		glScissor(props.lastScissorBox[0], props.lastScissorBox[1], props.lastScissorBox[2], props.lastScissorBox[3]);
+
+		if (renderingSecondaryViewport) {
+			glViewport(props.lastViewport[0], props.lastViewport[1], props.lastViewport[2], props.lastViewport[3]);
+			glScissor(props.lastScissorBox[0], props.lastScissorBox[1], props.lastScissorBox[2], props.lastScissorBox[3]);
+		} else {
+			GlStateManager._viewport(props.lastViewport[0], props.lastViewport[1], props.lastViewport[2], props.lastViewport[3]);
+			GlStateManager._scissorBox(props.lastScissorBox[0], props.lastScissorBox[1], props.lastScissorBox[2], props.lastScissorBox[3]);
+		}
 	}
 
 	public void newFrame() {
@@ -406,29 +493,29 @@ public class ImGuiImplGl3 {
 		glGetIntegerv(GL_TEXTURE_BINDING_2D, lastTexture);
 
 		try {
-			data.fontTexture = glGenTextures();
-			glBindTexture(GL_TEXTURE_2D, data.fontTexture);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-			glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
-			glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
-			glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width.get(), height.get(), 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+			data.fontTexture = GlStateManager._genTexture();
+			GlStateManager._bindTexture(data.fontTexture);
+			GlStateManager._texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_MIN_FILTER, GlConst.GL_LINEAR);
+			GlStateManager._texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_MAG_FILTER, GlConst.GL_LINEAR);
+			GlStateManager._texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_WRAP_S, GlConst.GL_CLAMP_TO_EDGE);
+			GlStateManager._texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_WRAP_T, GlConst.GL_CLAMP_TO_EDGE);
+			GlStateManager._pixelStore(GlConst.GL_UNPACK_ALIGNMENT, 1);
+			GlStateManager._pixelStore(GlConst.GL_UNPACK_SKIP_PIXELS, 0);
+			GlStateManager._pixelStore(GlConst.GL_UNPACK_SKIP_ROWS, 0);
+			GlStateManager._pixelStore(GlConst.GL_UNPACK_ROW_LENGTH, 0);
+			GlStateManager._texImage2D(GlConst.GL_TEXTURE_2D, 0, GlConst.GL_RGBA, width.get(), height.get(), 0, GlConst.GL_RGBA, GlConst.GL_UNSIGNED_BYTE, pixels);
 		} catch (Exception e) {
 			if (data.fontTexture != 0) {
-				glDeleteTextures(data.fontTexture);
+				GlStateManager._deleteTexture(data.fontTexture);
 				data.fontTexture = 0;
 			}
-			glBindTexture(GL_TEXTURE_2D, lastTexture[0]);
+			GlStateManager._bindTexture(lastTexture[0]);
 			return false;
 		}
 
 		fontAtlas.setTexID(data.fontTexture);
 
-		glBindTexture(GL_TEXTURE_2D, lastTexture[0]);
+		GlStateManager._bindTexture(lastTexture[0]);
 
 		return true;
 	}
@@ -439,7 +526,7 @@ public class ImGuiImplGl3 {
 		}
 		final ImGuiIO io = ImGui.getIO();
 		if (data.fontTexture != 0) {
-			glDeleteTextures(data.fontTexture);
+			GlStateManager._deleteTexture(data.fontTexture);
 			io.getFonts().setTexID(0);
 			data.fontTexture = 0;
 		}
@@ -454,7 +541,7 @@ public class ImGuiImplGl3 {
 		glGetIntegerv(GL_ARRAY_BUFFER_BINDING, lastArrayBuffer);
 		if (data.glVersion >= 210) {
 			glGetIntegerv(GL_PIXEL_UNPACK_BUFFER_BINDING, lastPixelUnpackBuffer);
-			glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+			GlStateManager._glBindBuffer(GlConst.GL_PIXEL_UNPACK_BUFFER, 0);
 		}
 		glGetIntegerv(GL_VERTEX_ARRAY_BINDING, lastVertexArray);
 
@@ -477,42 +564,42 @@ public class ImGuiImplGl3 {
 			fragmentShader = fragmentShaderGlsl130();
 		}
 
-		final int vertHandle = glCreateShader(GL_VERTEX_SHADER);
-		glShaderSource(vertHandle, vertexShader);
-		glCompileShader(vertHandle);
+		final int vertHandle = GlStateManager.glCreateShader(GlConst.GL_VERTEX_SHADER);
+		GlStateManager.glShaderSource(vertHandle, vertexShader.toString());
+		GlStateManager.glCompileShader(vertHandle);
 		checkShader(vertHandle, "vertex shader");
 
-		final int fragHandle = glCreateShader(GL_FRAGMENT_SHADER);
-		glShaderSource(fragHandle, fragmentShader);
-		glCompileShader(fragHandle);
+		final int fragHandle = GlStateManager.glCreateShader(GlConst.GL_FRAGMENT_SHADER);
+		GlStateManager.glShaderSource(fragHandle, fragmentShader.toString());
+		GlStateManager.glCompileShader(fragHandle);
 		checkShader(fragHandle, "fragment shader");
 
-		data.shaderHandle = glCreateProgram();
-		glAttachShader(data.shaderHandle, vertHandle);
-		glAttachShader(data.shaderHandle, fragHandle);
-		glLinkProgram(data.shaderHandle);
+		data.shaderHandle = GlStateManager.glCreateProgram();
+		GlStateManager.glAttachShader(data.shaderHandle, vertHandle);
+		GlStateManager.glAttachShader(data.shaderHandle, fragHandle);
+		GlStateManager.glLinkProgram(data.shaderHandle);
 		checkProgram(data.shaderHandle, "shader program");
 
 		glDetachShader(data.shaderHandle, vertHandle);
 		glDetachShader(data.shaderHandle, fragHandle);
-		glDeleteShader(vertHandle);
-		glDeleteShader(fragHandle);
+		GlStateManager.glDeleteShader(vertHandle);
+		GlStateManager.glDeleteShader(fragHandle);
 
-		data.attribLocationTex = glGetUniformLocation(data.shaderHandle, "Texture");
-		data.attribLocationProjMtx = glGetUniformLocation(data.shaderHandle, "ProjMtx");
+		data.attribLocationTex = GlStateManager._glGetUniformLocation(data.shaderHandle, "Texture");
+		data.attribLocationProjMtx = GlStateManager._glGetUniformLocation(data.shaderHandle, "ProjMtx");
 		data.attribLocationVtxPos = glGetAttribLocation(data.shaderHandle, "Position");
 		data.attribLocationVtxUV = glGetAttribLocation(data.shaderHandle, "UV");
 		data.attribLocationVtxColor = glGetAttribLocation(data.shaderHandle, "Color");
 
-		data.vboHandle = glGenBuffers();
-		data.elementsHandle = glGenBuffers();
+		data.vboHandle = GlStateManager._glGenBuffers();
+		data.elementsHandle = GlStateManager._glGenBuffers();
 
-		glBindTexture(GL_TEXTURE_2D, lastTexture[0]);
-		glBindBuffer(GL_ARRAY_BUFFER, lastArrayBuffer[0]);
+		GlStateManager._bindTexture(lastTexture[0]);
+		GlStateManager._glBindBuffer(GlConst.GL_ARRAY_BUFFER, lastArrayBuffer[0]);
 		if (data.glVersion >= 210) {
-			glBindBuffer(GL_PIXEL_UNPACK_BUFFER, lastPixelUnpackBuffer[0]);
+			GlStateManager._glBindBuffer(GlConst.GL_PIXEL_UNPACK_BUFFER, lastPixelUnpackBuffer[0]);
 		}
-		glBindVertexArray(lastVertexArray[0]);
+		GlStateManager._glBindVertexArray(lastVertexArray[0]);
 
 		return true;
 	}
@@ -526,7 +613,7 @@ public class ImGuiImplGl3 {
 			System.err.printf("%s: failed to compile %s! With GLSL: %s\n", this, desc, data.glslVersion);
 		}
 		if (logLength[0] > 1) {
-			final String log = glGetShaderInfoLog(handle);
+			final String log = GlStateManager.glGetShaderInfoLog(handle, logLength[0]);
 			System.err.println(log);
 		}
 		return status[0] == GL_TRUE;
@@ -541,7 +628,7 @@ public class ImGuiImplGl3 {
 			System.err.printf("%s: failed to link %s! With GLSL: %s\n", this, desc, data.glslVersion);
 		}
 		if (logLength[0] > 1) {
-			final String log = glGetProgramInfoLog(handle);
+			final String log = GlStateManager.glGetProgramInfoLog(handle, logLength[0]);
 			System.err.println(log);
 		}
 		return status[0] == GL_TRUE;
@@ -560,15 +647,15 @@ public class ImGuiImplGl3 {
 
 	public void destroyDeviceObjects() {
 		if (data.vboHandle != 0) {
-			glDeleteBuffers(data.vboHandle);
+			GlStateManager._glDeleteBuffers(data.vboHandle);
 			data.vboHandle = 0;
 		}
 		if (data.elementsHandle != 0) {
-			glDeleteBuffers(data.elementsHandle);
+			GlStateManager._glDeleteBuffers(data.elementsHandle);
 			data.elementsHandle = 0;
 		}
 		if (data.shaderHandle != 0) {
-			glDeleteProgram(data.shaderHandle);
+			GlStateManager.glDeleteProgram(data.shaderHandle);
 			data.shaderHandle = 0;
 		}
 		destroyFontsTexture();
@@ -760,7 +847,12 @@ public class ImGuiImplGl3 {
 				glClearColor(0, 0, 0, 0);
 				glClear(GL_COLOR_BUFFER_BIT);
 			}
-			renderDrawData(vp.getDrawData());
+			renderingSecondaryViewport = true;
+			try {
+				renderDrawData(vp.getDrawData());
+			} finally {
+				renderingSecondaryViewport = false;
+			}
 		}
 	}
 }
