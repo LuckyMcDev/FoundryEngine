@@ -152,10 +152,8 @@ class GameSessionTest {
 	}
 
 	@Test
-	void data_DataCompound_GetSet() {
+	void data_DataCompound_Get() {
 		GameData data = new GameData(id("d"));
-		assertNotNull(data.data());
-		data.data(data.data());
 		assertNotNull(data.data());
 	}
 }

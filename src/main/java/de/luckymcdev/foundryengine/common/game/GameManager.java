@@ -6,6 +6,7 @@ import de.luckymcdev.foundryengine.common.bundle.Bundle;
 import de.luckymcdev.foundryengine.common.bundle.BundleLifecycleListener;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -34,6 +35,7 @@ public class GameManager implements BundleLifecycleListener {
 	private final Map<String, Path> worldDataPaths = new ConcurrentHashMap<>();
 	private final Map<String, GameLifecycle> worldLifecycles = new ConcurrentHashMap<>();
 	private final Map<Identifier, GameSession> globalSessions = new ConcurrentHashMap<>();
+	private final Map<Identifier, CompoundTag> persistentSessionData = new ConcurrentHashMap<>();
 
 	private static String worldName(Level level) {
 		if (level == null) {
@@ -155,6 +157,15 @@ public class GameManager implements BundleLifecycleListener {
 	 */
 	public GameLifecycle worldLifecycle(String worldName) {
 		return worldLifecycles.getOrDefault(worldName, GameLifecycle.STOPPED);
+	}
+
+	/**
+	 * Returns the persistent CompoundTag for a session ID, creating one if absent.
+	 * The returned tag survives bundle reloads and is shared by all GameData instances
+	 * with the same ID.
+	 */
+	public CompoundTag getOrCreateSessionData(Identifier id) {
+		return persistentSessionData.computeIfAbsent(id, k -> new CompoundTag());
 	}
 
 	/**
@@ -352,9 +363,15 @@ public class GameManager implements BundleLifecycleListener {
 	public void onBundleReloadStarted() {
 		stopAll();
 		worlds.clear();
-		worldDataPaths.clear();
 		worldLifecycles.clear();
 		globalSessions.clear();
+	}
+
+	@Override
+	public void onBundleReloadCompleted() {
+		for (String worldName : worldDataPaths.keySet()) {
+			autoStartAll(worldName);
+		}
 	}
 
 	private Map<Identifier, GameSession> worlds(String world) {

@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.common.game;
 
 import com.mojang.logging.LogUtils;
+import de.luckymcdev.foundryengine.common.Common;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
@@ -19,11 +20,12 @@ public class GameData {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final String INITIALIZED_KEY = "_initialized";
 	private final Identifier identifier;
-	private CompoundTag data = new CompoundTag();
+	private final CompoundTag data;
 	private @Nullable Runnable initHandler;
 
 	public GameData(Identifier identifier) {
 		this.identifier = identifier;
+		this.data = Common.getGameManager().getOrCreateSessionData(identifier);
 	}
 
 	/**
@@ -35,16 +37,11 @@ public class GameData {
 
 	/**
 	 * Returns the underlying NBT compound data.
+	 * The returned tag is shared via GameManager's persistent store and survives
+	 * bundle reloads — modifications are visible to all sessions with the same ID.
 	 */
 	public CompoundTag data() {
 		return data;
-	}
-
-	/**
-	 * Sets the underlying NBT compound data.
-	 */
-	public void data(CompoundTag data) {
-		this.data = data;
 	}
 
 	/**
@@ -131,7 +128,7 @@ public class GameData {
 
 	protected void onLoad(CompoundTag tag) {
 		if (tag.contains("data")) {
-			tag.getCompound("data").ifPresent(loaded -> data = loaded);
+			tag.getCompound("data").ifPresent(data::merge);
 		}
 		if (!isInitialized()) {
 			if (initHandler != null) {

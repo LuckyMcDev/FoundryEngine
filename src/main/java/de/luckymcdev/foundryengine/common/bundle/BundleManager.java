@@ -14,6 +14,7 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
@@ -26,6 +27,8 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -43,6 +46,7 @@ public class BundleManager implements ResourceManagerReloadListener {
 	private final ReentrantLock reloadLock = new ReentrantLock();
 	private final GenericRegistry<String, Bundle> bundles = new GenericRegistry<>();
 	private final List<ModContainer> bundleContainers = new ArrayList<>();
+	private final Set<String> registeredConfigs = ConcurrentHashMap.newKeySet();
 	private final BundleDiscovery bundleDiscovery;
 	private final GroovyScriptLoader scriptLoader;
 	private final BundleLifecycleDispatcher lifecycleDispatcher = new BundleLifecycleDispatcher();
@@ -80,14 +84,47 @@ public class BundleManager implements ResourceManagerReloadListener {
 			BundleExceptionHandler.handle(
 				"Failed to load common scripts for bundle '" + bundle.info().id() + "'", e);
 		}
+		var id = bundle.info().id();
 		var spec = bundle.configSpec().build();
-		container.registerConfig(ModConfig.Type.COMMON, spec);
+		if (!registeredConfigs.contains(id)) {
+			container.registerConfig(ModConfig.Type.COMMON, spec);
+			registeredConfigs.add(id);
+		} else {
+			// Config is already registered in ConfigTracker from a previous load;
+			// re-registering would throw a "config file conflict" on reload.
+			container.setConfigSpec(spec);
+		}
 		lifecycleDispatcher.fireLoaded(bundle);
 		LOGGER.debug("Registered Bundle: {} with Info: {}", bundle.info().id(), bundle.info());
 	}
 
 	public List<ModContainer> getBundleContainers() {
 		return List.copyOf(bundleContainers);
+	}
+
+	/**
+	 * Rebuilds NeoForge's global loaded-mod list so it reflects the current set of
+	 * bundle containers. The construct-mod event only runs once, so without this the
+	 * list would keep stale {@link BundleModContainer}s after a reload.
+	 */
+	public void refreshModList() {
+		if (bundleContainers.isEmpty()) {
+			return;
+		}
+		List<ModContainer> allContainers = new ArrayList<>();
+		for (var container : ModList.get().getSortedMods()) {
+			if (!(container instanceof BundleModContainer)) {
+				allContainers.add(container);
+			}
+		}
+		allContainers.addAll(bundleContainers);
+		try {
+			var method = ModList.class.getDeclaredMethod("setLoadedMods", List.class);
+			method.setAccessible(true);
+			method.invoke(ModList.get(), allContainers);
+		} catch (Exception e) {
+			LOGGER.error("Failed to refresh loaded mod list", e);
+		}
 	}
 
 	/**
@@ -181,6 +218,7 @@ public class BundleManager implements ResourceManagerReloadListener {
 				BundleExceptionHandler.handle("Failed to reload bundles", e);
 			}
 
+			refreshModList();
 			loadServerScripts();
 
 			if (server != null) {
@@ -205,10 +243,14 @@ public class BundleManager implements ResourceManagerReloadListener {
 
 	/**
 	 * Unloads a single bundle: calls onUnload on all entrypoints,
+	 * removes its config from ConfigTracker, cleans up the mod container,
 	 * and closes the ZIP FileSystem if present.
 	 */
 	private void unloadBundle(Bundle bundle) {
 		lifecycleDispatcher.firePreUnload(bundle);
+		String id = bundle.info().id();
+		bundleContainers.removeIf(c ->
+			c instanceof BundleModContainer bmc && bmc.getBundle().info().id().equals(id));
 		try {
 			bundle.unload();
 		} finally {
