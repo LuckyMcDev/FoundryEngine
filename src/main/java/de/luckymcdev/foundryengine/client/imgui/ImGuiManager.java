@@ -97,7 +97,7 @@ public final class ImGuiManager implements ResourceManagerReloadListener, Native
 		io.setConfigWindowsMoveFromTitleBarOnly(true); // Sadly, this breaks when using gizmos
 		io.setConfigMacOSXBehaviors(InputQuirks.ON_OSX);
 
-		fontManager.loadFonts(resourceManager);
+		fontManager.load(resourceManager, BuiltInFonts.ALL);
 
 		ImGui.styleColorsDark();
 		loadThemeFromConfig();
@@ -316,17 +316,8 @@ public final class ImGuiManager implements ResourceManagerReloadListener, Native
 	@Override
 	public void onResourceManagerReload(ResourceManager resourceManager) {
 		switch (ClientConfig.FONT_OPTION.get()) {
-			case "MINIMAL": {
-				fontManager.loadFonts(resourceManager, BuiltInFonts.MINIMAL_LIST, BuiltInFonts.FALLBACK_JB);
-				break;
-			}
-			case "NORMAL": {
-				fontManager.loadFonts(resourceManager, BuiltInFonts.NORMAL_LIST, BuiltInFonts.REGULAR);
-				break;
-			}
-			case "DISABLED": {
-				break;
-			}
+			case "MINIMAL" -> fontManager.load(resourceManager, BuiltInFonts.MINIMAL, BuiltInFonts.FALLBACK);
+			case "NORMAL" -> fontManager.load(resourceManager, BuiltInFonts.ALL, BuiltInFonts.REGULAR);
 		}
 	}
 }

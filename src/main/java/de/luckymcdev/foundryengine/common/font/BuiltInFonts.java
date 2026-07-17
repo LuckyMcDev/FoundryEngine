@@ -1,23 +1,37 @@
 package de.luckymcdev.foundryengine.common.font;
 
-import net.minecraft.resources.Identifier;
+import de.luckymcdev.foundryengine.common.Common;
+import net.minecraft.network.chat.FontDescription;
 
 import java.util.List;
 
 /**
- * Registry of built-in font identifiers for ImGui and game UI.
+ * Font definition IDs for the built-in JetBrains Mono Nerd Font family.
+ * Each constant is a font definition JSON identifier (namespace:path, no "font/" prefix or ".json" suffix).
  */
 public class BuiltInFonts {
-	public static final Identifier LIGHT = TTFFile.JETBRAINS_MONO_NERD.light().id();
-	public static final Identifier REGULAR = TTFFile.JETBRAINS_MONO_NERD.regular().id();
-	public static final Identifier MEDIUM = TTFFile.JETBRAINS_MONO_NERD.medium().id();
-	public static final Identifier SEMIBOLD = TTFFile.JETBRAINS_MONO_NERD.semibold().id();
-	public static final Identifier BOLD = TTFFile.JETBRAINS_MONO_NERD.bold().id();
-	public static final Identifier ITALIC = TTFFile.JETBRAINS_MONO_NERD.italic().id();
-	public static final Identifier BOLD_ITALIC = TTFFile.JETBRAINS_MONO_NERD.boldItalic().id();
-	public static final Identifier FALLBACK_JB = TTFFile.FALLBACK_JB.id();
-	public static final List<Identifier> NORMAL_LIST = TTFFile.JETBRAINS_MONO_NERD.ids();
-	public static final List<Identifier> MINIMAL_LIST = List.of(
-		FALLBACK_JB
-	);
+	public static final FontDescription.Resource LIGHT = new FontDescription.Resource(Common.id("jbmononflight"));
+	public static final FontDescription.Resource REGULAR = new FontDescription.Resource(Common.id("jbmononfregular"));
+	public static final FontDescription.Resource MEDIUM = new FontDescription.Resource(Common.id("jbmononfmedium"));
+	public static final FontDescription.Resource SEMIBOLD = new FontDescription.Resource(Common.id("jbmononfsemibold"));
+	public static final FontDescription.Resource BOLD = new FontDescription.Resource(Common.id("jbmononfbold"));
+	public static final FontDescription.Resource ITALIC = new FontDescription.Resource(Common.id("jbmononfitalic"));
+	public static final FontDescription.Resource BOLD_ITALIC = new FontDescription.Resource(Common.id("jbmononfbolditalic"));
+	public static final FontDescription.Resource FALLBACK = new FontDescription.Resource(Common.id("jbregular"));
+
+	public static final List<FontDescription.Resource> ALL = List.of(LIGHT, REGULAR, MEDIUM, SEMIBOLD, BOLD, ITALIC, BOLD_ITALIC);
+	public static final List<FontDescription.Resource> MINIMAL = List.of(FALLBACK);
+
+	public static FontDescription face(boolean bold, boolean italic) {
+		if (bold && italic) {
+			return BOLD_ITALIC;
+		}
+		if (bold) {
+			return BOLD;
+		}
+		if (italic) {
+			return ITALIC;
+		}
+		return REGULAR;
+	}
 }

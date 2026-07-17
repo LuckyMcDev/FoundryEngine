@@ -16,7 +16,7 @@ import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcon;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.common.Common;
-import de.luckymcdev.foundryengine.common.font.TTFFile;
+import de.luckymcdev.foundryengine.common.font.BuiltInFonts;
 import de.luckymcdev.foundryengine.common.util.color.Color;
 import de.luckymcdev.foundryengine.config.ClientConfig;
 import imgui.ImFont;
@@ -39,6 +39,7 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.locale.Language;
+import net.minecraft.network.chat.FontDescription;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
@@ -109,7 +110,7 @@ public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorCons
 	 */
 	public static ImFont getStyleFont(final Style style) {
 		var fm = Client.getImGuiManager().getFontManager();
-		return fm.getFont(TTFFile.JETBRAINS_MONO_NERD.face(style.isBold(), style.isItalic()).id());
+		return fm.getFont(BuiltInFonts.face(style.isBold(), style.isItalic()));
 	}
 
 	public static int getColor(final int color) {
@@ -627,7 +628,7 @@ public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorCons
 		ImGui.textDisabled(value);
 	}
 
-	public void withFont(Identifier font, Runnable body) {
+	public void withFont(FontDescription.Resource font, Runnable body) {
 		var fonts = Client.getImGuiManager().getFontManager();
 		fonts.pushFont(font);
 		body.run();
