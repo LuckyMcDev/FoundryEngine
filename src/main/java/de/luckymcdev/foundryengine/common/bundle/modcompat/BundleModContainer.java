@@ -7,6 +7,8 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.EventListener;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.config.IConfigSpec;
+import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import org.apache.logging.log4j.LogManager;
@@ -18,6 +20,7 @@ public class BundleModContainer extends ModContainer {
 	private final Bundle bundle;
 	private final IEventBus eventBus;
 	private ModConfigSpec configSpec;
+	private boolean registeredConfig = false;
 
 	public BundleModContainer(BundleModInfo modInfo, Bundle bundle) {
 		super(modInfo);
@@ -49,5 +52,14 @@ public class BundleModContainer extends ModContainer {
 
 	public void setConfigSpec(ModConfigSpec modConfigSpec) {
 		this.configSpec = modConfigSpec;
+	}
+
+	@Override
+	public void registerConfig(ModConfig.Type type, IConfigSpec configSpec) {
+		this.configSpec = (ModConfigSpec) configSpec;
+		if (!registeredConfig) {
+			super.registerConfig(type, configSpec);
+			registeredConfig = true;
+		}
 	}
 }

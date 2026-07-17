@@ -81,7 +81,6 @@ public class BundleManager implements ResourceManagerReloadListener {
 				"Failed to load common scripts for bundle '" + bundle.info().id() + "'", e);
 		}
 		var spec = bundle.configSpec().build();
-		container.setConfigSpec(spec);
 		container.registerConfig(ModConfig.Type.COMMON, spec);
 		lifecycleDispatcher.fireLoaded(bundle);
 		LOGGER.debug("Registered Bundle: {} with Info: {}", bundle.info().id(), bundle.info());
