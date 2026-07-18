@@ -9,7 +9,7 @@ FoundryEngine provides event classes with static methods. You pass a **callback*
 ```groovy
 import de.luckymcdev.foundryengine.common.event.PlayerEvents
 
-PlayerEvents.tick { it ->
+PlayerEvents.tick {
     def player = it.player
     if (player.isShiftKeyDown()) {
         println "${player.name} is sneaking!"
@@ -17,24 +17,24 @@ PlayerEvents.tick { it ->
 }
 ```
 
-In Groovy, the `{ it -> ... }` is a closure. The `it` variable contains information about the event.
+In Groovy, `{ ... }` is a closure with an implicit `it` parameter containing the event data.
 
 ## What data does each event provide?
 
 Different events provide different information:
 
 ```groovy
-BlockEvents.broken { it ->
+BlockEvents.broken {
     it.pos       // Where the block was
     it.player    // Who broke it
     it.state     // What the block was
 }
 
-PlayerEvents.tick { it ->
+PlayerEvents.tick {
     it.player    // The player
 }
 
-EntityEvents.death { it ->
+EntityEvents.death {
     it.entity    // What died
     it.source    // What killed it
 }
@@ -49,7 +49,7 @@ ServerEvents.started { ->
 The most important event is `BundleEvents.registry`. Use it to register items, blocks, sounds, and particles:
 
 ```groovy
-BundleEvents.registry { it ->
+BundleEvents.registry {
     it.items(myItem)
     it.blocks(myBlock)
     it.sounds(mySound)
@@ -62,7 +62,7 @@ BundleEvents.registry { it ->
 You can listen to any NeoForge event, even ones not wrapped by FoundryEngine:
 
 ```groovy
-BundleEvents.custom(LivingDeathEvent.class, { it ->
+BundleEvents.custom(LivingDeathEvent.class, {
     println "${it.entity} died"
 })
 ```
@@ -75,11 +75,11 @@ Event listeners go inside the `onLoad()` method of your entrypoint:
 class Entrypoint implements BundleEntrypoint {
     @Override
     void onLoad() {
-        PlayerEvents.tick { it ->
+        PlayerEvents.tick {
             // runs every tick for every player
         }
 
-        BundleEvents.registry { it ->
+        BundleEvents.registry {
             // register your content
         }
     }
