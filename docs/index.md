@@ -3,7 +3,7 @@ layout: home
 
 hero:
     name: "FoundryEngine"
-  text: "Turn Minecraft into a Game Engine"
+    text: "Turn Minecraft into a Game Engine"
     tagline: Build mods without writing Java. An in-game editor, visual scripting, custom dimensions, cutscenes, mesh rendering, and more.
   image:
     src: /FoundryEngine/logo.png
