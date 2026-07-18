@@ -2,81 +2,81 @@
 layout: home
 
 hero:
-  name: "Foundry Engine"
+    name: "FoundryEngine"
   text: "Turn Minecraft into a Game Engine"
-  tagline: An in-game editor, visual scripting, custom dimensions, cutscenes, mesh rendering, and more — all without writing a single line of Java.
+    tagline: Build mods without writing Java. An in-game editor, visual scripting, custom dimensions, cutscenes, mesh rendering, and more.
   image:
     src: /FoundryEngine/logo.png
     alt: FoundryEngine Logo
   actions:
     - theme: brand
-      text: "Get started"
-      link: "/guide/getting-started"
+      text: "Get Started"
+      link: "/getting-started/"
     - theme: alt
-      text: "Installation guide"
-      link: "/guide/"
+      text: "Installation"
+      link: "/getting-started/installation"
     - theme: alt
       text: "View on GitHub"
       link: "https://github.com/LuckyMcDev/FoundryEngine"
 
 features:
-  - title: "Bundle System"
-    details: "Self-contained mod packaging that combines scripts, resources, and data packs in a single folder. No Java compilation needed."
-    link: "/concepts/core/bundles"
+    -   title: "No Java Required"
+        details: "Create mods using Groovy scripts. No compilation, no build tools. Just drop a folder and reload."
+        link: "/getting-started/first-bundle"
 
-  - title: "Groovy Scripting"
-    details: "Full Groovy 5 runtime for bundles. Register items, blocks, recipes, sounds, and particles from a scripting language."
-    link: "/concepts/core/scripts"
+    - title: "Bundle System"
+      details: "Self-contained mod packaging with scripts, textures, models, and data in one folder."
+      link: "/core-concepts/what-is-a-bundle"
 
   - title: "Builder API"
-    details: "Fluent builder classes for items, blocks, recipes (all 9 types), sounds, and particles with callback hooks for custom behavior."
-    link: "/concepts/core/builders"
+    details: "Simple builders for items, blocks, recipes, sounds, and particles with callback hooks."
+    link: "/core-concepts/creating-items"
 
   - title: "Event System"
-    details: "80+ events across 16 event classes covering block, item, player, entity, level, network, area, client, server, command, recipe, bundle, stage, game session, slot, and dialogue lifecycle."
-    link: "/concepts/core/events"
+    details: "React to block breaks, player joins, mob deaths, and 80+ other game events."
+    link: "/core-concepts/events-guide"
 
   - title: "In-Game Editor"
-    details: "Dear ImGui-powered dockable editor with panels for cutscenes, areas, waypoints, file browsing, code editing, dialogues, and more. All accessible in-game."
-    link: "/concepts/systems/editor"
+    details: "Dockable editor with panels for cutscenes, areas, waypoints, file browsing, and more."
+    link: "/systems/editor"
 
   - title: "Cutscene System"
-    details: "Bezier-based camera paths with keyframe commands, screen effects, rotational anchor points, and full in-world editor."
-    link: "/concepts/systems/cutscenes"
+    details: "Bezier camera paths with keyframe commands, screen effects, and in-world editor."
+    link: "/systems/cutscenes"
 
-  - title: "Instanced Worlds"
-    details: "Create runtime dimensions on-the-fly with custom chunk generators, clock controls, game rules, and difficulty. Temporary or persistent."
-    link: "/concepts/systems/instanced-worlds"
+    -   title: "Custom Worlds"
+        details: "Create runtime dimensions with custom chunk generators, game rules, and difficulty."
+        link: "/systems/instanced-worlds"
 
   - title: "Game Stages"
-    details: "Progression framework using named stages to gate items, mobs, dimensions, loot tables, and recipes with cancellable stage events."
-    link: "/concepts/systems/stages"
+    details: "Gate items, mobs, dimensions, and recipes behind progression milestones."
+    link: "/systems/stages"
 
-  - title: "Areas and Waypoints"
-    details: "Spatial zone triggers (AABB) with enter/leave/tick events and persistent colored in-world markers for navigation."
-    link: "/concepts/systems/areas"
+    -   title: "Areas & Waypoints"
+        details: "Spatial zones with enter/leave events and colored in-world markers."
+        link: "/systems/areas"
 
   - title: "Custom Particles"
-    details: "Keyframe-driven particle system with sequenced color, scale, velocity, position, and rotation over the particle lifetime."
-    link: "/concepts/systems/particles"
+    details: "Keyframe-driven particle system with color, scale, velocity, and rotation over time."
+    link: "/systems/particles"
 
-  - title: "Post-Processing Effects"
-    details: "Built-in shader effects (grayscale, sepia, bloom, blur) with a priority-based effect manager, custom GLSL pipelines, and fade transitions."
-    link: "/concepts/systems/post-processing"
+    -   title: "Post-Processing"
+        details: "Built-in shader effects (grayscale, sepia, bloom, blur) with fade transitions."
+        link: "/systems/post-processing"
 
-  - title: "Mesh Rendering and OBJ"
-    details: "Custom 3D rendering pipeline with mesh renderer, OBJ model support, 6 render pipelines, and engine scene depth capture."
-    link: "/concepts/systems/mesh-rendering"
+    -   title: "Mesh Rendering"
+        details: "Custom 3D rendering pipeline with OBJ model support and engine scene depth."
+        link: "/systems/mesh-rendering"
+
+    -   title: "Dialogue System"
+        details: "Branching NPC conversations with conditions, actions, and display modes."
+        link: "/systems/dialogue"
 
   - title: "Game Sessions"
-    details: "Managed lifecycle system for game modes and minigames with persistent NBT data and full state machine control."
-    link: "/concepts/systems/game-sessions"
+    details: "Stateful lifecycle system for minigames and custom game modes with persistent data."
+    link: "/systems/game-sessions"
 
   - title: "Java Addon API"
-    details: "Public events and builders for addon developers to hook into the engine. Register panels, modify blocks/items, add data providers."
-    link: "/concepts/advanced/addon-api"
-
-  - title: "Markdown Rendering"
-    details: "Render GitHub-Flavored Markdown as formatted Minecraft Component text for in-game documentation and tutorials."
-    link: "/concepts/systems/markdown"
+    details: "Public events and builders for Java developers to extend the engine."
+    link: "/advanced/addon-api"
 ---

@@ -394,7 +394,9 @@ ParticleBuilder.create(Common.id("sparkle"))
     .lifetime(30)
     .layer(ParticleLayer.TRANSLUCENT)
     .color(Color.WHITE, Color.RED, Easing.SINE_IN)
-    .scale(0.5f, 1.5f, Easing.SINE_OUT)
+    .scaleData(new ParticleScaleData(new KeyframeSequence<Float>()
+        .add(0.5f, 0f, Easing.LINEAR)
+        .add(1.5f, 1f, Easing.SINE_OUT)))
     .velocity(new Vector3d(0.0, 0.1, 0.0))
 
 BundleEvents.registry {
@@ -575,6 +577,9 @@ class Entrypoint implements BundleEntrypoint {
 ## See also
 
 - The `ExampleBundles/testbundle` directory in the repository for a complete working bundle with items, blocks, all 9 recipe types, sounds, commands, and event listeners.
-- [Concepts Overview](../concepts/core/) for detailed documentation on every feature.
-- [Builders](../concepts/core/builders) -- Full builder API reference
-- [Events](../concepts/core/events) -- Full event API reference
+- [Core Concepts](../core-concepts/) for detailed documentation on every feature.
+- [Creating Items](../core-concepts/creating-items) -- Item builder reference
+- [Creating Blocks](../core-concepts/creating-blocks) -- Block builder reference
+- [Creating Recipes](../core-concepts/creating-recipes) -- Recipe builder reference
+- [Events Guide](../core-concepts/events-guide) -- Events overview
+- [Events Reference](../core-concepts/events-reference) -- Full event list

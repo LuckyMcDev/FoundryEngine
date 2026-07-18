@@ -1,0 +1,10 @@
+[[bundles]]
+bundleId = "showcase"
+version = "1.0.0"
+displayName = "Showcase Bundle"
+displayURL = "https://github.com/LuckyMcDev/FoundryEngine"
+authors = "FoundryEngine"
+description = "A showcase bundle demonstrating most FoundryEngine features: items, blocks, recipes, sounds, particles, events, areas, waypoints, stages, dialogue, commands, and more."
+dependencies = [
+    "mod:neoforge@26.1.0.1-beta"
+]

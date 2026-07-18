@@ -55,3 +55,5 @@ docs/.vitepress/cache/
 *.tar.gz
 *.rar
 opencode.json
+
+StatisticsSnapshot.csv

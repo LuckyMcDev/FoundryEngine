@@ -2,7 +2,7 @@ import {defineConfig} from 'vitepress'
 
 export default defineConfig({
 	title: "FoundryEngine",
-	description: "A Minecraft mod that turns the game into a game engine — with an in-game editor, visual scripting, custom dimensions, cutscenes, mesh rendering, and more.",
+	description: "A Minecraft mod that turns the game into a game engine — build mods without writing Java.",
 	base: '/FoundryEngine/',
 
 	srcExclude: ['**/javadoc/**'],
@@ -16,119 +16,110 @@ export default defineConfig({
 
 		nav: [
 			{text: 'Home', link: '/'},
-			{text: 'Guide', link: '/guide/'},
-			{text: 'Concepts', link: '/concepts/core/'},
+			{text: 'Get Started', link: '/getting-started/'},
+			{text: 'Core Concepts', link: '/core-concepts/'},
+			{text: 'Systems', link: '/systems/'},
 			{text: 'Examples', link: '/examples/'},
 			{text: 'GitHub', link: 'https://github.com/LuckyMcDev/FoundryEngine'}
 		],
 
 		sidebar: {
-			'/guide/': [
+			'/getting-started/': [
 				{
-					text: 'Guide',
+					text: 'Getting Started',
 					items: [
-						{text: 'Installation', link: '/guide/'},
-						{text: 'Getting Started', link: '/guide/getting-started'},
-						{text: 'Workspaces', link: '/guide/workspaces'}
+						{text: 'What is FoundryEngine?', link: '/getting-started/'},
+						{text: 'Installation', link: '/getting-started/installation'},
+						{text: 'Your First Bundle', link: '/getting-started/first-bundle'},
+						{text: 'Workspaces', link: '/getting-started/workspaces'}
 					]
 				}
 			],
 
-			'/concepts/core/': [
+			'/core-concepts/': [
 				{
-					text: 'Core Concepts',
+					text: 'Bundles & Scripts',
 					items: [
-						{text: 'Overview', link: '/concepts/core/'},
-						{text: 'Bundles', link: '/concepts/core/bundles'},
-						{text: 'Scripts & Entrypoints', link: '/concepts/core/scripts'},
-						{text: 'Builders', link: '/concepts/core/builders'},
-						{text: 'Registries', link: '/concepts/core/registries'},
-						{text: 'Events', link: '/concepts/core/events'},
-						{text: 'Sides', link: '/concepts/core/sides'},
-						{text: 'Dependencies', link: '/concepts/core/dependencies'},
-						{text: 'Bundle Config', link: '/concepts/core/config'}
+						{text: 'Overview', link: '/core-concepts/'},
+						{text: 'What is a Bundle?', link: '/core-concepts/what-is-a-bundle'},
+						{text: 'Bundle Manifest', link: '/core-concepts/bundle-manifest'},
+						{text: 'Groovy Scripts', link: '/core-concepts/scripts'},
+						{text: 'Client & Server', link: '/core-concepts/sides'},
+						{text: 'Dependencies', link: '/core-concepts/dependencies'}
 					]
 				},
 				{
-					text: 'Systems',
+					text: 'Creating Content',
 					items: [
-						{text: 'Overview', link: '/concepts/systems/'},
-						{text: 'In-Game Editor', link: '/concepts/systems/editor'},
-						{text: 'Cutscene System', link: '/concepts/systems/cutscenes'},
-						{text: 'Instanced Worlds', link: '/concepts/systems/instanced-worlds'},
-						{text: 'Game Stages', link: '/concepts/systems/stages'},
-						{text: 'Areas', link: '/concepts/systems/areas'},
-						{text: 'Waypoints', link: '/concepts/systems/waypoints'},
-						{text: 'Custom Particles', link: '/concepts/systems/particles'},
-						{text: 'Post-Processing', link: '/concepts/systems/post-processing'},
-						{text: 'Game Sessions', link: '/concepts/systems/game-sessions'},
-						{text: 'Mesh Rendering & OBJ', link: '/concepts/systems/mesh-rendering'},
-						{text: 'Easing Functions', link: '/concepts/systems/easing'},
-						{text: 'Markdown Rendering', link: '/concepts/systems/markdown'},
-						{text: 'Commands', link: '/concepts/systems/commands'},
-						{text: 'NBT Command Suggestions', link: '/concepts/systems/nbt-suggestions'},
-						{text: 'Dialogue System', link: '/concepts/systems/dialogue'},
-						{text: 'Blueprints', link: '/concepts/systems/blueprints'}
+						{text: 'Creating Items', link: '/core-concepts/creating-items'},
+						{text: 'Creating Blocks', link: '/core-concepts/creating-blocks'},
+						{text: 'Creating Recipes', link: '/core-concepts/creating-recipes'},
+						{text: 'Creating Sounds & Particles', link: '/core-concepts/creating-sounds-particles'}
 					]
 				},
 				{
-					text: 'Advanced',
+					text: 'Events & Registration',
 					items: [
-						{text: 'Overview', link: '/concepts/advanced/'},
-						{text: 'Java Addon API', link: '/concepts/advanced/addon-api'},
-						{text: 'Editor Themes', link: '/concepts/advanced/themes'},
-						{text: 'Data Generation', link: '/concepts/advanced/data-generation'},
-						{text: 'Network Packets', link: '/concepts/advanced/network'},
-						{text: 'Mixin Architecture', link: '/concepts/advanced/mixins'}
+						{text: 'Events Guide', link: '/core-concepts/events-guide'},
+						{text: 'Events Reference', link: '/core-concepts/events-reference'},
+						{text: 'Registration', link: '/core-concepts/registration'}
 					]
 				}
 			],
 
-			'/concepts/systems/': [
+			'/systems/': [
 				{
-					text: 'Systems',
+					text: 'Editor & Cinematics',
 					items: [
-						{text: 'Overview', link: '/concepts/systems/'},
-						{text: 'In-Game Editor', link: '/concepts/systems/editor'},
-						{text: 'Cutscene System', link: '/concepts/systems/cutscenes'},
-						{text: 'Instanced Worlds', link: '/concepts/systems/instanced-worlds'},
-						{text: 'Game Stages', link: '/concepts/systems/stages'},
-						{text: 'Areas', link: '/concepts/systems/areas'},
-						{text: 'Waypoints', link: '/concepts/systems/waypoints'},
-						{text: 'Custom Particles', link: '/concepts/systems/particles'},
-						{text: 'Post-Processing', link: '/concepts/systems/post-processing'},
-						{text: 'Game Sessions', link: '/concepts/systems/game-sessions'},
-						{text: 'Mesh Rendering & OBJ', link: '/concepts/systems/mesh-rendering'},
-						{text: 'Easing Functions', link: '/concepts/systems/easing'},
-						{text: 'Markdown Rendering', link: '/concepts/systems/markdown'},
-						{text: 'Commands', link: '/concepts/systems/commands'},
-						{text: 'NBT Command Suggestions', link: '/concepts/systems/nbt-suggestions'},
-						{text: 'Dialogue System', link: '/concepts/systems/dialogue'},
-						{text: 'Blueprints', link: '/concepts/systems/blueprints'}
+						{text: 'In-Game Editor', link: '/systems/editor'},
+						{text: 'Cutscenes', link: '/systems/cutscenes'}
 					]
 				},
 				{
-					text: 'Core Concepts',
+					text: 'World & Progression',
 					items: [
-						{text: 'Overview', link: '/concepts/core/'},
-						{text: 'Bundles', link: '/concepts/core/bundles'},
-						{text: 'Scripts & Entrypoints', link: '/concepts/core/scripts'},
-						{text: 'Builders', link: '/concepts/core/builders'},
-						{text: 'Events', link: '/concepts/core/events'}
+						{text: 'Custom Worlds', link: '/systems/instanced-worlds'},
+						{text: 'Game Stages', link: '/systems/stages'},
+						{text: 'Game Sessions', link: '/systems/game-sessions'},
+						{text: 'Areas', link: '/systems/areas'},
+						{text: 'Waypoints', link: '/systems/waypoints'}
+					]
+				},
+				{
+					text: 'Rendering & Effects',
+					items: [
+						{text: 'Custom Particles', link: '/systems/particles'},
+						{text: 'Post-Processing', link: '/systems/post-processing'},
+						{text: 'Mesh Rendering', link: '/systems/mesh-rendering'},
+						{text: 'Easing Functions', link: '/systems/easing'}
+					]
+				},
+				{
+					text: 'Interaction',
+					items: [
+						{text: 'Dialogue System', link: '/systems/dialogue'},
+						{text: 'Markdown Rendering', link: '/systems/markdown'},
+						{text: 'NBT Suggestions', link: '/systems/nbt-suggestions'}
+					]
+				},
+				{
+					text: 'Reference',
+					items: [
+						{text: 'Commands Reference', link: '/systems/commands'}
 					]
 				}
 			],
 
-			'/concepts/advanced/': [
+			'/advanced/': [
 				{
-					text: 'Advanced',
+					text: 'For Java Developers',
 					items: [
-						{text: 'Overview', link: '/concepts/advanced/'},
-						{text: 'Java Addon API', link: '/concepts/advanced/addon-api'},
-						{text: 'Editor Themes', link: '/concepts/advanced/themes'},
-						{text: 'Data Generation', link: '/concepts/advanced/data-generation'},
-						{text: 'Network Packets', link: '/concepts/advanced/network'},
-						{text: 'Mixin Architecture', link: '/concepts/advanced/mixins'}
+						{text: 'Overview', link: '/advanced/'},
+						{text: 'Java Addon API', link: '/advanced/addon-api'},
+						{text: 'Data Generation', link: '/advanced/data-generation'},
+						{text: 'Network Packets', link: '/advanced/network-packets'},
+						{text: 'Editor Themes', link: '/advanced/editor-themes'},
+						{text: 'Mixin Architecture', link: '/advanced/mixin-architecture'}
 					]
 				}
 			],
@@ -137,7 +128,8 @@ export default defineConfig({
 				{
 					text: 'Examples',
 					items: [
-						{text: 'Overview', link: '/examples/'}
+						{text: 'Code Examples', link: '/examples/'},
+						{text: 'Showcase Bundle', link: '/examples/showcase-bundle'}
 					]
 				}
 			]
