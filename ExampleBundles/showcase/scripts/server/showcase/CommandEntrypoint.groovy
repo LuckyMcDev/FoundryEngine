@@ -16,6 +16,9 @@ class CommandEntrypoint implements BundleEntrypoint {
     }
 
     @Override
+    void onUnload() {}
+
+    @Override
     void onLoad() {
         CommandEvents.register { event ->
             def dispatcher = event.getDispatcher()

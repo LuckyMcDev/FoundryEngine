@@ -33,12 +33,12 @@ class CommonEntrypoint implements BundleEntrypoint {
 
     private static final ItemBuilder THIS_IS_A_ITEM = ItemBuilder.create(id("this_is_a_item"))
             .fireResistant()
-            .component("RARITY", Rarity.RARE)
+            .component(DataComponents.RARITY, Rarity.RARE)
             .stacksTo(67)
-            .use((level, player, hand) -> {
+            .use { level, player, hand ->
                 println("Test")
                 return InteractionResult.PASS
-            })
+            }
 
     private static final ItemBuilder ITEM_TWO = ItemBuilder.create(id("item_two"))
             .component(DataComponents.LORE, new ItemLore(List.of(

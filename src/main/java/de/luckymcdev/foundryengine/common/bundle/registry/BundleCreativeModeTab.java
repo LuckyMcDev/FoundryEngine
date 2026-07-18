@@ -36,6 +36,7 @@ public class BundleCreativeModeTab {
 							return id != null && id.getNamespace().equals(bundleId);
 						})
 						.map(ItemStack::new)
+						.filter(stack -> !stack.isEmpty())
 						.forEach(output::accept);
 					BuiltInRegistries.BLOCK.stream()
 						.filter(block -> {
@@ -43,6 +44,7 @@ public class BundleCreativeModeTab {
 							return id != null && id.getNamespace().equals(bundleId);
 						})
 						.map(ItemStack::new)
+						.filter(stack -> !stack.isEmpty())
 						.forEach(output::accept);
 				})
 				.build()

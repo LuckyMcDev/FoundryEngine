@@ -17,6 +17,9 @@ class LifecycleEntrypoint implements BundleEntrypoint {
     }
 
     @Override
+    void onUnload() {}
+
+    @Override
     void onLoad() {
         registerGameSession()
         registerEventListeners()
@@ -29,11 +32,11 @@ class LifecycleEntrypoint implements BundleEntrypoint {
             .autoStart(true)
             .onStarting { println "[Showcase] Game session starting!" }
             .onServerTick { server, level ->
-                if (level.dayTime % 6000 == 0) {
+                if (level.gameTime % 6000 == 0) {
                     def players = level.players()
                     if (!players.isEmpty()) {
                         server.getPlayerList().broadcastSystemMessage(
-                            Component.literal("§8[§eShowcase§8] §7Time: §f${level.dayTime / 20} seconds"), false)
+                            Component.literal("§8[§eShowcase§8] §7Time: §f${level.gameTime / 20} seconds"), false)
                     }
                 }
             }
@@ -58,7 +61,8 @@ class LifecycleEntrypoint implements BundleEntrypoint {
         EntityEvents.death { event ->
             def entity = event.entity
             def source = event.source
-            println "[Showcase] ${entity.name} was killed by ${source.displayName}"
+            def killer = source.getEntity()
+            println "[Showcase] ${entity.name} died${killer != null ? ' to ' + killer.name : ' from ' + source.getMsgId()}"
         }
     }
 }

@@ -13,6 +13,9 @@ class DialogueEntrypoint implements BundleEntrypoint {
     }
 
     @Override
+    void onUnload() {}
+
+    @Override
     void onLoad() {
         def manager = Common.getDialogueManager()
 

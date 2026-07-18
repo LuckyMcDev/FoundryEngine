@@ -20,6 +20,9 @@ class AreaEntrypoint implements BundleEntrypoint {
     }
 
     @Override
+    void onUnload() {}
+
+    @Override
     void onLoad() {
         def manager = Common.getAreaManager()
 

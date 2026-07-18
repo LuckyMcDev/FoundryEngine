@@ -9,10 +9,6 @@ import de.luckymcdev.foundryengine.common.event.BlockEvents
 import de.luckymcdev.foundryengine.common.event.BundleEvents
 import de.luckymcdev.foundryengine.common.event.PlayerEvents
 import de.luckymcdev.foundryengine.common.script.BundleEntrypoint
-import de.luckymcdev.foundryengine.client.particle.ParticleLayer
-import de.luckymcdev.foundryengine.client.particle.data.KeyframeSequence
-import de.luckymcdev.foundryengine.client.particle.data.ParticleScaleData
-import de.luckymcdev.foundryengine.common.easing.Easing
 import de.luckymcdev.foundryengine.common.util.color.Color
 import net.minecraft.advancements.criterion.InventoryChangeTrigger
 import net.minecraft.core.component.DataComponents
@@ -25,7 +21,6 @@ import net.minecraft.world.item.Rarity
 import net.minecraft.world.item.component.Consumables
 import net.minecraft.world.item.component.ItemLore
 import net.minecraft.world.level.block.Blocks
-import org.joml.Vector3d
 
 class CommonEntrypoint implements BundleEntrypoint {
 
@@ -50,14 +45,12 @@ class CommonEntrypoint implements BundleEntrypoint {
         def blocks = declareBlocks()
         def recipes = declareRecipes()
         def sound = declareSound()
-        def particle = declareParticle()
 
         BundleEvents.registry {
-            it.items(*items)
-            it.blocks(*blocks)
-            it.recipes(*recipes)
+            it.items(items)
+            it.blocks(blocks)
+            it.recipes(recipes)
             it.sounds(sound)
-            it.particles(particle)
         }
     }
 
@@ -93,7 +86,7 @@ class CommonEntrypoint implements BundleEntrypoint {
                 }
             }
 
-        return [gem, wand, apple, clock] as ItemBuilder[]
+        return [gem, wand, apple, clock]
     }
 
     /** Creates three blocks: a glowing stone, a fire trap, and an invisible light source. */
@@ -115,7 +108,7 @@ class CommonEntrypoint implements BundleEntrypoint {
             .properties { it.noCollision().strength(-1.0f, 3600000.0f).lightLevel { 15 } }
             .generateData(false)
 
-        return [glow, trap, light] as BlockBuilder[]
+        return [glow, trap, light]
     }
 
     /** Creates a shaped, shapeless, and smelting recipe using vanilla items. */
@@ -138,37 +131,23 @@ class CommonEntrypoint implements BundleEntrypoint {
             .cookingTime(200)
             .unlockedBy("has_stone", InventoryChangeTrigger.TriggerInstance.hasItems(Blocks.STONE))
 
-        return [shaped, shapeless, smelting] as RecipeBuilder[]
+        return [shaped, shapeless, smelting]
     }
 
     /** Creates a magic chime sound. */
     private SoundBuilder declareSound() {
         return SoundBuilder.create(id("magic_chime"))
             .subtitle("Magic Chime")
-            .addSound(id("sounds.magic_chime"))
+            .addSound(id("magic_chime"))
             .range(16.0f)
-    }
-
-    /** Creates a sparkle particle with animated color and scale. */
-    private ParticleBuilder declareParticle() {
-        return ParticleBuilder.create(id("sparkle"))
-            .alwaysShow()
-            .lifetime(30)
-            .layer(ParticleLayer.TRANSLUCENT)
-            .color(Color.WHITE, Color.RED, Easing.SINE_IN)
-            .scaleData(new ParticleScaleData(new KeyframeSequence<Float>()
-                .add(0.5f, 0f, Easing.LINEAR)
-                .add(1.5f, 1f, Easing.SINE_OUT)))
-            .velocity(new Vector3d(0.0, 0.1, 0.0))
     }
 
     /** Registers common event listeners. */
     private void registerEvents() {
         PlayerEvents.tick { event ->
-            def player = event.player
+            def player = event.entity
             if (player.tickCount % 100 == 0) {
-                player.sendSystemMessage(
-                    Component.literal("§7[Showcase] You have been playing for §e${player.tickCount / 20}§7 seconds!"))
+                //player.sendSystemMessage(Component.literal("§7[Showcase] You have been playing for §e${player.tickCount / 20}§7 seconds!"))
             }
         }
 

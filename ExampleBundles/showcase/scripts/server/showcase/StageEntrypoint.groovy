@@ -14,6 +14,9 @@ class StageEntrypoint implements BundleEntrypoint {
     }
 
     @Override
+    void onUnload() {}
+
+    @Override
     void onLoad() {
         def registry = Common.getGameStageHandler().getStageRegistry()
 

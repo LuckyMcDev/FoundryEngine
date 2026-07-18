@@ -86,7 +86,7 @@ Areas, waypoints, stages, dialogue, commands, and game sessions are registered i
 
 ### Multi-entrypoint pattern
 
-The bundle system loads every `.groovy` file that implements `BundleEntrypoint` inside `scripts/`. You can split your code across as many files as you want — each one gets `onLoad()` called independently.
+The bundle system loads every `.groovy` file that implements `BundleEntrypoint` inside `scripts/`. You can split your code across as many files as you want — just note that `BundleEntrypoint` is a Java interface with two abstract methods (`onLoad()` and `onUnload()`), so every entrypoint class must implement both (can be empty if no cleanup is needed).
 
 ## Next steps
 
