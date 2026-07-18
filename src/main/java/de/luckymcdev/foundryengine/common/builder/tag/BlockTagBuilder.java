@@ -57,14 +57,14 @@ public class BlockTagBuilder extends TagBuilder<Block> {
 	}
 
 	public BlockTagBuilder add(Block block) {
-		return (BlockTagBuilder) add(BuiltInRegistries.BLOCK.createIntrusiveHolder(block));
+		return add(BuiltInRegistries.BLOCK.getResourceKey(block).orElseThrow());
 	}
 
 	public BlockTagBuilder addOptional(Block block) {
-		return (BlockTagBuilder) addOptional(BuiltInRegistries.BLOCK.createIntrusiveHolder(block));
+		return addOptional(BuiltInRegistries.BLOCK.getResourceKey(block).orElseThrow());
 	}
 
 	public BlockTagBuilder remove(Block block) {
-		return (BlockTagBuilder) remove(BuiltInRegistries.BLOCK.createIntrusiveHolder(block));
+		return remove(BuiltInRegistries.BLOCK.getResourceKey(block).orElseThrow());
 	}
 }

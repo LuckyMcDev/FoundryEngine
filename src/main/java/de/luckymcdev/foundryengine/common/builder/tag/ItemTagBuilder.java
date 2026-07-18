@@ -57,14 +57,14 @@ public class ItemTagBuilder extends TagBuilder<Item> {
 	}
 
 	public ItemTagBuilder add(Item item) {
-		return (ItemTagBuilder) add(BuiltInRegistries.ITEM.createIntrusiveHolder(item));
+		return add(BuiltInRegistries.ITEM.getResourceKey(item).orElseThrow());
 	}
 
 	public ItemTagBuilder addOptional(Item item) {
-		return (ItemTagBuilder) addOptional(BuiltInRegistries.ITEM.createIntrusiveHolder(item));
+		return addOptional(BuiltInRegistries.ITEM.getResourceKey(item).orElseThrow());
 	}
 
 	public ItemTagBuilder remove(Item item) {
-		return (ItemTagBuilder) remove(BuiltInRegistries.ITEM.createIntrusiveHolder(item));
+		return remove(BuiltInRegistries.ITEM.getResourceKey(item).orElseThrow());
 	}
 }

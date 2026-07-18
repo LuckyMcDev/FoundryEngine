@@ -99,7 +99,7 @@ public class EngineModelProvider implements DataProvider {
 			return DataProvider.saveAll(
 				cachedOutput,
 				BlockStateModelDispatcher.CODEC,
-				block -> pathProvider.json(BuiltInRegistries.BLOCK.createIntrusiveHolder(block).key().identifier()),
+				block -> pathProvider.json(BuiltInRegistries.BLOCK.getKey(block)),
 				serialized
 			);
 		}
@@ -164,7 +164,7 @@ public class EngineModelProvider implements DataProvider {
 			return DataProvider.saveAll(
 				cachedOutput,
 				ClientItem.CODEC,
-				item -> pathProvider.json(BuiltInRegistries.ITEM.createIntrusiveHolder(item).key().identifier()),
+				item -> pathProvider.json(BuiltInRegistries.ITEM.getKey(item)),
 				resolved
 			);
 		}
