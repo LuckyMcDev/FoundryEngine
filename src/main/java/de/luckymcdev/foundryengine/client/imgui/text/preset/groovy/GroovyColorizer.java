@@ -77,7 +77,7 @@ public final class GroovyColorizer extends AbstractBaseColorizer {
 		"(/\\*.*?\\*/)"                                      // group 1 - multi-line comment
 			+ "|(\"\"\"(?:[^\"\\\\]|\\\\.)*\"\"\")"          // group 2 - triple-quoted string
 			+ "|('''(?:[^'\\\\]|\\\\.)*''')"                // group 3 - triple-single-quoted string
-			+ "|(\"(?:[^\"\\\\$]|\\\\.|\\$\\{.*?\\})*\")"  // group 4 - GString (with interpolation)
+			+ "|(\"(?:[^\"\\\\$]|\\\\.|\\$\\{.*?})*\")"  // group 4 - GString (with interpolation)
 			+ "|('(?:[^'\\\\]|\\\\.)*')"                    // group 5 - single-quoted string
 			+ "|(@[a-zA-Z_][a-zA-Z0-9_]*)"                  // group 6 - annotation
 			+ "|([a-zA-Z_][a-zA-Z0-9_]*)\\s*(?=\\()"       // group 7 - call before '('

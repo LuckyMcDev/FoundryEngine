@@ -137,7 +137,8 @@ public class DynamicPackRepository implements RepositorySource {
 				Component.literal(description),
 				PackCompatibility.COMPATIBLE,
 				FeatureFlagSet.of(),
-				List.of()
+				List.of(),
+				false
 			),
 			new PackSelectionConfig(true, position, fixedPosition)
 		);

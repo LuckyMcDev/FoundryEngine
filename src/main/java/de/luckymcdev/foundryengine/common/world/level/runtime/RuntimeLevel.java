@@ -30,7 +30,7 @@ public class RuntimeLevel extends ServerLevel {
 
 	protected RuntimeLevel(MinecraftServer server, ResourceKey<Level> dimension, RuntimeLevelConfig config, Style style) {
 		LevelStem dimensionOptions = config.createDimensionOptions(server);
-		GameRules gameRules = null;
+		GameRules gameRules;
 		if (!config.shouldMirrorOverworldGameRules()) {
 			gameRules = new GameRules(server.getWorldData().enabledFeatures());
 			config.getGameRules().applyTo(gameRules, null);
@@ -80,8 +80,8 @@ public class RuntimeLevel extends ServerLevel {
 	@Override
 	protected void tickTime() {
 		this.getRuntimeLevelData().setGameTime(this.getServer().overworld().getGameTime());
-		if (this.tickTime && this.clockManager instanceof RuntimeClockManager clockManager) {
-			clockManager.tickFromLevel(this);
+		if (this.tickTime && this.clockManager instanceof RuntimeClockManager ttClockManager) {
+			ttClockManager.tickFromLevel(this);
 		}
 	}
 

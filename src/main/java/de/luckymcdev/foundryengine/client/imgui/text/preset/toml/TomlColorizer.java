@@ -27,7 +27,7 @@ public final class TomlColorizer extends AbstractBaseColorizer {
 			+ "|(#.*?$)"                                   // group 2: comment
 			+ "|(\\btrue\\b|\\bfalse\\b)"                 // group 3: booleans
 			+ "|(\\d+\\.?\\d*[eE]?[+-]?\\d*)"             // group 4: numbers
-			+ "|(\\[\\s*[a-zA-Z_][a-zA-Z0-9_.]*\\s*\\])"  // group 5: section header
+			+ "|(\\[\\s*[a-zA-Z_][a-zA-Z0-9_.]*\\s*])"  // group 5: section header
 			+ "|([a-zA-Z_][a-zA-Z0-9_.]*)\\s*="            // group 6: key
 			+ "|(\\s+)"                                   // group 7: whitespace
 	);

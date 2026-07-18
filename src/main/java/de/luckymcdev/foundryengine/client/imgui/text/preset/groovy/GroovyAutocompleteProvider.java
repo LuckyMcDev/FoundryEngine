@@ -53,17 +53,6 @@ public record GroovyAutocompleteProvider(GroovyColorizer colorizer) implements I
 		return "";
 	}
 
-
-	@Override
-	public int minPrefixLength() {
-		return 2;
-	}
-
-	@Override
-	public boolean appendParens() {
-		return true;
-	}
-
 	@Override
 	public boolean shouldSuppress(String prefix, List<List<EditorGlyph>> lines, EditorCoordinates cursor) {
 		return false;

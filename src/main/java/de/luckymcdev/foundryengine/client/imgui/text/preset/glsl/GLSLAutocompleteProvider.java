@@ -61,17 +61,6 @@ public record GLSLAutocompleteProvider(GLSLColorizer colorizer) implements IAuto
 		return new AutocompleteItem(text, type, sig, color);
 	}
 
-
-	@Override
-	public int minPrefixLength() {
-		return 2;
-	}
-
-	@Override
-	public boolean appendParens() {
-		return true;
-	}
-
 	@Override
 	public boolean shouldSuppress(String prefix, List<List<EditorGlyph>> lines, EditorCoordinates cursor) {
 		if (cursor.line < lines.size()) {

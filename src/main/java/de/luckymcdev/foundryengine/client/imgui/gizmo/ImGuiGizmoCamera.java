@@ -48,14 +48,12 @@ public final class ImGuiGizmoCamera {
 		if (ImGui.isMouseDown(1)) {
 			if (!isDraggingOrbit) {
 				isDraggingOrbit = true;
-				lastMouseX = mx;
-				lastMouseY = my;
 			} else {
 				yaw += (mx - lastMouseX) * orbitSensitivity;
 				pitch = Math.clamp(pitch - (my - lastMouseY) * orbitSensitivity, -89.0f, 89.0f);
-				lastMouseX = mx;
-				lastMouseY = my;
 			}
+			lastMouseX = mx;
+			lastMouseY = my;
 		} else {
 			isDraggingOrbit = false;
 		}

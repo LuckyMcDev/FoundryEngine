@@ -273,7 +273,7 @@ public class CodeEditor extends EditorPanel {
 				if (ImGui.menuItem("Find/Replace", "Ctrl+H")) {
 					toggleFind(true);
 				}
-				if (ImGui.menuItem("Go to Line\u2026", "Ctrl+G")) {
+				if (ImGui.menuItem("Go to Line", "Ctrl+G")) {
 					openGotoLine();
 				}
 				ImGui.endMenu();
@@ -319,11 +319,11 @@ public class CodeEditor extends EditorPanel {
 			ImGui.inputText("##find", findText, ImGuiInputTextFlags.None);
 
 			ImGui.sameLine();
-			if (ImGui.smallButton("\u25B2")) {
+			if (ImGui.smallButton("Prev.")) {
 				findPrev();
 			}
 			ImGui.sameLine();
-			if (ImGui.smallButton("\u25BC")) {
+			if (ImGui.smallButton("Next")) {
 				findNext();
 			}
 
@@ -333,7 +333,7 @@ public class CodeEditor extends EditorPanel {
 			ImGui.checkbox("Whole word", wholeWord);
 
 			ImGui.sameLine();
-			if (ImGui.smallButton("\u00D7")) {
+			if (ImGui.smallButton("X")) {
 				showFind = false;
 				showReplace = false;
 			}
@@ -499,7 +499,7 @@ public class CodeEditor extends EditorPanel {
 	}
 
 	private void selectRange(String text, int start, int length) {
-		int startLine = 0, startCol = 0, endLine = 0, endCol = 0;
+		int startLine = 0, startCol = 0, endLine, endCol;
 		for (int i = 0; i < start && i < text.length(); i++) {
 			if (text.charAt(i) == '\n') {
 				startLine++;
@@ -531,7 +531,7 @@ public class CodeEditor extends EditorPanel {
 			return;
 		}
 
-		ImGui.text("Enter line number (1 \u2013 " + textEditor.getTotalLines() + "):");
+		ImGui.text("Enter line number (1 - " + textEditor.getTotalLines() + "):");
 
 		ImInt buf = new ImInt(gotoLineTarget);
 		if (ImGui.inputInt("##gotoLine", buf)) {

@@ -36,8 +36,8 @@ public abstract class CreativeModeInventoryScreenSlotWrapperMixin extends Slot i
 	@Inject(method = "<init>", at = @At("TAIL"))
 	public void CreativeModeInventoryScreen$SlotWrapper(Slot target, int index, int x, int y, CallbackInfo ci) {
 		var targetCus = (SlotCustomization) target;
-		this.engine$setSlotTooltipText(targetCus.engine$getSlotTooltipText());
-		this.engine$setDisabledOverride(targetCus.engine$getDisabledOverride());
+		this.engine$slotTooltipText = targetCus.engine$getSlotTooltipText();
+		this.engine$disabledOverride = targetCus.engine$getDisabledOverride();
 	}
 
 	@Inject(method = "isActive", at = @At("TAIL"), cancellable = true)

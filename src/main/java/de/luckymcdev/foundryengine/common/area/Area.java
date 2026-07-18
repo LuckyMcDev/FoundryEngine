@@ -37,10 +37,12 @@ public abstract class Area {
 
 	public static Area readFromNbt(CompoundTag tag) {
 		String type = tag.getString("type").orElse("aabb");
-		Area area = switch (type) {
-			case "block" -> BlockArea.readFromNbt(tag);
-			default -> AABBArea.readFromNbt(tag);
-		};
+		Area area;
+		if (type.equals("block")) {
+			area = BlockArea.readFromNbt(tag);
+		} else {
+			area = AABBArea.readFromNbt(tag);
+		}
 
 		ListTag modList = tag.getListOrEmpty("modules");
 		for (int i = 0; i < modList.size(); i++) {

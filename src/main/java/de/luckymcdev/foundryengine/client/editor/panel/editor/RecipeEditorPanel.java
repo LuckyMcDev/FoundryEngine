@@ -382,7 +382,7 @@ public class RecipeEditorPanel extends EditorPanel {
 		List<SlotDef> inputs = new ArrayList<>();
 		for (int i = 0; i < 9; i++) {
 			inputs.add(new SlotDef(String.valueOf(i), String.valueOf(i),
-				29 + (i % 3) * SLOT_TEX_SIZE, 16 + (i / 3) * SLOT_TEX_SIZE));
+				29 + (i % 3) * SLOT_TEX_SIZE, 16 + ((float) i / 3) * SLOT_TEX_SIZE));
 		}
 		return new RecipeLayout(RecipeType.SHAPELESS.texture, inputs, new SlotDef("result", "Result", 123, 34));
 	}

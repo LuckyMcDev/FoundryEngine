@@ -183,80 +183,75 @@ public class IconExporterLayer implements GuiLayer {
 		RenderSystem.outputDepthTextureOverride = depthView;
 
 		Projection projection = new Projection();
-		ProjectionMatrixBuffer projBuf = new ProjectionMatrixBuffer("icons");
-		projection.setupOrtho(-1000.0F, 1000.0F, texWidth, texHeight, true);
+		try (colorTex; colorView; depthTex; depthView; var projBuf = new ProjectionMatrixBuffer("icons")) {
+			projection.setupOrtho(-1000.0F, 1000.0F, texWidth, texHeight, true);
 
-		var gameRenderer = mc.gameRenderer;
-		RenderSystem.backupProjectionMatrix();
-		RenderSystem.setProjectionMatrix(projBuf.getBuffer(projection), ProjectionType.ORTHOGRAPHIC);
+			var gameRenderer = mc.gameRenderer;
+			RenderSystem.backupProjectionMatrix();
+			RenderSystem.setProjectionMatrix(projBuf.getBuffer(projection), ProjectionType.ORTHOGRAPHIC);
 
-		var lighting = gameRenderer.getLighting();
-		var submitNodeCollector = gameRenderer.getSubmitNodeStorage();
-		var featureDispatcher = gameRenderer.getFeatureRenderDispatcher();
-		var bufferSource = mc.renderBuffers().bufferSource();
-		var resolver = mc.getItemModelResolver();
-		var player = mc.player;
+			var lighting = gameRenderer.getLighting();
+			var submitNodeCollector = gameRenderer.getSubmitNodeStorage();
+			var featureDispatcher = gameRenderer.getFeatureRenderDispatcher();
+			var bufferSource = mc.renderBuffers().bufferSource();
+			var resolver = mc.getItemModelResolver();
+			var player = mc.player;
 
-		PoseStack poseStack = new PoseStack();
+			PoseStack poseStack = new PoseStack();
 
-		for (int i = 0; i < batch.size(); i++) {
-			var data = batch.get(i);
-			int col = i % columns;
-			int row = i / columns;
+			for (int i = 0; i < batch.size(); i++) {
+				var data = batch.get(i);
+				int col = i % columns;
+				int row = i / columns;
 
-			int left = col * imageSize;
-			int top = row * imageSize;
+				int left = col * imageSize;
+				int top = row * imageSize;
 
-			RenderSystem.enableScissorForRenderTypeDraws(left, texHeight - (top + imageSize), imageSize, imageSize);
+				RenderSystem.enableScissorForRenderTypeDraws(left, texHeight - (top + imageSize), imageSize, imageSize);
 
-			TrackingItemStackRenderState renderState = new TrackingItemStackRenderState();
-			resolver.updateForTopItem(renderState, data.stack(), ItemDisplayContext.GUI, level, player, 0);
+				TrackingItemStackRenderState renderState = new TrackingItemStackRenderState();
+				resolver.updateForTopItem(renderState, data.stack(), ItemDisplayContext.GUI, level, player, 0);
 
-			Lighting.Entry lightingEntry = renderState.usesBlockLight() ? Lighting.Entry.ITEMS_3D : Lighting.Entry.ITEMS_FLAT;
-			lighting.setupFor(lightingEntry);
+				Lighting.Entry lightingEntry = renderState.usesBlockLight() ? Lighting.Entry.ITEMS_3D : Lighting.Entry.ITEMS_FLAT;
+				lighting.setupFor(lightingEntry);
 
-			poseStack.pushPose();
-			poseStack.translate(left + (float) imageSize / 2.0F, top + (float) imageSize / 2.0F, 0.0F);
-			poseStack.scale(imageSize, -imageSize, imageSize);
-			renderState.submit(poseStack, submitNodeCollector, 15728880, OverlayTexture.NO_OVERLAY, 0);
-			poseStack.popPose();
+				poseStack.pushPose();
+				poseStack.translate(left + (float) imageSize / 2.0F, top + (float) imageSize / 2.0F, 0.0F);
+				poseStack.scale(imageSize, -imageSize, imageSize);
+				renderState.submit(poseStack, submitNodeCollector, 15728880, OverlayTexture.NO_OVERLAY, 0);
+				poseStack.popPose();
 
-			RenderSystem.disableScissorForRenderTypeDraws();
+				RenderSystem.disableScissorForRenderTypeDraws();
 
-			exportNbtIfNeeded(data, level.registryAccess());
-		}
-
-		featureDispatcher.renderAllFeatures();
-		bufferSource.endBatch();
-
-		RenderSystem.restoreProjectionMatrix();
-		RenderSystem.outputColorTextureOverride = null;
-		RenderSystem.outputDepthTextureOverride = null;
-
-		int pixelSize = TextureFormat.RGBA8.pixelSize();
-		GpuBuffer readBuffer = device.createBuffer(() -> "Icons read", GpuBuffer.USAGE_MAP_READ | GpuBuffer.USAGE_COPY_DST, (long) texWidth * texHeight * pixelSize);
-		CommandEncoder encoder = device.createCommandEncoder();
-		device.createCommandEncoder().copyTextureToBuffer(colorTex, readBuffer, 0, () -> {
-			try (var mapped = encoder.mapBuffer(readBuffer, true, false)) {
-				NativeImage image = new NativeImage(texWidth, texHeight, false);
-				for (int y = 0; y < texHeight; y++) {
-					for (int x = 0; x < texWidth; x++) {
-						int pixel = mapped.data().getInt((x + y * texWidth) * pixelSize);
-						image.setPixelABGR(x, texHeight - y - 1, pixel);
-					}
-				}
-				ImageExportUtil.processBatchAsync(image, batch, columns, imageSize, 0);
-			} catch (Exception e) {
-				ImageExportUtil.LOGGER.error("Failed to process icon batch", e);
+				exportNbtIfNeeded(data, level.registryAccess());
 			}
-			readBuffer.close();
-			colorTex.close();
-			colorView.close();
-			depthTex.close();
-			depthView.close();
-			projBuf.close();
-		}, 0);
 
+			featureDispatcher.renderAllFeatures();
+			bufferSource.endBatch();
+
+			RenderSystem.restoreProjectionMatrix();
+			RenderSystem.outputColorTextureOverride = null;
+			RenderSystem.outputDepthTextureOverride = null;
+
+			int pixelSize = TextureFormat.RGBA8.pixelSize();
+			GpuBuffer readBuffer = device.createBuffer(() -> "Icons read", GpuBuffer.USAGE_MAP_READ | GpuBuffer.USAGE_COPY_DST, (long) texWidth * texHeight * pixelSize);
+			CommandEncoder encoder = device.createCommandEncoder();
+			device.createCommandEncoder().copyTextureToBuffer(colorTex, readBuffer, 0, () -> {
+				try (var mapped = encoder.mapBuffer(readBuffer, true, false)) {
+					NativeImage image = new NativeImage(texWidth, texHeight, false);
+					for (int y = 0; y < texHeight; y++) {
+						for (int x = 0; x < texWidth; x++) {
+							int pixel = mapped.data().getInt((x + y * texWidth) * pixelSize);
+							image.setPixelABGR(x, texHeight - y - 1, pixel);
+						}
+					}
+					ImageExportUtil.processBatchAsync(image, batch, columns, imageSize, 0);
+				} catch (Exception e) {
+					ImageExportUtil.LOGGER.error("Failed to process icon batch", e);
+				}
+				readBuffer.close();
+			}, 0);
+		}
 		int processed = totalItems - pendingItems.size();
 		if (mc.player != null) {
 			mc.player.sendSystemMessage(Component.translatable("gui.foundryengine.icons.status", processed, totalItems));

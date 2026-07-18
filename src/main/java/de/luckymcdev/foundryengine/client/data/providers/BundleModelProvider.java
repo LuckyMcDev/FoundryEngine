@@ -10,6 +10,7 @@ import net.minecraft.client.data.models.model.ModelLocationUtils;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModelDispatcher;
 import net.minecraft.client.renderer.item.ClientItem;
 import net.minecraft.client.renderer.item.ItemModel;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
@@ -79,7 +80,7 @@ public abstract class BundleModelProvider implements DataProvider {
 			return DataProvider.saveAll(
 				cachedOutput,
 				BlockStateModelDispatcher.CODEC,
-				block -> pathProvider.json(block.builtInRegistryHolder().key().identifier()),
+				block -> pathProvider.json(BuiltInRegistries.BLOCK.createIntrusiveHolder(block).key().identifier()),
 				serialized
 			);
 		}
@@ -141,7 +142,7 @@ public abstract class BundleModelProvider implements DataProvider {
 			return DataProvider.saveAll(
 				cachedOutput,
 				ClientItem.CODEC,
-				item -> pathProvider.json(item.builtInRegistryHolder().key().identifier()),
+				item -> pathProvider.json(BuiltInRegistries.ITEM.createIntrusiveHolder(item).key().identifier()),
 				resolved
 			);
 		}

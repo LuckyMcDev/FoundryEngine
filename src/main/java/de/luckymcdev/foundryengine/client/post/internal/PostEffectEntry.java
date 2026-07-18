@@ -294,7 +294,10 @@ public final class PostEffectEntry {
 	private void renderProcessor(Minecraft mc, PostChain processor, GraphicsResourceAllocator allocator, Set<Identifier> effectiveExternalTargets) {
 		RenderTarget mainFramebuffer = mc.getMainRenderTarget();
 		if (effectiveExternalTargets.equals(Set.of(PostChain.MAIN_TARGET_ID))) {
-			processor.process(mainFramebuffer, allocator);
+			FrameGraphBuilder frame = new FrameGraphBuilder();
+			PostChain.TargetBundle targets = PostChain.TargetBundle.of(PostChain.MAIN_TARGET_ID, frame.importExternal("main", mainFramebuffer));
+			processor.addToFrame(frame, mainFramebuffer.width, mainFramebuffer.height, targets);
+			frame.execute(allocator);
 			return;
 		}
 

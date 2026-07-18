@@ -182,7 +182,7 @@ public class StorageSourceManager {
 	 */
 	public static void ensureInstanced(String levelId, Path source) throws IOException {
 		String packMode = CommonConfig.PACK_MODE.get();
-		if (!packMode.isEmpty() && packMode.equalsIgnoreCase("dev")) {
+		if (packMode.equalsIgnoreCase("dev")) {
 			LOGGER.info("Pack mode '{}': loading world '{}' directly (no instancing)", packMode, levelId);
 			return;
 		}

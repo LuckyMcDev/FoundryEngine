@@ -438,7 +438,7 @@ public final class ImGuiCoreTextEditor {
 			String errorMsg = errorLines.get(li + 1);
 			if (errorMsg != null) {
 				float gutterX = origin.x + textStart - numW - theme.gutterPaddingRight - 6;
-				dl.addText(gutterX, lineY, EditorTheme.toImU32(theme.errorMarkerColor), "\u25CF");
+				dl.addText(gutterX, lineY, EditorTheme.toImU32(theme.errorMarkerColor), "O");
 				float waveY = lineY + lineHeight - 2;
 				float underlineStart = origin.x + textStart;
 				float underlineEnd = origin.x + textStart + (x > 0 ? x : charWidth);

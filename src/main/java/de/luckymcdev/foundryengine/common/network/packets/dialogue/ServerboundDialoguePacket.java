@@ -52,15 +52,10 @@ public record ServerboundDialoguePacket(
 			}
 			var dialogueManager = Common.getDialogueManager();
 			switch (packet.action()) {
-				case SELECT_OPTION -> {
-					dialogueManager.selectOption(player, packet.optionId());
-				}
-				case ADVANCE_NEXT -> {
-					dialogueManager.advanceNext(player);
-				}
-				case END -> {
-					dialogueManager.endDialogue(player);
-				}
+				case SELECT_OPTION -> dialogueManager.selectOption(player, packet.optionId());
+				case ADVANCE_NEXT -> dialogueManager.advanceNext(player);
+				case END -> dialogueManager.endDialogue(player);
+				default -> throw new IllegalStateException("Unexpected value: " + packet.action());
 			}
 		});
 	}

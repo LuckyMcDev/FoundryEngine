@@ -533,7 +533,7 @@ public abstract class Easing {
 			if (p == 0) {
 				p = time * 0.3f;
 			}
-			float s = 0;
+			float s;
 			if (a < Math.abs(max)) {
 				a = max;
 				s = p / 4;
@@ -577,7 +577,7 @@ public abstract class Easing {
 			if (p == 0) {
 				p = time * 0.3f;
 			}
-			float s = 0;
+			float s;
 			if (a < Math.abs(max)) {
 				a = max;
 				s = p / 4;
@@ -621,7 +621,7 @@ public abstract class Easing {
 			if (p == 0) {
 				p = time * (0.3f * 1.5f);
 			}
-			float s = 0;
+			float s;
 			if (a < Math.abs(max)) {
 				a = max;
 				s = p / 4.0f;
@@ -763,9 +763,9 @@ public abstract class Easing {
 		public float ease(float value, float min, float max, float time) {
 			float s = getOvershoot();
 			if ((value /= time / 2) < 1) {
-				return max / 2 * (value * value * (((s *= (1.525)) + 1) * value - s)) + min;
+				return max / 2 * (value * value * (((s = (float) (s * (1.525))) + 1) * value - s)) + min;
 			}
-			return max / 2 * ((value -= 2) * value * (((s *= (1.525)) + 1) * value + s) + 2) + min;
+			return max / 2 * ((value -= 2) * value * (((s = (float) (s * (1.525))) + 1) * value + s) + 2) + min;
 		}
 	}
 }

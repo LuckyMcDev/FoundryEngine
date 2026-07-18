@@ -70,7 +70,7 @@ public class RegistryRef<K, V> {
 	 * @return Optional containing the value, or empty if not registered
 	 */
 	public Optional<V> toOptional() {
-		return Optional.ofNullable(get());
+		return Optional.of(get());
 	}
 
 	/**
@@ -135,7 +135,7 @@ public class RegistryRef<K, V> {
 	 */
 	public <U> Optional<U> map(Function<? super V, ? extends U> mapper) {
 		V value = get();
-		return value != null ? Optional.ofNullable(mapper.apply(value)) : Optional.empty();
+		return value != null ? Optional.of(mapper.apply(value)) : Optional.empty();
 	}
 
 	/**

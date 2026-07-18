@@ -432,7 +432,7 @@ public class NbtSuggestionEngine {
 				}
 				break;
 			case STRING:
-				if (prefix.isEmpty() || !prefix.startsWith("\"")) {
+				if (!prefix.startsWith("\"")) {
 					builder.suggest("\"\"");
 				}
 				break;

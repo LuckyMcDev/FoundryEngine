@@ -34,7 +34,9 @@ public class RuntimeClockManager extends ServerClockManager {
 	@Override
 	public void tick() {
 		if (this.advanceTime.getAsBoolean()) {
-			((ServerClockManagerExtension) this).engine$getClocks().values().forEach(ClockInstance::tick);
+			((ServerClockManagerExtension) this).engine$getClocks().values().forEach((clockInstance) -> {
+				clockInstance.tick(this.advanceTime.getAsBoolean());
+			});
 			this.setDirty();
 		}
 	}

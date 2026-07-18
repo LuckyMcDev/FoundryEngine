@@ -4,7 +4,6 @@ import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
 import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
-import de.luckymcdev.foundryengine.client.node.Node;
 import de.luckymcdev.foundryengine.client.node.NodeBuilder;
 import de.luckymcdev.foundryengine.client.node.NodeEditorInstance;
 import de.luckymcdev.foundryengine.client.node.NodePin;
@@ -55,10 +54,6 @@ public class NodeTestPanel extends EditorPanel {
 			@Override
 			public Component getDisplayName() {
 				return Component.translatable("node.foundryengine.root");
-			}
-
-			@Override
-			public void setNode(Node<Double> node) {
 			}
 		};
 

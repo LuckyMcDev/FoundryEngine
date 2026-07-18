@@ -37,11 +37,6 @@ public final class JsonAutocompleteProvider implements IAutocompleteProvider {
 	}
 
 	@Override
-	public int minPrefixLength() {
-		return 2;
-	}
-
-	@Override
 	public boolean appendParens() {
 		return false;
 	}

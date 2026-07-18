@@ -108,11 +108,9 @@ public class JsonComponentSuggestions {
 			case "color" -> suggestColor(builder, "");
 			case "font" -> suggestFont(builder, "");
 			case "bold", "italic", "underlined", "strikethrough", "obfuscated" -> builder.suggest("true");
-			case "text" -> builder.suggest("\"\"");
-			case "translate" -> builder.suggest("\"\"");
+			case "text", "insertion", "translate" -> builder.suggest("\"\"");
 			case "selector" -> builder.suggest("\"@p\"");
 			case "keybind" -> builder.suggest("\"key.forward\"");
-			case "insertion" -> builder.suggest("\"\"");
 		}
 	}
 

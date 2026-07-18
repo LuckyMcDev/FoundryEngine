@@ -208,7 +208,7 @@ public class ClientCutsceneManager {
 	                             float holdEnd) {
 	}
 
-	public final class PlayingCutscene {
+	public static final class PlayingCutscene {
 		public final Cutscene cutscene;
 		public final UUID startPlayerUuid;
 		public final UUID endPlayerUuid;

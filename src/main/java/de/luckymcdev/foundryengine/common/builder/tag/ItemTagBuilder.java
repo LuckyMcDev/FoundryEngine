@@ -1,5 +1,6 @@
 package de.luckymcdev.foundryengine.common.builder.tag;
 
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -56,14 +57,14 @@ public class ItemTagBuilder extends TagBuilder<Item> {
 	}
 
 	public ItemTagBuilder add(Item item) {
-		return (ItemTagBuilder) add(item.builtInRegistryHolder());
+		return (ItemTagBuilder) add(BuiltInRegistries.ITEM.createIntrusiveHolder(item));
 	}
 
 	public ItemTagBuilder addOptional(Item item) {
-		return (ItemTagBuilder) addOptional(item.builtInRegistryHolder());
+		return (ItemTagBuilder) addOptional(BuiltInRegistries.ITEM.createIntrusiveHolder(item));
 	}
 
 	public ItemTagBuilder remove(Item item) {
-		return (ItemTagBuilder) remove(item.builtInRegistryHolder());
+		return (ItemTagBuilder) remove(BuiltInRegistries.ITEM.createIntrusiveHolder(item));
 	}
 }

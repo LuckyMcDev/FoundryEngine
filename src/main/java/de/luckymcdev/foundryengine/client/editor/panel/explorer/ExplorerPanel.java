@@ -267,7 +267,7 @@ public class ExplorerPanel extends EditorPanel {
 			renderSection(ImGraphicsExtractor.icon(ImIcons.CUBES) + " Resources", "##section_res", () -> {
 				boolean empty = resourceTree == null || resourceTree.isEmpty();
 				if (empty && resourceLoading) {
-					ImGui.textDisabled("Loading\u2026");
+					ImGui.textDisabled("Loading ...");
 				} else if (empty) {
 					ImGui.textDisabled("No resources found");
 				} else if (filtering) {
@@ -276,7 +276,7 @@ public class ExplorerPanel extends EditorPanel {
 					resourceTree.render(this::renderResourceFile);
 				}
 				if (resourceLoading) {
-					ImGui.textDisabled("(loading server resources\u2026)");
+					ImGui.textDisabled("(loading server resources ...)");
 				}
 			});
 
@@ -284,12 +284,12 @@ public class ExplorerPanel extends EditorPanel {
 				ImGui.spacing();
 				renderSection(ImGraphicsExtractor.icon(ImIcons.SERVER) + " Remote Server", "##section_remote", () -> {
 					if (remoteLoading) {
-						ImGui.textDisabled("Loading\u2026");
+						ImGui.textDisabled("Loading ...");
 					} else if (remoteTree == null) {
 						if (!remoteRequested) {
 							requestRemoteFileList();
 						}
-						ImGui.textDisabled("Fetching file list\u2026");
+						ImGui.textDisabled("Fetching file list ...");
 					} else if (filtering) {
 						remoteTree.renderFiltered(query, this::renderRemoteFileItem);
 					} else {
@@ -409,7 +409,7 @@ public class ExplorerPanel extends EditorPanel {
 		float spacing = ImGui.getStyle().getItemSpacingX();
 		float searchWidth = ImGui.getContentRegionAvailX() - (buttonWidth + spacing) * 2 - spacing;
 		ImGui.setNextItemWidth(Math.max(searchWidth, 60.0f));
-		ImGui.inputTextWithHint("##search", ImIcons.SEARCH + " Filter\u2026", searchFilter);
+		ImGui.inputTextWithHint("##search", ImIcons.SEARCH + " Filter ...", searchFilter);
 
 		if (ImGui.isItemFocused() && ImGui.isKeyPressed(ImGuiKey.Escape)) {
 			searchFilter.set("");
@@ -417,7 +417,7 @@ public class ExplorerPanel extends EditorPanel {
 
 		if (!searchFilter.get().isEmpty()) {
 			ImGui.sameLine();
-			if (ImGui.smallButton("\u00d7##clearSearch")) {
+			if (ImGui.smallButton("X##clearSearch")) {
 				searchFilter.set("");
 			}
 		}
@@ -461,7 +461,7 @@ public class ExplorerPanel extends EditorPanel {
 		ImGui.textWrapped(ImIcons.EXCLAMATION_TRIANGLE + " " + lastError);
 		ImGui.popStyleColor();
 		ImGui.sameLine();
-		if (ImGui.smallButton("\u00d7")) {
+		if (ImGui.smallButton("X")) {
 			lastError = null;
 		}
 	}
@@ -491,10 +491,10 @@ public class ExplorerPanel extends EditorPanel {
 				revealInExplorer(dir);
 			}
 			ImGui.separator();
-			if (ImGui.menuItem(ImIcons.FILE + "  New File\u2026")) {
+			if (ImGui.menuItem(ImIcons.FILE + "  New File")) {
 				createNewFileIn(dir);
 			}
-			if (ImGui.menuItem(ImIcons.FOLDER + "  New Folder\u2026")) {
+			if (ImGui.menuItem(ImIcons.FOLDER + "  New Folder")) {
 				createNewFolderIn(dir);
 			}
 			ImGui.endPopup();

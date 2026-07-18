@@ -85,7 +85,7 @@ public final class EngineLevels {
 	}
 
 	private static Identifier generateTemporaryLevelKey() {
-		String key = RandomStringUtils.random(16, "abcdefghijklmnopqrstuvwxyz0123456789");
+		String key = RandomStringUtils.insecure().next(16, "abcdefghijklmnopqrstuvwxyz0123456789");
 		return Common.id(key);
 	}
 

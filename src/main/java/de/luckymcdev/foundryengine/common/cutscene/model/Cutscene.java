@@ -493,7 +493,7 @@ public class Cutscene {
 	public double[] getAnchorDistanceKeys() {
 		int anchors = getAnchorPointCount();
 		double[] keys = new double[anchors];
-		if (anchors <= 0) {
+		if (anchors == 0) {
 			return keys;
 		}
 		keys[0] = 0.0;
@@ -503,7 +503,7 @@ public class Cutscene {
 
 		int splineCount = this.path.splines.size();
 		for (int i = 1; i < anchors - 1; i++) {
-			double time = splineCount <= 0 ? (double) i / (double) (anchors - 1) : ((double) i / (double) splineCount);
+			double time = splineCount == 0 ? (double) i / (double) (anchors - 1) : ((double) i / (double) splineCount);
 			keys[i] = this.path.getNormalizedDistanceAtTime(time);
 		}
 		keys[anchors - 1] = 1.0;

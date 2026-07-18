@@ -17,6 +17,7 @@ import net.neoforged.neoforge.registries.RegisterEvent;
 
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 public class RegistryEvent extends Event implements IModBusEvent {
 	private final RegisterEvent inner;
@@ -54,7 +55,7 @@ public class RegistryEvent extends Event implements IModBusEvent {
 			collector.addBlock(builder);
 		}
 
-		List<BlockBuilder> withItem = List.of(builders).stream()
+		List<BlockBuilder> withItem = Stream.of(builders)
 			.filter(BlockBuilder::hasItem)
 			.toList();
 		if (!withItem.isEmpty()) {

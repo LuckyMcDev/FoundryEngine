@@ -403,10 +403,6 @@ public class GroovyReflectionAutocompleteProvider implements IAutocompleteProvid
 		return 0;
 	}
 
-	@Override
-	public boolean appendParens() {
-		return true;
-	}
 
 	@Override
 	public boolean shouldSuppress(String prefix, List<List<EditorGlyph>> lines, EditorCoordinates cursor) {

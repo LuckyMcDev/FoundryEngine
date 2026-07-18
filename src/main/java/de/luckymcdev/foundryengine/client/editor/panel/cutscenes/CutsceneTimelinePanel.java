@@ -371,7 +371,7 @@ public class CutsceneTimelinePanel extends EditorPanel {
 				int cursor = hs;
 				for (int seg = 0; seg < anchors - 1; seg++) {
 					double segWeight = keys[seg + 1] - keys[seg];
-					cursor += Math.round((segWeight / totalWeight) * len);
+					cursor = (int) (cursor + Math.round((segWeight / totalWeight) * len));
 					anchorTicks[seg + 1] = cursor;
 					cursor += holdTicks.get(seg + 1);
 				}
@@ -385,9 +385,8 @@ public class CutsceneTimelinePanel extends EditorPanel {
 				// Draw hold zone after interior anchors
 				if (i > 0 && i < anchors - 1) {
 					int holdEndTick = Mth.clamp(anchorTicks[i] + holdTicks.get(i), 0, totalTicks);
-					float hx1 = x;
 					float hx2 = minX + padding + (holdEndTick * zoomPxPerTick);
-					draw.addRectFilled(hx1, minY + 18.0f, hx2, baseY, holdCol);
+					draw.addRectFilled(x, minY + 18.0f, hx2, baseY, holdCol);
 				}
 			}
 
@@ -779,7 +778,7 @@ public class CutsceneTimelinePanel extends EditorPanel {
 		int tick = hs;
 		for (int s = 0; s < seg; s++) {
 			double sw = keys[s + 1] - keys[s];
-			tick += Math.round((sw / totalWeight) * len);
+			tick = (int) (tick + Math.round((sw / totalWeight) * len));
 			tick += holdTicks.get(s + 1);
 		}
 
@@ -787,7 +786,7 @@ public class CutsceneTimelinePanel extends EditorPanel {
 		int segDuration = Math.round((float) (sw / totalWeight) * len);
 		if (segDuration > 0 && keys[seg + 1] > keys[seg]) {
 			double localT = (t - keys[seg]) / (keys[seg + 1] - keys[seg]);
-			tick += Math.round(localT * segDuration);
+			tick = (int) (tick + Math.round(localT * segDuration));
 		}
 
 		return Math.min(tick, totalTicks);
@@ -802,7 +801,7 @@ public class CutsceneTimelinePanel extends EditorPanel {
 		}
 
 		int splineCount = c.path.splines.size();
-		if (splineCount <= 0) {
+		if (splineCount == 0) {
 			return (double) anchorIndex / (double) (anchors - 1);
 		}
 

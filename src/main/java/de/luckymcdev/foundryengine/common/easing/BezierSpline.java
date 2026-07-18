@@ -193,9 +193,6 @@ public class BezierSpline {
 	}
 
 	/**
-	 * Calculates the approximate length of the spline segment.
-	 */
-	/**
 	 * Returns the approximate length of this spline segment.
 	 */
 	public double getLength() {
