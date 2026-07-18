@@ -14,15 +14,15 @@ All FoundryEngine commands are registered under `/engine` and require specific p
 
 Manage and play cutscenes.
 
-| Subcommand | Permission | Description |
-|------------|------------|-------------|
-| `list` | Gamemaster | List all cutscenes in the current dimension |
-| `add <name>` | Gamemaster | Create a new cutscene at your position |
-| `remove <name>` | Gamemaster | Remove a cutscene |
-| `linearize <name>` | Gamemaster | Make a 2-node cutscene a straight line |
-| `play <player> <name> [length] [easing] [holdStart] [holdEnd]` | Gamemaster | Play a cutscene for a player |
-| `cancel <player>` | Gamemaster | Cancel a player's active cutscene |
-| `resetAll confirm` | Gamemaster | Remove all cutscenes (requires `confirm`) |
+| Subcommand                                                     | Permission | Description                                 |
+|----------------------------------------------------------------|------------|---------------------------------------------|
+| `list`                                                         | Gamemaster | List all cutscenes in the current dimension |
+| `add <name>`                                                   | Gamemaster | Create a new cutscene at your position      |
+| `remove <name>`                                                | Gamemaster | Remove a cutscene                           |
+| `linearize <name>`                                             | Gamemaster | Make a 2-node cutscene a straight line      |
+| `play <player> <name> [length] [easing] [holdStart] [holdEnd]` | Gamemaster | Play a cutscene for a player                |
+| `cancel <player>`                                              | Gamemaster | Cancel a player's active cutscene           |
+| `resetAll confirm`                                             | Gamemaster | Remove all cutscenes (requires `confirm`)   |
 
 ### Play parameters
 
@@ -34,23 +34,23 @@ Manage and play cutscenes.
 
 Manage in-world markers.
 
-| Subcommand | Permission | Description |
-|------------|------------|-------------|
-| `add <pos> <name> [icon] [color]` | Gamemaster | Add a waypoint |
-| `remove <pos>` | Gamemaster | Remove waypoint at position |
-| `clear` | Gamemaster | Clear all waypoints |
-| `list` | Gamemaster | List all waypoints |
+| Subcommand                        | Permission | Description                 |
+|-----------------------------------|------------|-----------------------------|
+| `add <pos> <name> [icon] [color]` | Gamemaster | Add a waypoint              |
+| `remove <pos>`                    | Gamemaster | Remove waypoint at position |
+| `clear`                           | Gamemaster | Clear all waypoints         |
+| `list`                            | Gamemaster | List all waypoints          |
 
 ## stage
 
 Manage player game stages.
 
-| Subcommand | Permission | Description |
-|------------|------------|-------------|
-| `<targets> add <stage>` | Admin | Add a stage to players |
-| `<targets> remove <stage>` | Admin | Remove a stage from players |
-| `<targets> clear` | Admin | Clear all stages from players |
-| `<targets> list` | Any | List a player's stages |
+| Subcommand                 | Permission | Description                   |
+|----------------------------|------------|-------------------------------|
+| `<targets> add <stage>`    | Admin      | Add a stage to players        |
+| `<targets> remove <stage>` | Admin      | Remove a stage from players   |
+| `<targets> clear`          | Admin      | Clear all stages from players |
+| `<targets> list`           | Any        | List a player's stages        |
 
 ## screeneffect
 
@@ -60,15 +60,15 @@ Apply post-processing effects to players.
 /engine screeneffect <players> <effect> <intro> <hold> [outro] [easing] [command]
 ```
 
-| Parameter | Description |
-|-----------|-------------|
-| `players` | Target player(s) |
-| `effect` | Effect name (`black`, `circle`, `star`, `cinematic`) |
-| `intro` | Fade-in duration in ticks |
-| `hold` | Hold duration in ticks |
-| `outro` | Fade-out duration in ticks (optional) |
-| `easing` | Easing type (optional) |
-| `command` | Command to run at effect start (optional) |
+| Parameter | Description                                          |
+|-----------|------------------------------------------------------|
+| `players` | Target player(s)                                     |
+| `effect`  | Effect name (`black`, `circle`, `star`, `cinematic`) |
+| `intro`   | Fade-in duration in ticks                            |
+| `hold`    | Hold duration in ticks                               |
+| `outro`   | Fade-out duration in ticks (optional)                |
+| `easing`  | Easing type (optional)                               |
+| `command` | Command to run at effect start (optional)            |
 
 ## reload
 
@@ -110,10 +110,10 @@ Execute arbitrary Groovy code inline. Useful for testing:
 
 Dump registry data to a markdown file.
 
-| Subcommand | Permission | Description |
-|------------|------------|-------------|
-| `all` | Admin | Dump all registries |
-| `registry <name>` | Admin | Dump a specific registry |
+| Subcommand        | Permission | Description              |
+|-------------------|------------|--------------------------|
+| `all`             | Admin      | Dump all registries      |
+| `registry <name>` | Admin      | Dump a specific registry |
 
 Output is written to a markdown file in the game directory.
 
@@ -121,12 +121,12 @@ Output is written to a markdown file in the game directory.
 
 Development/testing commands.
 
-| Subcommand | Permission | Description |
-|------------|------------|-------------|
-| `display block\|item\|text\|all\|kill` | Admin | Spawn/manage test display entities |
-| `world open <name> <true\|false>` | Admin | Create a test runtime dimension (`true` = temporary) |
-| `world delete\|unload <name>` | Admin | Delete or unload a test world |
-| `fake spawn` | Admin | Spawn a test mannequin |
+| Subcommand                             | Permission | Description                                          |
+|----------------------------------------|------------|------------------------------------------------------|
+| `display block\|item\|text\|all\|kill` | Admin      | Spawn/manage test display entities                   |
+| `world open <name> <true\|false>`      | Admin      | Create a test runtime dimension (`true` = temporary) |
+| `world delete\|unload <name>`          | Admin      | Delete or unload a test world                        |
+| `fake spawn`                           | Admin      | Spawn a test mannequin                               |
 
 ## See also
 

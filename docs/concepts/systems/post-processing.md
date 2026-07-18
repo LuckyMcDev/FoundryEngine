@@ -122,22 +122,22 @@ When you need an intermediate framebuffer, use the swap target pattern:
 
 ### Pipeline JSON Fields
 
-| Field | Description |
-|-------|-------------|
-| `targets` | Local intermediate framebuffers for multi-pass effects |
-| `passes` | Ordered list of render passes, each a fullscreen quad |
-| `vertex_shader` | Use `"minecraft:core/screenquad"` for all effects |
+| Field             | Description                                               |
+|-------------------|-----------------------------------------------------------|
+| `targets`         | Local intermediate framebuffers for multi-pass effects    |
+| `passes`          | Ordered list of render passes, each a fullscreen quad     |
+| `vertex_shader`   | Use `"minecraft:core/screenquad"` for all effects         |
 | `fragment_shader` | Namespaced path to your `.fsh` shader (without extension) |
-| `inputs` | Samplers bound for this pass: `sampler_name` + `target` |
-| `output` | Target framebuffer: local name or `"minecraft:main"` |
-| `uniforms` | Map of block name to member descriptors |
+| `inputs`          | Samplers bound for this pass: `sampler_name` + `target`   |
+| `output`          | Target framebuffer: local name or `"minecraft:main"`      |
+| `uniforms`        | Map of block name to member descriptors                   |
 
 ### Uniform Member Descriptor
 
-| Field | Description |
-|-------|-------------|
-| `name` | GLSL member variable name inside the block |
-| `type` | `"float"`, `"int"`, `"vec2"`, `"vec3"`, `"vec4"`, `"mat4"` |
+| Field   | Description                                                    |
+|---------|----------------------------------------------------------------|
+| `name`  | GLSL member variable name inside the block                     |
+| `type`  | `"float"`, `"int"`, `"vec2"`, `"vec3"`, `"vec4"`, `"mat4"`     |
 | `value` | Default value (number for scalars, array for vectors/matrices) |
 
 ## GLSL shader conventions
@@ -164,10 +164,10 @@ Provided by `minecraft:core/screenquad`. No custom vertex shader needed.
 
 GLSL sampler name = JSON `sampler_name` + `"Sampler"` suffix:
 
-| JSON `sampler_name` | GLSL uniform |
-|---------------------|--------------|
-| `"In"` | `InSampler` |
-| `"Depth"` | `DepthSampler` |
+| JSON `sampler_name` | GLSL uniform   |
+|---------------------|----------------|
+| `"In"`              | `InSampler`    |
+| `"Depth"`           | `DepthSampler` |
 
 ```glsl
 uniform sampler2D InSampler;
@@ -312,11 +312,11 @@ RenderPhase.PRE_GUI      // After world + hand, before GUI
 RenderPhase.POST_RENDER  // After everything (entire frame)
 ```
 
-| Phase | Covers | Use Case |
-|-------|--------|----------|
-| `POST_WORLD` | World only (depth available) | World-space effects, water distortion |
-| `PRE_GUI` | World + items/hands | Full game-view effects before UI |
-| `POST_RENDER` | Entire frame including GUI | Screen-wide overlays, colour grading |
+| Phase         | Covers                       | Use Case                              |
+|---------------|------------------------------|---------------------------------------|
+| `POST_WORLD`  | World only (depth available) | World-space effects, water distortion |
+| `PRE_GUI`     | World + items/hands          | Full game-view effects before UI      |
+| `POST_RENDER` | Entire frame including GUI   | Screen-wide overlays, colour grading  |
 
 ### Depth Snapshot Target
 

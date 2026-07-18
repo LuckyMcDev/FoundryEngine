@@ -23,6 +23,7 @@ NetworkManager
 ### PacketBounds
 
 Each packet declares its direction:
+
 - `CLIENT` — sent server-to-client
 - `SERVER` — sent client-to-server
 - `BOTH` — sent in either direction

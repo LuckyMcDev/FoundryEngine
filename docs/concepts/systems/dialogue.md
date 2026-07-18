@@ -46,10 +46,10 @@ Common.getDialogueManager().registerTree(tree)
 
 ## Display Modes
 
-| Mode | Enum | Description |
-|------|------|-------------|
+| Mode       | Enum                         | Description                                                                   |
+|------------|------------------------------|-------------------------------------------------------------------------------|
 | **Screen** | `DialogueDisplayMode.SCREEN` | Full-screen overlay with styled panel, speaker name, text, and option buttons |
-| **Chat** | `DialogueDisplayMode.CHAT` | Dialogue printed to the chat window |
+| **Chat**   | `DialogueDisplayMode.CHAT`   | Dialogue printed to the chat window                                           |
 
 ## Starting a Dialogue
 
@@ -86,12 +86,12 @@ questNode.enterActionIds.add("give_item")
 
 ## Dialogue Events
 
-| Event | Description |
-|---|---|
-| `DialogueEvents.onStarted(cb)` | Dialogue started for a player |
-| `DialogueEvents.onAdvanced(cb)` | Dialogue advanced to next node |
-| `DialogueEvents.onOptionSelected(cb)` | Player selected an option |
-| `DialogueEvents.onEnded(cb)` | Dialogue ended |
+| Event                                 | Description                    |
+|---------------------------------------|--------------------------------|
+| `DialogueEvents.onStarted(cb)`        | Dialogue started for a player  |
+| `DialogueEvents.onAdvanced(cb)`       | Dialogue advanced to next node |
+| `DialogueEvents.onOptionSelected(cb)` | Player selected an option      |
+| `DialogueEvents.onEnded(cb)`          | Dialogue ended                 |
 
 ```groovy
 import de.luckymcdev.foundryengine.common.event.DialogueEvents

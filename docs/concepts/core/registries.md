@@ -19,12 +19,12 @@ You register the **builder object**, not the raw output. The engine handles regi
 
 ## Available Registry Methods
 
-| Method | Registers |
-|---|---|
-| `it.items(ItemBuilder...)` | Custom items |
-| `it.blocks(BlockBuilder...)` | Custom blocks (and their block items) |
-| `it.sounds(SoundBuilder...)` | Sound events |
-| `it.particles(ParticleBuilder...)` | Particle types |
+| Method                             | Registers                             |
+|------------------------------------|---------------------------------------|
+| `it.items(ItemBuilder...)`         | Custom items                          |
+| `it.blocks(BlockBuilder...)`       | Custom blocks (and their block items) |
+| `it.sounds(SoundBuilder...)`       | Sound events                          |
+| `it.particles(ParticleBuilder...)` | Particle types                        |
 
 ## See also
 

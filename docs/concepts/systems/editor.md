@@ -10,45 +10,45 @@ The editor is opened by pressing the editor keybind (default: F7). If configured
 
 ### Editor
 
-| Panel | Description |
-|-------|-------------|
-| **Area Panel** | Manage spatial zones |
+| Panel           | Description                  |
+|-----------------|------------------------------|
+| **Area Panel**  | Manage spatial zones         |
 | **Main Editor** | Text/code editor for scripts |
 
 ### Cutscene
 
-| Panel | Description |
-|-------|-------------|
-| **Cutscene Panel** | List, create, delete, and configure cutscenes |
+| Panel                       | Description                                                      |
+|-----------------------------|------------------------------------------------------------------|
+| **Cutscene Panel**          | List, create, delete, and configure cutscenes                    |
 | **Cutscene Timeline Panel** | Timeline-based attachment editor for screen effects and commands |
 
 ### File Explorer
 
-| Panel | Description |
-|-------|-------------|
-| **File Explorer** | Dual-pane file browser (local files + server resources) |
-| **Resource Explorer** | Browse game resources (textures, models, sounds) |
-| **Texture Viewer** | View image files |
-| **Code Editor** | Syntax-highlighted code editing |
+| Panel                 | Description                                             |
+|-----------------------|---------------------------------------------------------|
+| **File Explorer**     | Dual-pane file browser (local files + server resources) |
+| **Resource Explorer** | Browse game resources (textures, models, sounds)        |
+| **Texture Viewer**    | View image files                                        |
+| **Code Editor**       | Syntax-highlighted code editing                         |
 
 ### Tools
 
-| Panel | Description |
-|-------|-------------|
-| **Console** | In-game log viewer with filtering |
-| **Stopwatch** | Performance timing utilities |
-| **Catalogue** | Browse items and blocks |
-| **Dev Tools** | Developer utilities |
-| **Effect** | Post-processing effect controls |
+| Panel               | Description                                  |
+|---------------------|----------------------------------------------|
+| **Console**         | In-game log viewer with filtering            |
+| **Stopwatch**       | Performance timing utilities                 |
+| **Catalogue**       | Browse items and blocks                      |
+| **Dev Tools**       | Developer utilities                          |
+| **Effect**          | Post-processing effect controls              |
 | **Minecraft Tools** | Game mode, time, weather, and other controls |
-| **Waypoint** | Waypoint management |
+| **Waypoint**        | Waypoint management                          |
 
 ### View
 
-| Panel | Description |
-|-------|-------------|
-| **Info** | Information display |
-| **Theme Selector** | UI theme selection |
+| Panel              | Description         |
+|--------------------|---------------------|
+| **Info**           | Information display |
+| **Theme Selector** | UI theme selection  |
 
 > **⚠️ Blueprint Editor has been removed.** The node-based visual scripting system is being reworked for a better solution. This section will be updated when a new system is available.
 
@@ -74,15 +74,15 @@ When holding the editor item, in-world editing tools activate:
 
 The editor ships with seven built-in themes:
 
-| Theme | Description |
-|-------|-------------|
-| **Dark** | Default dark theme |
-| **ModernDark** | Modern dark variant |
-| **Cherry** | Cherry blossom inspired |
-| **CatppuccinMocha** | Popular warm theme |
-| **Veil** | Subtle veil theme |
-| **Vidlib** | Video library style |
-| **BessDark** | Bess dark variant |
+| Theme               | Description             |
+|---------------------|-------------------------|
+| **Dark**            | Default dark theme      |
+| **ModernDark**      | Modern dark variant     |
+| **Cherry**          | Cherry blossom inspired |
+| **CatppuccinMocha** | Popular warm theme      |
+| **Veil**            | Subtle veil theme       |
+| **Vidlib**          | Video library style     |
+| **BessDark**        | Bess dark variant       |
 
 Switch themes from the **Theme Selector Panel** under the View menu.
 

@@ -91,6 +91,7 @@ Use the `/engine cutscene play` command:
 ```
 
 Parameters:
+
 - `length` — duration in ticks (overrides default)
 - `easing` — `LINEAR`, `SINE_IN`, `SINE_OUT`, `SINE_IN_OUT`, `CUBIC_IN`, `CUBIC_OUT`, `CUBIC_IN_OUT`, `QUINT_IN`, `QUINT_OUT`, `QUINT_IN_OUT`, `BOUNCE_IN`, `BOUNCE_OUT`, `BOUNCE_IN_OUT`
 - `holdStart` / `holdEnd` — ticks to hold at path start/end
@@ -107,21 +108,22 @@ The cutscene editor lets you place and adjust path nodes directly in the game wo
 4. Add or remove nodes from the panel or by holding the editor item
 
 The in-world renderer draws:
+
 - Path splines between anchor points
 - Tangent handles on each control point
 - Anchor rotation indicators
 
 ## Cutscene Commands
 
-| Command | Description |
-|---------|-------------|
-| `/engine cutscene list` | List all cutscenes in the current dimension |
-| `/engine cutscene add <name>` | Create a new cutscene at your position |
-| `/engine cutscene remove <name>` | Remove a cutscene |
-| `/engine cutscene linearize <name>` | Make a 2-node cutscene a straight line |
-| `/engine cutscene play <player> <name> [length] [easing] [holdStart] [holdEnd]` | Play a cutscene |
-| `/engine cutscene cancel <player>` | Cancel a player's active cutscene |
-| `/engine cutscene resetAll confirm` | Remove all cutscenes |
+| Command                                                                         | Description                                 |
+|---------------------------------------------------------------------------------|---------------------------------------------|
+| `/engine cutscene list`                                                         | List all cutscenes in the current dimension |
+| `/engine cutscene add <name>`                                                   | Create a new cutscene at your position      |
+| `/engine cutscene remove <name>`                                                | Remove a cutscene                           |
+| `/engine cutscene linearize <name>`                                             | Make a 2-node cutscene a straight line      |
+| `/engine cutscene play <player> <name> [length] [easing] [holdStart] [holdEnd]` | Play a cutscene                             |
+| `/engine cutscene cancel <player>`                                              | Cancel a player's active cutscene           |
+| `/engine cutscene resetAll confirm`                                             | Remove all cutscenes                        |
 
 ## Example: Trigger Cutscene on Area Entry
 

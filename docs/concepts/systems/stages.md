@@ -230,12 +230,12 @@ PlayerEvents.tick {
 
 Stage changes fire NeoForge events on `NeoForge.EVENT_BUS`:
 
-| Event | Cancellable | When |
-|-------|-------------|------|
-| `GameStageEvent.Add` | Yes | Before a stage is added |
-| `GameStageEvent.Remove` | Yes | Before a stage is removed |
-| `GameStageEvent.Added` | No | After stage is added |
-| `GameStageEvent.Removed` | No | After stage is removed |
+| Event                    | Cancellable | When                      |
+|--------------------------|-------------|---------------------------|
+| `GameStageEvent.Add`     | Yes         | Before a stage is added   |
+| `GameStageEvent.Remove`  | Yes         | Before a stage is removed |
+| `GameStageEvent.Added`   | No          | After stage is added      |
+| `GameStageEvent.Removed` | No          | After stage is removed    |
 
 ```groovy
 import de.luckymcdev.foundryengine.common.game.stage.GameStageEvent

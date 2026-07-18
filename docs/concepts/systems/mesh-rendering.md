@@ -8,7 +8,7 @@ The `MeshRenderer` is a low-level rendering engine that uses a `MappableRingBuff
 
 ### Two rendering paths
 
-#### Immediate draw()
+#### Immediate draw ()
 
 Accumulates vertices, uploads, and submits in one call:
 
@@ -49,14 +49,14 @@ The `MeshRenderer` works with any `RenderPipeline` — use the built-in pipeline
 
 Pre-built render pipelines for common use cases:
 
-| Pipeline | Vertex Format | Use Case |
-|----------|---------------|----------|
-| `POSITION` | `POSITION`, QUADS | Uncoloured geometry |
-| `POSITION_COLOR` | `POSITION_COLOR`, QUADS | Vertex-coloured geometry |
-| `POSITION_COLOR_NORMAL` | `POSITION_COLOR_NORMAL`, QUADS | Lit models (Suzanne) |
-| `POSITION_TEX_COLOR` | `POSITION_TEX_COLOR`, QUADS | Textured geometry |
-| `DEBUG_LINES` | `POSITION_COLOR_NORMAL_LINE_WIDTH`, LINES | Debug line rendering |
-| `FILLED_THROUGH_WALLS` | `POSITION_COLOR`, QUADS | Debug overlays (always visible) |
+| Pipeline                | Vertex Format                             | Use Case                        |
+|-------------------------|-------------------------------------------|---------------------------------|
+| `POSITION`              | `POSITION`, QUADS                         | Uncoloured geometry             |
+| `POSITION_COLOR`        | `POSITION_COLOR`, QUADS                   | Vertex-coloured geometry        |
+| `POSITION_COLOR_NORMAL` | `POSITION_COLOR_NORMAL`, QUADS            | Lit models (Suzanne)            |
+| `POSITION_TEX_COLOR`    | `POSITION_TEX_COLOR`, QUADS               | Textured geometry               |
+| `DEBUG_LINES`           | `POSITION_COLOR_NORMAL_LINE_WIDTH`, LINES | Debug line rendering            |
+| `FILLED_THROUGH_WALLS`  | `POSITION_COLOR`, QUADS                   | Debug overlays (always visible) |
 
 ### RenderType Helpers
 
@@ -101,13 +101,13 @@ model.getObject("Cube").render(pipeline, viewMatrix);
 
 ### Key Types
 
-| Class | Description |
-|-------|-------------|
-| `ObjModel` | Loaded model with faces and named objects |
-| `ObjObject` | Named sub-object with position, rotation, scale |
-| `ObjParser` | Parses `.obj` files (vertices, normals, UVs, faces) |
-| `Face` | A polygon face (3+ vertices) with centroid calculation |
-| `Vertex` | Position, normal, and UV for a single vertex |
+| Class       | Description                                            |
+|-------------|--------------------------------------------------------|
+| `ObjModel`  | Loaded model with faces and named objects              |
+| `ObjObject` | Named sub-object with position, rotation, scale        |
+| `ObjParser` | Parses `.obj` files (vertices, normals, UVs, faces)    |
+| `Face`      | A polygon face (3+ vertices) with centroid calculation |
+| `Vertex`    | Position, normal, and UV for a single vertex           |
 
 ### ObjObject Transform Properties
 
@@ -128,15 +128,15 @@ The engine ships 20+ shaders under `assets/foundryengine/shaders/`:
 
 ### Core Shaders
 
-| Shader Pair | Purpose |
-|-------------|---------|
-| `core/position` | Uncoloured solid geometry |
-| `core/position_color` | Vertex-coloured geometry |
-| `core/position_color_lit` | Lit geometry with normals |
-| `core/position_tex_color` | Textured geometry |
-| `core/lines` | Line rendering |
-| `core/worldmesh` | World-aligned mesh |
-| `core/worldmesh_color` | Coloured world-aligned mesh |
+| Shader Pair               | Purpose                     |
+|---------------------------|-----------------------------|
+| `core/position`           | Uncoloured solid geometry   |
+| `core/position_color`     | Vertex-coloured geometry    |
+| `core/position_color_lit` | Lit geometry with normals   |
+| `core/position_tex_color` | Textured geometry           |
+| `core/lines`              | Line rendering              |
+| `core/worldmesh`          | World-aligned mesh          |
+| `core/worldmesh_color`    | Coloured world-aligned mesh |
 
 ### Post-Processing Shaders
 

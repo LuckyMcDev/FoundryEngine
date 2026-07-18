@@ -14,49 +14,49 @@ Where `time` is normalized (0.0 to 1.0) and the result is the eased value betwee
 
 ## Complete List
 
-| Constant | Description |
-|----------|-------------|
-| `LINEAR` | No easing, constant speed |
-| `QUAD_IN` | Quadratic acceleration |
-| `QUAD_OUT` | Quadratic deceleration |
-| `QUAD_IN_OUT` | Quadratic acceleration + deceleration |
-| `CUBIC_IN` | Cubic acceleration |
-| `CUBIC_OUT` | Cubic deceleration |
-| `CUBIC_IN_OUT` | Cubic acceleration + deceleration |
-| `QUARTIC_IN` | Quartic acceleration |
-| `QUARTIC_OUT` | Quartic deceleration |
-| `QUARTIC_IN_OUT` | Quartic acceleration + deceleration |
-| `QUINTIC_IN` | Quintic acceleration |
-| `QUINTIC_OUT` | Quintic deceleration |
-| `QUINTIC_IN_OUT` | Quintic acceleration + deceleration |
-| `SINE_IN` | Sinusoidal acceleration |
-| `SINE_OUT` | Sinusoidal deceleration |
-| `SINE_IN_OUT` | Sinusoidal acceleration + deceleration |
-| `EXPO_IN` | Exponential acceleration |
-| `EXPO_OUT` | Exponential deceleration |
-| `EXPO_IN_OUT` | Exponential acceleration + deceleration |
-| `CIRC_IN` | Circular acceleration |
-| `CIRC_OUT` | Circular deceleration |
-| `CIRC_IN_OUT` | Circular acceleration + deceleration |
-| `ELASTIC_IN` | Elastic bounce (overshoots start) |
-| `ELASTIC_OUT` | Elastic bounce (overshoots end) |
-| `ELASTIC_IN_OUT` | Elastic bounce both ends |
-| `BACK_IN` | Overshoots start then settles |
-| `BACK_OUT` | Overshoots end then settles |
-| `BACK_IN_OUT` | Overshoots both ends |
-| `BOUNCE_IN` | Bounces at start |
-| `BOUNCE_OUT` | Bounces at end |
-| `BOUNCE_IN_OUT` | Bounces both ends |
+| Constant         | Description                             |
+|------------------|-----------------------------------------|
+| `LINEAR`         | No easing, constant speed               |
+| `QUAD_IN`        | Quadratic acceleration                  |
+| `QUAD_OUT`       | Quadratic deceleration                  |
+| `QUAD_IN_OUT`    | Quadratic acceleration + deceleration   |
+| `CUBIC_IN`       | Cubic acceleration                      |
+| `CUBIC_OUT`      | Cubic deceleration                      |
+| `CUBIC_IN_OUT`   | Cubic acceleration + deceleration       |
+| `QUARTIC_IN`     | Quartic acceleration                    |
+| `QUARTIC_OUT`    | Quartic deceleration                    |
+| `QUARTIC_IN_OUT` | Quartic acceleration + deceleration     |
+| `QUINTIC_IN`     | Quintic acceleration                    |
+| `QUINTIC_OUT`    | Quintic deceleration                    |
+| `QUINTIC_IN_OUT` | Quintic acceleration + deceleration     |
+| `SINE_IN`        | Sinusoidal acceleration                 |
+| `SINE_OUT`       | Sinusoidal deceleration                 |
+| `SINE_IN_OUT`    | Sinusoidal acceleration + deceleration  |
+| `EXPO_IN`        | Exponential acceleration                |
+| `EXPO_OUT`       | Exponential deceleration                |
+| `EXPO_IN_OUT`    | Exponential acceleration + deceleration |
+| `CIRC_IN`        | Circular acceleration                   |
+| `CIRC_OUT`       | Circular deceleration                   |
+| `CIRC_IN_OUT`    | Circular acceleration + deceleration    |
+| `ELASTIC_IN`     | Elastic bounce (overshoots start)       |
+| `ELASTIC_OUT`    | Elastic bounce (overshoots end)         |
+| `ELASTIC_IN_OUT` | Elastic bounce both ends                |
+| `BACK_IN`        | Overshoots start then settles           |
+| `BACK_OUT`       | Overshoots end then settles             |
+| `BACK_IN_OUT`    | Overshoots both ends                    |
+| `BOUNCE_IN`      | Bounces at start                        |
+| `BOUNCE_OUT`     | Bounces at end                          |
+| `BOUNCE_IN_OUT`  | Bounces both ends                       |
 
 ## BezierEasing
 
 CSS-style cubic bezier easings:
 
-| Constant | Control Points |
-|----------|----------------|
-| `BezierEasing.EASE` | `(0.25, 0.1, 0.25, 1.0)` |
-| `BezierEasing.EASE_IN` | `(0.42, 0.0, 1.0, 1.0)` |
-| `BezierEasing.EASE_OUT` | `(0.0, 0.0, 0.58, 1.0)` |
+| Constant                   | Control Points           |
+|----------------------------|--------------------------|
+| `BezierEasing.EASE`        | `(0.25, 0.1, 0.25, 1.0)` |
+| `BezierEasing.EASE_IN`     | `(0.42, 0.0, 1.0, 1.0)`  |
+| `BezierEasing.EASE_OUT`    | `(0.0, 0.0, 0.58, 1.0)`  |
 | `BezierEasing.EASE_IN_OUT` | `(0.42, 0.0, 0.58, 1.0)` |
 
 Custom: `new BezierEasing("custom", 0.1, 0.8, 0.2, 1.0)`

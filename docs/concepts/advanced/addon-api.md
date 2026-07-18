@@ -23,12 +23,12 @@ public void onTitleScreen(TitleScreenModifyEvent event) {
 
 Abstract event — listen to subclasses:
 
-| Subclass                    | Cancellable | When                              |
-|-----------------------------|-------------|-----------------------------------|
-| `GameStageEvent.Add`        | Yes         | Before a stage is added           |
-| `GameStageEvent.Remove`     | Yes         | Before a stage is removed         |
-| `GameStageEvent.Added`      | No          | After a stage has been added      |
-| `GameStageEvent.Removed`    | No          | After a stage has been removed    |
+| Subclass                 | Cancellable | When                           |
+|--------------------------|-------------|--------------------------------|
+| `GameStageEvent.Add`     | Yes         | Before a stage is added        |
+| `GameStageEvent.Remove`  | Yes         | Before a stage is removed      |
+| `GameStageEvent.Added`   | No          | After a stage has been added   |
+| `GameStageEvent.Removed` | No          | After a stage has been removed |
 
 All four expose `getStageName()` and `getPlayer()`.
 
@@ -54,18 +54,18 @@ public void onBlockMod(BlockModificationEvent event) {
 }
 ```
 
-| Method                    | Description                     |
-|---------------------------|---------------------------------|
-| `hasCollision(boolean)`   | Enable/disable block collision  |
-| `explosionResistance(float)` | Set explosion resistance     |
-| `lightEmission(int)`      | Set light level (0-15)          |
-| `soundType(SoundType)`    | Set sound type                  |
-| `friction(float)`         | Set friction coefficient        |
-| `speedFactor(float)`      | Set speed factor                |
-| `jumpFactor(float)`       | Set jump factor                 |
-| `randomlyTicking(boolean)`| Enable/disable random ticks     |
-| `setDestroySpeed(float)`  | Set destroy speed               |
-| `setRequiresTool(boolean)`| Whether a tool is required      |
+| Method                       | Description                    |
+|------------------------------|--------------------------------|
+| `hasCollision(boolean)`      | Enable/disable block collision |
+| `explosionResistance(float)` | Set explosion resistance       |
+| `lightEmission(int)`         | Set light level (0-15)         |
+| `soundType(SoundType)`       | Set sound type                 |
+| `friction(float)`            | Set friction coefficient       |
+| `speedFactor(float)`         | Set speed factor               |
+| `jumpFactor(float)`          | Set jump factor                |
+| `randomlyTicking(boolean)`   | Enable/disable random ticks    |
+| `setDestroySpeed(float)`     | Set destroy speed              |
+| `setRequiresTool(boolean)`   | Whether a tool is required     |
 
 ## ItemModificationEvent
 
@@ -86,13 +86,13 @@ public void onItemMod(ItemModificationEvent event) {
 }
 ```
 
-| Method                                      | Description                  |
-|---------------------------------------------|------------------------------|
-| `setMaxStackSize(int)`                      | Override max stack size      |
-| `setMaxDamage(int)`                         | Override durability          |
-| `setUnbreakable()`                          | Make item unbreakable        |
-| `setFood(FoodProperties)`                   | Override food properties     |
-| `setTool(Tool)`                             | Override tool properties     |
+| Method                                          | Description                  |
+|-------------------------------------------------|------------------------------|
+| `setMaxStackSize(int)`                          | Override max stack size      |
+| `setMaxDamage(int)`                             | Override durability          |
+| `setUnbreakable()`                              | Make item unbreakable        |
+| `setFood(FoodProperties)`                       | Override food properties     |
+| `setTool(Tool)`                                 | Override tool properties     |
 | `setAttributeModifiers(ItemAttributeModifiers)` | Override attribute modifiers |
 
 ## BundleDataGenEvent

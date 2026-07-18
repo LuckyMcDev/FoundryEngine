@@ -4,14 +4,14 @@ Builders are the main way to create and register game content in FoundryEngine. 
 
 All builders extend `AbstractBuilder<T>` (`de.luckymcdev.foundryengine.common.builder.AbstractBuilder`):
 
-| Method | Description |
-|---|---|
-| `build()` | Build the object without registering it |
-| `get()` | Get the registered object (throws if not registered yet) |
-| `getOrCreate()` | Get the registered object, or build if not yet registered |
-| `getId()` | The builder's `Identifier` |
-| `newID(pre, post)` | Create a new identifier with prefix/suffix |
-| `shouldGenerateData()` | Whether data is auto-generated (default: `true`) |
+| Method                 | Description                                               |
+|------------------------|-----------------------------------------------------------|
+| `build()`              | Build the object without registering it                   |
+| `get()`                | Get the registered object (throws if not registered yet)  |
+| `getOrCreate()`        | Get the registered object, or build if not yet registered |
+| `getId()`              | The builder's `Identifier`                                |
+| `newID(pre, post)`     | Create a new identifier with prefix/suffix                |
+| `shouldGenerateData()` | Whether data is auto-generated (default: `true`)          |
 
 ---
 
@@ -31,15 +31,15 @@ ItemBuilder.create(Identifier.fromNamespaceAndPath("mybundle", "my_item"))
 
 All methods return `ItemBuilder` for fluent chaining.
 
-| Method | Description |
-|---|---|
-| `factory(Function<Properties, Item>)` | Custom item factory (default: `EngineItem::new`) |
-| `properties(UnaryOperator<Properties>)` | Modify the item properties |
-| `stacksTo(int)` | Max stack size |
-| `fireResistant()` | Item is immune to fire/lava |
-| `component(DataComponentType, T)` | Add a data component |
-| `component(String, T)` | Add a data component by string key |
-| `generateData(boolean)` | Toggle auto data generation |
+| Method                                  | Description                                      |
+|-----------------------------------------|--------------------------------------------------|
+| `factory(Function<Properties, Item>)`   | Custom item factory (default: `EngineItem::new`) |
+| `properties(UnaryOperator<Properties>)` | Modify the item properties                       |
+| `stacksTo(int)`                         | Max stack size                                   |
+| `fireResistant()`                       | Item is immune to fire/lava                      |
+| `component(DataComponentType, T)`       | Add a data component                             |
+| `component(String, T)`                  | Add a data component by string key               |
+| `generateData(boolean)`                 | Toggle auto data generation                      |
 
 ### Callback hooks
 
@@ -63,17 +63,17 @@ ItemBuilder.create(id("wand"))
     }
 ```
 
-| Method | Callback Type | Parameters | Returns |
-|---|---|---|---|
-| `use(cb)` | `UseCallback` | `Level, Player, InteractionHand` | `InteractionResult` |
-| `useOn(cb)` | `UseOnCallback` | `UseOnContext` | `InteractionResult` |
-| `onUseTick(cb)` | `OnUseTickCallback` | `Level, LivingEntity, ItemStack, int ticksRemaining` | `void` |
-| `finishUsingItem(cb)` | `FinishUsingItemCallback` | `ItemStack, Level, LivingEntity` | `ItemStack` |
-| `hurtEnemy(cb)` | `HurtEnemyCallback` | `ItemStack, LivingEntity mob, LivingEntity attacker` | `void` |
-| `postHurtEnemy(cb)` | `PostHurtEnemyCallback` | `ItemStack, LivingEntity mob, LivingEntity attacker` | `void` |
-| `inventoryTick(cb)` | `InventoryTickCallback` | `ItemStack, ServerLevel, Entity, EquipmentSlot` | `void` |
-| `releaseUsing(cb)` | `ReleaseUsingCallback` | `ItemStack, Level, LivingEntity, int remainingTime` | `boolean` |
-| `onCraftedPostProcess(cb)` | `OnCraftedPostProcessCallback` | `ItemStack, Level` | `void` |
+| Method                     | Callback Type                  | Parameters                                           | Returns             |
+|----------------------------|--------------------------------|------------------------------------------------------|---------------------|
+| `use(cb)`                  | `UseCallback`                  | `Level, Player, InteractionHand`                     | `InteractionResult` |
+| `useOn(cb)`                | `UseOnCallback`                | `UseOnContext`                                       | `InteractionResult` |
+| `onUseTick(cb)`            | `OnUseTickCallback`            | `Level, LivingEntity, ItemStack, int ticksRemaining` | `void`              |
+| `finishUsingItem(cb)`      | `FinishUsingItemCallback`      | `ItemStack, Level, LivingEntity`                     | `ItemStack`         |
+| `hurtEnemy(cb)`            | `HurtEnemyCallback`            | `ItemStack, LivingEntity mob, LivingEntity attacker` | `void`              |
+| `postHurtEnemy(cb)`        | `PostHurtEnemyCallback`        | `ItemStack, LivingEntity mob, LivingEntity attacker` | `void`              |
+| `inventoryTick(cb)`        | `InventoryTickCallback`        | `ItemStack, ServerLevel, Entity, EquipmentSlot`      | `void`              |
+| `releaseUsing(cb)`         | `ReleaseUsingCallback`         | `ItemStack, Level, LivingEntity, int remainingTime`  | `boolean`           |
+| `onCraftedPostProcess(cb)` | `OnCraftedPostProcessCallback` | `ItemStack, Level`                                   | `void`              |
 
 ### Complete example
 
@@ -110,13 +110,13 @@ BlockBuilder.create(Identifier.fromNamespaceAndPath("mybundle", "my_block"))
 
 ### Configuration Methods
 
-| Method | Description |
-|---|---|
-| `factory(Function<BlockBehaviour.Properties, Block>)` | Custom block factory |
-| `properties(UnaryOperator<Properties>)` | Modify block properties |
-| `noItem()` | Skip block item creation |
-| `itemProperties(UnaryOperator<Item.Properties>)` | Modify block item properties |
-| `generateData(boolean)` | Toggle auto data generation |
+| Method                                                | Description                  |
+|-------------------------------------------------------|------------------------------|
+| `factory(Function<BlockBehaviour.Properties, Block>)` | Custom block factory         |
+| `properties(UnaryOperator<Properties>)`               | Modify block properties      |
+| `noItem()`                                            | Skip block item creation     |
+| `itemProperties(UnaryOperator<Item.Properties>)`      | Modify block item properties |
+| `generateData(boolean)`                               | Toggle auto data generation  |
 
 ### Block callback hooks
 
@@ -133,32 +133,32 @@ BlockBuilder.create(id("magic_block"))
     }
 ```
 
-| Method | Callback Type | Parameters | Returns |
-|---|---|---|---|
-| `animateTick(cb)` | `AnimateTickCallback` | `BlockState, Level, BlockPos, RandomSource` | `void` |
-| `destroy(cb)` | `DestroyCallback` | `LevelAccessor, BlockPos, BlockState` | `void` |
-| `wasExploded(cb)` | `WasExplodedCallback` | `ServerLevel, BlockPos, Explosion` | `void` |
-| `stepOn(cb)` | `StepOnCallback` | `Level, BlockPos, BlockState, Entity` | `void` |
-| `setPlacedBy(cb)` | `SetPlacedByCallback` | `Level, BlockPos, BlockState, LivingEntity, ItemStack` | `void` |
-| `fallOn(cb)` | `FallOnCallback` | `Level, BlockState, BlockPos, Entity, double fallDistance` | `void` |
-| `playerWillDestroy(cb)` | `PlayerWillDestroyCallback` | `Level, BlockPos, BlockState, Player` | `BlockState` |
-| `playerDestroy(cb)` | `PlayerDestroyCallback` | `Level, Player, BlockPos, BlockState, BlockEntity, ItemStack` | `void` |
-| `handlePrecipitation(cb)` | `HandlePrecipitationCallback` | `BlockState, Level, BlockPos, Biome.Precipitation` | `void` |
+| Method                    | Callback Type                 | Parameters                                                    | Returns      |
+|---------------------------|-------------------------------|---------------------------------------------------------------|--------------|
+| `animateTick(cb)`         | `AnimateTickCallback`         | `BlockState, Level, BlockPos, RandomSource`                   | `void`       |
+| `destroy(cb)`             | `DestroyCallback`             | `LevelAccessor, BlockPos, BlockState`                         | `void`       |
+| `wasExploded(cb)`         | `WasExplodedCallback`         | `ServerLevel, BlockPos, Explosion`                            | `void`       |
+| `stepOn(cb)`              | `StepOnCallback`              | `Level, BlockPos, BlockState, Entity`                         | `void`       |
+| `setPlacedBy(cb)`         | `SetPlacedByCallback`         | `Level, BlockPos, BlockState, LivingEntity, ItemStack`        | `void`       |
+| `fallOn(cb)`              | `FallOnCallback`              | `Level, BlockState, BlockPos, Entity, double fallDistance`    | `void`       |
+| `playerWillDestroy(cb)`   | `PlayerWillDestroyCallback`   | `Level, BlockPos, BlockState, Player`                         | `BlockState` |
+| `playerDestroy(cb)`       | `PlayerDestroyCallback`       | `Level, Player, BlockPos, BlockState, BlockEntity, ItemStack` | `void`       |
+| `handlePrecipitation(cb)` | `HandlePrecipitationCallback` | `BlockState, Level, BlockPos, Biome.Precipitation`            | `void`       |
 
 ### Item callback hooks on blocks
 
 BlockBuilder also exposes item callbacks that apply to the block's item form:
 
-| Method | Description |
-|---|---|
-| `itemUse(cb)` | When the block item is used |
-| `itemUseOn(cb)` | When the block item is used on something |
-| `itemInventoryTick(cb)` | Inventory tick for the block item |
-| `itemFinishUsing(cb)` | When the block item is consumed |
-| `itemHurtEnemy(cb)` | When the block item hurts an enemy |
-| `itemPostHurtEnemy(cb)` | When the block item hurts an enemy (post) |
-| `itemReleaseUsing(cb)` | When use is released |
-| `itemOnCraftedPostProcess(cb)` | After the block item is crafted |
+| Method                         | Description                               |
+|--------------------------------|-------------------------------------------|
+| `itemUse(cb)`                  | When the block item is used               |
+| `itemUseOn(cb)`                | When the block item is used on something  |
+| `itemInventoryTick(cb)`        | Inventory tick for the block item         |
+| `itemFinishUsing(cb)`          | When the block item is consumed           |
+| `itemHurtEnemy(cb)`            | When the block item hurts an enemy        |
+| `itemPostHurtEnemy(cb)`        | When the block item hurts an enemy (post) |
+| `itemReleaseUsing(cb)`         | When use is released                      |
+| `itemOnCraftedPostProcess(cb)` | After the block item is crafted           |
 
 ### Complete Example
 
@@ -194,70 +194,70 @@ Creates all recipe types. Used for data generation via `RecipeResult`.
 
 ### Static factories
 
-| Factory | Description |
-|---|---|
-| `RecipeBuilder.shaped(id, result)` | Shaped crafting recipe |
-| `RecipeBuilder.shapeless(id, result)` | Shapeless crafting recipe |
-| `RecipeBuilder.smelting(id, result)` | Furnace smelting |
-| `RecipeBuilder.blasting(id, result)` | Blast furnace |
-| `RecipeBuilder.smoking(id, result)` | Smoker |
-| `RecipeBuilder.campfireCooking(id, result)` | Campfire cooking |
-| `RecipeBuilder.stonecutting(id, result)` | Stonecutter |
-| `RecipeBuilder.smithingTransform(id, result)` | Smithing table transform |
-| `RecipeBuilder.smithingTrim(id)` | Smithing table trim |
+| Factory                                       | Description               |
+|-----------------------------------------------|---------------------------|
+| `RecipeBuilder.shaped(id, result)`            | Shaped crafting recipe    |
+| `RecipeBuilder.shapeless(id, result)`         | Shapeless crafting recipe |
+| `RecipeBuilder.smelting(id, result)`          | Furnace smelting          |
+| `RecipeBuilder.blasting(id, result)`          | Blast furnace             |
+| `RecipeBuilder.smoking(id, result)`           | Smoker                    |
+| `RecipeBuilder.campfireCooking(id, result)`   | Campfire cooking          |
+| `RecipeBuilder.stonecutting(id, result)`      | Stonecutter               |
+| `RecipeBuilder.smithingTransform(id, result)` | Smithing table transform  |
+| `RecipeBuilder.smithingTrim(id)`              | Smithing table trim       |
 
 ### Universal methods
 
-| Method | Description |
-|---|---|
-| `count(int)` | Result count (default: 1) |
-| `category(RecipeCategory)` | Recipe category |
-| `group(String)` | Recipe group |
-| `unlockedBy(String, Criterion)` | Unlock criterion |
-| `generateData(boolean)` | Toggle auto data generation |
+| Method                          | Description                 |
+|---------------------------------|-----------------------------|
+| `count(int)`                    | Result count (default: 1)   |
+| `category(RecipeCategory)`      | Recipe category             |
+| `group(String)`                 | Recipe group                |
+| `unlockedBy(String, Criterion)` | Unlock criterion            |
+| `generateData(boolean)`         | Toggle auto data generation |
 
 ### Shaped recipe
 
-| Method | Description |
-|---|---|
-| `pattern(String...)` | Crafting pattern (3 lines max) |
-| `define(char, ItemLike)` | Define a pattern key |
+| Method                     | Description                        |
+|----------------------------|------------------------------------|
+| `pattern(String...)`       | Crafting pattern (3 lines max)     |
+| `define(char, ItemLike)`   | Define a pattern key               |
 | `define(char, Ingredient)` | Define a pattern key as ingredient |
 
 ### Shapeless recipe
 
-| Method | Description |
-|---|---|
-| `requires(ItemLike)` | Add an ingredient |
-| `requires(ItemLike, int)` | Add multiple of an ingredient |
-| `requires(Ingredient)` | Add an ingredient |
+| Method                      | Description                   |
+|-----------------------------|-------------------------------|
+| `requires(ItemLike)`        | Add an ingredient             |
+| `requires(ItemLike, int)`   | Add multiple of an ingredient |
+| `requires(Ingredient)`      | Add an ingredient             |
 | `requires(Ingredient, int)` | Add multiple of an ingredient |
 
 ### Cooking recipes (smelting, blasting, smoking, campfireCooking)
 
-| Method | Description |
-|---|---|
-| `ingredient(ItemLike)` | The item to cook |
-| `ingredient(Ingredient)` | The ingredient to cook |
-| `experience(float)` | XP rewarded (default: 0.1) |
-| `cookingTime(int)` | Ticks to cook (default: 200) |
+| Method                   | Description                  |
+|--------------------------|------------------------------|
+| `ingredient(ItemLike)`   | The item to cook             |
+| `ingredient(Ingredient)` | The ingredient to cook       |
+| `experience(float)`      | XP rewarded (default: 0.1)   |
+| `cookingTime(int)`       | Ticks to cook (default: 200) |
 
 ### Stonecutting
 
-| Method | Description |
-|---|---|
-| `ingredient(ItemLike)` | Input item |
+| Method                   | Description      |
+|--------------------------|------------------|
+| `ingredient(ItemLike)`   | Input item       |
 | `ingredient(Ingredient)` | Input ingredient |
 
 ### Smithing (transform & trim)
 
-| Method | Description |
-|---|---|
-| `base(ItemLike)` | Base item |
-| `base(Ingredient)` | Base ingredient |
-| `addition(ItemLike)` | Addition item |
-| `addition(Ingredient)` | Addition ingredient |
-| `template(ItemLike)` | Smithing template |
+| Method                 | Description                  |
+|------------------------|------------------------------|
+| `base(ItemLike)`       | Base item                    |
+| `base(Ingredient)`     | Base ingredient              |
+| `addition(ItemLike)`   | Addition item                |
+| `addition(Ingredient)` | Addition ingredient          |
+| `template(ItemLike)`   | Smithing template            |
 | `template(Ingredient)` | Smithing template ingredient |
 
 ### Complete examples
@@ -304,14 +304,14 @@ SoundBuilder.create(Identifier.fromNamespaceAndPath("mybundle", "my_sound"))
 
 ### Methods
 
-| Method | Description |
-|---|---|
-| `range(float)` | Fixed range for the sound |
-| `subtitle(String)` | Subtitle text (shown in settings) |
-| `replace(boolean)` | Whether to replace existing sounds |
-| `addSound(Identifier)` | Add a sound file at default settings |
-| `addSound(Identifier, float, float, int, boolean, int, boolean)` | Add with full control |
-| `generateData(boolean)` | Toggle auto data generation |
+| Method                                                           | Description                          |
+|------------------------------------------------------------------|--------------------------------------|
+| `range(float)`                                                   | Fixed range for the sound            |
+| `subtitle(String)`                                               | Subtitle text (shown in settings)    |
+| `replace(boolean)`                                               | Whether to replace existing sounds   |
+| `addSound(Identifier)`                                           | Add a sound file at default settings |
+| `addSound(Identifier, float, float, int, boolean, int, boolean)` | Add with full control                |
+| `generateData(boolean)`                                          | Toggle auto data generation          |
 
 The full `addSound` parameters are: `location`, `volume`, `pitch`, `weight`, `stream`, `attenuationDistance`, `preload`.
 
@@ -345,25 +345,25 @@ ParticleBuilder.create(Identifier.fromNamespaceAndPath("mybundle", "my_particle"
 
 ### Methods
 
-| Method | Description |
-|---|---|
-| `factory(Function<Boolean, ParticleType>)` | Custom particle type factory |
-| `alwaysShow()` | Always show (ignore particle settings) |
-| `lifetime(int)` | Particle lifetime in ticks (default: 20) |
-| `layer(ParticleLayer)` | Render layer (`OPAQUE` or `TRANSLUCENT`) |
-| `colorData(ParticleColorData)` | Full color data control |
-| `color(Color)` | Single color |
-| `color(Color, Color, Easing)` | Color transition |
-| `scaleData(ParticleScaleData)` | Full scale data control |
-| `scale(float)` | Fixed scale |
-| `velocityData(ParticleVelocityData)` | Full velocity data control |
-| `velocity(Vector3d)` | Fixed velocity |
-| `positionData(ParticlePositionData)` | Full position data control |
-| `position(Vector3d)` | Fixed position |
-| `rotationData(ParticleRotationData)` | Full rotation data control |
-| `rotation(float)` | Fixed rotation |
-| `rotation(float, float, Easing)` | Rotation animation |
-| `generateData(boolean)` | Toggle auto data generation |
+| Method                                     | Description                              |
+|--------------------------------------------|------------------------------------------|
+| `factory(Function<Boolean, ParticleType>)` | Custom particle type factory             |
+| `alwaysShow()`                             | Always show (ignore particle settings)   |
+| `lifetime(int)`                            | Particle lifetime in ticks (default: 20) |
+| `layer(ParticleLayer)`                     | Render layer (`OPAQUE` or `TRANSLUCENT`) |
+| `colorData(ParticleColorData)`             | Full color data control                  |
+| `color(Color)`                             | Single color                             |
+| `color(Color, Color, Easing)`              | Color transition                         |
+| `scaleData(ParticleScaleData)`             | Full scale data control                  |
+| `scale(float)`                             | Fixed scale                              |
+| `velocityData(ParticleVelocityData)`       | Full velocity data control               |
+| `velocity(Vector3d)`                       | Fixed velocity                           |
+| `positionData(ParticlePositionData)`       | Full position data control               |
+| `position(Vector3d)`                       | Fixed position                           |
+| `rotationData(ParticleRotationData)`       | Full rotation data control               |
+| `rotation(float)`                          | Fixed rotation                           |
+| `rotation(float, float, Easing)`           | Rotation animation                       |
+| `generateData(boolean)`                    | Toggle auto data generation              |
 
 ### ParticleLayer
 

@@ -23,10 +23,10 @@ Bundles can register:
 
 You have two options. This tutorial uses the **in-game folder** approach (no build tools needed).
 
-| Approach         | Setup Effort | Reload Speed | Version Control |
-|------------------|-------------|--------------|-----------------|
-| In-game folder   | None        | Instant (`/engine reload`) | Manual |
-| Template project | Gradle setup | Build + deploy | Built-in |
+| Approach         | Setup Effort | Reload Speed               | Version Control |
+|------------------|--------------|----------------------------|-----------------|
+| In-game folder   | None         | Instant (`/engine reload`) | Manual          |
+| Template project | Gradle setup | Build + deploy             | Built-in        |
 
 See [Workspaces](workspaces) for a detailed comparison.
 
@@ -70,14 +70,14 @@ dependencies = [
 
 ### Manifest fields
 
-| Field          | Description                              |
-|----------------|------------------------------------------|
-| `bundleId`     | Unique identifier (lowercase, underscores, no spaces) |
-| `version`      | Semantic version (e.g. `0.1.0`)          |
-| `displayName`  | Human-readable name shown in the mods menu |
-| `displayURL`   | Optional link to your project page       |
-| `authors`      | Your name or team name                   |
-| `description`  | Shown in the mods menu                   |
+| Field          | Description                                              |
+|----------------|----------------------------------------------------------|
+| `bundleId`     | Unique identifier (lowercase, underscores, no spaces)    |
+| `version`      | Semantic version (e.g. `0.1.0`)                          |
+| `displayName`  | Human-readable name shown in the mods menu               |
+| `displayURL`   | Optional link to your project page                       |
+| `authors`      | Your name or team name                                   |
+| `description`  | Shown in the mods menu                                   |
 | `dependencies` | Required mods and bundles (`"mod:..."` / `"bundle:..."`) |
 
 ## Create the entrypoint script
@@ -135,6 +135,7 @@ private static final ItemBuilder MY_ITEM = ItemBuilder.create(id("my_item"))
 ```
 
 This creates a gem-like item that:
+
 - Has a custom lore description
 - Shows as **Uncommon** rarity (blue text)
 - Stacks up to 16
@@ -245,13 +246,13 @@ my-first-bundle/
 
 ## Troubleshooting
 
-| Symptom | Cause | Fix |
-|---------|-------|-----|
-| `/engine reload` not found | Mod not installed | Verify FoundryEngine is in `mods/` |
-| Bundle not loading | TOML syntax error | Check `[[bundles]]` header and braces |
-| `ClassNotFoundException` | Import missing | Add the missing `import` statement |
-| Changes not appearing | Script not recompiled | Run `/engine reload` again |
-| Item missing from inventory | Not registered | Check `BundleEvents.registry {}` in `onLoad()` |
+| Symptom                     | Cause                 | Fix                                            |
+|-----------------------------|-----------------------|------------------------------------------------|
+| `/engine reload` not found  | Mod not installed     | Verify FoundryEngine is in `mods/`             |
+| Bundle not loading          | TOML syntax error     | Check `[[bundles]]` header and braces          |
+| `ClassNotFoundException`    | Import missing        | Add the missing `import` statement             |
+| Changes not appearing       | Script not recompiled | Run `/engine reload` again                     |
+| Item missing from inventory | Not registered        | Check `BundleEvents.registry {}` in `onLoad()` |
 
 ## Next steps
 

@@ -39,16 +39,17 @@ manager.clearWaypoints(level)
 
 ## Waypoint properties
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `name` | `String` | Display name |
-| `icon` | `String` | Icon identifier (e.g. `ChatIcons.PLUS`) |
-| `x`, `y`, `z` | `int` | Block position |
-| `color` | `int` | ARGB hex colour |
+| Property      | Type     | Description                             |
+|---------------|----------|-----------------------------------------|
+| `name`        | `String` | Display name                            |
+| `icon`        | `String` | Icon identifier (e.g. `ChatIcons.PLUS`) |
+| `x`, `y`, `z` | `int`    | Block position                          |
+| `color`       | `int`    | ARGB hex colour                         |
 
 ### Colour format
 
 Colours use ARGB hex format: `0xAARRGGBB`. For example:
+
 - `0xFFFF0000` — opaque red
 - `0x44FF44FF` — semi-transparent purple
 - `0xFF44FF44` — opaque green
@@ -59,12 +60,12 @@ Colours use ARGB hex format: `0xAARRGGBB`. For example:
 
 ## Waypoint Commands
 
-| Command | Description |
-|---------|-------------|
-| `/engine waypoint add <pos> <name> [icon] [color]` | Add a waypoint |
-| `/engine waypoint remove <pos>` | Remove waypoint at position |
-| `/engine waypoint clear` | Clear all waypoints |
-| `/engine waypoint list` | List all waypoints |
+| Command                                            | Description                 |
+|----------------------------------------------------|-----------------------------|
+| `/engine waypoint add <pos> <name> [icon] [color]` | Add a waypoint              |
+| `/engine waypoint remove <pos>`                    | Remove waypoint at position |
+| `/engine waypoint clear`                           | Clear all waypoints         |
+| `/engine waypoint list`                            | List all waypoints          |
 
 ## See also
 

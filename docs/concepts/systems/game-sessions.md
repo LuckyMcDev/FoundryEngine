@@ -217,12 +217,12 @@ Sessions with `autoStart(true)` will be started automatically when the world loa
 
 All events are on the NeoForge event bus:
 
-| Event | Cancellable | When |
-|-------|-------------|------|
-| `GameSessionEvent.Starting` | Yes | Before session start (can veto) |
-| `GameSessionEvent.Started` | No | After session has started |
-| `GameSessionEvent.Stopping` | Yes | Before session stop (can veto) |
-| `GameSessionEvent.Stopped` | No | After session has stopped |
+| Event                       | Cancellable | When                            |
+|-----------------------------|-------------|---------------------------------|
+| `GameSessionEvent.Starting` | Yes         | Before session start (can veto) |
+| `GameSessionEvent.Started`  | No          | After session has started       |
+| `GameSessionEvent.Stopping` | Yes         | Before session stop (can veto)  |
+| `GameSessionEvent.Stopped`  | No          | After session has stopped       |
 
 Each event has `getSessionId()` returning the session's `Identifier`.
 

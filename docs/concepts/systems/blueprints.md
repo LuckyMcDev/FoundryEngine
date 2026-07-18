@@ -59,44 +59,44 @@ A blueprint file consists of three top-level arrays:
 
 Each node represents a discrete unit of logic in the blueprint graph.
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `id` | `int` | Unique identifier for the node |
-| `identifier` | `string` | Stable runtime ID |
-| `name` | `string` | Display name |
-| `category` | `string` or `null` | Category for grouping |
-| `posX` | `float` | Grid-space X position |
-| `posY` | `float` | Grid-space Y position |
+| Field          | Type                  | Description                      |
+|----------------|-----------------------|----------------------------------|
+| `id`           | `int`                 | Unique identifier for the node   |
+| `identifier`   | `string`              | Stable runtime ID                |
+| `name`         | `string`              | Display name                     |
+| `category`     | `string` or `null`    | Category for grouping            |
+| `posX`         | `float`               | Grid-space X position            |
+| `posY`         | `float`               | Grid-space Y position            |
 | `outputValues` | `Map<string, object>` | Computed output values (runtime) |
-| `data` | `Map<string, object>` | Editor metadata |
+| `data`         | `Map<string, object>` | Editor metadata                  |
 
 ## Pin
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `id` | `int` | Unique identifier |
-| `nodeId` | `int` | Parent node ID |
-| `label` | `string` | Display label |
-| `typeName` | `string` | Data type |
-| `connectionType` | `"INPUT"` or `"OUTPUT"` | Pin direction |
-| `defaultValue` | `any` or `null` | Default when not connected |
-| `isConnected` | `boolean` | Whether linked |
+| Field            | Type                    | Description                |
+|------------------|-------------------------|----------------------------|
+| `id`             | `int`                   | Unique identifier          |
+| `nodeId`         | `int`                   | Parent node ID             |
+| `label`          | `string`                | Display label              |
+| `typeName`       | `string`                | Data type                  |
+| `connectionType` | `"INPUT"` or `"OUTPUT"` | Pin direction              |
+| `defaultValue`   | `any` or `null`         | Default when not connected |
+| `isConnected`    | `boolean`               | Whether linked             |
 
 ### Pin Types
 
-| `typeName` | Description |
-|------------|-------------|
-| `Exec` | Execution flow (trigger) |
-| `Bool` | Boolean |
-| `Int` | Integer |
-| `Float` | Floating-point |
-| `String` | Text string |
-| `Object` | Generic object |
-| `Any` | Accepts any type |
+| `typeName` | Description              |
+|------------|--------------------------|
+| `Exec`     | Execution flow (trigger) |
+| `Bool`     | Boolean                  |
+| `Int`      | Integer                  |
+| `Float`    | Floating-point           |
+| `String`   | Text string              |
+| `Object`   | Generic object           |
+| `Any`      | Accepts any type         |
 
 ## Link
 
-| Field | Type | Description |
-|-------|------|-------------|
+| Field         | Type  | Description         |
+|---------------|-------|---------------------|
 | `sourcePinId` | `int` | Output pin (source) |
-| `targetPinId` | `int` | Input pin (target) |
+| `targetPinId` | `int` | Input pin (target)  |

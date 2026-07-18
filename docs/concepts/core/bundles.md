@@ -45,14 +45,14 @@ dependencies = [
 
 ### Fields
 
-| Field | Description |
-|---|---|
-| `bundleId` | Unique identifier (lowercase, no spaces) |
-| `version` | Semantic version string |
-| `displayName` | Human-readable name (shown in mods menu) |
-| `displayURL` | Optional project URL |
-| `authors` | Author name(s) |
-| `description` | Description shown in mods menu |
+| Field          | Description                                               |
+|----------------|-----------------------------------------------------------|
+| `bundleId`     | Unique identifier (lowercase, no spaces)                  |
+| `version`      | Semantic version string                                   |
+| `displayName`  | Human-readable name (shown in mods menu)                  |
+| `displayURL`   | Optional project URL                                      |
+| `authors`      | Author name(s)                                            |
+| `description`  | Description shown in mods menu                            |
 | `dependencies` | Array of `"mod:..."` or `"bundle:..."` dependency strings |
 
 ## What Bundles Can Define

@@ -29,24 +29,24 @@ For each bundle, `BundleDataGenerator.run(bundle)`:
 
 ## Server providers
 
-| Provider                          | Generates                              |
-|-----------------------------------|----------------------------------------|
-| `EngineAdvancementProvider`       | Advancement JSONs                      |
-| `EngineLootTableProvider`         | Loot table JSONs                       |
-| `EngineRecipePrioritiesProvider`  | Recipe priority data                   |
-| `EngineBlockTagsProvider`         | Block tag JSONs                        |
-| `EngineItemTagsProvider`          | Item tag JSONs                         |
-| `EngineGlobalLootModifierProvider`| Global loot modifier JSONs             |
+| Provider                           | Generates                  |
+|------------------------------------|----------------------------|
+| `EngineAdvancementProvider`        | Advancement JSONs          |
+| `EngineLootTableProvider`          | Loot table JSONs           |
+| `EngineRecipePrioritiesProvider`   | Recipe priority data       |
+| `EngineBlockTagsProvider`          | Block tag JSONs            |
+| `EngineItemTagsProvider`           | Item tag JSONs             |
+| `EngineGlobalLootModifierProvider` | Global loot modifier JSONs |
 
 ## Client providers
 
-| Provider                             | Generates                                |
-|--------------------------------------|------------------------------------------|
-| `EngineLanguageProvider`             | `en_us.json` language file               |
-| `EngineModelProvider`                | Block/item model JSONs                   |
-| `EngineEquipmentAssetProvider`       | Equipment asset data                     |
-| `EngineParticleDescriptionProvider`  | Particle description JSONs               |
-| `EngineSoundDefinitionsProvider`     | `sounds.json` sound definitions          |
+| Provider                            | Generates                       |
+|-------------------------------------|---------------------------------|
+| `EngineLanguageProvider`            | `en_us.json` language file      |
+| `EngineModelProvider`               | Block/item model JSONs          |
+| `EngineEquipmentAssetProvider`      | Equipment asset data            |
+| `EngineParticleDescriptionProvider` | Particle description JSONs      |
+| `EngineSoundDefinitionsProvider`    | `sounds.json` sound definitions |
 
 ## Per-Builder Toggle
 
@@ -84,11 +84,11 @@ public void onDataGen(BundleDataGenEvent event) {
 
 ### Event Properties
 
-| Method                    | Returns                               |
-|---------------------------|---------------------------------------|
-| `getGenerator()`          | `EngineDataGenerator` instance        |
-| `getLookup()`             | `CompletableFuture<HolderLookup.Provider>` |
-| `addProvider(DataProvider)` | Register a custom provider           |
+| Method                      | Returns                                    |
+|-----------------------------|--------------------------------------------|
+| `getGenerator()`            | `EngineDataGenerator` instance             |
+| `getLookup()`               | `CompletableFuture<HolderLookup.Provider>` |
+| `addProvider(DataProvider)` | Register a custom provider                 |
 
 ## DynamicPackRepository
 

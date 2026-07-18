@@ -24,10 +24,10 @@ dependencies = [
 
 Dependencies use `@` to separate the name from the version requirement. Version strings follow semantic versioning. If a dependency is not met, the bundle will not load and an error is shown in the mods menu.
 
-| Prefix | Type |
-|---|---|
+| Prefix    | Type                         |
+|-----------|------------------------------|
 | `bundle:` | Another FoundryEngine bundle |
-| `mod:` | A NeoForge mod (mod ID) |
+| `mod:`    | A NeoForge mod (mod ID)      |
 
 ## See also
 

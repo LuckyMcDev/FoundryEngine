@@ -15,6 +15,7 @@ FoundryEngine EventGroupHolder
 ```
 
 Each API event class contains:
+
 - **Static `EventGroupHolder` fields** — one per event type, holding Java/Groovy callbacks
 - **Static registration methods** — e.g. `BlockEvents.broken(callback)` adds your callback
 - **Internal `Internal` class** — listens on NeoForge's bus and forwards to the `EventGroupHolder`
@@ -63,8 +64,8 @@ BundleEvents.custom(LivingDeathEvent.class, {
 
 Package: `de.luckymcdev.foundryengine.common.event.AreaEvents`
 
-| Event | Description |
-|---|---|
+| Event          | Description                                |
+|----------------|--------------------------------------------|
 | `register(cb)` | Called for every `ServerLevel` as it loads |
 
 Fires when server levels load, providing a hook to create areas. Area runtime behavior uses module interfaces (`AreaTickModule`, `AreaEnterModule`, `AreaLeaveModule`, `AreaBlockModule`, `AreaRenderModule`).
@@ -75,15 +76,15 @@ Fires when server levels load, providing a hook to create areas. Area runtime be
 
 Package: `de.luckymcdev.foundryengine.common.event.BlockEvents`
 
-| Event | Description |
-|---|---|
-| `broken(cb)` | A block is broken |
-| `placed(cb)` | A block is placed |
-| `neighborNotify(cb)` | Block neighbor update |
-| `leftClicked(cb)` | Player left-clicks a block |
-| `rightClicked(cb)` | Player right-clicks a block |
-| `farmlandTrampled(cb)` | Farmland is trampled |
-| `modification(cb)` | Modify block behavior post-registration |
+| Event                  | Description                             |
+|------------------------|-----------------------------------------|
+| `broken(cb)`           | A block is broken                       |
+| `placed(cb)`           | A block is placed                       |
+| `neighborNotify(cb)`   | Block neighbor update                   |
+| `leftClicked(cb)`      | Player left-clicks a block              |
+| `rightClicked(cb)`     | Player right-clicks a block             |
+| `farmlandTrampled(cb)` | Farmland is trampled                    |
+| `modification(cb)`     | Modify block behavior post-registration |
 
 > **⚠️ BlockModificationEvent is unstable.** The modification API has known issues and may not produce the expected results in all cases. Use with caution.
 
@@ -101,16 +102,16 @@ Package: `de.luckymcdev.foundryengine.common.event.BundleEvents`
 
 Core lifecycle events. **The most important event class for bundle developers.**
 
-| Event | Description |
-|---|---|
-| `registry(cb)` | Register items, blocks, sounds, particles |
-| `vanillaGame(cb)` | Vanilla game events (advancement, etc.) |
-| `commonSetup(cb)` | FML common setup phase |
-| `clientSetup(cb)` | FML client-only setup |
-| `dedicatedServerSetup(cb)` | Dedicated server setup |
-| `postInit(cb)` | After all mods initialize |
-| `serverAboutToStart(cb)` | Server about to start |
-| `dataGen(cb)` | Bundle data generation |
+| Event                      | Description                               |
+|----------------------------|-------------------------------------------|
+| `registry(cb)`             | Register items, blocks, sounds, particles |
+| `vanillaGame(cb)`          | Vanilla game events (advancement, etc.)   |
+| `commonSetup(cb)`          | FML common setup phase                    |
+| `clientSetup(cb)`          | FML client-only setup                     |
+| `dedicatedServerSetup(cb)` | Dedicated server setup                    |
+| `postInit(cb)`             | After all mods initialize                 |
+| `serverAboutToStart(cb)`   | Server about to start                     |
+| `dataGen(cb)`              | Bundle data generation                    |
 
 ```groovy
 BundleEvents.registry {
@@ -143,19 +144,19 @@ Package: `de.luckymcdev.foundryengine.common.event.ClientEvents`
 
 Only fires on the **client side**.
 
-| Event | Description |
-|---|---|
-| `tick(cb)` | End of client tick |
-| `stopped(cb)` | Client fully stopped |
-| `stopping(cb)` | Client is stopping |
-| `chat(cb)` | Client sending a chat message |
-| `keyMappings(cb)` | Register key mappings |
-| `renderGui(cb)` | After GUI is rendered |
-| `renderGuiLayer(cb)` | After a GUI layer is rendered |
-| `renderHand(cb)` | Hand rendering |
-| `renderAfterLevel(cb)` | After level rendering |
-| `loggedIn(cb)` | Client logged into a server |
-| `loggedOut(cb)` | Client logged out |
+| Event                  | Description                   |
+|------------------------|-------------------------------|
+| `tick(cb)`             | End of client tick            |
+| `stopped(cb)`          | Client fully stopped          |
+| `stopping(cb)`         | Client is stopping            |
+| `chat(cb)`             | Client sending a chat message |
+| `keyMappings(cb)`      | Register key mappings         |
+| `renderGui(cb)`        | After GUI is rendered         |
+| `renderGuiLayer(cb)`   | After a GUI layer is rendered |
+| `renderHand(cb)`       | Hand rendering                |
+| `renderAfterLevel(cb)` | After level rendering         |
+| `loggedIn(cb)`         | Client logged into a server   |
+| `loggedOut(cb)`        | Client logged out             |
 
 ---
 
@@ -163,9 +164,9 @@ Only fires on the **client side**.
 
 Package: `de.luckymcdev.foundryengine.common.event.CommandEvents`
 
-| Event | Description |
-|---|---|
-| `register(cb)` | Register server commands |
+| Event                | Description                   |
+|----------------------|-------------------------------|
+| `register(cb)`       | Register server commands      |
 | `registerClient(cb)` | Register client-side commands |
 
 ```groovy
@@ -186,13 +187,13 @@ CommandEvents.register {
 
 Package: `de.luckymcdev.foundryengine.common.event.EntityEvents`
 
-| Event | Description |
-|---|---|
-| `joinLevel(cb)` | Entity enters a level |
-| `death(cb)` | Living entity dies |
-| `drops(cb)` | Entity drops items on death |
-| `hurt(cb)` | Entity takes damage (post) |
-| `spawned(cb)` | Entity spawned into world |
+| Event            | Description                   |
+|------------------|-------------------------------|
+| `joinLevel(cb)`  | Entity enters a level         |
+| `death(cb)`      | Living entity dies            |
+| `drops(cb)`      | Entity drops items on death   |
+| `hurt(cb)`       | Entity takes damage (post)    |
+| `spawned(cb)`    | Entity spawned into world     |
 | `checkSpawn(cb)` | Check entity spawn conditions |
 
 ---
@@ -203,12 +204,12 @@ Package: `de.luckymcdev.foundryengine.common.event.GameEvents`
 
 Game session lifecycle events.
 
-| Event | Description |
-|---|---|
+| Event            | Description           |
+|------------------|-----------------------|
 | `onStarting(cb)` | Game session starting |
-| `onStarted(cb)` | Game session started |
+| `onStarted(cb)`  | Game session started  |
 | `onStopping(cb)` | Game session stopping |
-| `onStopped(cb)` | Game session stopped |
+| `onStopped(cb)`  | Game session stopped  |
 
 ---
 
@@ -216,20 +217,20 @@ Game session lifecycle events.
 
 Package: `de.luckymcdev.foundryengine.common.event.ItemEvents`
 
-| Event | Description |
-|---|---|
-| `pickedUp(cb)` | Item picked up by player |
-| `destroyed(cb)` | Item is destroyed (used up) |
-| `rightClicked(cb)` | Player right-clicks with item |
-| `crafted(cb)` | Item crafted |
-| `dropped(cb)` | Item thrown/dropped |
-| `foodEaten(cb)` | Food consumption finished |
-| `smelted(cb)` | Item smelted in furnace |
-| `dynamicTooltips(cb)` | Item tooltip rendering |
-| `entityInteracted(cb)` | Player interacts entity with item |
-| `firstLeftClicked(cb)` | Left-click on empty space |
-| `firstRightClicked(cb)` | Right-click on empty space |
-| `modification(cb)` | Modify item behavior post-registration |
+| Event                   | Description                            |
+|-------------------------|----------------------------------------|
+| `pickedUp(cb)`          | Item picked up by player               |
+| `destroyed(cb)`         | Item is destroyed (used up)            |
+| `rightClicked(cb)`      | Player right-clicks with item          |
+| `crafted(cb)`           | Item crafted                           |
+| `dropped(cb)`           | Item thrown/dropped                    |
+| `foodEaten(cb)`         | Food consumption finished              |
+| `smelted(cb)`           | Item smelted in furnace                |
+| `dynamicTooltips(cb)`   | Item tooltip rendering                 |
+| `entityInteracted(cb)`  | Player interacts entity with item      |
+| `firstLeftClicked(cb)`  | Left-click on empty space              |
+| `firstRightClicked(cb)` | Right-click on empty space             |
+| `modification(cb)`      | Modify item behavior post-registration |
 
 > **⚠️ ItemModificationEvent is unstable.** The modification API has known issues and may not produce the expected results in all cases. Use with caution.
 
@@ -245,14 +246,14 @@ The `it` parameter exposes: `setMaxStackSize`, `setMaxDamage`, `setUnbreakable`,
 
 Package: `de.luckymcdev.foundryengine.common.event.LevelEvents`
 
-| Event | Description |
-|---|---|
-| `load(cb)` | Level/dimension is loaded |
-| `unload(cb)` | Level/dimension is unloaded |
-| `save(cb)` | Level data is saved |
-| `tick(cb)` | End of level tick |
+| Event                 | Description                   |
+|-----------------------|-------------------------------|
+| `load(cb)`            | Level/dimension is loaded     |
+| `unload(cb)`          | Level/dimension is unloaded   |
+| `save(cb)`            | Level data is saved           |
+| `tick(cb)`            | End of level tick             |
 | `beforeExplosion(cb)` | Before an explosion detonates |
-| `afterExplosion(cb)` | After an explosion detonates |
+| `afterExplosion(cb)`  | After an explosion detonates  |
 
 ---
 
@@ -272,16 +273,16 @@ Package: `de.luckymcdev.foundryengine.common.event.NetworkEvents`
 
 Package: `de.luckymcdev.foundryengine.common.event.PlayerEvents`
 
-| Event | Description |
-|---|---|
-| `loggedIn(cb)` | Player logged in |
-| `loggedOut(cb)` | Player logged out |
-| `tick(cb)` | End of player tick |
-| `chat(cb)` | Player sends chat message |
-| `advancement(cb)` | Player earns advancement |
-| `chestClosed(cb)` | Player closes a container |
-| `chestOpened(cb)` | Player opens a container |
-| `respawned(cb)` | Player respawns |
+| Event              | Description                     |
+|--------------------|---------------------------------|
+| `loggedIn(cb)`     | Player logged in                |
+| `loggedOut(cb)`    | Player logged out               |
+| `tick(cb)`         | End of player tick              |
+| `chat(cb)`         | Player sends chat message       |
+| `advancement(cb)`  | Player earns advancement        |
+| `chestClosed(cb)`  | Player closes a container       |
+| `chestOpened(cb)`  | Player opens a container        |
+| `respawned(cb)`    | Player respawns                 |
 | `decorateChat(cb)` | Decorate received chat messages |
 
 ---
@@ -290,10 +291,10 @@ Package: `de.luckymcdev.foundryengine.common.event.PlayerEvents`
 
 Package: `de.luckymcdev.foundryengine.common.event.RecipeEvents`
 
-| Event | Description |
-|---|---|
-| `recipesReceived(cb)` | Client received recipe list |
-| `modifyRecipes(cb)` | Modify recipe JSONs at reload |
+| Event                 | Description                   |
+|-----------------------|-------------------------------|
+| `recipesReceived(cb)` | Client received recipe list   |
+| `modifyRecipes(cb)`   | Modify recipe JSONs at reload |
 
 ---
 
@@ -301,15 +302,15 @@ Package: `de.luckymcdev.foundryengine.common.event.RecipeEvents`
 
 Package: `de.luckymcdev.foundryengine.common.event.ServerEvents`
 
-| Event | Description |
-|---|---|
-| `aboutToStart(cb)` | Server about to start |
-| `started(cb)` | Server has started |
-| `starting(cb)` | Server is starting |
-| `stopped(cb)` | Server has stopped |
-| `stopping(cb)` | Server is stopping |
-| `tick(cb)` | End of server tick |
-| `tags(cb)` | Game tags were updated/reloaded |
+| Event              | Description                     |
+|--------------------|---------------------------------|
+| `aboutToStart(cb)` | Server about to start           |
+| `started(cb)`      | Server has started              |
+| `starting(cb)`     | Server is starting              |
+| `stopped(cb)`      | Server has stopped              |
+| `stopping(cb)`     | Server is stopping              |
+| `tick(cb)`         | End of server tick              |
+| `tags(cb)`         | Game tags were updated/reloaded |
 
 ---
 
@@ -317,8 +318,8 @@ Package: `de.luckymcdev.foundryengine.common.event.ServerEvents`
 
 Package: `de.luckymcdev.foundryengine.common.event.SlotEvents`
 
-| Event | Description |
-|---|---|
+| Event              | Description                                 |
+|--------------------|---------------------------------------------|
 | `modification(cb)` | Container menu opened or screen initialized |
 
 Fired with `AbstractContainerMenu` when a container is opened or a screen initializes.
@@ -331,12 +332,12 @@ Package: `de.luckymcdev.foundryengine.common.event.StageEvents`
 
 Game stage progression events.
 
-| Event | Description |
-|---|---|
-| `adding(cb)` | Before a stage is added (cancellable) |
+| Event          | Description                             |
+|----------------|-----------------------------------------|
+| `adding(cb)`   | Before a stage is added (cancellable)   |
 | `removing(cb)` | Before a stage is removed (cancellable) |
-| `added(cb)` | After a stage has been added |
-| `removed(cb)` | After a stage has been removed |
+| `added(cb)`    | After a stage has been added            |
+| `removed(cb)`  | After a stage has been removed          |
 
 ---
 
@@ -346,12 +347,12 @@ Package: `de.luckymcdev.foundryengine.common.event.DialogueEvents`
 
 Dialogue tree traversal events.
 
-| Event | Description |
-|---|---|
-| `onStarted(cb)` | Dialogue started for a player |
-| `onAdvanced(cb)` | Dialogue advanced to next node |
-| `onOptionSelected(cb)` | Player selected an option |
-| `onEnded(cb)` | Dialogue ended |
+| Event                  | Description                    |
+|------------------------|--------------------------------|
+| `onStarted(cb)`        | Dialogue started for a player  |
+| `onAdvanced(cb)`       | Dialogue advanced to next node |
+| `onOptionSelected(cb)` | Player selected an option      |
+| `onEnded(cb)`          | Dialogue ended                 |
 
 ---
 
@@ -411,12 +412,12 @@ Package: `de.luckymcdev.foundryengine.common.game.stage.GameStageEvent`
 
 Abstract event — listen to subclasses:
 
-| Subclass | Cancellable | Description |
-|---|---|---|
-| `GameStageEvent.Add` | Yes | Before a stage is added to a player |
-| `GameStageEvent.Remove` | Yes | Before a stage is removed from a player |
-| `GameStageEvent.Added` | No | After a stage has been added |
-| `GameStageEvent.Removed` | No | After a stage has been removed |
+| Subclass                 | Cancellable | Description                             |
+|--------------------------|-------------|-----------------------------------------|
+| `GameStageEvent.Add`     | Yes         | Before a stage is added to a player     |
+| `GameStageEvent.Remove`  | Yes         | Before a stage is removed from a player |
+| `GameStageEvent.Added`   | No          | After a stage has been added            |
+| `GameStageEvent.Removed` | No          | After a stage has been removed          |
 
 All four expose `getStageName()` and `getPlayer()`.
 

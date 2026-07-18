@@ -84,21 +84,21 @@ my-bundle/
 
 ### Key differences from in-game folder
 
-| Aspect | In-Game Folder | Template Project |
-|--------|---------------|------------------|
-| Script location | `scripts/common/` | `src/main/groovy/common/` |
+| Aspect            | In-Game Folder                           | Template Project                              |
+|-------------------|------------------------------------------|-----------------------------------------------|
+| Script location   | `scripts/common/`                        | `src/main/groovy/common/`                     |
 | Manifest location | `bundle-folder/your-bundle.bundles.toml` | `src/main/resources/your-bundle.bundles.toml` |
-| Asset location | `assets/` | `src/main/resources/assets/` |
-| Data location | `data/` | `src/main/resources/data/` |
+| Asset location    | `assets/`                                | `src/main/resources/assets/`                  |
+| Data location     | `data/`                                  | `src/main/resources/data/`                    |
 
 ### Key Gradle tasks
 
-| Task | Command | Purpose |
-|------|---------|---------|
+| Task           | Command                  | Purpose                                                     |
+|----------------|--------------------------|-------------------------------------------------------------|
 | `deployBundle` | `./gradlew deployBundle` | Build the bundle and copy it to the Minecraft run directory |
-| `runClient` | `./gradlew runClient` | Launch Minecraft with NeoForge and the deployed bundle |
-| `clean` | `./gradlew clean` | Remove build artifacts |
-| `test` | `./gradlew test` | Run any JUnit tests in the project |
+| `runClient`    | `./gradlew runClient`    | Launch Minecraft with NeoForge and the deployed bundle      |
+| `clean`        | `./gradlew clean`        | Remove build artifacts                                      |
+| `test`         | `./gradlew test`         | Run any JUnit tests in the project                          |
 
 ### Build and deploy workflow
 

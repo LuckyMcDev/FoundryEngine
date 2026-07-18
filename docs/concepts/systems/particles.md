@@ -24,21 +24,21 @@ ParticleBuilder.create(Common.id("sparkle"))
 
 ### ParticleBuilder Methods
 
-| Method | Description |
-|--------|-------------|
-| `alwaysShow()` | Ignore client particle settings |
-| `lifetime(int)` | Duration in ticks |
-| `layer(ParticleLayer)` | Render layer (OPAQUE, TRANSLUCENT) |
-| `color(Color, Color, Easing)` | Start/end colour with easing |
-| `scale(float, float, Easing)` | Start/end scale with easing |
-| `velocity(Vector3d)` | Constant velocity |
-| `rotation(float, float, Easing)` | Start/end rotation with easing |
-| `colorData(KeyframedParticleData)` | Full keyframe colour control |
-| `scaleData(KeyframedParticleData)` | Full keyframe scale control |
-| `velocityData(KeyframedParticleData)` | Full keyframe velocity control |
-| `positionData(KeyframedParticleData)` | Full keyframe position control |
-| `rotationData(KeyframedParticleData)` | Full keyframe rotation control |
-| `speedData(KeyframedParticleData)` | Full keyframe speed control |
+| Method                                | Description                        |
+|---------------------------------------|------------------------------------|
+| `alwaysShow()`                        | Ignore client particle settings    |
+| `lifetime(int)`                       | Duration in ticks                  |
+| `layer(ParticleLayer)`                | Render layer (OPAQUE, TRANSLUCENT) |
+| `color(Color, Color, Easing)`         | Start/end colour with easing       |
+| `scale(float, float, Easing)`         | Start/end scale with easing        |
+| `velocity(Vector3d)`                  | Constant velocity                  |
+| `rotation(float, float, Easing)`      | Start/end rotation with easing     |
+| `colorData(KeyframedParticleData)`    | Full keyframe colour control       |
+| `scaleData(KeyframedParticleData)`    | Full keyframe scale control        |
+| `velocityData(KeyframedParticleData)` | Full keyframe velocity control     |
+| `positionData(KeyframedParticleData)` | Full keyframe position control     |
+| `rotationData(KeyframedParticleData)` | Full keyframe rotation control     |
+| `speedData(KeyframedParticleData)`    | Full keyframe speed control        |
 
 ## Keyframe sequences
 
@@ -67,26 +67,27 @@ ParticleBuilder.create(Common.id("complex_fx"))
 
 The `KeyframeSequence<T>` class stores animation keyframes:
 
-| Method | Description |
-|--------|-------------|
-| `add(T value, float timepoint, Easing easing)` | Add a keyframe at normalized time (0-1) |
-| `getInterpolation(float progress)` | Get interpolated value at progress point |
+| Method                                         | Description                              |
+|------------------------------------------------|------------------------------------------|
+| `add(T value, float timepoint, Easing easing)` | Add a keyframe at normalized time (0-1)  |
+| `getInterpolation(float progress)`             | Get interpolated value at progress point |
 
 Each keyframe has:
+
 - **Value** — the keyframe value (Color, Float, Vector3d, etc.)
 - **Timepoint** — normalized position in the sequence (0.0 to 1.0)
 - **Easing** — the easing function for interpolating to this keyframe
 
 ### KeyframedParticleData Types
 
-| Class | Generic Type | What it controls |
-|-------|--------------|------------------|
-| `ParticleColorData` | `Color` | Colour over lifetime |
-| `ParticleScaleData` | `Float` | Scale over lifetime |
-| `ParticleSpeedData` | `Float` | Speed over lifetime |
-| `ParticleVelocityData` | `Vector3d` | Velocity vector over lifetime |
-| `ParticlePositionData` | `Vector3d` | Position offset over lifetime |
-| `ParticleRotationData` | `Float` | Rotation over lifetime |
+| Class                  | Generic Type | What it controls              |
+|------------------------|--------------|-------------------------------|
+| `ParticleColorData`    | `Color`      | Colour over lifetime          |
+| `ParticleScaleData`    | `Float`      | Scale over lifetime           |
+| `ParticleSpeedData`    | `Float`      | Speed over lifetime           |
+| `ParticleVelocityData` | `Vector3d`   | Velocity vector over lifetime |
+| `ParticlePositionData` | `Vector3d`   | Position offset over lifetime |
+| `ParticleRotationData` | `Float`      | Rotation over lifetime        |
 
 ## Spawning particles
 

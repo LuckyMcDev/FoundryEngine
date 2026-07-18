@@ -83,10 +83,10 @@ scripts/
 └── server/my_bundle/      # Server-only logic (commands, data management)
 ```
 
-| Location | Purpose |
-|---|---|
+| Location                      | Purpose                                       |
+|-------------------------------|-----------------------------------------------|
 | `scripts/common/<namespace>/` | Shared logic (items, blocks, recipes, events) |
-| `scripts/client/<namespace>/` | Client-only logic (rendering, keybinds, GUI) |
+| `scripts/client/<namespace>/` | Client-only logic (rendering, keybinds, GUI)  |
 | `scripts/server/<namespace>/` | Server-only logic (commands, data management) |
 
 Each folder can have its own entrypoint. You don't need all three — only the sides your bundle requires.

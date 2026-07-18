@@ -8,36 +8,36 @@ FoundryEngine's Dear ImGui editor supports theming via the `ImTheme` interface. 
 
 Every theme implements this interface:
 
-| Method        | Description                                      |
-|---------------|--------------------------------------------------|
-| `getName()`   | Returns the display name of the theme            |
+| Method                   | Description                            |
+|--------------------------|----------------------------------------|
+| `getName()`              | Returns the display name of the theme  |
 | `applyTheme(ImGuiStyle)` | Applies the theme's colors and styling |
 
 Helper methods available in the interface:
 
-| Method           | Description                                          |
-|------------------|------------------------------------------------------|
-| `col(style, col, color)` | Set an ImGui color (from Color or ARGB/rgba)  |
-| `padding(style, x, y)`   | Set window padding                            |
-| `framePadding(style, x, y)` | Set frame padding                          |
-| `itemSpacing(style, x, y)` | Set item spacing                           |
-| `itemInnerSpacing(style, x, y)` | Set item inner spacing                  |
-| `rounding(style, window, frame, grab, tab, popup, scrollbar, child)` | Set all rounding values |
-| `borders(style, window, frame, popup, child, tab)` | Set all border sizes         |
+| Method                                                               | Description                                  |
+|----------------------------------------------------------------------|----------------------------------------------|
+| `col(style, col, color)`                                             | Set an ImGui color (from Color or ARGB/rgba) |
+| `padding(style, x, y)`                                               | Set window padding                           |
+| `framePadding(style, x, y)`                                          | Set frame padding                            |
+| `itemSpacing(style, x, y)`                                           | Set item spacing                             |
+| `itemInnerSpacing(style, x, y)`                                      | Set item inner spacing                       |
+| `rounding(style, window, frame, grab, tab, popup, scrollbar, child)` | Set all rounding values                      |
+| `borders(style, window, frame, popup, child, tab)`                   | Set all border sizes                         |
 
 ## Built-in Themes
 
 All themes are registered in `ImThemes` (package `de.luckymcdev.foundryengine.client.editor.styles`):
 
-| Theme                    | Class                     | Default? |
-|--------------------------|---------------------------|----------|
-| **BessDark**             | `BessDarkTheme`           | Yes      |
-| **ModernDark**           | `ModernDarkTheme`         | No       |
-| **Dark**                 | `DarkTheme`               | No       |
-| **Cherry**               | `CherryTheme`             | No       |
-| **CatppuccinMocha**      | `CatpuccinMochaTheme`     | No       |
-| **Vidlib**               | `VidlibTheme`             | No       |
-| **Veil**                 | `VeilTheme`               | No       |
+| Theme               | Class                 | Default? |
+|---------------------|-----------------------|----------|
+| **BessDark**        | `BessDarkTheme`       | Yes      |
+| **ModernDark**      | `ModernDarkTheme`     | No       |
+| **Dark**            | `DarkTheme`           | No       |
+| **Cherry**          | `CherryTheme`         | No       |
+| **CatppuccinMocha** | `CatpuccinMochaTheme` | No       |
+| **Vidlib**          | `VidlibTheme`         | No       |
+| **Veil**            | `VeilTheme`           | No       |
 
 ### ThemeSelectorPanel
 

@@ -38,6 +38,7 @@ player.teleport(new TeleportTransition(
 Bundles can include pre-built worlds in a `saves/` folder. When the bundle is loaded, these worlds are **instanced** — copied to a temporary directory — so the original bundle files remain pristine. Each server run gets a fresh copy of the world data, and any changes made during gameplay are isolated to the temporary instance.
 
 This is useful for:
+
 - Adventure maps bundled with a mod
 - Pre-built hub worlds or spawn areas
 - Tutorial/demo worlds that reset each session
@@ -55,20 +56,20 @@ The instancing is automatic — place your world data in `saves/<world_name>/` i
 
 The config builder gives you control over the dimension:
 
-| Method | Description |
-|--------|-------------|
-| `setGenerator(ChunkGenerator)` | Set the chunk generator (void, overworld copy, custom) |
-| `setDimensionType(Holder<DimensionType>)` | Dimension type (renderer, lighting, etc.) |
-| `setSeed(long)` | Custom world seed |
-| `setGameTime(long)` | Starting game time |
-| `setDifficulty(Difficulty)` | Override difficulty |
-| `setGameRule(GameRule<T>, T)` | Set individual game rules |
-| `setShouldTickTime(boolean)` | Enable or disable time advancement |
-| `setMirrorOverworldGameRules(boolean)` | Copy overworld game rules |
-| `setMirrorOverworldDifficulty(boolean)` | Copy overworld difficulty |
-| `setMirrorOverworldClocks(boolean)` | Copy overworld clock settings |
-| `setFlat(boolean)` | Enable flat world lighting |
-| `setLevelConstructor(RuntimeLevel.Constructor)` | Custom level factory |
+| Method                                          | Description                                            |
+|-------------------------------------------------|--------------------------------------------------------|
+| `setGenerator(ChunkGenerator)`                  | Set the chunk generator (void, overworld copy, custom) |
+| `setDimensionType(Holder<DimensionType>)`       | Dimension type (renderer, lighting, etc.)              |
+| `setSeed(long)`                                 | Custom world seed                                      |
+| `setGameTime(long)`                             | Starting game time                                     |
+| `setDifficulty(Difficulty)`                     | Override difficulty                                    |
+| `setGameRule(GameRule<T>, T)`                   | Set individual game rules                              |
+| `setShouldTickTime(boolean)`                    | Enable or disable time advancement                     |
+| `setMirrorOverworldGameRules(boolean)`          | Copy overworld game rules                              |
+| `setMirrorOverworldDifficulty(boolean)`         | Copy overworld difficulty                              |
+| `setMirrorOverworldClocks(boolean)`             | Copy overworld clock settings                          |
+| `setFlat(boolean)`                              | Enable flat world lighting                             |
+| `setLevelConstructor(RuntimeLevel.Constructor)` | Custom level factory                                   |
 
 ## Chunk Generators
 
