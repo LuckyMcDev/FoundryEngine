@@ -271,7 +271,9 @@ public class GameManager implements BundleLifecycleListener {
 	 */
 	public void stopAll(String worldName) {
 		Map<Identifier, GameSession> sessions = worlds.get(worldName);
-		if (sessions == null) return;
+		if (sessions == null) {
+			return;
+		}
 		for (Identifier id : sessions.keySet()) {
 			stopSession(worldName, id);
 		}

@@ -48,9 +48,9 @@ public class EvalCommand implements EngineCommand {
 			binding.setVariable("source", ctx.getSource());
 
 			GroovyShell shell = new GroovyShell(
-					Thread.currentThread().getContextClassLoader(),
-					binding,
-					ScriptConfig.createCompilerConfig()
+				Thread.currentThread().getContextClassLoader(),
+				binding,
+				ScriptConfig.createCompilerConfig()
 			);
 
 			Object result = shell.evaluate(code);

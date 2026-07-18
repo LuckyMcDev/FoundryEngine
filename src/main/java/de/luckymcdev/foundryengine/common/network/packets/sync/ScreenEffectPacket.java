@@ -30,6 +30,7 @@ public record ScreenEffectPacket(
 		ScreenEffectPacket::handleClient,
 		null
 	);
+	public static java.util.function.Consumer<ScreenEffectPacket> CLIENT_HANDLER;
 
 	@Override
 	public Type<ScreenEffectPacket> getType() {
@@ -45,8 +46,6 @@ public record ScreenEffectPacket(
 	public StreamCodec<RegistryFriendlyByteBuf, ScreenEffectPacket> getCodec() {
 		return DEFINITION.codec();
 	}
-
-	public static java.util.function.Consumer<ScreenEffectPacket> CLIENT_HANDLER;
 
 	@Override
 	public void handleClient(IPayloadContext ctx) {

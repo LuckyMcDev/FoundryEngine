@@ -637,7 +637,7 @@ public class ExplorerPanel extends EditorPanel {
 			long bytes = Files.readAttributes(file.toPath(), BasicFileAttributes.class).size();
 			String size = bytes < 1_024 ? bytes + " B"
 				: bytes < 1_048_576 ? String.format("%.1f KB", bytes / 1_024.0)
-				  : String.format("%.1f MB", bytes / 1_048_576.0);
+				: String.format("%.1f MB", bytes / 1_048_576.0);
 			ImGui.textDisabled("Size:     " + size);
 		} catch (IOException ignored) {
 		}

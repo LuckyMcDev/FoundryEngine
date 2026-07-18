@@ -20,8 +20,6 @@ public record ClientBoundExplorerPacket(
 	List<String> resourceIds
 ) implements AbstractPacket<ClientBoundExplorerPacket> {
 
-	public static java.util.function.Consumer<ClientBoundExplorerPacket> CLIENT_HANDLER;
-
 	public static final StreamCodec<RegistryFriendlyByteBuf, RemoteEntry> REMOTE_ENTRY_CODEC = StreamCodec.composite(
 		ByteBufCodecs.STRING_UTF8, RemoteEntry::relativePath,
 		ByteBufCodecs.BOOL, RemoteEntry::isDirectory,
@@ -42,6 +40,7 @@ public record ClientBoundExplorerPacket(
 		ClientBoundExplorerPacket::handleClient,
 		null
 	);
+	public static java.util.function.Consumer<ClientBoundExplorerPacket> CLIENT_HANDLER;
 
 	@Override
 	public Type<ClientBoundExplorerPacket> getType() {

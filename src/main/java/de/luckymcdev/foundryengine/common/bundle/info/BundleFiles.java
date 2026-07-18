@@ -29,7 +29,6 @@ public record BundleFiles(Path root, Path assets, Path data, ScriptFiles scripts
 		ScriptFiles.CODEC.fieldOf("scripts").forGetter(BundleFiles::scripts),
 		PATH_CODEC.fieldOf("saves").forGetter(BundleFiles::saves)
 	).apply(instance, (root, assets, data, scripts, saves) -> new BundleFiles(root, assets, data, scripts, saves, null)));
-
 	public static BundleFilesBuilder builder() {
 		return new BundleFilesBuilder();
 	}

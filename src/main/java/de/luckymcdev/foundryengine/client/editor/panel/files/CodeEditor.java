@@ -45,8 +45,9 @@ public class CodeEditor extends EditorPanel {
 	private final ImString replaceText = new ImString(256);
 	private final ImBoolean matchCase = new ImBoolean(false);
 	private final ImBoolean wholeWord = new ImBoolean(false);
-	public boolean forceReadOnly = false;
 	private final Identifier bufferId;
+	private final @Nullable URL scriptRoot;
+	public boolean forceReadOnly = false;
 	private String currentThemeName;
 	private String fileName;
 	private String oldSource;
@@ -57,7 +58,6 @@ public class CodeEditor extends EditorPanel {
 	private float fontScale = 1.0f;
 	private long lastEditTime = 0;
 	private boolean syntaxCheckDirty = false;
-	private final @Nullable URL scriptRoot;
 
 	public CodeEditor(Identifier id, Component label, String source) {
 		this(id, label, source, null);

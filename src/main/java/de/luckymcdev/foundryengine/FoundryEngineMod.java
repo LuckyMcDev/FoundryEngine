@@ -269,7 +269,7 @@ public class FoundryEngineMod {
 			Common.getBundleManager().discover(Common.BUNDLES);
 			Common.getBundleManager().refreshModList();
 		} catch (IOException e) {
-			LOGGER.error("Error while loading bundles: {}", e.getStackTrace());
+			LOGGER.error("Error while loading bundles: {}", (Object) e.getStackTrace());
 		}
 
 		EngineLogAppender.Holder.addAppender();

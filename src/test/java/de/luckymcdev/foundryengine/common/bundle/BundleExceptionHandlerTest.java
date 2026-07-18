@@ -10,38 +10,38 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
  */
 class BundleExceptionHandlerTest {
 
-    @Test
-    void handle_RuntimeException_DoesNotThrow() {
-        assertDoesNotThrow(() ->
-                BundleExceptionHandler.handle("Test context", new RuntimeException("Test error"))
-        );
-    }
+	@Test
+	void handle_RuntimeException_DoesNotThrow() {
+		assertDoesNotThrow(() ->
+			BundleExceptionHandler.handle("Test context", new RuntimeException("Test error"))
+		);
+	}
 
-    @Test
-    void handle_IOException_DoesNotThrow() {
-        assertDoesNotThrow(() ->
-                BundleExceptionHandler.handle("IO context", new java.io.IOException("File not found"))
-        );
-    }
+	@Test
+	void handle_IOException_DoesNotThrow() {
+		assertDoesNotThrow(() ->
+			BundleExceptionHandler.handle("IO context", new java.io.IOException("File not found"))
+		);
+	}
 
-    @Test
-    void handle_NullMessageException_DoesNotThrow() {
-        assertDoesNotThrow(() ->
-                BundleExceptionHandler.handle("Null context", new NullPointerException())
-        );
-    }
+	@Test
+	void handle_NullMessageException_DoesNotThrow() {
+		assertDoesNotThrow(() ->
+			BundleExceptionHandler.handle("Null context", new NullPointerException())
+		);
+	}
 
-    @Test
-    void handle_EmptyContext_DoesNotThrow() {
-        assertDoesNotThrow(() ->
-                BundleExceptionHandler.handle("", new Exception("error"))
-        );
-    }
+	@Test
+	void handle_EmptyContext_DoesNotThrow() {
+		assertDoesNotThrow(() ->
+			BundleExceptionHandler.handle("", new Exception("error"))
+		);
+	}
 
-    @Test
-    void handle_WrappedException_DoesNotThrow() {
-        assertDoesNotThrow(() ->
-                BundleExceptionHandler.handle("Wrapped", new Exception(new RuntimeException("cause")))
-        );
-    }
+	@Test
+	void handle_WrappedException_DoesNotThrow() {
+		assertDoesNotThrow(() ->
+			BundleExceptionHandler.handle("Wrapped", new Exception(new RuntimeException("cause")))
+		);
+	}
 }

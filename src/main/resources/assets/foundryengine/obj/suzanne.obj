@@ -1,6 +1,4 @@
-# Blender 4.5.3 LTS
-# www.blender.org
-mtllib suzanne.mtl
+
 o Suzanne
 v 0.437500 0.164062 0.765625
 v -0.437500 0.164062 0.765625

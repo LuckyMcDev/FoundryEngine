@@ -25,8 +25,6 @@ public record ClientboundDialoguePacket(
 	CompoundTag node
 ) implements AbstractPacket<ClientboundDialoguePacket> {
 
-	public static java.util.function.Consumer<ClientboundDialoguePacket> CLIENT_HANDLER;
-
 	public static final Type<ClientboundDialoguePacket> TYPE = AbstractPacket.createType(Common.id("dialogue_client"));
 	public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundDialoguePacket> CODEC = StreamCodec.composite(
 		ActionCodec.streamCodec(Action.values(), Action.SHOW), ClientboundDialoguePacket::action,
@@ -42,6 +40,7 @@ public record ClientboundDialoguePacket(
 		(packet, ctx) -> handleClient(packet, ctx),
 		null
 	);
+	public static java.util.function.Consumer<ClientboundDialoguePacket> CLIENT_HANDLER;
 
 	public static ClientboundDialoguePacket show(Identifier treeId, DialogueSession session, DialogueNode node) {
 		return new ClientboundDialoguePacket(Action.SHOW, treeId, session.toNbt(), node.toNbt());

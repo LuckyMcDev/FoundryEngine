@@ -1,17 +1,17 @@
 {
-  "required": true,
-  "minVersion": "0.8",
-  "package": "de.luckymcdev.foundryengine.mixin.screen",
-  "compatibilityLevel": "JAVA_25",
+	"required": true,
+	"minVersion": "0.8",
+	"package": "de.luckymcdev.foundryengine.mixin.screen",
+	"compatibilityLevel": "JAVA_25",
 	"client": [
 		"AbstractContainerScreenMixin",
 		"CreativeModeInventoryScreenSlotWrapperMixin",
 		"TitleScreenMixin"
 	],
-  "injectors": {
-    "defaultRequire": 1
-  },
-  "overwrites": {
-    "requireAnnotations": true
-  }
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
+	}
 }

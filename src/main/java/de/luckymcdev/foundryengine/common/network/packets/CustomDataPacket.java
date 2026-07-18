@@ -15,10 +15,6 @@ import java.util.function.BiConsumer;
 
 public record CustomDataPacket(String id, CompoundTag data) implements AbstractPacket<CustomDataPacket> {
 
-	public static BiConsumer<CustomDataPacket, IPayloadContext> CLIENT_HANDLER = (pkt, ctx) -> {
-	};
-	public static BiConsumer<CustomDataPacket, IPayloadContext> SERVER_HANDLER = (pkt, ctx) -> {
-	};
 	public static final Definition<CustomDataPacket> DEFINITION = new Definition<>(
 		AbstractPacket.createType(Common.id("custom_data")),
 		PacketBounds.BOTH,
@@ -30,6 +26,10 @@ public record CustomDataPacket(String id, CompoundTag data) implements AbstractP
 		CustomDataPacket::handleClient,
 		CustomDataPacket::handleServer
 	);
+	public static BiConsumer<CustomDataPacket, IPayloadContext> CLIENT_HANDLER = (pkt, ctx) -> {
+	};
+	public static BiConsumer<CustomDataPacket, IPayloadContext> SERVER_HANDLER = (pkt, ctx) -> {
+	};
 
 	@Override
 	public Type<CustomDataPacket> getType() {

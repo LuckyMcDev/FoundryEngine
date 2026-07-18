@@ -22,13 +22,13 @@ public class DialogueManager {
 	public static final String SAVE_SECTION = "dialogue";
 	private final SavedDataManager savedDataManager;
 	private final Map<Identifier, DialogueTree> trees = new LinkedHashMap<>();
+	private final Map<UUID, DialogueSession> sessions = new HashMap<>();
+	private final Map<String, DialogueAction> actions = new LinkedHashMap<>();
+	private final Map<String, DialogueCondition> conditions = new LinkedHashMap<>();
 
 	public DialogueManager(SavedDataManager savedDataManager) {
 		this.savedDataManager = savedDataManager;
 	}
-	private final Map<UUID, DialogueSession> sessions = new HashMap<>();
-	private final Map<String, DialogueAction> actions = new LinkedHashMap<>();
-	private final Map<String, DialogueCondition> conditions = new LinkedHashMap<>();
 
 	public void registerTree(DialogueTree tree) {
 		trees.put(tree.getId(), tree);

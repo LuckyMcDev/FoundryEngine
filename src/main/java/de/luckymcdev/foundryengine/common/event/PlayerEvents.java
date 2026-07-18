@@ -18,6 +18,7 @@ public class PlayerEvents {
 	public static final EventGroupHolder<PlayerContainerEvent.Close> CHEST_CLOSED = new EventGroupHolder<>();
 	public static final EventGroupHolder<PlayerContainerEvent.Open> CHEST_OPENED = new EventGroupHolder<>();
 	public static final EventGroupHolder<PlayerEvent.PlayerRespawnEvent> RESPAWNED = new EventGroupHolder<>();
+
 	public static void loggedIn(EventCallback<PlayerEvent.PlayerLoggedInEvent> cb) {
 		LOGGED_IN.register(cb);
 	}

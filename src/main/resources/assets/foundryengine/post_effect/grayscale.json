@@ -1,18 +1,18 @@
 {
-  "targets": {
-    "swap": {}
-  },
-  "passes": [
-    {
-      "vertex_shader": "minecraft:core/screenquad",
-      "fragment_shader": "foundryengine:post/grayscale",
-      "inputs": [
-        {
-          "sampler_name": "In",
-          "target": "minecraft:main"
-        }
-      ],
-      "output": "minecraft:main"
-    }
-  ]
+	"targets": {
+		"swap": {}
+	},
+	"passes": [
+		{
+			"vertex_shader": "minecraft:core/screenquad",
+			"fragment_shader": "foundryengine:post/grayscale",
+			"inputs": [
+				{
+					"sampler_name": "In",
+					"target": "minecraft:main"
+				}
+			],
+			"output": "minecraft:main"
+		}
+	]
 }

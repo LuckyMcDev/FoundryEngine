@@ -59,16 +59,16 @@ public class BundleManager implements ResourceManagerReloadListener {
 		this.bundleDiscovery = new BundleDiscovery(bundleFactory, this::register);
 	}
 
-	public void setServer(@Nullable MinecraftServer server) {
-		this.server = server;
-	}
-
 	private static BundleModContainer createModContainer(Bundle bundle) {
 		var bundleInfo = bundle.info();
 		var modInfo = new BundleModInfo(bundleInfo, null);
 		var owningFile = new BundleModFileInfo(modInfo, bundleInfo, modInfo);
 		modInfo.setOwningFile(owningFile);
 		return new BundleModContainer(modInfo, bundle);
+	}
+
+	public void setServer(@Nullable MinecraftServer server) {
+		this.server = server;
 	}
 
 	/**

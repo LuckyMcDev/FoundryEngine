@@ -1243,6 +1243,56 @@ public class ImGuiImplGlfw {
 		}
 	}
 
+	private static final class SetWindowSizeFunction extends ImPlatformFuncViewportImVec2 {
+		private final int[] x = new int[1];
+		private final int[] y = new int[1];
+		private final int[] width = new int[1];
+		private final int[] height = new int[1];
+
+		@Override
+		public void accept(final ImGuiViewport vp, final ImVec2 value) {
+			final ViewportData vd = (ViewportData) vp.getPlatformUserData();
+			if (vd == null) {
+				return;
+			}
+			if (IS_APPLE && !glfwHasOsxWindowPosFix) {
+				x[0] = 0;
+				y[0] = 0;
+				width[0] = 0;
+				height[0] = 0;
+				glfwGetWindowPos(vd.window, x, y);
+				glfwGetWindowSize(vd.window, width, height);
+				glfwSetWindowPos(vd.window, x[0], y[0] - height[0] + (int) value.y);
+			}
+			vd.ignoreWindowSizeEventFrame = ImGui.getFrameCount();
+			glfwSetWindowSize(vd.window, (int) value.x, (int) value.y);
+		}
+	}
+
+	private static final class SetWindowFocusFunction extends ImPlatformFuncViewport {
+		@Override
+		public void accept(final ImGuiViewport vp) {
+			if (glfwHasFocusWindow) {
+				final ViewportData vd = (ViewportData) vp.getPlatformUserData();
+				if (vd != null) {
+					glfwFocusWindow(vd.window);
+				}
+			}
+		}
+	}
+
+	private static final class SetWindowAlphaFunction extends ImPlatformFuncViewportFloat {
+		@Override
+		public void accept(final ImGuiViewport vp, final float value) {
+			if (glfwHasWindowAlpha) {
+				final ViewportData vd = (ViewportData) vp.getPlatformUserData();
+				if (vd != null) {
+					glfwSetWindowOpacity(vd.window, value);
+				}
+			}
+		}
+	}
+
 	private final class CreateWindowFunction extends ImPlatformFuncViewport {
 		@Override
 		public void accept(final ImGuiViewport vp) {
@@ -1316,56 +1366,6 @@ public class ImGuiImplGlfw {
 
 			vp.setPlatformHandle(-1);
 			vp.setPlatformUserData(null);
-		}
-	}
-
-	private static final class SetWindowSizeFunction extends ImPlatformFuncViewportImVec2 {
-		private final int[] x = new int[1];
-		private final int[] y = new int[1];
-		private final int[] width = new int[1];
-		private final int[] height = new int[1];
-
-		@Override
-		public void accept(final ImGuiViewport vp, final ImVec2 value) {
-			final ViewportData vd = (ViewportData) vp.getPlatformUserData();
-			if (vd == null) {
-				return;
-			}
-			if (IS_APPLE && !glfwHasOsxWindowPosFix) {
-				x[0] = 0;
-				y[0] = 0;
-				width[0] = 0;
-				height[0] = 0;
-				glfwGetWindowPos(vd.window, x, y);
-				glfwGetWindowSize(vd.window, width, height);
-				glfwSetWindowPos(vd.window, x[0], y[0] - height[0] + (int) value.y);
-			}
-			vd.ignoreWindowSizeEventFrame = ImGui.getFrameCount();
-			glfwSetWindowSize(vd.window, (int) value.x, (int) value.y);
-		}
-	}
-
-	private static final class SetWindowFocusFunction extends ImPlatformFuncViewport {
-		@Override
-		public void accept(final ImGuiViewport vp) {
-			if (glfwHasFocusWindow) {
-				final ViewportData vd = (ViewportData) vp.getPlatformUserData();
-				if (vd != null) {
-					glfwFocusWindow(vd.window);
-				}
-			}
-		}
-	}
-
-	private static final class SetWindowAlphaFunction extends ImPlatformFuncViewportFloat {
-		@Override
-		public void accept(final ImGuiViewport vp, final float value) {
-			if (glfwHasWindowAlpha) {
-				final ViewportData vd = (ViewportData) vp.getPlatformUserData();
-				if (vd != null) {
-					glfwSetWindowOpacity(vd.window, value);
-				}
-			}
 		}
 	}
 

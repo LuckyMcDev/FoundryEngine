@@ -21,8 +21,6 @@ import java.util.ArrayList;
 
 public record CutscenePacket(CompoundTag nbt) implements AbstractPacket<CutscenePacket> {
 
-	public static java.util.function.Consumer<CutscenePacket> CLIENT_HANDLER;
-
 	public static final Definition<CutscenePacket> DEFINITION = new Definition<>(
 		AbstractPacket.createType(Common.id("cutscene_nbt")),
 		PacketBounds.BOTH,
@@ -30,6 +28,7 @@ public record CutscenePacket(CompoundTag nbt) implements AbstractPacket<Cutscene
 		CutscenePacket::handleClient,
 		CutscenePacket::handleServer
 	);
+	public static java.util.function.Consumer<CutscenePacket> CLIENT_HANDLER;
 
 	public static CutscenePacket addAction(String name) {
 		CompoundTag tag = new CompoundTag();
