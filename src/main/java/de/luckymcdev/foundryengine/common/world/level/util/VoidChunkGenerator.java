@@ -119,6 +119,10 @@ public class VoidChunkGenerator extends ChunkGenerator {
 		this(server.registryAccess().lookupOrThrow(Registries.BIOME), biome);
 	}
 
+	public VoidChunkGenerator(MinecraftServer server, String biome) {
+		this(server, ResourceKey.create(Registries.BIOME, Identifier.parse(biome)));
+	}
+
 	@Override
 	protected MapCodec<? extends ChunkGenerator> codec() {
 		return CODEC;
