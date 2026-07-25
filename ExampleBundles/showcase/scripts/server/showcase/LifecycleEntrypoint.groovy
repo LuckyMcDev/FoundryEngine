@@ -12,57 +12,48 @@ import net.minecraft.resources.Identifier
 
 class LifecycleEntrypoint implements BundleEntrypoint {
 
-    static Identifier id(String path) {
-        return Identifier.fromNamespaceAndPath("showcase", path)
-    }
+	static Identifier id(String path) {
+		return Identifier.fromNamespaceAndPath("showcase", path)
+	}
 
-    @Override
-    void onUnload() {}
+	@Override
+	void onLoad() {
+		def data = new GameData(id("showcase_data"))
+		def session = new GameSession(id("showcase_world"), data)
+				.autoStart(true)
+				.onStarting { println "[Showcase] Game session starting!" }
+				.onServerTick { server, level ->
+					if (level.gameTime % 6000 == 0) {
+						def players = level.players()
+						if (!players.isEmpty()) {
+							server.getPlayerList().broadcastSystemMessage(
+									Component.literal("§8[§eShowcase§8] §7Time: §f${level.gameTime / 20} seconds"), false)
+						}
+					}
+				}
 
-    @Override
-    void onLoad() {
-        registerGameSession()
-        registerEventListeners()
-    }
+		Common.getGameManager().register(session)
 
-    /** Creates an auto-starting game session with a periodic time broadcast. */
-    private void registerGameSession() {
-        def data = new GameData(id("showcase_data"))
-        def session = new GameSession(id("showcase_world"), data)
-            .autoStart(true)
-            .onStarting { println "[Showcase] Game session starting!" }
-            .onServerTick { server, level ->
-                if (level.gameTime % 6000 == 0) {
-                    def players = level.players()
-                    if (!players.isEmpty()) {
-                        server.getPlayerList().broadcastSystemMessage(
-                            Component.literal("§8[§eShowcase§8] §7Time: §f${level.gameTime / 20} seconds"), false)
-                    }
-                }
-            }
+		GameEvents.onStarted { event ->
+			println "[Showcase] Session ${event.sessionId} started!"
+		}
 
-        Common.getGameManager().register(session)
-    }
+		PlayerEvents.loggedIn { event ->
+			println "[Showcase] ${event.entity.name} joined the game"
+		}
 
-    /** Registers general lifecycle listeners. */
-    private void registerEventListeners() {
-        GameEvents.onStarted { event ->
-            println "[Showcase] Session ${event.sessionId} started!"
-        }
+		PlayerEvents.loggedOut { event ->
+			println "[Showcase] ${event.entity.name} left the game"
+		}
 
-        PlayerEvents.loggedIn { event ->
-            println "[Showcase] ${event.entity.name} joined the game"
-        }
+		EntityEvents.death { event ->
+			def entity = event.entity
+			def source = event.source
+			def killer = source.getEntity()
+			println "[Showcase] ${entity.name} died${killer != null ? ' to ' + killer.name : ' from ' + source.getMsgId()}"
+		}
+	}
 
-        PlayerEvents.loggedOut { event ->
-            println "[Showcase] ${event.entity.name} left the game"
-        }
-
-        EntityEvents.death { event ->
-            def entity = event.entity
-            def source = event.source
-            def killer = source.getEntity()
-            println "[Showcase] ${entity.name} died${killer != null ? ' to ' + killer.name : ' from ' + source.getMsgId()}"
-        }
-    }
+	@Override
+	void onUnload() {}
 }
