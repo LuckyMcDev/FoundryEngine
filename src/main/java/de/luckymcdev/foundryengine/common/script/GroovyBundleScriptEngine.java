@@ -20,15 +20,12 @@ public class GroovyBundleScriptEngine {
 	@Nullable
 	private GroovyScriptEngine engine;
 
-	public String fileExtension() {
-		return ".groovy";
-	}
-
 	public void initialize(BundleFiles files) throws IOException {
 		URL root = files.scripts().root().toUri().toURL();
 		ClassLoader parent = FMLLoader.getCurrent().getCurrentClassLoader();
+		ClassLoader sandboxed = new ScriptSandbox.FilteringClassLoader(parent);
 
-		engine = new GroovyScriptEngine(new URL[]{root}, parent);
+		engine = new GroovyScriptEngine(new URL[]{root}, sandboxed);
 		CompilerConfiguration config = ScriptConfig.createCompilerConfig();
 
 		Common.post(new GroovyScriptEngineModifyEvent(this, engine, config));

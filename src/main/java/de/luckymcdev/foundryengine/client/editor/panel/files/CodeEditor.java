@@ -9,6 +9,7 @@ import de.luckymcdev.foundryengine.client.imgui.ImGuiShortcut;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.client.imgui.text.ImGuiCoreTextEditor;
 import de.luckymcdev.foundryengine.client.imgui.text.editor.EditorTheme;
+import de.luckymcdev.foundryengine.common.script.ScriptConfig;
 import de.luckymcdev.foundryengine.config.ClientConfig;
 import imgui.ImGui;
 import imgui.flag.ImGuiFocusedFlags;
@@ -178,7 +179,7 @@ public class CodeEditor extends EditorPanel {
 		if (syntaxCheckDirty && System.nanoTime() - lastEditTime >= SYNTAX_CHECK_DEBOUNCE_NS) {
 			syntaxCheckDirty = false;
 			String ext = extensionFrom(fileName);
-			if ("groovy".equals(ext) || "gvy".equals(ext) || "gy".equals(ext) || "gsh".equals(ext)) {
+			if (ScriptConfig.fileExtensions().stream().anyMatch(ext::equals)) {
 				Int2ObjectMap<String> errors = DryRunCompiler.checkSyntax(currentText, scriptRoot);
 				Client.getWorkspaceState().setBufferErrors(bufferId, errors);
 			}
@@ -283,7 +284,7 @@ public class CodeEditor extends EditorPanel {
 				if (ImGui.menuItem("Check Syntax")) {
 					String currentText = textEditor.getText();
 					String ext = extensionFrom(fileName);
-					if ("groovy".equals(ext) || "gvy".equals(ext) || "gy".equals(ext) || "gsh".equals(ext)) {
+					if (ScriptConfig.fileExtensions().stream().anyMatch(ext::equals)) {
 						Int2ObjectMap<String> errors = DryRunCompiler.checkSyntax(currentText, scriptRoot);
 						Client.getWorkspaceState().setBufferErrors(bufferId, errors);
 					}

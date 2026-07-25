@@ -5,6 +5,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.common.script.ScriptConfig;
+import de.luckymcdev.foundryengine.common.script.ScriptSandbox;
 import de.luckymcdev.foundryengine.config.StartupConfig;
 import de.luckymcdev.foundryengine.server.command.EngineCommand;
 import groovy.lang.Binding;
@@ -48,7 +49,9 @@ public class EvalCommand implements EngineCommand {
 			binding.setVariable("source", ctx.getSource());
 
 			GroovyShell shell = new GroovyShell(
-				Thread.currentThread().getContextClassLoader(),
+				new ScriptSandbox.FilteringClassLoader(
+					Thread.currentThread().getContextClassLoader()
+				),
 				binding,
 				ScriptConfig.createCompilerConfig()
 			);
