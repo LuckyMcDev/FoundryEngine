@@ -37,6 +37,80 @@ BlockBuilder.create(id("my_slab"))
     .properties { it.noOcclusion().lightLevel { 15 } }
 ```
 
+## Block variants
+
+Shorthand methods for common block shapes. These set the underlying block class — callbacks and ghost mode use `EngineBlock` and can be combined with variant methods:
+
+| Method                 | Parameters            | Block class             |
+|------------------------|-----------------------|-------------------------|
+| `.stairs(baseState)`   | `BlockState`          | `StairBlock`            |
+| `.slab()`              | —                     | `SlabBlock`             |
+| `.wall()`              | —                     | `WallBlock`             |
+| `.fence()`             | —                     | `FenceBlock`            |
+| `.fenceGate(type)`     | `WoodType`            | `FenceGateBlock`        |
+| `.door(type)`          | `BlockSetType`        | `DoorBlock`             |
+| `.trapdoor(type)`      | `BlockSetType`        | `TrapDoorBlock`         |
+| `.pressurePlate(type)` | `BlockSetType`        | `PressurePlateBlock`    |
+| `.button(type, ticks)` | `BlockSetType`, `int` | `ButtonBlock`           |
+| `.pillar()`            | —                     | `RotatedPillarBlock`    |
+| `.glass()`             | —                     | `TransparentBlock`      |
+| `.bars()`              | —                     | `IronBarsBlock`         |
+| `.carpet()`            | —                     | `CarpetBlock`           |
+| `.chain()`             | —                     | `ChainBlock`            |
+| `.lantern()`           | —                     | `LanternBlock`          |
+| `.ladder()`            | —                     | `LadderBlock`           |
+| `.endRod()`            | —                     | `EndRodBlock`           |
+| `.lever()`             | —                     | `LeverBlock`            |
+| `.observer()`          | —                     | `ObserverBlock`         |
+| `.dispenser()`         | —                     | `DispenserBlock`        |
+| `.dropper()`           | —                     | `DropperBlock`          |
+| `.hopper()`            | —                     | `HopperBlock`           |
+| `.anvil()`             | —                     | `AnvilBlock`            |
+| `.grindstone()`        | —                     | `GrindstoneBlock`       |
+| `.composter()`         | —                     | `ComposterBlock`        |
+| `.redstoneLamp()`      | —                     | `RedstoneLampBlock`     |
+| `.daylightDetector()`  | —                     | `DaylightDetectorBlock` |
+| `.beacon()`            | —                     | `BeaconBlock`           |
+| `.lightningRod()`      | —                     | `LightningRodBlock`     |
+
+```groovy
+BlockBuilder.create(id("my_stairs"))
+        .stairs(baseBlockState)       // Pass the base block's default state
+        .properties { it.strength(2.0f) }
+
+BlockBuilder.create(id("my_door"))
+        .door(BlockSetType.IRON)     // Or your own BlockSetType
+        .properties { it.noOcclusion() }
+
+BlockBuilder.create(id("my_glass"))
+        .glass()
+        .properties { it.noOcclusion().strength(0.3f) }
+```
+
+Variant methods set `blockFactory` internally — they're mutually exclusive with `.factory()`. Callbacks and ghost mode work with all variants.
+
+## Ghost blocks
+
+Ghost blocks are blocks that are not really rendered. When using just `.ghost()` it is visible by particle like the barrier block when the block item is held.
+
+```groovy
+// Default: visible only when holding the block's item
+BlockBuilder.create(id("waypoint_marker"))
+    .ghost()
+    .properties { it.strength(-1.0f, 3600000.0f).noCollision() }
+```
+
+### Custom visibility predicate
+
+```groovy
+// Visible only to players holding a diamond
+BlockBuilder.create(id("hidden_switch"))
+    .ghost { player, state -> player.isHolding(Items.DIAMOND) }
+    .properties { it.noCollision() }
+```
+
+Ghost blocks use `EngineBlock` internally (so callbacks work) and show floating mini-block particles (`ParticleTypes.BLOCK_MARKER`) when a creative player meeting the visibility condition is nearby.
+
 ## Behavior callbacks
 
 Callbacks let your block react to the world:
@@ -58,15 +132,17 @@ BlockBuilder.create(id("hot_plate"))
 
 ### Available callbacks
 
-| Method                  | When it runs                             | Parameters                                                 |
-|-------------------------|------------------------------------------|------------------------------------------------------------|
-| `animateTick(cb)`       | Random display ticks (particles, sounds) | `BlockState, Level, BlockPos, RandomSource`                |
-| `destroy(cb)`           | Block is broken                          | `LevelAccessor, BlockPos, BlockState`                      |
-| `wasExploded(cb)`       | Block is destroyed by explosion          | `ServerLevel, BlockPos, Explosion`                         |
-| `stepOn(cb)`            | Entity walks on the block                | `Level, BlockPos, BlockState, Entity`                      |
-| `setPlacedBy(cb)`       | Block is placed by a player              | `Level, BlockPos, BlockState, LivingEntity, ItemStack`     |
-| `fallOn(cb)`            | Entity falls onto the block              | `Level, BlockState, BlockPos, Entity, double fallDistance` |
-| `playerWillDestroy(cb)` | Player starts breaking                   | `Level, BlockPos, BlockState, Player`                      |
+| Method                    | When it runs                              | Parameters                                                    |
+|---------------------------|-------------------------------------------|---------------------------------------------------------------|
+| `animateTick(cb)`         | Random display ticks (particles, sounds)  | `BlockState, Level, BlockPos, RandomSource`                   |
+| `destroy(cb)`             | Block is broken                           | `LevelAccessor, BlockPos, BlockState`                         |
+| `wasExploded(cb)`         | Block is destroyed by explosion           | `ServerLevel, BlockPos, Explosion`                            |
+| `stepOn(cb)`              | Entity walks on the block                 | `Level, BlockPos, BlockState, Entity`                         |
+| `setPlacedBy(cb)`         | Block is placed by a player               | `Level, BlockPos, BlockState, LivingEntity, ItemStack`        |
+| `fallOn(cb)`              | Entity falls onto the block               | `Level, BlockState, BlockPos, Entity, double fallDistance`    |
+| `playerWillDestroy(cb)`   | Player starts breaking                    | `Level, BlockPos, BlockState, Player`                         |
+| `playerDestroy(cb)`       | Block is harvested by player              | `Level, Player, BlockPos, BlockState, BlockEntity, ItemStack` |
+| `handlePrecipitation(cb)` | Block is hit by precipitation (rain/snow) | `BlockState, Level, BlockPos, Biome.Precipitation`            |
 
 ## Item callbacks for blocks
 
