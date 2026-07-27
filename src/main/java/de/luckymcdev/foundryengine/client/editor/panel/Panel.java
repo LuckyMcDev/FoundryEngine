@@ -5,7 +5,7 @@ import de.luckymcdev.foundryengine.client.editor.config.ImGuiWindowType;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.config.PanelStyle;
 import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
-import de.luckymcdev.foundryengine.client.imgui.ImGuiShortcut;
+import de.luckymcdev.foundryengine.client.imgui.hotkey.ImHotKey;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcon;
 import imgui.ImGui;
 import imgui.flag.ImGuiWindowFlags;
@@ -20,7 +20,7 @@ public abstract class Panel {
 	private final Identifier id;
 	private final Component label;
 	private final @Nullable ImIcon icon;
-	private final ImGuiShortcut shortcut;
+	private final ImHotKey.@Nullable HotKey shortcutHotkey;
 	private final PanelCategory category;
 	private final boolean temporary;
 	private final boolean menuBar;
@@ -35,7 +35,7 @@ public abstract class Panel {
 		this.id = builder.id;
 		this.label = builder.label;
 		this.icon = builder.icon;
-		this.shortcut = builder.imGuiShortcut;
+		this.shortcutHotkey = builder.shortcutHotkey;
 		this.category = builder.category;
 		this.temporary = builder.temporary;
 		this.menuBar = builder.menuBar;
@@ -127,8 +127,8 @@ public abstract class Panel {
 		return icon;
 	}
 
-	public final ImGuiShortcut getShortcut() {
-		return shortcut;
+	public final ImHotKey.@Nullable HotKey getShortcut() {
+		return shortcutHotkey;
 	}
 
 	public final PanelCategory getCategory() {
@@ -276,7 +276,7 @@ public abstract class Panel {
 		private final Identifier id;
 		private final Component label;
 		private @Nullable ImIcon icon;
-		private ImGuiShortcut imGuiShortcut = ImGuiShortcut.empty();
+		private ImHotKey.@Nullable HotKey shortcutHotkey;
 		private PanelCategory category = PanelCategory.OPEN;
 		private boolean temporary;
 		private boolean menuBar;
@@ -298,8 +298,8 @@ public abstract class Panel {
 			return this;
 		}
 
-		public Builder shortcut(ImGuiShortcut imGuiShortcut) {
-			this.imGuiShortcut = imGuiShortcut;
+		public Builder shortcut(ImHotKey.@Nullable HotKey shortcutHotkey) {
+			this.shortcutHotkey = shortcutHotkey;
 			return this;
 		}
 

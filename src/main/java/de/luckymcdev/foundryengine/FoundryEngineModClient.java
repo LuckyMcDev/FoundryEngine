@@ -1,5 +1,6 @@
 package de.luckymcdev.foundryengine;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.logging.LogUtils;
@@ -27,6 +28,7 @@ import de.luckymcdev.foundryengine.client.editor.panel.tools.OutlinePanel;
 import de.luckymcdev.foundryengine.client.editor.panel.tools.ProblemsPanel;
 import de.luckymcdev.foundryengine.client.editor.panel.tools.StopwatchPanel;
 import de.luckymcdev.foundryengine.client.editor.panel.tools.WaypointPanel;
+import de.luckymcdev.foundryengine.client.editor.panel.view.HotkeySettingsPanel;
 import de.luckymcdev.foundryengine.client.editor.panel.view.InfoPanel;
 import de.luckymcdev.foundryengine.client.editor.panel.view.ThemeSelectorPanel;
 import de.luckymcdev.foundryengine.client.event.registry.RegistryEventClient;
@@ -161,8 +163,18 @@ public class FoundryEngineModClient {
 			OutlinePanel.INSTANCE,
 			WaypointPanel.INSTANCE,
 			NodeTestPanel.INSTANCE,
-			DialogueEditorPanel.INSTANCE
+			DialogueEditorPanel.INSTANCE,
+			HotkeySettingsPanel.INSTANCE
 		);
+		var hkm = Client.getHotKeyManager();
+		hkm.register(Common.id("code_editor.save"), "Save", "Save active file", null, InputConstants.KEY_LCONTROL, InputConstants.KEY_S);
+		hkm.register(Common.id("code_editor.find"), "Find", "Find in active file", null, InputConstants.KEY_LCONTROL, InputConstants.KEY_F);
+		hkm.register(Common.id("code_editor.replace"), "Find/Replace", "Find and replace in active file", null, InputConstants.KEY_LCONTROL, InputConstants.KEY_H);
+		hkm.register(Common.id("code_editor.goto_line"), "Go to Line", "Go to a specific line", null, InputConstants.KEY_LCONTROL, InputConstants.KEY_G);
+
+		hkm.getImHotKey().setOnHotKeySet(hkm::save);
+		hkm.load();
+
 		event.enqueueWork(() -> {
 			Common.getBundleManager().loadClientScripts();
 			for (var container : Common.getBundleManager().getBundleContainers()) {

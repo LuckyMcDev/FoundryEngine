@@ -55,6 +55,7 @@ public class MainMenu {
 
 	public void handleShortcuts() {
 		shortcutHandler.handleShortcuts();
+		Client.getHotKeyManager().update();
 	}
 
 	public void handleRender() {

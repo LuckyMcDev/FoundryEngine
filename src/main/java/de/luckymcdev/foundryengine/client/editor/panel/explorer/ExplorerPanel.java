@@ -8,7 +8,6 @@ import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
 import de.luckymcdev.foundryengine.client.editor.panel.files.CodeEditor;
 import de.luckymcdev.foundryengine.client.editor.panel.files.TextureViewerPanel;
 import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
-import de.luckymcdev.foundryengine.client.imgui.ImGuiShortcut;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.client.util.FileEndings;
 import de.luckymcdev.foundryengine.common.Common;
@@ -76,7 +75,6 @@ public class ExplorerPanel extends EditorPanel {
 	public ExplorerPanel() {
 		super(new Builder(Common.id("explorer"))
 			.icon(ImIcons.FILES_O)
-			.shortcut(ImGuiShortcut.empty())
 			.category(PanelCategory.EDITOR_EXPLORER));
 	}
 

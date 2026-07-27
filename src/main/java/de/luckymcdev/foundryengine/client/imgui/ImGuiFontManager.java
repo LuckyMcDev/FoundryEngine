@@ -180,7 +180,7 @@ public final class ImGuiFontManager {
 	}
 
 	public void pushFont(FontDescription.Resource id) {
-		ImGui.pushFont(getFont(id));
+		ImGui.pushFont(getFont(id), 0.0F);
 	}
 
 	public void popFont() {

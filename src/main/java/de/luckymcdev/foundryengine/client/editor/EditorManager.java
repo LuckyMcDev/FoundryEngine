@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.client.editor;
 
 import com.mojang.logging.LogUtils;
+import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.panel.Panel;
 import net.minecraft.resources.Identifier;
 import org.jspecify.annotations.Nullable;
@@ -29,12 +30,14 @@ public class EditorManager {
 			LOGGER.error("Tried to register panel with duplicate id: {}", panel.getId());
 		} else {
 			panels.put(panel.getId(), panel);
+			Client.getHotKeyManager().registerPanel(panel, () -> togglePanel(panel));
 		}
 	}
 
 	public void remove(Panel panel) {
 		closePanel(panel);
 		panels.remove(panel.getId());
+		Client.getHotKeyManager().remove(panel.getId());
 	}
 
 	public @Nullable Panel getPanel(Identifier id) {

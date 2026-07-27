@@ -1,7 +1,9 @@
 package de.luckymcdev.foundryengine.client.editor.menu;
 
+import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.EditorManager;
 import de.luckymcdev.foundryengine.client.editor.panel.Panel;
+import de.luckymcdev.foundryengine.client.imgui.hotkey.ImHotKey;
 import imgui.ImGui;
 
 public class PanelMenuItemRenderer {
@@ -21,8 +23,7 @@ public class PanelMenuItemRenderer {
 	}
 
 	private String getShortcutLabel(Panel panel) {
-		return panel.getShortcut() != null
-			? panel.getShortcut().toLabel()
-			: "";
+		ImHotKey.HotKey hk = panel.getShortcut();
+		return hk != null ? Client.getHotKeyManager().getImHotKey().getHotKeyLabel(hk.functionKeys, null) : "";
 	}
 }

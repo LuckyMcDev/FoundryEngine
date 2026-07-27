@@ -51,7 +51,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public final class ImGuiManager implements ResourceManagerReloadListener, NativeResource {
 	public static final ImGuiCharSink IMGUI_CHAR_SINK = new ImGuiCharSink();
 	public static final StringSplitter IM_GUI_SPLITTER = new StringSplitter((charId, style) -> {
-		ImGui.pushFont(ImGraphicsExtractor.getStyleFont(style));
+		ImGui.pushFont(ImGraphicsExtractor.getStyleFont(style), 0.0F);
 		float width = ImGui.calcTextSizeX(Character.toString(charId));
 		ImGui.popFont();
 		return width;

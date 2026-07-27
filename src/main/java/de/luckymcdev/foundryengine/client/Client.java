@@ -19,6 +19,7 @@ import de.luckymcdev.foundryengine.client.icons.IconExporterLayer;
 import de.luckymcdev.foundryengine.client.ide.WorkspaceState;
 import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiManager;
+import de.luckymcdev.foundryengine.client.imgui.hotkey.HotKeyManager;
 import de.luckymcdev.foundryengine.client.particle.ParticleManager;
 import de.luckymcdev.foundryengine.client.post.PostEffectManager;
 import de.luckymcdev.foundryengine.client.render.MeshRenderer;
@@ -99,6 +100,7 @@ public final class Client {
 	private static final ItemCommandManager ITEM_COMMAND_MANAGER = new ItemCommandManager();
 	private static final IconExporterLayer ICON_EXPORTER_LAYER = new IconExporterLayer();
 	private static final WorkspaceState WORKSPACE_STATE = new WorkspaceState();
+	private static final HotKeyManager HOTKEY_MANAGER = new HotKeyManager();
 
 	private Client() {
 		throw new UtilityClassException();
@@ -355,6 +357,13 @@ public final class Client {
 	 */
 	public static IconExporterLayer getIconExporterLayer() {
 		return ICON_EXPORTER_LAYER;
+	}
+
+	/**
+	 * Returns the hotkey manager.
+	 */
+	public static HotKeyManager getHotKeyManager() {
+		return HOTKEY_MANAGER;
 	}
 
 	/**

@@ -5,10 +5,11 @@ import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
 import de.luckymcdev.foundryengine.client.ide.compiler.DryRunCompiler;
 import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
-import de.luckymcdev.foundryengine.client.imgui.ImGuiShortcut;
+import de.luckymcdev.foundryengine.client.imgui.hotkey.ImHotKey;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.client.imgui.text.ImGuiCoreTextEditor;
 import de.luckymcdev.foundryengine.client.imgui.text.editor.EditorTheme;
+import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.script.ScriptConfig;
 import de.luckymcdev.foundryengine.config.ClientConfig;
 import imgui.ImGui;
@@ -67,7 +68,6 @@ public class CodeEditor extends EditorPanel {
 	public CodeEditor(Identifier id, Component label, String source, @Nullable URL scriptRoot) {
 		super(new Builder(id, label)
 			.icon(ImIcons.EDIT)
-			.shortcut(ImGuiShortcut.empty())
 			.category(PanelCategory.EDITOR_FILES)
 			.menuBar(true));
 		this.bufferId = id;
@@ -579,21 +579,27 @@ public class CodeEditor extends EditorPanel {
 			return;
 		}
 
-		boolean ctrl = ImGui.getIO().getKeyCtrl();
+		var hkm = Client.getHotKeyManager();
+		var imHotKey = hkm.getImHotKey();
 
-		if (ctrl && ImGui.isKeyPressed(ImGuiKey.S) && isDirty() && !forceReadOnly) {
+		ImHotKey.HotKey saveHk = hkm.getHotKeyById(Common.id("code_editor.save"));
+		if (saveHk != null && imHotKey.isPressed(saveHk) && isDirty() && !forceReadOnly) {
 			save();
 		}
-		if (ctrl && ImGui.isKeyPressed(ImGuiKey.F)) {
+		ImHotKey.HotKey findHk = hkm.getHotKeyById(Common.id("code_editor.find"));
+		if (findHk != null && imHotKey.isPressed(findHk)) {
 			toggleFind(false);
 		}
-		if (ctrl && ImGui.isKeyPressed(ImGuiKey.H)) {
+		ImHotKey.HotKey replaceHk = hkm.getHotKeyById(Common.id("code_editor.replace"));
+		if (replaceHk != null && imHotKey.isPressed(replaceHk)) {
 			toggleFind(true);
 		}
-		if (ctrl && ImGui.isKeyPressed(ImGuiKey.G)) {
+		ImHotKey.HotKey gotoHk = hkm.getHotKeyById(Common.id("code_editor.goto_line"));
+		if (gotoHk != null && imHotKey.isPressed(gotoHk)) {
 			openGotoLine();
 		}
 
+		boolean ctrl = ImGui.getIO().getKeyCtrl();
 		float wheel = ImGui.getIO().getMouseWheel();
 		if (ctrl && wheel != 0) {
 			adjustFontScale(wheel > 0 ? +FONT_SCALE_STEP : -FONT_SCALE_STEP);
