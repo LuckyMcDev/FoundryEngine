@@ -66,6 +66,10 @@ class CommonEntrypoint implements BundleEntrypoint {
             .properties(p -> p.strength(2.0f, 3.0f))
             .itemProperties(p -> p.rarity(Rarity.COMMON))
 
+    private static final BlockBuilder GHOST_BLOCK = BlockBuilder.create(id("ghost_block"))
+            .properties(p -> p.strength(-1.0f, 3600000.0f).noCollision())
+            .ghost((player, state) -> player.isHolding(state.getBlock().asItem()))
+
     // Recipe builders — one for each supported type
     private static final RecipeBuilder SHAPED_RECIPE = RecipeBuilder.shaped(id("test_shaped"), Items.DIAMOND_SWORD)
             .pattern(" D ", " D ", " S ")
@@ -130,7 +134,7 @@ class CommonEntrypoint implements BundleEntrypoint {
     void onLoad() {
         BundleEvents.registry {
             it.items(THIS_IS_A_ITEM, ITEM_TWO, COSMIC_APPLE)
-            it.blocks(MY_BLOCK)
+            it.blocks(MY_BLOCK, GHOST_BLOCK)
             it.recipes(SHAPED_RECIPE, SHAPELESS_RECIPE, SMELTING_RECIPE, BLASTING_RECIPE,
                       SMOKING_RECIPE, CAMPFIRE_RECIPE, STONECUTTING_RECIPE, SMITHING_TRANSFORM_RECIPE)
             it.sounds(MY_SOUND)

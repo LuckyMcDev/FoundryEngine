@@ -1,26 +1,36 @@
 package de.luckymcdev.foundryengine.common.world.block;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.BlockParticleOption;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.EntityCollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jspecify.annotations.Nullable;
 
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.function.BiPredicate;
 
 public class EngineBlock extends Block {
 	private final Map<CallbackType, Object> callbacks = new EnumMap<>(CallbackType.class);
+	private @Nullable BiPredicate<Player, BlockState> visibilityCondition;
 
 	public EngineBlock(Properties properties) {
 		super(properties);
@@ -32,6 +42,11 @@ public class EngineBlock extends Block {
 
 	public void clearCallback(CallbackType type) {
 		callbacks.remove(type);
+	}
+
+	public EngineBlock visibilityCondition(@Nullable BiPredicate<Player, BlockState> condition) {
+		this.visibilityCondition = condition;
+		return this;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -91,6 +106,13 @@ public class EngineBlock extends Block {
 			cb.run(state, level, pos, random);
 		} else {
 			super.animateTick(state, level, pos, random);
+		}
+		if (visibilityCondition != null && random.nextInt(5) == 0) {
+			Player player = level.getNearestPlayer(pos.getX(), pos.getY(), pos.getZ(), 8.0, false);
+			if (player != null && player.isCreative() && visibilityCondition.test(player, state)) {
+				level.addParticle(new BlockParticleOption(ParticleTypes.BLOCK_MARKER, state),
+					pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 0.0, 0.0, 0.0);
+			}
 		}
 	}
 
@@ -168,6 +190,43 @@ public class EngineBlock extends Block {
 		} else {
 			super.handlePrecipitation(state, level, pos, precipitation);
 		}
+	}
+
+	@Override
+	protected RenderShape getRenderShape(BlockState state) {
+		if (visibilityCondition != null) {
+			return RenderShape.INVISIBLE;
+		}
+		return super.getRenderShape(state);
+	}
+
+	@Override
+	protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+		if (visibilityCondition == null) {
+			return super.getShape(state, level, pos, context);
+		}
+		if (context instanceof EntityCollisionContext entityCtx
+			&& entityCtx.getEntity() instanceof Player player
+			&& visibilityCondition.test(player, state)) {
+			return Shapes.block();
+		}
+		return Shapes.empty();
+	}
+
+	@Override
+	protected float getShadeBrightness(BlockState state, BlockGetter level, BlockPos pos) {
+		if (visibilityCondition != null) {
+			return 1.0F;
+		}
+		return super.getShadeBrightness(state, level, pos);
+	}
+
+	@Override
+	protected boolean propagatesSkylightDown(BlockState state) {
+		if (visibilityCondition != null) {
+			return true;
+		}
+		return super.propagatesSkylightDown(state);
 	}
 
 	public enum CallbackType {

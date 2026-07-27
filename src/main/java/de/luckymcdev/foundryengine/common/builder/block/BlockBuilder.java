@@ -7,15 +7,50 @@ import de.luckymcdev.foundryengine.common.world.item.EngineItem;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.AnvilBlock;
+import net.minecraft.world.level.block.BeaconBlock;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.ButtonBlock;
+import net.minecraft.world.level.block.CarpetBlock;
+import net.minecraft.world.level.block.ChainBlock;
+import net.minecraft.world.level.block.ComposterBlock;
+import net.minecraft.world.level.block.DaylightDetectorBlock;
+import net.minecraft.world.level.block.DispenserBlock;
+import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.level.block.DropperBlock;
+import net.minecraft.world.level.block.EndRodBlock;
+import net.minecraft.world.level.block.FenceBlock;
+import net.minecraft.world.level.block.FenceGateBlock;
+import net.minecraft.world.level.block.GrindstoneBlock;
+import net.minecraft.world.level.block.HopperBlock;
+import net.minecraft.world.level.block.IronBarsBlock;
+import net.minecraft.world.level.block.LadderBlock;
+import net.minecraft.world.level.block.LanternBlock;
+import net.minecraft.world.level.block.LeverBlock;
+import net.minecraft.world.level.block.LightningRodBlock;
+import net.minecraft.world.level.block.ObserverBlock;
+import net.minecraft.world.level.block.PressurePlateBlock;
+import net.minecraft.world.level.block.RedstoneLampBlock;
+import net.minecraft.world.level.block.RotatedPillarBlock;
+import net.minecraft.world.level.block.SlabBlock;
+import net.minecraft.world.level.block.StairBlock;
+import net.minecraft.world.level.block.TransparentBlock;
+import net.minecraft.world.level.block.TrapDoorBlock;
+import net.minecraft.world.level.block.WallBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockSetType;
+import net.minecraft.world.level.block.state.properties.WoodType;
 import net.neoforged.neoforge.registries.RegisterEvent;
+import org.jspecify.annotations.Nullable;
 
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
@@ -27,6 +62,8 @@ public class BlockBuilder extends AbstractBuilder<Block> {
 	private Function<BlockBehaviour.Properties, Block> blockFactory;
 	private boolean hasItem = true;
 	private UnaryOperator<Item.Properties> itemPropertyModifier = p -> p;
+	@Nullable
+	private BiPredicate<Player, BlockState> visibilityCondition;
 
 	public BlockBuilder(Identifier id) {
 		super(id);
@@ -172,8 +209,9 @@ public class BlockBuilder extends AbstractBuilder<Block> {
 	public Block build() {
 		this.properties.setId(ResourceKey.create(Registries.BLOCK, id));
 
-		if (!blockCallbacks.isEmpty()) {
+		if (!blockCallbacks.isEmpty() || visibilityCondition != null) {
 			EngineBlock block = new EngineBlock(this.properties);
+			block.visibilityCondition(visibilityCondition);
 			blockCallbacks.forEach((type, cb) -> {
 				switch (type) {
 					case ANIMATE_TICK -> block.animateTick((EngineBlock.AnimateTickCallback) cb);
@@ -195,6 +233,161 @@ public class BlockBuilder extends AbstractBuilder<Block> {
 
 	<C> BlockBuilder callback(EngineItem.CallbackType type, C cb) {
 		itemCallbacks.put(type, cb);
+		return this;
+	}
+
+	public BlockBuilder ghost() {
+		this.visibilityCondition = (player, state) -> player.isHolding(state.getBlock().asItem());
+		return this;
+	}
+
+	public BlockBuilder ghost(BiPredicate<Player, BlockState> visibilityCondition) {
+		this.visibilityCondition = visibilityCondition;
+		return this;
+	}
+
+	public BlockBuilder stairs(BlockState base) {
+		this.blockFactory = props -> new StairBlock(base, props);
+		return this;
+	}
+
+	public BlockBuilder slab() {
+		this.blockFactory = SlabBlock::new;
+		return this;
+	}
+
+	public BlockBuilder wall() {
+		this.blockFactory = WallBlock::new;
+		return this;
+	}
+
+	public BlockBuilder fence() {
+		this.blockFactory = FenceBlock::new;
+		return this;
+	}
+
+	public BlockBuilder fenceGate(WoodType type) {
+		this.blockFactory = props -> new FenceGateBlock(type, props);
+		return this;
+	}
+
+	public BlockBuilder door(BlockSetType type) {
+		this.blockFactory = props -> new DoorBlock(type, props);
+		return this;
+	}
+
+	public BlockBuilder trapdoor(BlockSetType type) {
+		this.blockFactory = props -> new TrapDoorBlock(type, props);
+		return this;
+	}
+
+	public BlockBuilder pressurePlate(BlockSetType type) {
+		this.blockFactory = props -> new PressurePlateBlock(type, props);
+		return this;
+	}
+
+	public BlockBuilder button(BlockSetType type, int ticksToStayPressed) {
+		this.blockFactory = props -> new ButtonBlock(type, ticksToStayPressed, props);
+		return this;
+	}
+
+	public BlockBuilder pillar() {
+		this.blockFactory = RotatedPillarBlock::new;
+		return this;
+	}
+
+	public BlockBuilder glass() {
+		this.blockFactory = TransparentBlock::new;
+		return this;
+	}
+
+	public BlockBuilder bars() {
+		this.blockFactory = IronBarsBlock::new;
+		return this;
+	}
+
+	public BlockBuilder carpet() {
+		this.blockFactory = CarpetBlock::new;
+		return this;
+	}
+
+	public BlockBuilder chain() {
+		this.blockFactory = ChainBlock::new;
+		return this;
+	}
+
+	public BlockBuilder lantern() {
+		this.blockFactory = LanternBlock::new;
+		return this;
+	}
+
+	public BlockBuilder ladder() {
+		this.blockFactory = LadderBlock::new;
+		return this;
+	}
+
+	public BlockBuilder endRod() {
+		this.blockFactory = EndRodBlock::new;
+		return this;
+	}
+
+	public BlockBuilder lever() {
+		this.blockFactory = LeverBlock::new;
+		return this;
+	}
+
+	public BlockBuilder observer() {
+		this.blockFactory = ObserverBlock::new;
+		return this;
+	}
+
+	public BlockBuilder dispenser() {
+		this.blockFactory = DispenserBlock::new;
+		return this;
+	}
+
+	public BlockBuilder dropper() {
+		this.blockFactory = DropperBlock::new;
+		return this;
+	}
+
+	public BlockBuilder hopper() {
+		this.blockFactory = HopperBlock::new;
+		return this;
+	}
+
+	public BlockBuilder anvil() {
+		this.blockFactory = AnvilBlock::new;
+		return this;
+	}
+
+	public BlockBuilder grindstone() {
+		this.blockFactory = GrindstoneBlock::new;
+		return this;
+	}
+
+	public BlockBuilder composter() {
+		this.blockFactory = ComposterBlock::new;
+		return this;
+	}
+
+	public BlockBuilder redstoneLamp() {
+		this.blockFactory = RedstoneLampBlock::new;
+		return this;
+	}
+
+	public BlockBuilder daylightDetector() {
+		this.blockFactory = DaylightDetectorBlock::new;
+		return this;
+	}
+
+	public BlockBuilder beacon() {
+		this.blockFactory = BeaconBlock::new;
+		return this;
+	}
+
+	public BlockBuilder lightningRod() {
+		this.blockFactory = LightningRodBlock::new;
 		return this;
 	}
 
