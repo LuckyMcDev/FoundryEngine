@@ -11,20 +11,6 @@ import java.util.Objects;
 @NullMarked
 public final class ScriptSandbox {
 
-	private static final List<String> ALLOWED_PREFIXES = List.of(
-		"java.lang.",
-		"java.util.",
-		"java.math.",
-		"net.minecraft.",
-		"net.neoforged.",
-		"com.mojang.",
-		"org.joml.",
-		"org.slf4j.",
-		"de.luckymcdev.",
-		"groovy.",
-		"org.codehaus.groovy.",
-		"org.apache.groovy."
-	);
 	private static final List<String> DENIED_CLASSES = List.of(
 		"java.lang.Runtime",
 		"java.lang.ProcessBuilder",
@@ -70,15 +56,7 @@ public final class ScriptSandbox {
 			}
 		}
 
-		// Whitelist check
-		for (String prefix : ALLOWED_PREFIXES) {
-			if (className.startsWith(prefix)) {
-				return true;
-			}
-		}
-
-		// Everything else is denied
-		return false;
+		return true;
 	}
 
 	/**
@@ -94,7 +72,7 @@ public final class ScriptSandbox {
 
 		/**
 		 * @param delegate the real class loader to delegate to after the
-		 *                 sandbox check passes (must not be null)
+		 * sandbox check passes (must not be null)
 		 */
 		public FilteringClassLoader(ClassLoader delegate) {
 			super(Objects.requireNonNull(delegate, "delegate"));

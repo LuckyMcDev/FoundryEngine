@@ -36,6 +36,7 @@ public class RegistryEvent extends Event implements IModBusEvent {
 		});
 		for (ItemBuilder builder : builders) {
 			collector.addItem(builder);
+			builder.getTags().forEach(collector::addTag);
 		}
 	}
 
@@ -53,6 +54,7 @@ public class RegistryEvent extends Event implements IModBusEvent {
 		});
 		for (BlockBuilder builder : builders) {
 			collector.addBlock(builder);
+			builder.getTags().forEach(collector::addTag);
 		}
 
 		List<BlockBuilder> withItem = Stream.of(builders)

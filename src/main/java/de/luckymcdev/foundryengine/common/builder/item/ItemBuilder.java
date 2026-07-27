@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.common.builder.item;
 
 import de.luckymcdev.foundryengine.common.builder.AbstractBuilder;
+import de.luckymcdev.foundryengine.common.builder.tag.ItemTagBuilder;
 import de.luckymcdev.foundryengine.common.world.item.EngineItem;
 import de.luckymcdev.foundryengine.common.wrapper.DataComponentWrapper;
 import net.minecraft.core.component.DataComponentType;
@@ -11,13 +12,16 @@ import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import org.jetbrains.annotations.ApiStatus;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 public class ItemBuilder extends AbstractBuilder<Item> {
 	private final Map<EngineItem.CallbackType, Object> callbacks = new EnumMap<>(EngineItem.CallbackType.class);
+	private final List<ItemTagBuilder> tags = new ArrayList<>();
 	private Item.Properties properties;
 	private Function<Item.Properties, Item> factory;
 
@@ -147,5 +151,19 @@ public class ItemBuilder extends AbstractBuilder<Item> {
 	public ItemBuilder generateData(boolean generate) {
 		this.generateData = generate;
 		return this;
+	}
+
+	public ItemBuilder tag(ItemTagBuilder tagBuilder) {
+		tagBuilder.add(ResourceKey.create(Registries.ITEM, id));
+		tags.add(tagBuilder);
+		return this;
+	}
+
+	public ItemBuilder tag(Identifier tagId) {
+		return tag(ItemTagBuilder.create(tagId));
+	}
+
+	public List<ItemTagBuilder> getTags() {
+		return tags;
 	}
 }

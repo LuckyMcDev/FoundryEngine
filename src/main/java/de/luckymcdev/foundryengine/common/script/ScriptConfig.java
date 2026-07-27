@@ -37,7 +37,7 @@ public final class ScriptConfig {
 		secure.setClosuresAllowed(true);
 		secure.setMethodDefinitionAllowed(true);
 
-		// Prevent using fully-qualified names
+		// Prevent using fully qualified names
 		secure.setIndirectImportCheckEnabled(true);
 
 		// Blocklist for imports
@@ -45,8 +45,6 @@ public final class ScriptConfig {
 			"java.io",
 			"java.net",
 			"java.nio",
-			"java.lang.reflect",
-			"java.lang.invoke",
 			"javax",
 			"javax.script",
 			"sun",
@@ -69,12 +67,6 @@ public final class ScriptConfig {
 			"java.lang.ThreadGroup",
 			"java.lang.SecurityManager",
 			"java.lang.System",
-			"java.lang.Class",
-			"java.lang.reflect.AccessibleObject",
-			"java.lang.reflect.Field",
-			"java.lang.reflect.Method",
-			"java.lang.reflect.Constructor",
-			"java.lang.reflect.Proxy",
 			"java.io.File",
 			"java.io.InputStream",
 			"java.io.OutputStream",

@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.common.builder.block;
 
 import de.luckymcdev.foundryengine.common.builder.AbstractBuilder;
 import de.luckymcdev.foundryengine.common.builder.item.ItemBuilder;
+import de.luckymcdev.foundryengine.common.builder.tag.BlockTagBuilder;
 import de.luckymcdev.foundryengine.common.world.block.EngineBlock;
 import de.luckymcdev.foundryengine.common.world.item.EngineItem;
 import net.minecraft.core.registries.Registries;
@@ -47,7 +48,9 @@ import net.minecraft.world.level.block.state.properties.WoodType;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import org.jspecify.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
@@ -58,6 +61,7 @@ public class BlockBuilder extends AbstractBuilder<Block> {
 	private final BiFunction<Block, Item.Properties, Item> itemFactory;
 	private final Map<EngineBlock.CallbackType, Object> blockCallbacks = new EnumMap<>(EngineBlock.CallbackType.class);
 	private final Map<EngineItem.CallbackType, Object> itemCallbacks = new EnumMap<>(EngineItem.CallbackType.class);
+	private final List<BlockTagBuilder> tags = new ArrayList<>();
 	private BlockBehaviour.Properties properties;
 	private Function<BlockBehaviour.Properties, Block> blockFactory;
 	private boolean hasItem = true;
@@ -244,6 +248,20 @@ public class BlockBuilder extends AbstractBuilder<Block> {
 	public BlockBuilder ghost(BiPredicate<Player, BlockState> visibilityCondition) {
 		this.visibilityCondition = visibilityCondition;
 		return this;
+	}
+
+	public BlockBuilder tag(BlockTagBuilder tagBuilder) {
+		tagBuilder.add(ResourceKey.create(Registries.BLOCK, id));
+		tags.add(tagBuilder);
+		return this;
+	}
+
+	public BlockBuilder tag(Identifier tagId) {
+		return tag(BlockTagBuilder.create(tagId));
+	}
+
+	public List<BlockTagBuilder> getTags() {
+		return tags;
 	}
 
 	public BlockBuilder stairs(BlockState base) {
