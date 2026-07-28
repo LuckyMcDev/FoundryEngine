@@ -5,6 +5,7 @@ import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -18,6 +19,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.EntityCollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -96,6 +98,11 @@ public class EngineBlock extends Block {
 
 	public EngineBlock handlePrecipitation(HandlePrecipitationCallback cb) {
 		setCallback(CallbackType.HANDLE_PRECIPITATION, cb);
+		return this;
+	}
+
+	public EngineBlock use(UseCallback cb) {
+		setCallback(CallbackType.USE, cb);
 		return this;
 	}
 
@@ -193,6 +200,15 @@ public class EngineBlock extends Block {
 	}
 
 	@Override
+	protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+		UseCallback cb = get(CallbackType.USE);
+		if (cb != null) {
+			return cb.run(state, level, pos, player, hitResult);
+		}
+		return super.useWithoutItem(state, level, pos, player, hitResult);
+	}
+
+	@Override
 	protected RenderShape getRenderShape(BlockState state) {
 		if (visibilityCondition != null) {
 			return RenderShape.INVISIBLE;
@@ -238,7 +254,8 @@ public class EngineBlock extends Block {
 		FALL_ON,
 		PLAYER_WILL_DESTROY,
 		PLAYER_DESTROY,
-		HANDLE_PRECIPITATION
+		HANDLE_PRECIPITATION,
+		USE
 	}
 
 	@FunctionalInterface
@@ -284,5 +301,10 @@ public class EngineBlock extends Block {
 	@FunctionalInterface
 	public interface HandlePrecipitationCallback {
 		void run(BlockState state, Level level, BlockPos pos, Biome.Precipitation precipitation);
+	}
+
+	@FunctionalInterface
+	public interface UseCallback {
+		InteractionResult run(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult);
 	}
 }

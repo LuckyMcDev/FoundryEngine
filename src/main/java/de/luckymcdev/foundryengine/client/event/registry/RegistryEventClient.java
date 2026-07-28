@@ -1,11 +1,16 @@
 package de.luckymcdev.foundryengine.client.event.registry;
 
 import de.luckymcdev.foundryengine.client.particle.EngineParticle;
+import de.luckymcdev.foundryengine.common.builder.blockentity.BlockEntityBuilder;
 import de.luckymcdev.foundryengine.common.builder.particle.ParticleBuilder;
 import de.luckymcdev.foundryengine.common.registry.RegistryCollector;
 import net.minecraft.client.particle.SpriteSet;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
+import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +37,17 @@ public class RegistryEventClient {
 				LOGGER.warn("Skipping particle provider registration for {} because type {} is not SimpleParticleType.",
 					builder.getId(),
 					type.getClass().getName());
+			}
+		}
+	}
+
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	public static void registerRenderers(RegistryCollector collector) {
+		for (BlockEntityBuilder<?> builder : List.copyOf(collector.getBlockEntities())) {
+			BlockEntityRendererProvider<?, BlockEntityRenderState> rendererFactory = builder.getRendererFactory();
+			if (rendererFactory != null) {
+				var type = builder.get();
+				BlockEntityRenderers.register((BlockEntityType) type, rendererFactory);
 			}
 		}
 	}

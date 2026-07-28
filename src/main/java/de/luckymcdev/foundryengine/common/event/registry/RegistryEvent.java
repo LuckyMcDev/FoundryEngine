@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.common.event.registry;
 
 import de.luckymcdev.foundryengine.common.builder.block.BlockBuilder;
+import de.luckymcdev.foundryengine.common.builder.blockentity.BlockEntityBuilder;
 import de.luckymcdev.foundryengine.common.builder.item.ItemBuilder;
 import de.luckymcdev.foundryengine.common.builder.item.ToolMaterialBuilder;
 import de.luckymcdev.foundryengine.common.builder.particle.ParticleBuilder;
@@ -67,6 +68,14 @@ public class RegistryEvent extends Event implements IModBusEvent {
 				}
 			});
 		}
+
+		List<BlockEntityBuilder<?>> attachedBes = Stream.of(builders)
+			.map(BlockBuilder::getBlockEntityBuilder)
+			.filter(java.util.Objects::nonNull)
+			.toList();
+		if (!attachedBes.isEmpty()) {
+			blockEntities(attachedBes.toArray(BlockEntityBuilder[]::new));
+		}
 	}
 
 	public void recipes(RecipeBuilder... builders) {
@@ -94,6 +103,17 @@ public class RegistryEvent extends Event implements IModBusEvent {
 		});
 		for (SoundBuilder builder : builders) {
 			collector.addSound(builder);
+		}
+	}
+
+	public void blockEntities(BlockEntityBuilder<?>... builders) {
+		inner.register(BuiltInRegistries.BLOCK_ENTITY_TYPE.key(), helper -> {
+			for (BlockEntityBuilder<?> builder : builders) {
+				builder.register(helper);
+			}
+		});
+		for (BlockEntityBuilder<?> builder : builders) {
+			collector.addBlockEntity(builder);
 		}
 	}
 

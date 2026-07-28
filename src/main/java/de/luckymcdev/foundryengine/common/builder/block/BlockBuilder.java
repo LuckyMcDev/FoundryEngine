@@ -1,9 +1,11 @@
 package de.luckymcdev.foundryengine.common.builder.block;
 
 import de.luckymcdev.foundryengine.common.builder.AbstractBuilder;
+import de.luckymcdev.foundryengine.common.builder.blockentity.BlockEntityBuilder;
 import de.luckymcdev.foundryengine.common.builder.item.ItemBuilder;
 import de.luckymcdev.foundryengine.common.builder.tag.BlockTagBuilder;
 import de.luckymcdev.foundryengine.common.world.block.EngineBlock;
+import de.luckymcdev.foundryengine.common.world.block.EngineEntityBlock;
 import de.luckymcdev.foundryengine.common.world.item.EngineItem;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
@@ -11,6 +13,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.AnvilBlock;
 import net.minecraft.world.level.block.BeaconBlock;
 import net.minecraft.world.level.block.Block;
@@ -41,10 +44,12 @@ import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.TransparentBlock;
 import net.minecraft.world.level.block.TrapDoorBlock;
 import net.minecraft.world.level.block.WallBlock;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraft.world.level.block.state.properties.WoodType;
+import net.minecraft.world.level.storage.loot.LootTable;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import org.jspecify.annotations.Nullable;
 
@@ -68,6 +73,11 @@ public class BlockBuilder extends AbstractBuilder<Block> {
 	private UnaryOperator<Item.Properties> itemPropertyModifier = p -> p;
 	@Nullable
 	private BiPredicate<Player, BlockState> visibilityCondition;
+	@Nullable
+	private BlockEntityBuilder<?> blockEntityBuilder;
+	private DropType dropType = DropType.SELF;
+	private @Nullable ItemLike dropItem;
+	private @Nullable Function<Block, LootTable.Builder> dropCustomizer;
 
 	public BlockBuilder(Identifier id) {
 		super(id);
@@ -149,6 +159,11 @@ public class BlockBuilder extends AbstractBuilder<Block> {
 		return this;
 	}
 
+	public BlockBuilder use(EngineBlock.UseCallback cb) {
+		blockCallbacks.put(EngineBlock.CallbackType.USE, cb);
+		return this;
+	}
+
 	public BlockBuilder itemInventoryTick(EngineItem.InventoryTickCallback cb) {
 		itemCallbacks.put(EngineItem.CallbackType.INVENTORY_TICK, cb);
 		return this;
@@ -213,26 +228,42 @@ public class BlockBuilder extends AbstractBuilder<Block> {
 	public Block build() {
 		this.properties.setId(ResourceKey.create(Registries.BLOCK, id));
 
-		if (!blockCallbacks.isEmpty() || visibilityCondition != null) {
-			EngineBlock block = new EngineBlock(this.properties);
-			block.visibilityCondition(visibilityCondition);
-			blockCallbacks.forEach((type, cb) -> {
-				switch (type) {
-					case ANIMATE_TICK -> block.animateTick((EngineBlock.AnimateTickCallback) cb);
-					case DESTROY -> block.destroy((EngineBlock.DestroyCallback) cb);
-					case WAS_EXPLODED -> block.wasExploded((EngineBlock.WasExplodedCallback) cb);
-					case STEP_ON -> block.stepOn((EngineBlock.StepOnCallback) cb);
-					case SET_PLACED_BY -> block.setPlacedBy((EngineBlock.SetPlacedByCallback) cb);
-					case FALL_ON -> block.fallOn((EngineBlock.FallOnCallback) cb);
-					case PLAYER_WILL_DESTROY -> block.playerWillDestroy((EngineBlock.PlayerWillDestroyCallback) cb);
-					case PLAYER_DESTROY -> block.playerDestroy((EngineBlock.PlayerDestroyCallback) cb);
-					case HANDLE_PRECIPITATION -> block.handlePrecipitation((EngineBlock.HandlePrecipitationCallback) cb);
-				}
-			});
-			return block;
+		EngineBlock block;
+		if (blockEntityBuilder != null) {
+			block = new EngineEntityBlock(this.properties,
+				() -> (BlockEntityType<?>) blockEntityBuilder.getOrCreate(),
+				blockEntityBuilder.hasTick());
+		} else if (!blockCallbacks.isEmpty() || visibilityCondition != null) {
+			block = new EngineBlock(this.properties);
+		} else {
+			Block raw = blockFactory.apply(this.properties);
+			if (raw instanceof EngineBlock eb) {
+				applyCallbacks(eb);
+			}
+			return raw;
 		}
 
-		return blockFactory.apply(this.properties);
+		block.visibilityCondition(visibilityCondition);
+		applyCallbacks(block);
+		return block;
+	}
+
+	@SuppressWarnings("unchecked")
+	private void applyCallbacks(EngineBlock block) {
+		blockCallbacks.forEach((type, cb) -> {
+			switch (type) {
+				case ANIMATE_TICK -> block.animateTick((EngineBlock.AnimateTickCallback) cb);
+				case DESTROY -> block.destroy((EngineBlock.DestroyCallback) cb);
+				case WAS_EXPLODED -> block.wasExploded((EngineBlock.WasExplodedCallback) cb);
+				case STEP_ON -> block.stepOn((EngineBlock.StepOnCallback) cb);
+				case SET_PLACED_BY -> block.setPlacedBy((EngineBlock.SetPlacedByCallback) cb);
+				case FALL_ON -> block.fallOn((EngineBlock.FallOnCallback) cb);
+				case PLAYER_WILL_DESTROY -> block.playerWillDestroy((EngineBlock.PlayerWillDestroyCallback) cb);
+				case PLAYER_DESTROY -> block.playerDestroy((EngineBlock.PlayerDestroyCallback) cb);
+				case HANDLE_PRECIPITATION -> block.handlePrecipitation((EngineBlock.HandlePrecipitationCallback) cb);
+				case USE -> block.use((EngineBlock.UseCallback) cb);
+			}
+		});
 	}
 
 	<C> BlockBuilder callback(EngineItem.CallbackType type, C cb) {
@@ -412,5 +443,56 @@ public class BlockBuilder extends AbstractBuilder<Block> {
 	public BlockBuilder generateData(boolean generate) {
 		this.generateData = generate;
 		return this;
+	}
+
+	public BlockBuilder blockEntity(BlockEntityBuilder<?> beBuilder) {
+		this.blockEntityBuilder = beBuilder;
+		beBuilder.validBlock(this);
+		return this;
+	}
+
+	public @Nullable BlockEntityBuilder<?> getBlockEntityBuilder() {
+		return blockEntityBuilder;
+	}
+
+	public BlockBuilder dropsSelf() {
+		this.dropType = DropType.SELF;
+		return this;
+	}
+
+	public BlockBuilder drops(ItemLike drop) {
+		this.dropType = DropType.ITEM;
+		this.dropItem = drop;
+		return this;
+	}
+
+	public BlockBuilder dropsNothing() {
+		this.dropType = DropType.NOTHING;
+		return this;
+	}
+
+	public BlockBuilder dropsCustom(Function<Block, LootTable.Builder> customizer) {
+		this.dropType = DropType.CUSTOM;
+		this.dropCustomizer = customizer;
+		return this;
+	}
+
+	public DropType getDropType() {
+		return dropType;
+	}
+
+	public @Nullable ItemLike getDropItem() {
+		return dropItem;
+	}
+
+	public @Nullable Function<Block, LootTable.Builder> getDropCustomizer() {
+		return dropCustomizer;
+	}
+
+	public enum DropType {
+		SELF,
+		ITEM,
+		NOTHING,
+		CUSTOM
 	}
 }

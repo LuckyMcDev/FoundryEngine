@@ -115,6 +115,11 @@ public class FoundryEngineModClient {
 		LOGGER.debug("FoundryEngineModClient setup called");
 		ModPathBroadcaster.broadcast();
 
+		var collector = Common.getRegistryCollector();
+		if (collector != null) {
+			RegistryEventClient.registerRenderers(collector);
+		}
+
 		CutscenePacket.CLIENT_HANDLER = p -> Client.getCutsceneManager().handlePacket(p);
 		ClientboundDialoguePacket.CLIENT_HANDLER = p -> {
 			var clientManager = Client.getDialogueManager();
@@ -182,6 +187,7 @@ public class FoundryEngineModClient {
 					container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
 				}
 			}
+			Client.getMc().reloadResourcePacks();
 		});
 	}
 

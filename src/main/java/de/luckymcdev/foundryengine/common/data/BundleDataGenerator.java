@@ -149,7 +149,7 @@ public class BundleDataGenerator {
 				Set.of(),
 				List.of(
 					new LootTableProvider.SubProviderEntry(
-						registries -> new EngineLootTableSubProvider(registries),
+						registries -> new EngineLootTableSubProvider(registries, blockBuilders),
 						LootContextParamSets.BLOCK
 					)
 				),
