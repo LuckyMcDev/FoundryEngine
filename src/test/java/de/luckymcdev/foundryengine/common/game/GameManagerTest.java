@@ -330,7 +330,7 @@ class GameManagerTest {
 		private final String bundleId;
 
 		public FakeBundle(String id) {
-			super(null, null, null, null, null);
+			super(null, null, null, null);
 			this.bundleId = id;
 		}
 

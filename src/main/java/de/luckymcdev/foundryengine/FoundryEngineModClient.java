@@ -187,7 +187,7 @@ public class FoundryEngineModClient {
 					container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
 				}
 			}
-			Client.getMc().reloadResourcePacks();
+			//Client.getMc().reloadResourcePacks();
 		});
 	}
 

@@ -1,28 +1,27 @@
 package de.luckymcdev.foundryengine.common.script.event;
 
-import de.luckymcdev.foundryengine.common.script.GroovyBundleScriptEngine;
-import groovy.util.GroovyScriptEngine;
+import de.luckymcdev.foundryengine.common.script.ScriptShell;
 import net.neoforged.bus.api.Event;
 import org.codehaus.groovy.control.CompilerConfiguration;
 
 /**
- * Event posted when the Groovy script engine is being initialized.
- * Allows modification of the {@link GroovyScriptEngine} and its {@link CompilerConfiguration}.
+ * Event posted once when the global {@link ScriptShell} is initialized.
+ * Allows modification of the shared {@link CompilerConfiguration}
+ * before any bundle scripts are compiled.
  */
 public class GroovyScriptEngineModifyEvent extends Event {
 
-	private final GroovyScriptEngine groovyEngine;
+	private final ScriptShell scriptShell;
 	private final CompilerConfiguration compilerConfiguration;
 
-	public GroovyScriptEngineModifyEvent(GroovyBundleScriptEngine bundleEngine,
-	                                     GroovyScriptEngine groovyEngine,
+	public GroovyScriptEngineModifyEvent(ScriptShell scriptShell,
 	                                     CompilerConfiguration compilerConfiguration) {
-		this.groovyEngine = groovyEngine;
+		this.scriptShell = scriptShell;
 		this.compilerConfiguration = compilerConfiguration;
 	}
 
-	public GroovyScriptEngine getGroovyScriptEngine() {
-		return groovyEngine;
+	public ScriptShell getScriptShell() {
+		return scriptShell;
 	}
 
 	public CompilerConfiguration getCompilerConfiguration() {

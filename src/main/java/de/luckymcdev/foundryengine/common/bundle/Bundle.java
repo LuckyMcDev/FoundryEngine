@@ -5,7 +5,6 @@ import de.luckymcdev.foundryengine.common.bundle.info.BundleFiles;
 import de.luckymcdev.foundryengine.common.bundle.info.BundleInfo;
 import de.luckymcdev.foundryengine.common.bundle.registry.BundleCreativeModeTab;
 import de.luckymcdev.foundryengine.common.script.BundleEntrypoint;
-import de.luckymcdev.foundryengine.common.script.GroovyBundleScriptEngine;
 import de.luckymcdev.foundryengine.common.script.GroovyScriptLoader;
 import net.minecraft.resources.Identifier;
 
@@ -17,32 +16,30 @@ import java.util.stream.Stream;
 public class Bundle {
 	private final BundleInfo info;
 	private final BundleFiles bundleFiles;
-	private final GroovyBundleScriptEngine scriptEngine;
 	private final BundleCreativeModeTab creativeModeTab;
 	private final BundleConfigSpec configSpec;
 	private final List<BundleEntrypoint> commonEntrypoints = new ArrayList<>();
 	private final List<BundleEntrypoint> clientEntrypoints = new ArrayList<>();
 	private final List<BundleEntrypoint> serverEntrypoints = new ArrayList<>();
 
-	public Bundle(BundleInfo info, BundleFiles bundleFiles, GroovyBundleScriptEngine scriptEngine,
+	public Bundle(BundleInfo info, BundleFiles bundleFiles,
 	              BundleCreativeModeTab creativeModeTab, BundleConfigSpec configSpec) {
 		this.info = info;
 		this.bundleFiles = bundleFiles;
-		this.scriptEngine = scriptEngine;
 		this.creativeModeTab = creativeModeTab;
 		this.configSpec = configSpec;
 	}
 
 	public void loadCommon(GroovyScriptLoader loader) {
-		commonEntrypoints.addAll(loader.loadCommon(bundleFiles, scriptEngine, info.id()));
+		commonEntrypoints.addAll(loader.loadCommon(bundleFiles, info.id()));
 	}
 
 	public void loadClient(GroovyScriptLoader loader) {
-		clientEntrypoints.addAll(loader.loadClient(bundleFiles, scriptEngine, info.id()));
+		clientEntrypoints.addAll(loader.loadClient(bundleFiles, info.id()));
 	}
 
 	public void loadServer(GroovyScriptLoader loader) {
-		serverEntrypoints.addAll(loader.loadServer(bundleFiles, scriptEngine, info.id()));
+		serverEntrypoints.addAll(loader.loadServer(bundleFiles, info.id()));
 	}
 
 	public List<BundleEntrypoint> entrypoints() {
@@ -65,7 +62,6 @@ public class Bundle {
 
 	public void unload() {
 		entrypoints().forEach(BundleEntrypoint::onUnload);
-		scriptEngine.close();
 		commonEntrypoints.clear();
 		clientEntrypoints.clear();
 		serverEntrypoints.clear();
@@ -81,10 +77,6 @@ public class Bundle {
 
 	public BundleConfigSpec configSpec() {
 		return configSpec;
-	}
-
-	public GroovyBundleScriptEngine scriptEngine() {
-		return scriptEngine;
 	}
 
 	public BundleCreativeModeTab creativeModeTab() {

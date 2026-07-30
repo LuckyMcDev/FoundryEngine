@@ -15,6 +15,7 @@ import de.luckymcdev.foundryengine.common.game.stage.table.StageTableManager;
 import de.luckymcdev.foundryengine.common.network.NetworkManager;
 import de.luckymcdev.foundryengine.common.registry.RegistryCollector;
 import de.luckymcdev.foundryengine.common.savedata.SavedDataManager;
+import de.luckymcdev.foundryengine.common.script.ScriptShell;
 import de.luckymcdev.foundryengine.common.util.FirstRun;
 import de.luckymcdev.foundryengine.common.waypoint.WaypointManager;
 import net.minecraft.resources.Identifier;
@@ -60,6 +61,7 @@ public final class Common {
 	private static final CutsceneSessionManager CUTSCENE_SESSION_MANAGER = new CutsceneSessionManager();
 	private static final WaypointManager WAYPOINT_MANAGER = new WaypointManager(SAVED_DATA_MANAGER);
 	private static final DialogueManager DIALOGUE_MANAGER = new DialogueManager(SAVED_DATA_MANAGER);
+	private static final ScriptShell SCRIPT_SHELL = new ScriptShell();
 	private static final BundleManager BUNDLE_MANAGER = new BundleManager(FoundryEngineMod.getModBus());
 	private static final GameManager GAME_MANAGER = new GameManager();
 	private static final List<Runnable> EVENT_CLEARERS = new ArrayList<>();
@@ -98,6 +100,10 @@ public final class Common {
 	/**
 	 * Returns the singleton {@link BundleManager}.
 	 */
+	public static ScriptShell getScriptShell() {
+		return SCRIPT_SHELL;
+	}
+
 	public static BundleManager getBundleManager() {
 		return BUNDLE_MANAGER;
 	}
