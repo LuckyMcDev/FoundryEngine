@@ -3,11 +3,16 @@ package de.luckymcdev.foundryengine.common.script;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.script.event.GroovyScriptEngineModifyEvent;
 import groovy.lang.GroovyClassLoader;
-import groovy.lang.GroovyCodeSource;
 import net.neoforged.fml.loading.FMLLoader;
+import org.codehaus.groovy.control.CompilationUnit;
 import org.codehaus.groovy.control.CompilerConfiguration;
+import org.codehaus.groovy.control.Phases;
+import org.codehaus.groovy.tools.GroovyClass;
 
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -31,13 +36,19 @@ public final class ScriptShell {
 		Common.post(new GroovyScriptEngineModifyEvent(this, compilerConfig));
 	}
 
-	public Class<?> compile(Path scriptPath, Path scriptRoot) throws Exception {
+	public List<GroovyClass> compileBundle(List<Path> scriptPaths, Path scriptRoot) throws IOException {
 		Path root = scriptRoot.normalize().toAbsolutePath();
 		GroovyClassLoader loader = this.groovyClassLoader;
 		if (scriptRoots.add(root)) {
 			loader.addURL(root.toUri().toURL());
 		}
-		return loader.parseClass(new GroovyCodeSource(scriptPath.toUri().toURL()));
+
+		CompilationUnit unit = new CompilationUnit(compilerConfig, null, loader);
+		for (Path scriptPath : scriptPaths) {
+			unit.addSource(new File(scriptPath.toUri()));
+		}
+		unit.compile(Phases.CLASS_GENERATION);
+		return unit.getClasses();
 	}
 
 	public void invalidateAll() {
@@ -45,6 +56,10 @@ public final class ScriptShell {
 		ClassLoader parent = new ScriptSandbox.FilteringClassLoader(
 			FMLLoader.getCurrent().getCurrentClassLoader());
 		this.groovyClassLoader = new GroovyClassLoader(parent, compilerConfig);
+	}
+
+	GroovyClassLoader getClassLoader() {
+		return groovyClassLoader;
 	}
 
 	public CompilerConfiguration getCompilerConfiguration() {

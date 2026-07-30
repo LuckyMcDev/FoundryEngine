@@ -208,10 +208,12 @@ public class BundleManager implements ResourceManagerReloadListener {
 			lifecycleDispatcher.fireReloadStarted();
 
 			Common.clearEvents();
-			Common.getScriptShell().invalidateAll();
 
 			unloadAllBundles();
 			bundles.clear();
+
+			Common.getScriptShell().invalidateAll();
+			scriptLoader.invalidateCache();
 
 			try {
 				discover(Common.BUNDLES);

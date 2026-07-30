@@ -6,125 +6,280 @@ import de.luckymcdev.foundryengine.common.bundle.info.BundleFiles;
 import de.luckymcdev.foundryengine.common.priority.Priority;
 import de.luckymcdev.foundryengine.config.StartupConfig;
 import de.luckymcdev.foundryengine.server.Server;
+import groovy.lang.GroovyClassLoader;
+import groovy.lang.GroovyCodeSource;
 import net.minecraft.network.chat.Component;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.ModLoadingIssue;
 import org.codehaus.groovy.control.MultipleCompilationErrorsException;
 import org.codehaus.groovy.control.messages.SyntaxErrorMessage;
-import org.jetbrains.annotations.Nullable;
+import org.codehaus.groovy.tools.GroovyClass;
 import org.slf4j.Logger;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
-/**
- * Loads and compiles Groovy bundle scripts into entrypoints.
- */
 public class GroovyScriptLoader {
 	private static final Logger LOGGER = LogUtils.getLogger();
 
+	private final Map<String, BundleCompileResult> bundleCache = new ConcurrentHashMap<>();
+
+	private static Map<String, Path> buildClassNameMap(List<Path> scriptPaths) {
+		Map<String, Path> map = new HashMap<>();
+		for (Path p : scriptPaths) {
+			String fn = p.getFileName().toString();
+			if (fn.endsWith(".groovy")) {
+				map.put(fn.substring(0, fn.length() - ".groovy".length()), p);
+			}
+		}
+		return map;
+	}
+
 	public List<BundleEntrypoint> loadCommon(BundleFiles files, String bundleId) {
-		return load(files, BundleFiles.ScriptFiles::common, EnvType.COMMON, bundleId);
+		return loadEnv(files, bundleId, EnvType.COMMON, BundleCompileResult::common);
 	}
 
 	public List<BundleEntrypoint> loadClient(BundleFiles files, String bundleId) {
-		return load(files, BundleFiles.ScriptFiles::client, EnvType.CLIENT, bundleId);
+		return loadEnv(files, bundleId, EnvType.CLIENT, BundleCompileResult::client);
 	}
 
 	public List<BundleEntrypoint> loadServer(BundleFiles files, String bundleId) {
-		return load(files, BundleFiles.ScriptFiles::server, EnvType.SERVER, bundleId);
+		return loadEnv(files, bundleId, EnvType.SERVER, BundleCompileResult::server);
 	}
 
-	private List<BundleEntrypoint> load(BundleFiles files,
-	                                    Function<BundleFiles.ScriptFiles, Path> pathGetter, EnvType envType, String bundleId) {
-		List<BundleEntrypoint> entrypoints = new ArrayList<>();
-
+	private List<BundleEntrypoint> loadEnv(BundleFiles files, String bundleId, EnvType envType,
+	                                       Function<BundleCompileResult, List<BundleEntrypoint>> resultExtractor) {
 		if (!StartupConfig.SCRIPTING_ENABLED.get()) {
-			return entrypoints;
+			return List.of();
 		}
 
-		Path envPath = pathGetter.apply(files.scripts());
+		BundleCompileResult result = bundleCache.computeIfAbsent(bundleId, id -> {
+			LOGGER.info("Compiling all scripts for bundle '{}'", bundleId);
+			return compileBundle(files, bundleId);
+		});
 
-		List<Path> scriptPaths = files.scripts().collection().stream()
-			.filter(p -> p.startsWith(envPath))
+		List<BundleEntrypoint> entrypoints = resultExtractor.apply(result);
+		List<BundleEntrypoint> loaded = new ArrayList<>();
+
+		for (BundleEntrypoint entrypoint : entrypoints) {
+			try {
+				entrypoint.onLoad();
+				loaded.add(entrypoint);
+			} catch (Exception e) {
+				LOGGER.warn("Failed to run onLoad for {} script in bundle '{}': {}",
+					envType.getName(), bundleId, e.getMessage());
+				ModLoadingIssue issue = ModLoadingIssue.error(String.format(
+					"Failed to run onLoad for %s script in bundle '%s': %s",
+					envType.getName(), bundleId, e.getMessage()));
+				ModLoader.addLoadingIssue(issue);
+				if (Server.getServer() != null) {
+					Server.getServer().getPlayerList().broadcastSystemMessage(
+						Component.literal("§c[Script Error] onLoad " + envType.getName() + " script in bundle '" + bundleId + "': " + e),
+						false);
+				}
+			}
+		}
+
+		loaded.sort(Priority.comparing(BundleEntrypoint::getPriority));
+
+		int total = entrypoints.size();
+		int succeeded = loaded.size();
+		int failed = total - succeeded;
+		if (failed > 0) {
+			LOGGER.warn("Bundle '{}' {} scripts: {} loaded, {} failed (of {})",
+				bundleId, envType.getName(), succeeded, failed, total);
+		} else {
+			LOGGER.info("Bundle '{}' {} scripts: {} loaded",
+				bundleId, envType.getName(), succeeded);
+		}
+
+		return loaded;
+	}
+
+	private BundleCompileResult compileBundle(BundleFiles files, String bundleId) {
+		Path scriptRoot = files.scripts().root();
+		Path commonPath = files.scripts().common();
+		Path clientPath = files.scripts().client();
+		Path serverPath = files.scripts().server();
+
+		List<Path> allScriptPaths = files.scripts().collection().stream()
 			.filter(p -> p.toString().endsWith(".groovy"))
 			.toList();
 
-		for (Path scriptPath : scriptPaths) {
-			BundleEntrypoint entrypoint = null;
-			String filename = scriptPath.getFileName().toString();
+		if (allScriptPaths.isEmpty()) {
+			return new BundleCompileResult(List.of(), List.of(), List.of());
+		}
+
+		Map<String, Path> classNameToPath = buildClassNameMap(allScriptPaths);
+
+		try {
+			List<GroovyClass> compiledClasses = Common.getScriptShell()
+				.compileBundle(allScriptPaths, scriptRoot);
+			return defineAndSplit(compiledClasses, classNameToPath,
+				commonPath, clientPath, serverPath, bundleId);
+		} catch (MultipleCompilationErrorsException mce) {
+			LOGGER.warn("Batch compile failed for bundle '{}', falling back to per-file compilation", bundleId);
+			for (var msg : mce.getErrorCollector().getErrors()) {
+				if (msg instanceof SyntaxErrorMessage sem) {
+					LOGGER.warn("  {}", sem.getCause().getMessage());
+				} else {
+					LOGGER.warn("  {}", msg);
+				}
+			}
+		} catch (Exception e) {
+			LOGGER.error("Batch compile failed unexpectedly for bundle '{}'", bundleId, e);
+		}
+
+		return fallbackCompile(allScriptPaths, files, bundleId,
+			commonPath, clientPath, serverPath);
+	}
+
+	private BundleCompileResult defineAndSplit(List<GroovyClass> compiledClasses,
+	                                           Map<String, Path> classNameToPath,
+	                                           Path commonPath, Path clientPath, Path serverPath,
+	                                           String bundleId) {
+		GroovyClassLoader loader = Common.getScriptShell().getClassLoader();
+
+		Map<String, Class<?>> definedClasses = new HashMap<>();
+		for (GroovyClass gc : compiledClasses) {
+			try {
+				Class<?> clazz = loader.defineClass(gc.getName(), gc.getBytes());
+				definedClasses.put(gc.getName(), clazz);
+			} catch (Exception e) {
+				LOGGER.warn("Failed to define class '{}' in bundle '{}': {}",
+					gc.getName(), bundleId, e.getMessage());
+			}
+		}
+
+		List<BundleEntrypoint> common = new ArrayList<>();
+		List<BundleEntrypoint> client = new ArrayList<>();
+		List<BundleEntrypoint> server = new ArrayList<>();
+
+		for (Map.Entry<String, Class<?>> entry : definedClasses.entrySet()) {
+			String className = entry.getKey();
+			Class<?> clazz = entry.getValue();
+
+			if (className.contains("$")) {
+				continue;
+			}
+			if (!BundleEntrypoint.class.isAssignableFrom(clazz)) {
+				continue;
+			}
+
+			String simpleName = className.contains(".")
+				? className.substring(className.lastIndexOf('.') + 1)
+				: className;
+
+			Path sourcePath = classNameToPath.get(simpleName);
+			if (sourcePath == null) {
+				LOGGER.debug("Skipping entrypoint class '{}' (no matching source file in bundle '{}')",
+					className, bundleId);
+				continue;
+			}
 
 			try {
-				entrypoint = loadScriptClass(scriptPath, files.scripts().root());
+				BundleEntrypoint entrypoint = (BundleEntrypoint) clazz.getDeclaredConstructor().newInstance();
+
+				if (sourcePath.startsWith(commonPath)) {
+					common.add(entrypoint);
+				} else if (sourcePath.startsWith(clientPath)) {
+					client.add(entrypoint);
+				} else if (sourcePath.startsWith(serverPath)) {
+					server.add(entrypoint);
+				} else {
+					LOGGER.warn("Script class '{}' in bundle '{}' is outside known env directories",
+						className, bundleId);
+				}
+			} catch (Exception e) {
+				String filename = sourcePath.getFileName().toString();
+				LOGGER.warn("Failed to instantiate entrypoint '{}' in bundle '{}': {}",
+					filename, bundleId, e.getMessage());
+			}
+		}
+
+		return new BundleCompileResult(common, client, server);
+	}
+
+	private BundleCompileResult fallbackCompile(List<Path> scriptPaths, BundleFiles files, String bundleId,
+	                                            Path commonPath, Path clientPath, Path serverPath) {
+		GroovyClassLoader loader = Common.getScriptShell().getClassLoader();
+		List<BundleEntrypoint> common = new ArrayList<>();
+		List<BundleEntrypoint> client = new ArrayList<>();
+		List<BundleEntrypoint> server = new ArrayList<>();
+
+		for (Path scriptPath : scriptPaths) {
+			String filename = scriptPath.getFileName().toString();
+			BundleEntrypoint entrypoint = null;
+
+			try {
+				Class<?> scriptClass = loader.parseClass(new GroovyCodeSource(scriptPath.toUri().toURL()));
+				if (BundleEntrypoint.class.isAssignableFrom(scriptClass)) {
+					entrypoint = (BundleEntrypoint) scriptClass.getDeclaredConstructor().newInstance();
+				}
 			} catch (MultipleCompilationErrorsException mce) {
 				for (var msg : mce.getErrorCollector().getErrors()) {
 					if (msg instanceof SyntaxErrorMessage sem) {
-						LOGGER.warn("Script error in '{}' ({},{}): {}", filename,
-							sem.getCause().getLine(), sem.getCause().getStartColumn(), sem.getCause().getMessage());
+						LOGGER.warn("Script error in '{}' ({},{}): {}",
+							filename, sem.getCause().getLine(), sem.getCause().getStartColumn(), sem.getCause().getMessage());
 					} else {
 						LOGGER.warn("Script error in '{}': {}", filename, msg);
 					}
 				}
-				LOGGER.warn("Failed to compile {} script '{}' for bundle '{}'", envType.getName(), filename, bundleId, mce);
+				LOGGER.warn("Failed to compile script '{}' for bundle '{}'", filename, bundleId, mce);
 				ModLoadingIssue issue = ModLoadingIssue.error(String.format(
-					"Failed to compile %s script '%s' for bundle '%s': %s", envType.getName(), filename, bundleId, mce.getMessage()));
+					"Failed to compile script '%s' for bundle '%s': %s", filename, bundleId, mce.getMessage()));
 				ModLoader.addLoadingIssue(issue);
 				if (Server.getServer() != null) {
-					String loc = mce.getStackTrace().length > 0 ? " (" + mce.getStackTrace()[0].getFileName() + ":" + mce.getStackTrace()[0].getLineNumber() + ")" : "";
-					Server.getServer().getPlayerList().broadcastSystemMessage(Component.literal("§c[Script Error] Compile " + envType.getName() + " script '" + filename + "' for bundle '" + bundleId + "': " + mce + loc), false);
+					String loc = mce.getStackTrace().length > 0
+						? " (" + mce.getStackTrace()[0].getFileName() + ":" + mce.getStackTrace()[0].getLineNumber() + ")"
+						: "";
+					Server.getServer().getPlayerList().broadcastSystemMessage(
+						Component.literal("§c[Script Error] Compile script '" + filename + "' for bundle '" + bundleId + "': " + mce + loc),
+						false);
 				}
 			} catch (Exception e) {
-				LOGGER.warn("Failed to compile {} script '{}' for bundle '{}'", envType.getName(), filename, bundleId, e);
+				LOGGER.warn("Failed to compile script '{}' for bundle '{}'", filename, bundleId, e);
 				ModLoadingIssue issue = ModLoadingIssue.error(String.format(
-					"Failed to compile %s script '%s' for bundle '%s': %s", envType.getName(), filename, bundleId, e.getMessage()));
+					"Failed to compile script '%s' for bundle '%s': %s", filename, bundleId, e.getMessage()));
 				ModLoader.addLoadingIssue(issue);
 				if (Server.getServer() != null) {
-					String loc = e.getStackTrace().length > 0 ? " (" + e.getStackTrace()[0].getFileName() + ":" + e.getStackTrace()[0].getLineNumber() + ")" : "";
-					Server.getServer().getPlayerList().broadcastSystemMessage(Component.literal("§c[Script Error] Compile " + envType.getName() + " script '" + filename + "' for bundle '" + bundleId + "': " + e + loc), false);
+					String loc = e.getStackTrace().length > 0
+						? " (" + e.getStackTrace()[0].getFileName() + ":" + e.getStackTrace()[0].getLineNumber() + ")"
+						: "";
+					Server.getServer().getPlayerList().broadcastSystemMessage(
+						Component.literal("§c[Script Error] Compile script '" + filename + "' for bundle '" + bundleId + "': " + e + loc),
+						false);
 				}
 			}
 
 			if (entrypoint != null) {
-				entrypoints.add(entrypoint);
-				try {
-					entrypoint.onLoad();
-				} catch (Exception e) {
-					LOGGER.warn("Failed to run onLoad for {} script '{}' in bundle '{}'", envType.getName(), filename, bundleId, e);
-					ModLoadingIssue issue = ModLoadingIssue.error(String.format(
-						"Failed to run onLoad for %s script '%s' in bundle '%s': %s", envType.getName(), filename, bundleId, e.getMessage()));
-					ModLoader.addLoadingIssue(issue);
-					if (Server.getServer() != null) {
-						String loc = e.getStackTrace().length > 0 ? " (" + e.getStackTrace()[0].getFileName() + ":" + e.getStackTrace()[0].getLineNumber() + ")" : "";
-						Server.getServer().getPlayerList().broadcastSystemMessage(Component.literal("§c[Script Error] onLoad " + envType.getName() + " script '" + filename + "' for bundle '" + bundleId + "': " + e + loc), false);
-					}
+				if (scriptPath.startsWith(commonPath)) {
+					common.add(entrypoint);
+				} else if (scriptPath.startsWith(clientPath)) {
+					client.add(entrypoint);
+				} else if (scriptPath.startsWith(serverPath)) {
+					server.add(entrypoint);
 				}
 			}
 		}
 
-		entrypoints.sort(Priority.comparing(BundleEntrypoint::getPriority));
-
-		int total = scriptPaths.size();
-		int loaded = entrypoints.size();
-		int failed = total - loaded;
-		if (failed > 0) {
-			LOGGER.warn("Bundle '{}' {} scripts: {} loaded, {} failed (of {})", bundleId, envType.getName(), loaded, failed, total);
-		} else {
-			LOGGER.info("Bundle '{}' {} scripts: {} loaded", bundleId, envType.getName(), loaded);
-		}
-
-		return entrypoints;
+		return new BundleCompileResult(common, client, server);
 	}
 
-	private @Nullable BundleEntrypoint loadScriptClass(Path scriptPath, Path scriptRoot) throws Exception {
-		Class<?> scriptClass = Common.getScriptShell().compile(scriptPath, scriptRoot);
+	public void invalidateCache() {
+		bundleCache.clear();
+	}
 
-		if (BundleEntrypoint.class.isAssignableFrom(scriptClass)) {
-			return (BundleEntrypoint) scriptClass.getDeclaredConstructor().newInstance();
-		}
-
-		return null;
+	private record BundleCompileResult(
+		List<BundleEntrypoint> common,
+		List<BundleEntrypoint> client,
+		List<BundleEntrypoint> server
+	) {
 	}
 
 	public enum EnvType {
