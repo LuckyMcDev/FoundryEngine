@@ -13,3 +13,5 @@ plugins {
 
 develocity {
 }
+
+include 'TestBundle'
