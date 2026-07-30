@@ -69,6 +69,27 @@ ItemBuilder.create(id("cosmic_apple"))
     .stacksTo(16)
 ```
 
+## Additional callbacks
+
+| Method                     | When it runs                   | Parameters                                       | Returns     |
+|----------------------------|--------------------------------|--------------------------------------------------|-------------|
+| `onUseTick(cb)`            | Each tick while holding use    | `Level, Player, InteractionHand, ItemStack, int` | `void`      |
+| `finishUsingItem(cb)`      | After eating/drinking finishes | `ItemStack, Level, LivingEntity`                 | `ItemStack` |
+| `releaseUsing(cb)`         | When use is released early     | `ItemStack, Level, LivingEntity, int`            | `boolean`   |
+| `onCraftedPostProcess(cb)` | After item is crafted          | `ItemStack, Level`                               | `void`      |
+
+## Item tags
+
+Attach item tags for recipe groups, tool categories, etc.:
+
+```groovy
+import de.luckymcdev.foundryengine.common.builder.tag.ItemTagBuilder
+
+ItemBuilder.create(id("my_item"))
+    .tag(ItemTagBuilder.create(Common.id("my_items")))
+    .tag(Common.id("mineable/sword"))
+```
+
 ## Registration
 
 Register items inside `BundleEvents.registry`:

@@ -34,20 +34,10 @@ PostEffectHandle handle = mgr.register(
 
 ```java
 handle.disable();
-handle.
-
-enable();
-handle.
-
-setCondition(() ->player.
-
-isUnderwater());
-        handle.
-
-setFade(20,10);
-handle.
-
-unregister();
+handle.enable();
+handle.setCondition(() -> player.isUnderwater());
+handle.setFade(20, 10);
+handle.unregister();
 ```
 
 ## Built-in effects

@@ -1,34 +1,33 @@
 # Events Reference
 
-Complete list of all events in FoundryEngine. All are in package `de.luckymcdev.foundryengine.common.event`.
+All events are in package `de.luckymcdev.foundryengine.common.event`.
 
 ## BundleEvents
 
 The most important events for bundle creators.
 
-| Method                     | What it does                              |
-|----------------------------|-------------------------------------------|
-| `registry(cb)`             | Register items, blocks, sounds, particles |
-| `commonSetup(cb)`          | FML common setup phase                    |
-| `clientSetup(cb)`          | FML client-only setup                     |
-| `dedicatedServerSetup(cb)` | Dedicated server setup                    |
-| `postInit(cb)`             | After all mods initialize                 |
-| `dataGen(cb)`              | Bundle data generation                    |
-| `custom(EventClass, cb)`   | Listen for any NeoForge event             |
+| Method                     | What it does                                                             |
+|----------------------------|--------------------------------------------------------------------------|
+| `registry(cb)`             | Register items, blocks, sounds, particles, recipes, block entities, tags |
+| `commonSetup(cb)`          | FML common setup phase                                                   |
+| `clientSetup(cb)`          | FML client-only setup                                                    |
+| `dedicatedServerSetup(cb)` | Dedicated server setup                                                   |
+| `postInit(cb)`             | After all mods initialize                                                |
+| `dataGen(cb)`              | Bundle data generation                                                   |
+| `custom(EventClass, cb)`   | Listen for any NeoForge event                                            |
 
 ## PlayerEvents
 
-| Method             | Data you get      |
-|--------------------|-------------------|
-| `loggedIn(cb)`     | Player            |
-| `loggedOut(cb)`    | Player            |
-| `tick(cb)`         | Player            |
-| `chat(cb)`         | Chat event        |
-| `advancement(cb)`  | Advancement event |
-| `chestOpened(cb)`  | Container event   |
-| `chestClosed(cb)`  | Container event   |
-| `respawned(cb)`    | Player            |
-| `decorateChat(cb)` | Chat event        |
+| Method            | Data you get      |
+|-------------------|-------------------|
+| `loggedIn(cb)`    | Player            |
+| `loggedOut(cb)`   | Player            |
+| `tick(cb)`        | Player            |
+| `chat(cb)`        | Chat event        |
+| `advancement(cb)` | Advancement event |
+| `chestOpened(cb)` | Container event   |
+| `chestClosed(cb)` | Container event   |
+| `respawned(cb)`   | Player            |
 
 ## BlockEvents
 
@@ -44,28 +43,29 @@ The most important events for bundle creators.
 
 ## EntityEvents
 
-| Method           | Data you get          |
-|------------------|-----------------------|
-| `joinLevel(cb)`  | Entity, level         |
-| `death(cb)`      | Entity, source        |
-| `drops(cb)`      | Drops event           |
-| `hurt(cb)`       | Entity, damage source |
-| `checkSpawn(cb)` | Entity, level         |
+| Method          | Data you get          |
+|-----------------|-----------------------|
+| `joinLevel(cb)` | Entity, level         |
+| `death(cb)`     | Entity, source        |
+| `drops(cb)`     | Drops event           |
+| `hurt(cb)`      | Entity, damage source |
 
 ## ItemEvents
 
-| Method                 | Data you get            |
-|------------------------|-------------------------|
-| `pickedUp(cb)`         | Player, stack           |
-| `destroyed(cb)`        | Item destroyed event    |
-| `rightClicked(cb)`     | Player, hand            |
-| `crafted(cb)`          | Player, stack           |
-| `dropped(cb)`          | Player, stack           |
-| `foodEaten(cb)`        | Player, stack           |
-| `smelted(cb)`          | Player, stack           |
-| `dynamicTooltips(cb)`  | Stack, tooltip lines    |
-| `entityInteracted(cb)` | Player, entity, hand    |
-| `modification(cb)`     | Item properties builder |
+| Method                  | Data you get            |
+|-------------------------|-------------------------|
+| `pickedUp(cb)`          | Player, stack           |
+| `destroyed(cb)`         | Item destroyed event    |
+| `rightClicked(cb)`      | Player, hand            |
+| `crafted(cb)`           | Player, stack           |
+| `dropped(cb)`           | Player, stack           |
+| `foodEaten(cb)`         | Player, stack           |
+| `smelted(cb)`           | Player, stack           |
+| `dynamicTooltips(cb)`   | Stack, tooltip lines    |
+| `entityInteracted(cb)`  | Player, entity, hand    |
+| `firstLeftClicked(cb)`  | Player, hand            |
+| `firstRightClicked(cb)` | Player, hand            |
+| `modification(cb)`      | Item properties builder |
 
 ## ServerEvents
 
@@ -83,15 +83,20 @@ The most important events for bundle creators.
 
 Client-only events.
 
-| Method            | What it signals               |
-|-------------------|-------------------------------|
-| `tick(cb)`        | End of client tick            |
-| `stopped(cb)`     | Client fully stopped          |
-| `chat(cb)`        | Client sending a chat message |
-| `keyMappings(cb)` | Register key mappings         |
-| `renderGui(cb)`   | After GUI is rendered         |
-| `loggedIn(cb)`    | Client logged into a server   |
-| `loggedOut(cb)`   | Client logged out             |
+| Method                 | What it signals                |
+|------------------------|--------------------------------|
+| `tick(cb)`             | End of client tick             |
+| `stopped(cb)`          | Client fully stopped           |
+| `stopping(cb)`         | Client is stopping             |
+| `chat(cb)`             | Client sending a chat message  |
+| `chatReceived(cb)`     | Client received a chat message |
+| `keyMappings(cb)`      | Register key mappings          |
+| `renderGui(cb)`        | After GUI is rendered          |
+| `renderGuiLayer(cb)`   | After a GUI layer is rendered  |
+| `renderHand(cb)`       | Before hand is rendered        |
+| `renderAfterLevel(cb)` | After the level is rendered    |
+| `loggedIn(cb)`         | Client logged into a server    |
+| `loggedOut(cb)`        | Client logged out              |
 
 ## Other event classes
 

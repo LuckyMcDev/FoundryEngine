@@ -16,7 +16,7 @@ A dialogue is a **tree of nodes**. Each node has:
 ```groovy
 import de.luckymcdev.foundryengine.common.dialogue.*
 
-var tree = new DialogueTree(Common.id("my_dialogue"), "start")
+def tree = new DialogueTree(Common.id("my_dialogue"), "start")
 
 // Root node — what the NPC says first
 var startNode = new DialogueNode("start", "Villager", "Hello there!")

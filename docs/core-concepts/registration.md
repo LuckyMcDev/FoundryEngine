@@ -20,12 +20,16 @@ The engine takes care of the rest — it registers your content with NeoForge's 
 
 ## What you can register
 
-| Method                             | What it registers                     |
-|------------------------------------|---------------------------------------|
-| `it.items(ItemBuilder...)`         | Custom items                          |
-| `it.blocks(BlockBuilder...)`       | Custom blocks (and their block items) |
-| `it.sounds(SoundBuilder...)`       | Sound events                          |
-| `it.particles(ParticleBuilder...)` | Particle types                        |
+| Method                                     | What it registers                     |
+|--------------------------------------------|---------------------------------------|
+| `it.items(ItemBuilder...)`                 | Custom items                          |
+| `it.blocks(BlockBuilder...)`               | Custom blocks (and their block items) |
+| `it.recipes(RecipeBuilder...)`             | Recipes of all types                  |
+| `it.sounds(SoundBuilder...)`               | Sound events                          |
+| `it.particles(ParticleBuilder...)`         | Particle types                        |
+| `it.blockEntities(BlockEntityBuilder...)`  | Block entity types                    |
+| `it.toolMaterials(ToolMaterialBuilder...)` | Tool materials                        |
+| `it.tags(TagBuilder<?>...)`                | Block/item tags                       |
 
 ## Getting the registered object
 
@@ -47,6 +51,18 @@ By default, each builder generates asset and data files automatically (models, r
 BlockBuilder.create(id("custom_block"))
     .generateData(false)
 ```
+
+## Advanced registration
+
+Beyond the common methods above, `RegistryEvent` also supports:
+
+| Method                                                  | What it registers                          |
+|---------------------------------------------------------|--------------------------------------------|
+| `it.recipes(RecipeBuilder...)`                          | Crafting, smelting, smithing, stonecutting |
+| `it.blockEntities(BlockEntityBuilder...)`               | Block entity types for blocks              |
+| `it.toolMaterials(ToolMaterialBuilder...)`              | Custom tool materials                      |
+| `it.tags(TagBuilder<?>...)`                             | Block and item tag definitions             |
+| `it.register(ResourceKey<Registry<T>>, RegisterHelper)` | Any NeoForge registry directly             |
 
 ## Next
 

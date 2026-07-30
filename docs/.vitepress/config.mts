@@ -8,7 +8,7 @@ export default defineConfig({
 	srcExclude: ['**/javadoc/**'],
 
 	head: [
-		['link', {rel: 'icon', href: '/FoundryEngine/favicon.ico'}]
+		['link', {rel: 'icon', href: '/FoundryEngine/logo.png'}]
 	],
 
 	themeConfig: {
@@ -145,7 +145,7 @@ export default defineConfig({
 		},
 
 		editLink: {
-			pattern: 'https://github.com/LuckyMcDev/FoundryEngine/blob/master/docs/:path',
+			pattern: 'https://github.com/LuckyMcDev/FoundryEngine/blob/main/docs/:path',
 			text: 'Edit this page on GitHub'
 		}
 	},

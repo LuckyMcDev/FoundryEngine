@@ -24,22 +24,24 @@ NetworkManager
 
 ```java
 public record MyPacket(int value) implements AbstractPacket<MyPacket> {
-    public static final Type<MyPacket> TYPE = AbstractPacket.createType(
-        Common.id("my_packet"));
-
-    public static final StreamCodec<RegistryFriendlyByteBuf, MyPacket> CODEC =
+    public static final Definition<MyPacket> DEFINITION = new Definition<>(
+        AbstractPacket.createType(Common.id("my_packet")),
+        PacketBounds.SERVER,
         StreamCodec.composite(
             ByteBufCodecs.VAR_INT, MyPacket::value,
-            MyPacket::new);
+            MyPacket::new),
+        null,
+        MyPacket::handleServer
+    );
 
     @Override
-    public Type<MyPacket> getType() { return TYPE; }
+    public Type<MyPacket> getType() { return DEFINITION.type(); }
 
     @Override
-    public PacketBounds getBoundTo() { return PacketBounds.SERVER; }
+    public PacketBounds getBoundTo() { return DEFINITION.bounds(); }
 
     @Override
-    public StreamCodec<RegistryFriendlyByteBuf, MyPacket> getCodec() { return CODEC; }
+    public StreamCodec<RegistryFriendlyByteBuf, MyPacket> getCodec() { return DEFINITION.codec(); }
 
     @Override
     public void handleServer(IPayloadContext ctx) {
@@ -52,9 +54,7 @@ Registration:
 
 ```java
 NetworkManager network = Common.getNetworkManager();
-network.register(new AbstractPacket.Definition<>(
-    MyPacket.TYPE, MyPacket.PACKET_BOUNDS, MyPacket.CODEC,
-    null, MyPacket::handleServer));
+network.register(MyPacket.DEFINITION);
 ```
 
 ## CustomDataPacket

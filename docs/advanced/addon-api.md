@@ -32,7 +32,7 @@ public void onStageAdd(GameStageEvent.Add event) {
 }
 ```
 
-Subclasses: `Add` (cancellable), `Remove` (cancellable), `Added`, `Removed`. All expose `getStageName()` and `getPlayer()`.
+Subclasses: `Add` (cancellable), `Remove` (cancellable), `Added`, `Removed`. All expose `getStage()` (returns `Identifier`) and `getPlayer()`.
 
 ## BlockModificationEvent
 

@@ -7,10 +7,10 @@ Easing functions make animations look smooth. FoundryEngine includes 31 Penner e
 All easings use the same formula:
 
 ```groovy
-float result = Easing.SINE_IN_OUT.ease(currentTime, minValue, maxValue, totalDuration)
+float result = Easing.SINE_IN_OUT.ease(elapsedTime, minValue, maxValue, totalDuration)
 ```
 
-Where `currentTime` goes from 0 to 1 (normalized), and the result is the eased value between `min` and `max`.
+Where `elapsedTime` goes from 0 to `totalDuration`, and the result is the eased value between `min` and `max`.
 
 ## Quick list
 

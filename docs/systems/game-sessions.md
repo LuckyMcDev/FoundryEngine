@@ -58,10 +58,11 @@ enum MyGameState implements GameState {
     WARMUP(true), ROUND_ACTIVE(true), ROUND_OVER(false), MATCH_OVER(false);
     private final boolean active
     MyGameState(boolean active) { this.active = active }
-    @Override public boolean isActive() { return active; }
+    @Override
+    boolean isActive() { return active; }
 }
 
-session.publicState(MyGameStat
+session.publicState(MyGameState.WARMUP
 ```
 
 ## Managing sessions

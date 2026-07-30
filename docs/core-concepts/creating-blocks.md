@@ -89,6 +89,56 @@ BlockBuilder.create(id("my_glass"))
 
 Variant methods set `blockFactory` internally — they're mutually exclusive with `.factory()`. Callbacks and ghost mode work with all variants.
 
+## Block drops
+
+Control what a block drops when mined:
+
+```groovy
+BlockBuilder.create(id("my_block"))
+    .dropsSelf()                              // Drop itself (default)
+
+BlockBuilder.create(id("my_ore"))
+    .drops(Items.DIAMOND)                     // Drop a specific item
+
+BlockBuilder.create(id("unbreakable"))
+    .dropsNothing()                           // Drop nothing
+
+BlockBuilder.create(id("custom_drop"))
+    .dropsCustom { block ->                   // Custom loot table
+        LootTable.lootTable().withPool(
+            LootPool.lootPool().add(
+                ItemLootEntry.lootTableItem(Items.DIAMOND)))
+    }
+```
+
+## Block entities
+
+Attach a block entity (tile entity) to your block for persistent data:
+
+```groovy
+import de.luckymcdev.foundryengine.common.builder.blockentity.BlockEntityBuilder
+
+def beBuilder = new BlockEntityBuilder<MyBlockEntity>(id("my_be"), MyBlockEntity::new)
+    .hasTick()                                // Enable per-tick updates
+
+BlockBuilder.create(id("my_block"))
+    .blockEntity(beBuilder)
+```
+
+Register the block entity alongside the block in `BundleEvents.registry`.
+
+## Block tags
+
+Attach block and item tags:
+
+```groovy
+import de.luckymcdev.foundryengine.common.builder.tag.BlockTagBuilder
+
+BlockBuilder.create(id("my_block"))
+    .tag(BlockTagBuilder.create(Common.id("my_blocks")))
+    .tag(Common.id("mineable/pickaxe"))       // Shorthand for existing tags
+```
+
 ## Ghost blocks
 
 Ghost blocks are blocks that are not really rendered. When using just `.ghost()` it is visible by particle like the barrier block when the block item is held.
