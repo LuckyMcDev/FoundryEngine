@@ -1,0 +1,4 @@
+[submodule "TestBundle"]
+	path = TestBundle
+	url = https://github.com/LuckyMcDev/ExampleBundle.git
+	branch = testbundle
