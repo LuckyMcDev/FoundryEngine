@@ -1,7 +1,6 @@
 package de.luckymcdev.foundryengine.client.ui.widget;
 
 import de.luckymcdev.foundryengine.client.ui.UIArea;
-import de.luckymcdev.foundryengine.client.ui.UIVec;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -10,8 +9,8 @@ import net.minecraft.world.item.ItemStack;
 public class ItemWidget extends WidgetBase {
 	private ItemStack item = ItemStack.EMPTY;
 
-	public ItemWidget(UIVec position, UIVec size) {
-		super(position, size);
+	public ItemWidget() {
+		super();
 	}
 
 	public ItemStack getItem() {

@@ -2,7 +2,7 @@ package de.luckymcdev.foundryengine.client.ui.widget;
 
 import de.luckymcdev.foundryengine.client.ui.Enums;
 import de.luckymcdev.foundryengine.client.ui.UIArea;
-import de.luckymcdev.foundryengine.client.ui.UIVec;
+import dev.vfyjxf.taffy.tree.Layout;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.util.Mth;
 import org.joml.Vector2i;
@@ -22,8 +22,8 @@ public class ScrollingPanelWidget extends PanelWidget {
 	private double scrollSensitivity = 1;
 	private boolean startedDrag = false;
 
-	public ScrollingPanelWidget(UIVec position, UIVec size) {
-		super(position, size);
+	public ScrollingPanelWidget() {
+		super();
 	}
 
 	public <T extends ScrollingPanelWidget> T enableDragging() {
@@ -95,19 +95,17 @@ public class ScrollingPanelWidget extends PanelWidget {
 		if (!this.autoScrollLimits) {
 			return;
 		}
-		UIArea area = this.getArea();
-		int minX = Integer.MAX_VALUE;
-		int minY = Integer.MAX_VALUE;
-		int maxX = Integer.MIN_VALUE;
-		int maxY = Integer.MIN_VALUE;
-		for (WidgetBase child : this.getChildren()) {
-			UIArea subArea = child.getBaseArea();
-			minX = Math.min(minX, subArea.x - area.x - scrollPadding.x);
-			minY = Math.min(minY, subArea.y - area.y - scrollPadding.y);
-			maxX = Math.max(maxX, subArea.x - area.x + subArea.width - area.width + (borderThickness * 2) + scrollPadding.x);
-			maxY = Math.max(maxY, subArea.y - area.y + subArea.height - area.height + (borderThickness * 2) + scrollPadding.y);
+		Layout layout = this.tree != null && this.nodeId != null ? this.tree.getLayout(this.nodeId) : null;
+		if (layout == null) {
+			return;
 		}
-		this.scrollLimits = new UIArea(Math.min(0, minX), Math.min(0, minY), maxX - Math.min(0, minX), maxY - Math.min(0, minY));
+		int padX = scrollPadding != null ? scrollPadding.x : 0;
+		int padY = scrollPadding != null ? scrollPadding.y : 0;
+		float innerWidth = layout.size().width - borderThickness * 2;
+		float innerHeight = layout.size().height - borderThickness * 2;
+		float maxX = Math.max(0, layout.contentSize().width - innerWidth + padX * 2);
+		float maxY = Math.max(0, layout.contentSize().height - innerHeight + padY * 2);
+		this.scrollLimits = new UIArea(0, 0, Mth.ceil(maxX), Mth.ceil(maxY));
 	}
 
 	@Override
@@ -164,8 +162,9 @@ public class ScrollingPanelWidget extends PanelWidget {
 			this.scrollY = Mth.clamp(this.scrollY, this.scrollLimits.y, this.scrollLimits.y + this.scrollLimits.height);
 		}
 		for (WidgetBase child : this.getChildren()) {
-			child.setOffset(new Vector2i(-(int) this.scrollX, -(int) this.scrollY));
+			child.offset = new Vector2i(-(int) this.scrollX, -(int) this.scrollY);
 		}
+		this.updateArea();
 	}
 
 	@Override

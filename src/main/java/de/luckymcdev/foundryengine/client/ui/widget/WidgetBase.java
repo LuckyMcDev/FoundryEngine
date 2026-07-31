@@ -1,26 +1,44 @@
 package de.luckymcdev.foundryengine.client.ui.widget;
 
 import de.luckymcdev.foundryengine.client.ui.UIArea;
-import de.luckymcdev.foundryengine.client.ui.UIVec;
-import de.luckymcdev.foundryengine.client.ui.constraint.WidgetConstraint;
-import de.luckymcdev.foundryengine.client.ui.layout.WidgetLayout;
+import dev.vfyjxf.taffy.geometry.TaffyLine;
+import dev.vfyjxf.taffy.geometry.TaffyRect;
+import dev.vfyjxf.taffy.geometry.TaffySize;
+import dev.vfyjxf.taffy.style.AlignContent;
+import dev.vfyjxf.taffy.style.AlignItems;
+import dev.vfyjxf.taffy.style.AvailableSpace;
+import dev.vfyjxf.taffy.style.FlexDirection;
+import dev.vfyjxf.taffy.style.FlexWrap;
+import dev.vfyjxf.taffy.style.GridAutoFlow;
+import dev.vfyjxf.taffy.style.GridPlacement;
+import dev.vfyjxf.taffy.style.LengthPercentage;
+import dev.vfyjxf.taffy.style.LengthPercentageAuto;
+import dev.vfyjxf.taffy.style.TaffyDimension;
+import dev.vfyjxf.taffy.style.TaffyDisplay;
+import dev.vfyjxf.taffy.style.TaffyPosition;
+import dev.vfyjxf.taffy.style.TaffyStyle;
+import dev.vfyjxf.taffy.style.TrackSizingFunction;
+import dev.vfyjxf.taffy.tree.Layout;
+import dev.vfyjxf.taffy.tree.NodeId;
+import dev.vfyjxf.taffy.tree.TaffyTree;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.world.phys.Vec2;
 import org.joml.Vector2i;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class WidgetBase {
 	WidgetBase parent;
 
-	UIVec position;
+	final TaffyStyle style = new TaffyStyle();
+	TaffyTree tree;
+	NodeId nodeId;
+	UIArea rootAvailableArea;
+
+	TaffyDisplay baseDisplay = TaffyDisplay.FLEX;
 	float rotation = 0.0f;
-	UIVec size;
-
 	Vector2i offset = new Vector2i(0, 0);
-
-	Vec2 anchorPoint = new Vec2(0.0f, 0.0f);
 	int zIndex = 0;
 
 	boolean focused = false;
@@ -29,62 +47,305 @@ public class WidgetBase {
 
 	boolean shouldLerp = false;
 
-	WidgetLayout layout = null;
-	WidgetConstraint constraint = null;
-
 	UIArea lastArea;
 	UIArea uiArea;
-	UIArea baseArea;
 	boolean areaChanged = false;
+
+	Layout lastLayout;
 
 	List<WidgetBase> children = new ArrayList<>();
 
 	boolean initialized = false;
 
-	public WidgetBase(UIVec position, UIVec size) {
-		this.position = position;
-		this.size = size;
+	// === Sizing ===
+
+	private static NodeId buildNode(TaffyTree tree, WidgetBase widget) {
+		widget.tree = tree;
+		NodeId node = tree.newLeaf(widget.style);
+		widget.nodeId = node;
+		for (WidgetBase child : widget.children) {
+			if (child.style.getDisplay() == TaffyDisplay.NONE) {
+				continue;
+			}
+			tree.addChild(node, buildNode(tree, child));
+		}
+		return node;
 	}
 
-	public <T extends WidgetBase> T setPosition(UIVec position, boolean silent) {
-		this.position = position;
-		if (this.initialized && !silent) {
-			this.updateArea();
-		}
+	public <T extends WidgetBase> T setWidth(float pixels) {
+		this.style.size.width = TaffyDimension.length(pixels);
 		return (T) this;
 	}
 
-	public UIVec getPosition() {
-		return this.position;
+	public <T extends WidgetBase> T setWidthPercent(float percent) {
+		this.style.size.width = TaffyDimension.percent(percent);
+		return (T) this;
 	}
 
-	public <T extends WidgetBase> T setPosition(UIVec position) {
-		return this.setPosition(position, false);
+	public <T extends WidgetBase> T setWidth(TaffyDimension width) {
+		this.style.size.width = width;
+		return (T) this;
 	}
 
-	public float getRotation() {
-		return this.rotation;
+	public <T extends WidgetBase> T setHeight(float pixels) {
+		this.style.size.height = TaffyDimension.length(pixels);
+		return (T) this;
 	}
+
+	public <T extends WidgetBase> T setHeightPercent(float percent) {
+		this.style.size.height = TaffyDimension.percent(percent);
+		return (T) this;
+	}
+
+	public <T extends WidgetBase> T setHeight(TaffyDimension height) {
+		this.style.size.height = height;
+		return (T) this;
+	}
+
+	public <T extends WidgetBase> T setSize(float width, float height) {
+		this.setWidth(width);
+		this.setHeight(height);
+		return (T) this;
+	}
+
+	// === Flex Item ===
+
+	public <T extends WidgetBase> T setSize(TaffyDimension width, TaffyDimension height) {
+		this.setWidth(width);
+		this.setHeight(height);
+		return (T) this;
+	}
+
+	public <T extends WidgetBase> T setFlexGrow(float grow) {
+		this.style.flexGrow = grow;
+		return (T) this;
+	}
+
+	public <T extends WidgetBase> T setFlexShrink(float shrink) {
+		this.style.flexShrink = shrink;
+		return (T) this;
+	}
+
+	public <T extends WidgetBase> T setFlexBasis(float pixels) {
+		this.style.flexBasis = TaffyDimension.length(pixels);
+		return (T) this;
+	}
+
+	public <T extends WidgetBase> T setFlexBasis(TaffyDimension basis) {
+		this.style.flexBasis = basis;
+		return (T) this;
+	}
+
+	// === Spacing ===
+
+	public <T extends WidgetBase> T setAlignSelf(AlignItems alignSelf) {
+		this.style.alignSelf = alignSelf;
+		return (T) this;
+	}
+
+	public <T extends WidgetBase> T setMargin(int all) {
+		this.style.margin = TaffyRect.all(LengthPercentageAuto.length(all));
+		return (T) this;
+	}
+
+	public <T extends WidgetBase> T setMargin(int horizontal, int vertical) {
+		this.style.margin = new TaffyRect<>(
+			LengthPercentageAuto.length(horizontal),
+			LengthPercentageAuto.length(horizontal),
+			LengthPercentageAuto.length(vertical),
+			LengthPercentageAuto.length(vertical)
+		);
+		return (T) this;
+	}
+
+	public <T extends WidgetBase> T setMargin(int left, int right, int top, int bottom) {
+		this.style.margin = new TaffyRect<>(
+			LengthPercentageAuto.length(left),
+			LengthPercentageAuto.length(right),
+			LengthPercentageAuto.length(top),
+			LengthPercentageAuto.length(bottom)
+		);
+		return (T) this;
+	}
+
+	public <T extends WidgetBase> T setPadding(int all) {
+		this.style.padding = TaffyRect.all(LengthPercentage.length(all));
+		return (T) this;
+	}
+
+	public <T extends WidgetBase> T setPadding(int horizontal, int vertical) {
+		this.style.padding = new TaffyRect<>(
+			LengthPercentage.length(horizontal),
+			LengthPercentage.length(horizontal),
+			LengthPercentage.length(vertical),
+			LengthPercentage.length(vertical)
+		);
+		return (T) this;
+	}
+
+	public <T extends WidgetBase> T setPadding(int left, int right, int top, int bottom) {
+		this.style.padding = new TaffyRect<>(
+			LengthPercentage.length(left),
+			LengthPercentage.length(right),
+			LengthPercentage.length(top),
+			LengthPercentage.length(bottom)
+		);
+		return (T) this;
+	}
+
+	public <T extends WidgetBase> T setGap(int all) {
+		this.style.gap = TaffySize.all(LengthPercentage.length(all));
+		return (T) this;
+	}
+
+	// === Container Layout ===
+
+	public <T extends WidgetBase> T setGap(int rowGap, int columnGap) {
+		this.style.gap = TaffySize.of(LengthPercentage.length(rowGap), LengthPercentage.length(columnGap));
+		return (T) this;
+	}
+
+	public <T extends WidgetBase> T setDisplay(TaffyDisplay display) {
+		this.baseDisplay = display;
+		this.style.display = this.visible ? display : TaffyDisplay.NONE;
+		return (T) this;
+	}
+
+	public <T extends WidgetBase> T setFlexDirection(FlexDirection direction) {
+		this.style.flexDirection = direction;
+		this.baseDisplay = TaffyDisplay.FLEX;
+		this.style.display = this.visible ? TaffyDisplay.FLEX : TaffyDisplay.NONE;
+		return (T) this;
+	}
+
+	public <T extends WidgetBase> T setFlexWrap(FlexWrap wrap) {
+		this.style.flexWrap = wrap;
+		return (T) this;
+	}
+
+	public <T extends WidgetBase> T setAlignItems(AlignItems alignItems) {
+		this.style.alignItems = alignItems;
+		return (T) this;
+	}
+
+	public <T extends WidgetBase> T setAlignContent(AlignContent alignContent) {
+		this.style.alignContent = alignContent;
+		return (T) this;
+	}
+
+	// === Aspect Ratio ===
+
+	public <T extends WidgetBase> T setJustifyContent(AlignContent justifyContent) {
+		this.style.justifyContent = justifyContent;
+		return (T) this;
+	}
+
+	// === Positioning ===
+
+	public <T extends WidgetBase> T setAspectRatio(float aspectRatio) {
+		this.style.aspectRatio = aspectRatio;
+		return (T) this;
+	}
+
+	public <T extends WidgetBase> T setPositionAbsolute() {
+		this.style.position = TaffyPosition.ABSOLUTE;
+		return (T) this;
+	}
+
+	public <T extends WidgetBase> T setInsetLeft(float pixels) {
+		this.style.inset.left = LengthPercentageAuto.length(pixels);
+		return (T) this;
+	}
+
+	public <T extends WidgetBase> T setInsetLeftPercent(float percent) {
+		this.style.inset.left = LengthPercentageAuto.percent(percent);
+		return (T) this;
+	}
+
+	public <T extends WidgetBase> T setInsetRight(float pixels) {
+		this.style.inset.right = LengthPercentageAuto.length(pixels);
+		return (T) this;
+	}
+
+	public <T extends WidgetBase> T setInsetRightPercent(float percent) {
+		this.style.inset.right = LengthPercentageAuto.percent(percent);
+		return (T) this;
+	}
+
+	public <T extends WidgetBase> T setInsetTop(float pixels) {
+		this.style.inset.top = LengthPercentageAuto.length(pixels);
+		return (T) this;
+	}
+
+	public <T extends WidgetBase> T setInsetTopPercent(float percent) {
+		this.style.inset.top = LengthPercentageAuto.percent(percent);
+		return (T) this;
+	}
+
+	public <T extends WidgetBase> T setInsetBottom(float pixels) {
+		this.style.inset.bottom = LengthPercentageAuto.length(pixels);
+		return (T) this;
+	}
+
+	public <T extends WidgetBase> T setInsetBottomPercent(float percent) {
+		this.style.inset.bottom = LengthPercentageAuto.percent(percent);
+		return (T) this;
+	}
+
+	// === Grid ===
+
+	public <T extends WidgetBase> T setInset(int left, int right, int top, int bottom) {
+		this.style.inset = new TaffyRect<>(
+			LengthPercentageAuto.length(left),
+			LengthPercentageAuto.length(right),
+			LengthPercentageAuto.length(top),
+			LengthPercentageAuto.length(bottom)
+		);
+		return (T) this;
+	}
+
+	public <T extends WidgetBase> T setGridTemplateColumns(TrackSizingFunction... columns) {
+		this.style.gridTemplateColumns = List.of(columns);
+		this.baseDisplay = TaffyDisplay.GRID;
+		this.style.display = this.visible ? TaffyDisplay.GRID : TaffyDisplay.NONE;
+		return (T) this;
+	}
+
+	public <T extends WidgetBase> T setGridTemplateRows(TrackSizingFunction... rows) {
+		this.style.gridTemplateRows = List.of(rows);
+		this.baseDisplay = TaffyDisplay.GRID;
+		this.style.display = this.visible ? TaffyDisplay.GRID : TaffyDisplay.NONE;
+		return (T) this;
+	}
+
+	public <T extends WidgetBase> T setGridAutoFlow(GridAutoFlow flow) {
+		this.style.gridAutoFlow = flow;
+		return (T) this;
+	}
+
+	public <T extends WidgetBase> T setGridRow(int start, int end) {
+		this.style.gridRow = new TaffyLine<>(GridPlacement.line(start), GridPlacement.line(end));
+		return (T) this;
+	}
+
+	// === Misc ===
 
 	public <T extends WidgetBase> T setRotation(float rotation) {
 		this.rotation = rotation;
 		return (T) this;
 	}
 
-	public <T extends WidgetBase> T setSize(UIVec size, boolean silent) {
-		this.size = size;
-		if (this.initialized && !silent) {
-			this.updateArea();
-		}
+	public <T extends WidgetBase> T setGridColumn(int start, int end) {
+		this.style.gridColumn = new TaffyLine<>(GridPlacement.line(start), GridPlacement.line(end));
 		return (T) this;
 	}
 
-	public UIVec getSize() {
-		return this.size;
+	public float getRotation() {
+		return this.rotation;
 	}
 
-	public <T extends WidgetBase> T setSize(UIVec size) {
-		return this.setSize(size, false);
+	public WidgetBase getParent() {
+		return this.parent;
 	}
 
 	public Vector2i getOffset() {
@@ -96,44 +357,6 @@ public class WidgetBase {
 		if (this.initialized) {
 			this.updateArea();
 		}
-		return (T) this;
-	}
-
-	public WidgetBase getParent() {
-		return this.parent;
-	}
-
-	public <T extends WidgetBase> T setParent(WidgetBase parent) {
-		this.parent = parent;
-		return (T) this;
-	}
-
-	public WidgetLayout getLayout() {
-		return this.layout;
-	}
-
-	public <T extends WidgetBase> T setLayout(WidgetLayout layout) {
-		layout.setParent(this);
-		this.layout = layout;
-		return (T) this;
-	}
-
-	public WidgetConstraint getConstraint() {
-		return this.constraint;
-	}
-
-	public <T extends WidgetBase> T setConstraint(WidgetConstraint constraint) {
-		constraint.setParent(this);
-		this.constraint = constraint;
-		return (T) this;
-	}
-
-	public Vec2 getAnchorPoint() {
-		return this.anchorPoint;
-	}
-
-	public <T extends WidgetBase> T setAnchorPoint(Vec2 anchorPoint) {
-		this.anchorPoint = new Vec2(Math.clamp(anchorPoint.x, 0.0f, 1.0f), Math.clamp(anchorPoint.y, 0.0f, 1.0f));
 		return (T) this;
 	}
 
@@ -155,6 +378,86 @@ public class WidgetBase {
 		return (T) this;
 	}
 
+	public <T extends WidgetBase> T setParent(WidgetBase parent) {
+		this.parent = parent;
+		return (T) this;
+	}
+
+	// === Layout ===
+
+	public TaffyStyle getStyle() {
+		return this.style;
+	}
+
+	private WidgetBase getRoot() {
+		if (this.parent == null) {
+			return this;
+		}
+		return this.parent.getRoot();
+	}
+
+	public void updateArea() {
+		WidgetBase root = this.getRoot();
+		if (root != this) {
+			root.recomputeLayout();
+		}
+	}
+
+	public void updateArea(UIArea parentArea) {
+		WidgetBase root = this.getRoot();
+		if (root == this) {
+			root.rootAvailableArea = parentArea;
+		}
+		root.recomputeLayout();
+	}
+
+	private void recomputeLayout() {
+		if (this.rootAvailableArea == null) {
+			return;
+		}
+		this.style.size = TaffySize.of(
+			TaffyDimension.length(this.rootAvailableArea.width),
+			TaffyDimension.length(this.rootAvailableArea.height)
+		);
+		this.tree = new TaffyTree();
+		this.nodeId = this.tree.newLeaf(this.style);
+		for (WidgetBase child : this.children) {
+			if (child.style.getDisplay() == TaffyDisplay.NONE) {
+				continue;
+			}
+			this.tree.addChild(this.nodeId, buildNode(this.tree, child));
+		}
+		this.tree.computeLayout(this.nodeId, TaffySize.of(
+			AvailableSpace.definite(this.rootAvailableArea.width),
+			AvailableSpace.definite(this.rootAvailableArea.height)
+		));
+		this.applyLayout(this, this.rootAvailableArea.x, this.rootAvailableArea.y);
+	}
+
+	private void applyLayout(WidgetBase widget, int originX, int originY) {
+		if (widget.tree == null || widget.nodeId == null) {
+			return;
+		}
+		Layout layout = widget.tree.getLayout(widget.nodeId);
+		if (layout == null) {
+			return;
+		}
+		int x = originX + (int) layout.location().x + widget.offset.x;
+		int y = originY + (int) layout.location().y + widget.offset.y;
+		widget.lastArea = widget.uiArea;
+		widget.uiArea = new UIArea(x, y, (int) layout.size().width, (int) layout.size().height);
+		widget.areaChanged = !Objects.equals(widget.lastArea, widget.uiArea);
+		widget.lastLayout = layout;
+		for (WidgetBase child : widget.children) {
+			if (child.style.getDisplay() == TaffyDisplay.NONE) {
+				continue;
+			}
+			this.applyLayout(child, x, y);
+		}
+	}
+
+	// === Lifecycle ===
+
 	public void onInit() {
 		this.initialized = true;
 		for (WidgetBase child : this.children) {
@@ -166,7 +469,6 @@ public class WidgetBase {
 		if (this.areaChanged) {
 			this.lastArea = this.uiArea;
 		}
-
 		for (WidgetBase child : this.children) {
 			child.preTick();
 		}
@@ -206,8 +508,8 @@ public class WidgetBase {
 		return this.uiArea;
 	}
 
-	public UIArea getBaseArea() {
-		return this.baseArea;
+	public Layout getLastLayout() {
+		return this.lastLayout;
 	}
 
 	public UIArea getRenderArea(float tickDelta) {
@@ -217,28 +519,10 @@ public class WidgetBase {
 		return this.uiArea;
 	}
 
-	public void updateArea() {
-		this.updateArea(this.parent.uiArea);
-	}
-
-	public void updateArea(UIArea parentArea) {
-		this.lastArea = uiArea;
-		this.areaChanged = true;
-		UIVec offsetPos = new UIVec(this.position.scaleX, this.position.scaleY, this.position.offsetX + offset.x, this.position.offsetY + offset.y);
-		this.uiArea = parentArea.getSubArea(offsetPos, this.size, this.anchorPoint);
-		this.baseArea = parentArea.getSubArea(this.position, this.size, this.anchorPoint);
-		if (this.constraint != null) {
-			this.constraint.update();
-		}
-		for (WidgetBase child : this.children) {
-			child.updateArea();
-		}
-		if (this.layout != null) {
-			this.layout.update();
-		}
-	}
-
 	public boolean contains(double x, double y) {
+		if (!this.visible || this.style.getDisplay() == TaffyDisplay.NONE) {
+			return false;
+		}
 		return this.uiArea.isInArea(x, y);
 	}
 
@@ -262,8 +546,10 @@ public class WidgetBase {
 		return this.visible;
 	}
 
-	public void setVisible(boolean visible) {
+	public <T extends WidgetBase> T setVisible(boolean visible) {
 		this.visible = visible;
+		this.style.display = visible ? this.baseDisplay : TaffyDisplay.NONE;
+		return (T) this;
 	}
 
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {

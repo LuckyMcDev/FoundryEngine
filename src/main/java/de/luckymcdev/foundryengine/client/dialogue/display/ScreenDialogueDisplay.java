@@ -3,7 +3,6 @@ package de.luckymcdev.foundryengine.client.dialogue.display;
 import com.mojang.blaze3d.platform.InputConstants;
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.ui.Enums;
-import de.luckymcdev.foundryengine.client.ui.UIVec;
 import de.luckymcdev.foundryengine.client.ui.screen.EngineScreen;
 import de.luckymcdev.foundryengine.client.ui.widget.ButtonWidget;
 import de.luckymcdev.foundryengine.client.ui.widget.PanelWidget;
@@ -13,6 +12,8 @@ import de.luckymcdev.foundryengine.common.dialogue.DialogueSession;
 import de.luckymcdev.foundryengine.common.dialogue.DialogueStyle;
 import de.luckymcdev.foundryengine.common.dialogue.display.IDialogueDisplay;
 import de.luckymcdev.foundryengine.common.network.packets.dialogue.ServerboundDialoguePacket;
+import dev.vfyjxf.taffy.style.AlignItems;
+import dev.vfyjxf.taffy.style.FlexDirection;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.KeyEvent;
@@ -22,7 +23,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.phys.Vec2;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import org.jspecify.annotations.Nullable;
 
@@ -74,7 +74,6 @@ public class ScreenDialogueDisplay implements IDialogueDisplay {
 		private final List<ButtonWidget> optionButtons = new ArrayList<>();
 		private DialogueNode node;
 		private DialogueStyle style;
-		private boolean widgetsBuilt;
 		private PanelWidget dialogueBox;
 		private TextWidget speakerText;
 		private TextWidget dialogueText;
@@ -89,7 +88,6 @@ public class ScreenDialogueDisplay implements IDialogueDisplay {
 		DialogueScreen(DialogueNode node, DialogueStyle style) {
 			this.node = node;
 			this.style = style;
-			this.widgetsBuilt = false;
 		}
 
 		void setStyle(DialogueStyle s) {
@@ -99,21 +97,20 @@ public class ScreenDialogueDisplay implements IDialogueDisplay {
 		void updateNode(DialogueNode n) {
 			this.node = n;
 			startTypewriter();
-			if (widgetsBuilt) {
+			if (isWidgetsInitialized()) {
 				rebuildOptions();
 			}
 		}
 
 		@Override
 		protected void init() {
-			buildLayout();
-			if (fullText.isEmpty() && !widgetsBuilt) {
+			if (shouldBuildWidgets()) {
+				buildLayout();
 				startTypewriter();
 			} else {
 				applyVisibleText(lastVisibleCharCount);
 			}
 			rebuildOptions();
-			widgetsBuilt = true;
 			super.init();
 		}
 
@@ -127,35 +124,42 @@ public class ScreenDialogueDisplay implements IDialogueDisplay {
 			var m = style.getMargin();
 			var ph = resolvePanelHeight();
 
-			dialogueBox = new PanelWidget(
-				new UIVec(0, 1, m, -m),
-				new UIVec(0.75, 0, 0, ph)
-			);
-			dialogueBox.setAnchorPoint(new Vec2(0, 1));
+			dialogueBox = new PanelWidget();
+			dialogueBox.setPositionAbsolute();
+			dialogueBox.setInsetLeft(m);
+			dialogueBox.setInsetBottom(m);
+			dialogueBox.setWidthPercent(0.75f);
+			dialogueBox.setHeight(ph);
+			dialogueBox.setFlexDirection(FlexDirection.COLUMN);
+			dialogueBox.setPadding(10, 10, 8, 8);
+			dialogueBox.setGap(4);
 			dialogueBox.setBackgroundColor(style.getDialogueBackground());
 			dialogueBox.setBorder(style.getDialogueBorder(), style.getDialogueBorderWidth());
 
-			speakerText = new TextWidget(
-				new UIVec(0, 0, 10, 8),
-				new UIVec(1, 0, -20, 14)
-			);
+			speakerText = new TextWidget();
+			speakerText.setWidthPercent(1.0f);
+			speakerText.setHeight(14);
+			speakerText.setFlexShrink(0);
 			speakerText.setFontSize(style.getSpeakerFontSize());
 			dialogueBox.addWidget(speakerText);
 
-			dialogueText = new TextWidget(
-				new UIVec(0, 0, 10, 26),
-				new UIVec(1, 1, -20, -34)
-			);
+			dialogueText = new TextWidget();
+			dialogueText.setWidthPercent(1.0f);
+			dialogueText.setFlexGrow(1);
 			dialogueText.setFontSize(style.getDialogueFontSize());
 			dialogueBox.addWidget(dialogueText);
 
 			this.addWidget(dialogueBox);
 
-			optionsBox = new PanelWidget(
-				new UIVec(1, 1, -m, -m),
-				new UIVec(0.25, 0, 0, ph)
-			);
-			optionsBox.setAnchorPoint(new Vec2(1, 1));
+			optionsBox = new PanelWidget();
+			optionsBox.setPositionAbsolute();
+			optionsBox.setInsetRight(m);
+			optionsBox.setInsetBottom(m);
+			optionsBox.setWidthPercent(0.25f);
+			optionsBox.setHeight(ph);
+			optionsBox.setFlexDirection(FlexDirection.COLUMN);
+			optionsBox.setPadding(8, 8, 8, 8);
+			optionsBox.setGap(style.getOptionGap());
 			optionsBox.setBackgroundColor(style.getOptionsBackground());
 			optionsBox.setBorder(style.getOptionsBorder(), style.getOptionsBorderWidth());
 			this.addWidget(optionsBox);
@@ -208,7 +212,7 @@ public class ScreenDialogueDisplay implements IDialogueDisplay {
 
 			if (typewriterDone && !optionsRevealed) {
 				optionsRevealed = true;
-				if (widgetsBuilt) {
+				if (isWidgetsInitialized()) {
 					rebuildOptions();
 				}
 			}
@@ -228,7 +232,7 @@ public class ScreenDialogueDisplay implements IDialogueDisplay {
 			applyVisibleText(fullText.length());
 			if (!optionsRevealed) {
 				optionsRevealed = true;
-				if (widgetsBuilt) {
+				if (isWidgetsInitialized()) {
 					rebuildOptions();
 				}
 			}
@@ -253,60 +257,53 @@ public class ScreenDialogueDisplay implements IDialogueDisplay {
 			}
 
 			var bt = style.getButtonHeight();
-			var gap = style.getOptionGap();
 			var options = node.getOptions();
 
 			if (options.isEmpty()) {
 				boolean hasNext = node.getNextNodeId() != null && !node.getNextNodeId().isBlank();
-				navButton = new ButtonWidget(
-					new UIVec(0.5, 0.5, 0, 0),
-					new UIVec(0.9, 0, 0, bt),
-					(mx, my, btn) -> ClientPacketDistributor.sendToServer(
-						hasNext ? ServerboundDialoguePacket.advanceNext() : ServerboundDialoguePacket.end())
-				);
-				navButton.setAnchorPoint(new Vec2(0.5f, 0.5f));
+				navButton = new ButtonWidget((mx, my, btn) -> ClientPacketDistributor.sendToServer(
+					hasNext ? ServerboundDialoguePacket.advanceNext() : ServerboundDialoguePacket.end()));
+				navButton.setWidthPercent(1.0f);
+				navButton.setHeight(bt);
+				navButton.setFlexShrink(0);
 				navButton.setBackgroundColor(style.getNavButtonBackground());
 				navButton.setHoverColor(style.getNavButtonHover());
 				navButton.setBorderColor(style.getNavButtonBorder());
 
-				var label = new TextWidget(
-					new UIVec(0.5, 0.5, 0, 0),
-					new UIVec(0.85, 0, 0, bt)
-				);
-				label.setAnchorPoint(new Vec2(0.5f, 0.5f));
+				var label = new TextWidget();
+				label.setWidthPercent(1.0f);
+				label.setHeightPercent(1.0f);
 				label.setAlignment(Enums.Alignment.CENTER);
 				label.setFontSize(style.getOptionFontSize());
 				label.setText(Component.literal(hasNext ? "Next ->" : "[End Dialogue]"));
 				navButton.addWidget(label);
 				optionsBox.addWidget(navButton);
 			} else {
-				int y = 8;
 				for (var opt : options) {
-					var btn = new ButtonWidget(
-						new UIVec(0, 0, 8, y),
-						new UIVec(1, 0, -16, bt),
-						(mx, my, b) -> ClientPacketDistributor.sendToServer(
-							ServerboundDialoguePacket.selectOption(opt.getId()))
-					);
+					var btn = new ButtonWidget((mx, my, b) -> ClientPacketDistributor.sendToServer(
+						ServerboundDialoguePacket.selectOption(opt.getId())));
+					btn.setWidthPercent(1.0f);
+					btn.setHeight(bt);
+					btn.setFlexShrink(0);
+					btn.setPadding(4, 4, 3, 3);
+					btn.setAlignItems(AlignItems.CENTER);
 					btn.setBackgroundColor(style.getButtonBackground());
 					btn.setHoverColor(style.getButtonHover());
 					btn.setBorderColor(style.getButtonBorder());
 
-					var label = new TextWidget(
-						new UIVec(0, 0, 4, 3),
-						new UIVec(1, 0, -8, 16)
-					);
+					var label = new TextWidget();
+					label.setWidthPercent(1.0f);
+					label.setHeightPercent(1.0f);
 					label.setFontSize(style.getOptionFontSize());
 					label.setText(Component.literal(opt.getText()));
 
 					btn.addWidget(label);
 					optionButtons.add(btn);
 					optionsBox.addWidget(btn);
-					y += bt + gap;
 				}
 			}
 
-			if (widgetsBuilt) {
+			if (isWidgetsInitialized()) {
 				for (var child : optionsBox.getChildren()) {
 					child.onInit();
 				}

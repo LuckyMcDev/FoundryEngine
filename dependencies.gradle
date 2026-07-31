@@ -25,13 +25,17 @@ dependencies {
     // Groovy
     bundle "org.apache.groovy:groovy:${groovy_version}"
 
+	// JEI
     compileOnly("mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}")
     runtimeOnly("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}")
 
     // RenderDoc Support
     bundle "dev.latvian.mods:renderdoc-support:${renderdoc_support_version}"
 
-    // ImGui dependencies
+	// Taffy (layout engine)
+	bundle "dev.vfyjxf:taffy:${taffy_version}"
+
+	// ImGui dependencies
     bundle "io.github.spair:imgui-java-binding:${imgui_version}"
     jarJar(api(implementation("io.github.spair:imgui-java-lwjgl3:${imgui_version}"))) {
         exclude group: "org.lwjgl"

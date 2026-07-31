@@ -1,12 +1,11 @@
 package de.luckymcdev.foundryengine.client.ui.widget;
 
 import de.luckymcdev.foundryengine.client.ui.UIArea;
-import de.luckymcdev.foundryengine.client.ui.UIVec;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public class MaskWidget extends WidgetBase {
-	public MaskWidget(UIVec position, UIVec size) {
-		super(position, size);
+	public MaskWidget() {
+		super();
 	}
 
 	@Override

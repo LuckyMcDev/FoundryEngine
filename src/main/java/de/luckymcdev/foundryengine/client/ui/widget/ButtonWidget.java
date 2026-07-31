@@ -1,7 +1,6 @@
 package de.luckymcdev.foundryengine.client.ui.widget;
 
 import de.luckymcdev.foundryengine.client.ui.UIArea;
-import de.luckymcdev.foundryengine.client.ui.UIVec;
 import de.luckymcdev.foundryengine.common.util.color.Color;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -10,8 +9,8 @@ public class ButtonWidget extends PanelWidget {
 	private final ClickEvent clickEvent;
 	private Color hoverColor = Color.GRAY;
 
-	public ButtonWidget(UIVec position, UIVec size, ClickEvent clickEvent) {
-		super(position, size);
+	public ButtonWidget(ClickEvent clickEvent) {
+		super();
 		this.clickEvent = clickEvent;
 	}
 

@@ -1,12 +1,11 @@
 package de.luckymcdev.foundryengine.client.ui.widget;
 
-import de.luckymcdev.foundryengine.client.ui.UIVec;
 import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
 
 public class TextFieldWidget extends TextWidget {
-	public TextFieldWidget(UIVec position, UIVec size) {
-		super(position, size);
+	public TextFieldWidget() {
+		super();
 	}
 
 	@Override

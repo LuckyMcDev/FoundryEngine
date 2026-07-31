@@ -1,7 +1,6 @@
 package de.luckymcdev.foundryengine.client.ui.widget;
 
 import de.luckymcdev.foundryengine.client.ui.UIArea;
-import de.luckymcdev.foundryengine.client.ui.UIVec;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
@@ -14,8 +13,8 @@ public class ImageWidget extends WidgetBase {
 	private Vec2 imageSize = null;
 	private NineSliceData nineSliceData = null;
 
-	public ImageWidget(UIVec position, UIVec size) {
-		super(position, size);
+	public ImageWidget() {
+		super();
 	}
 
 	public <T extends ImageWidget> T setImage(Identifier image, int imageWidth, int imageHeight) {

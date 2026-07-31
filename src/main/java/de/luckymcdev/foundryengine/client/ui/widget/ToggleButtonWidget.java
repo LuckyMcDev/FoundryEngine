@@ -1,7 +1,6 @@
 package de.luckymcdev.foundryengine.client.ui.widget;
 
 import de.luckymcdev.foundryengine.client.ui.UIArea;
-import de.luckymcdev.foundryengine.client.ui.UIVec;
 import de.luckymcdev.foundryengine.common.util.color.Color;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -11,8 +10,8 @@ public class ToggleButtonWidget extends ButtonWidget {
 
 	private boolean pressed;
 
-	public ToggleButtonWidget(UIVec position, UIVec size, ClickEvent clickEvent) {
-		super(position, size, clickEvent);
+	public ToggleButtonWidget(ClickEvent clickEvent) {
+		super(clickEvent);
 	}
 
 	public Color getToggledColor() {

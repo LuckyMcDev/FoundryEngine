@@ -1,8 +1,9 @@
 package de.luckymcdev.foundryengine.client.ui.widget;
 
 import de.luckymcdev.foundryengine.client.ui.UIArea;
-import de.luckymcdev.foundryengine.client.ui.UIVec;
 import de.luckymcdev.foundryengine.common.util.color.Color;
+import dev.vfyjxf.taffy.geometry.TaffyRect;
+import dev.vfyjxf.taffy.style.LengthPercentage;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 
@@ -11,8 +12,8 @@ public class PanelWidget extends WidgetBase {
 	Color borderColor = Color.WHITE;
 	int borderThickness = 0;
 
-	public PanelWidget(UIVec position, UIVec size) {
-		super(position, size);
+	public PanelWidget() {
+		super();
 	}
 
 	public Color getBackgroundColor() {
@@ -61,6 +62,7 @@ public class PanelWidget extends WidgetBase {
 
 	public <T extends PanelWidget> T setBorderThickness(int borderThickness) {
 		this.borderThickness = borderThickness;
+		this.style.border = TaffyRect.all(LengthPercentage.length(borderThickness));
 		return (T) this;
 	}
 

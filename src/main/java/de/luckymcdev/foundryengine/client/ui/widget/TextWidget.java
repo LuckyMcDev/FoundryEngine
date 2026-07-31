@@ -2,7 +2,6 @@ package de.luckymcdev.foundryengine.client.ui.widget;
 
 import de.luckymcdev.foundryengine.client.ui.Enums;
 import de.luckymcdev.foundryengine.client.ui.UIArea;
-import de.luckymcdev.foundryengine.client.ui.UIVec;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -19,8 +18,8 @@ public class TextWidget extends WidgetBase {
 	private double fontSize = 9;
 	private Enums.Alignment alignment = Enums.Alignment.TOP_LEFT;
 
-	public TextWidget(UIVec position, UIVec size) {
-		super(position, size);
+	public TextWidget() {
+		super();
 	}
 
 	public MutableComponent getText() {

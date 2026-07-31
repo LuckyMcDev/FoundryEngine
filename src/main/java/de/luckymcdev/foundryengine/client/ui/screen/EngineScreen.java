@@ -1,7 +1,6 @@
 package de.luckymcdev.foundryengine.client.ui.screen;
 
 import de.luckymcdev.foundryengine.client.ui.UIArea;
-import de.luckymcdev.foundryengine.client.ui.UIVec;
 import de.luckymcdev.foundryengine.client.ui.widget.WidgetBase;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
@@ -14,12 +13,13 @@ import net.minecraft.util.Mth;
 public abstract class EngineScreen extends Screen {
 	private final WidgetBase root;
 	private final boolean debug;
+	private boolean widgetsInitialized;
 	float tick = 0.0f;
 	long lastNanos = 0;
 
 	public EngineScreen(boolean debug) {
 		super(Component.empty());
-		this.root = new WidgetBase(new UIVec(0, 0, 0, 0), new UIVec(1, 1, 0, 0));
+		this.root = new WidgetBase();
 		this.debug = debug;
 	}
 
@@ -29,6 +29,26 @@ public abstract class EngineScreen extends Screen {
 
 	public boolean shouldDebug() {
 		return this.debug;
+	}
+
+	/**
+	 * Guards one-time widget construction across {@link #init()} calls. Minecraft re-invokes
+	 * {@code init()} on every resize; returning {@code true} only on the first call prevents
+	 * screens from re-adding their widget tree (which would render duplicates).
+	 */
+	protected final boolean shouldBuildWidgets() {
+		if (widgetsInitialized) {
+			return false;
+		}
+		widgetsInitialized = true;
+		return true;
+	}
+
+	/**
+	 * Whether {@link #init()} has completed at least once (i.e. the widget tree exists).
+	 */
+	protected final boolean isWidgetsInitialized() {
+		return widgetsInitialized;
 	}
 
 	@Override

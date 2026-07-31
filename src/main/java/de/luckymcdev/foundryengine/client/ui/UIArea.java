@@ -1,6 +1,6 @@
 package de.luckymcdev.foundryengine.client.ui;
 
-import net.minecraft.world.phys.Vec2;
+import java.util.Objects;
 
 public class UIArea {
 	public int x;
@@ -13,16 +13,6 @@ public class UIArea {
 		this.y = y;
 		this.width = Math.max(0, width);
 		this.height = Math.max(0, height);
-	}
-
-	public UIArea getSubArea(UIVec pos, UIVec size, Vec2 anchorPoint) {
-		int anchorX = this.x + (int) (this.width * pos.scaleX) + pos.offsetX;
-		int anchorY = this.y + (int) (this.height * pos.scaleY) + pos.offsetY;
-		int sizeX = (int) (this.width * size.scaleX) + size.offsetX;
-		int sizeY = (int) (this.height * size.scaleY) + size.offsetY;
-		int posX = anchorX - (int) (sizeX * anchorPoint.x);
-		int posY = anchorY - (int) (sizeY * anchorPoint.y);
-		return new UIArea(posX, posY, sizeX, sizeY);
 	}
 
 	public UIArea shrink(int amount) {
@@ -39,6 +29,22 @@ public class UIArea {
 
 	public boolean isInArea(double x, double y) {
 		return x > this.x && y > this.y && x < this.x + this.width && y < this.y + this.height;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!(obj instanceof UIArea other)) {
+			return false;
+		}
+		return this.x == other.x && this.y == other.y && this.width == other.width && this.height == other.height;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.x, this.y, this.width, this.height);
 	}
 
 	@Override

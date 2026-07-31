@@ -6,7 +6,9 @@ import de.luckymcdev.foundryengine.client.ui.screen.EngineScreen;
 import de.luckymcdev.foundryengine.client.ui.widget.ButtonWidget;
 import de.luckymcdev.foundryengine.client.ui.widget.PanelWidget;
 import de.luckymcdev.foundryengine.common.util.color.Color;
-import net.minecraft.world.phys.Vec2;
+import dev.vfyjxf.taffy.style.AlignContent;
+import dev.vfyjxf.taffy.style.AlignItems;
+import dev.vfyjxf.taffy.style.FlexDirection;
 import org.slf4j.Logger;
 
 public class ExampleScreen extends EngineScreen {
@@ -18,34 +20,40 @@ public class ExampleScreen extends EngineScreen {
 
 	@Override
 	protected void init() {
-		PanelWidget panel = new PanelWidget(
-			new UIVec(0.25, 0.25, 0, 0),
-			new UIVec(0.5, 0.5, 0, 0)
-		);
+		if (shouldBuildWidgets()) {
+			buildWidgets();
+		}
+		super.init();
+	}
+
+	private void buildWidgets() {
+		PanelWidget panel = new PanelWidget();
+		panel.setPositionAbsolute();
+		panel.setInsetLeftPercent(0.25f);
+		panel.setInsetTopPercent(0.25f);
+		panel.setWidthPercent(0.5f);
+		panel.setHeightPercent(0.5f);
+		panel.setFlexDirection(FlexDirection.ROW);
+		panel.setJustifyContent(AlignContent.CENTER);
+		panel.setAlignItems(AlignItems.CENTER);
 
 		panel.setBackgroundColor(Color.LIGHT_GRAY);
 		panel.setBorder(Color.RED, 2);
 
-		ButtonWidget button = new ButtonWidget(
-			new UIVec(0.5, 0.5, 0, 0),
-			new UIVec(0, 0, 100, 20),
-			(mouseX, mouseY, btn) -> {
-				LOGGER.debug("Button clicked! Mouse: {} {} | Button ID: {}", mouseX, mouseY, btn);
-				Client.getPlayer().connection.sendChat("HELLO");
-			}
-		);
+		ButtonWidget button = new ButtonWidget((mouseX, mouseY, btn) -> {
+			LOGGER.debug("Button clicked! Mouse: {} {} | Button ID: {}", mouseX, mouseY, btn);
+			Client.getPlayer().connection.sendChat("HELLO");
+		});
+		button.setSize(100, 20);
+		button.setFlexShrink(0);
 
 		button.setBackgroundColor(Color.DARK_GRAY);
 		button.setHoverColor(Color.LIGHT_GRAY);
 		button.setBorderColor(Color.BLACK);
 
-		button.setAnchorPoint(new Vec2(0.5f, 0.5f));
-
 		panel.addWidget(button);
 
-		this.addWidgets(panel);
-
-		super.init();
+		this.addWidget(panel);
 	}
 
 	@Override
