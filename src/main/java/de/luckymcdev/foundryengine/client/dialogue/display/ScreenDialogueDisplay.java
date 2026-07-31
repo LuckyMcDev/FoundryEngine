@@ -68,7 +68,6 @@ public class ScreenDialogueDisplay implements IDialogueDisplay {
 	}
 
 	private static class DialogueScreen extends EngineScreen {
-		private static final double CHARS_PER_SECOND = 45.0;
 		private static final double MAX_PANEL_HEIGHT_FRACTION = 0.28;
 
 		private final List<ButtonWidget> optionButtons = new ArrayList<>();
@@ -190,7 +189,7 @@ public class ScreenDialogueDisplay implements IDialogueDisplay {
 			}
 
 			double elapsedSeconds = (System.nanoTime() - typewriterStartNanos) / 1_000_000_000.0;
-			int visibleChars = (int) (elapsedSeconds * CHARS_PER_SECOND);
+			int visibleChars = (int) (elapsedSeconds * Math.max(1, style.getTypewriterCharsPerSecond()));
 
 			if (visibleChars >= fullText.length()) {
 				visibleChars = fullText.length();
@@ -198,7 +197,7 @@ public class ScreenDialogueDisplay implements IDialogueDisplay {
 			}
 
 			int newChars = visibleChars - lastVisibleCharCount;
-			if (newChars > 0) {
+			if (newChars > 0 && style.isTypewriterSoundEnabled()) {
 				SoundEvent typewriterSound = SoundEvents.POINTED_DRIPSTONE_DRIP_WATER;
 				for (int i = 0; i < newChars; i++) {
 					Minecraft.getInstance().getSoundManager().play(

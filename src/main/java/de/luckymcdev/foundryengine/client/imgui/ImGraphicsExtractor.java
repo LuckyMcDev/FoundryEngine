@@ -134,7 +134,6 @@ public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorCons
 		return loadTexture("file", imageFile);
 	}
 
-	@SuppressWarnings("unchecked")
 	private static <T> Image loadTexture(String type, T idOrFile) {
 		int textureId = -1;
 		int width = -1;

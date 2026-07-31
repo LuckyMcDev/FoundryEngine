@@ -87,6 +87,18 @@ if (session != null) {
 }
 ```
 
+## Styling dialogues
+
+Every tree carries a `DialogueStyle` (accessible via `tree.getStyle()`) that controls the screen display: colors, borders, font sizes, layout, and the typewriter effect.
+
+```groovy
+var style = tree.getStyle()
+style.setTypewriterSoundEnabled(false)      // mute the per-character tick sound
+style.setTypewriterCharsPerSecond(60)       // reveal speed
+```
+
+The typewriter settings (sound on/off, characters per second) can also be tweaked in the **Dialogue Editor** under *Style → Typewriter*. Style values live in a stack of override layers with a shared `DialogueStyle.DEFAULTS` base; `push()` / `pop()` allow temporary overrides and `reset()` restores the engine defaults.
+
 ## Next
 
 - [Events Reference](../core-concepts/events-reference.md) — DialogueEvents

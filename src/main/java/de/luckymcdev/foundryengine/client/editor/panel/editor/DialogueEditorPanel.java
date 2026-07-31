@@ -6,7 +6,6 @@ import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.dialogue.DialogueNode;
 import de.luckymcdev.foundryengine.common.dialogue.DialogueOption;
-import de.luckymcdev.foundryengine.common.dialogue.DialogueStyle;
 import de.luckymcdev.foundryengine.common.dialogue.DialogueTree;
 import de.luckymcdev.foundryengine.common.network.packets.dialogue.DialogueSavePacket;
 import de.luckymcdev.foundryengine.common.util.color.Color;
@@ -389,6 +388,19 @@ public class DialogueEditorPanel extends EditorPanel {
 			ImGui.treePop();
 		}
 
+		if (ImGui.treeNodeEx("Typewriter", ImGuiTreeNodeFlags.None)) {
+			if (ImGui.checkbox("Sound", s.isTypewriterSoundEnabled())) {
+				s.setTypewriterSoundEnabled(!s.isTypewriterSoundEnabled());
+			}
+
+			var iv = new ImInt(s.getTypewriterCharsPerSecond());
+			ImGui.setNextItemWidth(100);
+			if (ImGui.inputInt("Chars/Second", iv)) {
+				s.setTypewriterCharsPerSecond(Math.max(1, iv.get()));
+			}
+			ImGui.treePop();
+		}
+
 		ImGui.unindent();
 	}
 
@@ -396,36 +408,7 @@ public class DialogueEditorPanel extends EditorPanel {
 	 * Resets the tree's style back to engine defaults.
 	 */
 	private void resetStyleToDefaults(DialogueTree tree) {
-		var defaults = new DialogueStyle();
-		var s = tree.getStyle();
-
-		s.setDialogueBackground(defaults.getDialogueBackground());
-		s.setDialogueBorder(defaults.getDialogueBorder());
-		s.setDialogueBorderWidth(defaults.getDialogueBorderWidth());
-
-		s.setOptionsBackground(defaults.getOptionsBackground());
-		s.setOptionsBorder(defaults.getOptionsBorder());
-		s.setOptionsBorderWidth(defaults.getOptionsBorderWidth());
-
-		s.setButtonBackground(defaults.getButtonBackground());
-		s.setButtonHover(defaults.getButtonHover());
-		s.setButtonBorder(defaults.getButtonBorder());
-
-		s.setNavButtonBackground(defaults.getNavButtonBackground());
-		s.setNavButtonHover(defaults.getNavButtonHover());
-		s.setNavButtonBorder(defaults.getNavButtonBorder());
-
-		s.setOverlayColor(defaults.getOverlayColor());
-
-		s.setSpeakerFontSize(defaults.getSpeakerFontSize());
-		s.setDialogueFontSize(defaults.getDialogueFontSize());
-		s.setOptionFontSize(defaults.getOptionFontSize());
-
-		s.setMargin(defaults.getMargin());
-		s.setPanelHeight(defaults.getPanelHeight());
-		s.setButtonHeight(defaults.getButtonHeight());
-		s.setOptionGap(defaults.getOptionGap());
-
+		tree.getStyle().reset();
 		setStatus("Style reset to defaults for " + tree.getId() + ".");
 	}
 
