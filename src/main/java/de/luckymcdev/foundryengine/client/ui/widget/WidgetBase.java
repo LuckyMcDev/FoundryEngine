@@ -21,8 +21,11 @@ import dev.vfyjxf.taffy.style.TrackSizingFunction;
 import dev.vfyjxf.taffy.tree.Layout;
 import dev.vfyjxf.taffy.tree.NodeId;
 import dev.vfyjxf.taffy.tree.TaffyTree;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.network.chat.Component;
 import org.joml.Vector2i;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +60,7 @@ public class WidgetBase {
 
 	boolean initialized = false;
 
-	// === Sizing ===
+	@Nullable Component tooltip;
 
 	private static NodeId buildNode(TaffyTree tree, WidgetBase widget) {
 		widget.tree = tree;
@@ -108,8 +111,6 @@ public class WidgetBase {
 		return (T) this;
 	}
 
-	// === Flex Item ===
-
 	public <T extends WidgetBase> T setSize(TaffyDimension width, TaffyDimension height) {
 		this.setWidth(width);
 		this.setHeight(height);
@@ -135,8 +136,6 @@ public class WidgetBase {
 		this.style.flexBasis = basis;
 		return (T) this;
 	}
-
-	// === Spacing ===
 
 	public <T extends WidgetBase> T setAlignSelf(AlignItems alignSelf) {
 		this.style.alignSelf = alignSelf;
@@ -198,8 +197,6 @@ public class WidgetBase {
 		return (T) this;
 	}
 
-	// === Container Layout ===
-
 	public <T extends WidgetBase> T setGap(int rowGap, int columnGap) {
 		this.style.gap = TaffySize.of(LengthPercentage.length(rowGap), LengthPercentage.length(columnGap));
 		return (T) this;
@@ -233,14 +230,10 @@ public class WidgetBase {
 		return (T) this;
 	}
 
-	// === Aspect Ratio ===
-
 	public <T extends WidgetBase> T setJustifyContent(AlignContent justifyContent) {
 		this.style.justifyContent = justifyContent;
 		return (T) this;
 	}
-
-	// === Positioning ===
 
 	public <T extends WidgetBase> T setAspectRatio(float aspectRatio) {
 		this.style.aspectRatio = aspectRatio;
@@ -292,8 +285,6 @@ public class WidgetBase {
 		return (T) this;
 	}
 
-	// === Grid ===
-
 	public <T extends WidgetBase> T setInset(int left, int right, int top, int bottom) {
 		this.style.inset = new TaffyRect<>(
 			LengthPercentageAuto.length(left),
@@ -327,8 +318,6 @@ public class WidgetBase {
 		this.style.gridRow = new TaffyLine<>(GridPlacement.line(start), GridPlacement.line(end));
 		return (T) this;
 	}
-
-	// === Misc ===
 
 	public <T extends WidgetBase> T setRotation(float rotation) {
 		this.rotation = rotation;
@@ -382,8 +371,6 @@ public class WidgetBase {
 		this.parent = parent;
 		return (T) this;
 	}
-
-	// === Layout ===
 
 	public TaffyStyle getStyle() {
 		return this.style;
@@ -455,8 +442,6 @@ public class WidgetBase {
 			this.applyLayout(child, x, y);
 		}
 	}
-
-	// === Lifecycle ===
 
 	public void onInit() {
 		this.initialized = true;
@@ -550,6 +535,25 @@ public class WidgetBase {
 		this.visible = visible;
 		this.style.display = visible ? this.baseDisplay : TaffyDisplay.NONE;
 		return (T) this;
+	}
+
+	public @Nullable Component getTooltip() {
+		return this.tooltip;
+	}
+
+	public <T extends WidgetBase> T setTooltip(@Nullable Component tooltip) {
+		this.tooltip = tooltip;
+		return (T) this;
+	}
+
+	/**
+	 * Queues a vanilla tooltip for the next frame when the widget is hovered. Call from a widget's
+	 * {@code renderContent}/{@code renderOverlay} implementation.
+	 */
+	protected void renderTooltip(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+		if (this.tooltip != null && this.contains(mouseX, mouseY)) {
+			guiGraphics.setTooltipForNextFrame(Minecraft.getInstance().font, this.tooltip, mouseX, mouseY);
+		}
 	}
 
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
