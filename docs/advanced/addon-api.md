@@ -6,14 +6,14 @@ FoundryEngine exposes events and builders for Java developers through NeoForge's
 
 Subscribe to FoundryEngine events using `@SubscribeEvent` on the appropriate bus. All API events are in `de.luckymcdev.foundryengine.common.event`.
 
-## TitleScreenModifyEvent
+## TitleScreenModificationEvent
 
 Modify or cancel title screen buttons:
 
 ```java
 @SubscribeEvent
-public void onTitleScreen(TitleScreenModifyEvent event) {
-    if (event.getButtonType() == TitleScreenModifyEvent.ButtonType.REALMS) {
+public void onTitleScreen(TitleScreenModificationEvent event) {
+    if (event.getButtonType() == TitleScreenModificationEvent.ButtonType.REALMS) {
         event.setCanceled(true);
     }
 }

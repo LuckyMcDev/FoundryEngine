@@ -118,7 +118,7 @@ Attach a block entity (tile entity) to your block for persistent data:
 ```groovy
 import de.luckymcdev.foundryengine.common.builder.blockentity.BlockEntityBuilder
 
-def beBuilder = new BlockEntityBuilder<MyBlockEntity>(id("my_be"), MyBlockEntity::new)
+def beBuilder = BlockEntityBuilder.create(id("my_be"))
     .hasTick()                                // Enable per-tick updates
 
 BlockBuilder.create(id("my_block"))

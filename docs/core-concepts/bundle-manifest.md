@@ -42,12 +42,12 @@ The manifest file must be named `your-bundle-name.bundles.toml` (replace `your-b
 
 ## Dependencies
 
-Dependencies tell FoundryEngine: "I need this to run." If a dependency is missing, your bundle will not load.
+Dependencies tell FoundryEngine: "I need this to run." If a dependency is missing, your bundle / the game will not load.
 
 ```toml
 dependencies = [
     "mod:neoforge@26.1.0.1-beta",   # Needs a mod
-    "bundle:my-library@1.0.0"       # Needs another bundle
+    "bundle:mylibrary@1.0.0"       # Needs another bundle
 ]
 ```
 

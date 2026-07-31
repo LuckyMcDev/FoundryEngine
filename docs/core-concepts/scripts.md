@@ -33,29 +33,29 @@ class Entrypoint implements BundleEntrypoint {
 
 **`onUnload()`** — runs when the bundle is unloaded (e.g. `/engine reload`). Clean up any resources here.
 
+Both of these methods **must** be implemented
+
 ### 2. Helper scripts
 
 Any script that does NOT contain a `BundleEntrypoint` is a helper. Other scripts import it to use its methods:
 
 ```groovy
-// helpers/Utils.groovy
 package my_bundle
 
-void sayHello(String name) {
+static void sayHello(String name) {
     println "Hello, $name!"
 }
 ```
 
 ```groovy
-// Entrypoint.groovy
 package my_bundle
 
-import my_bundle.sayHello
+import my_bundle.Utils
 
 class Entrypoint implements BundleEntrypoint {
     @Override
     void onLoad() {
-        sayHello("World")
+        Utils.sayHello("World")
     }
 }
 ```

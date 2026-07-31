@@ -1,6 +1,6 @@
 # Dependencies
 
-A dependency tells FoundryEngine: "I need this mod or bundle to run. If it is missing, do not load me."
+A dependency tells FoundryEngine: "I need this mod or bundle to run. If it is missing, do not load."
 
 ## Why use dependencies?
 
@@ -46,7 +46,7 @@ Each dependency follows this pattern:
 
 ## What happens if a dependency is missing?
 
-The bundle will not load. An error message appears in the mods menu explaining what is missing.
+The Game will not load. An error message appears, explaining what is missing.
 
 ## Next
 

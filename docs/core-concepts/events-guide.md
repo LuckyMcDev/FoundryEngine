@@ -59,7 +59,7 @@ BundleEvents.registry {
 
 ## Listening to custom events
 
-You can listen to any NeoForge event, even ones not wrapped by FoundryEngine:
+You can listen to any NeoForge event, even ones not wrapped by FoundryEngine. Disclaimer: This is meant for Users who know what they are doing.
 
 ```groovy
 BundleEvents.custom(LivingDeathEvent.class, {

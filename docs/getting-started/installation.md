@@ -18,7 +18,7 @@ The version number should start with `25`. If the command is not found, install 
 
 ### NeoForge 26.1.x
 
-FoundryEngine runs on **NeoForge 26.1.x** for **Minecraft 1.26.x**.
+FoundryEngine runs on **NeoForge 26.1.x** for **Minecraft 26.1.x**.
 
 **Using a custom launcher (Prism, MultiMC, ATLauncher, etc.):**
 
@@ -48,7 +48,7 @@ When you first launch, FoundryEngine creates a folder inside your Minecraft dire
     └── .cache/           # Internal cache
 ```
 
-If you see this folder, the mod loaded. You can also check the Mods menu — **FoundryEngine 0.1.1** should appear.
+If you see this folder, the mod loaded. You can also check the Mods menu — **FoundryEngine** should appear.
 
 ## What's next
 
