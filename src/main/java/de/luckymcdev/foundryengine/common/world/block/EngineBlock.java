@@ -203,7 +203,10 @@ public class EngineBlock extends Block {
 	protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
 		UseCallback cb = get(CallbackType.USE);
 		if (cb != null) {
-			return cb.run(state, level, pos, player, hitResult);
+			InteractionResult result = cb.run(state, level, pos, player, hitResult);
+			if (result != null) {
+				return result;
+			}
 		}
 		return super.useWithoutItem(state, level, pos, player, hitResult);
 	}

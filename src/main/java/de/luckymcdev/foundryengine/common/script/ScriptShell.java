@@ -32,8 +32,8 @@ public final class ScriptShell {
 		ClassLoader parent = new ScriptSandbox.FilteringClassLoader(
 			FMLLoader.getCurrent().getCurrentClassLoader());
 		this.compilerConfig = ScriptConfig.createCompilerConfig();
-		this.groovyClassLoader = new GroovyClassLoader(parent, compilerConfig);
 		Common.post(new GroovyScriptEngineModifyEvent(this, compilerConfig));
+		this.groovyClassLoader = new GroovyClassLoader(parent, compilerConfig);
 	}
 
 	public List<GroovyClass> compileBundle(List<Path> scriptPaths, Path scriptRoot) throws IOException {

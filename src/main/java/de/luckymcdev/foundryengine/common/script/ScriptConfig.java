@@ -23,6 +23,7 @@ public final class ScriptConfig {
 		CompilerConfiguration config = new CompilerConfiguration();
 		config.addCompilationCustomizers(createImportCustomizer());
 		config.addCompilationCustomizers(createSecureCustomizer());
+		config.addCompilationCustomizers(LenientClosureTransformer.customizer());
 		return config;
 	}
 

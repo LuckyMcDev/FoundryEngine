@@ -94,13 +94,25 @@ public class EngineItem extends Item {
 	@Override
 	public InteractionResult useOn(UseOnContext context) {
 		UseOnCallback cb = get(CallbackType.USE_ON);
-		return cb != null ? cb.run(context) : super.useOn(context);
+		if (cb != null) {
+			InteractionResult result = cb.run(context);
+			if (result != null) {
+				return result;
+			}
+		}
+		return super.useOn(context);
 	}
 
 	@Override
 	public InteractionResult use(Level level, Player player, InteractionHand hand) {
 		UseCallback cb = get(CallbackType.USE);
-		return cb != null ? cb.run(level, player, hand) : super.use(level, player, hand);
+		if (cb != null) {
+			InteractionResult result = cb.run(level, player, hand);
+			if (result != null) {
+				return result;
+			}
+		}
+		return super.use(level, player, hand);
 	}
 
 	@Override
