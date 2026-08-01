@@ -1,0 +1,16 @@
+{
+	"required": true,
+	"minVersion": "0.8",
+	"package": "de.luckymcdev.foundryengine.mixin.sound",
+	"compatibilityLevel": "JAVA_25",
+	"client": [
+		"SoundBufferLibraryMixin",
+		"SoundManagerMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
+	}
+}

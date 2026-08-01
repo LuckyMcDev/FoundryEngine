@@ -25,6 +25,9 @@ dependencies {
     // Groovy
     bundle "org.apache.groovy:groovy:${groovy_version}"
 
+	// JLayer
+	bundle "com.googlecode.soundlibs:jlayer:${jlayer_version}"
+
 	// JEI
     compileOnly("mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}")
     runtimeOnly("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}")
