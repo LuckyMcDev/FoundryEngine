@@ -49,6 +49,10 @@ public class GameStageHandler {
 	private final RecipeStages RECIPES = new RecipeStages();
 	private final List<Map.Entry<StageAdditionCondition, Identifier>> PENDING_STAGES = new ArrayList<>();
 	private final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, Common.MODID);
+	private final Codec<Set<Identifier>> IDENTIFIER_SET_CODEC = Identifier.CODEC.listOf().xmap(
+		HashSet::new,
+		ArrayList::new
+	);
 	public final Supplier<AttachmentType<Set<Identifier>>> ATTACHMENT = ATTACHMENT_TYPES.register(
 		"player_stages",
 		() -> AttachmentType.<Set<Identifier>>builder(() -> new HashSet<>())
@@ -67,11 +71,6 @@ public class GameStageHandler {
 			})
 			.build()
 	);
-	private final Codec<Set<Identifier>> IDENTIFIER_SET_CODEC = Identifier.CODEC.listOf().xmap(
-		HashSet::new,
-		ArrayList::new
-	);
-
 	public void register(IEventBus modEventbus) {
 		LOGGER.debug("Registered {} GameStageHandler", Common.MODNAME);
 		ATTACHMENT_TYPES.register(modEventbus);
