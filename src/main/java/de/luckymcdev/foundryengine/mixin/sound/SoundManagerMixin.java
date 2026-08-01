@@ -29,7 +29,6 @@ public class SoundManagerMixin {
 			LOGGER.warn("File {} does not exist, cannot add it to event {}", soundPath, eventLocation);
 			return false;
 		}
-
 		return true;
 	}
 }

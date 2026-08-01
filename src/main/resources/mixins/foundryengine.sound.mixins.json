@@ -5,7 +5,8 @@
 	"compatibilityLevel": "JAVA_25",
 	"client": [
 		"SoundBufferLibraryMixin",
-		"SoundManagerMixin"
+		"SoundManagerMixin",
+		"SoundManagerPreparationsMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

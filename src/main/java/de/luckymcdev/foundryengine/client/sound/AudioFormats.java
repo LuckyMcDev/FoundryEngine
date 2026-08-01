@@ -19,6 +19,7 @@ public class AudioFormats {
 		return switch (detect(pushback)) {
 			case OGG -> new JOrbisAudioStream(pushback);
 			case MP3 -> new Mp3AudioStream(pushback);
+			case FLAC -> new FlacAudioStream(pushback);
 		};
 	}
 
@@ -27,6 +28,7 @@ public class AudioFormats {
 		return switch (detect(pushback)) {
 			case OGG -> looping ? new LoopingAudioStream(JOrbisAudioStream::new, pushback) : new JOrbisAudioStream(pushback);
 			case MP3 -> looping ? new LoopingAudioStream(Mp3AudioStream::new, pushback) : new Mp3AudioStream(pushback);
+			case FLAC -> looping ? new LoopingAudioStream(FlacAudioStream::new, pushback) : new FlacAudioStream(pushback);
 		};
 	}
 
@@ -66,12 +68,17 @@ public class AudioFormats {
 			return Supported.OGG;
 		}
 
+		if (read >= 4 && header[0] == 'f' && header[1] == 'L' && header[2] == 'a' && header[3] == 'C') {
+			return Supported.FLAC;
+		}
+
 		return Supported.MP3;
 	}
 
 	public enum Supported {
 		OGG(".ogg"),
-		MP3(".mp3");
+		MP3(".mp3"),
+		FLAC(".flac");
 
 		private final String extension;
 

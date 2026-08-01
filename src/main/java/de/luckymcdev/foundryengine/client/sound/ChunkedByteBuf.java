@@ -19,14 +19,28 @@ public class ChunkedByteBuf {
 
 	public void put(short[] samples, int length) {
 		for (int i = 0; i < length; i++) {
-			if (this.currentBuffer.remaining() == 0) {
-				this.currentBuffer.flip();
-				this.buffers.add(this.currentBuffer);
-				this.currentBuffer = BufferUtils.createByteBuffer(this.bufferSize);
-			}
-
+			ensureCapacity(2);
 			this.currentBuffer.putShort(samples[i]);
 			this.byteCount += 2;
+		}
+	}
+
+	public void put(byte[] data, int length) {
+		int offset = 0;
+		while (offset < length) {
+			ensureCapacity(1);
+			int toWrite = Math.min(this.currentBuffer.remaining(), length - offset);
+			this.currentBuffer.put(data, offset, toWrite);
+			offset += toWrite;
+			this.byteCount += toWrite;
+		}
+	}
+
+	private void ensureCapacity(int needed) {
+		if (this.currentBuffer.remaining() < needed) {
+			this.currentBuffer.flip();
+			this.buffers.add(this.currentBuffer);
+			this.currentBuffer = BufferUtils.createByteBuffer(this.bufferSize);
 		}
 	}
 
