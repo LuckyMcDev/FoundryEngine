@@ -57,6 +57,8 @@ import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
@@ -64,7 +66,8 @@ import java.util.function.Function;
 
 public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorConsumer {
 	private static final int MAX_ICON_LOADS_PER_FRAME = 25;
-	private static final Map<String, Integer> iconCache = new HashMap<>();
+	private static final int MAX_ICON_CACHE_SIZE = 256;
+	private static final Map<String, Integer> iconCache = new LinkedHashMap<>();
 	private static final Map<String, DynamicTexture> iconTextures = new HashMap<>();
 	private static final Set<String> pendingKeys = new HashSet<>();
 	private static final Queue<ItemStack> renderQueue = new ArrayDeque<>();
@@ -270,6 +273,7 @@ public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorCons
 				int glId = ((GlTexture) dynTex.getTexture()).glId();
 				iconCache.put(cacheKey, glId);
 				iconTextures.put(cacheKey, dynTex);
+				evictOldestIconIfNeeded();
 				pendingKeys.remove(cacheKey);
 			} catch (Exception e) {
 				Common.LOGGER.error("Failed to read back item icon for {}", cacheKey, e);
@@ -277,6 +281,19 @@ public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorCons
 			}
 			readBuffer.close();
 		}, 0);
+	}
+
+	private static void evictOldestIconIfNeeded() {
+		while (iconCache.size() > MAX_ICON_CACHE_SIZE) {
+			Iterator<String> it = iconCache.keySet().iterator();
+			String oldestKey = it.next();
+			it.remove();
+			DynamicTexture texture = iconTextures.remove(oldestKey);
+			if (texture != null) {
+				texture.close();
+			}
+			pendingKeys.remove(oldestKey);
+		}
 	}
 
 	private static void ensureFramebuffer(int size) {

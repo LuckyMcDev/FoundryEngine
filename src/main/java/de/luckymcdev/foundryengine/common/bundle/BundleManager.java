@@ -15,6 +15,7 @@ import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
+import net.neoforged.fml.config.ConfigTracker;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
@@ -22,11 +23,15 @@ import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
@@ -108,11 +113,12 @@ public class BundleManager implements ResourceManagerReloadListener {
 	 * list would keep stale {@link BundleModContainer}s after a reload.
 	 */
 	public void refreshModList() {
-		if (bundleContainers.isEmpty()) {
+		ModList modList = ModList.get();
+		if (modList == null || bundleContainers.isEmpty()) {
 			return;
 		}
 		List<ModContainer> allContainers = new ArrayList<>();
-		for (var container : ModList.get().getSortedMods()) {
+		for (var container : modList.getSortedMods()) {
 			if (!(container instanceof BundleModContainer)) {
 				allContainers.add(container);
 			}
@@ -121,9 +127,13 @@ public class BundleManager implements ResourceManagerReloadListener {
 		try {
 			var method = ModList.class.getDeclaredMethod("setLoadedMods", List.class);
 			method.setAccessible(true);
-			method.invoke(ModList.get(), allContainers);
+			method.invoke(modList, allContainers);
 		} catch (Exception e) {
-			LOGGER.error("Failed to refresh loaded mod list", e);
+			// Fail-safe: never let mod-list reflection crash a reload. The loaded mod
+			// list may be stale until restart, but the reload itself must survive.
+			Throwable cause = e instanceof InvocationTargetException ite ? ite.getTargetException() : e;
+			LOGGER.error("Failed to refresh loaded mod list via reflection; the loaded mod list may be stale. Cause: {}",
+				cause, e);
 		}
 	}
 
@@ -211,6 +221,9 @@ public class BundleManager implements ResourceManagerReloadListener {
 
 			unloadAllBundles();
 			bundles.clear();
+			// Drop the config bookkeeping from the previous load so re-registration
+			// below takes the fresh path and stays consistent with ConfigTracker.
+			registeredConfigs.clear();
 
 			Common.getScriptShell().invalidateAll();
 			scriptLoader.invalidateCache();
@@ -225,10 +238,19 @@ public class BundleManager implements ResourceManagerReloadListener {
 			loadServerScripts();
 
 			if (server != null) {
-				var dispatcher = server.getCommands().getDispatcher();
-				var selection = Commands.CommandSelection.ALL;
-				var buildContext = CommandBuildContext.simple(server.registryAccess(), server.getWorldData().enabledFeatures());
-				NeoForge.EVENT_BUS.post(new RegisterCommandsEvent(dispatcher, selection, buildContext));
+				// Commands are normally registered once at server start; re-posting the
+				// event here cannot re-run all of NeoForge's registry logic, so flag that
+				// command/registry state may be inconsistent until the server restarts.
+				LOGGER.warn("Reloading FoundryEngine Bundles while a server is live: command/registry state "
+					+ "may be inconsistent until restart.");
+				var commands = server.getCommands();
+				if (commands != null && commands.getDispatcher() != null) {
+					var selection = Commands.CommandSelection.ALL;
+					var buildContext = CommandBuildContext.simple(
+						server.registryAccess(), server.getWorldData().enabledFeatures());
+					NeoForge.EVENT_BUS.post(new RegisterCommandsEvent(
+						commands.getDispatcher(), selection, buildContext));
+				}
 			}
 
 			lifecycleDispatcher.fireReloadCompleted();
@@ -254,11 +276,63 @@ public class BundleManager implements ResourceManagerReloadListener {
 		String id = bundle.info().id();
 		bundleContainers.removeIf(c ->
 			c instanceof BundleModContainer bmc && bmc.getBundle().info().id().equals(id));
+		// Remove the stale ModConfig so a reload can re-register the config cleanly.
+		removeBundleConfigFromTracker(id);
+		registeredConfigs.remove(id);
 		try {
 			bundle.unload();
 		} finally {
 			lifecycleDispatcher.fireUnloaded(bundle);
 			closeFileSystem(bundle);
+		}
+	}
+
+	/**
+	 * Removes a bundle's {@link ModConfig} from {@link ConfigTracker} so that a reload
+	 * can re-register it with a freshly built spec. {@link ConfigTracker} has no public
+	 * removal API, so this reflects into its bookkeeping maps. Fails safe: on any
+	 * reflection error the stale config is left in place and the reload continues.
+	 */
+	private void removeBundleConfigFromTracker(String bundleId) {
+		if (bundleId == null || bundleId.isEmpty()) {
+			return;
+		}
+		String fileName = String.format(Locale.ROOT, "%s-%s.toml", bundleId, ModConfig.Type.COMMON.extension());
+		try {
+			ConfigTracker tracker = ConfigTracker.INSTANCE;
+
+			Field fileMapField = ConfigTracker.class.getDeclaredField("fileMap");
+			fileMapField.setAccessible(true);
+			@SuppressWarnings("unchecked")
+			Map<String, ModConfig> fileMap = (Map<String, ModConfig>) fileMapField.get(tracker);
+			ModConfig removed = fileMap.remove(fileName);
+			if (removed == null) {
+				return;
+			}
+
+			Field configSetsField = ConfigTracker.class.getDeclaredField("configSets");
+			configSetsField.setAccessible(true);
+			@SuppressWarnings("unchecked")
+			Map<ModConfig.Type, Set<ModConfig>> configSets =
+				(Map<ModConfig.Type, Set<ModConfig>>) configSetsField.get(tracker);
+			Set<ModConfig> byType = configSets.get(removed.getType());
+			if (byType != null) {
+				byType.remove(removed);
+			}
+
+			Field configsByModField = ConfigTracker.class.getDeclaredField("configsByMod");
+			configsByModField.setAccessible(true);
+			@SuppressWarnings("unchecked")
+			Map<String, List<ModConfig>> configsByMod =
+				(Map<String, List<ModConfig>>) configsByModField.get(tracker);
+			List<ModConfig> byMod = configsByMod.get(bundleId);
+			if (byMod != null) {
+				byMod.remove(removed);
+			}
+
+			LOGGER.debug("Removed stale bundle config '{}' from ConfigTracker", fileName);
+		} catch (ReflectiveOperationException | RuntimeException e) {
+			LOGGER.error("Failed to remove stale bundle config '{}' from ConfigTracker", fileName, e);
 		}
 	}
 

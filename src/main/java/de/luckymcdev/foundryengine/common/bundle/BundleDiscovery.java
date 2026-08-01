@@ -57,6 +57,11 @@ public class BundleDiscovery {
 	public void discover(Path directory) throws IOException {
 		LOGGER.debug("Discovering Bundles in: {}", directory);
 
+		// Reset instance state so a reload re-scan cannot accumulate stale entries
+		// or resolve dependencies against bundles no longer on disk.
+		discoveredBundles.clear();
+		pendingBundles.clear();
+
 		try (Stream<Path> stream = Files.list(directory)) {
 			for (Path path : stream.toList()) {
 				try {

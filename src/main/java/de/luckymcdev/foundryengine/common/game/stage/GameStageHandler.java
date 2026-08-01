@@ -27,9 +27,11 @@ import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 
 import java.util.AbstractMap;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -47,10 +49,6 @@ public class GameStageHandler {
 	private final RecipeStages RECIPES = new RecipeStages();
 	private final List<Map.Entry<StageAdditionCondition, Identifier>> PENDING_STAGES = new ArrayList<>();
 	private final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, Common.MODID);
-	private final Codec<Set<Identifier>> IDENTIFIER_SET_CODEC = Identifier.CODEC.listOf().xmap(
-		HashSet::new,
-		ArrayList::new
-	);
 	public final Supplier<AttachmentType<Set<Identifier>>> ATTACHMENT = ATTACHMENT_TYPES.register(
 		"player_stages",
 		() -> AttachmentType.<Set<Identifier>>builder(() -> new HashSet<>())
@@ -69,6 +67,11 @@ public class GameStageHandler {
 			})
 			.build()
 	);
+	private final Codec<Set<Identifier>> IDENTIFIER_SET_CODEC = Identifier.CODEC.listOf().xmap(
+		HashSet::new,
+		ArrayList::new
+	);
+
 	public void register(IEventBus modEventbus) {
 		LOGGER.debug("Registered {} GameStageHandler", Common.MODNAME);
 		ATTACHMENT_TYPES.register(modEventbus);
@@ -79,6 +82,10 @@ public class GameStageHandler {
 	}
 
 	public boolean addStage(Player player, Identifier stage) {
+		return addStage(player, stage, new ArrayDeque<>());
+	}
+
+	private boolean addStage(Player player, Identifier stage, Deque<Identifier> path) {
 		if (hasStage(player, stage)) {
 			return false;
 		}
@@ -91,7 +98,7 @@ public class GameStageHandler {
 		var newStages = new HashSet<>(player.getData(ATTACHMENT));
 		if (newStages.add(stage)) {
 			player.setData(ATTACHMENT, newStages);
-			grantParentStages(player, stage);
+			grantParentStages(player, stage, path);
 			NeoForge.EVENT_BUS.post(new GameStageEvent.Added(player, stage));
 			return true;
 		}
@@ -141,7 +148,7 @@ public class GameStageHandler {
 		int count = 0;
 		for (var stage : toAdd) {
 			if (newStages.add(stage)) {
-				grantParentStages(player, stage);
+				grantParentStages(player, stage, new ArrayDeque<>());
 				count++;
 			}
 		}
@@ -235,14 +242,24 @@ public class GameStageHandler {
 	}
 
 	private void grantParentStages(Player player, Identifier stage) {
+		grantParentStages(player, stage, new ArrayDeque<>());
+	}
+
+	private void grantParentStages(Player player, Identifier stage, Deque<Identifier> path) {
 		if (!STAGE_REGISTRY.hasParents(stage)) {
 			return;
 		}
+		if (path.contains(stage)) {
+			LOGGER.warn("Stage parent cycle detected involving stage [{}]; stopping recursion", stage);
+			return;
+		}
+		path.addLast(stage);
 		for (var parent : STAGE_REGISTRY.getParents(stage)) {
 			if (!hasStage(player, parent)) {
-				addStage(player, parent);
+				addStage(player, parent, path);
 			}
 		}
+		path.removeLast();
 	}
 
 	public BlockStages blocks() {

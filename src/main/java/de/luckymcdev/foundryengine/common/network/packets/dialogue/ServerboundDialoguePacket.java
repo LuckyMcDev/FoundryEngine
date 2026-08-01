@@ -22,7 +22,7 @@ public record ServerboundDialoguePacket(
 	public static final Type<ServerboundDialoguePacket> TYPE = AbstractPacket.createType(Common.id("dialogue_server"));
 	public static final StreamCodec<RegistryFriendlyByteBuf, ServerboundDialoguePacket> CODEC = StreamCodec.composite(
 		ActionCodec.streamCodec(Action.values(), Action.END), ServerboundDialoguePacket::action,
-		ByteBufCodecs.STRING_UTF8, ServerboundDialoguePacket::optionId,
+		ByteBufCodecs.stringUtf8(AbstractPacket.MAX_STRING_LENGTH), ServerboundDialoguePacket::optionId,
 		ServerboundDialoguePacket::new
 	);
 	public static final Definition<ServerboundDialoguePacket> DEFINITION = new Definition<>(

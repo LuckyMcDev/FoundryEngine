@@ -4,6 +4,7 @@ import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.network.AbstractPacket;
 import de.luckymcdev.foundryengine.common.network.PacketBounds;
 import de.luckymcdev.foundryengine.common.util.PermissionChecks;
+import de.luckymcdev.foundryengine.config.CommonConfig;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -19,7 +20,7 @@ public record CutsceneCommandPacket(String command) implements AbstractPacket<Cu
 		AbstractPacket.createType(Common.id("cutscene_command")),
 		PacketBounds.SERVER,
 		StreamCodec.composite(
-			ByteBufCodecs.STRING_UTF8, CutsceneCommandPacket::command,
+			ByteBufCodecs.stringUtf8(AbstractPacket.MAX_STRING_LENGTH), CutsceneCommandPacket::command,
 			CutsceneCommandPacket::new
 		),
 		null,
@@ -52,9 +53,28 @@ public record CutsceneCommandPacket(String command) implements AbstractPacket<Cu
 		if (!PermissionChecks.COMMANDS_GAMEMASTER.check(player.permissions())) {
 			return;
 		}
+		if (!CommonConfig.CUTSCENE_COMMAND_EXECUTION.get()) {
+			Common.LOGGER.warn("CutsceneCommandPacket: command execution is disabled by config; refusing to execute from player {}",
+				player.getName().getString());
+			return;
+		}
 
 		MinecraftServer server = player.level().getServer();
 		if (server == null) {
+			return;
+		}
+
+		String trimmed = this.command.trim();
+		if (trimmed.startsWith("/")) {
+			trimmed = trimmed.substring(1);
+		}
+		String rootName = trimmed.split("\\s+", 2)[0];
+		if (rootName.isEmpty()) {
+			return;
+		}
+		if (server.getCommands().getDispatcher().getRoot().getChild(rootName) == null) {
+			Common.LOGGER.warn("CutsceneCommandPacket: unknown command root '{}' from player {}; refusing to execute",
+				rootName, player.getName().getString());
 			return;
 		}
 

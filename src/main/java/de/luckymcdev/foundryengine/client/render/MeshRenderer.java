@@ -17,45 +17,67 @@ import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.resources.Identifier;
 import org.joml.Matrix4fc;
 
-import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 public class MeshRenderer implements AutoCloseable {
+	private static final int MAX_RENDER_TYPES = 256;
+	private static final int MAX_PIPELINES = 256;
+	private static final AtomicInteger RENDER_TYPE_INDEX = new AtomicInteger();
 	private static final ByteBufferBuilder ALLOCATOR = new ByteBufferBuilder(RenderType.SMALL_BUFFER_SIZE);
-	private static final Map<Identifier, RenderPipeline> PIPELINES = new HashMap<>();
-	private static final Map<String, RenderType> RENDER_TYPES = new HashMap<>();
+	private static final Map<Identifier, RenderPipeline> PIPELINES = new LinkedHashMap<>();
+	private static final Map<String, RenderType> RENDER_TYPES = new LinkedHashMap<>();
 
 	public static RenderType renderType(Identifier vertexShader, Identifier fragmentShader,
 	                                    Identifier texture0, Identifier texture1) {
 		String key = vertexShader + "|" + fragmentShader + "|" + texture0 + "|" + texture1;
-		return RENDER_TYPES.computeIfAbsent(key, k -> {
+		RenderType renderType = RENDER_TYPES.computeIfAbsent(key, k -> {
 			RenderPipeline pipeline = PIPELINES.computeIfAbsent(fragmentShader,
 				fsh -> buildPipeline(vertexShader, fsh));
+			trimToSize(PIPELINES, MAX_PIPELINES);
 			RenderSetup setup = RenderSetup.builder(pipeline)
 				.withTexture("Sampler0", texture0)
 				.withTexture("Sampler1", texture1)
 				.withTexture("DepthSampler", EngineSceneDepth.ID)
 				.createRenderSetup();
-			return RenderType.create("engine_mesh/" + RENDER_TYPES.size(), setup);
+			return RenderType.create("engine_mesh/" + RENDER_TYPE_INDEX.getAndIncrement(), setup);
 		});
+		trimToSize(RENDER_TYPES, MAX_RENDER_TYPES);
+		return renderType;
 	}
 
 	public static RenderType cutoutRenderType(Identifier vertexShader, Identifier fragmentShader,
 	                                          Identifier texture0, Identifier texture1) {
 		String key = "cutout|" + vertexShader + "|" + fragmentShader + "|" + texture0 + "|" + texture1;
-		return RENDER_TYPES.computeIfAbsent(key, k -> {
+		RenderType renderType = RENDER_TYPES.computeIfAbsent(key, k -> {
 			Identifier location = Identifier.fromNamespaceAndPath(
 				fragmentShader.getNamespace(), "cutout/" + fragmentShader.getPath());
 			RenderPipeline pipeline = PIPELINES.computeIfAbsent(location,
 				loc -> buildCutoutPipeline(loc, vertexShader, fragmentShader));
+			trimToSize(PIPELINES, MAX_PIPELINES);
 			RenderSetup setup = RenderSetup.builder(pipeline)
 				.withTexture("Sampler0", texture0)
 				.withTexture("Sampler1", texture1)
 				.withTexture("DepthSampler", EngineSceneDepth.ID)
 				.createRenderSetup();
-			return RenderType.create("engine_mesh_cutout/" + RENDER_TYPES.size(), setup);
+			return RenderType.create("engine_mesh_cutout/" + RENDER_TYPE_INDEX.getAndIncrement(), setup);
 		});
+		trimToSize(RENDER_TYPES, MAX_RENDER_TYPES);
+		return renderType;
+	}
+
+	private static <K, V> void trimToSize(Map<K, V> map, int maxSize) {
+		if (map.size() <= maxSize) {
+			return;
+		}
+		Iterator<K> it = map.keySet().iterator();
+		while (map.size() > maxSize) {
+			it.next();
+			it.remove();
+		}
 	}
 
 	private static RenderPipeline buildCutoutPipeline(Identifier location, Identifier vertexShader,

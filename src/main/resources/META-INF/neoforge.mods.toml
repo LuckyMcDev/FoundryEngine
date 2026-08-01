@@ -15,8 +15,6 @@ authors = "${mod_authors}"
 description = '''${mod_description}'''
 
 [[mixins]]
-config = "mixins/${mod_id}.resources.mixins.json"
-[[mixins]]
 config = "mixins/${mod_id}.input.mixins.json"
 [[mixins]]
 config = "mixins/${mod_id}.mixins.json"
@@ -24,8 +22,6 @@ config = "mixins/${mod_id}.mixins.json"
 config = "mixins/${mod_id}.render.mixins.json"
 [[mixins]]
 config = "mixins/${mod_id}.screen.mixins.json"
-[[mixins]]
-config = "mixins/${mod_id}.entity.mixins.json"
 [[mixins]]
 config = "mixins/${mod_id}.command.mixins.json"
 [[mixins]]

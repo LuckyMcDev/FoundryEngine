@@ -32,9 +32,8 @@ import java.util.List;
 import java.util.Objects;
 
 public class WidgetBase {
-	WidgetBase parent;
-
 	final TaffyStyle style = new TaffyStyle();
+	WidgetBase parent;
 	TaffyTree tree;
 	NodeId nodeId;
 	UIArea rootAvailableArea;
@@ -319,11 +318,6 @@ public class WidgetBase {
 		return (T) this;
 	}
 
-	public <T extends WidgetBase> T setRotation(float rotation) {
-		this.rotation = rotation;
-		return (T) this;
-	}
-
 	public <T extends WidgetBase> T setGridColumn(int start, int end) {
 		this.style.gridColumn = new TaffyLine<>(GridPlacement.line(start), GridPlacement.line(end));
 		return (T) this;
@@ -333,8 +327,18 @@ public class WidgetBase {
 		return this.rotation;
 	}
 
+	public <T extends WidgetBase> T setRotation(float rotation) {
+		this.rotation = rotation;
+		return (T) this;
+	}
+
 	public WidgetBase getParent() {
 		return this.parent;
+	}
+
+	public <T extends WidgetBase> T setParent(WidgetBase parent) {
+		this.parent = parent;
+		return (T) this;
 	}
 
 	public Vector2i getOffset() {
@@ -364,11 +368,6 @@ public class WidgetBase {
 
 	public <T extends WidgetBase> T setShouldLerp(boolean shouldLerp) {
 		this.shouldLerp = shouldLerp;
-		return (T) this;
-	}
-
-	public <T extends WidgetBase> T setParent(WidgetBase parent) {
-		this.parent = parent;
 		return (T) this;
 	}
 

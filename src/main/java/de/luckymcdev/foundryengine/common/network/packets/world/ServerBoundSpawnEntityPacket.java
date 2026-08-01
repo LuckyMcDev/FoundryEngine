@@ -31,7 +31,7 @@ public record ServerBoundSpawnEntityPacket(
 		AbstractPacket.createType(Common.id("spawn_entity")),
 		PacketBounds.SERVER,
 		StreamCodec.composite(
-			ByteBufCodecs.STRING_UTF8, ServerBoundSpawnEntityPacket::entityTypeId,
+			ByteBufCodecs.stringUtf8(AbstractPacket.MAX_STRING_LENGTH), ServerBoundSpawnEntityPacket::entityTypeId,
 			ByteBufCodecs.DOUBLE, ServerBoundSpawnEntityPacket::x,
 			ByteBufCodecs.DOUBLE, ServerBoundSpawnEntityPacket::y,
 			ByteBufCodecs.DOUBLE, ServerBoundSpawnEntityPacket::z,

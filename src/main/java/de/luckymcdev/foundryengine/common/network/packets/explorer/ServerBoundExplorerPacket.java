@@ -41,8 +41,8 @@ public record ServerBoundExplorerPacket(
 		PacketBounds.SERVER,
 		StreamCodec.composite(
 			ACTION_CODEC, ServerBoundExplorerPacket::action,
-			ByteBufCodecs.STRING_UTF8, ServerBoundExplorerPacket::path,
-			ByteBufCodecs.STRING_UTF8, ServerBoundExplorerPacket::payload,
+			ByteBufCodecs.stringUtf8(AbstractPacket.MAX_STRING_LENGTH), ServerBoundExplorerPacket::path,
+			ByteBufCodecs.stringUtf8(AbstractPacket.MAX_FILE_CONTENT_LENGTH), ServerBoundExplorerPacket::payload,
 			ServerBoundExplorerPacket::new
 		),
 		null,

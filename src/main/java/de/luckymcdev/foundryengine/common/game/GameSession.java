@@ -7,6 +7,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
+import org.jspecify.annotations.Nullable;
 
 import java.nio.file.Path;
 import java.util.function.BiConsumer;
@@ -21,6 +22,7 @@ public class GameSession {
 	boolean started;
 	private GameState publicState = SimpleState.LOBBY;
 	private boolean autoStart;
+	private @Nullable Path worldDataPath;
 
 	private Consumer<Level> commonTickHandler = level -> {
 	};
@@ -176,9 +178,13 @@ public class GameSession {
 
 	/**
 	 * Loads the session data from persistent storage.
+	 * Uses the world data path previously set via {@link #load(Path)}/{@link #save(Path)},
+	 * falling back to {@link Common#GAME} (the shared cache dir) only when no world path
+	 * has been provided — that fallback exists purely to keep direct script-driven calls
+	 * working and should be avoided for world-scoped data.
 	 */
 	public void load() {
-		data.loadFrom(Common.GAME);
+		data.loadFrom(worldDataPath != null ? worldDataPath : Common.GAME);
 		flushInit();
 	}
 
@@ -186,6 +192,7 @@ public class GameSession {
 	 * Loads the session data from a world-specific directory.
 	 */
 	public void load(Path dataDir) {
+		this.worldDataPath = dataDir;
 		data.loadFrom(dataDir);
 		flushInit();
 	}
@@ -198,15 +205,17 @@ public class GameSession {
 
 	/**
 	 * Saves the session data to persistent storage.
+	 * See {@link #load()} for the world-path vs. cache-dir fallback semantics.
 	 */
 	public void save() {
-		data.saveTo(Common.GAME);
+		data.saveTo(worldDataPath != null ? worldDataPath : Common.GAME);
 	}
 
 	/**
 	 * Saves the session data to a world-specific directory.
 	 */
 	public void save(Path dataDir) {
+		this.worldDataPath = dataDir;
 		data.saveTo(dataDir);
 	}
 

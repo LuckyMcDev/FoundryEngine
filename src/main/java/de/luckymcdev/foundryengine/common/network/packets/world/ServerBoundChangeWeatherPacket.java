@@ -18,7 +18,7 @@ public record ServerBoundChangeWeatherPacket(
 		AbstractPacket.createType(Common.id("change_weather")),
 		PacketBounds.SERVER,
 		StreamCodec.composite(
-			ByteBufCodecs.STRING_UTF8, ServerBoundChangeWeatherPacket::weatherType,
+			ByteBufCodecs.stringUtf8(AbstractPacket.MAX_STRING_LENGTH), ServerBoundChangeWeatherPacket::weatherType,
 			ServerBoundChangeWeatherPacket::new
 		),
 		null,

@@ -23,22 +23,22 @@ public final class CutsceneUiState {
 	private CutsceneUiState() {
 	}
 
-	public static void setSelected(@Nullable Cutscene cutscene) {
+	public static synchronized void setSelected(@Nullable Cutscene cutscene) {
 		selectedCutsceneName = cutscene == null ? null : cutscene.getName();
 		if (cutscene != null) {
 			syncFromCutscene(cutscene);
 		}
 	}
 
-	public static @Nullable String getSelectedName() {
+	public static synchronized @Nullable String getSelectedName() {
 		return selectedCutsceneName;
 	}
 
-	public static void setSelectedName(@Nullable String name) {
+	public static synchronized void setSelectedName(@Nullable String name) {
 		selectedCutsceneName = (name == null || name.isBlank()) ? null : name;
 	}
 
-	public static @Nullable Cutscene getSelectedCutscene() {
+	public static synchronized @Nullable Cutscene getSelectedCutscene() {
 		if (selectedCutsceneName == null) {
 			return null;
 		}
@@ -48,7 +48,7 @@ public final class CutsceneUiState {
 	/**
 	 * Sync UI state from cutscene defaults. Call when selecting a different cutscene.
 	 */
-	public static void syncFromCutscene(Cutscene cutscene) {
+	public static synchronized void syncFromCutscene(Cutscene cutscene) {
 		if (cutscene == null) {
 			return;
 		}
@@ -77,7 +77,7 @@ public final class CutsceneUiState {
 	/**
 	 * Update cutscene defaults from current UI state. Call when UI values change.
 	 */
-	public static void syncToCutscene(Cutscene cutscene) {
+	public static synchronized void syncToCutscene(Cutscene cutscene) {
 		if (cutscene == null) {
 			return;
 		}
@@ -91,36 +91,35 @@ public final class CutsceneUiState {
 	}
 
 	// Getters and setters for panels
-	public static int getPlaybackLength() {
+	public static synchronized int getPlaybackLength() {
 		return playbackLength;
 	}
 
-	public static void setPlaybackLength(int v) {
+	public static synchronized void setPlaybackLength(int v) {
 		playbackLength = Math.max(1, v);
 	}
 
-	public static int getPlaybackHoldStart() {
+	public static synchronized int getPlaybackHoldStart() {
 		return playbackHoldStart;
 	}
 
-	public static void setPlaybackHoldStart(int v) {
+	public static synchronized void setPlaybackHoldStart(int v) {
 		playbackHoldStart = Math.max(0, v);
 	}
 
-	public static int getPlaybackHoldEnd() {
+	public static synchronized int getPlaybackHoldEnd() {
 		return playbackHoldEnd;
 	}
 
-	public static void setPlaybackHoldEnd(int v) {
+	public static synchronized void setPlaybackHoldEnd(int v) {
 		playbackHoldEnd = Math.max(0, v);
 	}
 
-	public static int getPlaybackEasingIndex() {
+	public static synchronized int getPlaybackEasingIndex() {
 		return playbackEasingIndex;
 	}
 
-	public static void setPlaybackEasingIndex(int v) {
+	public static synchronized void setPlaybackEasingIndex(int v) {
 		playbackEasingIndex = v;
 	}
 }
-

@@ -18,19 +18,20 @@ public record ScreenEffectPacket(
 
 	public static final Definition<ScreenEffectPacket> DEFINITION = new Definition<>(
 		AbstractPacket.createType(Common.id("screen_effect")),
-		PacketBounds.BOTH,
+		PacketBounds.CLIENT,
 		StreamCodec.composite(
-			ByteBufCodecs.STRING_UTF8, ScreenEffectPacket::name,
+			ByteBufCodecs.stringUtf8(AbstractPacket.MAX_STRING_LENGTH), ScreenEffectPacket::name,
 			ByteBufCodecs.INT, ScreenEffectPacket::introTicks,
 			ByteBufCodecs.INT, ScreenEffectPacket::holdTicks,
 			ByteBufCodecs.INT, ScreenEffectPacket::outroTicks,
-			ByteBufCodecs.STRING_UTF8, ScreenEffectPacket::lerpType,
+			ByteBufCodecs.stringUtf8(AbstractPacket.MAX_STRING_LENGTH), ScreenEffectPacket::lerpType,
 			ScreenEffectPacket::new
 		),
 		ScreenEffectPacket::handleClient,
 		null
 	);
-	public static java.util.function.Consumer<ScreenEffectPacket> CLIENT_HANDLER;
+	public static volatile java.util.function.Consumer<ScreenEffectPacket> CLIENT_HANDLER;
+	private static boolean clientHandlerWarned;
 
 	@Override
 	public Type<ScreenEffectPacket> getType() {
@@ -49,6 +50,16 @@ public record ScreenEffectPacket(
 
 	@Override
 	public void handleClient(IPayloadContext ctx) {
-		ctx.enqueueWork(() -> CLIENT_HANDLER.accept(this));
+		ctx.enqueueWork(() -> {
+			var handler = CLIENT_HANDLER;
+			if (handler == null) {
+				if (!clientHandlerWarned) {
+					clientHandlerWarned = true;
+					Common.LOGGER.warn("ScreenEffectPacket: client handler not initialized; dropping packet");
+				}
+				return;
+			}
+			handler.accept(this);
+		});
 	}
 }

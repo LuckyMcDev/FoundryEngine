@@ -9,15 +9,64 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Computes SHA-256 hashes of folder contents for change detection.
  */
 public class FolderHash {
+	private static final ExecutorService HASH_EXECUTOR = Executors.newSingleThreadExecutor(r -> {
+		Thread thread = new Thread(r, "foundryengine-folder-hash");
+		thread.setDaemon(true);
+		return thread;
+	});
+
 	/**
 	 * Computes a SHA-256 hash of all files in a folder, sorted by path.
 	 */
 	public static String hashFolder(Path folder) throws IOException, NoSuchAlgorithmException {
+		try {
+			return hashFolderAsync(folder).get();
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new IOException("Interrupted while hashing folder: " + folder, e);
+		} catch (ExecutionException e) {
+			Throwable cause = e.getCause();
+			if (cause instanceof IOException io) {
+				throw io;
+			}
+			if (cause instanceof NoSuchAlgorithmException nsa) {
+				throw nsa;
+			}
+			if (cause instanceof RuntimeException re) {
+				throw re;
+			}
+			throw new IOException("Failed to hash folder: " + folder, cause);
+		}
+	}
+
+	/**
+	 * Computes a SHA-256 hash of all files in a folder on a background executor.
+	 * The returned future completes exceptionally with a {@link CompletionException}
+	 * wrapping the underlying {@link IOException} or {@link NoSuchAlgorithmException}.
+	 */
+	public static CompletableFuture<String> hashFolderAsync(Path folder) {
+		return CompletableFuture.supplyAsync(() -> computeHashUnchecked(folder), HASH_EXECUTOR);
+	}
+
+	private static String computeHashUnchecked(Path folder) {
+		try {
+			return computeHash(folder);
+		} catch (IOException | NoSuchAlgorithmException e) {
+			throw new CompletionException(e);
+		}
+	}
+
+	private static String computeHash(Path folder) throws IOException, NoSuchAlgorithmException {
 		MessageDigest digest = MessageDigest.getInstance("SHA-256");
 		List<Path> files = new ArrayList<>();
 

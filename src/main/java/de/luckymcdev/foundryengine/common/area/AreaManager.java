@@ -311,7 +311,7 @@ public class AreaManager {
 		BlockPos pos = event.getPos();
 		BlockState state = event.getState();
 
-		for (Area area : areasInDimension(level.dimension())) {
+		for (Area area : areasNearBlock(level.dimension(), pos)) {
 			if (!area.contains(pos)) {
 				continue;
 			}
@@ -335,7 +335,7 @@ public class AreaManager {
 		BlockPos pos = event.getPos();
 		BlockState state = event.getState();
 
-		for (Area area : areasInDimension(level.dimension())) {
+		for (Area area : areasNearBlock(level.dimension(), pos)) {
 			if (!area.contains(pos)) {
 				continue;
 			}
@@ -346,6 +346,20 @@ public class AreaManager {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Returns only the areas that overlap the 32-block cell containing {@code pos}, using the same
+	 * spatial index as the tick path. Falls back to the full per-dimension list if the index is not
+	 * populated for the dimension.
+	 */
+	private List<Area> areasNearBlock(ResourceKey<Level> dimension, BlockPos pos) {
+		Map<Long, List<Area>> grid = areaSpatialIndex.get(dimension);
+		if (grid == null) {
+			return areasInDimension(dimension);
+		}
+		long cellKey = spatialCellKey(pos.getX() >> 5, pos.getZ() >> 5);
+		return grid.getOrDefault(cellKey, List.of());
 	}
 
 	private List<Area> areasInDimension(ResourceKey<Level> dimension) {

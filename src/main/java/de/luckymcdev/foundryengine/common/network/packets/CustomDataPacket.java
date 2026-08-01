@@ -19,17 +19,19 @@ public record CustomDataPacket(String id, CompoundTag data) implements AbstractP
 		AbstractPacket.createType(Common.id("custom_data")),
 		PacketBounds.BOTH,
 		StreamCodec.composite(
-			ByteBufCodecs.STRING_UTF8, CustomDataPacket::id,
-			ByteBufCodecs.COMPOUND_TAG, CustomDataPacket::data,
+			ByteBufCodecs.stringUtf8(AbstractPacket.MAX_STRING_LENGTH), CustomDataPacket::id,
+			AbstractPacket.GENEROUS_NBT_CODEC, CustomDataPacket::data,
 			CustomDataPacket::new
 		),
 		CustomDataPacket::handleClient,
 		CustomDataPacket::handleServer
 	);
-	public static BiConsumer<CustomDataPacket, IPayloadContext> CLIENT_HANDLER = (pkt, ctx) -> {
+	public static volatile BiConsumer<CustomDataPacket, IPayloadContext> CLIENT_HANDLER = (pkt, ctx) -> {
 	};
-	public static BiConsumer<CustomDataPacket, IPayloadContext> SERVER_HANDLER = (pkt, ctx) -> {
+	public static volatile BiConsumer<CustomDataPacket, IPayloadContext> SERVER_HANDLER = (pkt, ctx) -> {
 	};
+	private static boolean clientHandlerWarned;
+	private static boolean serverHandlerWarned;
 
 	@Override
 	public Type<CustomDataPacket> getType() {
@@ -49,7 +51,13 @@ public record CustomDataPacket(String id, CompoundTag data) implements AbstractP
 	@Override
 	public void handleClient(IPayloadContext ctx) {
 		ctx.enqueueWork(() -> {
-			CLIENT_HANDLER.accept(this, ctx);
+			var handler = CLIENT_HANDLER;
+			if (handler != null) {
+				handler.accept(this, ctx);
+			} else if (!clientHandlerWarned) {
+				clientHandlerWarned = true;
+				Common.LOGGER.warn("CustomDataPacket: client handler not initialized; dropping packet");
+			}
 			if (ctx.player() != null) {
 				NeoForge.EVENT_BUS.post(new CustomDataReceivedEvent(ctx.player(), id, data));
 			}
@@ -59,7 +67,13 @@ public record CustomDataPacket(String id, CompoundTag data) implements AbstractP
 	@Override
 	public void handleServer(IPayloadContext ctx) {
 		ctx.enqueueWork(() -> {
-			SERVER_HANDLER.accept(this, ctx);
+			var handler = SERVER_HANDLER;
+			if (handler != null) {
+				handler.accept(this, ctx);
+			} else if (!serverHandlerWarned) {
+				serverHandlerWarned = true;
+				Common.LOGGER.warn("CustomDataPacket: server handler not initialized; dropping packet");
+			}
 			if (ctx.player() != null) {
 				NeoForge.EVENT_BUS.post(new CustomDataReceivedEvent(ctx.player(), id, data));
 			}

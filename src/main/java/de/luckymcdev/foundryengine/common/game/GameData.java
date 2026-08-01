@@ -39,6 +39,12 @@ public class GameData {
 	 * Returns the underlying NBT compound data.
 	 * The returned tag is shared via GameManager's persistent store and survives
 	 * bundle reloads — modifications are visible to all sessions with the same ID.
+	 * <p>
+	 * Threading contract: a session can be ticked from both the client and the server
+	 * thread in the same process (integrated server), so the shared tag may be accessed
+	 * concurrently. Every read/write that goes through the  accessors is
+	 * guarded by synchronizing on the tag itself. If the returned tag is mutated directly,
+	 * the caller must synchronize on that tag object as well to avoid races.
 	 */
 	public CompoundTag data() {
 		return data;
@@ -48,14 +54,18 @@ public class GameData {
 	 * Returns true if this data has been initialized at least once.
 	 */
 	public boolean isInitialized() {
-		return data.getBoolean(INITIALIZED_KEY).orElse(false);
+		synchronized (data) {
+			return data.getBoolean(INITIALIZED_KEY).orElse(false);
+		}
 	}
 
 	/**
 	 * Sets the initialization flag for this data.
 	 */
 	public void setInitialized(boolean initialized) {
-		data.putBoolean(INITIALIZED_KEY, initialized);
+		synchronized (data) {
+			data.putBoolean(INITIALIZED_KEY, initialized);
+		}
 	}
 
 	/**
@@ -70,71 +80,91 @@ public class GameData {
 	 * Gets a boolean value from the data.
 	 */
 	public boolean getBoolean(String key) {
-		return data.getBoolean(key).orElse(false);
+		synchronized (data) {
+			return data.getBoolean(key).orElse(false);
+		}
 	}
 
 	/**
 	 * Puts a boolean value into the data.
 	 */
 	public void putBoolean(String key, boolean value) {
-		data.putBoolean(key, value);
+		synchronized (data) {
+			data.putBoolean(key, value);
+		}
 	}
 
 	/**
 	 * Gets a double value from the data.
 	 */
 	public double getDouble(String key) {
-		return data.getDouble(key).orElse(0.0);
+		synchronized (data) {
+			return data.getDouble(key).orElse(0.0);
+		}
 	}
 
 	/**
 	 * Puts a double value into the data.
 	 */
 	public void putDouble(String key, double value) {
-		data.putDouble(key, value);
+		synchronized (data) {
+			data.putDouble(key, value);
+		}
 	}
 
 	/**
 	 * Gets an integer value from the data.
 	 */
 	public int getInt(String key) {
-		return data.getInt(key).orElse(0);
+		synchronized (data) {
+			return data.getInt(key).orElse(0);
+		}
 	}
 
 	/**
 	 * Puts an integer value into the data.
 	 */
 	public void putInt(String key, int value) {
-		data.putInt(key, value);
+		synchronized (data) {
+			data.putInt(key, value);
+		}
 	}
 
 	/**
 	 * Gets a string value from the data, or null if absent.
 	 */
 	public @Nullable String getString(String key) {
-		return data.getString(key).orElse(null);
+		synchronized (data) {
+			return data.getString(key).orElse(null);
+		}
 	}
 
 	/**
 	 * Puts a string value into the data.
 	 */
 	public void putString(String key, String value) {
-		data.putString(key, value);
+		synchronized (data) {
+			data.putString(key, value);
+		}
 	}
 
 	protected void onSave(CompoundTag tag) {
-		tag.put("data", data);
+		synchronized (data) {
+			tag.put("data", data);
+		}
 	}
 
 	protected void onLoad(CompoundTag tag) {
-		if (tag.contains("data")) {
-			tag.getCompound("data").ifPresent(data::merge);
-		}
-		if (!isInitialized()) {
-			if (initHandler != null) {
-				initHandler.run();
+		synchronized (data) {
+			if (tag.contains("data")) {
+				tag.getCompound("data").ifPresent(data::merge);
 			}
-			setInitialized(true);
+			if (!isInitialized()) {
+				if (initHandler != null) {
+					initHandler.run();
+				}
+				setInitialized(true);
+			}
 		}
 	}
 
@@ -145,11 +175,13 @@ public class GameData {
 		CompoundTag tag = new CompoundTag();
 		onSave(tag);
 		Path path = resolvePath(directory);
-		try {
-			Files.createDirectories(path.getParent());
-			NbtIo.writeCompressed(tag, path);
-		} catch (IOException e) {
-			LOGGER.error("Failed to save game data [{}]", identifier, e);
+		synchronized (data) {
+			try {
+				Files.createDirectories(path.getParent());
+				NbtIo.writeCompressed(tag, path);
+			} catch (IOException e) {
+				LOGGER.error("Failed to save game data [{}]", identifier, e);
+			}
 		}
 	}
 
@@ -158,18 +190,20 @@ public class GameData {
 	 */
 	public final void loadFrom(Path directory) {
 		Path path = resolvePath(directory);
-		try {
-			if (Files.exists(path)) {
-				CompoundTag tag = NbtIo.readCompressed(path, NbtAccounter.defaultQuota());
-				onLoad(tag);
-			} else {
-				if (initHandler != null) {
-					initHandler.run();
+		synchronized (data) {
+			try {
+				if (Files.exists(path)) {
+					CompoundTag tag = NbtIo.readCompressed(path, NbtAccounter.defaultQuota());
+					onLoad(tag);
+				} else {
+					if (initHandler != null) {
+						initHandler.run();
+					}
+					setInitialized(true);
 				}
-				setInitialized(true);
+			} catch (IOException e) {
+				LOGGER.error("Failed to load game data [{}]", identifier, e);
 			}
-		} catch (IOException e) {
-			LOGGER.error("Failed to load game data [{}]", identifier, e);
 		}
 	}
 

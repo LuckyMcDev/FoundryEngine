@@ -209,8 +209,20 @@ public class MobStages extends StageAddon<EntityType<?>> {
 			return;
 		}
 
+		// Only force the despawn when staged-player absence is the actual reason. The gating range
+		// (spawnRange) only keeps staged players in mind, so check that the mob is genuinely out of
+		// range of *every* player before overriding the vanilla result: if a (non-staged) player is
+		// within the natural despawn radius, other despawn rules apply and we must defer to them.
 		if (!hasNearbyPlayerWithStage(serverLevel, mob.blockPosition(), type)) {
-			event.setResult(MobDespawnEvent.Result.ALLOW);
+			Player nearestPlayer = serverLevel.getNearestPlayer(mob, -1.0);
+			if (nearestPlayer == null) {
+				event.setResult(MobDespawnEvent.Result.ALLOW);
+			} else {
+				int despawnDistance = type.getCategory().getDespawnDistance();
+				if (nearestPlayer.distanceToSqr(mob) >= (double) despawnDistance * despawnDistance) {
+					event.setResult(MobDespawnEvent.Result.ALLOW);
+				}
+			}
 		}
 	}
 }

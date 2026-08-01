@@ -5,7 +5,6 @@ import de.luckymcdev.foundryengine.common.network.AbstractPacket;
 import de.luckymcdev.foundryengine.common.network.PacketBounds;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
@@ -14,7 +13,7 @@ public record SavedDataSyncPacket(CompoundTag data) implements AbstractPacket<Sa
 	public static final Type<SavedDataSyncPacket> TYPE = AbstractPacket.createType(Common.id("savedata_sync"));
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, SavedDataSyncPacket> CODEC = StreamCodec.composite(
-		ByteBufCodecs.COMPOUND_TAG, SavedDataSyncPacket::data,
+		AbstractPacket.GENEROUS_NBT_CODEC, SavedDataSyncPacket::data,
 		SavedDataSyncPacket::new
 	);
 

@@ -6,7 +6,6 @@ import de.luckymcdev.foundryengine.common.bundle.info.BundleFiles;
 import de.luckymcdev.foundryengine.common.priority.Priority;
 import de.luckymcdev.foundryengine.config.StartupConfig;
 import de.luckymcdev.foundryengine.server.Server;
-import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyCodeSource;
 import net.minecraft.network.chat.Component;
 import net.neoforged.fml.ModLoader;
@@ -40,6 +39,20 @@ public class GroovyScriptLoader {
 		return map;
 	}
 
+	private static void reportOnLoadFailure(EnvType envType, String bundleId, String message) {
+		LOGGER.warn("Failed to run onLoad for {} script in bundle '{}': {}",
+			envType.getName(), bundleId, message);
+		ModLoadingIssue issue = ModLoadingIssue.error(String.format(
+			"Failed to run onLoad for %s script in bundle '%s': %s",
+			envType.getName(), bundleId, message));
+		ModLoader.addLoadingIssue(issue);
+		if (Server.getServer() != null) {
+			Server.getServer().getPlayerList().broadcastSystemMessage(
+				Component.literal("§c[Script Error] onLoad " + envType.getName() + " script in bundle '" + bundleId + "': " + message),
+				false);
+		}
+	}
+
 	public List<BundleEntrypoint> loadCommon(BundleFiles files, String bundleId) {
 		return loadEnv(files, bundleId, EnvType.COMMON, BundleCompileResult::common);
 	}
@@ -68,20 +81,16 @@ public class GroovyScriptLoader {
 
 		for (BundleEntrypoint entrypoint : entrypoints) {
 			try {
-				entrypoint.onLoad();
+				ScriptTimeout.run(entrypoint::onLoad,
+					StartupConfig.SCRIPT_TIMEOUT_SECONDS.get(), bundleId + "/" + envType.getName() + "/onLoad");
 				loaded.add(entrypoint);
+			} catch (ScriptTimeoutException ste) {
+				LOGGER.error("onLoad timed out for {} script in bundle '{}' after {}s, skipping",
+					envType.getName(), bundleId, StartupConfig.SCRIPT_TIMEOUT_SECONDS.get());
+				reportOnLoadFailure(envType, bundleId,
+					"timed out after " + StartupConfig.SCRIPT_TIMEOUT_SECONDS.get() + " seconds (entrypoint skipped)");
 			} catch (Exception e) {
-				LOGGER.warn("Failed to run onLoad for {} script in bundle '{}': {}",
-					envType.getName(), bundleId, e.getMessage());
-				ModLoadingIssue issue = ModLoadingIssue.error(String.format(
-					"Failed to run onLoad for %s script in bundle '%s': %s",
-					envType.getName(), bundleId, e.getMessage()));
-				ModLoader.addLoadingIssue(issue);
-				if (Server.getServer() != null) {
-					Server.getServer().getPlayerList().broadcastSystemMessage(
-						Component.literal("§c[Script Error] onLoad " + envType.getName() + " script in bundle '" + bundleId + "': " + e),
-						false);
-				}
+				reportOnLoadFailure(envType, bundleId, e.getMessage());
 			}
 		}
 
@@ -143,12 +152,12 @@ public class GroovyScriptLoader {
 	                                           Map<String, Path> classNameToPath,
 	                                           Path commonPath, Path clientPath, Path serverPath,
 	                                           String bundleId) {
-		GroovyClassLoader loader = Common.getScriptShell().getClassLoader();
+		ScriptShell shell = Common.getScriptShell();
 
 		Map<String, Class<?>> definedClasses = new HashMap<>();
 		for (GroovyClass gc : compiledClasses) {
 			try {
-				Class<?> clazz = loader.defineClass(gc.getName(), gc.getBytes());
+				Class<?> clazz = shell.defineClass(gc.getName(), gc.getBytes());
 				definedClasses.put(gc.getName(), clazz);
 			} catch (Exception e) {
 				LOGGER.warn("Failed to define class '{}' in bundle '{}': {}",
@@ -207,7 +216,7 @@ public class GroovyScriptLoader {
 
 	private BundleCompileResult fallbackCompile(List<Path> scriptPaths, BundleFiles files, String bundleId,
 	                                            Path commonPath, Path clientPath, Path serverPath) {
-		GroovyClassLoader loader = Common.getScriptShell().getClassLoader();
+		ScriptShell shell = Common.getScriptShell();
 		List<BundleEntrypoint> common = new ArrayList<>();
 		List<BundleEntrypoint> client = new ArrayList<>();
 		List<BundleEntrypoint> server = new ArrayList<>();
@@ -217,7 +226,7 @@ public class GroovyScriptLoader {
 			BundleEntrypoint entrypoint = null;
 
 			try {
-				Class<?> scriptClass = loader.parseClass(new GroovyCodeSource(scriptPath.toUri().toURL()));
+				Class<?> scriptClass = shell.parseClass(new GroovyCodeSource(scriptPath.toUri().toURL()));
 				if (BundleEntrypoint.class.isAssignableFrom(scriptClass)) {
 					entrypoint = (BundleEntrypoint) scriptClass.getDeclaredConstructor().newInstance();
 				}
@@ -275,13 +284,6 @@ public class GroovyScriptLoader {
 		bundleCache.clear();
 	}
 
-	private record BundleCompileResult(
-		List<BundleEntrypoint> common,
-		List<BundleEntrypoint> client,
-		List<BundleEntrypoint> server
-	) {
-	}
-
 	public enum EnvType {
 		CLIENT("client"),
 		SERVER("server"),
@@ -296,5 +298,12 @@ public class GroovyScriptLoader {
 		public String getName() {
 			return name;
 		}
+	}
+
+	private record BundleCompileResult(
+		List<BundleEntrypoint> common,
+		List<BundleEntrypoint> client,
+		List<BundleEntrypoint> server
+	) {
 	}
 }

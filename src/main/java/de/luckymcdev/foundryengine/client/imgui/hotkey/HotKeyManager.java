@@ -21,6 +21,7 @@ public class HotKeyManager {
 	private ImHotKey.HotKey[] cachedExecutableArray = new ImHotKey.HotKey[0];
 	private int[] cachedExecutableMap = new int[0];
 	private boolean needsRebuild = false;
+	private CompoundTag pendingHotkeySection = new CompoundTag();
 
 
 	public ImHotKey getImHotKey() {
@@ -41,6 +42,7 @@ public class HotKeyManager {
 		RegisteredHotKey entry = new RegisteredHotKey(id, hotKey, action);
 
 		registry.add(entry);
+		applyPersisted(entry);
 		needsRebuild = true;
 		return entry;
 	}
@@ -59,7 +61,9 @@ public class HotKeyManager {
 		if (hk == null) {
 			hk = new ImHotKey.HotKey(panel.getLabel(), "Toggle " + panel.getLabel().getString());
 		}
-		registry.add(new RegisteredHotKey(id, hk, toggleAction));
+		RegisteredHotKey entry = new RegisteredHotKey(id, hk, toggleAction);
+		registry.add(entry);
+		applyPersisted(entry);
 		needsRebuild = true;
 	}
 
@@ -89,10 +93,9 @@ public class HotKeyManager {
 
 	public void load() {
 		Common.getSavedDataManager().load();
-		CompoundTag section = Common.getSavedDataManager().getSection("hotkeys");
+		pendingHotkeySection = Common.getSavedDataManager().getSection("hotkeys");
 		for (RegisteredHotKey entry : registry) {
-			String key = entry.id().toString();
-			section.getLong(key).ifPresent(v -> entry.hotKey().functionKeys = v);
+			applyPersisted(entry);
 		}
 	}
 
@@ -102,6 +105,11 @@ public class HotKeyManager {
 			section.putLong(entry.id().toString(), entry.hotKey().functionKeys);
 		}
 		Common.getSavedDataManager().setSection("hotkeys", section);
+	}
+
+	private void applyPersisted(RegisteredHotKey entry) {
+		String key = entry.id().toString();
+		pendingHotkeySection.getLong(key).ifPresent(v -> entry.hotKey().functionKeys = v);
 	}
 
 	public long pack(int... glfwKeys) {

@@ -13,9 +13,9 @@ import net.minecraft.util.Mth;
 public abstract class EngineScreen extends Screen {
 	private final WidgetBase root;
 	private final boolean debug;
-	private boolean widgetsInitialized;
 	float tick = 0.0f;
 	long lastNanos = 0;
+	private boolean widgetsInitialized;
 
 	public EngineScreen(boolean debug) {
 		super(Component.empty());

@@ -19,7 +19,7 @@ public record GiveItemPacket(String itemId) implements AbstractPacket<GiveItemPa
 		AbstractPacket.createType(Common.id("give_item")),
 		PacketBounds.SERVER,
 		StreamCodec.composite(
-			ByteBufCodecs.STRING_UTF8, GiveItemPacket::itemId,
+			ByteBufCodecs.stringUtf8(AbstractPacket.MAX_STRING_LENGTH), GiveItemPacket::itemId,
 			GiveItemPacket::new
 		),
 		null,

@@ -3,8 +3,11 @@ package de.luckymcdev.foundryengine.client.post;
 import de.luckymcdev.foundryengine.client.post.internal.PostEffectEntry;
 import de.luckymcdev.foundryengine.client.post.internal.PostEffectRegistry;
 import de.luckymcdev.foundryengine.common.Common;
+import de.luckymcdev.foundryengine.common.cutscene.util.LerpType;
+import net.minecraft.client.renderer.UniformValue;
 import net.minecraft.resources.Identifier;
 
+import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.DoubleSupplier;
@@ -21,11 +24,11 @@ public final class PostEffectManager {
 	private final PostEffectHandle cinematic;
 
 	private PostEffectEntry currentScreenEffectEntry;
-	private BooleanSupplier screenEffectCondition = () -> true;
 	private float screenEffectTimer;
 	private float screenEffectIntro;
 	private float screenEffectHold;
 	private float screenEffectOutro;
+	private LerpType screenEffectLerp = LerpType.LINEAR;
 	private boolean inScreenEffect;
 
 	public PostEffectManager() {
@@ -128,8 +131,7 @@ public final class PostEffectManager {
 		screenEffectIntro = intro;
 		screenEffectHold = hold;
 		screenEffectOutro = outro;
-
-		screenEffectCondition = () -> true;
+		screenEffectLerp = LerpType.fromString(lerpType);
 
 		PostEffectEntry entry = registry.getEntry(name).orElse(null);
 		if (entry == null) {
@@ -137,9 +139,10 @@ public final class PostEffectManager {
 		}
 
 		currentScreenEffectEntry = entry;
-		entry.setFadeIn(intro);
-		entry.setFadeOut(outro);
-		entry.setCondition(() -> screenEffectCondition.getAsBoolean());
+		entry.setFadeIn(0);
+		entry.setFadeOut(0);
+		entry.putUniformSlot("Intensity", () -> List.of(new UniformValue.FloatUniform(computeScreenEffectIntensity())));
+		entry.setCondition(() -> true);
 		entry.setOnAfterApply(ctx -> tickScreenEffect(ctx.deltaTick()));
 		entry.setEnabled(true);
 	}
@@ -155,20 +158,30 @@ public final class PostEffectManager {
 		}
 		inScreenEffect = false;
 		screenEffectTimer = 0;
-		screenEffectCondition = () -> true;
 	}
 
 	private void tickScreenEffect(float deltaTick) {
 		screenEffectTimer += deltaTick;
-		float totalIntroHold = screenEffectIntro + screenEffectHold;
-		float total = totalIntroHold + screenEffectOutro;
-
-		if (screenEffectTimer >= totalIntroHold && screenEffectCondition.getAsBoolean()) {
-			screenEffectCondition = () -> false;
-		}
+		float total = screenEffectIntro + screenEffectHold + screenEffectOutro;
 
 		if (screenEffectTimer >= total) {
 			stopScreenEffect();
 		}
+	}
+
+	private float computeScreenEffectIntensity() {
+		if (!inScreenEffect || screenEffectTimer <= 0) {
+			return 0.0f;
+		}
+		float totalIntroHold = screenEffectIntro + screenEffectHold;
+		if (screenEffectTimer < totalIntroHold) {
+			if (screenEffectIntro <= 0) {
+				return 1.0f;
+			}
+			float introProgress = Math.min(1.0f, screenEffectTimer / screenEffectIntro);
+			return screenEffectLerp.compute(introProgress);
+		}
+		float outroProgress = screenEffectOutro <= 0 ? 1.0f : Math.min(1.0f, (screenEffectTimer - totalIntroHold) / screenEffectOutro);
+		return 1.0f - screenEffectLerp.compute(outroProgress);
 	}
 }

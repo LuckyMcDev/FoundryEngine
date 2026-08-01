@@ -412,6 +412,7 @@ public class FoundryEngineMod {
 
 	private void onServerTick(ServerTickEvent.Post event) {
 		var server = event.getServer();
+		Common.getGameManager().beginServerTick();
 		Common.getCutsceneSessionManager().tick(server);
 		Common.getGameStageHandler().onPlayerTick(event);
 		ServerScreenEffectManager.tick();
@@ -427,6 +428,8 @@ public class FoundryEngineMod {
 
 	private void onPlayerDisconnect(PlayerEvent.PlayerLoggedOutEvent event) {
 		if (event.getEntity() instanceof ServerPlayer player) {
+			Common.getCutsceneSessionManager().onPlayerDisconnect(player);
+			ServerScreenEffectManager.onPlayerDisconnect(player);
 			Common.getDialogueManager().onPlayerDisconnect(player);
 		}
 	}

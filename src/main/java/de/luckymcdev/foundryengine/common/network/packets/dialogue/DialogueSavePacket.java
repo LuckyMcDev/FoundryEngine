@@ -6,7 +6,6 @@ import de.luckymcdev.foundryengine.common.network.PacketBounds;
 import de.luckymcdev.foundryengine.common.util.PermissionChecks;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
@@ -20,7 +19,7 @@ public record DialogueSavePacket(CompoundTag data) implements AbstractPacket<Dia
 	public static final Definition<DialogueSavePacket> DEFINITION = new Definition<>(
 		AbstractPacket.createType(Common.id("dialogue_save")),
 		PacketBounds.SERVER,
-		StreamCodec.composite(ByteBufCodecs.COMPOUND_TAG, DialogueSavePacket::data, DialogueSavePacket::new),
+		StreamCodec.composite(AbstractPacket.GENEROUS_NBT_CODEC, DialogueSavePacket::data, DialogueSavePacket::new),
 		null,
 		DialogueSavePacket::handleServer
 	);

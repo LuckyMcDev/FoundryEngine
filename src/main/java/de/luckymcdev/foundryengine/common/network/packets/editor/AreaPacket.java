@@ -22,6 +22,7 @@ import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.List;
+import java.util.Optional;
 
 public record AreaPacket(
 	AreaPacket.Action action,
@@ -43,9 +44,9 @@ public record AreaPacket(
 		AABBCodec.INSTANCE, AreaPacket::bounds,
 		Identifier.STREAM_CODEC, AreaPacket::dimensionId,
 		ByteBufCodecs.INT.map(Color::new, Color::argb), AreaPacket::color,
-		Identifier.STREAM_CODEC.apply(ByteBufCodecs.list()), AreaPacket::modules,
-		ByteBufCodecs.COMPOUND_TAG, AreaPacket::moduleData,
-		ByteBufCodecs.COMPOUND_TAG, AreaPacket::linkedAreas,
+		Identifier.STREAM_CODEC.apply(ByteBufCodecs.list(AbstractPacket.MAX_MODULE_COUNT)), AreaPacket::modules,
+		AbstractPacket.GENEROUS_NBT_CODEC, AreaPacket::moduleData,
+		AbstractPacket.GENEROUS_NBT_CODEC, AreaPacket::linkedAreas,
 		ByteBufCodecs.VAR_INT.map(AreaType::fromOrdinal, AreaType::ordinal), AreaPacket::areaType,
 		AreaPacket::new
 	);
@@ -160,11 +161,21 @@ public record AreaPacket(
 		}
 		CompoundTag modData = packet.moduleData();
 		for (String key : modData.keySet()) {
-			modData.getCompound(key).ifPresent(ct -> area.setModuleData(Identifier.parse(key), ct));
+			Identifier mid = Identifier.tryParse(key);
+			if (mid == null) {
+				Common.LOGGER.warn("AreaPacket: skipping module data with malformed identifier '{}'", key);
+				continue;
+			}
+			modData.getCompound(key).ifPresent(ct -> area.setModuleData(mid, ct));
 		}
 		CompoundTag links = packet.linkedAreas();
 		for (String key : links.keySet()) {
-			links.getString(key).ifPresent(value -> area.linkArea(key, Identifier.parse(value)));
+			Identifier linked = links.getString(key).flatMap(value -> Optional.ofNullable(Identifier.tryParse(value))).orElse(null);
+			if (linked == null) {
+				Common.LOGGER.warn("AreaPacket: skipping link with malformed identifier '{}'", key);
+				continue;
+			}
+			area.linkArea(key, linked);
 		}
 	}
 
@@ -191,7 +202,8 @@ public record AreaPacket(
 		BLOCK, AABB;
 
 		public static AreaType fromOrdinal(int ordinal) {
-			return values()[ordinal];
+			AreaType[] values = values();
+			return ordinal >= 0 && ordinal < values.length ? values[ordinal] : AABB;
 		}
 	}
 }

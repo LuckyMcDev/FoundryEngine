@@ -254,12 +254,12 @@ public class FoundryEngineModClient {
 	}
 
 	private void onLoggingIn(ClientPlayerNetworkEvent.LoggingIn event) {
-		try {
-			String hash = FolderHash.hashFolder(Common.BUNDLES);
-			ClientPacketDistributor.sendToServer(new BundleHashPacket(hash));
-		} catch (Exception e) {
-			LOGGER.error("Failed to hash bundles folder", e);
-		}
+		FolderHash.hashFolderAsync(Common.BUNDLES)
+			.thenAccept(hash -> ClientPacketDistributor.sendToServer(new BundleHashPacket(hash)))
+			.exceptionally(e -> {
+				LOGGER.error("Failed to hash bundles folder", e);
+				return null;
+			});
 	}
 
 	private void onAfterOpaqueFeatures(RenderLevelStageEvent.AfterOpaqueFeatures event) {

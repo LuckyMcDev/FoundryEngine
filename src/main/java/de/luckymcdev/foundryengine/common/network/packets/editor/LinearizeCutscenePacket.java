@@ -19,7 +19,7 @@ public record LinearizeCutscenePacket(String cutsceneName) implements AbstractPa
 		AbstractPacket.createType(Common.id("linearize_cutscene")),
 		PacketBounds.SERVER,
 		StreamCodec.composite(
-			ByteBufCodecs.STRING_UTF8, LinearizeCutscenePacket::cutsceneName,
+			ByteBufCodecs.stringUtf8(AbstractPacket.MAX_STRING_LENGTH), LinearizeCutscenePacket::cutsceneName,
 			LinearizeCutscenePacket::new
 		),
 		null,

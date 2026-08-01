@@ -6,6 +6,8 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.common.script.ScriptConfig;
 import de.luckymcdev.foundryengine.common.script.ScriptSandbox;
+import de.luckymcdev.foundryengine.common.script.ScriptTimeout;
+import de.luckymcdev.foundryengine.common.script.ScriptTimeoutException;
 import de.luckymcdev.foundryengine.config.StartupConfig;
 import de.luckymcdev.foundryengine.server.command.EngineCommand;
 import groovy.lang.Binding;
@@ -35,7 +37,7 @@ public class EvalCommand implements EngineCommand {
 		}
 		String code = StringArgumentType.getString(ctx, "code");
 
-		ByteArrayOutputStream capturedOut = new ByteArrayOutputStream();
+		ByteArrayOutputStream capturedOut = new ThreadSafeByteArrayOutputStream();
 		PrintStream capturePs = new PrintStream(capturedOut);
 		PrintStream oldOut = System.out;
 		System.setOut(capturePs);
@@ -56,7 +58,8 @@ public class EvalCommand implements EngineCommand {
 				ScriptConfig.createCompilerConfig()
 			);
 
-			Object result = shell.evaluate(code);
+			Object result = ScriptTimeout.call(() -> shell.evaluate(code),
+				StartupConfig.SCRIPT_TIMEOUT_SECONDS.get(), "eval");
 			System.setOut(oldOut);
 
 			StringBuilder response = new StringBuilder();
@@ -74,11 +77,32 @@ public class EvalCommand implements EngineCommand {
 			}
 
 			sendSuccess(ctx, response.toString(), false);
+		} catch (ScriptTimeoutException e) {
+			System.setOut(oldOut);
+			sendFailure(ctx, "Eval timed out after " + StartupConfig.SCRIPT_TIMEOUT_SECONDS.get() + "s");
 		} catch (Exception e) {
 			System.setOut(oldOut);
 			LOGGER.error("Error evaluating code: {}", e.getMessage());
 			sendFailure(ctx, "Error: " + e.getMessage());
 		}
 		return 1;
+	}
+
+	private static final class ThreadSafeByteArrayOutputStream extends ByteArrayOutputStream {
+
+		@Override
+		public synchronized void write(int b) {
+			super.write(b);
+		}
+
+		@Override
+		public synchronized void write(byte[] b, int off, int len) {
+			super.write(b, off, len);
+		}
+
+		@Override
+		public synchronized String toString() {
+			return super.toString();
+		}
 	}
 }

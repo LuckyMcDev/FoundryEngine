@@ -46,6 +46,11 @@ public final class ScriptConfig {
 			"java.io",
 			"java.net",
 			"java.nio",
+			"java.beans",
+			"java.util.zip",
+			"java.util.jar",
+			"java.util.prefs",
+			"java.rmi",
 			"javax",
 			"javax.script",
 			"sun",
@@ -82,7 +87,15 @@ public final class ScriptConfig {
 			"java.net.HttpURLConnection",
 			"java.nio.file.Files",
 			"java.nio.file.Paths",
-			"java.nio.file.FileSystem"
+			"java.nio.file.FileSystem",
+			"java.beans.XMLDecoder",
+			"java.beans.XMLEncoder",
+			"java.util.zip.ZipInputStream",
+			"java.util.zip.ZipOutputStream",
+			"java.util.jar.JarFile",
+			"java.util.prefs.Preferences",
+			"java.rmi.Naming",
+			"javax.imageio.ImageIO"
 		));
 
 		return secure;

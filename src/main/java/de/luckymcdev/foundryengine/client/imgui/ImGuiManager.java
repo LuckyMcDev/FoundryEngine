@@ -64,6 +64,7 @@ public final class ImGuiManager implements ResourceManagerReloadListener, Native
 	private final AtomicBoolean menuBarVisible = new AtomicBoolean(true);
 	private @Nullable ImGuiContextStack imGuiContextStack;
 	private boolean shouldBlockInput = false;
+	private int previousFramebuffer;
 	private int dockId;
 	private ImTheme currentTheme;
 
@@ -217,6 +218,7 @@ public final class ImGuiManager implements ResourceManagerReloadListener, Native
 		GlTexture colorTexture = Client.getGlColTexture();
 		GlDevice device = Client.getGlDevice();
 
+		previousFramebuffer = GL11.glGetInteger(GL30C.GL_FRAMEBUFFER_BINDING);
 		GlStateManager._glBindFramebuffer(
 			GL30C.GL_FRAMEBUFFER, colorTexture.getFbo(device.directStateAccess(), null)
 		);
@@ -244,10 +246,12 @@ public final class ImGuiManager implements ResourceManagerReloadListener, Native
 			return;
 		}
 
-		ImGui.render();
-		imGuiImplGl3.renderDrawData(ImGui.getDrawData());
-
-		GlStateManager._glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
+		try {
+			ImGui.render();
+			imGuiImplGl3.renderDrawData(ImGui.getDrawData());
+		} finally {
+			GlStateManager._glBindFramebuffer(GL30.GL_FRAMEBUFFER, previousFramebuffer);
+		}
 
 		if (ImGui.getIO().hasConfigFlags(ImGuiConfigFlags.ViewportsEnable)) {
 			final long pointer = GLFW.glfwGetCurrentContext();

@@ -52,6 +52,11 @@ public final class EngineLevels {
 		NeoForge.EVENT_BUS.addListener((ServerStoppingEvent event) -> {
 			EngineLevels levels = get(event.getServer());
 			levels.onServerStopping();
+			// Guard the static singleton against stale references to the stopping server:
+			// only drop it if it still points at the instance we just shut down.
+			if (instance == levels) {
+				instance = null;
+			}
 		});
 	}
 
@@ -244,6 +249,17 @@ public final class EngineLevels {
 	}
 
 	private void onServerStopping() {
+		// Drain pending deletions/unloads so persistent-level queues are not left behind in
+		// the (now stale) singleton when the server exits.
+		if (!deletionQueue.isEmpty()) {
+			deletionQueue.forEach(this::tickDeleteLevel);
+			deletionQueue.clear();
+		}
+		if (!unloadingQueue.isEmpty()) {
+			unloadingQueue.forEach(this::tickUnloadLevel);
+			unloadingQueue.clear();
+		}
+
 		List<RuntimeLevel> temporaryLevels = this.collectTemporaryLevels();
 		for (RuntimeLevel temporary : temporaryLevels) {
 			this.kickPlayers(temporary);

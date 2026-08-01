@@ -8,7 +8,6 @@ import de.luckymcdev.foundryengine.common.network.PacketBounds;
 import de.luckymcdev.foundryengine.common.network.codecs.ActionCodec;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
@@ -29,8 +28,8 @@ public record ClientboundDialoguePacket(
 	public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundDialoguePacket> CODEC = StreamCodec.composite(
 		ActionCodec.streamCodec(Action.values(), Action.SHOW), ClientboundDialoguePacket::action,
 		Identifier.STREAM_CODEC, ClientboundDialoguePacket::treeId,
-		ByteBufCodecs.COMPOUND_TAG, ClientboundDialoguePacket::session,
-		ByteBufCodecs.COMPOUND_TAG, ClientboundDialoguePacket::node,
+		AbstractPacket.GENEROUS_NBT_CODEC, ClientboundDialoguePacket::session,
+		AbstractPacket.GENEROUS_NBT_CODEC, ClientboundDialoguePacket::node,
 		ClientboundDialoguePacket::new
 	);
 	public static final Definition<ClientboundDialoguePacket> DEFINITION = new Definition<>(
@@ -40,7 +39,8 @@ public record ClientboundDialoguePacket(
 		(packet, ctx) -> handleClient(packet, ctx),
 		null
 	);
-	public static java.util.function.Consumer<ClientboundDialoguePacket> CLIENT_HANDLER;
+	public static volatile java.util.function.Consumer<ClientboundDialoguePacket> CLIENT_HANDLER;
+	private static boolean clientHandlerWarned;
 
 	public static ClientboundDialoguePacket show(Identifier treeId, DialogueSession session, DialogueNode node) {
 		return new ClientboundDialoguePacket(Action.SHOW, treeId, session.toNbt(), node.toNbt());
@@ -55,7 +55,17 @@ public record ClientboundDialoguePacket(
 	}
 
 	private static void handleClient(ClientboundDialoguePacket packet, IPayloadContext ctx) {
-		ctx.enqueueWork(() -> CLIENT_HANDLER.accept(packet));
+		ctx.enqueueWork(() -> {
+			var handler = CLIENT_HANDLER;
+			if (handler == null) {
+				if (!clientHandlerWarned) {
+					clientHandlerWarned = true;
+					Common.LOGGER.warn("ClientboundDialoguePacket: client handler not initialized; dropping packet");
+				}
+				return;
+			}
+			handler.accept(packet);
+		});
 	}
 
 	@Override

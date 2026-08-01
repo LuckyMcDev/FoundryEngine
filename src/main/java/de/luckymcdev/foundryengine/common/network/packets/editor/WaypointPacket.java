@@ -31,8 +31,8 @@ public record WaypointPacket(
 		ByteBufCodecs.INT, WaypointPacket::x,
 		ByteBufCodecs.INT, WaypointPacket::y,
 		ByteBufCodecs.INT, WaypointPacket::z,
-		ByteBufCodecs.STRING_UTF8, WaypointPacket::icon,
-		ByteBufCodecs.STRING_UTF8, WaypointPacket::name,
+		ByteBufCodecs.stringUtf8(AbstractPacket.MAX_STRING_LENGTH), WaypointPacket::icon,
+		ByteBufCodecs.stringUtf8(AbstractPacket.MAX_STRING_LENGTH), WaypointPacket::name,
 		ByteBufCodecs.INT.map(Color::new, Color::argb), WaypointPacket::color,
 		WaypointPacket::new
 	);

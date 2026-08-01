@@ -32,9 +32,7 @@ public class CutsceneSessionManager {
 
 			if (tickLengths.isEmpty()) {
 				it.remove();
-				if (!ServerScreenEffectManager.inScreenEffect(player)) {
-					player.setInvulnerable(false);
-				}
+				reassertInvulnerability(player);
 				continue;
 			}
 
@@ -58,10 +56,37 @@ public class CutsceneSessionManager {
 		q.removeFirst();
 		if (q.isEmpty()) {
 			playerInstances.remove(player.getUUID());
-			if (!ServerScreenEffectManager.inScreenEffect(player)) {
-				player.setInvulnerable(false);
-			}
+			reassertInvulnerability(player);
 		}
+	}
+
+	/**
+	 * Returns true if the player is still protected by either tracker (cutscene or screen
+	 * effect). The predicate is evaluated from both trackers in one place so the outcome
+	 * does not depend on which tracker ticks first.
+	 */
+	public boolean shouldPlayerBeProtected(ServerPlayer player) {
+		return inCutscene(player) || ServerScreenEffectManager.inScreenEffect(player);
+	}
+
+	/**
+	 * Re-asserts the player's invulnerability from the combined state of both trackers,
+	 * clearing it only when no tracker still protects the player.
+	 */
+	private void reassertInvulnerability(ServerPlayer player) {
+		GameType mode = player.gameMode.getGameModeForPlayer();
+		if (mode == GameType.SURVIVAL || mode == GameType.ADVENTURE) {
+			player.setInvulnerable(shouldPlayerBeProtected(player));
+		}
+	}
+
+	/**
+	 * Clears this tracker for a player leaving the server. The corresponding screen-effect
+	 * tracker entry is cleared from the disconnect handler in the mod entrypoint so stale
+	 * entries cannot leave the player permanently invulnerable.
+	 */
+	public void onPlayerDisconnect(ServerPlayer player) {
+		playerInstances.remove(player.getUUID());
 	}
 
 	public boolean inCutscene(ServerPlayer player) {
@@ -73,4 +98,3 @@ public class CutsceneSessionManager {
 		playerInstances.computeIfAbsent(player.getUUID(), k -> new ArrayDeque<>()).addLast(ticks);
 	}
 }
-

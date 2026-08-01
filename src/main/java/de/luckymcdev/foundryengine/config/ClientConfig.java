@@ -21,6 +21,7 @@ public final class ClientConfig {
 	public static final ModConfigSpec.BooleanValue SHOW_SLOT_TOOLTIP;
 	public static final ModConfigSpec.ConfigValue<String> BLOCK_ENTITY_RENDER_DISTANCE;
 	public static final ModConfigSpec.BooleanValue CUSTOM_SKYBOX;
+	public static final ModConfigSpec.IntValue MOD_PATH_BROADCAST_PORT;
 
 	static {
 		ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -76,6 +77,11 @@ public final class ClientConfig {
 			.comment("If the custom skybox rendering is used")
 			.translation("foundryengine.configuration.custom_skybox")
 			.define("CUSTOM_SKYBOX", false);
+
+		MOD_PATH_BROADCAST_PORT = builder
+			.comment("The port the mod path broadcaster connects to so the Gradle plugin can pick up the mods directory.")
+			.translation("foundryengine.configuration.mod_path_broadcast_port")
+			.defineInRange("MOD_PATH_BROADCAST_PORT", 56656, 1, 65535);
 
 		SPEC = builder.build();
 	}

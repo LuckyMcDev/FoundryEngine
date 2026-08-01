@@ -25,6 +25,13 @@ public final class ScriptSandbox {
 		"java.nio.",
 		"java.lang.reflect.",
 		"java.lang.invoke.",
+		"java.beans.",
+		"java.util.zip.",
+		"java.util.jar.",
+		"java.util.prefs.",
+		"java.rmi.",
+		"javax.imageio.",
+		"sun.misc.",
 		"jdk.",
 		"jdk.internal.",
 		"sun.",
@@ -72,7 +79,7 @@ public final class ScriptSandbox {
 
 		/**
 		 * @param delegate the real class loader to delegate to after the
-		 * sandbox check passes (must not be null)
+		 *                 sandbox check passes (must not be null)
 		 */
 		public FilteringClassLoader(ClassLoader delegate) {
 			super(Objects.requireNonNull(delegate, "delegate"));

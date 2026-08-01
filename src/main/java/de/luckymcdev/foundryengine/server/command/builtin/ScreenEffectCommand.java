@@ -5,10 +5,12 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
+import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.cutscene.util.LerpType;
 
 import de.luckymcdev.foundryengine.common.cutscene.util.ServerScreenEffectManager;
 import de.luckymcdev.foundryengine.common.network.packets.sync.ScreenEffectPacket;
+import de.luckymcdev.foundryengine.config.CommonConfig;
 import de.luckymcdev.foundryengine.server.command.EngineCommand;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
@@ -78,6 +80,24 @@ public class ScreenEffectCommand implements EngineCommand {
 
 		String easing = getOptionalString(ctx, "easing", LerpType.LINEAR.name());
 		String command = hasCommand ? StringArgumentType.getString(ctx, "command") : "";
+
+		if (hasCommand && !command.isBlank()) {
+			if (!CommonConfig.SCREEN_EFFECT_COMMAND_CHAINING.get()) {
+				Common.LOGGER.warn("ScreenEffectCommand: command chaining is disabled by config; skipping chained command '{}'", command);
+				command = "";
+			} else {
+				MinecraftServer server = ctx.getSource().getServer();
+				String rootName = command.trim();
+				if (rootName.startsWith("/")) {
+					rootName = rootName.substring(1);
+				}
+				rootName = rootName.split("\\s+", 2)[0];
+				if (rootName.isEmpty() || server.getCommands().getDispatcher().getRoot().getChild(rootName) == null) {
+					Common.LOGGER.warn("ScreenEffectCommand: unknown command root '{}' in chained command; refusing to execute", rootName);
+					command = "";
+				}
+			}
+		}
 
 		for (ServerPlayer player : players) {
 			PacketDistributor.sendToPlayer(player, new ScreenEffectPacket(effect, intro, hold, outro, easing));

@@ -1,15 +1,18 @@
 package de.luckymcdev.foundryengine.mixin.render;
 
 import com.mojang.blaze3d.resource.CrossFrameResourcePool;
+import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.post.RenderPhase;
 import de.luckymcdev.foundryengine.interfaces.EngineGameRenderer;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
+import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -19,6 +22,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  */
 @Mixin(GameRenderer.class)
 public class GameRendererMixin implements EngineGameRenderer {
+
+	@Unique
+	private static final Logger engine$LOGGER = LogUtils.getLogger();
 
 	@Shadow
 	@Final
@@ -51,8 +57,14 @@ public class GameRendererMixin implements EngineGameRenderer {
 					mainMenu.render();
 				}
 				editorManager.handleRender();
+			} catch (Exception e) {
+				engine$LOGGER.error("ImGui editor frame failed, restoring rendering state", e);
 			} finally {
-				imguiManager.end();
+				try {
+					imguiManager.end();
+				} catch (Exception e) {
+					engine$LOGGER.error("ImGui frame teardown failed", e);
+				}
 			}
 		}
 	}

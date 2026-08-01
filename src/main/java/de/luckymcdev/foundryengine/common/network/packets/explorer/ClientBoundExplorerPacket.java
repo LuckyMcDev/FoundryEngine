@@ -11,6 +11,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public record ClientBoundExplorerPacket(
 	Action action,
@@ -21,7 +22,7 @@ public record ClientBoundExplorerPacket(
 ) implements AbstractPacket<ClientBoundExplorerPacket> {
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, RemoteEntry> REMOTE_ENTRY_CODEC = StreamCodec.composite(
-		ByteBufCodecs.STRING_UTF8, RemoteEntry::relativePath,
+		ByteBufCodecs.stringUtf8(AbstractPacket.MAX_STRING_LENGTH), RemoteEntry::relativePath,
 		ByteBufCodecs.BOOL, RemoteEntry::isDirectory,
 		RemoteEntry::new
 	);
@@ -31,16 +32,17 @@ public record ClientBoundExplorerPacket(
 		PacketBounds.CLIENT,
 		StreamCodec.composite(
 			ACTION_CODEC, ClientBoundExplorerPacket::action,
-			ByteBufCodecs.STRING_UTF8, ClientBoundExplorerPacket::path,
-			ByteBufCodecs.STRING_UTF8, ClientBoundExplorerPacket::payload,
-			REMOTE_ENTRY_CODEC.apply(ByteBufCodecs.list()), ClientBoundExplorerPacket::entries,
-			ByteBufCodecs.STRING_UTF8.apply(ByteBufCodecs.list()), ClientBoundExplorerPacket::resourceIds,
+			ByteBufCodecs.stringUtf8(AbstractPacket.MAX_STRING_LENGTH), ClientBoundExplorerPacket::path,
+			ByteBufCodecs.stringUtf8(AbstractPacket.MAX_FILE_CONTENT_LENGTH), ClientBoundExplorerPacket::payload,
+			REMOTE_ENTRY_CODEC.apply(ByteBufCodecs.list(AbstractPacket.MAX_LIST_ELEMENT_COUNT)), ClientBoundExplorerPacket::entries,
+			ByteBufCodecs.stringUtf8(AbstractPacket.MAX_STRING_LENGTH).apply(ByteBufCodecs.list(AbstractPacket.MAX_LIST_ELEMENT_COUNT)), ClientBoundExplorerPacket::resourceIds,
 			ClientBoundExplorerPacket::new
 		),
 		ClientBoundExplorerPacket::handleClient,
 		null
 	);
-	public static java.util.function.Consumer<ClientBoundExplorerPacket> CLIENT_HANDLER;
+	public static volatile Consumer<ClientBoundExplorerPacket> CLIENT_HANDLER;
+	private static boolean clientHandlerWarned;
 
 	@Override
 	public Type<ClientBoundExplorerPacket> getType() {
@@ -59,7 +61,17 @@ public record ClientBoundExplorerPacket(
 
 	@Override
 	public void handleClient(IPayloadContext ctx) {
-		ctx.enqueueWork(() -> CLIENT_HANDLER.accept(this));
+		ctx.enqueueWork(() -> {
+			var handler = CLIENT_HANDLER;
+			if (handler == null) {
+				if (!clientHandlerWarned) {
+					clientHandlerWarned = true;
+					Common.LOGGER.warn("ClientBoundExplorerPacket: client handler not initialized; dropping packet");
+				}
+				return;
+			}
+			handler.accept(this);
+		});
 	}
 
 	public enum Action {

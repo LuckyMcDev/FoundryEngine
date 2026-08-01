@@ -6,6 +6,7 @@ import de.luckymcdev.foundryengine.common.bundle.Bundle;
 import de.luckymcdev.foundryengine.common.bundle.BundleLifecycleListener;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
@@ -21,6 +22,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -36,6 +38,8 @@ public class GameManager implements BundleLifecycleListener {
 	private final Map<String, GameLifecycle> worldLifecycles = new ConcurrentHashMap<>();
 	private final Map<Identifier, GameSession> globalSessions = new ConcurrentHashMap<>();
 	private final Map<Identifier, CompoundTag> persistentSessionData = new ConcurrentHashMap<>();
+	private final Set<GameSession> tickedCommonSessions = ConcurrentHashMap.newKeySet();
+	private final Set<GameSession> tickedServerSessions = ConcurrentHashMap.newKeySet();
 
 	private static String worldName(Level level) {
 		if (level == null) {
@@ -48,7 +52,23 @@ public class GameManager implements BundleLifecycleListener {
 		if (client.getSingleplayerServer() != null) {
 			return client.getSingleplayerServer().getWorldData().getLevelName();
 		}
+		// Pure client (dedicated-server multiplayer): resolve a meaningful name from the
+		// connected server's data instead of falling back to "unknown".
+		ServerData currentServer = client.getCurrentServer();
+		if (currentServer != null && currentServer.name != null && !currentServer.name.isBlank()) {
+			return currentServer.name;
+		}
 		return "unknown";
+	}
+
+	/**
+	 * Resets the per-tick session deduplication state. Must be called once per server tick
+	 * before any level/session ticking so that each session's tick handlers run exactly once
+	 * per server tick regardless of how many dimensions the world has.
+	 */
+	public void beginServerTick() {
+		tickedCommonSessions.clear();
+		tickedServerSessions.clear();
 	}
 
 	/**
@@ -303,7 +323,8 @@ public class GameManager implements BundleLifecycleListener {
 		}
 
 		for (GameSession session : sessions.values()) {
-			if (session.started && session.publicState().isActive()) {
+			if (session.started && session.publicState().isActive()
+				&& tickedCommonSessions.add(session)) {
 				session.onCommonTick(level);
 			}
 		}
@@ -343,7 +364,8 @@ public class GameManager implements BundleLifecycleListener {
 		}
 
 		for (GameSession session : sessions.values()) {
-			if (session.started && session.publicState().isActive()) {
+			if (session.started && session.publicState().isActive()
+				&& tickedServerSessions.add(session)) {
 				session.onServerTick(server, level);
 			}
 		}

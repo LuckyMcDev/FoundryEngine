@@ -9,7 +9,6 @@ import de.luckymcdev.foundryengine.common.network.PacketBounds;
 import de.luckymcdev.foundryengine.common.util.PermissionChecks;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -24,11 +23,12 @@ public record CutscenePacket(CompoundTag nbt) implements AbstractPacket<Cutscene
 	public static final Definition<CutscenePacket> DEFINITION = new Definition<>(
 		AbstractPacket.createType(Common.id("cutscene_nbt")),
 		PacketBounds.BOTH,
-		StreamCodec.composite(ByteBufCodecs.COMPOUND_TAG, CutscenePacket::nbt, CutscenePacket::new),
+		StreamCodec.composite(AbstractPacket.GENEROUS_NBT_CODEC, CutscenePacket::nbt, CutscenePacket::new),
 		CutscenePacket::handleClient,
 		CutscenePacket::handleServer
 	);
-	public static java.util.function.Consumer<CutscenePacket> CLIENT_HANDLER;
+	public static volatile java.util.function.Consumer<CutscenePacket> CLIENT_HANDLER;
+	private static boolean clientHandlerWarned;
 
 	public static CutscenePacket addAction(String name) {
 		CompoundTag tag = new CompoundTag();
@@ -92,7 +92,17 @@ public record CutscenePacket(CompoundTag nbt) implements AbstractPacket<Cutscene
 
 	@Override
 	public void handleClient(IPayloadContext ctx) {
-		ctx.enqueueWork(() -> CLIENT_HANDLER.accept(this));
+		ctx.enqueueWork(() -> {
+			var handler = CLIENT_HANDLER;
+			if (handler == null) {
+				if (!clientHandlerWarned) {
+					clientHandlerWarned = true;
+					Common.LOGGER.warn("CutscenePacket: client handler not initialized; dropping packet");
+				}
+				return;
+			}
+			handler.accept(this);
+		});
 	}
 
 	@Override
@@ -113,8 +123,8 @@ public record CutscenePacket(CompoundTag nbt) implements AbstractPacket<Cutscene
 			return;
 		}
 
-		CutsceneAction action = CutsceneAction.fromString(this.nbt.getStringOr("Action", ""));
-		if (action == null) {
+		String actionName = this.nbt.getStringOr("Action", "");
+		if (actionName.isEmpty()) {
 			var list = new ArrayList<Cutscene>();
 			var nbtList = this.nbt.getListOrEmpty("CutsceneList");
 			for (int i = 0; i < nbtList.size(); i++) {
@@ -123,6 +133,12 @@ public record CutscenePacket(CompoundTag nbt) implements AbstractPacket<Cutscene
 			cutsceneManager.replaceAll(dimension, list);
 			cutsceneManager.save();
 			cutsceneManager.syncToAll();
+			return;
+		}
+		CutsceneAction action = CutsceneAction.fromString(actionName);
+		if (action == null) {
+			Common.LOGGER.warn("CutscenePacket: unknown action '{}' from player {}; skipping packet",
+				actionName, player.getName().getString());
 			return;
 		}
 		switch (action) {

@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public final class WorkspaceState {
+	private static final int MAX_BUFFERS = 128;
+
 	private final Map<Identifier, Buffer> buffers = new LinkedHashMap<>();
 	private final Map<Identifier, String> bufferContents = new HashMap<>();
 	private final Map<Identifier, Int2ObjectMap<String>> bufferErrors = new HashMap<>();
@@ -25,6 +27,7 @@ public final class WorkspaceState {
 		buffers.put(id, buf);
 		bufferContents.put(id, content);
 		activeBufferId = id;
+		enforceBufferLimit();
 		notifyChange();
 	}
 
@@ -33,6 +36,7 @@ public final class WorkspaceState {
 		buffers.put(id, buf);
 		bufferContents.put(id, content);
 		activeBufferId = id;
+		enforceBufferLimit();
 		notifyChange();
 	}
 
@@ -41,6 +45,7 @@ public final class WorkspaceState {
 		buffers.put(id, buf);
 		bufferContents.put(id, content);
 		activeBufferId = id;
+		enforceBufferLimit();
 		notifyChange();
 	}
 
@@ -84,6 +89,7 @@ public final class WorkspaceState {
 	public void registerBuffer(Buffer buffer) {
 		buffers.put(buffer.id(), buffer);
 		activeBufferId = buffer.id();
+		enforceBufferLimit();
 		notifyChange();
 	}
 
@@ -146,6 +152,18 @@ public final class WorkspaceState {
 	private void notifyChange() {
 		for (var l : changeListeners) {
 			l.run();
+		}
+	}
+
+	private void enforceBufferLimit() {
+		while (buffers.size() > MAX_BUFFERS) {
+			Identifier oldest = buffers.keySet().iterator().next();
+			buffers.remove(oldest);
+			bufferContents.remove(oldest);
+			bufferErrors.remove(oldest);
+			if (oldest.equals(activeBufferId)) {
+				activeBufferId = buffers.isEmpty() ? null : buffers.keySet().iterator().next();
+			}
 		}
 	}
 

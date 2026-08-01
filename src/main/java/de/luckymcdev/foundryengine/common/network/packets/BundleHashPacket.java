@@ -23,7 +23,7 @@ public record BundleHashPacket(String clientHash) implements AbstractPacket<Bund
 	public static final Definition<BundleHashPacket> DEFINITION = new Definition<>(
 		AbstractPacket.createType(Common.id("bundle_hash_packet")),
 		PacketBounds.SERVER,
-		StreamCodec.composite(ByteBufCodecs.STRING_UTF8, BundleHashPacket::clientHash, BundleHashPacket::new),
+		StreamCodec.composite(ByteBufCodecs.stringUtf8(AbstractPacket.MAX_STRING_LENGTH), BundleHashPacket::clientHash, BundleHashPacket::new),
 		null,
 		BundleHashPacket::handleServer
 	);
