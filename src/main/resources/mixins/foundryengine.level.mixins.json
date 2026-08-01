@@ -6,12 +6,15 @@
 	"mixins": [
 		"ChunkMapMixin",
 		"LevelStemMixin",
+		"PrimaryLevelDataMixin",
 		"ServerChunkCacheMixin",
 		"ServerLevelMixin",
 		"WorldGenSettingsMixin"
 	],
 	"client": [
-		"LevelStorageSourceMixin"
+		"CreateWorldScreenMixin",
+		"LevelStorageSourceMixin",
+		"WorldOpenFlowsMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

@@ -11,6 +11,7 @@ public final class CommonConfig {
 	public static final ModConfigSpec.BooleanValue FILE_NAME_HASH_COMPONENTS;
 	public static final ModConfigSpec.BooleanValue SCREEN_EFFECT_COMMAND_CHAINING;
 	public static final ModConfigSpec.BooleanValue CUTSCENE_COMMAND_EXECUTION;
+	public static final ModConfigSpec.BooleanValue SKIP_EXPERIMENTAL_WARNING;
 
 	static {
 		ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -39,6 +40,11 @@ public final class CommonConfig {
 			.comment("Allows the editor cutscene command network packet to execute an arbitrary server command. Disable to block command execution from cutscenes.")
 			.translation("foundryengine.configuration.cutscene_command_execution")
 			.define("CUTSCENE_COMMAND_EXECUTION", true);
+
+		SKIP_EXPERIMENTAL_WARNING = builder
+			.comment("Skip the Experimental warning on world join.")
+			.translation("foundryengine.configuration.skip_experimental_warning")
+			.define("SKIP_EXPERIMENTAL_WARNING", true);
 
 		SPEC = builder.build();
 	}

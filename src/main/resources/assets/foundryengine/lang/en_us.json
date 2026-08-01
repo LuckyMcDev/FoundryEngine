@@ -61,6 +61,7 @@
 	"foundryengine.configuration.eval_command_permission.tooltip": "Permission level required to use /engine eval (0–4).",
 	"foundryengine.configuration.clear_data_cache": "Clear Data Cache",
 	"foundryengine.configuration.clear_data_cache.tooltip": "If the data cache should be cleared on the next run.",
+	"foundryengine.configuration.skip_experimental_warning": "Skip Experimental World Join Warning",
 	"foundryengine.stage.required_prefix": " Required: ",
 	"foundryengine.stage.default_locked": "You don't have the required stages to interact with this %s!",
 	"foundryengine.stage.required_header": "Required Stages:",
