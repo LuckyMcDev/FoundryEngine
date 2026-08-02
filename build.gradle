@@ -1,58 +1,76 @@
+import me.modmuss50.mpp.ReleaseType
+
 plugins {
-    id 'java-library'
-    id 'maven-publish'
-    id 'idea'
-    id 'net.neoforged.moddev' version '2.0.140'
-    id "me.modmuss50.mod-publish-plugin" version "1.1.0"
-	id "fe-neoforge"
-	id "fe-publishing"
-	id "fe-tasks"
+	id 'de.luckymcdev.foundryengine'
 }
 
 version = mod_version
 group = mod_group_id
 
+foundryengine {
+	modId = mod_id
+	modName = mod_name
+	modLicense = mod_license
+	modAuthors = mod_authors
+	modDescription = mod_description
+
+	minecraftVersion = minecraft_version
+	minecraftVersionRange = minecraft_version_range
+	neoVersion = neo_version
+	neoVersionRange = neo_version_range
+	loaderVersionRange = loader_version_range
+
+	runDirs = ['client', 'server', 'gameTestServer']
+	bundlesSubPath = 'FoundryEngine/bundles'
+	exampleBundlesSource = 'ExampleBundles'
+
+	githubRepository = 'LuckyMcDev/FoundryEngine'
+	githubCommitish = 'master'
+	releaseType = ReleaseType.ALPHA
+}
+
 repositories {
-    mavenLocal()
-    gradlePluginPortal()
-    mavenCentral()
-    maven {
-        name "Neoforge"
-        url "https://maven.neoforged.net/releases"
-    }
-    maven {
-        name "Latvian"
-        url "https://maven.latvian.dev/releases"
-    }
-    maven {
-        name = "Modrinth"
-        url = "https://api.modrinth.com/maven"
-    }
-    maven {
-        name = "Jared's maven"
-        url = "https://maven.blamejared.com/"
-    }
-    maven {
-        name = "ModMaven"
-        url = "https://modmaven.dev"
-    }
+	mavenLocal()
+	gradlePluginPortal()
+	mavenCentral()
+	maven {
+		name "Neoforge"
+		url "https://maven.neoforged.net/releases"
+	}
+	maven {
+		name "Latvian"
+		url "https://maven.latvian.dev/releases"
+	}
+	maven {
+		name = "Modrinth"
+		url = "https://api.modrinth.com/maven"
+	}
+	maven {
+		name = "Jared's maven"
+		url = "https://maven.blamejared.com/"
+	}
+	maven {
+		name = "ModMaven"
+		url = "https://modmaven.dev"
+	}
 }
 
 base {
-    archivesName = mod_id
+	archivesName = mod_id
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(25)
 
 test {
-    useJUnitPlatform()
+	useJUnitPlatform()
 }
 
 idea {
-    module {
-        downloadJavadoc = true
-	    excludeDirs.add(file(".editorconfig"))
-    }
+	module {
+		downloadJavadoc = true
+		excludeDirs.add(file(".editorconfig"))
+	}
 }
 
+// Keep dependencies in a separate file for clarity
 apply from: 'dependencies.gradle'
