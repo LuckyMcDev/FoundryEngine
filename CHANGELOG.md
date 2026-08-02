@@ -7,7 +7,6 @@
 - Feat (editor): implement more advanced code editor stuff error highlighting workspace state
 
 working towards ide like behavior
-
 - *(editor)* Script editor, outline panel, imgui downgrade
 - *(command)* Implement binding commands to item stacks.
 - *(gizmo)* Add GizmoBuffer and GizmoRenderer for improved rendering of gizmos
@@ -56,6 +55,7 @@ working towards ide like behavior
 
 - Merge branch 'master' of https://github.com/LuckyMcDev/FoundryEngine
 - *(session)* Had to rework it again. "should" be better now
+- *(build)* Migrate full build to use a custom plugin
 
 ### Refactor
 
@@ -106,7 +106,6 @@ working towards ide like behavior
 - Delete obsolete Adapter class
 - Chore (deps): bump NeoForge to 26.1.2.78 and ImGui to 1.92.7.1 forgot to push this, is relevant for last 3 or 4 commits.
 - *(cleanup)* Remove obsolete scripts, configs, and example code
-
 ## [0.1.2] - 2026-07-06
 
 ### Features
@@ -200,7 +199,6 @@ working towards ide like behavior
 ### Revert
 
 - Revert since it somehow broke? i dont even understand why
-
 ## [0.1.0] - 2026-06-21
 
 ### Features
@@ -239,7 +237,6 @@ working towards ide like behavior
 - Bump version
 - *(deps)* Update neoforge version to 26.1.2.76
 - Allow manual trigger for publish workflow
-
 ## [0.0.67] - 2026-06-19
 
 ### Features
@@ -266,7 +263,6 @@ working towards ide like behavior
 - Add ai stuff
 - Update AGENTS.md
 - Bump version to 0.0.67 [skip ci]
-
 ## [0.0.66] - 2026-06-19
 
 ### Features
@@ -300,7 +296,6 @@ working towards ide like behavior
 - Feat (editor): implement more advanced code editor stuff error highlighting workspace state
 
 working towards ide like behavior
-
 - *(editor)* Script editor, outline panel, imgui downgrade
 
 ### Bug Fixes
@@ -560,7 +555,6 @@ working towards ide like behavior
 - Add preCommit Task
 
 Signed-off-by: LuckyMcDev <lucky.dev@myyahoo.com>
-
 - Refactor everything + add Javadoc.
 - Add .idea/ and .run/ to .gitignore
 - Remove duplicate vertex shaders and consolidate into single vert.vsh
@@ -593,7 +587,6 @@ Signed-off-by: LuckyMcDev <lucky.dev@myyahoo.com>
 - Refactor editor panels and add main editor panel
 
 allow for docking in central node. if a window is docked in central node, cancel minecraft input.
-
 - Remove old NodeEditorPanel and introduce new node language system
 - Remove tick print from example bundle because its too annoying
 - Add FileExplorerPanel and CodeEditor with bundle reloading support
@@ -602,7 +595,6 @@ allow for docking in central node. if a window is docked in central node, cancel
 i did an oopsie with the resource loading from bundles, should be fixed now. atleast the shader works.
 
 Added test shader from bundle testbundle. so now custom shader + registry from in bundle works.
-
 - Add BrowserPanel with MCEF integration and update dependencies from java-cef to mcef
 - Refactor node editor packages to imnodes and add NodeEditor context type
 - Remove shortcut from Code editor.
@@ -656,11 +648,9 @@ Added test shader from bundle testbundle. so now custom shader + registry from i
 - Revert "Change id and pack position in EngineRepositorySource"
 
 This reverts commit 3f272c60970b01a55b5f2a199184dea5aeabf9cc.
-
 - Revert "Remove unused method in BundlePackResources"
 
 This reverts commit 7c33dd653fc4264d09db778d220e4ad7d03c3d2f.
-
 - Make BrowserPanel registration conditional on mcef mod presence and remove browser-related test buttons
 - Update GroovyScriptEngine roots to include generated path Now i can generate scripts, and they're loaded as well.
 - Make mcef compileOnly
@@ -719,7 +709,6 @@ This reverts commit 7c33dd653fc4264d09db778d220e4ad7d03c3d2f.
 - Revert "Rename README.md to README.txt"
 
 This reverts commit d15bf8bfe40bece57ad89afe5a8266e956d2bcc4.
-
 - Add test command implementation
 - Add commonmark dependencies and update gradle.properties
 - Add setScreen method to Client
@@ -771,20 +760,17 @@ This reverts commit d15bf8bfe40bece57ad89afe5a8266e956d2bcc4.
 - Update version to 0.0.3!
 
 Will from now on be correctly updated.
-
 - Add Javadoc to permission helpers and change color of succes
 - Refactor build configuration into modular Gradle files
 - Run SonarQube analysis and fix most issues.
 
 Went from 600+ to 209
-
 - Idk what happened here, but its fixed now
 - Refactor and improve code quality bump to 0.0.4
 - Add first version of RecipeBuilder bump 0.0.5
 - Refactor EngineRegistry.java to EngineRegistries.java and add RecipeBuilder usage.
 
 bump 0.0.6
-
 - Add caution notes to GameBehavior and related classes.
 - Remove all the generated stuff from the ExampleBundle
 - Change error logs to warnings in ModPathBroadcaster
@@ -797,11 +783,9 @@ bump 0.0.6
 - Add @NullMarkded to all packages.
 
 bump 0.0.10
-
 - Update tag-dispatch.yaml
 
 fix typo. :publish
-
 - Remove testing actions
 - Update publish.yaml
 - Update Client and Server run jvm args, update game run directory
@@ -831,7 +815,6 @@ add new MdScreen constructors change to just one Markdown visitor. supports both
 - Add RegistryEvent API for cleaner registration inside of bundles.
 
 bump .19
-
 - Update package from io.github.* to de.*
 - Mark internal API methods with @ApiStatus.Internal
 - Ensure object is created before retrieval in BuilderBaseImpl
@@ -845,7 +828,6 @@ bump .20
 - Move consumer util classes to dedicated package
 
 bump .21
-
 - Add testing particle
 - Change particle spawns to just 1, and test color
 - Create engine_particle.png
@@ -881,7 +863,6 @@ New style system. Rename FeImGuiImplGlfw to EngineImGuiImplGlfw remove now unuse
 
 Add themes:
 BessDarkTheme CatpuccinMochaTheme CherryTheme DarkTheme ModernDarkTheme VeilTheme VidlibTheme
-
 - Update themes to use Color class and fix import path in EngineLogAppender
 - Add MinecraftToolsPanel for game mode, time, and metrics management
 - Enable keyboard navigation and FreeType renderer in ImGuiManager
@@ -928,7 +909,6 @@ BessDarkTheme CatpuccinMochaTheme CherryTheme DarkTheme ModernDarkTheme VeilThem
 - Add mod-publish-plugin and configure publishing settings
 
 havent yet made it publish, only added basic config.
-
 - Fix documentation links and update sidebar structure
 - Move ConsolePanel to Tools category and add StopwatchPanel
 - Update StopwatchPanel constructor to handle display name formatting
@@ -1100,7 +1080,6 @@ havent yet made it publish, only added basic config.
 - Add level storage source mixin to allow for additional save paths.
 
 Still need to implement the bundle save paths to be auto added.
-
 - Make network payload registration optional
 - Rename entity creation method to `createDisplay` for clarity
 - Move server tick handling from FoundryEngineModServer to FoundryEngineMod
@@ -1148,7 +1127,6 @@ Still need to implement the bundle save paths to be auto added.
 - Update EngineImGui with more methods, make client return EngineImGui instead of ImGuiManager.
 
 I think i figured out font issues. It might be the glyph ranges
-
 - Im an idiot, forgor this
 - Add ImGuiFontManager, Update ImGuiManager, remove most Icons bump version
 - Update Gradle wrapper to 9.5.0
@@ -1157,7 +1135,6 @@ I think i figured out font issues. It might be the glyph ranges
 - Update font handling and config options
 
 currently, minimal is a bit weird, but diabled should work
-
 - Im actually done with Fonts
 - Add BlueprintContexts to event group holders
 - Add Minecraft-specific pin types and auto-derive colors
@@ -1226,9 +1203,7 @@ currently, minimal is a bit weird, but diabled should work
 - Update mod version to 0.0.64
 - Update Docs
 - Make it so that i can hotswap mixins and other jvm stuff
-
 uses the intellij jrr
-
 - Holy documentation update
 - Replace int color with Color class in lots of files
 - Remove BBModel data classes and related utilities
@@ -1261,7 +1236,6 @@ uses the intellij jrr
 - Make it so that i can hotswap mixins and other jvm stuff
 
 uses the intellij jrr
-
 - Holy documentation update
 - Replace int color with Color class in lots of files
 - Remove BBModel data classes and related utilities
@@ -1343,7 +1317,6 @@ uses the intellij jrr
 - Test some actions
 
 :publish
-
 - Add unit tests for a lot of stuff.
 - Test deepwiki thingy
 
