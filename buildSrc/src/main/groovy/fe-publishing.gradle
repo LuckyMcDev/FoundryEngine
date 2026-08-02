@@ -24,6 +24,13 @@ tasks.register('javadocJar', Jar) {
     archiveClassifier.set('javadoc')
 }
 
+tasks.register('sourcesJar', Jar) {
+	description = 'A sources JAR built from the main source set'
+	group = 'build'
+	archiveClassifier.set('sources')
+	from sourceSets.main.allSource
+}
+
 tasks.assemble {
     dependsOn(tasks.javadocJar)
 }
