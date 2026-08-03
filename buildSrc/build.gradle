@@ -6,7 +6,7 @@ gradlePlugin {
 	plugins {
 		foundryEnginePlugin {
 			id = 'de.luckymcdev.foundryengine'
-			implementationClass = 'de.luckymcdev.foundryengine.FoundryEnginePlugin'
+			implementationClass = 'de.luckymcdev.foundryengine.plugin.FoundryEnginePlugin'
 		}
 	}
 }

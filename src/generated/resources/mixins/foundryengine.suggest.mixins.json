@@ -2,7 +2,8 @@
 	"required": true,
 	"minVersion": "0.8",
 	"package": "de.luckymcdev.foundryengine.mixin.suggest",
-	"compatibilityLevel": "JAVA_21",
+	"compatibilityLevel": "JAVA_25",
+	"mixins": [],
 	"client": [
 		"BlockStateParserMixin",
 		"CommandSuggestionsAccessor",
@@ -16,7 +17,11 @@
 		"StyleArgumentMixin",
 		"SuggestionsListMixin"
 	],
+	"plugin": "de.luckymcdev.foundryengine.mixin.FoundryEngineMixinPlugin",
 	"injectors": {
 		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
 	}
 }

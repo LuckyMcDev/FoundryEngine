@@ -1,4 +1,4 @@
-package de.luckymcdev.foundryengine;
+package de.luckymcdev.foundryengine.plugin;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
@@ -35,7 +35,6 @@ public abstract class GenerateFullChangelogTask extends DefaultTask {
 
 	@TaskAction
 	public void execute() {
-		// Both properties now have a value (the convention or user override)
 		File outputFile = getChangelogFile().getAsFile().get();
 
 		List<String> command = new ArrayList<>();

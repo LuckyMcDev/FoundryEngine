@@ -1,4 +1,4 @@
-package de.luckymcdev.foundryengine;
+package de.luckymcdev.foundryengine.plugin;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
@@ -13,10 +13,18 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.regex.Pattern;
 
+/**
+ * Bumps the patch version and writes the new version to the version catalog
+ * ({@code gradle/libs.versions.toml}). For backwards compatibility it also
+ * updates {@code mod_version} in {@code gradle.properties} when present.
+ */
 public abstract class BumpVersionTask extends DefaultTask {
+
+	private static final Pattern CATALOG_MOD_VERSION = Pattern.compile("^\\s*mod-version\\s*=.*");
 
 	@InputFile
 	public abstract RegularFileProperty getPropertiesFile();
@@ -37,13 +45,8 @@ public abstract class BumpVersionTask extends DefaultTask {
 		int newPatch = Integer.parseInt(parts[2]) + 1;
 		String newVersion = parts[0] + "." + parts[1] + "." + newPatch;
 
-		List<String> lines = Files.readAllLines(file.toPath());
-		List<String> updatedLines = lines.stream()
-			.map(line -> line.startsWith("mod_version=") ? "mod_version=" + newVersion : line)
-			.collect(Collectors.toList());
-
-		Files.write(file.toPath(), updatedLines);
-		getLogger().lifecycle("Bumped mod_version: {} -> {}", currentVersionStr, newVersion);
+		updateFile(file, newVersion);
+		getLogger().lifecycle("Bumped mod version: {} -> {}", currentVersionStr, newVersion);
 
 		String githubOutput = System.getenv("GITHUB_OUTPUT");
 		if (githubOutput != null) {
@@ -56,5 +59,41 @@ public abstract class BumpVersionTask extends DefaultTask {
 			Files.writeString(new File(githubEnv).toPath(), "NEW_VERSION=" + newVersion + "\n",
 				StandardCharsets.UTF_8, StandardOpenOption.APPEND, StandardOpenOption.CREATE);
 		}
+	}
+
+	private void updateFile(File file, String newVersion) throws IOException {
+		List<String> lines = Files.readAllLines(file.toPath());
+		List<String> result = new ArrayList<>();
+		boolean catalogFound = false;
+
+		for (String line : lines) {
+			if (CATALOG_MOD_VERSION.matcher(line).matches()) {
+				result.add(line.replaceFirst("=.*", "= \"" + newVersion + "\""));
+				catalogFound = true;
+			} else if (line.startsWith("mod_version=")) {
+				result.add("mod_version=" + newVersion);
+			} else {
+				result.add(line);
+			}
+		}
+
+		if (!catalogFound) {
+			result = insertIntoVersions(result, newVersion);
+		}
+
+		Files.write(file.toPath(), result);
+	}
+
+	private List<String> insertIntoVersions(List<String> lines, String newVersion) {
+		List<String> result = new ArrayList<>();
+		boolean inserted = false;
+		for (String line : lines) {
+			result.add(line);
+			if (!inserted && line.trim().equals("[versions]")) {
+				result.add("mod-version = \"" + newVersion + "\"");
+				inserted = true;
+			}
+		}
+		return inserted ? result : lines;
 	}
 }

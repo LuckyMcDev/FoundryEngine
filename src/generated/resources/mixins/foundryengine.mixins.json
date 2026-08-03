@@ -15,6 +15,7 @@
 	"client": [
 		"MinecraftMixin"
 	],
+	"plugin": "de.luckymcdev.foundryengine.mixin.FoundryEngineMixinPlugin",
 	"injectors": {
 		"defaultRequire": 1
 	},

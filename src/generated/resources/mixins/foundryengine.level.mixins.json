@@ -16,6 +16,7 @@
 		"LevelStorageSourceMixin",
 		"WorldOpenFlowsMixin"
 	],
+	"plugin": "de.luckymcdev.foundryengine.mixin.FoundryEngineMixinPlugin",
 	"injectors": {
 		"defaultRequire": 1
 	},

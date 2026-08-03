@@ -7,8 +7,8 @@
 		"BlockBehaviorMixin",
 		"BlockStateBaseMixin"
 	],
-	"client": [
-	],
+	"client": [],
+	"plugin": "de.luckymcdev.foundryengine.mixin.FoundryEngineMixinPlugin",
 	"injectors": {
 		"defaultRequire": 1
 	},

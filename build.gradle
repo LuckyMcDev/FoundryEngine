@@ -4,34 +4,162 @@ plugins {
 	id 'de.luckymcdev.foundryengine'
 }
 
-version = mod_version
-group = mod_group_id
+version = libs.versions.mod.version.get()
+group = libs.versions.mod.group.getOrElse('de.luckymcdev')
+base {
+	archivesName.set(libs.versions.mod.id)
+}
 
 foundryengine {
-	modId = mod_id
-	modName = mod_name
-	modLicense = mod_license
-	modAuthors = mod_authors
-	modDescription = mod_description
+	mod {
+		id = 'foundryengine'
+		name = 'Foundry Engine'
+		license = 'All Rights Reserved'
+		authors = 'LuckyMcDev'
+		description = 'A Mod that tries to turn minecraft into a Game Engine.'
+	}
 
-	minecraftVersion = minecraft_version
-	minecraftVersionRange = minecraft_version_range
-	neoVersion = neo_version
-	neoVersionRange = neo_version_range
-	loaderVersionRange = loader_version_range
+	minecraft {
+		minecraftVersion = libs.versions.minecraft.version
+		minecraftVersionRange = libs.versions.minecraft.range
+		neoVersion = libs.versions.neo.version
+		neoVersionRange = libs.versions.neo.range
+		loaderVersionRange = libs.versions.loader.range
 
-	runDirs = ['client', 'server', 'gameTestServer']
-	bundlesSubPath = 'FoundryEngine/bundles'
-	exampleBundlesSource = 'ExampleBundles'
+		runs {
+			client {
+				client()
+			}
+			server {
+				server()
+				programArgument '--nogui'
+			}
+			gameTestServer {
+				type = 'gameTestServer'
+			}
+		}
+	}
 
-	githubRepository = 'LuckyMcDev/FoundryEngine'
-	githubCommitish = 'master'
-	releaseType = ReleaseType.ALPHA
+	mixins {
+		config('') {
+			mixin 'MinecraftServerAccess'
+			mixin 'MinecraftServerMixin'
+			mixin 'registry.MappedRegistryMixin'
+			mixin 'resource.FilePackResourcesAccessor'
+			mixin 'resource.PathPackResourcesAccessor'
+			mixin 'resource.SharedZipFileAccessAccessor'
+			mixin 'resource.VanillaPackResourcesAccessor'
+			clientMixin 'MinecraftMixin'
+		}
+		config('input') {
+			clientMixin 'KeyboardHandlerMixin'
+			clientMixin 'MouseHandlerMixin'
+		}
+		config('render') {
+			clientMixin 'BlockEntityRendererMixin'
+			clientMixin 'CameraMixin'
+			clientMixin 'CutsceneCameraMixin'
+			clientMixin 'GameRendererMixin'
+			clientMixin 'GlGpuBufferAccessor'
+			clientMixin 'GpuDeviceMixin'
+			clientMixin 'ItemInHandRendererMixin'
+			clientMixin 'PostChainMixin'
+			clientMixin 'PostEffectPassAccessor'
+			clientMixin 'PostEffectProcessorAccessor'
+			clientMixin 'RenderPipelinesInvoker'
+			clientMixin 'ShaderLoaderAccessor'
+		}
+		config('screen') {
+			clientMixin 'AbstractContainerScreenMixin'
+			clientMixin 'CreativeModeInventoryScreenSlotWrapperMixin'
+			clientMixin 'TitleScreenMixin'
+		}
+		config('sound') {
+			clientMixin 'SoundBufferLibraryMixin'
+			clientMixin 'SoundManagerMixin'
+			clientMixin 'SoundManagerPreparationsMixin'
+		}
+		config('command') {
+			mixin 'ReloadCommandMixin'
+			mixin 'TimeCommandMixin'
+		}
+		config('level') {
+			mixin 'ChunkMapMixin'
+			mixin 'LevelStemMixin'
+			mixin 'PrimaryLevelDataMixin'
+			mixin 'ServerChunkCacheMixin'
+			mixin 'ServerLevelMixin'
+			mixin 'WorldGenSettingsMixin'
+			clientMixin 'CreateWorldScreenMixin'
+			clientMixin 'LevelStorageSourceMixin'
+			clientMixin 'WorldOpenFlowsMixin'
+		}
+		config('clock') {
+			mixin 'ClockInstanceAccessor'
+			mixin 'PlayerListMixin'
+			mixin 'ServerClockManagerMixin'
+		}
+		config('world') {
+			mixin 'BlockBehaviorMixin'
+			mixin 'BlockStateBaseMixin'
+		}
+		config('slot') {
+			mixin 'SlotMixin'
+		}
+		config('suggest') {
+			clientMixin 'BlockStateParserMixin'
+			clientMixin 'CommandSuggestionsAccessor'
+			clientMixin 'CommandSuggestionsMixin'
+			clientMixin 'ComponentArgumentMixin'
+			clientMixin 'CompoundTagArgumentMixin'
+			clientMixin 'EntitySelectorAccessor'
+			clientMixin 'EntitySelectorParserMixin'
+			clientMixin 'NbtPathArgumentMixin'
+			clientMixin 'NbtTagArgumentMixin'
+			clientMixin 'StyleArgumentMixin'
+			clientMixin 'SuggestionsListMixin'
+		}
+	}
+
+	bundles {
+		include 'org.commonmark:commonmark', libs.versions.commonmark
+		include 'org.commonmark:commonmark-ext-gfm-tables', libs.versions.commonmark
+		include 'org.commonmark:commonmark-ext-gfm-strikethrough', libs.versions.commonmark
+		include 'org.commonmark:commonmark-ext-autolink', libs.versions.commonmark
+
+		include 'org.apache.groovy:groovy', libs.versions.groovy
+
+		include 'com.googlecode.soundlibs:jlayer', libs.versions.jlayer
+		include 'org.jflac:jflac-codec', libs.versions.jflac
+		include 'dev.latvian.mods:renderdoc-support', libs.versions.renderdoc.support
+		include 'dev.vfyjxf:taffy', libs.versions.taffy
+
+		include 'io.github.spair:imgui-java-binding', libs.versions.imgui
+		include('io.github.spair:imgui-java-lwjgl3', libs.versions.imgui) {
+			exclude 'org.lwjgl'
+			exclude 'org.lwjgl.lwjgl'
+		}
+		include 'io.github.spair:imgui-java-natives-windows', libs.versions.imgui
+		include 'io.github.spair:imgui-java-natives-linux', libs.versions.imgui
+		include 'io.github.spair:imgui-java-natives-macos', libs.versions.imgui
+
+		exampleBundlesSource = 'ExampleBundles'
+		bundlesSubPath = 'FoundryEngine/bundles'
+	}
+
+	publishing {
+		githubRepository = 'LuckyMcDev/FoundryEngine'
+		githubCommitish = 'master'
+		releaseType = ReleaseType.ALPHA
+	}
+
+	vitepress {
+		sourceDir = 'docs'
+	}
 }
 
 repositories {
 	mavenLocal()
-	gradlePluginPortal()
 	mavenCentral()
 	maven {
 		name "Neoforge"
@@ -55,10 +183,6 @@ repositories {
 	}
 }
 
-base {
-	archivesName = mod_id
-}
-
 java.toolchain.languageVersion = JavaLanguageVersion.of(25)
 
 test {
@@ -72,5 +196,23 @@ idea {
 	}
 }
 
-// Keep dependencies in a separate file for clarity
-apply from: 'dependencies.gradle'
+dependencies {
+	// Sodium
+	compileOnly libs.sodium
+	runtimeOnly libs.sodium
+
+	// Iris
+	compileOnly libs.iris
+	runtimeOnly libs.iris
+
+	// Testing
+	testImplementation libs.junit.jupiter
+	testImplementation libs.testframework
+	testRuntimeOnly libs.junit.platform.launcher
+
+	// JEI
+	def jeiApi = libs.versions.minecraft.version.zip(libs.versions.jei) { mc, jei -> "mezz.jei:jei-${mc}-neoforge-api:${jei}" }
+	def jeiRuntime = libs.versions.minecraft.version.zip(libs.versions.jei) { mc, jei -> "mezz.jei:jei-${mc}-neoforge:${jei}" }
+	compileOnly jeiApi
+	runtimeOnly jeiRuntime
+}

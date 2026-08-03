@@ -1,0 +1,32 @@
+[versions]
+minecraft-version = "26.1.2"
+minecraft-range = "[26.1.1,26.2)"
+neo-version = "26.1.2.93"
+neo-range = "[26.1.2.71,26.2)"
+loader-range = "[4,)"
+
+mod-version = "0.1.5"
+mod-group = "de.luckymcdev"
+mod-id = "foundryengine"
+
+imgui = "1.92.7.1"
+spark = "1.10.172-neoforge"
+junit = "5.7.1"
+junit-platform = "1.7.1"
+groovy = "5.0.4"
+commonmark = "0.27.1"
+renderdoc-support = "1.0.1-build.2"
+jei = "29.5.0.28"
+taffy = "1.1.4"
+jlayer = "1.0.1.4"
+jflac = "1.5.2"
+modrinth-sodium = "UETw0GTI"
+modrinth-iris = "BO8hxvMR"
+
+[libraries]
+sodium = { module = "maven.modrinth:AANobbMI", version.ref = "modrinth-sodium" }
+iris = { module = "maven.modrinth:YL57xq9U", version.ref = "modrinth-iris" }
+
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit-platform" }
+testframework = { module = "net.neoforged:testframework", version.ref = "neo-version" }
