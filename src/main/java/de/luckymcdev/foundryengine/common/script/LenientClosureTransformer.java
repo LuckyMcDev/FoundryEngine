@@ -12,7 +12,6 @@ import org.codehaus.groovy.ast.stmt.BlockStatement;
 import org.codehaus.groovy.ast.stmt.Statement;
 import org.codehaus.groovy.ast.tools.GeneralUtils;
 import org.codehaus.groovy.classgen.GeneratorContext;
-import org.codehaus.groovy.classgen.VariableScopeVisitor;
 import org.codehaus.groovy.control.CompilePhase;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.control.customizers.CompilationCustomizer;
@@ -43,11 +42,10 @@ final class LenientClosureTransformer extends ClassCodeExpressionTransformer {
 	}
 
 	static CompilationCustomizer customizer() {
-		return new CompilationCustomizer(CompilePhase.CANONICALIZATION) {
+		return new CompilationCustomizer(CompilePhase.CONVERSION) {
 			@Override
 			public void call(SourceUnit source, GeneratorContext context, ClassNode classNode) {
 				new LenientClosureTransformer(source).visitClass(classNode);
-				new VariableScopeVisitor(source).visitClass(classNode);
 			}
 		};
 	}
