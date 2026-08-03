@@ -13,9 +13,29 @@ import java.util.List;
  * from the DSL so the task does not hold references to the extension
  * (config-cache safe).
  */
-public record MixinConfigSpec(String name, String packageName, boolean required, String minVersion, String compatibilityLevel, List<String> mixins, List<String> client, List<String> server, List<String> requiredFeatures, String parent, String target, int priority, int mixinPriority, boolean setSourceFile, String refmap, boolean verbose, String plugin, InjectorsSpec injectors, OverwritesSpec overwrites) implements Serializable {
+public class MixinConfigSpec implements Serializable {
 
 	private static final long serialVersionUID = 2L;
+
+	private final String name;
+	private final String packageName;
+	private final boolean required;
+	private final String minVersion;
+	private final String compatibilityLevel;
+	private final List<String> mixins;
+	private final List<String> client;
+	private final List<String> server;
+	private final List<String> requiredFeatures;
+	private final String parent;
+	private final String target;
+	private final int priority;
+	private final int mixinPriority;
+	private final boolean setSourceFile;
+	private final String refmap;
+	private final boolean verbose;
+	private final String plugin;
+	private final InjectorsSpec injectors;
+	private final OverwritesSpec overwrites;
 
 	public MixinConfigSpec(String name, String packageName, boolean required, String minVersion,
 	                       String compatibilityLevel, List<String> mixins, List<String> client, List<String> server,
@@ -43,130 +63,118 @@ public record MixinConfigSpec(String name, String packageName, boolean required,
 		this.overwrites = overwrites;
 	}
 
-	@Override
 	@Input
-	public String name() {
+	public String getName() {
 		return name;
 	}
 
-	@Override
 	@Input
-	public String packageName() {
+	public String getPackageName() {
 		return packageName;
 	}
 
-	@Override
 	@Input
-	public boolean required() {
+	public boolean isRequired() {
 		return required;
 	}
 
-	@Override
 	@Input
-	public String minVersion() {
+	public String getMinVersion() {
 		return minVersion;
 	}
 
-	@Override
 	@Input
-	public String compatibilityLevel() {
+	public String getCompatibilityLevel() {
 		return compatibilityLevel;
 	}
 
-	@Override
 	@Input
-	public List<String> mixins() {
+	public List<String> getMixins() {
 		return mixins;
 	}
 
-	@Override
 	@Input
-	public List<String> client() {
+	public List<String> getClient() {
 		return client;
 	}
 
-	@Override
 	@Input
-	public List<String> server() {
+	public List<String> getServer() {
 		return server;
 	}
 
-	@Override
 	@Input
-	public List<String> requiredFeatures() {
+	public List<String> getRequiredFeatures() {
 		return requiredFeatures;
 	}
 
-	@Override
 	@Input
 	@Optional
-	public String parent() {
+	public String getParent() {
 		return parent;
 	}
 
-	@Override
 	@Input
 	@Optional
-	public String target() {
+	public String getTarget() {
 		return target;
 	}
 
-	@Override
 	@Input
-	public int priority() {
+	public int getPriority() {
 		return priority;
 	}
 
-	@Override
 	@Input
-	public int mixinPriority() {
+	public int getMixinPriority() {
 		return mixinPriority;
 	}
 
-	@Override
 	@Input
-	public boolean setSourceFile() {
+	public boolean isSetSourceFile() {
 		return setSourceFile;
 	}
 
-	@Override
 	@Input
 	@Optional
-	public String refmap() {
+	public String getRefmap() {
 		return refmap;
 	}
 
-	@Override
 	@Input
-	public boolean verbose() {
+	public boolean isVerbose() {
 		return verbose;
 	}
 
-	@Override
 	@Input
 	@Optional
-	public String plugin() {
+	public String getPlugin() {
 		return plugin;
 	}
 
-	@Override
 	@Nested
-	public InjectorsSpec injectors() {
+	public InjectorsSpec getInjectors() {
 		return injectors;
 	}
 
-	@Override
 	@Nested
-	public OverwritesSpec overwrites() {
+	public OverwritesSpec getOverwrites() {
 		return overwrites;
 	}
 
 	/**
 	 * Serialisable injectors options.
 	 */
-	public record InjectorsSpec(int defaultRequire, String defaultGroup, String namespace, List<String> injectionPoints, List<String> dynamicSelectors, int maxShiftBy) implements Serializable {
+	public static class InjectorsSpec implements Serializable {
 
 		private static final long serialVersionUID = 1L;
+
+		private final int defaultRequire;
+		private final String defaultGroup;
+		private final String namespace;
+		private final List<String> injectionPoints;
+		private final List<String> dynamicSelectors;
+		private final int maxShiftBy;
 
 		public InjectorsSpec(int defaultRequire, String defaultGroup, String namespace,
 		                     List<String> injectionPoints, List<String> dynamicSelectors, int maxShiftBy) {
@@ -178,41 +186,35 @@ public record MixinConfigSpec(String name, String packageName, boolean required,
 			this.maxShiftBy = maxShiftBy;
 		}
 
-		@Override
 		@Input
-		public int defaultRequire() {
+		public int getDefaultRequire() {
 			return defaultRequire;
 		}
 
-		@Override
 		@Input
 		@Optional
-		public String defaultGroup() {
+		public String getDefaultGroup() {
 			return defaultGroup;
 		}
 
-		@Override
 		@Input
 		@Optional
-		public String namespace() {
+		public String getNamespace() {
 			return namespace;
 		}
 
-		@Override
 		@Input
-		public List<String> injectionPoints() {
+		public List<String> getInjectionPoints() {
 			return injectionPoints;
 		}
 
-		@Override
 		@Input
-		public List<String> dynamicSelectors() {
+		public List<String> getDynamicSelectors() {
 			return dynamicSelectors;
 		}
 
-		@Override
 		@Input
-		public int maxShiftBy() {
+		public int getMaxShiftBy() {
 			return maxShiftBy;
 		}
 	}
@@ -220,19 +222,25 @@ public record MixinConfigSpec(String name, String packageName, boolean required,
 	/**
 	 * Serialisable overwrites options.
 	 */
-	public record OverwritesSpec(boolean conformVisibility, boolean requireAnnotations) implements Serializable {
+	public static class OverwritesSpec implements Serializable {
 
 		private static final long serialVersionUID = 1L;
 
-		@Override
+		private final boolean conformVisibility;
+		private final boolean requireAnnotations;
+
+		public OverwritesSpec(boolean conformVisibility, boolean requireAnnotations) {
+			this.conformVisibility = conformVisibility;
+			this.requireAnnotations = requireAnnotations;
+		}
+
 		@Input
-		public boolean conformVisibility() {
+		public boolean isConformVisibility() {
 			return conformVisibility;
 		}
 
-		@Override
 		@Input
-		public boolean requireAnnotations() {
+		public boolean isRequireAnnotations() {
 			return requireAnnotations;
 		}
 	}

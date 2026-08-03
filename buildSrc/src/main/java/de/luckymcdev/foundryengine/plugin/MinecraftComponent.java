@@ -54,8 +54,9 @@ public class MinecraftComponent implements FoundryEngineComponent {
 			run.getLogLevel().set(Level.DEBUG);
 		});
 
-		// Configured runs
-		minecraft.getRuns().forEach(runConfig -> registerRun(project, neoForge, modId, runConfig));
+		project.afterEvaluate(p -> {
+			minecraft.getRuns().forEach(runConfig -> registerRun(project, neoForge, modId, runConfig));
+		});
 
 		// Data run (always added)
 		neoForge.getRuns().register("data", run -> {

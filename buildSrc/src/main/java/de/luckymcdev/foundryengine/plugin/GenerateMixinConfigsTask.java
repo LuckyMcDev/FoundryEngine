@@ -109,7 +109,7 @@ public abstract class GenerateMixinConfigsTask extends DefaultTask {
 		Files.createDirectories(outputDir);
 
 		for (MixinConfigSpec spec : getConfigs().get()) {
-			String fileName = MixinConfig.fileName(modId, spec.name());
+			String fileName = MixinConfig.fileName(modId, spec.getName());
 			Path file = outputDir.resolve(fileName).normalize();
 			if (!file.startsWith(outputDir)) {
 				throw new IllegalArgumentException("Mixin file name escapes output directory: " + fileName);
@@ -121,38 +121,38 @@ public abstract class GenerateMixinConfigsTask extends DefaultTask {
 	}
 
 	private String render(MixinConfigSpec spec, String basePackage) {
-		String pkg = spec.packageName();
+		String pkg = spec.getPackageName();
 		if (pkg == null || pkg.isEmpty()) {
-			pkg = spec.name().isEmpty() ? basePackage : basePackage + "." + spec.name();
+			pkg = spec.getName().isEmpty() ? basePackage : basePackage + "." + spec.getName();
 		}
 
 		List<String> fields = new ArrayList<>();
-		fields.add(field("required", String.valueOf(spec.required())));
-		fields.add(field("minVersion", quoted(spec.minVersion())));
+		fields.add(field("required", String.valueOf(spec.isRequired())));
+		fields.add(field("minVersion", quoted(spec.getMinVersion())));
 		fields.add(field("package", quoted(pkg)));
-		fields.add(field("compatibilityLevel", quoted(spec.compatibilityLevel())));
-		addIfPresent(fields, "parent", spec.parent());
-		addIfPresent(fields, "target", spec.target());
-		if (spec.priority() != 1000) {
-			fields.add(field("priority", String.valueOf(spec.priority())));
+		fields.add(field("compatibilityLevel", quoted(spec.getCompatibilityLevel())));
+		addIfPresent(fields, "parent", spec.getParent());
+		addIfPresent(fields, "target", spec.getTarget());
+		if (spec.getPriority() != 1000) {
+			fields.add(field("priority", String.valueOf(spec.getPriority())));
 		}
-		if (spec.mixinPriority() != 1000) {
-			fields.add(field("mixinPriority", String.valueOf(spec.mixinPriority())));
+		if (spec.getMixinPriority() != 1000) {
+			fields.add(field("mixinPriority", String.valueOf(spec.getMixinPriority())));
 		}
-		addArray(fields, "mixins", spec.mixins());
-		addArray(fields, "client", spec.client());
-		addArrayIfNotEmpty(fields, "server", spec.server());
-		addArrayIfNotEmpty(fields, "requiredFeatures", spec.requiredFeatures());
-		if (spec.setSourceFile()) {
+		addArray(fields, "mixins", spec.getMixins());
+		addArray(fields, "client", spec.getClient());
+		addArrayIfNotEmpty(fields, "server", spec.getServer());
+		addArrayIfNotEmpty(fields, "requiredFeatures", spec.getRequiredFeatures());
+		if (spec.isSetSourceFile()) {
 			fields.add(field("setSourceFile", "true"));
 		}
-		addIfPresent(fields, "refmap", spec.refmap());
-		if (spec.verbose()) {
+		addIfPresent(fields, "refmap", spec.getRefmap());
+		if (spec.isVerbose()) {
 			fields.add(field("verbose", "true"));
 		}
-		addIfPresent(fields, "plugin", spec.plugin());
-		addInjectors(fields, spec.injectors());
-		addOverwrites(fields, spec.overwrites());
+		addIfPresent(fields, "plugin", spec.getPlugin());
+		addInjectors(fields, spec.getInjectors());
+		addOverwrites(fields, spec.getOverwrites());
 
 		StringBuilder sb = new StringBuilder();
 		sb.append("{\n");
@@ -169,19 +169,19 @@ public abstract class GenerateMixinConfigsTask extends DefaultTask {
 
 	private void addInjectors(List<String> fields, MixinConfigSpec.InjectorsSpec inj) {
 		List<String> inner = new ArrayList<>();
-		if (inj.defaultRequire() != 0) {
-			inner.add(field("defaultRequire", String.valueOf(inj.defaultRequire())));
+		if (inj.getDefaultRequire() != 0) {
+			inner.add(field("defaultRequire", String.valueOf(inj.getDefaultRequire())));
 		}
-		if (!"default".equals(inj.defaultGroup())) {
-			inner.add(field("defaultGroup", quoted(inj.defaultGroup())));
+		if (!"default".equals(inj.getDefaultGroup())) {
+			inner.add(field("defaultGroup", quoted(inj.getDefaultGroup())));
 		}
-		if (!inj.namespace().isEmpty()) {
-			inner.add(field("namespace", quoted(inj.namespace())));
+		if (!inj.getNamespace().isEmpty()) {
+			inner.add(field("namespace", quoted(inj.getNamespace())));
 		}
-		addNestedArray(inner, "injectionPoints", inj.injectionPoints());
-		addNestedArray(inner, "dynamicSelectors", inj.dynamicSelectors());
-		if (inj.maxShiftBy() != 0) {
-			inner.add(field("maxShiftBy", String.valueOf(inj.maxShiftBy())));
+		addNestedArray(inner, "injectionPoints", inj.getInjectionPoints());
+		addNestedArray(inner, "dynamicSelectors", inj.getDynamicSelectors());
+		if (inj.getMaxShiftBy() != 0) {
+			inner.add(field("maxShiftBy", String.valueOf(inj.getMaxShiftBy())));
 		}
 		if (!inner.isEmpty()) {
 			fields.add(objectField("injectors", inner));
@@ -190,10 +190,10 @@ public abstract class GenerateMixinConfigsTask extends DefaultTask {
 
 	private void addOverwrites(List<String> fields, MixinConfigSpec.OverwritesSpec ovr) {
 		List<String> inner = new ArrayList<>();
-		if (ovr.conformVisibility()) {
+		if (ovr.isConformVisibility()) {
 			inner.add(field("conformVisibility", "true"));
 		}
-		if (ovr.requireAnnotations()) {
+		if (ovr.isRequireAnnotations()) {
 			inner.add(field("requireAnnotations", "true"));
 		}
 		if (!inner.isEmpty()) {
