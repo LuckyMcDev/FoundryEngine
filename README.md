@@ -1,70 +1,58 @@
-# FoundryEngine
+<div align="center">
+  <img src="src/main/resources/foundryengine.png" alt="FoundryEngine Logo" width="128"/>
+  <h1>Foundry Engine</h1>
 
-A NeoForge mod that turns Minecraft into a game engine.
-Mod ID `foundryengine`, package `de.luckymcdev.foundryengine`.
+A NeoForge Minecraft mod that turns Minecraft into a development-ready game engine.
 
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/LuckyMcDev/FoundryEngine)
+![License](https://img.shields.io/badge/License-ARR-white.svg)
+![Minecraft](https://img.shields.io/badge/Minecraft-26.1.2-yellow)
+![Java](https://img.shields.io/badge/Java-25-orange?logo=openjdk&logoColor=white)
+![Gradle](https://img.shields.io/badge/Gradle-9.6.1-blue?logo=gradle&logoColor=white)
+![NeoForge](https://img.shields.io/badge/NeoForge-26.1.2.93-e67e22)
+</div>
+
+---
+
+<div align="center">
+
+[![foundryengine](https://modfolio.creeperkatze.dev/modrinth/project/foundryengine?color=ffbf80)](https://modrinth.com/project/foundryengine)
+
+</div>
+
+Foundry Engine provides a large set of tools to ease the development of Minecraft additions. It does this by providing a new API called **Bundles**, a new way of loading content into the game. The mod is focused on allowing you to create custom games inside Minecraft.
 
 ## Features
 
-- **In-game editor** - ImGui-based editor with 18+ dockable panels for scene management, blueprints, cutscenes, areas, waypoints, code editing, file browsing, and more
-- **Bundle system** - Self-contained mod packaging (scripts, assets, data packs, blueprints). No Java compilation needed.
-- **Groovy scripting** - Full Groovy 5 runtime for bundle logic. Register items, blocks, recipes, sounds, and particles from scripts.
-- **Blueprint visual scripting** - Node-based graph editor with execution flow, typed pins, and built-in event nodes
-- **Cutscene system** - Bezier spline camera paths with per-node rotations, screen effects, server commands, and a full timeline editor
-- **Instanced worlds** - Create temporary or persistent runtime dimensions with configurable chunk generators, clocks, and game rules
-- **Game stages** - Progression framework gating items, mobs, dimensions, loot tables, and recipes behind player-specific stages
-- **Custom rendering** - Mesh renderer with 8 render pipelines, OBJ model support, post-processing effects, and 20 shaders
-- **Areas and waypoints** - Spatial zone triggers with modular behavior system and persistent in-world markers
-- **Custom particles** - Keyframe-driven particle system with sequenced color, scale, velocity, position, and rotation
-- **Post-processing** - Priority-based shader effect system with GLSL pipeline support, fade transitions, and built-in effects
-- **Game sessions** - Managed lifecycle system for game modes with persistent NBT data
-- **Event system** - 84 events across 16 event classes for blocks, items, players, entities, levels, and more
-- **Data generation** - Built-in bundle data generator for automated resource creation
+- Custom scripting in Groovy
+- Cutscene engine
+- In-game development GUI
+- Game stages
+- Area management
+- Waypoints
 
-## Quick start
+> Runs on both client and server but can function on either alone.
+> Some features may not work when running on only one side.
 
-```powershell
-./gradlew.bat build                # full build
-./gradlew.bat preCommit            # check + runData + build (commit pipeline)
-./gradlew.bat runClient            # launch MC client
-npm run docs:dev                   # VitePress docs (--host for network access)
-```
+## Project Structure
 
-## Documentation
+Follows a normal Java project structure, with the addition of a custom Gradle plugin in [`buildSrc`](buildSrc).
 
-Full documentation is available at [docs/](docs/) or run `npm run docs:dev` to serve locally.
+Check [`build.gradle`](build.gradle) for how it's wired up, and see [`libs.versions.toml`](gradle/libs.versions.toml) for library versions.
 
-- [Installation Guide](docs/guide/)
-- [Getting Started](docs/guide/getting-started)
-- [Bundle System](docs/concepts/core/bundles)
-- [Builders API](docs/concepts/core/builders)
-- [Events Reference](docs/concepts/core/events)
-- [Examples](docs/examples/)
-- [Commands Reference](docs/concepts/systems/commands)
+## Contributing
 
-## Architecture
+Contributions like additions to the event system or full features are appreciated. Open an issue or pull request on the [GitHub repository](https://github.com/LuckyMcDev/FoundryEngine).
 
-```
-FoundryEngine/
-├── common/            Shared logic (cutscenes, easing, network, world, blueprints, bundles, events, builders)
-├── client/            Client-only code (ImGui editor, rendering, particles, post-processing)
-├── server/            Server-only code (commands, dynamic packs)
-├── interfaces/        Mixin accessor interfaces for runtime property modification
-├── mixin/             39 mixin classes for rendering, world, input, UI, and more
-├── config/            NeoForge config classes
-├── src/
-│   ├── main/java/     Java sources
-│   └── generated/     Data generator output
-└── docs/              VitePress documentation site
-```
+## Credits
 
-## Key paths
+- [LuckyMcDev](https://github.com/LuckyMcDev) - Main Developer
+- [Auseawesome](https://github.com/Auseawesome) - helped with the design of features
+- [G_cat](https://github.com/gcat101) - alpha testing
 
-| Path                               | Purpose                              |
-|------------------------------------|--------------------------------------|
-| `runs/client`, `runs/server`       | Minecraft run directories            |
-| `ExampleBundles/`                  | Groovy scripting bundles for testing |
-| `FoundryEngine/bundles/` (in-game) | Bundle/script install location       |
-| `docs/`                            | VitePress documentation site         |
-| `repo/`                            | Local Maven publish target           |
+## Acknowledgements
+
+- [NeoForge](https://neoforged.net/) for their mod loader
+- [KubeJS](https://kubejs.com/) - inspired Foundry Engine
+- [Ocornut](https://github.com/ocornut) and [SpaiR](https://github.com/SpaiR) for [ImGui](https://github.com/ocornut/imgui) and [imgui-java](https://github.com/SpaiR/imgui-java)
+- Apache for the Groovy language
+- https://game-icons.net/ for the Logo

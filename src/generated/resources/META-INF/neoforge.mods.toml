@@ -6,6 +6,7 @@ license = "All Rights Reserved"
 modId = "foundryengine"
 version = "0.1.5"
 displayName = "Foundry Engine"
+logoFile = "assets/foundryengine/textures/logo_transparent.png"
 authors = "LuckyMcDev"
 description = "A Mod that tries to turn minecraft into a Game Engine."
 

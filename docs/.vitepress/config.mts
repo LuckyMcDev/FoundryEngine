@@ -8,11 +8,11 @@ export default defineConfig({
 	srcExclude: ['**/javadoc/**'],
 
 	head: [
-		['link', {rel: 'icon', href: '/FoundryEngine/logo.png'}]
+		['link', {rel: 'icon', href: '/logo_transparent.png'}]
 	],
 
 	themeConfig: {
-		logo: '/FoundryEngine/logo.png',
+		logo: '/logo_transparent.png',
 
 		nav: [
 			{text: 'Home', link: '/'},

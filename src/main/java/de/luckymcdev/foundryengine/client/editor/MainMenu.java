@@ -1,12 +1,15 @@
 package de.luckymcdev.foundryengine.client.editor;
 
+import de.luckymcdev.foundryengine.FoundryEngineModClient;
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.menu.MenuSection;
 import de.luckymcdev.foundryengine.client.editor.menu.ShortcutHandler;
 import de.luckymcdev.foundryengine.client.editor.menu.builtin.CategoryMenuSection;
+import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.common.registry.GenericRegistry;
 import imgui.ImGui;
+import imgui.flag.ImGuiStyleVar;
 
 /**
  * The Main Menu implementation. Manages the top info bar and coordinates menu sections.
@@ -43,14 +46,21 @@ public class MainMenu {
 	}
 
 	public void render() {
+		var g = Client.getImGraphics();
+
+		g.pushStack();
+		g.setStyleVar(ImGuiStyleVar.FramePadding, 8, 7);
 		if (ImGui.beginMainMenuBar()) {
-			var g = Client.getImGraphics();
+
+			g.drawImage(ImGraphicsExtractor.getTexture(FoundryEngineModClient.LOGO_TRANSPARENT), 32, 32);
+
 			g.pushStack();
 			menuSections.forEach(MenuSection::render);
 			g.popStack();
 
 			ImGui.endMainMenuBar();
 		}
+		g.popStack();
 	}
 
 	public void handleShortcuts() {

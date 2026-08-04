@@ -54,6 +54,7 @@ import de.luckymcdev.foundryengine.config.Config;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.Vec3i;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -88,6 +89,9 @@ import java.util.concurrent.CompletableFuture;
 public class FoundryEngineModClient {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final IEventBus BUS = NeoForge.EVENT_BUS;
+	public static final Identifier LOGO_TRANSPARENT = Common.id("textures/logo_transparent.png");
+	public static final Identifier LOGO_BLACK = Common.id("textures/logo_black.png");
+	public static final Identifier LOGO_WHITE = Common.id("textures/logo_white.png");
 
 	public FoundryEngineModClient(IEventBus modBus, ModContainer modContainer) {
 		modBus.addListener(this::onClientSetup);
