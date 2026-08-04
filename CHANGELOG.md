@@ -28,6 +28,8 @@ working towards ide like behavior
 - *(level)* Add config option to skip experimental warning
 - *(sound)* Add mp3 support to the sound engine
 - *(sound)* Add flac support to the sound engine and add test sounds
+- Feat (public): Update logo and render logo in menu bar, full readme rewrite also add excalidraw idea thingie sheet. idk if i will keep it in the git but it may be updated. fix vitepress
+- *(gradle)* Add credits property for mod toml generation
 
 ### Bug Fixes
 
@@ -50,6 +52,9 @@ working towards ide like behavior
 - *(script)* Rewrite scripting v2
 - *(script)* Fix a bug with closures in scripts.
 - *(stage)* Fix forward reference
+- *(gradle)* Fuck intellij code cleanup
+- *(script)* Fix another issue with closure transformer
+- *(docs)* Fix image link in readme
 
 ### Other
 
@@ -85,6 +90,10 @@ working towards ide like behavior
 - *(ai)* Refactor the way ai works in this project.
 - *(build)* Migrate modular gradle files into buildSrc
 - *(testbundle)* Disable transitive dependencies
+- Refactor (gradlePlugin): Create full gradle plugin for development.
+- auto mixin json generation
+- easy mincraft setup
+- use libs.versions.toml
 
 ### Documentation
 
@@ -106,6 +115,11 @@ working towards ide like behavior
 - Delete obsolete Adapter class
 - Chore (deps): bump NeoForge to 26.1.2.78 and ImGui to 1.92.7.1 forgot to push this, is relevant for last 3 or 4 commits.
 - *(cleanup)* Remove obsolete scripts, configs, and example code
+- *(changelog)* Update changelog
+- *(todo)* For todo go to github issues / project
+- *(docs)* Ignore TypeScript error in custom.css import
+- *(gradle)* Update Gradle wrapper to v9.6.1
+- *(docs)* Word some things differently.
 ## [0.1.2] - 2026-07-06
 
 ### Features
@@ -1203,6 +1217,7 @@ currently, minimal is a bit weird, but diabled should work
 - Update mod version to 0.0.64
 - Update Docs
 - Make it so that i can hotswap mixins and other jvm stuff
+
 uses the intellij jrr
 - Holy documentation update
 - Replace int color with Color class in lots of files
