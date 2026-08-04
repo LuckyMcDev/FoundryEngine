@@ -18,7 +18,7 @@ foundryengine {
 		authors = 'LuckyMcDev'
 		description = 'Turn Minecraft into a Game Engine'
 		logoFile = 'assets/foundryengine/textures/logo_transparent.png'
-		credits = 'Icon originally from https://game-icons.net/ modified by Auseawesome. Under CC-BY'
+		credits = 'Silhouette of cog icon from https://game-icons.net/ modified by Auseawesome. Originally licensed under CC-BY-3.0, full text available at https://creativecommons.org/licenses/by/3.0/'
 	}
 
 	minecraft {
