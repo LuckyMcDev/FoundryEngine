@@ -58,4 +58,9 @@ public abstract class ModExtension {
 	 * {@code logoFile}.
 	 */
 	public abstract Property<String> getLogoFile();
+
+	/**
+	 * {@code credits}
+	 */
+	public abstract Property<String> getCredits();
 }

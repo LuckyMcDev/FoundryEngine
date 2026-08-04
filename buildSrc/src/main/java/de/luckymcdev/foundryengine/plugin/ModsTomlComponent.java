@@ -39,6 +39,7 @@ public class ModsTomlComponent implements FoundryEngineComponent {
 			t.getModDescription().set(mod.getDescription());
 			t.getDisplayUrl().set(mod.getDisplayUrl());
 			t.getLogoFile().set(mod.getLogoFile());
+			t.getCredits().set(mod.getCredits());
 			t.getLoaderVersionRange().set(minecraft.getLoaderVersionRange());
 			t.getNeoVersionRange().set(minecraft.getNeoVersionRange());
 			t.getMinecraftVersionRange().set(minecraft.getMinecraftVersionRange());

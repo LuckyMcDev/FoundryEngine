@@ -7,8 +7,9 @@ modId = "foundryengine"
 version = "0.1.5"
 displayName = "Foundry Engine"
 logoFile = "assets/foundryengine/textures/logo_transparent.png"
+credits = "TestCredits"
 authors = "LuckyMcDev"
-description = "A Mod that tries to turn minecraft into a Game Engine."
+description = "Turn Minecraft into a Game Engine"
 
 [[mixins]]
 config = "mixins/foundryengine.clock.mixins.json"
