@@ -16,7 +16,7 @@ foundryengine {
 		name = 'Foundry Engine'
 		license = 'All Rights Reserved'
 		authors = 'LuckyMcDev'
-		description = 'A Mod that tries to turn minecraft into a Game Engine.'
+		description = 'Turn Minecraft into a Game Engine'
 		logoFile = 'assets/foundryengine/textures/logo_transparent.png'
 	}
 

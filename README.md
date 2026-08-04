@@ -4,11 +4,11 @@
 
 A NeoForge Minecraft mod that turns Minecraft into a development-ready game engine.
 
-![License](https://img.shields.io/badge/License-ARR-white.svg)
 ![Minecraft](https://img.shields.io/badge/Minecraft-26.1.2-yellow)
 ![Java](https://img.shields.io/badge/Java-25-orange?logo=openjdk&logoColor=white)
 ![Gradle](https://img.shields.io/badge/Gradle-9.6.1-blue?logo=gradle&logoColor=white)
 ![NeoForge](https://img.shields.io/badge/NeoForge-26.1.2.93-e67e22)
+![Builds](https://img.shields.io/github/actions/workflow/status/LuckyMcDev/FoundryEngine/build.yml)
 </div>
 
 ---
