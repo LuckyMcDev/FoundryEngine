@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="src/main/resources/foundryengine.png" alt="FoundryEngine Logo" width="128"/>
+  <img src="src/main/resources/assets/foundryengine/textures/logo_transparent.png" alt="FoundryEngine Logo" width="128"/>
   <h1>Foundry Engine</h1>
 
 A NeoForge Minecraft mod that turns Minecraft into a development-ready game engine.
