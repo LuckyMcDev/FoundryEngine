@@ -10,6 +10,7 @@ import groovy.lang.GroovyCodeSource;
 import net.minecraft.network.chat.Component;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.ModLoadingIssue;
+import net.neoforged.fml.loading.FMLEnvironment;
 import org.codehaus.groovy.control.MultipleCompilationErrorsException;
 import org.codehaus.groovy.control.messages.SyntaxErrorMessage;
 import org.codehaus.groovy.tools.GroovyClass;
@@ -110,14 +111,31 @@ public class GroovyScriptLoader {
 		return loaded;
 	}
 
+	private static boolean isCompilableOnThisSide(Path path, Path commonPath, Path clientPath, Path serverPath,
+	                                              boolean isClientSide) {
+		if (path.startsWith(commonPath)) {
+			return true;
+		}
+		if (path.startsWith(clientPath)) {
+			return isClientSide;
+		}
+		if (path.startsWith(serverPath)) {
+			return !isClientSide;
+		}
+		return true;
+	}
+
 	private BundleCompileResult compileBundle(BundleFiles files, String bundleId) {
 		Path scriptRoot = files.scripts().root();
 		Path commonPath = files.scripts().common();
 		Path clientPath = files.scripts().client();
 		Path serverPath = files.scripts().server();
 
+		boolean isClientSide = FMLEnvironment.getDist().isClient();
+
 		List<Path> allScriptPaths = files.scripts().collection().stream()
 			.filter(p -> p.toString().endsWith(".groovy"))
+			.filter(p -> isCompilableOnThisSide(p, commonPath, clientPath, serverPath, isClientSide))
 			.toList();
 
 		if (allScriptPaths.isEmpty()) {

@@ -5,7 +5,6 @@ import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.bundle.Bundle;
 import de.luckymcdev.foundryengine.common.bundle.BundleLifecycleListener;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
@@ -333,7 +332,7 @@ public class GameManager implements BundleLifecycleListener {
 	/**
 	 * Ticks all started sessions for the world of the given client level.
 	 */
-	public void tickClient(Minecraft client, ClientLevel level) {
+	public void tickClient(Minecraft client, Level level) {
 		String name = worldName(level);
 		if (worldLifecycle(name) != GameLifecycle.RUNNING) {
 			return;

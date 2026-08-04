@@ -95,9 +95,10 @@ public class GameSession {
 
 	/**
 	 * Called on every client tick for this session.
+	 * This cast is needed due to env separation
 	 */
-	public void onClientTick(Minecraft client, ClientLevel level) {
-		clientTickHandler.accept(client, level);
+	public void onClientTick(Minecraft client, Level level) {
+		clientTickHandler.accept(client, (ClientLevel) level);
 	}
 
 	/**
