@@ -168,6 +168,7 @@ public class BundleDataGenerator {
 			gen.addProvider(new EngineItemTagsProvider(pOut, lookupProvider, namespace, itemTagBuilders));
 			gen.addProvider(new EngineGlobalLootModifierProvider(pOut, lookupProvider, namespace));
 
+			// TODO: Fix client only stuff generating only on client for {@link ResourcePackMerger} to merge the correct client things too.
 			if (FMLEnvironment.getDist().isClient()) {
 				gen.addProvider(new EngineLanguageProvider(pOut, "en_us", namespace, blockBuilders, itemBuilders, soundBuilders));
 				gen.addProvider(new EngineModelProvider(pOut, namespace, blockBuilders, itemBuilders));

@@ -3,6 +3,7 @@ package de.luckymcdev.foundryengine;
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.config.Config;
+import de.luckymcdev.foundryengine.server.packs.ResourcePackMerger;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -10,6 +11,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import org.slf4j.Logger;
 
 /**
@@ -24,6 +26,7 @@ public class FoundryEngineModServer {
 		modBus.addListener(this::onServerSetup);
 
 		BUS.addListener(this::onAddReloadListeners);
+		BUS.addListener(this::onPlayerLoggedIn);
 
 		Config.registerServer(modContainer);
 
@@ -32,6 +35,12 @@ public class FoundryEngineModServer {
 
 	private void onServerSetup(FMLDedicatedServerSetupEvent event) {
 		LOGGER.debug("FoundryEngineModServer setup called");
+	}
+
+	private void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
+		LOGGER.debug("Player logged in, should send resource pack");
+		var tempPath = Common.TEMP_DIR.resolve("resourcepack-out");
+		var path = ResourcePackMerger.mergeToZip(tempPath.resolve("fe-resources.zip"));
 	}
 
 	private void onAddReloadListeners(AddServerReloadListenersEvent event) {
