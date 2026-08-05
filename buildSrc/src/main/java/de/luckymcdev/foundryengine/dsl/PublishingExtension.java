@@ -31,4 +31,16 @@ public abstract class PublishingExtension {
 	 * Release type for mod-publish-plugin.
 	 */
 	public abstract Property<ReleaseType> getReleaseType();
+
+	/**
+	 * Modrinth project id (8-character alphanumeric id). Falls back to the
+	 * {@code MODRINTH_PROJECT_ID} environment variable.
+	 */
+	public abstract Property<String> getModrinthProjectId();
+
+	/**
+	 * CurseForge project id. Falls back to the {@code CURSEFORGE_PROJECT_ID}
+	 * environment variable.
+	 */
+	public abstract Property<String> getCurseforgeProjectId();
 }

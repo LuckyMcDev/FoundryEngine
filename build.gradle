@@ -153,6 +153,8 @@ foundryengine {
 		githubRepository = 'LuckyMcDev/FoundryEngine'
 		githubCommitish = 'master'
 		releaseType = ReleaseType.ALPHA
+		modrinthProjectId = 'AaUmWHXd'
+		curseforgeProjectId = '1605117'
 	}
 
 	vitepress {

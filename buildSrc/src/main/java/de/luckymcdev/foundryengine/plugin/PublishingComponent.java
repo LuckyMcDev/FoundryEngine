@@ -4,6 +4,7 @@ import de.luckymcdev.foundryengine.dsl.FoundryEngineExtension;
 import de.luckymcdev.foundryengine.dsl.ModExtension;
 import me.modmuss50.mpp.ModPublishExtension;
 import me.modmuss50.mpp.ReleaseType;
+import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
 import org.gradle.api.publish.PublishingExtension;
 import org.gradle.api.publish.maven.MavenPublication;
@@ -90,6 +91,19 @@ public class PublishingComponent implements FoundryEngineComponent {
 			github.getRepository().set(githubRepo);
 			github.getCommitish().set(githubCommitish);
 			github.getTagName().set("v" + modVersion);
+		});
+		publishMods.curseforge(curseforge -> {
+			curseforge.getAccessToken().set(project.getProviders().environmentVariable("CURSEFORGE_TOKEN"));
+			curseforge.getProjectId().set(publishing.getCurseforgeProjectId()
+				.orElse(project.getProviders().environmentVariable("CURSEFORGE_PROJECT_ID")));
+			curseforge.getMinecraftVersions().add(extension.getMinecraft().getMinecraftVersion());
+			curseforge.getJavaVersions().add(JavaVersion.VERSION_25);
+		});
+		publishMods.modrinth(modrinth -> {
+			modrinth.getAccessToken().set(project.getProviders().environmentVariable("MODRINTH_TOKEN"));
+			modrinth.getProjectId().set(publishing.getModrinthProjectId()
+				.orElse(project.getProviders().environmentVariable("MODRINTH_PROJECT_ID")));
+			modrinth.getMinecraftVersions().add(extension.getMinecraft().getMinecraftVersion());
 		});
 
 		// Maven publishing
