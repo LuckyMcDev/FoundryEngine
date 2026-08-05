@@ -1,10 +1,21 @@
 ## [unreleased]
 
+### Bug Fixes
+
+- *(registry)* Fix server-sided crash with client reference on block entity registering
+- *(publishing)* Update `sources` JAR to use `getAllJava` and fix VitePress caching configuration
+- *(publishing)* Remove GitHub Actions publish workflow and fix CurseForge publishing configuration
+
+## [0.1.5] - 2026-08-05
+
 ### Features
 
 - *(suggestions)* Implement NBT command suggestions
-- Feat (suggestions): update NBT suggestions also move all suggestion mixins
-- Feat (editor): implement more advanced code editor stuff error highlighting workspace state
+- Feat(suggestions): update NBT suggestions
+also move all suggestion mixins
+- Feat(editor): implement more advanced code editor stuff
+error highlighting
+workspace state
 
 working towards ide like behavior
 - *(editor)* Script editor, outline panel, imgui downgrade
@@ -13,23 +24,37 @@ working towards ide like behavior
 - *(network)* Add CustomDataPacket and CustomDataReceivedEvent for handling custom data.
 - *(crash-report)* Add crash report callables for bundles and game sessions
 - *(io)* Add JsonIO and NBTIO classes for JSON and NBT file handling
-- Feat (script): add ScriptSandbox improvements to script security.
-- Feat (builder): add barrier block type functionality add methods in block builder for most block types (stairs slabs etc)
+- Feat(script): add ScriptSandbox
+improvements to script security.
+- Feat(builder): add barrier block type functionality
+add methods in block builder for most block types (stairs slabs etc)
 - *(docs)* Document block variants and ghost blocks
-- Feat (imgui): replace ImGuiShortcut with HotKeyManager add java port of ImHotKey (https://github.com/CedricGuillemet/ImHotKey)
+- Feat(imgui): replace ImGuiShortcut with HotKeyManager
+add java port of ImHotKey (https://github.com/CedricGuillemet/ImHotKey)
 - *(builder)* Add support for block and item tags in respective builders
 - *(utils)* Add ReflectionHelper
 - *(builder)* Add block entity support
 - *(submodule)* Add TestBundle as submodule
 - *(ui)* Replace custom UI constraints with Taffy layout engine
 - *(ui)* Add vanilla-style buttons, sliders, and checkboxes
-- Feat (dialogue): add stack-based styling and typewriter controls closes #42
+- Feat(dialogue): add stack-based styling and typewriter controls
+closes #42
 - *(testbundle)* Test utility groovy scripts
 - *(level)* Add config option to skip experimental warning
 - *(sound)* Add mp3 support to the sound engine
 - *(sound)* Add flac support to the sound engine and add test sounds
-- Feat (public): Update logo and render logo in menu bar, full readme rewrite also add excalidraw idea thingie sheet. idk if i will keep it in the git but it may be updated. fix vitepress
+- Feat(public): Update logo and render logo in menu bar, full readme rewrite
+also add excalidraw idea thingie sheet. idk if i will keep it in the git but it may be updated.
+fix vitepress
 - *(gradle)* Add credits property for mod toml generation
+- *(server)* Add resource pack merging on server. sending needs implementing
+- Feat(excalidraw): update excalidraw with game session documentation.
+also update testbundle
+- *(interfaces)* Update mixin and interface structure.
+- *(gradle)* Add docs build.gradle for intellij module appearance
+- *(commands)* Add `block_to_display` command for spawning block displays from blocks
+- *(config)* Add CompatibilityMode configuration with content registration restrictions
+- *(publishing)* Add Modrinth and CurseForge integration to publishing workflow
 
 ### Bug Fixes
 
@@ -48,19 +73,26 @@ working towards ide like behavior
 - *(docs)* Fix indenting in index file
 - *(docs)* Fix indenting again. add missing constructor to VoidChunkGenerator
 - *(common)* Fix registry access during frozen registry.
-- Fix (script) rewrite scripting v1
+- Fix(script) rewrite scripting v1
 - *(script)* Rewrite scripting v2
 - *(script)* Fix a bug with closures in scripts.
 - *(stage)* Fix forward reference
 - *(gradle)* Fuck intellij code cleanup
 - *(script)* Fix another issue with closure transformer
 - *(docs)* Fix image link in readme
+- *(resources)* Forgot to commit this
+- *(client)* Fix some server - client separation issues
+- *(client)* Fix TODO in charTyped method to use String
+- *(client)* Forgot to fix this, change charTyped to String
+- *(testbundle)* Update TestBundle
+- *(mixin-configs)* Correct string formatting and indentation for nested arrays and fields
 
 ### Other
 
 - Merge branch 'master' of https://github.com/LuckyMcDev/FoundryEngine
 - *(session)* Had to rework it again. "should" be better now
 - *(build)* Migrate full build to use a custom plugin
+- Updated credits for icon to match license
 
 ### Refactor
 
@@ -68,11 +100,14 @@ working towards ide like behavior
 - *(game)* Rework game session management to be per world and auto start.
 - *(stage)* Rework stage system
 - *(editor)* Remove unused MainEditor panel.
-- Refactor (script): rework scripting system to be easier to work with and finally fix eval command to use actual groovy shell. for now removes the extensibility of other languages.
+- Refactor(script): rework scripting system to be easier to work with and finally fix eval command to use actual groovy shell.
+for now removes the extensibility of other languages.
 - *(gizmo)* Rework some of the world gizmo logic and increase the size of which it activates hovers.
 - *(managers)* Fix manager calls in other managers for weird dependencies
 - *(bundle)* Rework bundle logic in modlist screen so that it uses mod containers for display.
-- Refactor (bundle): switch to neoforge config system for easier management. Lang file generation for configs needs to be figured out. Not sure how yet. Also added an event bus to the bundle mod config.
+- Refactor(bundle): switch to neoforge config system for easier management.
+Lang file generation for configs needs to be figured out. Not sure how yet.
+Also added an event bus to the bundle mod config.
 - *(imgui)* Use GlStateManager for main window rendering in ImGuiImplGl3
 - *(io)* Replace simple path validation with more advanced resolution logic.
 - *(imgui)* Remove opengl support for less than version 330
@@ -90,14 +125,19 @@ working towards ide like behavior
 - *(ai)* Refactor the way ai works in this project.
 - *(build)* Migrate modular gradle files into buildSrc
 - *(testbundle)* Disable transitive dependencies
-- Refactor (gradlePlugin): Create full gradle plugin for development.
+- Refactor(gradlePlugin): Create full gradle plugin for development.
 - auto mixin json generation
 - easy mincraft setup
 - use libs.versions.toml
+- *(vitepress)* Move vitepress files from root to docs
+- *(package-info)* Remove and regenerate package info files
+- *(client)* Remove unused `BundleModelProvider` class
+- *(data)* Relocate data generator classes to `data.gen` package
 
 ### Documentation
 
 - Update and expand various guides with corrections
+- *(readme)* Add badges for CurseForge, Modrinth, and GitHub links
 
 ### Testing
 
@@ -113,13 +153,16 @@ working towards ide like behavior
 - *(nullability)* Make signature nullable in AutocompleteItem
 - Bump mod_version to 0.1.4
 - Delete obsolete Adapter class
-- Chore (deps): bump NeoForge to 26.1.2.78 and ImGui to 1.92.7.1 forgot to push this, is relevant for last 3 or 4 commits.
+- Chore(deps): bump NeoForge to 26.1.2.78 and ImGui to 1.92.7.1
+forgot to push this, is relevant for last 3 or 4 commits.
 - *(cleanup)* Remove obsolete scripts, configs, and example code
 - *(changelog)* Update changelog
 - *(todo)* For todo go to github issues / project
 - *(docs)* Ignore TypeScript error in custom.css import
 - *(gradle)* Update Gradle wrapper to v9.6.1
 - *(docs)* Word some things differently.
+- *(changelog)* Update changelog
+- *(resources)* Update generated resources
 ## [0.1.2] - 2026-07-06
 
 ### Features
@@ -189,7 +232,8 @@ working towards ide like behavior
 - *(node)* Improve pin list handling in Node and NodeEditorInstance
 - *(bundle)* Rework registering and recipes
 - *(builder)* Rework recipe builder to delegate to mc builders.
-- Refactor (icon): update Icons to be normal names. no more differentiation between FAE and FA
+- Refactor(icon): update Icons to be normal names.
+no more differentiation between FAE and FA
 - *(explorer)* Merge File and Resource explorer into one.
 
 ### Documentation
@@ -306,8 +350,11 @@ working towards ide like behavior
 - *(builder)* Update tag builder for easier use
 - *(ai)* Some ai stuffs.
 - *(suggestions)* Implement NBT command suggestions
-- Feat (suggestions): update NBT suggestions also move all suggestion mixins
-- Feat (editor): implement more advanced code editor stuff error highlighting workspace state
+- Feat(suggestions): update NBT suggestions
+also move all suggestion mixins
+- Feat(editor): implement more advanced code editor stuff
+error highlighting
+workspace state
 
 working towards ide like behavior
 - *(editor)* Script editor, outline panel, imgui downgrade
@@ -343,21 +390,27 @@ working towards ide like behavior
 
 - Setup + imgui
 - Move imgui to client package
-- Update imgui with ContextType thing. Its for having the ImGuiContextStack which can make it easier to create multiple windows with different imgui contexts.
-- Lots of ImGui changes including:
-  Node system. Font managment. Context and graphics stack update / addition Commons and Instances for hard coded things
+- Update imgui with ContextType thing.
+Its for having the ImGuiContextStack which can make it easier to create multiple windows with different imgui contexts.
+- Lots of ImGui changes
+including:
+Node system.
+Font managment.
+Context and graphics stack update / addition
+Commons and Instances for hard coded things
 - Forgot to commit the font file
 - Delete TestImguiImpl.java
-- Update icons. All Icons are now available.
+- Update icons.
+All Icons are now available.
 - Add simple registry things.
 - Update gl stuff, unwrapping texture is now done inside of Client.java
 - Try to do the like imgui makes minecraft smaller thing, that did NOT work!
-  I may or may not do it again, but the next commit will remove this again just to make it cleaner.
+I may or may not do it again, but the next commit will remove this again just to make it cleaner.
 - Removed the docking stuff.
 - Run reformat code.
 - Remove unused frame tracking and dpiScale from ImGuiImpl
 - Rename ImGuiImpl to ImGuiHandler
-- Add ResourceRegistry and Commons.id () helper method
+- Add ResourceRegistry and Commons.id() helper method
 - Add NoMixinException for when i want to implement a method in a mixin, but that method then didnt get implemented, that exeption is thrown.
 - Remove EditorWindow and add top info bar to ImGuiHandler
 - Add panel system and built-in editor with test and node editor panels
@@ -400,7 +453,7 @@ working towards ide like behavior
 - Refactor TestRender with improved framebuffer blitting and state management
 
 - Add TbRenderer and TbRenderSystem for centralized rendering control
-- Implement FrameBufferManager.blit () for efficient framebuffer copying
+- Implement FrameBufferManager.blit() for efficient framebuffer copying
 - Remove manual framebuffer binding and restore OpenGL state
 - Add MinecraftMixin to initialize TbRenderSystem on game startup
 - Update mixin configuration to include MinecraftMixin
@@ -455,9 +508,13 @@ working towards ide like behavior
 - Rename `getGlTexture` to `getGlColTexture` and add `getGlDepthTexture` method
 - Refactor OpenCL dispatch system and introduce thread safety checks
 - Add resource reload logging and server reload listener registration
-- Try add RenderNurse to minecraft Make lwjgl bom read from gradle.properties#lwjgl_version RenderNurse does NOT work yet.
+- Try add RenderNurse to minecraft
+Make lwjgl bom read from gradle.properties#lwjgl_version
+RenderNurse does NOT work yet.
 - Move Config class to config package and make SPEC public
-- Remove TbRenderSystem and refactor renderer access via Instances Also fix Imgui font not loading by making it a ReloadListener Change TTFFile constructor
+- Remove TbRenderSystem and refactor renderer access via Instances
+Also fix Imgui font not loading by making it a ReloadListener
+Change TTFFile constructor
 - Remove RenderNurse agent and wrap dependencies with jarJar
 - Add .idea and .run to .gitignore and create RenderDoc.cmd
 - Refactor texture and device access with instance checks
@@ -533,7 +590,7 @@ working towards ide like behavior
 - Fix ImGui tree node rendering in PostProcessPanel
 - Change cellSize uniform type from float to int in ASCII shader
 - Simplify TestRender by using new built-in pipelines
-- Move onClosed () call to close () method and remove redundant check
+- Move onClosed() call to close() method and remove redundant check
 - Refactor ImGui managment system and add custom Gl3 and Glfw Impl classes.
 - Refactor panel system and move panels to builtin package
 
@@ -600,7 +657,8 @@ Signed-off-by: LuckyMcDev <lucky.dev@myyahoo.com>
 - Add support for bundles to be ZIP files.
 - Refactor editor panels and add main editor panel
 
-allow for docking in central node. if a window is docked in central node, cancel minecraft input.
+allow for docking in central node.
+if a window is docked in central node, cancel minecraft input.
 - Remove old NodeEditorPanel and introduce new node language system
 - Remove tick print from example bundle because its too annoying
 - Add FileExplorerPanel and CodeEditor with bundle reloading support
@@ -614,7 +672,9 @@ Added test shader from bundle testbundle. so now custom shader + registry from i
 - Remove shortcut from Code editor.
 - Make browser display Javadoc + add toggle button for javadoc / doxygen
 - Remove basically unused script factory things
-- Add Foundry helper commands. Hand, which prints info about your hand Dump, which dumps all things in all / a specific registry.
+- Add Foundry helper commands.
+Hand, which prints info about your hand
+Dump, which dumps all things in all / a specific registry.
 - Fix Typo in HandCommand.
 - Add Codecs to BundleInfo and BundleFiles
 - Add client connection and packet sending utilities
@@ -633,15 +693,18 @@ Added test shader from bundle testbundle. so now custom shader + registry from i
 - Move BundleGenerator to data package and enhance functionality
 - Update EngineLogAppender to use non deprecated constructor
 - Add bundle registry system and event handling improvements
-- Refactor BundleRegistry to BundleRegistryQuery, add more registries. Add All Config types in Config and make Config#STARTUP_SPEC be responsible for script and resource enabling / disabling.
+- Refactor BundleRegistry to BundleRegistryQuery, add more registries.
+Add All Config types in Config and make Config#STARTUP_SPEC be responsible for script and resource enabling / disabling.
 - Update run configurations to enable ANSI terminal support
 - Bump Version
 - Add data mixin config and move DataGeneratorMixin to dedicated config
 - Add ANSI terminal support in run configureEach, so it doesn't get reset
-- Update dump command to use BuiltInRegistries Update dump command to require Admin Permissions.
+- Update dump command to use BuiltInRegistries
+Update dump command to require Admin Permissions.
 - Dump command refactor look v1
 - Update dump command output format to Markdown
-- Add Builder System with implementations for Blocks and Item. Update TestBundle to use this ItemBuilder to create a test Item.
+- Add Builder System with implementations for Blocks and Item.
+Update TestBundle to use this ItemBuilder to create a test Item.
 - Remove BundleGenerator and refactor resource pack loading
 
 - Replace BundleGenerator with separate client and server generators
@@ -666,7 +729,8 @@ This reverts commit 3f272c60970b01a55b5f2a199184dea5aeabf9cc.
 
 This reverts commit 7c33dd653fc4264d09db778d220e4ad7d03c3d2f.
 - Make BrowserPanel registration conditional on mcef mod presence and remove browser-related test buttons
-- Update GroovyScriptEngine roots to include generated path Now i can generate scripts, and they're loaded as well.
+- Update GroovyScriptEngine roots to include generated path
+Now i can generate scripts, and they're loaded as well.
 - Make mcef compileOnly
 - Change pack position and id in EngineRepositorySource
 - Add Adapter utility class
@@ -761,7 +825,8 @@ This reverts commit d15bf8bfe40bece57ad89afe5a8266e956d2bcc4.
 - Update Example Bundle to use new registration api.
 - Remove unused plugin from vitepress config
 - Add Freezable Utility class.
-- Update some Panel stuff Includes Javadoc typo updates and moving of packages
+- Update some Panel stuff
+Includes Javadoc typo updates and moving of packages
 - Add ModPathBroadcaster so that dev envs can get all the files they need.
 - Update bundle documentation.
 - Add documentation for mod dependency setup in dev environment
@@ -780,15 +845,17 @@ Will from now on be correctly updated.
 
 Went from 600+ to 209
 - Idk what happened here, but its fixed now
-- Refactor and improve code quality bump to 0.0.4
-- Add first version of RecipeBuilder bump 0.0.5
+- Refactor and improve code quality
+bump to 0.0.4
+- Add first version of RecipeBuilder
+bump 0.0.5
 - Refactor EngineRegistry.java to EngineRegistries.java and add RecipeBuilder usage.
 
 bump 0.0.6
 - Add caution notes to GameBehavior and related classes.
 - Remove all the generated stuff from the ExampleBundle
 - Change error logs to warnings in ModPathBroadcaster
-- Add id (String) Util method to Bundle
+- Add id(String) Util method to Bundle
 - Remove old Data gen stuff in anticipation for Virtual Packs
 - Add full Virtual Pack system. SHOULD be working
 - Bump
@@ -809,23 +876,29 @@ fix typo. :publish
 - Update tasks.gradle
 - Update game test server directory
 - Add game test server bundle copy task
-- Refactor builder package structure. bump .11
-- Re-add RecipeBuilder functionality for Virtual Resource Packs. bump .12
+- Refactor builder package structure.
+bump .11
+- Re-add RecipeBuilder functionality for Virtual Resource Packs.
+bump .12
 - Update BuilderBase javadoc
 - Update Minecraft to 26.1-pre3
 - Refactor all builders to use api & impl system.
 
 bump .14
-
-- Remove unused "generated" path from BundleFiles bump 0.0.15
+- Remove unused "generated" path from BundleFiles
+bump 0.0.15
 - Oops
 - Refactor Markdown parsing system
 
-add new MdScreen constructors change to just one Markdown visitor. supports both commonmark + gfm bump .16
-
-- Add block and item model generation to virtual packs bump .17
+add new MdScreen constructors
+change to just one Markdown visitor.
+supports both commonmark + gfm
+bump .16
+- Add block and item model generation to virtual packs
+bump .17
 - Fix virtual pack title
-- Move zipFileSystem from Bundle to BundleFiles bump .18
+- Move zipFileSystem from Bundle to BundleFiles
+bump .18
 - Add RegistryEvent API for cleaner registration inside of bundles.
 
 bump .19
@@ -837,8 +910,8 @@ bump .19
 - Refactor config system into separate classes
 
 bump .20
-
-- Add DebugUtils class for game pausing useful for debugging?
+- Add DebugUtils class for game pausing
+useful for debugging?
 - Move consumer util classes to dedicated package
 
 bump .21
@@ -850,8 +923,7 @@ bump .21
 - Update builders and add EngineItem and EngineBlock for more functionality per block / item.
 
 bump .22
-
-- Remove unnecessary @SuppressWarnings annotation from DataComponentWrapper.wrap ()
+- Remove unnecessary @SuppressWarnings annotation from DataComponentWrapper.wrap()
 - Add feature system, needs to be implemented for more than just the editor.
 - Refactor DataComponentWrapper to accept input parameter directly
 - Try fix the action hanging
@@ -867,20 +939,34 @@ bump .22
 - Add creative mode tab support for bundles
 - Refactor `BundleCreativeModeTab` to use `Supplier` instead of `DeferredHolder`
 - Refactor BundleCreativeModeTab to check for empty registries
-- Add Config System for Bundles. Uses Toml for configs. May need to rework how you create the config, but its good enough for now. bump .24
-- Fix typo in exceptions package name. Bump .25
+- Add Config System for Bundles.
+Uses Toml for configs.
+May need to rework how you create the config, but its good enough for now.
+bump .24
+- Fix typo in exceptions package name.
+Bump .25
 - Add Javadoc comments to package-info.java files
 - This check actually broke things so it shall be removed
-- Refactor A lot of ImGui stuff. bump .26
+- Refactor A lot of ImGui stuff.
+bump .26
 
-New style system. Rename FeImGuiImplGlfw to EngineImGuiImplGlfw remove now unused ImGuiGraphics
+New style system.
+Rename FeImGuiImplGlfw to EngineImGuiImplGlfw
+remove now unused ImGuiGraphics
 
 Add themes:
-BessDarkTheme CatpuccinMochaTheme CherryTheme DarkTheme ModernDarkTheme VeilTheme VidlibTheme
+BessDarkTheme
+CatpuccinMochaTheme
+CherryTheme
+DarkTheme
+ModernDarkTheme
+VeilTheme
+VidlibTheme
 - Update themes to use Color class and fix import path in EngineLogAppender
 - Add MinecraftToolsPanel for game mode, time, and metrics management
 - Enable keyboard navigation and FreeType renderer in ImGuiManager
-- Replace EngineImGuiImplGlfw with full ImGuiImplGlfw implementation bump .27
+- Replace EngineImGuiImplGlfw with full ImGuiImplGlfw implementation
+bump .27
 - Remove CodeEditor and replace with TextEditor extension
 
 - Added `FileEndings` utility class for mapping file extensions to language definitions and icons
@@ -890,14 +976,22 @@ BessDarkTheme CatpuccinMochaTheme CherryTheme DarkTheme ModernDarkTheme VeilThem
 - Bumped mod version to 0.0.28
 - Removed now non-existent F13-F24 key mappings in `ImGuiImplGlfw`
 - Try fix bug where imgui captures all input even if its disabled
-- Update Code Editor + Lang Defs also update shortcuts for all panels. bump .29
-- Move FileEndings and CodeEditorLanguageDefinitions to common package bump .30
-- Fully rework exlorer stuff, now uses abstract base. Add texture viewer for both files and identifiers. Also improve code editor to have a forceReadOnly bump .31
+- Update Code Editor + Lang Defs also update shortcuts for all panels.
+bump .29
+- Move FileEndings and CodeEditorLanguageDefinitions to common package
+bump .30
+- Fully rework exlorer stuff, now uses abstract base.
+Add texture viewer for both files and identifiers.
+Also improve code editor to have a forceReadOnly
+bump .31
 - Make texture rendering use nearest neighbor sampling for pixel perfect rendering
-- Refactor Menu System to use Categories bump .32
+- Refactor Menu System to use Categories
+bump .32
 - Refactor panels to follow their categories
 - Add weather selector to Minecraft tools panel
-- Add custom networking system. Idk how good it is / how well it will work but its def easier to create packets than vanilla. bump .33
+- Add custom networking system.
+Idk how good it is / how well it will work but its def easier to create packets than vanilla.
+bump .33
 - Make MinecraftToolsPanel use new networking system.
 - Fix crash on Server loading client classes.
 - Add permission checks and update packets to use them.
@@ -912,14 +1006,16 @@ BessDarkTheme CatpuccinMochaTheme CherryTheme DarkTheme ModernDarkTheme VeilThem
 - Full Documentation rework
 - Refactor Example Bundle, And add documentation
 - Add permission checks to editor panels
-- Refactor NetworkManager and add Remote File editing bump .34
+- Refactor NetworkManager and add Remote File editing
+bump .34
 - Add icons to panels and refactor permission checks
 - Update to use new Post Processing stages from RenderLevelStageEvent.
 - Tried adding after gui post-processing, doesn't work.
 - Update version ranges and bump to 0.0.35
 - Remove feature management system
 - Add simple formatting to panel and change manual formatting to this method.
-- Refactor PanelCategory and update some Icons. Also rename EngineImGuiUtils.java to ImGuiUtils.java
+- Refactor PanelCategory and update some Icons.
+Also rename EngineImGuiUtils.java to ImGuiUtils.java
 - Add mod-publish-plugin and configure publishing settings
 
 havent yet made it publish, only added basic config.
@@ -979,15 +1075,19 @@ havent yet made it publish, only added basic config.
 - Add hand subcommand to generate_icons for exporting held item
 - Update the Minecraft postChain system to allow for custom ones, and also multiple active at the same time.
 - Update EffectManager to be instance-based and accessed via Client
-- Move post-processing effects to dedicated EffectPanel still need to add dynamic shader stuffs.
+- Move post-processing effects to dedicated EffectPanel
+still need to add dynamic shader stuffs.
 - Make Effect Manager registry based
 - Refactor EffectManager to just have one list of active effects tracked in the GameRenderer
 - Make ReloadCommandMixin work. Now sends Done! after its done
 - Add working bloom and broken depth visualization
-- Add post-processing effect reloading functionality currently doesnt work.
+- Add post-processing effect reloading functionality
+currently doesnt work.
 - Update bloom threshold value to 0.7
 - Update Panel to use a try-finally statement
-- Add OBJ model rendering classes and parsing functionality This is not yet implemented correctly. it is just pasted from before. bump .37
+- Add OBJ model rendering classes and parsing functionality
+This is not yet implemented correctly. it is just pasted from before.
+bump .37
 - Add getter to EngineMinecraft to access perTickGizmos
 - Run reformat code
 - Remove per bundle event bus, turn into more kjs oriented event approach.
@@ -1012,7 +1112,8 @@ havent yet made it publish, only added basic config.
 - Update documentation hero section and fix registries example
 - Remove EditorContext for now. Add ability to bundles to declare Dependencies.
 - Update wiki
-- Add Blueprint System For ImGui. The main editor will use this at some point.
+- Add Blueprint System For ImGui.
+The main editor will use this at some point.
 - Fix ImGui tree node flag import
 - Add no-op screen for editor, open it when crtl is held + editor is toggled via keybind
 - Update README and GameRendererMixin
@@ -1040,7 +1141,7 @@ havent yet made it publish, only added basic config.
 - Update ScenePanel and remove PropertiesPanel
 - Fix ScenePanel#iconForType to use corrected return type
 - Refactor InfoPanel
-- Add recipe tab to CataloguePanel and refactor Client.getMinecraft () to Client.getMc ()
+- Add recipe tab to CataloguePanel and refactor Client.getMinecraft() to Client.getMc()
 - Add engine display entities and renderers
 - Update display entity hitbox calculation and tracking
 - Implement Attackable and Targeting interfaces for display entities
@@ -1071,7 +1172,9 @@ havent yet made it publish, only added basic config.
 - Remove Cutscene input handling from mixin due to concerns mentioned by Pie
 - Refactor render distance calculation logic to be done on config reload, to save method calls
 - Fix nullpointer by calculating effective render distance on config reload
-- Update blueprint system to be client common aware. Also run reformat code so a lot of stuff. Implement some more of Pies suggestions.
+- Update blueprint system to be client common aware.
+Also run reformat code so a lot of stuff.
+Implement some more of Pies suggestions.
 - [NOT IMPLEMENTED] Data generators, replacement for vpacks at some point.
 - Remove anonymous class from PackResourcesSupplier
 - Update Blueprint system.
@@ -1084,7 +1187,8 @@ havent yet made it publish, only added basic config.
 - Improve TextureViewerPanel
 - Big cutscene System overhaul.
 - Make CutsceneCommand work with default cutscene values.
-- Make windows movable from not only the title bar. Dont know if this will stay, i just like it from trackmania plugin thing, so it will exist here for now as well.
+- Make windows movable from not only the title bar.
+Dont know if this will stay, i just like it from trackmania plugin thing, so it will exist here for now as well.
 - Big Blueprint system update.
 - Forgot to commit these
 - Make CutscenePanel use default / saved values instead of hardcoded ones.
@@ -1176,12 +1280,14 @@ currently, minimal is a bit weird, but diabled should work
 - Panel Updates, move packages and other things
 - Forgot this
 - ImGui Update
-- Refactor Editor item to be a general pourpose editor. area system now uses it aswell.
+- Refactor Editor item to be a general pourpose editor.
+area system now uses it aswell.
 - Update some things
 - Move Packets and update saved data
 - Refactor test command structure
 - Remove position_color_tex_lightmap shader and related pipeline update position only pipeline
-- Remove virtual resource pack system Switch to default minecraft data generation
+- Remove virtual resource pack system
+Switch to default minecraft data generation
 - Update mod version and fix code block line numbers in docs
 - Fix typo in docs
 - Move Commands around. Add Server class, add and run task to generate package-info.java files
@@ -1203,7 +1309,7 @@ currently, minimal is a bit weird, but diabled should work
 - Add MODRINTH.md with project overview and feature list
 - Refactor Data generation system to use builders instead of registry
 - Add data cache clearing, update config to remove unused, bump .55
-- Move BundleDataGenerator.runAll () outside of lambda
+- Move BundleDataGenerator.runAll() outside of lambda
 - Remove Composite Pack resources, i think it was causing crashes.
 - Expose data generator to bundles via event.
 - Add block and item modification events with mixin support
@@ -1239,7 +1345,8 @@ uses the intellij jrr
 - Add mesh rendering pipeline and depth capture system
 - Remove MeshPipeline class
 - Add game session docs
-- Remove blueprint editor and related classes this is due to me wanting to fully rework it into something more capable and change the library its using.
+- Remove blueprint editor and related classes
+this is due to me wanting to fully rework it into something more capable and change the library its using.
 - Bare minimum node editor
 - Remove api package
 - Update some stuff.
@@ -1271,7 +1378,8 @@ uses the intellij jrr
 - Add mesh rendering pipeline and depth capture system
 - Remove MeshPipeline class
 - Add game session docs
-- Remove blueprint editor and related classes this is due to me wanting to fully rework it into something more capable and change the library its using.
+- Remove blueprint editor and related classes
+this is due to me wanting to fully rework it into something more capable and change the library its using.
 - Bare minimum node editor
 - Remove api package
 - Update some stuff.
@@ -1313,13 +1421,15 @@ uses the intellij jrr
 - *(node)* Improve pin list handling in Node and NodeEditorInstance
 - *(bundle)* Rework registering and recipes
 - *(builder)* Rework recipe builder to delegate to mc builders.
-- Refactor (icon): update Icons to be normal names. no more differentiation between FAE and FA
+- Refactor(icon): update Icons to be normal names.
+no more differentiation between FAE and FA
 - *(explorer)* Merge File and Resource explorer into one.
 - *(network)* Remove TestPacket and streamline action handling
 - *(game)* Rework game session management to be per world and auto start.
 - *(stage)* Rework stage system
 - *(editor)* Remove unused MainEditor panel.
-- Refactor (script): rework scripting system to be easier to work with and finally fix eval command to use actual groovy shell. for now removes the extensibility of other languages.
+- Refactor(script): rework scripting system to be easier to work with and finally fix eval command to use actual groovy shell.
+for now removes the extensibility of other languages.
 
 ### Documentation
 
