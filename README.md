@@ -1,6 +1,17 @@
 <div align="center">
   <img src="src/main/resources/assets/foundryengine/textures/logo_transparent.png" alt="FoundryEngine Logo" width="128"/>
   <h1>Foundry Engine</h1>
+  <p>
+    <a href="https://www.curseforge.com/minecraft/mc-mods/foundry-engine">
+      <img src="https://img.shields.io/badge/CurseForge-Get%20it-orange?logo=curseforge&logoColor=white" alt="CurseForge"/>
+    </a>
+    <a href="https://modrinth.com/project/foundryengine">
+      <img src="https://img.shields.io/badge/Modrinth-Get%20it-green?logo=modrinth&logoColor=white" alt="Modrinth"/>
+    </a>
+    <a href="https://github.com/LuckyMcDev/FoundryEngine">
+      <img src="https://img.shields.io/badge/GitHub-View%20Source-black?logo=github&logoColor=white" alt="GitHub"/>
+    </a>
+  </p>
 
 A NeoForge Minecraft mod that turns Minecraft into a development-ready game engine.
 
