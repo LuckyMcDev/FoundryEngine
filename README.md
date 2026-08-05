@@ -11,6 +11,9 @@
     <a href="https://github.com/LuckyMcDev/FoundryEngine">
       <img src="https://img.shields.io/badge/GitHub-View%20Source-black?logo=github&logoColor=white" alt="GitHub"/>
     </a>
+    <a href="https://www.codefactor.io/repository/github/luckymcdev/foundryengine">
+        <img src="https://www.codefactor.io/repository/github/luckymcdev/foundryengine/badge" alt="CodeFactor" />
+    </a>
   </p>
 
 A NeoForge Minecraft mod that turns Minecraft into a development-ready game engine.
