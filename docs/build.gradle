@@ -1,0 +1,5 @@
+plugins {
+	id "idea"
+}
+
+// This file is only so that it appears as a module in Intellij :D
