@@ -69,7 +69,7 @@ public class PublishingComponent implements FoundryEngineComponent {
 			jar.setDescription("A sources JAR built from the main source set");
 			jar.setGroup("build");
 			jar.getArchiveClassifier().set("sources");
-			jar.from(sourceSets.getByName("main").getAllSource());
+			jar.from(sourceSets.getByName("main").getAllJava());
 		});
 
 		project.getTasks().named("assemble", task -> task.dependsOn("javadocJar"));
@@ -98,6 +98,8 @@ public class PublishingComponent implements FoundryEngineComponent {
 				.orElse(project.getProviders().environmentVariable("CURSEFORGE_PROJECT_ID")));
 			curseforge.getMinecraftVersions().add(extension.getMinecraft().getMinecraftVersion());
 			curseforge.getJavaVersions().add(JavaVersion.VERSION_25);
+			curseforge.getClientRequired().set(true);
+			curseforge.getServerRequired().set(true);
 		});
 		publishMods.modrinth(modrinth -> {
 			modrinth.getAccessToken().set(project.getProviders().environmentVariable("MODRINTH_TOKEN"));
