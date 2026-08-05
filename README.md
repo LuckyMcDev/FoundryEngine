@@ -25,9 +25,13 @@ A NeoForge Minecraft mod that turns Minecraft into a development-ready game engi
 ---
 
 <div align="center">
-
-<a href="https://www.curseforge.com/minecraft/mc-mods/foundry-engine"><img src="https://modfolio.creeperkatze.dev/curseforge/project/1605117?showSummary=true" alt="Foundry Engine" /></a>
-<a href="https://modrinth.com/project/AaUmWHXd"><img src="https://modfolio.creeperkatze.dev/modrinth/project/AaUmWHXd" alt="AaUmWHXd" /></a>
+  <a href="https://www.curseforge.com/minecraft/mc-mods/foundry-engine">
+    <img src="https://modfolio.creeperkatze.dev/curseforge/project/1605117?showSummary=true" alt="CurseForge" />
+  </a>
+  <br />
+  <a href="https://modrinth.com/project/AaUmWHXd">
+    <img src="https://modfolio.creeperkatze.dev/modrinth/project/AaUmWHXd" alt="Modrinth" />
+  </a>
 </div>
 
 Foundry Engine provides a large set of tools to ease the development of Minecraft additions. It does this by providing a new API called **Bundles**, a new way of loading content into the game. The mod is focused on allowing you to create custom games inside Minecraft.
