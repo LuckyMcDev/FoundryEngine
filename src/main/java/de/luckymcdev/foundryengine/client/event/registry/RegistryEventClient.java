@@ -44,7 +44,7 @@ public class RegistryEventClient {
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public static void registerRenderers(RegistryCollector collector) {
 		for (BlockEntityBuilder<?> builder : List.copyOf(collector.getBlockEntities())) {
-			BlockEntityRendererProvider<?, BlockEntityRenderState> rendererFactory = builder.getRendererFactory();
+			BlockEntityRendererProvider<?, BlockEntityRenderState> rendererFactory = (BlockEntityRendererProvider<?, BlockEntityRenderState>) builder.getRendererFactory();
 			if (rendererFactory != null) {
 				var type = builder.get();
 				BlockEntityRenderers.register((BlockEntityType) type, rendererFactory);

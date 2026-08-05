@@ -3,8 +3,6 @@ package de.luckymcdev.foundryengine.common.builder.blockentity;
 import de.luckymcdev.foundryengine.common.builder.AbstractBuilder;
 import de.luckymcdev.foundryengine.common.builder.block.BlockBuilder;
 import de.luckymcdev.foundryengine.common.world.block.entity.EngineBlockEntity;
-import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -26,7 +24,7 @@ public class BlockEntityBuilder<T extends BlockEntity> extends AbstractBuilder<B
 	private final List<Runnable> blockResolvers = new ArrayList<>();
 	private final Set<Block> resolvedBlocks = new HashSet<>();
 	private BlockEntityType.BlockEntitySupplier<T> factory;
-	private @Nullable BlockEntityRendererProvider<T, BlockEntityRenderState> rendererFactory;
+	private @Nullable Object rendererFactory;
 	private boolean onlyOpCanSetNbt;
 
 	@SuppressWarnings("unchecked")
@@ -50,7 +48,7 @@ public class BlockEntityBuilder<T extends BlockEntity> extends AbstractBuilder<B
 		return this;
 	}
 
-	public BlockEntityBuilder<T> renderer(BlockEntityRendererProvider<T, BlockEntityRenderState> rendererFactory) {
+	public BlockEntityBuilder<T> renderer(Object rendererFactory) {
 		this.rendererFactory = rendererFactory;
 		return this;
 	}
@@ -113,7 +111,7 @@ public class BlockEntityBuilder<T extends BlockEntity> extends AbstractBuilder<B
 		return onlyOpCanSetNbt;
 	}
 
-	public @Nullable BlockEntityRendererProvider<T, BlockEntityRenderState> getRendererFactory() {
+	public @Nullable Object getRendererFactory() {
 		return rendererFactory;
 	}
 
