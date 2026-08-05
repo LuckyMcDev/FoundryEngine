@@ -1,3 +1,6 @@
+/**
+ * client - dialogue
+ */
 @NullMarked
 package de.luckymcdev.foundryengine.client.dialogue;
 

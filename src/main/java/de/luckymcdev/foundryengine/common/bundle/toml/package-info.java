@@ -1,5 +1,5 @@
 /**
- * Bundle Toml parsing
+ * common - bundle - toml
  */
 @NullMarked
 package de.luckymcdev.foundryengine.common.bundle.toml;

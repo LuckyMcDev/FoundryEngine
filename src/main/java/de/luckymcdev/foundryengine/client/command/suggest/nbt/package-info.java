@@ -1,5 +1,5 @@
 /**
- * Client - Command - Suggest - Nbt
+ * client - command - suggest - nbt
  */
 @NullMarked
 package de.luckymcdev.foundryengine.client.command.suggest.nbt;

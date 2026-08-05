@@ -1,5 +1,5 @@
 /**
- * Client - Node
+ * client - node
  */
 @NullMarked
 package de.luckymcdev.foundryengine.client.node;

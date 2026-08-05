@@ -1,5 +1,5 @@
 /**
- * Client - Imgui - Gizmo
+ * client - imgui - gizmo
  */
 @NullMarked
 package de.luckymcdev.foundryengine.client.imgui.gizmo;

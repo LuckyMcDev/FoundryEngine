@@ -1,5 +1,5 @@
 /**
- * Client - Post - Internal
+ * client - post - internal
  */
 @NullMarked
 package de.luckymcdev.foundryengine.client.post.internal;

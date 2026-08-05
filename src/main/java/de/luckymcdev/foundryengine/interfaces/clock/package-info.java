@@ -1,5 +1,5 @@
-﻿/**
- * Interfaces - Clock
+/**
+ * interfaces - clock
  */
 @NullMarked
 package de.luckymcdev.foundryengine.interfaces.clock;

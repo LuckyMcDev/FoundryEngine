@@ -1,5 +1,5 @@
 /**
- * Script Event management
+ * common - script - event
  */
 @NullMarked
 package de.luckymcdev.foundryengine.common.script.event;

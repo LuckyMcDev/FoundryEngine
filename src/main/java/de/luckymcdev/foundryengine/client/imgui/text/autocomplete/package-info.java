@@ -1,5 +1,5 @@
 /**
- * Client - Imgui - Text - Autocomplete
+ * client - imgui - text - autocomplete
  */
 @NullMarked
 package de.luckymcdev.foundryengine.client.imgui.text.autocomplete;

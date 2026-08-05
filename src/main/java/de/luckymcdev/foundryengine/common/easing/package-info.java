@@ -1,5 +1,5 @@
 /**
- * Easings
+ * common - easing
  */
 @NullMarked
 package de.luckymcdev.foundryengine.common.easing;

@@ -1,5 +1,5 @@
 /**
- * World-space gizmo system for in-editor transform handles.
+ * client - gizmo
  */
 @NullMarked
 package de.luckymcdev.foundryengine.client.gizmo;

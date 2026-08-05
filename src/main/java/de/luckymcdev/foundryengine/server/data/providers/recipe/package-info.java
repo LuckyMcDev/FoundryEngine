@@ -1,5 +1,5 @@
 /**
- * Common - Data - Providers - Server - Recipe
+ * server - data - providers - recipe
  */
 @NullMarked
 package de.luckymcdev.foundryengine.server.data.providers.recipe;

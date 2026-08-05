@@ -1,5 +1,5 @@
 /**
- * Common - Data
+ * common - data
  */
 @NullMarked
 package de.luckymcdev.foundryengine.common.data;

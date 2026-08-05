@@ -1,5 +1,5 @@
 /**
- * Color Utility
+ * common - util - color
  */
 @NullMarked
 package de.luckymcdev.foundryengine.common.util.color;

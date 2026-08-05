@@ -1,5 +1,5 @@
 /**
- * Client Side Code for FoundryEngine.
+ * client
  */
 @NullMarked
 package de.luckymcdev.foundryengine.client;

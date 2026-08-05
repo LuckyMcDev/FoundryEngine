@@ -1,5 +1,5 @@
 /**
- * Particle Builder implementations
+ * common - builder - particle
  */
 @NullMarked
 package de.luckymcdev.foundryengine.common.builder.particle;

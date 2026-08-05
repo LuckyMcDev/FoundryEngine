@@ -1,5 +1,5 @@
 /**
- * Common - Waypoint
+ * common - waypoint
  */
 @NullMarked
 package de.luckymcdev.foundryengine.common.waypoint;

@@ -1,3 +1,6 @@
+/**
+ * common - network - packets - dialogue
+ */
 @NullMarked
 package de.luckymcdev.foundryengine.common.network.packets.dialogue;
 

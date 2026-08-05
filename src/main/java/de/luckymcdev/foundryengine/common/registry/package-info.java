@@ -1,5 +1,5 @@
 /**
- * Registry
+ * common - registry
  */
 @NullMarked
 package de.luckymcdev.foundryengine.common.registry;

@@ -1,5 +1,5 @@
 /**
- * Client - Command - Builtin
+ * client - command - builtin
  */
 @NullMarked
 package de.luckymcdev.foundryengine.client.command.builtin;

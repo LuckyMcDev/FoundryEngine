@@ -1,5 +1,5 @@
 /**
- * Client - Editor - Panel - Test
+ * client - editor - panel - test
  */
 @NullMarked
 package de.luckymcdev.foundryengine.client.editor.panel.test;

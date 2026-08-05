@@ -1,5 +1,5 @@
 /**
- * Common - Area
+ * common - area
  */
 @NullMarked
 package de.luckymcdev.foundryengine.common.area;

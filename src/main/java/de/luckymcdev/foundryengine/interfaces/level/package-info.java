@@ -1,5 +1,5 @@
-﻿/**
- * Interfaces - Level
+/**
+ * interfaces - level
  */
 @NullMarked
 package de.luckymcdev.foundryengine.interfaces.level;

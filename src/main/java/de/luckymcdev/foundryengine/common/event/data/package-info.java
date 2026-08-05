@@ -1,5 +1,5 @@
 /**
- * Common - Event - Data
+ * common - event - data
  */
 @NullMarked
 package de.luckymcdev.foundryengine.common.event.data;

@@ -1,5 +1,5 @@
 /**
- * Log Appending
+ * common - log
  */
 @NullMarked
 package de.luckymcdev.foundryengine.common.log;

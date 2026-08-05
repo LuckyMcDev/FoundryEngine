@@ -1,3 +1,6 @@
+/**
+ * common - game
+ */
 @NullMarked
 package de.luckymcdev.foundryengine.common.game;
 

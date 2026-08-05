@@ -1,5 +1,5 @@
 /**
- * Client - Render - Obj
+ * client - render - obj
  */
 @NullMarked
 package de.luckymcdev.foundryengine.client.render.obj;

@@ -1,5 +1,5 @@
 /**
- * Game Stage addons
+ * common - game - stage - addon
  */
 @NullMarked
 package de.luckymcdev.foundryengine.common.game.stage.addon;

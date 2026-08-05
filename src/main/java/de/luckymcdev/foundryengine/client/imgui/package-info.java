@@ -1,5 +1,5 @@
 /**
- * ImGui implementation
+ * client - imgui
  */
 @NullMarked
 package de.luckymcdev.foundryengine.client.imgui;

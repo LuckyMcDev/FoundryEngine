@@ -1,5 +1,5 @@
 /**
- * Particle Data
+ * client - particle - data
  */
 @NullMarked
 package de.luckymcdev.foundryengine.client.particle.data;

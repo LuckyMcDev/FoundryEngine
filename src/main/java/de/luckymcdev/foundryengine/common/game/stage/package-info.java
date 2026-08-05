@@ -1,5 +1,5 @@
 /**
- * Game Stage
+ * common - game - stage
  */
 @NullMarked
 package de.luckymcdev.foundryengine.common.game.stage;

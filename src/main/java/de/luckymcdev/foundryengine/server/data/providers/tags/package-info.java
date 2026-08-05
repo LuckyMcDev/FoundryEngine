@@ -1,5 +1,5 @@
 /**
- * Common - Data - Providers - Server - Tags
+ * server - data - providers - tags
  */
 @NullMarked
 package de.luckymcdev.foundryengine.server.data.providers.tags;

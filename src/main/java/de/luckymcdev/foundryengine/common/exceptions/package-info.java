@@ -1,5 +1,5 @@
 /**
- * Exceptions
+ * common - exceptions
  */
 @NullMarked
 package de.luckymcdev.foundryengine.common.exceptions;

@@ -1,5 +1,5 @@
 /**
- * Icon file generation
+ * client - icons
  */
 @NullMarked
 package de.luckymcdev.foundryengine.client.icons;

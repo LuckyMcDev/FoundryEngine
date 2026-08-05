@@ -1,5 +1,5 @@
 /**
- * Mixin - Suggest - Nbt
+ * mixin - suggest
  */
 @NullMarked
 package de.luckymcdev.foundryengine.mixin.suggest;

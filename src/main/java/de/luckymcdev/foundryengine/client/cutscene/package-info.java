@@ -1,3 +1,6 @@
+/**
+ * client - cutscene
+ */
 @NullMarked
 package de.luckymcdev.foundryengine.client.cutscene;
 

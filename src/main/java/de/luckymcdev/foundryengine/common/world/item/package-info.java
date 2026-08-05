@@ -1,5 +1,5 @@
 /**
- * Items
+ * common - world - item
  */
 @NullMarked
 package de.luckymcdev.foundryengine.common.world.item;

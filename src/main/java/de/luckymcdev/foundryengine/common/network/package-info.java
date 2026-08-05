@@ -1,5 +1,5 @@
 /**
- * Network
+ * common - network
  */
 @NullMarked
 package de.luckymcdev.foundryengine.common.network;

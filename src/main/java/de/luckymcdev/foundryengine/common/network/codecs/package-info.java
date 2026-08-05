@@ -1,5 +1,5 @@
 /**
- * Common - Network - Codecs
+ * common - network - codecs
  */
 @NullMarked
 package de.luckymcdev.foundryengine.common.network.codecs;

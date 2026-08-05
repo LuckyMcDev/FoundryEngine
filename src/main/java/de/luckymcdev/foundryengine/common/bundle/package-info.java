@@ -1,5 +1,5 @@
 /**
- * Bundles
+ * common - bundle
  */
 @NullMarked
 package de.luckymcdev.foundryengine.common.bundle;

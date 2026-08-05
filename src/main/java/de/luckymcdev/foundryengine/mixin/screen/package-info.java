@@ -1,5 +1,5 @@
 /**
- * Screen Mixins
+ * mixin - screen
  */
 @NullMarked
 package de.luckymcdev.foundryengine.mixin.screen;

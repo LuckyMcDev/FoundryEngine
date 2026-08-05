@@ -1,5 +1,5 @@
 /**
- * Server Side Code for FoundryEngine.
+ * server
  */
 @NullMarked
 package de.luckymcdev.foundryengine.server;

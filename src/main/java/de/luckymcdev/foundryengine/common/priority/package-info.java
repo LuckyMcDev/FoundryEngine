@@ -1,5 +1,5 @@
 /**
- * Priority
+ * common - priority
  */
 @NullMarked
 package de.luckymcdev.foundryengine.common.priority;

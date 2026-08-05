@@ -1,5 +1,5 @@
 /**
- * Script management
+ * common - script
  */
 @NullMarked
 package de.luckymcdev.foundryengine.common.script;

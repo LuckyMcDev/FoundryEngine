@@ -1,5 +1,5 @@
 /**
- * Common - World - Level - Runtime
+ * common - world - level - runtime
  */
 @NullMarked
 package de.luckymcdev.foundryengine.common.world.level.runtime;

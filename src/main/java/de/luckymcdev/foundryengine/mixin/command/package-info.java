@@ -1,5 +1,5 @@
 /**
- * Command Mixins
+ * mixin - command
  */
 @NullMarked
 package de.luckymcdev.foundryengine.mixin.command;

@@ -1,5 +1,5 @@
 /**
- * Client - Area
+ * client - area
  */
 @NullMarked
 package de.luckymcdev.foundryengine.client.area;

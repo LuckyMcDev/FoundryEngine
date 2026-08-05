@@ -1,5 +1,5 @@
 /**
- * The FoundryEngine Config.
+ * config
  */
 @NullMarked
 package de.luckymcdev.foundryengine.config;

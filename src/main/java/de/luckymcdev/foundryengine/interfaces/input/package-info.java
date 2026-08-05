@@ -1,5 +1,5 @@
-﻿/**
- * Interfaces - Input
+/**
+ * interfaces - input
  */
 @NullMarked
 package de.luckymcdev.foundryengine.interfaces.input;

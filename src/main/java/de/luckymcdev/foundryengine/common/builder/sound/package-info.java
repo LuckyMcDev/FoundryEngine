@@ -1,5 +1,5 @@
 /**
- * Common - Builder - Sound
+ * common - builder - sound
  */
 @NullMarked
 package de.luckymcdev.foundryengine.common.builder.sound;

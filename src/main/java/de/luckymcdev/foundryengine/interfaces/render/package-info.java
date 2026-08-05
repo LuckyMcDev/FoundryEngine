@@ -1,5 +1,5 @@
-﻿/**
- * Interfaces - Render
+/**
+ * interfaces - render
  */
 @NullMarked
 package de.luckymcdev.foundryengine.interfaces.render;

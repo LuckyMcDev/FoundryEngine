@@ -1,5 +1,5 @@
 /**
- * Common - Wrapper
+ * common - wrapper
  */
 @NullMarked
 package de.luckymcdev.foundryengine.common.wrapper;

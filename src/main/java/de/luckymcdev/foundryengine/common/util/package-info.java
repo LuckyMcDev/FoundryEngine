@@ -1,5 +1,5 @@
 /**
- * Common Utilities
+ * common - util
  */
 @NullMarked
 package de.luckymcdev.foundryengine.common.util;

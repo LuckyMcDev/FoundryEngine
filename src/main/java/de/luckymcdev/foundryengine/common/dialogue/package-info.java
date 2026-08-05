@@ -1,3 +1,6 @@
+/**
+ * common - dialogue
+ */
 @NullMarked
 package de.luckymcdev.foundryengine.common.dialogue;
 

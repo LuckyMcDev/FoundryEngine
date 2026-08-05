@@ -1,5 +1,5 @@
 /**
- * Client - Sound
+ * client - sound
  */
 @NullMarked
 package de.luckymcdev.foundryengine.client.sound;

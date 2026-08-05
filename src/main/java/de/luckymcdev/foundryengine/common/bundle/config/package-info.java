@@ -1,5 +1,5 @@
 /**
- * Bundle Config
+ * common - bundle - config
  */
 @NullMarked
 package de.luckymcdev.foundryengine.common.bundle.config;

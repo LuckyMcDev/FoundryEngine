@@ -1,5 +1,5 @@
 /**
- * Client - Render
+ * client - render
  */
 @NullMarked
 package de.luckymcdev.foundryengine.client.render;

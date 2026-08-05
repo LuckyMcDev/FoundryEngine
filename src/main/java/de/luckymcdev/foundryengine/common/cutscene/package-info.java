@@ -1,3 +1,6 @@
+/**
+ * common - cutscene
+ */
 @NullMarked
 package de.luckymcdev.foundryengine.common.cutscene;
 

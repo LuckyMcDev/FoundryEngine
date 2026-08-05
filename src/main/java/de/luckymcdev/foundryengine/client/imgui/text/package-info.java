@@ -1,5 +1,5 @@
 /**
- * Client - Imgui - Text
+ * client - imgui - text
  */
 @NullMarked
 package de.luckymcdev.foundryengine.client.imgui.text;

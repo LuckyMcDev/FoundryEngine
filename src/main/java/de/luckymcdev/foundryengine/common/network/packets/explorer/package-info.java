@@ -1,5 +1,5 @@
 /**
- * Common - Network - Packets - Explorer
+ * common - network - packets - explorer
  */
 @NullMarked
 package de.luckymcdev.foundryengine.common.network.packets.explorer;

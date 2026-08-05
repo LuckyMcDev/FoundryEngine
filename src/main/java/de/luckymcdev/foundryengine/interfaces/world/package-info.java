@@ -1,5 +1,5 @@
-﻿/**
- * Interfaces - World
+/**
+ * interfaces - world
  */
 @NullMarked
 package de.luckymcdev.foundryengine.interfaces.world;

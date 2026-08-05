@@ -1,3 +1,6 @@
+/**
+ * common - world
+ */
 @NullMarked
 package de.luckymcdev.foundryengine.common.world;
 

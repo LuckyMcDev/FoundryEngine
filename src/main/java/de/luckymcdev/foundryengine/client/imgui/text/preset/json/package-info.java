@@ -1,5 +1,5 @@
 /**
- * Client - Imgui - Text - Preset - Json
+ * client - imgui - text - preset - json
  */
 @NullMarked
 package de.luckymcdev.foundryengine.client.imgui.text.preset.json;

@@ -1,5 +1,5 @@
 /**
- * Bult-in editor
+ * client - editor - panel
  */
 @NullMarked
 package de.luckymcdev.foundryengine.client.editor.panel;

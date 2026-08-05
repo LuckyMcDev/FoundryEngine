@@ -1,5 +1,5 @@
 /**
- * Recipe Builder implementations
+ * common - builder - recipe
  */
 @NullMarked
 package de.luckymcdev.foundryengine.common.builder.recipe;

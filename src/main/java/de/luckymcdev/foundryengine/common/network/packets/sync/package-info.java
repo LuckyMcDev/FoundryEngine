@@ -1,5 +1,5 @@
 /**
- * Common - Network - Packets - Sync
+ * common - network - packets - sync
  */
 @NullMarked
 package de.luckymcdev.foundryengine.common.network.packets.sync;

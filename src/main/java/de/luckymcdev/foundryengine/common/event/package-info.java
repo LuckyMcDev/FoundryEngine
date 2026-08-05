@@ -1,5 +1,5 @@
 /**
- * Common - Event
+ * common - event
  */
 @NullMarked
 package de.luckymcdev.foundryengine.common.event;

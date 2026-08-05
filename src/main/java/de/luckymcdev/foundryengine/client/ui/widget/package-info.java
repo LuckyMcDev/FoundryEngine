@@ -1,5 +1,5 @@
 /**
- * Client - Ui - Widget
+ * client - ui - widget
  */
 @NullMarked
 package de.luckymcdev.foundryengine.client.ui.widget;

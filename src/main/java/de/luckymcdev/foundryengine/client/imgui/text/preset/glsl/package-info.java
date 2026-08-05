@@ -1,5 +1,5 @@
 /**
- * Client - Imgui - Text - Preset - Glsl
+ * client - imgui - text - preset - glsl
  */
 @NullMarked
 package de.luckymcdev.foundryengine.client.imgui.text.preset.glsl;

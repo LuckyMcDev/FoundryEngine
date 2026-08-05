@@ -1,5 +1,5 @@
 /**
- * Mixin - Resource
+ * mixin - resource
  */
 @NullMarked
 package de.luckymcdev.foundryengine.mixin.resource;

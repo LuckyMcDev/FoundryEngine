@@ -1,5 +1,5 @@
 /**
- * Bult-in editor config
+ * client - editor - config
  */
 @NullMarked
 package de.luckymcdev.foundryengine.client.editor.config;

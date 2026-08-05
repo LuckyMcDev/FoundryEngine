@@ -1,5 +1,5 @@
 /**
- * Common - World - Level
+ * common - world - level
  */
 @NullMarked
 package de.luckymcdev.foundryengine.common.world.level;

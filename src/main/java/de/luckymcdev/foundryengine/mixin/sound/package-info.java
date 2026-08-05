@@ -1,5 +1,5 @@
 /**
- * Mixin - Sound
+ * mixin - sound
  */
 @NullMarked
 package de.luckymcdev.foundryengine.mixin.sound;

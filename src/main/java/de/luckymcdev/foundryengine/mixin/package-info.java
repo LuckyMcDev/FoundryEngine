@@ -1,5 +1,5 @@
 /**
- * Mixins for FoundryEngine.
+ * mixin
  */
 @NullMarked
 package de.luckymcdev.foundryengine.mixin;

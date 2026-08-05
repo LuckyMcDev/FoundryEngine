@@ -1,5 +1,5 @@
 /**
- * Markdown Parsing
+ * common - md
  */
 @NullMarked
 package de.luckymcdev.foundryengine.common.md;

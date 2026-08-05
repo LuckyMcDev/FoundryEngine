@@ -1,5 +1,5 @@
 /**
- * Builder implementations
+ * common - builder
  */
 @NullMarked
 package de.luckymcdev.foundryengine.common.builder;

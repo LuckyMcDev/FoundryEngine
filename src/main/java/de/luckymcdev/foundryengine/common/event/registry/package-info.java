@@ -1,5 +1,5 @@
 /**
- * Common - Event - Registry
+ * common - event - registry
  */
 @NullMarked
 package de.luckymcdev.foundryengine.common.event.registry;

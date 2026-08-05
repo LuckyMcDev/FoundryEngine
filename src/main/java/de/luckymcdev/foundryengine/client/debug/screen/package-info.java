@@ -1,5 +1,5 @@
 /**
- * Debug screen entries
+ * client - debug - screen
  */
 @NullMarked
 package de.luckymcdev.foundryengine.client.debug.screen;

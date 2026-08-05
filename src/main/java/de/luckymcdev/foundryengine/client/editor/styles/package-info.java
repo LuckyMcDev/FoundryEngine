@@ -1,5 +1,5 @@
 /**
- * Client - Editor - Styles
+ * client - editor - styles
  */
 @NullMarked
 package de.luckymcdev.foundryengine.client.editor.styles;

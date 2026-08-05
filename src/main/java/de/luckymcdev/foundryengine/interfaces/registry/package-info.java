@@ -1,5 +1,5 @@
-﻿/**
- * Interfaces - Registry
+/**
+ * interfaces - registry
  */
 @NullMarked
 package de.luckymcdev.foundryengine.interfaces.registry;

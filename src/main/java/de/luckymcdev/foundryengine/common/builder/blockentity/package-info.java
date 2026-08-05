@@ -1,5 +1,5 @@
 /**
- * Block Entity Builder implementations
+ * common - builder - blockentity
  */
 @NullMarked
 package de.luckymcdev.foundryengine.common.builder.blockentity;

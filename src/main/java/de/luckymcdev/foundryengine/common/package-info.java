@@ -1,5 +1,5 @@
 /**
- * Common Code for FoundryEngine
+ * common
  */
 @NullMarked
 package de.luckymcdev.foundryengine.common;

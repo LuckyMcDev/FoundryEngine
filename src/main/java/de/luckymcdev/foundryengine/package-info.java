@@ -1,5 +1,5 @@
 /**
- * The FoundryEngine Mod.
+ * de.luckymcdev.foundryengine
  */
 @NullMarked
 package de.luckymcdev.foundryengine;

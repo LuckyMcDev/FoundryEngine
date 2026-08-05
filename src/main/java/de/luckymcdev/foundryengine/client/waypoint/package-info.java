@@ -1,5 +1,5 @@
 /**
- * Client - Waypoint
+ * client - waypoint
  */
 @NullMarked
 package de.luckymcdev.foundryengine.client.waypoint;
