@@ -30,9 +30,9 @@ public class TextFieldWidget extends TextWidget {
 	}
 
 	@Override
-	public boolean charTyped(char c, int modifiers) {
+	public boolean charTyped(String c, int modifiers) {
 		if (this.isFocused()) {
-			this.setText(this.getText().append(String.valueOf(c)));
+			this.setText(this.getText().append(c));
 		}
 		return super.charTyped(c, modifiers);
 	}
