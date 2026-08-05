@@ -1,9 +1,11 @@
 package de.luckymcdev.foundryengine.config;
 
+import de.luckymcdev.foundryengine.common.util.CompatibilityMode;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 public final class StartupConfig {
 	public static final ModConfigSpec SPEC;
+	public static final ModConfigSpec.ConfigValue<CompatibilityMode> COMPATIBILITY_MODE;
 	public static final ModConfigSpec.BooleanValue SCRIPTING_ENABLED;
 	public static final ModConfigSpec.BooleanValue EVAL_COMMAND_ENABLED;
 	public static final ModConfigSpec.IntValue EVAL_COMMAND_PERMISSION;
@@ -12,6 +14,15 @@ public final class StartupConfig {
 
 	static {
 		ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
+
+		COMPATIBILITY_MODE = builder
+			.comment("Sets the compatibility mode for FoundryEngine.")
+			.comment("Compatibility means, what you support.")
+			.comment("That means, when set to Client, you are client only,")
+			.comment("when set to Server, you are server only,")
+			.comment("and when set to Both, you are required on both client and server.")
+			.translation("foundryengine.configuration.compatibility_mode")
+			.defineEnum("COMPATIBILITY_MODE", CompatibilityMode.BOTH);
 
 		SCRIPTING_ENABLED = builder
 			.comment("Enables/disables loading of Groovy scripts from bundles.")
@@ -40,4 +51,6 @@ public final class StartupConfig {
 
 		SPEC = builder.build();
 	}
+
+
 }

@@ -16,8 +16,10 @@ import de.luckymcdev.foundryengine.common.network.NetworkManager;
 import de.luckymcdev.foundryengine.common.registry.RegistryCollector;
 import de.luckymcdev.foundryengine.common.savedata.SavedDataManager;
 import de.luckymcdev.foundryengine.common.script.ScriptShell;
+import de.luckymcdev.foundryengine.common.util.CompatibilityMode;
 import de.luckymcdev.foundryengine.common.util.FirstRun;
 import de.luckymcdev.foundryengine.common.waypoint.WaypointManager;
+import de.luckymcdev.foundryengine.config.StartupConfig;
 import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.EventPriority;
@@ -186,6 +188,10 @@ public final class Common {
 
 	public static void setRegistryCollector(@Nullable RegistryCollector collector) {
 		registryCollector = collector;
+	}
+
+	public static CompatibilityMode getCompatibilityMode() {
+		return StartupConfig.COMPATIBILITY_MODE.get();
 	}
 
 	/**
