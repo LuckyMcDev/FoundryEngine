@@ -68,7 +68,7 @@ public abstract class GenerateMixinConfigsTask extends DefaultTask {
 
 	private static void addNestedArray(List<String> fields, String key, List<String> values) {
 		if (!values.isEmpty()) {
-			fields.add(arrayField(field(key, ""), values, 3));
+			fields.add(arrayField(field(key, ""), values, 0));
 		}
 	}
 
@@ -79,13 +79,20 @@ public abstract class GenerateMixinConfigsTask extends DefaultTask {
 		StringBuilder sb = new StringBuilder(field(key, ""));
 		sb.append("{\n");
 		for (int i = 0; i < inner.size(); i++) {
-			sb.append('\t').append('\t').append(inner.get(i));
+			String fieldStr = inner.get(i);
+			String[] lines = fieldStr.split("\n", -1);
+			for (int j = 0; j < lines.length; j++) {
+				sb.append("\t").append(lines[j]);
+				if (j < lines.length - 1) {
+					sb.append('\n');
+				}
+			}
 			if (i < inner.size() - 1) {
 				sb.append(',');
 			}
 			sb.append('\n');
 		}
-		sb.append('\t').append('}');
+		sb.append('}');
 		return sb.toString();
 	}
 
@@ -157,7 +164,14 @@ public abstract class GenerateMixinConfigsTask extends DefaultTask {
 		StringBuilder sb = new StringBuilder();
 		sb.append("{\n");
 		for (int i = 0; i < fields.size(); i++) {
-			sb.append('\t').append(fields.get(i));
+			String fieldStr = fields.get(i);
+			String[] lines = fieldStr.split("\n", -1);
+			for (int j = 0; j < lines.length; j++) {
+				sb.append('\t').append(lines[j]);
+				if (j < lines.length - 1) {
+					sb.append('\n');
+				}
+			}
 			if (i < fields.size() - 1) {
 				sb.append(',');
 			}
