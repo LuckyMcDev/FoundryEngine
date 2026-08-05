@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.server.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import de.luckymcdev.foundryengine.server.command.builtin.BlockToDisplayCommand;
 import de.luckymcdev.foundryengine.server.command.builtin.CutsceneCommand;
 import de.luckymcdev.foundryengine.server.command.builtin.DialogueCommand;
 import de.luckymcdev.foundryengine.server.command.builtin.DumpCommand;
@@ -35,7 +36,8 @@ public class FoundryCommands {
 		new CutsceneCommand(),
 		new DialogueCommand(),
 		new ScreenEffectCommand(),
-		new WaypointCommand()
+		new WaypointCommand(),
+		new BlockToDisplayCommand()
 	);
 
 	public static void registerAll(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext context) {

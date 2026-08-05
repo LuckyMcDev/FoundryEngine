@@ -45,6 +45,7 @@ public final class Common {
 	public static final Path CONFIG = FMLPaths.CONFIGDIR.get();
 	public static final Path TEMP_DIR = Path.of(SystemProperties.getProperty("java.io.tmpdir")).resolve(MODID);
 	private static final boolean FIRST_RUN = FirstRun.isFor(MODID);
+	public static final String BLOCK_DISPLAY_TAG = MODID + "_blockdisplay";
 	public static final Path DIRECTORY = dir(GAMEDIR.resolve(MODNAME));
 	public static final Path BUNDLES = dir(DIRECTORY.resolve("bundles"));
 	public static final Path CACHE = dir(DIRECTORY.resolve(".cache"));
