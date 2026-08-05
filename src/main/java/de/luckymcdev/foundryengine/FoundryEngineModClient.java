@@ -247,6 +247,7 @@ public class FoundryEngineModClient {
 
 	private void onItemTooltip(ItemTooltipEvent event) {
 		Client.getItemCommandManager().handleItemTooltip(event);
+		Client.getTooltipManager().handleItemTooltip(event);
 	}
 
 	private void onRightClickItem(PlayerInteractEvent.RightClickItem event) {

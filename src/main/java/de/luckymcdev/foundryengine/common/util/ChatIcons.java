@@ -6,6 +6,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FontDescription;
 import net.minecraft.network.chat.Style;
 
+import java.util.List;
+
 /**
  * Chat icon components using a custom font for engine UI elements.
  */
@@ -40,8 +42,8 @@ public interface ChatIcons {
 		return Component.literal(String.valueOf(c)).setStyle(ICONS);
 	}
 
-	static Entry[] values() {
-		return new Entry[]{
+	static List<Entry> values() {
+		return List.of(
 			new Entry('.', "Small Space", SMALL_SPACE),
 			new Entry('!', "Error", ERROR),
 			new Entry('+', "Plus", PLUS),
@@ -65,8 +67,38 @@ public interface ChatIcons {
 			new Entry('T', "Tag", TAG),
 			new Entry('W', "Warn", WARN),
 			new Entry('X', "No", NO),
-			new Entry('Y', "Yes", YES),
-		};
+			new Entry('Y', "Yes", YES)
+		);
+	}
+
+	interface Tags {
+		Style STYLE = Style.EMPTY.withFont(new FontDescription.Resource(Common.id("tags"))).applyFormat(ChatFormatting.WHITE);
+
+		Component BANNER_PATTERN = tagIcon('A');
+		Component BLOCK = tagIcon('B');
+		Component ENCHANTMENT = tagIcon('C');
+		Component ENTITY_TYPE = tagIcon('E');
+		Component FLUID = tagIcon('F');
+		Component ITEM = tagIcon('I');
+		Component INSTRUMENT = tagIcon('N');
+		Component PAINTING_VARIANT = tagIcon('P');
+
+		private static Component tagIcon(char c) {
+			return Component.literal(String.valueOf(c)).setStyle(STYLE);
+		}
+
+		static List<Entry> values() {
+			return List.of(
+				new Entry('A', "Banner Pattern", BANNER_PATTERN),
+				new Entry('B', "Block", BLOCK),
+				new Entry('C', "Enchantment", ENCHANTMENT),
+				new Entry('E', "Entity Type", ENTITY_TYPE),
+				new Entry('F', "Fluid", FLUID),
+				new Entry('I', "Item", ITEM),
+				new Entry('N', "Instrument", INSTRUMENT),
+				new Entry('P', "Painting Variant", PAINTING_VARIANT)
+			);
+		}
 	}
 
 	record Entry(char character, String name, Component component) {

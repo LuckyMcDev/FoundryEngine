@@ -30,7 +30,7 @@ public class WaypointPanel extends EditorPanel {
 		Color.CYAN, Color.BLUE, Color.PURPLE, Color.PINK, Color.TURQUOISE
 	};
 
-	private static final ChatIcons.Entry[] ICON_ENTRIES = ChatIcons.values();
+	private static final List<ChatIcons.Entry> ICON_ENTRIES = ChatIcons.values();
 	private static final String[] ICON_LABELS = buildIconLabels();
 
 	private final ImString newName = new ImString(64);
@@ -47,9 +47,9 @@ public class WaypointPanel extends EditorPanel {
 	}
 
 	private static String[] buildIconLabels() {
-		String[] labels = new String[ICON_ENTRIES.length];
-		for (int i = 0; i < ICON_ENTRIES.length; i++) {
-			labels[i] = ICON_ENTRIES[i].character() + "  " + ICON_ENTRIES[i].name();
+		String[] labels = new String[ICON_ENTRIES.size()];
+		for (int i = 0; i < ICON_ENTRIES.size(); i++) {
+			labels[i] = ICON_ENTRIES.get(i).character() + "  " + ICON_ENTRIES.get(i).name();
 		}
 		return labels;
 	}
@@ -229,7 +229,7 @@ public class WaypointPanel extends EditorPanel {
 			pos = mc.player.blockPosition();
 		}
 
-		String icon = String.valueOf(ICON_ENTRIES[selectedIconIndex.get()].character());
+		String icon = String.valueOf(ICON_ENTRIES.get(selectedIconIndex.get()).character());
 
 		ClientPacketDistributor.sendToServer(WaypointPacket.add(
 			pos.getX(), pos.getY(), pos.getZ(), name, icon, newColor

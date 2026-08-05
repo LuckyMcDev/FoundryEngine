@@ -1,0 +1,52 @@
+{
+	"providers": [
+		{
+			"type": "bitmap",
+			"file": "foundryengine:font/icons/tag/banner_pattern.png",
+			"ascent": 7,
+			"chars": ["A"]
+		},
+		{
+			"type": "bitmap",
+			"file": "foundryengine:font/icons/tag/block.png",
+			"ascent": 7,
+			"chars": ["B"]
+		},
+		{
+			"type": "bitmap",
+			"file": "foundryengine:font/icons/tag/enchantment.png",
+			"ascent": 7,
+			"chars": ["C"]
+		},
+		{
+			"type": "bitmap",
+			"file": "foundryengine:font/icons/tag/entity_type.png",
+			"ascent": 7,
+			"chars": ["E"]
+		},
+		{
+			"type": "bitmap",
+			"file": "foundryengine:font/icons/tag/fluid.png",
+			"ascent": 7,
+			"chars": ["F"]
+		},
+		{
+			"type": "bitmap",
+			"file": "foundryengine:font/icons/tag/item.png",
+			"ascent": 7,
+			"chars": ["I"]
+		},
+		{
+			"type": "bitmap",
+			"file": "foundryengine:font/icons/tag/instrument.png",
+			"ascent": 7,
+			"chars": ["N"]
+		},
+		{
+			"type": "bitmap",
+			"file": "foundryengine:font/icons/tag/painting_variant.png",
+			"ascent": 7,
+			"chars": ["P"]
+		}
+	]
+}

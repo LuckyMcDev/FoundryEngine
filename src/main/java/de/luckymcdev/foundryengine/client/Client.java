@@ -25,6 +25,7 @@ import de.luckymcdev.foundryengine.client.post.PostEffectManager;
 import de.luckymcdev.foundryengine.client.render.MeshRenderer;
 import de.luckymcdev.foundryengine.client.render.obj.ObjModelManager;
 import de.luckymcdev.foundryengine.client.skybox.SkyboxManager;
+import de.luckymcdev.foundryengine.client.tooltip.TooltipManager;
 import de.luckymcdev.foundryengine.client.waypoint.ClientWaypointManager;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.exceptions.UtilityClassException;
@@ -101,6 +102,7 @@ public final class Client {
 	private static final IconExporterLayer ICON_EXPORTER_LAYER = new IconExporterLayer();
 	private static final WorkspaceState WORKSPACE_STATE = new WorkspaceState();
 	private static final HotKeyManager HOTKEY_MANAGER = new HotKeyManager();
+	private static final TooltipManager TOOLTIP_MANAGER = new TooltipManager();
 
 	private Client() {
 		throw new UtilityClassException();
@@ -364,6 +366,13 @@ public final class Client {
 	 */
 	public static HotKeyManager getHotKeyManager() {
 		return HOTKEY_MANAGER;
+	}
+
+	/**
+	 * Returns the tooltip manager.
+	 */
+	public static TooltipManager getTooltipManager() {
+		return TOOLTIP_MANAGER;
 	}
 
 	/**

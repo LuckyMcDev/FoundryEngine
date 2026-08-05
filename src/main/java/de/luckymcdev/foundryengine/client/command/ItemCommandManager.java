@@ -1,10 +1,14 @@
 package de.luckymcdev.foundryengine.client.command;
 
+import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.registry.GenericRegistry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
@@ -45,6 +49,14 @@ public class ItemCommandManager {
 				event.getToolTip().add(
 					Component.literal("Executes Command: " + command.command()).withStyle(ChatFormatting.GRAY)
 				);
+				var stack = event.getItemStack();
+				stack.update(DataComponents.CUSTOM_DATA, CustomData.EMPTY, oldData -> {
+					CompoundTag copyTag = oldData.copyTag();
+					var tag = new CompoundTag();
+					tag.putString("command", command.command());
+					copyTag.put(Common.MODID, tag);
+					return CustomData.of(copyTag);
+				});
 				return;
 			}
 		}
