@@ -149,8 +149,7 @@ public abstract class EngineScreen extends Screen {
 
 	@Override
 	public boolean charTyped(CharacterEvent event) {
-		//TODO: Find a better fix for this?
-		this.root.charTyped(event.codepointAsString().charAt(0), 0);
+		this.root.charTyped(event.codepointAsString(), 0);
 		return super.charTyped(event);
 	}
 }

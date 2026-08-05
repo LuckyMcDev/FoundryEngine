@@ -621,7 +621,7 @@ public class WidgetBase {
 		return false;
 	}
 
-	public boolean charTyped(char c, int modifiers) {
+	public boolean charTyped(String c, int modifiers) {
 		for (WidgetBase child : this.children) {
 			if (child.enabled) {
 				if (child.charTyped(c, modifiers)) {
