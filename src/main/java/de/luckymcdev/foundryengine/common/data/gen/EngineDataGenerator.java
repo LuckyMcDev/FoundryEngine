@@ -1,4 +1,4 @@
-package de.luckymcdev.foundryengine.common.data;
+package de.luckymcdev.foundryengine.common.data.gen;
 
 import net.minecraft.SharedConstants;
 import net.minecraft.data.DataGenerator;

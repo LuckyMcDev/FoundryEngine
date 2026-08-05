@@ -3,7 +3,7 @@ package de.luckymcdev.foundryengine;
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.cutscene.util.ServerScreenEffectManager;
-import de.luckymcdev.foundryengine.common.data.BundleDataGenerator;
+import de.luckymcdev.foundryengine.common.data.gen.BundleDataGenerator;
 import de.luckymcdev.foundryengine.common.event.BlockEvents;
 import de.luckymcdev.foundryengine.common.event.BundleEvents;
 import de.luckymcdev.foundryengine.common.event.ClientEvents;

@@ -1,4 +1,4 @@
-package de.luckymcdev.foundryengine.common.data;
+package de.luckymcdev.foundryengine.common.data.gen;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.client.data.providers.EngineEquipmentAssetProvider;

@@ -3,7 +3,7 @@ package de.luckymcdev.foundryengine.server.packs;
 import com.google.gson.JsonObject;
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.common.Common;
-import de.luckymcdev.foundryengine.common.data.BundleDataGenerator;
+import de.luckymcdev.foundryengine.common.data.gen.BundleDataGenerator;
 import net.minecraft.SharedConstants;
 import net.minecraft.server.packs.PackType;
 import org.apache.commons.io.FileUtils;

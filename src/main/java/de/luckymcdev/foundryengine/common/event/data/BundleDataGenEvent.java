@@ -1,6 +1,6 @@
 package de.luckymcdev.foundryengine.common.event.data;
 
-import de.luckymcdev.foundryengine.common.data.EngineDataGenerator;
+import de.luckymcdev.foundryengine.common.data.gen.EngineDataGenerator;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataProvider;
 import net.neoforged.bus.api.Event;
