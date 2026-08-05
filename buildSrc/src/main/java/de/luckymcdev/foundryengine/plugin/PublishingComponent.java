@@ -69,7 +69,7 @@ public class PublishingComponent implements FoundryEngineComponent {
 			jar.setDescription("A sources JAR built from the main source set");
 			jar.setGroup("build");
 			jar.getArchiveClassifier().set("sources");
-			jar.from(sourceSets.getByName("main").getAllSource());
+			jar.from(sourceSets.getByName("main").getAllJava());
 		});
 
 		project.getTasks().named("assemble", task -> task.dependsOn("javadocJar"));
