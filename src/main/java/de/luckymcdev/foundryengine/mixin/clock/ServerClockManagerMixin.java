@@ -2,7 +2,7 @@ package de.luckymcdev.foundryengine.mixin.clock;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import de.luckymcdev.foundryengine.common.world.level.ServerClockManagerExtension;
+import de.luckymcdev.foundryengine.interfaces.clock.EngineServerClockManager;
 import net.minecraft.core.Holder;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.server.level.ServerPlayer;
@@ -17,10 +17,10 @@ import org.spongepowered.asm.mixin.injection.At;
 import java.util.Map;
 
 /**
- * Implements {@link ServerClockManagerExtension} to expose clock instances and redirect broadcasts per-level.
+ * Implements {@link EngineServerClockManager} to expose clock instances and redirect broadcasts per-level.
  */
 @Mixin(ServerClockManager.class)
-public abstract class ServerClockManagerMixin implements ServerClockManagerExtension {
+public abstract class ServerClockManagerMixin implements EngineServerClockManager {
 	@Shadow
 	@Final
 	private Map<Holder<WorldClock>, ServerClockManager.ClockInstance> clocks;

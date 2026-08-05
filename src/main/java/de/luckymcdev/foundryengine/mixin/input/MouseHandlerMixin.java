@@ -1,7 +1,7 @@
 package de.luckymcdev.foundryengine.mixin.input;
 
 import de.luckymcdev.foundryengine.client.Client;
-import de.luckymcdev.foundryengine.interfaces.EngineMouseHandler;
+import de.luckymcdev.foundryengine.interfaces.input.EngineMouseHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.client.input.MouseButtonInfo;

@@ -1,5 +1,5 @@
 /**
- * Mixin - Slot
+ * mixin - slot
  */
 @NullMarked
 package de.luckymcdev.foundryengine.mixin.slot;

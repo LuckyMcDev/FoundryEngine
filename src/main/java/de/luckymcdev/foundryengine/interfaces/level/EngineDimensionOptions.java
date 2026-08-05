@@ -1,5 +1,7 @@
-package de.luckymcdev.foundryengine.interfaces;
+package de.luckymcdev.foundryengine.interfaces.level;
 
+import de.luckymcdev.foundryengine.common.exceptions.NoMixinException;
+import de.luckymcdev.foundryengine.interfaces.EngineInterface;
 import net.minecraft.world.level.dimension.LevelStem;
 
 import java.util.function.Predicate;
@@ -14,20 +16,28 @@ public interface EngineDimensionOptions extends EngineInterface<LevelStem> {
 	/**
 	 * Sets whether the dimension data should be saved.
 	 */
-	void engine$setSave(boolean value);
+	default void engine$setSave(boolean value) {
+		throw new NoMixinException(this);
+	}
 
 	/**
 	 * Returns whether the dimension data is saved.
 	 */
-	boolean engine$getSave();
+	default boolean engine$getSave() {
+		throw new NoMixinException(this);
+	}
 
 	/**
 	 * Sets whether the dimension properties should be saved.
 	 */
-	void engine$setSaveProperties(boolean value);
+	default void engine$setSaveProperties(boolean value) {
+		throw new NoMixinException(this);
+	}
 
 	/**
 	 * Returns whether the dimension properties are saved.
 	 */
-	boolean engine$getSaveProperties();
+	default boolean engine$getSaveProperties() {
+		throw new NoMixinException(this);
+	}
 }

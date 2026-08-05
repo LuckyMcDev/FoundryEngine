@@ -1,7 +1,7 @@
 package de.luckymcdev.foundryengine.mixin.screen;
 
 import com.google.common.collect.Lists;
-import de.luckymcdev.foundryengine.common.slot.SlotCustomization;
+import de.luckymcdev.foundryengine.interfaces.slot.EngineSlot;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.Slot;
@@ -15,10 +15,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.List;
 
 /**
- * Implements {@link SlotCustomization} on the creative inventory slot wrapper.
+ * Implements {@link EngineSlot} on the creative inventory slot wrapper.
  */
 @Mixin(targets = {"net/minecraft/client/gui/screens/inventory/CreativeModeInventoryScreen$SlotWrapper"})
-public abstract class CreativeModeInventoryScreenSlotWrapperMixin extends Slot implements SlotCustomization {
+public abstract class CreativeModeInventoryScreenSlotWrapperMixin extends Slot implements EngineSlot {
 
 	@Unique
 	private List<Component> engine$slotTooltipText = Lists.newArrayList();
@@ -35,7 +35,7 @@ public abstract class CreativeModeInventoryScreenSlotWrapperMixin extends Slot i
 	 */
 	@Inject(method = "<init>", at = @At("TAIL"))
 	public void CreativeModeInventoryScreen$SlotWrapper(Slot target, int index, int x, int y, CallbackInfo ci) {
-		var targetCus = (SlotCustomization) target;
+		var targetCus = (EngineSlot) target;
 		this.engine$slotTooltipText = targetCus.engine$getSlotTooltipText();
 		this.engine$disabledOverride = targetCus.engine$getDisabledOverride();
 	}

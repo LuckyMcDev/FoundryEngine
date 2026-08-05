@@ -1,5 +1,5 @@
 /**
- * Input Mixins
+ * mixin - input
  */
 @NullMarked
 package de.luckymcdev.foundryengine.mixin.input;

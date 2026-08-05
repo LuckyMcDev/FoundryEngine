@@ -1,6 +1,6 @@
 package de.luckymcdev.foundryengine.mixin.world;
 
-import de.luckymcdev.foundryengine.interfaces.EngineBlockStateBehavior;
+import de.luckymcdev.foundryengine.interfaces.world.EngineBlockStateBehavior;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;

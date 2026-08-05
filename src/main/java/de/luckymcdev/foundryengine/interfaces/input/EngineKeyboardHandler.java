@@ -1,5 +1,7 @@
-package de.luckymcdev.foundryengine.interfaces;
+package de.luckymcdev.foundryengine.interfaces.input;
 
+import de.luckymcdev.foundryengine.common.exceptions.NoMixinException;
+import de.luckymcdev.foundryengine.interfaces.EngineInterface;
 import net.minecraft.client.KeyboardHandler;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
@@ -12,10 +14,14 @@ public interface EngineKeyboardHandler extends EngineInterface<KeyboardHandler> 
 	/**
 	 * Called on key press events to allow interception or augmentation.
 	 */
-	void engine$keyPress(long p_window, int action, KeyEvent event, CallbackInfo ci);
+	default void engine$keyPress(long p_window, int action, KeyEvent event, CallbackInfo ci) {
+		throw new NoMixinException(this);
+	}
 
 	/**
 	 * Called on character typed events to allow interception or augmentation.
 	 */
-	void engine$charTyped(long p_window, CharacterEvent event, CallbackInfo ci);
+	default void engine$charTyped(long p_window, CharacterEvent event, CallbackInfo ci) {
+		throw new NoMixinException(this);
+	}
 }

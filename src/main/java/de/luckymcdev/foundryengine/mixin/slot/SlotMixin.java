@@ -1,7 +1,7 @@
 package de.luckymcdev.foundryengine.mixin.slot;
 
 import com.google.common.collect.Lists;
-import de.luckymcdev.foundryengine.common.slot.SlotCustomization;
+import de.luckymcdev.foundryengine.interfaces.slot.EngineSlot;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.Slot;
 import org.spongepowered.asm.mixin.Final;
@@ -16,10 +16,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.List;
 
 /**
- * Implements {@link SlotCustomization} on Slot to support custom tooltips and disabled override.
+ * Implements {@link EngineSlot} on Slot to support custom tooltips and disabled override.
  */
 @Mixin(Slot.class)
-public class SlotMixin implements SlotCustomization {
+public class SlotMixin implements EngineSlot {
 
 	@Shadow
 	@Final

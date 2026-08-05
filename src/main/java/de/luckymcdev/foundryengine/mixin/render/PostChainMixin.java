@@ -3,7 +3,7 @@ package de.luckymcdev.foundryengine.mixin.render;
 import com.mojang.blaze3d.framegraph.FrameGraphBuilder;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.resource.GraphicsResourceAllocator;
-import de.luckymcdev.foundryengine.interfaces.EnginePostChain;
+import de.luckymcdev.foundryengine.interfaces.render.EnginePostChain;
 import net.minecraft.client.renderer.LevelTargetBundle;
 import net.minecraft.client.renderer.PostChain;
 import net.minecraft.resources.Identifier;

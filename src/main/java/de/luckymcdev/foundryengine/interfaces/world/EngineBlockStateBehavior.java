@@ -1,5 +1,7 @@
-package de.luckymcdev.foundryengine.interfaces;
+package de.luckymcdev.foundryengine.interfaces.world;
 
+import de.luckymcdev.foundryengine.common.exceptions.NoMixinException;
+import de.luckymcdev.foundryengine.interfaces.EngineInterface;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 
 /**
@@ -9,15 +11,21 @@ public interface EngineBlockStateBehavior extends EngineInterface<BlockBehaviour
 	/**
 	 * Sets the light emission level for this block state.
 	 */
-	void engine$setLightEmission(int emission);
+	default void engine$setLightEmission(int emission) {
+		throw new NoMixinException(this);
+	}
 
 	/**
 	 * Sets the destroy speed of this block state.
 	 */
-	void engine$setDestroySpeed(float speed);
+	default void engine$setDestroySpeed(float speed) {
+		throw new NoMixinException(this);
+	}
 
 	/**
 	 * Sets whether this block state requires a tool to drop.
 	 */
-	void engine$setRequiresTool(boolean requiresTool);
+	default void engine$setRequiresTool(boolean requiresTool) {
+		throw new NoMixinException(this);
+	}
 }

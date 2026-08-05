@@ -2,7 +2,7 @@ package de.luckymcdev.foundryengine.mixin.registry;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.mojang.logging.LogUtils;
-import de.luckymcdev.foundryengine.common.world.level.RemoveFromRegistry;
+import de.luckymcdev.foundryengine.interfaces.registry.EngineRegistry;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import net.minecraft.core.Holder;
@@ -24,10 +24,10 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
- * Implements {@link RemoveFromRegistry} and {@link WritableRegistry} on MappedRegistry to support entry removal and freezing.
+ * Implements {@link EngineRegistry} and {@link WritableRegistry} on MappedRegistry to support entry removal and freezing.
  */
 @Mixin(MappedRegistry.class)
-public abstract class MappedRegistryMixin<T> implements RemoveFromRegistry<T>, WritableRegistry<T> {
+public abstract class MappedRegistryMixin<T> implements EngineRegistry<T>, WritableRegistry<T> {
 	@Unique
 	private static final Logger engine$LOGGER = LogUtils.getLogger();
 

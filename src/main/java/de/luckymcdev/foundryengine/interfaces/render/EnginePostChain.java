@@ -1,7 +1,9 @@
-package de.luckymcdev.foundryengine.interfaces;
+package de.luckymcdev.foundryengine.interfaces.render;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.resource.GraphicsResourceAllocator;
+import de.luckymcdev.foundryengine.common.exceptions.NoMixinException;
+import de.luckymcdev.foundryengine.interfaces.EngineInterface;
 import net.minecraft.client.renderer.PostChain;
 import net.minecraft.resources.Identifier;
 
@@ -14,5 +16,7 @@ public interface EnginePostChain extends EngineInterface<PostChain> {
 	/**
 	 * Processes the post-chain using the given external targets and resource allocator.
 	 */
-	void engine$process(Map<Identifier, RenderTarget> externalTargets, GraphicsResourceAllocator resourceAllocator);
+	default void engine$process(Map<Identifier, RenderTarget> externalTargets, GraphicsResourceAllocator resourceAllocator) {
+		throw new NoMixinException(this);
+	}
 }

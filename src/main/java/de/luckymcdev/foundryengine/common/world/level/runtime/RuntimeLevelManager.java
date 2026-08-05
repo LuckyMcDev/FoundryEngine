@@ -1,8 +1,8 @@
 package de.luckymcdev.foundryengine.common.world.level.runtime;
 
 import de.luckymcdev.foundryengine.common.world.level.EngineLevels;
-import de.luckymcdev.foundryengine.common.world.level.RemoveFromRegistry;
-import de.luckymcdev.foundryengine.interfaces.EngineDimensionOptions;
+import de.luckymcdev.foundryengine.interfaces.level.EngineDimensionOptions;
+import de.luckymcdev.foundryengine.interfaces.registry.EngineRegistry;
 import de.luckymcdev.foundryengine.mixin.MinecraftServerAccess;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.RegistrationInfo;
@@ -46,7 +46,7 @@ public class RuntimeLevelManager {
 		((EngineDimensionOptions) (Object) options).engine$setSaveProperties(false);
 
 		MappedRegistry<LevelStem> dimensionsRegistry = getDimensionsRegistry(this.server);
-		try (var _ = RemoveFromRegistry.thaw(dimensionsRegistry)) {
+		try (var _ = EngineRegistry.thaw(dimensionsRegistry)) {
 			var key = ResourceKey.create(Registries.LEVEL_STEM, levelKey.identifier());
 			if (!dimensionsRegistry.containsKey(key)) {
 				dimensionsRegistry.register(key, options, RegistrationInfo.BUILT_IN);
@@ -123,6 +123,6 @@ public class RuntimeLevelManager {
 	}
 
 	private void unregister(RuntimeLevel level, ResourceKey<Level> dimensionKey, MappedRegistry<LevelStem> dimensionsRegistry, boolean alwaysDelete) {
-		RemoveFromRegistry.remove(dimensionsRegistry, dimensionKey.identifier());
+		EngineRegistry.remove(dimensionsRegistry, dimensionKey.identifier());
 	}
 }

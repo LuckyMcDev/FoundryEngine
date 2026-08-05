@@ -1,5 +1,6 @@
 /**
- * Interfaces which are implemented in {@link de.luckymcdev.foundryengine.mixin}
+ * Engine interfaces which are implemented in {@link de.luckymcdev.foundryengine.mixin}.
+ * Subpackages mirror the mixin packages.
  */
 @NullMarked
 package de.luckymcdev.foundryengine.interfaces;

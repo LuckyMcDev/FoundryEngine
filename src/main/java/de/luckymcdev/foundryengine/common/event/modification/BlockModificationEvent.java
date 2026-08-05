@@ -1,7 +1,7 @@
 package de.luckymcdev.foundryengine.common.event.modification;
 
-import de.luckymcdev.foundryengine.interfaces.EngineBlockBehavior;
-import de.luckymcdev.foundryengine.interfaces.EngineBlockStateBehavior;
+import de.luckymcdev.foundryengine.interfaces.world.EngineBlockBehavior;
+import de.luckymcdev.foundryengine.interfaces.world.EngineBlockStateBehavior;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.neoforged.bus.api.Event;

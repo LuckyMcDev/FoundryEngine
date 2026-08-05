@@ -1,6 +1,6 @@
 package de.luckymcdev.foundryengine.mixin.world;
 
-import de.luckymcdev.foundryengine.interfaces.EngineBlockBehavior;
+import de.luckymcdev.foundryengine.interfaces.world.EngineBlockBehavior;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import org.spongepowered.asm.mixin.Mixin;

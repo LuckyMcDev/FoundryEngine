@@ -4,7 +4,7 @@ import com.mojang.blaze3d.resource.CrossFrameResourcePool;
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.post.RenderPhase;
-import de.luckymcdev.foundryengine.interfaces.EngineGameRenderer;
+import de.luckymcdev.foundryengine.interfaces.render.EngineGameRenderer;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;

@@ -1,6 +1,6 @@
 package de.luckymcdev.foundryengine.common.world.level.runtime;
 
-import de.luckymcdev.foundryengine.common.world.level.ServerClockManagerExtension;
+import de.luckymcdev.foundryengine.interfaces.clock.EngineServerClockManager;
 import de.luckymcdev.foundryengine.mixin.clock.ClockInstanceAccessor;
 import net.minecraft.core.Holder;
 import net.minecraft.network.protocol.game.ClientboundSetTimePacket;
@@ -34,7 +34,7 @@ public class RuntimeClockManager extends ServerClockManager {
 	@Override
 	public void tick() {
 		if (this.advanceTime.getAsBoolean()) {
-			((ServerClockManagerExtension) this).engine$getClocks().values().forEach((clockInstance) -> {
+			((EngineServerClockManager) this).engine$getClocks().values().forEach((clockInstance) -> {
 				clockInstance.tick(this.advanceTime.getAsBoolean());
 			});
 			this.setDirty();
@@ -63,7 +63,7 @@ public class RuntimeClockManager extends ServerClockManager {
 
 	@Override
 	public ClientboundSetTimePacket createFullSyncPacket() {
-		return new ClientboundSetTimePacket(this.getGameTime(), Util.mapValues(((ServerClockManagerExtension) this).engine$getClocks(), (clock) -> this.packNetworkState(clock, this.server)));
+		return new ClientboundSetTimePacket(this.getGameTime(), Util.mapValues(((EngineServerClockManager) this).engine$getClocks(), (clock) -> this.packNetworkState(clock, this.server)));
 	}
 
 	protected ClockNetworkState packNetworkState(ClockInstance instance, final MinecraftServer server) {

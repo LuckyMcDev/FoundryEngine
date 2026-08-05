@@ -1,5 +1,5 @@
 /**
- * Mixin - Clock
+ * mixin - clock
  */
 @NullMarked
 package de.luckymcdev.foundryengine.mixin.clock;

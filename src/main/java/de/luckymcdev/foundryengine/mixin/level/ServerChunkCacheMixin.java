@@ -1,6 +1,6 @@
 package de.luckymcdev.foundryengine.mixin.level;
 
-import de.luckymcdev.foundryengine.interfaces.EngineLevelAccess;
+import de.luckymcdev.foundryengine.interfaces.level.EngineLevelAccess;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;
 import org.spongepowered.asm.mixin.Final;

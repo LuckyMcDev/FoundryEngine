@@ -1,5 +1,5 @@
 /**
- * Mixin - World
+ * mixin - world
  */
 @NullMarked
 package de.luckymcdev.foundryengine.mixin.world;

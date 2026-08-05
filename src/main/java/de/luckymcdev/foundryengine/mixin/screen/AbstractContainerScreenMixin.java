@@ -1,7 +1,7 @@
 package de.luckymcdev.foundryengine.mixin.screen;
 
-import de.luckymcdev.foundryengine.common.slot.SlotCustomization;
 import de.luckymcdev.foundryengine.config.ClientConfig;
+import de.luckymcdev.foundryengine.interfaces.slot.EngineSlot;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Renders custom slot tooltips on inventory screens via SlotCustomization.
+ * Renders custom slot tooltips on inventory screens via EngineSlot.
  */
 @Mixin(AbstractContainerScreen.class)
 public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMenu> extends Screen {
@@ -43,7 +43,7 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
 	@Inject(method = "extractTooltip", at = @At("RETURN"))
 	protected void engine$renderTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY, CallbackInfo ci) {
 		if (this.menu.getCarried().isEmpty() && this.hoveredSlot != null && !this.hoveredSlot.hasItem()) {
-			if (ClientConfig.SHOW_SLOT_TOOLTIP.getAsBoolean() && this.hoveredSlot instanceof SlotCustomization slotWithTooltip) {
+			if (ClientConfig.SHOW_SLOT_TOOLTIP.getAsBoolean() && this.hoveredSlot instanceof EngineSlot slotWithTooltip) {
 				List<Component> list = slotWithTooltip.engine$getSlotTooltipText();
 				if (!list.isEmpty()) {
 					graphics.setTooltipForNextFrame(this.font, list, Optional.empty(), mouseX, mouseY);

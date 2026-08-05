@@ -1,6 +1,6 @@
 package de.luckymcdev.foundryengine.mixin.level;
 
-import de.luckymcdev.foundryengine.interfaces.EngineDimensionOptions;
+import de.luckymcdev.foundryengine.interfaces.level.EngineDimensionOptions;
 import net.minecraft.world.level.dimension.LevelStem;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;

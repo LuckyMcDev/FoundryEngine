@@ -2,7 +2,7 @@ package de.luckymcdev.foundryengine.mixin.input;
 
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.EditorScreen;
-import de.luckymcdev.foundryengine.interfaces.EngineKeyboardHandler;
+import de.luckymcdev.foundryengine.interfaces.input.EngineKeyboardHandler;
 import net.minecraft.client.KeyboardHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.input.CharacterEvent;
