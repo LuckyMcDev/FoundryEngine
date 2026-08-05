@@ -19,9 +19,11 @@ jobs:
           cache: npm
 
       - name: Install dependencies
+        working-directory: docs
         run: npm ci
 
       - name: Build VitePress
+        working-directory: docs
         run: npm run docs:build
 
       - uses: actions/upload-artifact@v7
