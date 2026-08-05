@@ -98,6 +98,8 @@ public class PublishingComponent implements FoundryEngineComponent {
 				.orElse(project.getProviders().environmentVariable("CURSEFORGE_PROJECT_ID")));
 			curseforge.getMinecraftVersions().add(extension.getMinecraft().getMinecraftVersion());
 			curseforge.getJavaVersions().add(JavaVersion.VERSION_25);
+			curseforge.getClientRequired().set(true);
+			curseforge.getServerRequired().set(true);
 		});
 		publishMods.modrinth(modrinth -> {
 			modrinth.getAccessToken().set(project.getProviders().environmentVariable("MODRINTH_TOKEN"));
