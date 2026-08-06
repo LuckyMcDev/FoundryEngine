@@ -4,7 +4,7 @@ plugins {
 	id 'de.luckymcdev.foundryengine'
 }
 
-version = libs.versions.mod.version.get()
+version = libs.versions.minecraft.version.get() + "-" + libs.versions.mod.version.get()
 group = libs.versions.mod.group.getOrElse('de.luckymcdev')
 base {
 	archivesName.set(libs.versions.mod.id)
