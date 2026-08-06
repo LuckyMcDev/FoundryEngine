@@ -57,13 +57,12 @@ public class ExplorerPanel extends EditorPanel {
 	private static final DateTimeFormatter DATE_FMT =
 		DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneId.systemDefault());
 
-	private final File rootDir = Common.DIRECTORY.toFile();
+	private static final List<String> BLACKLISTED_EXTENSIONS = Arrays.asList("bak", "tmp");
+	private final List<File> rootDirs = List.of(Common.DIRECTORY.toFile(), Common.CONFIG.toFile());
 	private final ImString searchFilter = new ImString(256);
-
 	private boolean initialized = false;
 	private boolean rootReadable = true;
 	private @Nullable String lastError = null;
-
 	private @Nullable LocalTree localTree = null;
 	private @Nullable RemoteTree remoteTree = null;
 	private boolean remoteRequested = false;
@@ -76,6 +75,18 @@ public class ExplorerPanel extends EditorPanel {
 		super(new Builder(Common.id("explorer"))
 			.icon(ImIcons.FILES_O)
 			.category(PanelCategory.EDITOR_EXPLORER));
+	}
+
+	private static boolean isBlacklisted(String fileName) {
+		if (fileName == null) {
+			return false;
+		}
+		int dotIndex = fileName.lastIndexOf('.');
+		if (dotIndex < 0) {
+			return false;
+		}
+		String ext = fileName.substring(dotIndex + 1).toLowerCase();
+		return BLACKLISTED_EXTENSIONS.contains(ext);
 	}
 
 	private static boolean hasServer() {
@@ -220,11 +231,8 @@ public class ExplorerPanel extends EditorPanel {
 	}
 
 	private @Nullable LocalTree buildLocalTree() {
-		File[] contents = rootDir.listFiles();
-		if (contents == null) {
-			return null;
-		}
-		Arrays.sort(contents, Comparator.comparing(File::isFile).thenComparing(f -> f.getName().toLowerCase()));
+		List<File> contents = new ArrayList<>(rootDirs);
+		contents.sort(Comparator.comparing(File::isFile).thenComparing(f -> f.getName().toLowerCase()));
 		LocalTree tree = new LocalTree();
 		for (File entry : contents) {
 			tree.add(entry);
@@ -400,8 +408,10 @@ public class ExplorerPanel extends EditorPanel {
 	}
 
 	private void renderToolbar() {
-		ImGui.textDisabled(rootDir.getName() + "/");
-		ImGui.sameLine();
+		rootDirs.forEach(file -> {
+			ImGui.textDisabled(file.getName() + "/");
+			ImGui.sameLine();
+		});
 
 		float buttonWidth = ImGui.getFrameHeight();
 		float spacing = ImGui.getStyle().getItemSpacingX();
@@ -734,6 +744,11 @@ public class ExplorerPanel extends EditorPanel {
 			}
 
 			void addChild(File entry) {
+				// Skip blacklisted files
+				if (entry.isFile() && isBlacklisted(entry.getName())) {
+					return;
+				}
+
 				if (entry.isDirectory()) {
 					Node dirNode = new Node(entry.getName(), entry);
 					File[] contents = entry.listFiles();
@@ -784,8 +799,14 @@ public class ExplorerPanel extends EditorPanel {
 		}
 
 		void add(Identifier id) {
+			String path = id.getPath();
+			String fileName = path.contains("/") ? path.substring(path.lastIndexOf('/') + 1) : path;
+			if (isBlacklisted(fileName)) {
+				return;
+			}
+
 			ResourceTree nsNode = children.computeIfAbsent(id.getNamespace(), k -> new ResourceTree());
-			String[] segments = id.getPath().split("/");
+			String[] segments = path.split("/");
 			ResourceTree current = nsNode;
 			for (int i = 0; i < segments.length - 1; i++) {
 				current = current.children.computeIfAbsent(segments[i], k -> new ResourceTree());
@@ -852,7 +873,10 @@ public class ExplorerPanel extends EditorPanel {
 						if (isDir) {
 							current.children.computeIfAbsent(parts[i], k -> new RemoteNode());
 						} else {
-							current.files.add(new Entry(parts[i], path, false));
+							// Skip blacklisted remote files
+							if (!isBlacklisted(parts[i])) {
+								current.files.add(new Entry(parts[i], path, false));
+							}
 						}
 					} else {
 						current = current.children.computeIfAbsent(parts[i], k -> new RemoteNode());
