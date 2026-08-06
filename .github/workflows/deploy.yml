@@ -5,7 +5,7 @@ on:
     branches: [ master ]
     paths:
       - 'docs/**'
-      - '.github/workflows/build-vitepress.yml'
+      - '.github/workflows/build-docusaurus.yml'
       - '.github/workflows/build-javadoc.yml'
       - '.github/workflows/deploy.yml'
   workflow_dispatch:
@@ -15,14 +15,14 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  vitepress:
-    uses: ./.github/workflows/build-vitepress.yml
+  docs:
+    uses: ./.github/workflows/build-docusaurus.yml
 
   javadoc:
     uses: ./.github/workflows/build-javadoc.yml
 
   deploy:
-    needs: [ vitepress, javadoc ]
+    needs: [ docs, javadoc ]
     runs-on: ubuntu-latest
 
     permissions:
@@ -42,9 +42,9 @@ jobs:
         run: |
           mkdir final
           
-          # Copy VitePress if it exists
-          if [ -d "site/vitepress" ]; then
-            cp -r site/vitepress/* final/
+          # Copy Docusaurus if it exists
+          if [ -d "site/docusaurus" ]; then
+            cp -r site/docusaurus/* final/
           fi
           
           # Copy Javadoc if it exists

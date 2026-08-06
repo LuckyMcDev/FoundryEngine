@@ -58,57 +58,92 @@ public float applyDiscount(float price) {
 
 If a change occurs between versions of the framework or library, then relevant changes in the documentation should be split into separate sections or put into tabs. This maintains the accuracy of the information depending on the version the developer is currently targeting.
 
-VitePress supports [tabs](https://vitepress.dev/guide/markdown#code-groups) via code groups:
+Docusaurus supports [tabs](https://docusaurus.io/docs/markdown-features/tabs) via the `Tabs` component:
 
-````markdown
-::: code-group
+```jsx
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
-```java [Latest]
-public void latestMethod() {
-    // ...
-}
+<Tabs>
+    <TabItem value="latest" label="Latest" default>
+        public void latestMethod() {
+        // ...
+    }
+    </TabItem>
+    <TabItem value="v2" label="v2.x">
+        public void previousMethod() {
+        // ...
+    }
+    </TabItem>
+    <TabItem value="v1" label="v1.x">
+        public void firstMethod() {
+        // ...
+    }
+    </TabItem>
+</Tabs>
 ```
 
-```java [v2.x]
-public void previousMethod() {
-    // ...
-}
-```
+## Versioning by Minecraft Version
 
-```java [v1.x]
-public void firstMethod() {
-    // ...
-}
-```
-:::
-````
+The site uses Docusaurus [versioning](https://docusaurus.io/docs/versioning) to ship docs **per Minecraft version**. Each MC version that FoundryEngine supports gets its own frozen snapshot of the docs, switchable from a dropdown in the navbar (when more than one version exists).
 
-Output:
+- The `docs/content/` folder is the **current** version. It represents the newest Minecraft version the docs describe and is served at the site root (e.g. `/FoundryEngine/features`).
+- Released MC versions are frozen into `docs/versioned_docs/version-<mc>/` with a matching sidebar in `docs/versioned_sidebars/`. Their URLs are versioned (e.g. `/FoundryEngine/26.1/features`).
+- `docs/versions.json` lists every frozen version, newest first.
 
-::: code-group
+### Cutting a new MC version
 
-```java [Latest]
-public void latestMethod() {
-    // ...
-}
-```
+1. Make sure `docs/content/` describes the **currently released** MC version and is ready to be frozen.
+2. Freeze it before changing any content for the next version:
+   ```bash
+   npm run docs:version 26.1
+   ```
+   This copies `content/` into `versioned_docs/version-26.1/`, generates `versioned_sidebars/version-26.1-sidebars.json`, and appends `26.1` to `versions.json`.
+3. In `docusaurus.config.js`, update the current version label to the next MC version the engine targets:
+   ```js
+{
+     {
+       'MC 26.2',
+     },
+   },
+   ```
+4. (Optional) Open `versioned_docs/version-26.1/` and trim anything that is not relevant to that MC version.
+5. Update the docs inside `docs/content/` for the new MC version, and bump anything in the sidebar or going forward.
+6. Verify with `npm run docs:build`.
 
-```java [v2.x]
-public void previousMethod() {
-    // ...
-}
-```
+> **Order matters:** run `docs:version` *before* editing `docs/content/` for the new version, otherwise the frozen snapshot picks up the new content.
 
-```java [v1.x]
-public void firstMethod() {
-    // ...
-}
-```
-:::
+### Editing existing / old versions
+
+Each `versioned_docs/version-<mc>/` folder is an independent route. Edits there only affect that MC version. Typical uses: applying a patch to a backported MC version, or removing a page that does not exist in an older version. Remember to update the corresponding `versioned_sidebars/version-<mc>-sidebars.json` whenever you add or remove a page.
+
+### Removing a version
+
+Per the [Docusaurus docs](https://docusaurus.io/docs/versioning#deleting-an-existing-version): remove the name from `versions.json`, then delete the `versioned_docs/version-<mc>/` folder and `versioned_sidebars/version-<mc>-sidebars.json`.
+
+## Adding a Language (i18n)
+
+The site is configured with English as the only locale for now, but the infrastructure is ready. To add a translation:
+
+1. Add the locale to `docusaurus.config.js`:
+   ```js
+{
+     'en',
+     locales: ['en', 'de'],
+   },
+   ```
+2. Generate the label skeletons:
+   ```bash
+   npm run docs:write-translations -- --locale de
+   ```
+   This creates the foldable label JSON files under `docs/i18n/de/`.
+3. Translate the theme labels (navbar, footer) in `docs/i18n/de/docusaurus-theme-classic/` and the docs sidebar labels in `docs/i18n/de/docusaurus-plugin-content-docs/current.json`.
+4. Translate page content by mirroring a page under `docs/i18n/de/docusaurus-plugin-content-docs/current/<path>.md`. Untranslated pages automatically fall back to the English version.
+5. See the [Docusaurus i18n tutorial](https://docusaurus.io/docs/i18n/tutorial) for the full workflow.
 
 ## Style Guide
 
-This documentation uses [VitePress](https://vitepress.dev/), which is built on top of [Vue](https://vuejs.org/) and [Vite](https://vitejs.dev/). You can find more detailed information about available features on the [VitePress documentation](https://vitepress.dev/guide/what-is-vitepress).
+This documentation uses [Docusaurus](https://docusaurus.io/), which is built on top of [React](https://react.dev/). You can find more detailed information about available features on the [Docusaurus documentation](https://docusaurus.io/docs/markdown-features).
 
 This style guide will be more focused towards common features and formatting we use in the Markdown files.
 
@@ -120,8 +155,8 @@ The most common front matter fields are:
 
 - `title` — Overrides the page title.
 - `description` — Overrides the page description.
-- `sidebar` — Controls sidebar behavior (e.g., `sidebar: auto` for automatic sidebar generation).
-- `outline` — Controls the table of contents depth.
+- `sidebar_position` — Controls the sidebar order of the page within its section.
+- `hide_table_of_contents` — Hides the table of contents (set to `true`).
 
 Example:
 
@@ -129,14 +164,13 @@ Example:
 ---
 title: Getting Started
 description: A guide to getting started with the project
-sidebar: auto
-outline: deep
+sidebar_position: 1
 ---
 ```
 
 #### Categories
 
-Categories are folders within the documentation. They inherit titles and positional data from the `index.md` file. The sidebar order can be controlled using the `sidebar` configuration in the VitePress config file or via front matter.
+Categories are folders within the documentation. They inherit titles and positional data from the `index.md` file. The sidebar order can be controlled using the `sidebar_position` front matter field or via the `sidebars.js` configuration.
 
 ### Titles
 
@@ -184,7 +218,7 @@ When referencing elements outside of code blocks, they should be surrounded with
 - If the class name is implied, the method or field can simply be prefixed with `#`: `` `#SOME_CONSTANT` ``
 - Inner classes should specify the name of the outer class followed by a `.`: `` `MyClass.InnerClass` ``
 
-Code blocks should specify the language after the triple backtick (```). VitePress uses [Shiki](https://shiki.matsu.io/) for syntax highlighting, which supports a wide range of languages.
+Code blocks should specify the language after the triple backtick (```). Docusaurus uses [Prism](https://prismjs.com/) for syntax highlighting, which supports a wide range of languages.
 
 ````markdown
 ```java
@@ -211,42 +245,41 @@ There are [two] different types of [link references][linkref].
 [linkref]: https://linkref.donotclick
 ```
 
-### Admonitions / Custom Containers
+### Admonitions
 
-VitePress supports [custom containers](https://vitepress.dev/guide/markdown#custom-containers) using three colons (`:::`) and specifying its type:
+Docusaurus supports [admonitions](https://docusaurus.io/docs/markdown-features/admonitions) using three colons (`:::`) and specifying its type:
 
 ```markdown
-::: tip
+:::tip
 This is a tip!
 :::
 
-::: warning
+:::warning
 This is a warning.
 :::
 
-::: danger
+:::danger
 This is a dangerous warning.
 :::
 
-::: details
-This is a details block.
+:::note
+This is a note.
 :::
 ```
 
 Output:
 
-::: tip
+:::tip
 This is a tip!
 :::
 
-::: warning
+:::warning
 This is a warning.
 :::
 
-::: danger
+:::danger
 This is a dangerous warning.
 :::
 
-::: details
-This is a details block.
+:::note This is a note.
 :::

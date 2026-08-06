@@ -31,11 +31,11 @@ hs_err_pid*
 /runs/server
 /repo/
 
-# Node / VitePress
+# Node / Docusaurus
 node_modules/
 docs/generated/
-docs/.vitepress/dist/
-docs/.vitepress/cache/
+docs/.docusaurus/
+docs/build/
 
 # Temporary & OS Junk
 *~
@@ -57,3 +57,66 @@ docs/.vitepress/cache/
 opencode.json
 
 StatisticsSnapshot.csv
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/p/foundry-engine-d24.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/__mdx-loader-dependency.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/__plugin.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/site-content-advanced-addon-api-md-22c.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/site-content-advanced-data-generation-md-049.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/site-content-advanced-editor-themes-md-a85.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/site-content-advanced-index-md-c08.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/site-content-advanced-network-packets-md-377.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/site-content-contributing-md-639.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/site-content-core-concepts-bundle-manifest-md-fd8.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/site-content-core-concepts-creating-blocks-md-7db.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/site-content-core-concepts-creating-items-md-f49.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/site-content-core-concepts-creating-recipes-md-ef4.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/site-content-core-concepts-creating-sounds-particles-md-d48.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/site-content-core-concepts-dependencies-md-f43.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/site-content-core-concepts-events-guide-md-bd1.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/site-content-core-concepts-events-reference-md-47a.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/site-content-core-concepts-index-md-a0d.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/site-content-core-concepts-registration-md-035.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/site-content-core-concepts-scripts-md-f46.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/site-content-core-concepts-sides-md-9f5.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/site-content-core-concepts-what-is-a-bundle-md-49f.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/site-content-examples-index-md-772.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/site-content-examples-showcase-bundle-md-1bc.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/site-content-features-md-e14.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/site-content-getting-started-first-bundle-md-758.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/site-content-getting-started-index-md-79e.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/site-content-getting-started-installation-md-c0c.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/site-content-getting-started-workspaces-md-969.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/site-content-systems-areas-md-929.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/site-content-systems-audio-streaming-md-11d.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/site-content-systems-commands-md-a3f.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/site-content-systems-cutscenes-md-654.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/site-content-systems-dialogue-md-daa.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/site-content-systems-easing-md-dbc.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/site-content-systems-editor-md-a83.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/site-content-systems-game-sessions-md-28b.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/site-content-systems-index-md-932.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/site-content-systems-instanced-worlds-md-c1d.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/site-content-systems-markdown-md-c71.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/site-content-systems-mesh-rendering-md-75d.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/site-content-systems-nbt-suggestions-md-200.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/site-content-systems-node-editor-md-e3f.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/site-content-systems-particles-md-98d.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/site-content-systems-persistence-md-628.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/site-content-systems-post-processing-md-179.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/site-content-systems-skybox-md-540.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/site-content-systems-stages-md-23a.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/site-content-systems-tooltips-md-f8c.json
+/docs/.docusaurus/docusaurus-plugin-content-docs/default/site-content-systems-waypoints-md-34b.json
+/docs/.docusaurus/docusaurus-plugin-content-pages/default/__plugin.json
+/docs/.docusaurus/client-manifest.json
+/docs/.docusaurus/client-modules.js
+/docs/.docusaurus/codeTranslations.json
+/docs/.docusaurus/docusaurus.config.mjs
+/docs/.docusaurus/DONT-EDIT-THIS-FOLDER
+/docs/.docusaurus/globalData.json
+/docs/.docusaurus/i18n.json
+/docs/.docusaurus/registry.js
+/docs/.docusaurus/routes.js
+/docs/.docusaurus/routesChunkNames.json
+/docs/.docusaurus/site-metadata.json
+/docs/.docusaurus/site-storage.json

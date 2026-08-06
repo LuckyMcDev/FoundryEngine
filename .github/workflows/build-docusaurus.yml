@@ -1,4 +1,4 @@
-name: Build VitePress
+name: Build Docusaurus
 
 on:
   workflow_call:
@@ -23,11 +23,11 @@ jobs:
         working-directory: docs
         run: npm ci
 
-      - name: Build VitePress
+      - name: Build Docusaurus
         working-directory: docs
         run: npm run docs:build
 
       - uses: actions/upload-artifact@v7
         with:
-          name: vitepress
-          path: docs/.vitepress/dist
+          name: docusaurus
+          path: docs/build

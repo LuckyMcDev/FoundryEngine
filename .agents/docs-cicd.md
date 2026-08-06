@@ -2,11 +2,18 @@
 
 Read this file when working on documentation or CI.
 
-## VitePress
+## Docusaurus
 
-- Location: `docs/`
-- Scripts: `npm run docs:dev` (dev) / `npm run docs:build` (prod)
-- Agent reference docs live in `.agents/` (not part of the published VitePress site)
+- Location: `docs/` (site config, `package.json`, `docusaurus.config.js`, `sidebars.js`)
+- Content: `docs/content/`
+- Static assets: `docs/static/` (logo, screenshots)
+- Scripts: `npm run docs:dev` (dev) / `npm run docs:build` (prod) / `npm run docs:preview` (serve build)
+- Versioning (docs per Minecraft version): `npm run docs:version <mc>` freezes `content/` into `versioned_docs/`; `npm run docs:versions` lists frozen versions. Current version label lives in `docusaurus.config.js` → `presets[0].docs.versions.current.label`. See `docs/content/contributing.md`.
+- i18n (future languages): locale dropdown is already in the navbar; adding a locale = edit `docusaurus.config.js` → `i18n.locales` + run `npm run docs:write-translations -- --locale <code>`. Only `en` is active.
+- Build output: `docs/build`
+- Base URL: `/FoundryEngine/` (GitHub Pages project site)
+- Deploy: `.github/workflows/build-docusaurus.yml` + `.github/workflows/deploy.yml`
+- Agent reference docs live in `.agents/` (not part of the published Docusaurus site)
 
 ## Code Documentation
 
