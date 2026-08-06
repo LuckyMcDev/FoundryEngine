@@ -11,6 +11,7 @@ import de.luckymcdev.foundryengine.common.builder.recipe.RecipeBuilder;
 import de.luckymcdev.foundryengine.common.builder.sound.SoundBuilder;
 import de.luckymcdev.foundryengine.common.builder.tag.TagBuilder;
 import de.luckymcdev.foundryengine.common.registry.RegistryCollector;
+import de.luckymcdev.foundryengine.config.StartupConfig;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
@@ -180,9 +181,12 @@ public class RegistryEvent extends Event implements IModBusEvent {
 		}
 		List<String> idList = ids.get();
 		if (LOGGED_SKIPS.add(kind + ":" + idList)) {
-			var loadingIssue = ModLoadingIssue.warning("Compatibility mode %s: cannot register %s content (requires %s). Skipping: %s".formatted(Common.getCompatibilityMode().getName(), kind, requires, idList));
-			Common.LOGGER.warn(loadingIssue.toString());
-			ModLoader.addLoadingIssue(loadingIssue);
+			var str = "Compatibility mode %s: cannot register %s content (requires %s). Skipping: %s".formatted(Common.getCompatibilityMode().getName(), kind, requires, idList);
+			if (!StartupConfig.COMPATIBILITY_MODE_WARNING_SKIP.get()) {
+				var loadingIssue = ModLoadingIssue.warning(str);
+				ModLoader.addLoadingIssue(loadingIssue);
+			}
+			Common.LOGGER.warn(str);
 		}
 		return true;
 	}

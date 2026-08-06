@@ -6,6 +6,7 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 public final class StartupConfig {
 	public static final ModConfigSpec SPEC;
 	public static final ModConfigSpec.ConfigValue<CompatibilityMode> COMPATIBILITY_MODE;
+	public static final ModConfigSpec.BooleanValue COMPATIBILITY_MODE_WARNING_SKIP;
 	public static final ModConfigSpec.BooleanValue SCRIPTING_ENABLED;
 	public static final ModConfigSpec.BooleanValue EVAL_COMMAND_ENABLED;
 	public static final ModConfigSpec.IntValue EVAL_COMMAND_PERMISSION;
@@ -23,6 +24,11 @@ public final class StartupConfig {
 			.comment("and when set to Both, you are required on both client and server.")
 			.translation("foundryengine.configuration.compatibility_mode")
 			.defineEnum("COMPATIBILITY_MODE", CompatibilityMode.BOTH);
+
+		COMPATIBILITY_MODE_WARNING_SKIP = builder
+			.comment("Enables / disables skipping the warning which appears when incompatible with the current compatibility mode.")
+			.translation("foundryengine.configuration.compatibility_mode_warning_skip")
+			.define("COMPATIBILITY_MODE_WARNING_SKIP", false);
 
 		SCRIPTING_ENABLED = builder
 			.comment("Enables/disables loading of Groovy scripts from bundles.")
