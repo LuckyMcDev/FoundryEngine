@@ -165,8 +165,7 @@ public final class ImGuiManager implements ResourceManagerReloadListener, Native
 	}
 
 	private ImTheme loadThemeFromConfig() {
-		String themeName = ClientConfig.SELECTED_THEME.get();
-		ImTheme theme = ImThemes.getThemeByName(themeName);
+		ImTheme theme = ClientConfig.SELECTED_THEME.get().getTheme();
 		setTheme(theme);
 		return theme;
 	}
@@ -175,7 +174,7 @@ public final class ImGuiManager implements ResourceManagerReloadListener, Native
 	 * Persists the given theme name to the client config.
 	 */
 	public void saveThemeToConfig(ImTheme theme) {
-		ClientConfig.SELECTED_THEME.set(theme.getName());
+		ClientConfig.SELECTED_THEME.set(ImThemes.get(theme));
 		ClientConfig.SELECTED_THEME.save();
 	}
 
@@ -320,8 +319,8 @@ public final class ImGuiManager implements ResourceManagerReloadListener, Native
 	@Override
 	public void onResourceManagerReload(ResourceManager resourceManager) {
 		switch (ClientConfig.FONT_OPTION.get()) {
-			case "MINIMAL" -> fontManager.load(resourceManager, BuiltInFonts.MINIMAL, BuiltInFonts.FALLBACK);
-			case "NORMAL" -> fontManager.load(resourceManager, BuiltInFonts.ALL, BuiltInFonts.REGULAR);
+			case MINIMAL -> fontManager.load(resourceManager, BuiltInFonts.MINIMAL, BuiltInFonts.FALLBACK);
+			case NORMAL -> fontManager.load(resourceManager, BuiltInFonts.ALL, BuiltInFonts.REGULAR);
 		}
 	}
 }

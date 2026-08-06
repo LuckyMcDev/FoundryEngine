@@ -8,13 +8,10 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 import java.util.Arrays;
 
 public final class ClientConfig {
-	public static final String[] FONT_OPTION_VALUES = {"MINIMAL", "NORMAL", "DISABLED"};
-
 	public static final ModConfigSpec SPEC;
-
-	public static final ModConfigSpec.ConfigValue<String> SELECTED_THEME;
+	public static final ModConfigSpec.ConfigValue<ImThemes> SELECTED_THEME;
 	public static final ModConfigSpec.ConfigValue<String> TEXT_EDITOR_THEME;
-	public static final ModConfigSpec.ConfigValue<String> FONT_OPTION;
+	public static final ModConfigSpec.ConfigValue<FontOption> FONT_OPTION;
 	public static final ModConfigSpec.BooleanValue RENDER_OFFHAND;
 	public static final ModConfigSpec.BooleanValue AUTO_EXPORT;
 	public static final ModConfigSpec.IntValue ICON_SIZE;
@@ -29,7 +26,7 @@ public final class ClientConfig {
 		SELECTED_THEME = builder
 			.comment("The currently selected ImGui theme. Available themes: " + ImThemes.getAvailableThemeNames())
 			.translation("foundryengine.configuration.selected_theme")
-			.define("SELECTED_THEME", ImThemes.BESS_DARK_IM_THEME.getName());
+			.defineEnum("SELECTED_THEME", ImThemes.BESS_DARK);
 
 		TEXT_EDITOR_THEME = builder
 			.comment("The currently selected ImGui Text Editor theme. Available themes: " + EditorTheme.getAvailableThemeNames())
@@ -38,10 +35,10 @@ public final class ClientConfig {
 
 		FONT_OPTION = builder
 			.comment("What should happen with fonts.")
-			.comment("Can be: " + Arrays.toString(FONT_OPTION_VALUES))
+			.comment("Can be: " + Arrays.toString(FontOption.values()))
 			.comment("")
 			.translation("foundryengine.configuration.font_option")
-			.define("FONT_OPTION", "NORMAL");
+			.defineEnum("FONT_OPTION", FontOption.NORMAL);
 
 		RENDER_OFFHAND = builder
 			.comment("A Funny Offhand rendering technique. It makes it be rendered the same way the main hand is.")
@@ -93,5 +90,11 @@ public final class ClientConfig {
 			case "half" -> effectiveRdBlocks / 2;
 			default -> 64;
 		};
+	}
+
+	public enum FontOption {
+		MINIMAL,
+		NORMAL,
+		DISABLED
 	}
 }
