@@ -69,7 +69,7 @@ Block dimension travel:
 ```groovy
 stages.dimensions().requireStages(
     ResourceKey.create(Registries.DIMENSION,
-        ResourceLocation.parse("minecraft:the_end")),
+        Identifier.parse("minecraft:the_end")),
     Common.id("end_open"))
 ```
 
@@ -79,7 +79,7 @@ Gate crafting by result item:
 
 ```groovy
 stages.recipes().requireStages(
-    ResourceLocation.parse("minecraft:netherite_ingot"),
+    Identifier.parse("minecraft:netherite_ingot"),
     Common.id("nether_complete"))
 ```
 

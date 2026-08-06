@@ -8,12 +8,13 @@ Waypoints are colored markers that appear in the world. They help players naviga
 import de.luckymcdev.foundryengine.common.waypoint.Waypoint
 import de.luckymcdev.foundryengine.common.Common
 import de.luckymcdev.foundryengine.common.util.ChatIcons
+import de.luckymcdev.foundryengine.common.util.color.Color
 
 def waypoint = new Waypoint(
     "Spawn Point",              // Name
     ChatIcons.PLUS.getString(), // Icon
     100, 64, -200,              // x, y, z
-    0xFF44FF44                  // ARGB color (green)
+    new Color(0xFF44FF44)       // ARGB color (green)
 )
 
 Common.getWaypointManager().addWaypoint(level, waypoint)
@@ -21,14 +22,14 @@ Common.getWaypointManager().addWaypoint(level, waypoint)
 
 ## Colors
 
-Colors use ARGB hex: `0xAARRGGBB`
+Colors use ARGB hex: `0xAARRGGBB`, wrapped in `new Color(int)`.
 
-| Color                   | Code         |
-|-------------------------|--------------|
-| Red                     | `0xFFFF0000` |
-| Green                   | `0xFF44FF44` |
-| Blue                    | `0xFF0000FF` |
-| Semi-transparent purple | `0x44FF44FF` |
+| Color                   | Code                    |
+|-------------------------|-------------------------|
+| Red                     | `new Color(0xFFFF0000)` |
+| Green                   | `new Color(0xFF44FF44)` |
+| Blue                    | `new Color(0xFF0000FF)` |
+| Semi-transparent purple | `new Color(0x44FF44FF)` |
 
 ## Manager API
 

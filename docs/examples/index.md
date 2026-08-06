@@ -449,7 +449,7 @@ stages.mobs().requireStages(EntityType.WITHER, "nether_complete")
 // Gate a dimension
 stages.dimensions().requireStages(
     ResourceKey.create(Registries.DIMENSION,
-        ResourceLocation.parse("minecraft:the_end")),
+        Identifier.parse("minecraft:the_end")),
     "end_open")
 ```
 

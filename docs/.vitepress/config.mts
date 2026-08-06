@@ -16,6 +16,7 @@ export default defineConfig({
 
 		nav: [
 			{text: 'Home', link: '/'},
+			{text: 'Features', link: '/features'},
 			{text: 'Get Started', link: '/getting-started/'},
 			{text: 'Core Concepts', link: '/core-concepts/'},
 			{text: 'Systems', link: '/systems/'},
@@ -91,6 +92,8 @@ export default defineConfig({
 						{text: 'Custom Particles', link: '/systems/particles'},
 						{text: 'Post-Processing', link: '/systems/post-processing'},
 						{text: 'Mesh Rendering', link: '/systems/mesh-rendering'},
+						{text: 'Skybox', link: '/systems/skybox'},
+						{text: 'Node Graph Editor', link: '/systems/node-editor'},
 						{text: 'Easing Functions', link: '/systems/easing'}
 					]
 				},
@@ -99,12 +102,15 @@ export default defineConfig({
 					items: [
 						{text: 'Dialogue System', link: '/systems/dialogue'},
 						{text: 'Markdown Rendering', link: '/systems/markdown'},
-						{text: 'NBT Suggestions', link: '/systems/nbt-suggestions'}
+						{text: 'NBT Suggestions', link: '/systems/nbt-suggestions'},
+						{text: 'Item Tooltips', link: '/systems/tooltips'},
+						{text: 'Audio Streaming', link: '/systems/audio-streaming'}
 					]
 				},
 				{
 					text: 'Reference',
 					items: [
+						{text: 'Saved Data & Persistence', link: '/systems/persistence'},
 						{text: 'Commands Reference', link: '/systems/commands'}
 					]
 				}
@@ -118,8 +124,7 @@ export default defineConfig({
 						{text: 'Java Addon API', link: '/advanced/addon-api'},
 						{text: 'Data Generation', link: '/advanced/data-generation'},
 						{text: 'Network Packets', link: '/advanced/network-packets'},
-						{text: 'Editor Themes', link: '/advanced/editor-themes'},
-						{text: 'Mixin Architecture', link: '/advanced/mixin-architecture'}
+						{text: 'Editor Themes', link: '/advanced/editor-themes'}
 					]
 				}
 			],
