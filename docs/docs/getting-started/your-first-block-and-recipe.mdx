@@ -1,0 +1,73 @@
+---
+sidebar_position: 4
+---
+
+# Your first block and recipe
+
+This lesson registers a block and a crafting recipe for the item from the previous lesson. It assumes you finished [Your first item](your-first-item).
+
+## A block that glows
+
+Import the block builder, build a block with properties, and register it alongside your item.
+
+```groovy
+import de.luckymcdev.foundryengine.common.builder.block.BlockBuilder
+
+def glow = BlockBuilder.create(id("glowing_stone"))
+        .properties { it.strength(3.0f, 6.0f).lightLevel { 15 } }
+
+BundleEvents.registry {
+    it.blocks(glow)
+}
+```
+
+What the properties do:
+
+- `.properties { it.strength(3.0f, 6.0f) }` sets hardness and blast resistance. `3.0f` is the time to mine it, `6.0f` the resistance to explosions.
+- `.lightLevel { 15 }` makes the block emit the maximum light level.
+- `it.blocks(glow)` registers the block in the registry event.
+
+The block needs a texture the same way the item did. Put a 16 by 16 image at `src/main/resources/assets/mybundle/textures/block/glowing_stone.png`, with the file name matching the block's path.
+
+## A crafting recipe
+
+The recipe builder makes shaped, shapeless, and smelting recipes. A shaped recipe uses a pattern of letters, where each letter stands for an ingredient.
+
+```groovy
+import de.luckymcdev.foundryengine.common.builder.recipe.RecipeBuilder
+import net.minecraft.advancements.criterion.InventoryChangeTrigger
+import net.minecraft.world.item.Items
+
+def shaped = RecipeBuilder.shaped(id("gem_block_recipe"), net.minecraft.world.level.block.Blocks.GLOWSTONE)
+        .pattern("GGG", "GGG", "GGG")
+        .define('G' as char, id("magic_gem"))
+        .unlockedBy("has_magic_gem", InventoryChangeTrigger.TriggerInstance.hasItems(Items.DIAMOND))
+
+BundleEvents.registry {
+    it.recipes(shaped)
+}
+```
+
+How the parts fit:
+
+- `RecipeBuilder.shaped(id, output)` names the recipe and says what it produces. Here it produces a block of glowstone from your gem.
+- `.pattern(...)` gives three rows of a 3 by 3 grid. Each row is a string of letters.
+- `.define('G' as char, ingredient)` says which ingredient each letter stands for. `'G' as char` turns the single-character string into a `char`, which is the type the recipe builder expects.
+- `.unlockedBy(...)` sets the advancement that makes the recipe show up in the recipe book. The last argument, `hasItems(Items.DIAMOND)`, is the trigger; change it to whatever item the player should hold.
+
+A shapeless recipe is shorter, since order does not matter:
+
+```groovy
+def shapeless = RecipeBuilder.shapeless(id("gems_from_glowstone"), id("magic_gem"))
+        .requires(Blocks.GLOWSTONE)
+        .count(4)
+        .unlockedBy("has_glowstone", InventoryChangeTrigger.TriggerInstance.hasItems(Items.GLOWSTONE))
+```
+
+`.count(4)` sets how many of the output item the recipe gives.
+
+## Run the game
+
+Run `runClient`, open the recipe book, and craft your gem or your block. A glowing block made from your own item is a good checkpoint: it proves items, blocks, and recipes all registered together.
+
+Next, add [sounds and particles](sounds-and-particles).

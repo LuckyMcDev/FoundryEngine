@@ -1,0 +1,62 @@
+---
+sidebar_position: 2
+title: Set a waypoint
+description: Place a persistent marker at a position, per dimension.
+---
+
+# Set a waypoint
+
+A waypoint is a persistent marker at a position. It survives across sessions because it is saved data. Waypoints are stored per dimension.
+
+## Create one
+
+```groovy title="scripts/server/<bundle>/Server.groovy"
+import de.luckymcdev.foundryengine.common.Common
+import de.luckymcdev.foundryengine.common.waypoint.Waypoint
+import de.luckymcdev.foundryengine.common.util.color.Color
+
+def manager = Common.getWaypointManager()
+
+def wp = new Waypoint("My Spot", "I", 100, 80, 200, new Color(255, 255, 255))
+manager.addWaypoint(level, wp)
+```
+
+`Waypoint` is a record with five values: a name, an icon character, the `x`/`y`/`z` position, and a color. `addWaypoint(level, waypoint)` registers it for the level's dimension and saves it.
+
+## Guard against duplicates
+
+Adding on every event would create duplicates. Check whether the dimension already has waypoints first:
+
+```groovy
+import de.luckymcdev.foundryengine.common.event.PlayerEvents
+import net.minecraft.server.level.ServerPlayer
+
+PlayerEvents.loggedIn { event ->
+    def player = event.entity as ServerPlayer
+    def level = player.level()
+    if (!Common.getWaypointManager().isLoaded(level.dimension())) {
+        Common.getWaypointManager().addWaypoint(level,
+                new Waypoint("Spawn", "H", 0, 64, 0, new Color(255, 200, 0)))
+    }
+}
+```
+
+`isLoaded(dimension)` returns true once the dimension's waypoints have been loaded from save data, which is what you want to check.
+
+## Read and remove
+
+```groovy
+def all = Common.getWaypointManager().getWaypoints(player.level().dimension())
+all.each { w ->
+    println "${w.name()} at (${w.x()}, ${w.y()}, ${w.z()})"
+}
+
+Common.getWaypointManager().removeWaypoint(level, 100, 80, 200)
+```
+
+In game, waypoints render as markers over the world, and the `/engine waypoint` command lists and manages them.
+
+## Related
+
+- Try the full walkthrough: [Areas and waypoints tutorial](../../getting-started/areas-and-waypoints).
+- All methods: [WaypointManager reference](../managers).

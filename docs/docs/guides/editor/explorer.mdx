@@ -1,0 +1,31 @@
+---
+sidebar_position: 1
+title: Use the explorer
+description: Browse bundle files and in-game resources from inside the editor.
+---
+
+# Use the explorer
+
+The explorer panel is the file browser of the in-game editor. It shows the bundle directories on disk and the game's resources, so you can open, edit, and save files without leaving the game.
+
+## Open the explorer
+
+Open the panel from the editor's **View** menu. Panels are grouped in the menu bar by category; the explorer lives under the file category.
+
+## What you see
+
+- **Bundle directories**: your bundle folders under the engine's bundle path. These map one to one to the files on disk, so a change here is a change in your project.
+- **Game resources**: assets and data loaded by the resource manager. Texture and data files open in a viewer; scripts open in the code editor.
+
+## Open and edit files
+
+Double-click a file to open it in the appropriate panel:
+
+- Groovy and JSON files open in the [code editor](code-editor).
+- PNG textures open in the texture viewer.
+- Files you can edit show a save action when modified. Saving writes back to disk; the next reload picks the change up.
+
+## Related
+
+- Editing open files: [Use the code editor](code-editor).
+- Applying changes: [Reload in game](../packaging/reload-in-game).

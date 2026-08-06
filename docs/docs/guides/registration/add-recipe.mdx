@@ -1,0 +1,60 @@
+---
+sidebar_position: 3
+title: Add a recipe
+description: Register shaped, shapeless, or smelting recipes from your bundle.
+---
+
+# Add a recipe
+
+Recipes are registered from the **common** entrypoint. The `RecipeBuilder` covers the three most common recipe types.
+
+## Shaped crafting
+
+```groovy title="scripts/common/<bundle>/Common.groovy"
+import de.luckymcdev.foundryengine.common.builder.recipe.RecipeBuilder
+import net.minecraft.world.item.Items
+
+def shaped = RecipeBuilder.shaped(id("wand_from_diamond"), Items.DIAMOND_HORSE_ARMOR)
+        .pattern(" D ", " S ", " S ")
+        .define('D' as char, Items.DIAMOND)
+        .define('S' as char, Items.STICK)
+        .unlockedBy("has_diamond", InventoryChangeTrigger.TriggerInstance.hasItems(Items.DIAMOND))
+```
+
+The first argument is the recipe id, the second is the output item. `.pattern` lays out the grid, `.define` maps a character to an ingredient.
+
+## Shapeless crafting
+
+```groovy
+def shapeless = RecipeBuilder.shapeless(id("gems_from_diamond"), Items.DIAMOND)
+        .requires(Items.DIAMOND)
+        .requires(Items.EMERALD)
+        .count(3)
+        .unlockedBy("has_diamond", InventoryChangeTrigger.TriggerInstance.hasItems(Items.DIAMOND))
+```
+
+`.requires` adds one ingredient per call. `.count` sets the number of output items.
+
+## Smelting
+
+```groovy
+def smelting = RecipeBuilder.smelting(id("smelt_smooth"), Blocks.SMOOTH_STONE)
+        .ingredient(Blocks.STONE)
+        .experience(0.5f)
+        .cookingTime(200)
+        .unlockedBy("has_stone", InventoryChangeTrigger.TriggerInstance.hasItems(Blocks.STONE))
+```
+
+## Register them
+
+```groovy
+BundleEvents.registry {
+    it.recipes(shaped, shapeless, smelting)
+}
+```
+
+Every recipe needs an `.unlockedBy` so it appears in the recipe book. The first argument is a name you choose; the second is the condition, usually an `InventoryChangeTrigger` that fires when the player has the ingredient.
+
+## Related
+
+- All builder calls: [RecipeBuilder reference](../builders/RecipeBuilder).

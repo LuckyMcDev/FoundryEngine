@@ -1,0 +1,35 @@
+---
+sidebar_position: 6
+title: Stages and progression
+description: How stages gate content and sessions orchestrate it.
+---
+
+# Stages and progression
+
+Progression in FoundryEngine is built from two pieces: **stages**, which are per-player flags, and **sessions**, which are whole-world orchestration objects. They solve different problems and work together.
+
+## Stages are per player
+
+A stage is a named flag on a player, stored as a NeoForge attachment. Stages carry no other state. You define the names and the graph of parents, and you decide when players earn them.
+
+Two things make stages powerful:
+
+- **Parents.** A stage can declare a parent. Granting a child grants the parents too, so you can model "Explorer (requires Beginner)" without writing the logic.
+- **Addons gate real objects.** The built-in addons attach stage requirements to items, blocks, mobs, recipes, loot, and dimensions. Locked items drop from the inventory, pickups are refused, recipes vanish, and requirements appear in tooltips.
+
+## Sessions orchestrate a whole world
+
+A session is scoped to a world, not a player. It bundles persistent data and tick handlers, and can auto-start when the world loads. Sessions are how a running rule system differs from a list of flags:
+
+- A session owns the world's loop: it ticks every server tick while it is active.
+- Its lifecycle (starting, stopping) is world-level.
+- Its data persists per world.
+
+## How they fit together
+
+Typical use: a session runs the world's clock and an internal state machine; stages record what each player has accomplished. The session reads and writes stage data, and stage addons enforce the boundaries. The progression graph lives in stages; the running system that advances it lives in a session.
+
+## Related
+
+- Gate content: [Gate content with stages](../guides/world/gate-with-stages).
+- Run a session: [Build a game session](../guides/world/game-session).

@@ -1,0 +1,72 @@
+---
+sidebar_position: 1
+---
+
+# Guides
+
+Guides are the recipes and dictionary of the engine. Recipes solve one concrete problem each; reference pages list the exact names of things. Read the page for the task you are doing and follow the steps. You do not need to read them in order.
+
+## Recipes
+
+### Registration
+
+- [Add an item](registration/add-item): register a new item with a texture.
+- [Add a block](registration/add-block): register a block with properties.
+- [Add a recipe](registration/add-recipe): shaped, shapeless, or smelting recipes.
+- [Add a sound](registration/add-sound): a sound with a subtitle and range.
+- [Add a particle](registration/add-particle): a keyframed particle effect.
+- [Add a command](registration/add-command): register your own `/` command.
+
+### World
+
+- [Create an area](world/create-area): define a spatial zone with enter and leave modules.
+- [Set a waypoint](world/set-waypoint): place a persistent marker.
+- [Gate content with stages](world/gate-with-stages): block items, mobs, and recipes behind progression.
+- [Run a dialogue](world/run-dialogue): start a dialogue tree from a command or event.
+- [Add screen effects](world/screen-effects): apply a post-processing effect.
+- [Build a game session](world/game-session): start and stop a session on world load.
+
+### Editor
+
+- [Use the explorer](editor/explorer): browse server files and game resources.
+- [Validate your scripts](editor/validate-your-scripts): find Groovy errors before executing.
+- [Use the code editor](editor/code-editor): autocomplete, colorizers, and tabs.
+- [Themes and shortcuts](editor/themes-and-shortcuts): change the look and bind hotkeys.
+
+### Packaging
+
+- [Generate data](packaging/generate-data): produce JSON from your bundle scripts.
+- [Run a dedicated server](packaging/dedicated-server): load bundles on a server.
+- [Reload in game](packaging/reload-in-game): pick up script changes without restarting.
+- [Distribute a bundle](packaging/distribute): hand your bundle to other players.
+
+## Lookups
+
+### Getting oriented
+
+- [Glossary](glossary): plain-language definitions of every term the docs use.
+- [Bundle metadata](bundle-metadata): every field in `*.bundles.toml`.
+- [Entrypoint lifecycle](entrypoint-lifecycle): the `BundleEntrypoint` interface and the load events.
+
+### Builders
+
+- [ItemBuilder](builders/ItemBuilder): register items.
+- [BlockBuilder](builders/BlockBuilder): register blocks.
+- [RecipeBuilder](builders/RecipeBuilder): shaped, shapeless, and smelting recipes.
+- [SoundBuilder](builders/SoundBuilder): register sounds.
+- [ParticleBuilder](builders/ParticleBuilder): register particle effects.
+
+### Events
+
+- [BundleEvents](events/BundleEvents): registration-time events.
+- [PlayerEvents](events/PlayerEvents): player actions such as joining, ticking, and breaking blocks.
+- [BlockEvents](events/BlockEvents): block-level events.
+- [StageEvents](events/StageEvents): stage adding and added.
+- [CommandEvents](events/CommandEvents): register commands.
+
+### Everything else
+
+- [Managers](managers): the managers you reach through `Common`, such as `getAreaManager()`.
+- [Engine commands](engine-commands): the `/engine` command suite.
+- [Config](config): the Common, Startup, Client, and Server config options.
+- [Editor panels](editor-panels): editor panels and default hotkeys.

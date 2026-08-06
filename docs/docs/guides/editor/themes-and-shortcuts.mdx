@@ -1,0 +1,38 @@
+---
+sidebar_position: 4
+title: Themes and shortcuts
+description: Change the editor's look and bind panel shortcuts.
+---
+
+# Themes and shortcuts
+
+The editor has two theme layers: the ImGui theme that styles all panels, and the text editor theme inside the code editor.
+
+## Switch themes
+
+- Open the **Theme Selector** panel from the editor's **View** menu.
+- Pick one of the built-in themes: **Bess Dark** (default), **Catppuccin Mocha**, **Modern Dark**, **Dark**, **Cherry**, **Vidlib**, or **Veil**.
+- The selection is saved in the client config as `SELECTED_THEME`, so it survives restarts.
+
+The text editor theme is separate and stored as `TEXT_EDITOR_THEME` (set to `dark` by default).
+
+## Edit the config by hand
+
+The themes are plain NeoForge config values. To set one without the panel, edit `client.toml`:
+
+```toml
+[General]
+SELECTED_THEME = "cherry"
+TEXT_EDITOR_THEME = "dark"
+```
+
+Config changes apply on the next launch.
+
+## Shortcuts
+
+Panels register a shortcut so they can be opened and closed with a key. The shortcut list is handled by the hotkey manager; open a panel once from the menu to see its binding, or bind your own in the editor's shortcut handling.
+
+## Related
+
+- [Use the code editor](code-editor).
+- Client options: [Config reference](../config).

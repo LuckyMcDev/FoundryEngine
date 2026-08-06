@@ -1,0 +1,14 @@
+news:
+  label: News
+  permalink: /news
+  description: General updates about FoundryEngine.
+
+changelog:
+  label: Changelog
+  permalink: /changelog
+  description: Release notes for FoundryEngine versions.
+
+announcements:
+  label: Announcements
+  permalink: /announcements
+  description: Big announcements, such as new features or milestones.

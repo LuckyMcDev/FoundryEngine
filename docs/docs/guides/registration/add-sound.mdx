@@ -1,0 +1,49 @@
+---
+sidebar_position: 4
+title: Add a sound
+description: Register a custom sound event from your bundle.
+---
+
+# Add a sound
+
+A custom sound event is registered from the **client** entrypoint.
+
+## Use the SoundBuilder
+
+```groovy title="scripts/client/<bundle>/Client.groovy"
+import de.luckymcdev.foundryengine.common.builder.sound.SoundBuilder
+
+def chime = SoundBuilder.create(id("magic_chime"))
+        .subtitle("Magic Chime")
+        .addSound(id("magic_chime"))
+        .range(16.0f)
+
+BundleEvents.registry {
+    it.sounds(chime)
+}
+```
+
+`SoundBuilder.create()` defines the sound event. `.addSound()` points at the sound file, and `.subtitle()` sets the text shown above the hotbar.
+
+## Add the audio file
+
+Place the audio at `assets/mybundle/sounds/magic_chime.ogg`. The file can be of the MP3, OGG or FLAC format. The path after `assets/mybundle/sounds/` has to match the path you pass to `.addSound()`.
+
+## Play it
+
+```groovy
+import net.minecraft.sounds.SoundSource
+
+player.level().playSound(
+        null,
+        player.getX(), player.getY(), player.getZ(),
+        id("magic_chime"),
+        SoundSource.AMBIENT,
+        1.0f, 1.0f)
+```
+
+`sound.ogg` variants play fine through Minecraft's sound system. Keep `.range()` in mind: sounds registered with a short range fade out quickly, which is what you want for a small chime.
+
+## Related
+
+- All builder calls: [SoundBuilder reference](../builders/SoundBuilder).

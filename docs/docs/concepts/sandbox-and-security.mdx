@@ -1,0 +1,42 @@
+---
+sidebar_position: 8
+title: Sandbox and security
+description: What bundle scripts can and cannot do.
+---
+
+# Sandbox and security
+
+Bundle scripts are Groovy running inside the game process. They have the same power as the game itself. That is a feature and a risk, and the engine handles it with layers of restraint rather than a hard sandbox.
+
+## What scripts can do
+
+A bundle script can call anything on the classpath. It can register items, spawn entities, change the world, run commands, and touch game state directly. Groovy does not restrict this.
+
+## The real controls
+
+Because scripts are trusted code running as the game, the meaningful controls are about what a *server owner* is willing to run:
+
+- **Permission to load.** Bundles are loaded from the bundle directory by the operator. A server owner decides which bundles to install. That decision is the first line of defense.
+- **Command scoping.** Engine commands that change the world are operator-gated. Bundles can only use what they are given.
+- **Path validation.** File access from scripts goes through validation that rejects paths escaping the Minecraft directory, so a script cannot wander the host filesystem through engine helpers.
+
+## Configuration toggles
+
+Several features that could be abused are switches in the common config:
+
+| Option | Effect |
+| --- | --- |
+| `SCREEN_EFFECT_COMMAND_CHAINING` | Blocks `/engine screeneffect` from chaining arbitrary server commands. |
+| `CUTSCENE_COMMAND_EXECUTION` | Blocks cutscenes from executing arbitrary server commands. |
+
+A server operator who does not want script-triggered command execution turns these off.
+
+## What this means for you
+
+- Only install bundles you trust, the way you only install mods you trust.
+- If you share bundles, they run with full game access on other machines. Do not add hidden behaviour.
+- The engine's helpers stay inside the game directory; raw Groovy can reach further, so treat raw access as trusted code.
+
+## Related
+
+- [Configuration](../guides/config).

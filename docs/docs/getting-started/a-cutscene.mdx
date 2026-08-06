@@ -1,0 +1,33 @@
+---
+sidebar_position: 8
+---
+
+# A cutscene
+
+This lesson plans a cutscene: a sequence where the camera follows a path while the world keeps running. Cutscenes in FoundryEngine are often authored in the world with the editor tool, and a cutscene model holds the path.
+
+It asks you to think about assets and timing before you see a running result, so it reads differently from the previous lessons.
+
+## Sounds like text?
+
+Cutscene details depend on the version you are on and on how much you build by hand versus with the editor. The exact scripting calls are not yet covered here in full. What follows is the shape you work with.
+
+## A camera path
+
+A cutscene moves the camera along a path. The path is made of points, and the camera eases between them. FoundryEngine builds the curve from Bézier points, and the easing functions (`common/easing`) control how movement and effects change over time.
+
+## Two ways to build one
+
+**With the editor.** The in-game editor has a cutscene tool and a timeline panel. You place points in the world, the engine builds the Bézier path, and you attach effects to points on the timeline. This is the hands-on way and it writes the cutscene for you.
+
+**In code.** A cutscene is a model with a path and attached effects, registered through the cutscene manager. The `screeneffect` command plays a screen effect directly while a cutscene can carry the same effects (`black`, `circle`, `star`, `cinematic`) attached to steps of the path.
+
+## Play it
+
+The `/engine cutscene` command group plays, lists, and manages cutscenes. Start your cutscene from a command or from another event, and the camera takes over for the duration of the path.
+
+## When to use easing
+
+Anything that changes across the cutscene, camera height, screen fade, an effect's strength, goes through easing. The easing reference gives a named set of shapes (smooth, bounce, ease-in-out) so timing feels deliberate rather than flat.
+
+Next, [add stages and a game session](stages-and-game-sessions) to scope your content.

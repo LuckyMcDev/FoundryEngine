@@ -1,0 +1,60 @@
+---
+sidebar_position: 1
+title: ItemBuilder
+description: Reference for the ItemBuilder fluent API.
+---
+
+# ItemBuilder
+
+`ItemBuilder` builds an `Item`. Create one with `ItemBuilder.create(Identifier)` and register it through `BundleEvents.registry { it.items(...) }`.
+
+## Creation
+
+| Method | Returns | Notes |
+| --- | --- | --- |
+| `static create(Identifier id)` | builder | Start a new item. |
+
+## Properties
+
+| Method | Notes |
+| --- | --- |
+| `.stacksTo(int count)` | Maximum stack size. |
+| `.fireResistant()` | Item survives lava and fire. |
+| `.properties(UnaryOperator<Item.Properties>)` | Direct access to `Item.Properties`. |
+| `.component(DataComponentType<T>, T)` | Set a data component, e.g. `DataComponents.RARITY`. |
+| `.factory(Function<Item.Properties, Item>)` | Swap the item class. |
+
+## Callbacks
+
+Each callback is a functional interface; assign it with a Groovy closure.
+
+| Method | Runs |
+| --- | --- |
+| `.use { level, player, hand -> ... }` | Right-click while holding. Return an `InteractionResult`. |
+| `.useOn { ... }` | Right-click on a block. |
+| `.inventoryTick { stack, level, owner, slot -> ... }` | Every tick while in an inventory. |
+| `.onUseTick { ... }` | While the item is being used. |
+| `.finishUsingItem { ... }` | After the player finishes eating or drinking. |
+| `.releaseUsing { ... }` | When the player lets go. |
+| `.hurtEnemy { ... }` / `.postHurtEnemy { ... }` | When the item hits an entity. |
+| `.onCraftedPostProcess { ... }` | After the item is crafted. |
+
+## Data generation
+
+| Method | Notes |
+| --- | --- |
+| `.generateData(boolean)` | Set `false` to skip JSON generation. |
+| `.tag(ItemTagBuilder)` / `.tag(Identifier)` | Add the item to a tag. |
+
+## Example
+
+```groovy
+def gem = ItemBuilder.create(id("magic_gem"))
+        .stacksTo(16)
+        .component(DataComponents.RARITY, Rarity.UNCOMMON)
+```
+
+## Related
+
+- Walkthrough: [Your first item](../../getting-started/your-first-item).
+- Registering: [Add an item](../registration/add-item).

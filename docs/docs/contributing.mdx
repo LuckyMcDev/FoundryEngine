@@ -1,0 +1,77 @@
+---
+sidebar_position: 10
+title: Contributing to the docs
+description: How to add and edit documentation on this site.
+---
+
+# Contributing to the docs
+
+This site documents FoundryEngine for people making bundles. Before you change anything, read the writing standard and the site structure.
+
+## Where things live
+
+- Content is in `docs/docs/` under three folders: `getting-started`, `guides`, `concepts`.
+- News and changelogs are blog posts in `docs/blog/`, shown at `/news`.
+- Sidebars are generated from the folders; a file's `sidebar_position` and `title` frontmatter control its order and name.
+
+## The writing standard
+
+The primary reader is new to Java and Groovy, and new to programming. Write for bundle creators.
+
+- Define every term on its first use. Plain one-line definitions, no jargon chains.
+- Never assume modding experience, an IDE, or prior knowledge of Minecraft APIs.
+- Spell out commands, file paths, and config keys in full every time.
+- The guides section ships a glossary (`guides/glossary.mdx`) with plain-language definitions.
+
+### Voice
+
+Plain, direct, factual. Docs are neutral; do not add personality or first-person asides.
+
+### Hard rules
+
+- **Plain copulatives.** Use "is", "has", "does". Never "serves as", "features", "boasts", "presents".
+- **No AI vocabulary.** Avoid leverage, robust, comprehensive, seamless, ecosystem, game-changer, delve, embark, cutting-edge, paradigm, tapestry, realm, unleash, harness, foster, elevate, "at its core", intricate, meticulous, showcase (as a verb), "worth [verb]ing", "deep dive", "unpack".
+- **No meta-narration.** No "Let's take a look", "In this guide, we will", "dive in", "It's worth noting that", "Furthermore", "Moreover", "Additionally", "Here's the interesting part".
+- **No promotional or evaluative prose.** No "powerful", "amazing", "revolutionary", "the definitive X". No significance inflation, like "marking a pivotal moment".
+- **Em dashes.** Max one per 1000 words. Prefer periods, commas, or parentheses. This also catches the `--` double-hyphen substitute.
+- **Headings.** Sentence case: "Add a use handler to your item", not "Adding A Use Handler To Your Item". Headings say something specific; no "Overview", "Key Points", "Summary", "Introduction".
+- **No invented specifics.** Every command, file path, builder call, event name, and config key must exist and be verifiable in the codebase or `ExampleBundles/`. If a fact is missing, flag it for verification rather than guessing.
+- **One term per concept.** "bundle", "entrypoint", "builder", "event group", "manager" are used consistently. No synonym cycling.
+- **No filler.** No "I hope this helps", "Great question", "Feel free to reach out".
+- **No placeholders.** No `[Your Name]` or `TODO` in published pages.
+
+### What the docs do get
+
+- **Lists are fine.** Steps, parameters, and TOML fields are genuine list content. Keep them as lists.
+- **Numbered steps for how-to**, imperative mood, one small step per item, each grounded in a real command or path.
+- **Short paragraphs are fine.** Vary paragraph length. One-sentence paragraphs are acceptable.
+- **Concrete over generic.** Name the specific thing. `BlockBuilder.properties { it.strength(3.0f, 6.0f) }` sets hardness and blast resistance; that beats "BlockBuilder supports customization".
+- **Fragments in terse registers are fine.** Parameter docs and glossary entries legitimately use fragments.
+
+## Verify before you write
+
+The getting-started, reference, and concept pages contain real API calls. Check them against the source:
+
+- Builders: `src/main/java/de/luckymcdev/foundryengine/common/builder/`.
+- Events: `src/main/java/de/luckymcdev/foundryengine/common/event/`.
+- Managers: `src/main/java/de/luckymcdev/foundryengine/common/Common.java` for getters.
+- Commands: `src/main/java/de/luckymcdev/foundryengine/server/command/builtin/`.
+- Bundle examples: `ExampleBundles/` and better, `TestBundle/`.
+- Bundle metadata: `*.bundles.toml` files in `ExampleBundles/`.
+
+Run `/engine eval` or `runData` if you are unsure a snippet behaves the way the docs claim.
+
+## Adding a page
+
+1. Create the file under the right quadrant folder.
+2. Add frontmatter: `title`, `description`, and `sidebar_position`.
+3. Link to it from the quadrant's `index.mdx`.
+4. Keep internal links relative (`../guides/managers`), not absolute.
+
+## The build gate
+
+`npm run docs:build` fails on broken links and missing pages. Run it after any change that touches links, and fix every failure before opening a pull request.
+
+## Versioning
+
+The live folder documents the current Minecraft version. Never edit a versioned copy directly; edit the live folder and freeze a new version with `npm run docs:version <version>`. See `docs/README.md` for the workflow.

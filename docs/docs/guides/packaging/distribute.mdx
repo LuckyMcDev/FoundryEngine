@@ -1,0 +1,34 @@
+---
+sidebar_position: 4
+title: Distribute a bundle
+description: Hand your bundle to other players.
+---
+
+# Distribute a bundle
+
+A bundle is the folder with your scripts, assets, and data, plus a `.bundles.toml` metadata file. Distributing it means giving that to someone else to drop into their bundle directory.
+
+## Build a release
+
+- Make sure the bundle id and version in `gradle.properties` match `.bundles.toml`.
+- Run the deploy task so the bundle is assembled with its assets. On a development machine this happens automatically when you launch the client (`runClient` depends on `deployBundle`).
+- The assembled bundle lands under the engine's bundle path as `<id>-<version>`.
+
+## Share the files
+
+Zip the bundle directory and send it. The recipient unzips it into their bundle directory and restarts, or runs `/engine reload` if the engine is already running.
+
+## What the recipient needs
+
+- The same Minecraft version and NeoForge build.
+- FoundryEngine installed.
+- For singleplayer: just the bundle.
+- For a server: the bundle on the server, and the client bundle on every player who needs the content (see [dedicated server](dedicated-server)).
+
+## Version matters
+
+Bundles are tied to the Minecraft version they were built against. A bundle built for one MC version may not load on another. Match the engine version between everyone in a multiplayer game.
+
+## Related
+
+- [Bundle metadata reference](../bundle-metadata).

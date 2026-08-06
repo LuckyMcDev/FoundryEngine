@@ -1,0 +1,63 @@
+---
+sidebar_position: 5
+title: Add screen effects
+description: Apply post-processing effects like fades, vignettes, and blur from scripts.
+---
+
+# Add screen effects
+
+Screen effects are post-processing shaders applied after the world renders. You drive them from the client through the post-effect manager.
+
+## One-shot screen effects
+
+The simplest case is a timed effect that fades in, holds, and fades out:
+
+```groovy title="scripts/client/<bundle>/Client.groovy"
+import de.luckymcdev.foundryengine.client.Client
+
+Client.getPostEffectManager().startScreenEffect(
+        "black",   // effect name
+        20,        // fade in, ticks
+        40,        // hold, ticks
+        20,        // fade out, ticks
+        "linear")  // lerp type
+```
+
+Built-in effects include `black`, `star`, `circle`, and `cinematic`. The lerp type is one of `linear`, `sine_in`, `sine_out`, `sine_in_out`, or similar easing names.
+
+## Conditional effects
+
+For an effect that follows a condition, register it with a fade:
+
+```groovy
+def lowHp = Client.getPostEffectManager().conditionalWithFade(
+        id("low_hp_vignette"),
+        { playerHealth < 6.0f } as BooleanSupplier,
+        10, 10)
+
+def intensity = Client.getPostEffectManager().vignette(
+        id("my_vignette"),
+        { Math.min(1.0f, missingHealth / 10.0f) } as DoubleSupplier)
+```
+
+`conditionalWithFade` re-evaluates the condition every frame and fades the effect in and out. The `DoubleSupplier` variants let a uniform, like the vignette intensity, animate over time.
+
+## Register a custom effect
+
+Custom shaders need their JSON + shader files. Register the effect with its uniforms:
+
+```groovy
+import de.luckymcdev.foundryengine.common.Common
+import de.luckymcdev.foundryengine.client.post.RenderPhase
+
+def handle = Client.getPostEffectManager().register(id("my_effect"), { cfg ->
+    cfg.phase(RenderPhase.POST_RENDER)
+    cfg.uniform("Radius", 4.0f)
+})
+```
+
+The shader and its JSON definition live under `assets/mybundle/shaders/`. The JSON declares the uniforms; `cfg.uniform(...)` fills them each frame.
+
+## Related
+
+- Effect manager API: [PostEffectManager reference](../managers).

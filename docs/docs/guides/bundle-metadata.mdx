@@ -1,0 +1,47 @@
+---
+sidebar_position: 3
+title: Bundle metadata
+description: The .bundles.toml file that describes a bundle.
+---
+
+# Bundle metadata
+
+Every bundle carries a `.bundles.toml` file that the engine reads to identify it. The file sits at the bundle root and is named `<bundleId>.bundles.toml`.
+
+## Fields
+
+```toml title="mybundle.bundles.toml"
+[[bundles]]
+bundleId = "mybundle"
+version = "1.0.0"
+displayName = "My Bundle"
+displayURL = "https://example.com/my-bundle"
+authors = "Your Name"
+description = "What this bundle does."
+dependencies = [
+    "mod:neoforge@26.1.0.1-beta"
+]
+```
+
+| Field | Meaning |
+| --- | --- |
+| `bundleId` | Unique id. Used as the namespace for `Identifier`s and the script package. |
+| `version` | SemVer string `MAJOR.MINOR.PATCH`. |
+| `displayName` | Name shown in lists and menus. |
+| `displayURL` | Link shown in the bundle info. |
+| `authors` | Author name or list. |
+| `description` | Short summary. |
+| `dependencies` | List of dependencies, like `mod:neoforge@26.1.0.1-beta`. |
+
+## Version must match
+
+The version in `gradle.properties` has to match the `.bundles.toml` version. The bundle is deployed as `<bundleId>-<version>`; a mismatch is reported when the bundle is built or loaded.
+
+## The bundle id is the namespace
+
+`bundleId` becomes the namespace of every `Identifier` you create, so `id("magic_gem")` with bundle id `mybundle` resolves to `mybundle:magic_gem`. Two bundles with the same id collide, so keep ids unique.
+
+## Related
+
+- Building a bundle project: [Your first bundle](../getting-started/your-first-bundle).
+- Distributing: [Distribute a bundle](../guides/packaging/distribute).

@@ -1,0 +1,70 @@
+---
+sidebar_position: 3
+title: RecipeBuilder
+description: Reference for the RecipeBuilder fluent API.
+---
+
+# RecipeBuilder
+
+`RecipeBuilder` builds a recipe of a fixed type. The type is chosen by the creation method.
+
+## Creation
+
+| Method | Recipe type |
+| --- | --- |
+| `static shaped(Identifier id, Item result)` | 3x3 grid crafting. |
+| `static shapeless(Identifier id, Item result)` | Any arrangement. |
+| `static smelting(Identifier id, Item result)` | Furnace. |
+| `static blasting(Identifier id, Item result)` | Blast furnace. |
+| `static smoking(Identifier id, Item result)` | Smoker. |
+| `static campfireCooking(Identifier id, Item result)` | Campfire. |
+| `static stonecutting(Identifier id, Item result)` | Stonecutter. |
+| `static smithingTransform(Identifier id, Item result)` | Smithing table transform. |
+| `static smithingTrim(Identifier id, Item result)` | Smithing table trim. |
+| `static custom(Identifier id, ...)` | Custom recipe type. |
+
+## Shaped
+
+| Method | Notes |
+| --- | --- |
+| `.pattern(String...)` | Rows of the grid. |
+| `.define(Character, Item)` | Map a character to an ingredient. |
+
+## Shapeless
+
+| Method | Notes |
+| --- | --- |
+| `.requires(Item)` | One ingredient per call. |
+
+## Cooking
+
+| Method | Notes |
+| --- | --- |
+| `.ingredient(Item)` | The input. |
+| `.experience(float)` | XP granted per craft. |
+| `.cookingTime(int)` | Ticks in the furnace. |
+
+## Common
+
+| Method | Notes |
+| --- | --- |
+| `.count(int)` | Output count. |
+| `.category(...)` / `.group(...)` | Recipe book placement. |
+| `.unlockedBy(String, Condition)` | Recipe book unlock, usually an `InventoryChangeTrigger`. |
+| `.base(...)` / `.addition(...)` | Smithing inputs. |
+| `.template(...)` / `.trimPattern(...)` | Smithing template and trim. |
+
+## Example
+
+```groovy
+def shaped = RecipeBuilder.shaped(id("wand_from_diamond"), Items.DIAMOND_HORSE_ARMOR)
+        .pattern(" D ", " S ", " S ")
+        .define('D' as char, Items.DIAMOND)
+        .define('S' as char, Items.STICK)
+        .unlockedBy("has_diamond",
+                InventoryChangeTrigger.TriggerInstance.hasItems(Items.DIAMOND))
+```
+
+## Related
+
+- Registering: [Add a recipe](../registration/add-recipe).

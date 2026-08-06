@@ -1,0 +1,34 @@
+---
+sidebar_position: 2
+title: Validate your scripts
+description: Find Groovy errors before you run the bundle.
+---
+
+# Validate your scripts
+
+The editor surfaces Groovy errors as you type. Two places report them: the code editor's error marks and the Problems panel.
+
+## Use the Problems panel
+
+The Problems panel lists every file with a parse error and the line each error is on.
+
+- Open the panel from the **Tools** menu.
+- Each file appears as a tree node with the error count. Click an error to jump to that line in the code editor.
+- **Clear All** in the panel menu bar dismisses the current list, so you can re-check after editing.
+
+A clean list shows **No problems detected**.
+
+## Catch errors on reload
+
+Syntax errors that survive to a reload are reported when the bundle executes. The console panel shows the exception with the script and line number. Fix the reported line, save, and reload again.
+
+## Keep it green
+
+- Close every string literal and block `{ }` before saving.
+- Check that every `import` points at a real class. A wrong import is a compile error, not a runtime one.
+- If a line reports a problem but looks fine, the error is usually the missing line or brace just above it.
+
+## Related
+
+- [Use the code editor](code-editor).
+- [Reload in game](../packaging/reload-in-game).

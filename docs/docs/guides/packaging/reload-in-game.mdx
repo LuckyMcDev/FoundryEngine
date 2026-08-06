@@ -1,0 +1,35 @@
+---
+sidebar_position: 2
+title: Reload in game
+description: Pick up script changes without restarting the game.
+---
+
+# Reload in game
+
+After you edit a script, apply the change without restarting the client.
+
+## Reload all bundles
+
+```text
+/engine reload
+```
+
+`/engine reload` unloads and re-runs every bundle. It needs operator permissions. On success it prints **Scripts reloaded successfully!**; if a script fails to load you get the failure message instead.
+
+## What reload does
+
+- Stops all game sessions and clears their tick state.
+- Calls `onUnload()` on every bundle.
+- Re-reads the bundle scripts from disk.
+- Calls `onLoad()` on every bundle again.
+
+Because reload restarts sessions, persistent data saved by sessions stays on disk and loads again on the next start.
+
+## Reloading in the editor
+
+The editor works on the same files on disk. Save the file in the code editor, then run `/engine reload` in the game console. If a file has a syntax error, the Problems panel and the console report it before the bundle executes.
+
+## Related
+
+- Errors before you reload: [Validate your scripts](../editor/validate-your-scripts).
+- Bundle lifecycle in detail: [Entrypoint lifecycle reference](../entrypoint-lifecycle).

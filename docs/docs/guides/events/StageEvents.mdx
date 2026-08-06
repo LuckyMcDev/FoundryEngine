@@ -1,0 +1,33 @@
+---
+sidebar_position: 4
+title: StageEvents
+description: Reference for player stage change events.
+---
+
+# StageEvents
+
+`StageEvents` fires around stage changes on players. Each event has `event.entity` (the player) and `event.stage` (the `Identifier` of the stage).
+
+## Adding and removing
+
+| Method | When |
+| --- | --- |
+| `adding { event -> ... }` | A stage is about to be granted. Canceling the NeoForge event stops it. |
+| `added { event -> ... }` | A stage was granted. |
+| `removing { ... }` | A stage is about to be removed. |
+| `removed { ... }` | A stage was removed. |
+
+The `post*` variants run after the engine's own handling.
+
+## Example
+
+```groovy
+StageEvents.added { event ->
+    def player = event.entity as ServerPlayer
+    player.sendSystemMessage(Component.literal("New stage: ${event.stage}"))
+}
+```
+
+## Related
+
+- Gating content: [Gate content with stages](../world/gate-with-stages).

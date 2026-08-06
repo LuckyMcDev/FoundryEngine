@@ -1,0 +1,73 @@
+---
+sidebar_position: 9
+---
+
+# Stages and game sessions
+
+This lesson gates content behind progression with stages, then ties a minigame's lifecycle to a game session. It assumes you finished the earlier lessons.
+
+## A stage
+
+A stage is a progression marker a player either has or does not have. Content can require one. Stages can chain, so a player earns "explorer" only after "beginner".
+
+Register stages from the stage registry:
+
+```groovy
+import de.luckymcdev.foundryengine.common.Common
+import de.luckymcdev.foundryengine.common.event.StageEvents
+import net.minecraft.network.chat.Component
+
+void onLoad() {
+    def registry = Common.getGameStageHandler().getStageRegistry()
+
+    registry.register(
+            id("beginner"),
+            Component.literal("Beginner"),
+            Component.literal("Just starting out"))
+
+    registry.register(
+            id("explorer"),
+            Component.literal("Explorer"),
+            Component.literal("Traveled far and wide"),
+            id("beginner"))
+}
+```
+
+`registry.register(id, name, description)` adds a stage. Add the parent stage as the fourth argument to chain one stage after another: "explorer" requires "beginner".
+
+## React when a stage is added
+
+The bundle can listen for stages changing. The showcase bundle announces the moment a stage is unlocked:
+
+```groovy
+StageEvents.added { event ->
+    def player = event.entity as ServerPlayer
+    player.sendSystemMessage(
+            Component.literal("§6New stage unlocked: §e${event.stage}"))
+}
+```
+
+`StageEvents.adding { ... }` runs before the stage is granted, `StageEvents.added { ... }` after. `event.entity` is the player, and `event.stage` is the stage id.
+
+## Use stages to gate content
+
+Stages are the gate that other systems check. Items, mobs, dimensions, and recipes ship built-in stage add-ons. When you want a gem usable only after "explorer", the item gate reads the stage before it lets the player use it. The guides [Gate content with stages](../guides/world/gate-with-stages) recipe shows the wiring for a specific add-on.
+
+## A game session
+
+A game session is a named, running game inside the world. It has its own persistent state, it starts when the world loads, and it stops and saves when the world saves. It gives a minigame a lifecycle to hang phases on.
+
+A session is built through the game manager and can flip stages in response to events. The state between phases, or the score that resets on a new round, lives in the session's data.
+
+## Running game
+
+The full cycle looks like this:
+
+1. The world loads and a session starts.
+2. The session runs phases; areas, dialogue, and cutscenes react to players inside it.
+3. Events advance the session, and the session grants or removes stages.
+4. The world saves, the session stops and saves its own `GameData`.
+
+Start with [this stage command](../guides/world/gate-with-stages) and bring in the session once you have content worth a lifecycle.
+
+That closes the lesson set. From here the guides section covers each recipe on its own.

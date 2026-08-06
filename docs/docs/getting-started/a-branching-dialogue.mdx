@@ -1,0 +1,89 @@
+---
+sidebar_position: 6
+---
+
+# A branching dialogue
+
+This lesson builds a conversation with choices. The showcase bundle example is your model: a tree of nodes, where each node has a speaker, a line, and options that lead to other nodes.
+
+It assumes you finished the earlier lessons and know how entrypoints register things in `onLoad()`.
+
+## A dialogue tree
+
+A dialogue is a `DialogueTree`. It starts at a node and moves between nodes as the player picks options.
+
+Build a small guide conversation:
+
+```groovy
+import de.luckymcdev.foundryengine.common.Common
+import de.luckymcdev.foundryengine.common.dialogue.DialogueTree
+import de.luckymcdev.foundryengine.common.dialogue.DialogueNode
+import de.luckymcdev.foundryengine.common.dialogue.DialogueOption
+import de.luckymcdev.foundryengine.common.dialogue.DialogueStyle
+
+void onLoad() {
+    def manager = Common.getDialogueManager()
+
+    def tree = new DialogueTree(id("welcome_guide"), "start")
+    tree.setStyle(new DialogueStyle())
+    manager.registerTree(tree)
+}
+```
+
+`new DialogueTree(id("welcome_guide"), "start")` names the tree and sets the id of the first node, `"start"`.
+
+## Add nodes and options
+
+A node is a line of dialogue with a speaker, and any number of options.
+
+```groovy
+def startNode = new DialogueNode("start", "Guide",
+        "Welcome, adventurer! I can teach you about this world.")
+def farewellNode = new DialogueNode("farewell", "Guide",
+        "Good luck on your journey!")
+
+startNode.getOptions().add(new DialogueOption("opt_leave", "Goodbye!", "farewell"))
+```
+
+Read it as: the `start` node is spoken by "Guide", says the welcome line, and offers one option. The option, `"opt_leave"`, shows the text `Goodbye!`, and when chosen moves the conversation to the node whose id is `"farewell"`.
+
+Wire the nodes into the tree and register them:
+
+```groovy
+tree.addNode(startNode)
+tree.addNode(farewellNode)
+```
+
+## Run an action when an option is chosen
+
+A node can run an action when the player enters it. Register an action by name, then attach that name to the node.
+
+```groovy
+import de.luckymcdev.foundryengine.common.dialogue.DialogueAction
+import net.minecraft.network.chat.Component
+
+manager.registerAction("give_starting_kit", { player, session ->
+    player.sendSystemMessage(Component.literal("§aYou received a starting kit!"))
+} as DialogueAction)
+
+farewellNode.getEnterActionIds().add("give_starting_kit")
+```
+
+`registerAction` stores a block of code under a name. The block receives the `player` and the `session` and runs when the node is entered. `getEnterActionIds().add(...)` points the node at that action.
+
+## Chain the whole tree
+
+A complete tree has several nodes and passes control between them. The pattern is the same as above repeated:
+
+1. Create each `DialogueNode` with its speaker and line.
+2. Add `DialogueOption`s to a node; each option names a target node id.
+3. Add every node to the tree.
+4. Register the tree.
+
+The showcase bundle's `start` node offers three options (items, areas, goodbye), each leading to another node, and those nodes offer options that loop back. Build a copy of that to see the full shape.
+
+## Run the dialogue
+
+Dialogue runs from a command or an event, so the player can start it. The [Run a dialogue](../guides/world/run-dialogue) recipe shows how to start a tree from a command. Use it to launch `id("welcome_guide")` and the conversation opens.
+
+Next, [add areas and waypoints](areas-and-waypoints).

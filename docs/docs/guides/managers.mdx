@@ -1,0 +1,48 @@
+---
+sidebar_position: 3
+title: Managers
+description: The singleton managers reachable from Common and Client.
+---
+
+# Managers
+
+Managers are singletons that own the engine's subsystems. Reach them from `Common` (both sides) or `Client` (client only).
+
+## Common managers
+
+| Getter | Class | Owns |
+| --- | --- | --- |
+| `Common.getBundleManager()` | `BundleManager` | Bundle discovery, load, and reload. |
+| `Common.getGameStageHandler()` | `GameStageHandler` | Stages, stage addons, stage registry. |
+| `Common.getStageTableManager()` | `StageTableManager` | Stage tables for progression rules. |
+| `Common.getNetworkManager()` | `NetworkManager` | Client-server packets. |
+| `Common.getAreaManager()` | `AreaManager` | Areas, modules, presets. |
+| `Common.getCutsceneManager()` | `CutsceneManager` | Cutscene definitions. |
+| `Common.getCutsceneSessionManager()` | `CutsceneSessionManager` | Running cutscene sessions. |
+| `Common.getSavedDataManager()` | `SavedDataManager` | Persistent save sections. |
+| `Common.getWaypointManager()` | `WaypointManager` | Waypoints. |
+| `Common.getDialogueManager()` | `DialogueManager` | Dialogue trees and actions. |
+| `Common.getGameManager()` | `GameManager` | Game sessions. |
+| `Common.getScriptShell()` | `ScriptShell` | Groovy script execution. |
+
+## Client managers
+
+| Getter | Class | Owns |
+| --- | --- | --- |
+| `Client.getPostEffectManager()` | `PostEffectManager` | Screen effects and post-processing. |
+| `Client.getEditorManager()` | `EditorManager` | Editor panels. |
+| `Client.getHotKeyManager()` | `HotKeyManager` | Panel hotkeys. |
+| `Client.getWorkspaceState()` | `WorkspaceState` | Open editor buffers and their errors. |
+
+## Common patterns
+
+```groovy
+Common.getAreaManager().register(level, area)
+Common.getWaypointManager().addWaypoint(level, waypoint)
+Common.getDialogueManager().startDialogue(player, treeId)
+Common.getGameManager().register(session)
+```
+
+## Related
+
+- [Entrypoint lifecycle](entrypoint-lifecycle).

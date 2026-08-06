@@ -1,0 +1,55 @@
+---
+sidebar_position: 1
+title: Add an item
+description: Register a new item from your bundle's common entrypoint.
+---
+
+# Add an item
+
+An item is registered from your bundle's **common** entrypoint script. Common scripts run on both the client and the server, so everything the item needs is available in both places.
+
+## Use the ItemBuilder
+
+```groovy title="scripts/common/<bundle>/Common.groovy"
+import de.luckymcdev.foundryengine.common.builder.item.ItemBuilder
+import de.luckymcdev.foundryengine.common.event.BundleEvents
+import net.minecraft.resources.Identifier
+
+class CommonEntrypoint implements BundleEntrypoint {
+
+    static Identifier id(String path) {
+        return Identifier.fromNamespaceAndPath("mybundle", path)
+    }
+
+    @Override
+    void onLoad() {
+        def gem = ItemBuilder.create(id("magic_gem"))
+                .stacksTo(16)
+
+        BundleEvents.registry {
+            it.items(gem)
+        }
+    }
+}
+```
+
+`ItemBuilder.create()` returns a builder. You hand the finished item to `it.items(...)` inside `BundleEvents.registry`.
+
+## Common builder calls
+
+| Call | Effect |
+| --- | --- |
+| `.stacksTo(n)` | Maximum stack size. |
+| `.component(key, value)` | Adds a data component, for example `DataComponents.RARITY` or `DataComponents.LORE`. |
+| `.use { level, player, hand -> ... }` | Runs when a player right-clicks while holding the item. Return `InteractionResult.SUCCESS` from the closure. |
+| `.inventoryTick { stack, level, owner, slot -> ... }` | Runs every tick while the item is in an inventory. |
+
+## Give the item a texture
+
+Create a PNG at `assets/mybundle/textures/item/magic_gem.png`. The file name must match the item's path. On the first run the item renders with a placeholder texture if the file is missing, but you want the real one before you call it done.
+
+## Related
+
+- Learn the full flow in the [first item tutorial](../../getting-started/your-first-item).
+- All builder calls: [ItemBuilder reference](../builders/ItemBuilder).
+- When the item can be eaten, crafted into other things, or changes the world, see [Add a recipe](add-recipe) and [Add a block](add-block).

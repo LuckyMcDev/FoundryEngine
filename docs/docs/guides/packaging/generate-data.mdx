@@ -1,0 +1,51 @@
+---
+sidebar_position: 1
+title: Generate data
+description: Produce JSON files for your registered content with the data generator.
+---
+
+# Generate data
+
+Most registered content needs JSON files: recipes, block states, item models, loot tables. The engine generates them for you instead of writing them by hand.
+
+## What gets generated
+
+The data generator runs over everything you registered in `BundleEvents.registry` and writes the matching JSON:
+
+| Content | Generated                                        |
+|---------|--------------------------------------------------|
+| Item    | item model + item JSON                           |
+| Block   | block state, block model, loot table, item model |
+| Recipe  | recipe JSON                                      |
+
+Turn generation off per object when you want to hand-write the file instead:
+
+```groovy
+def light = BlockBuilder.create(id("invisible_light"))
+        .noItem()
+        .properties { it.noCollision().strength(-1.0f, 3600000.0f) }
+        .generateData(false)
+```
+
+## Run the generator
+
+The Generators added via the `BundleEvents.dataGen` are run when the game starts.
+Run the game once for them to be generated. No need to for a Gradle task.
+
+## Add your own providers
+
+A custom provider runs during the same pass:
+
+```groovy
+import de.luckymcdev.foundryengine.common.event.BundleEvents
+
+BundleEvents.dataGen { event ->
+    event.addProvider(new MyProvider(event.getLookup()))
+}
+```
+
+`MyProvider` implements `net.minecraft.data.DataProvider`. The generated output lands in the same place as the built-in providers.
+
+## Related
+
+- What the generator writes and when: [Explanation](../../concepts/bundles-to-registry-pipeline).

@@ -1,0 +1,102 @@
+---
+sidebar_position: 1
+title: Create an area
+description: Define a spatial zone that reacts when players enter, leave, or stand inside it.
+---
+
+# Create an area
+
+An area is a persistent spatial zone in one dimension. The engine checks it every tick, and your modules react when players enter, leave, or tick inside it.
+
+## Step 1: Write the modules
+
+Modules are small classes with an `id()` and a handler. Three interfaces exist: `AreaEnterModule`, `AreaLeaveModule`, and `AreaTickModule`.
+
+```groovy title="scripts/server/<bundle>/Server.groovy"
+import de.luckymcdev.foundryengine.common.area.Area
+import de.luckymcdev.foundryengine.common.area.module.AreaEnterModule
+import de.luckymcdev.foundryengine.common.area.module.AreaLeaveModule
+import de.luckymcdev.foundryengine.common.area.module.AreaTickModule
+import net.minecraft.network.chat.Component
+import net.minecraft.server.level.ServerLevel
+import net.minecraft.server.level.ServerPlayer
+
+class EnterModule implements AreaEnterModule {
+    Identifier id() { return Identifier.fromNamespaceAndPath("mybundle", "enter") }
+    void onEnter(ServerPlayer player, Area area) {
+        player.sendSystemMessage(Component.literal("You entered ${area.id()}"))
+    }
+}
+
+class LeaveModule implements AreaLeaveModule {
+    Identifier id() { return Identifier.fromNamespaceAndPath("mybundle", "leave") }
+    void onLeave(ServerPlayer player, Area area) {
+        player.sendSystemMessage(Component.literal("You left ${area.id()}"))
+    }
+}
+
+class HealModule implements AreaTickModule {
+    Identifier id() { return Identifier.fromNamespaceAndPath("mybundle", "heal") }
+    void tick(ServerLevel level, Area area) {
+        level.players().each { p ->
+            if (area.contains(p.blockPosition()) && p.tickCount % 40 == 0) {
+                p.heal(0.5f)
+            }
+        }
+    }
+}
+```
+
+A tick module's `tick` runs once per server tick while at least one player is inside the area.
+
+## Step 2: Register the modules and an area
+
+```groovy
+import de.luckymcdev.foundryengine.common.Common
+import de.luckymcdev.foundryengine.common.area.AABBArea
+import de.luckymcdev.foundryengine.common.util.color.Color
+import net.minecraft.core.registries.Registries
+import net.minecraft.world.phys.AABB
+
+def manager = Common.getAreaManager()
+
+manager.registerModuleType(new EnterModule())
+manager.registerModuleType(new LeaveModule())
+manager.registerModuleType(new HealModule())
+
+def dim = player.level().dimension()
+def bounds = new AABB(0.0, 64.0, 0.0, 32.0, 90.0, 32.0)
+def area = new AABBArea(id("healing_zone"), bounds, dim, new Color(100, 200, 100))
+
+area.addModule(id("enter"))
+area.addModule(id("leave"))
+area.addModule(id("heal"))
+
+manager.register(level, area)
+```
+
+`AABBArea` takes an id, an `AABB` bounds box, the dimension key, and a color. `addModule` attaches a registered module by id. `register(level, area)` saves the area and syncs it to every client so the outline renders.
+
+## Presets instead
+
+If you create many identical areas, define one preset and reuse it:
+
+```groovy
+import de.luckymcdev.foundryengine.common.area.preset.AreaPreset
+
+def preset = AreaPreset.builder("mybundle:healing_zone")
+        .color(new Color(100, 200, 100))
+        .module(id("enter"))
+        .module(id("leave"))
+        .module(id("heal"))
+        .build()
+
+manager.registerPreset(preset)
+```
+
+A preset registers the module list once. Each area you place with the editor uses the same preset.
+
+## Related
+
+- What areas are and how the tick loop works: [Explanation](../../concepts/runtime-worlds).
+- Querying areas from code: [AreaManager reference](../managers).

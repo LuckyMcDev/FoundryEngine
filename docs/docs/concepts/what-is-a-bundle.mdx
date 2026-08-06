@@ -1,0 +1,43 @@
+---
+sidebar_position: 2
+title: What is a bundle?
+description: The model that makes a mod a content pack.
+---
+
+# What is a bundle?
+
+A bundle is the unit of content in FoundryEngine. It is a folder with Groovy scripts, assets, and data, plus a metadata file. The engine loads it, runs its scripts, and turns what the scripts register into real game content.
+
+## Why bundles instead of a mod
+
+A normal Minecraft mod is a JAR that is baked into the game at launch. A bundle is separate: the engine discovers it at runtime, loads it, and can unload and reload it without restarting the game. That changes how you work:
+
+- **Edit and see the result.** You change a script, reload, and the new behavior is live. No JAR building, no relaunch.
+- **Content is data.** A bundle is a folder you can copy, zip, and share. It is portable the way a texture pack is portable.
+- **Scripts, not compiled code.** Bundle logic is Groovy, written in plain text. It does not need a compiler step.
+
+## What a bundle contains
+
+```
+mybundle/
+├── mybundle.bundles.toml     metadata: id, version, name
+└── scripts/
+    ├── common/               runs on client and server
+    ├── server/               runs on the server only
+    └── client/               runs on the client only
+```
+
+Assets and data live alongside scripts in the same folder. The engine builds them into what Minecraft sees.
+
+## Three folders, three audiences
+
+The split into `common`, `server`, and `client` mirrors how Minecraft itself is split. Anything that both sides need to know about must be registered from a common script. Anything that only the server should do (commands, stages, dialogue) goes in server scripts. Anything that only the client can do (particles, screen effects) goes in client scripts.
+
+## One bundle id, one namespace
+
+The bundle id in the metadata becomes the namespace of every `Identifier` the bundle creates. Bundle `mybundle` registers `mybundle:magic_gem`, not `minecraft:magic_gem`. Namespaces keep bundles from colliding with each other and with the game.
+
+## Related
+
+- Build one end to end: [Your first bundle](../getting-started/your-first-bundle).
+- The metadata file: [Bundle metadata](../guides/bundle-metadata).

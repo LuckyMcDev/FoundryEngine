@@ -1,0 +1,57 @@
+---
+sidebar_position: 2
+title: Add a block
+description: Register a block from your bundle's common entrypoint.
+---
+
+# Add a block
+
+A block is registered from the **common** entrypoint, exactly like an item.
+
+## Use the BlockBuilder
+
+```groovy title="scripts/common/<bundle>/Common.groovy"
+import de.luckymcdev.foundryengine.common.builder.block.BlockBuilder
+import de.luckymcdev.foundryengine.common.event.BundleEvents
+
+@Override
+void onLoad() {
+    def glow = BlockBuilder.create(id("glowing_stone"))
+            .properties { it.strength(3.0f, 6.0f).lightLevel { 15 } }
+
+    BundleEvents.registry {
+        it.blocks(glow)
+    }
+}
+```
+
+`BlockBuilder.create()` returns a builder. You hand the finished block to `it.blocks(...)`.
+
+## Block properties
+
+The `.properties` closure configures a `BlockBehaviour.Properties`. Common calls:
+
+| Call | Effect |
+| --- | --- |
+| `.strength(destroy, explosion)` | Hardness and explosion resistance. |
+| `.lightLevel { 15 }` | Emits light at the given level. |
+| `.noCollision()` | Entities walk through the block. |
+| `.requiresCorrectToolForDrops()` | The right tool is needed to drop anything. |
+
+## Behaviour
+
+| Call | Effect |
+| --- | --- |
+| `.stepOn { level, pos, state, entity -> ... }` | Runs when an entity stands on the block. |
+| `.destroy { level, pos, state -> ... }` | Runs when the block is destroyed. |
+| `.noItem()` | Registers the block without a corresponding item. |
+| `.generateData(false)` | Skips data generation for the block. |
+
+## Textures
+
+Place the block texture at `assets/mybundle/textures/block/<path>.png`. If you want a different texture for each face, put files in the `textures/block/` folder and point at them with a custom block state in `assets/mybundle/blockstates/`.
+
+## Related
+
+- Build a matching recipe: [Add a recipe](add-recipe).
+- All builder calls: [BlockBuilder reference](../builders/BlockBuilder).

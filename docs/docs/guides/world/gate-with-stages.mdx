@@ -1,0 +1,68 @@
+---
+sidebar_position: 3
+title: Gate content with stages
+description: Block items, blocks, mobs, and recipes behind progression stages.
+---
+
+# Gate content with stages
+
+Stages are per-player progression flags. The engine ships stage restrictions for items, blocks, mobs, recipes, loot, and dimensions. When a player is missing a required stage, the object is locked: items drop out of the inventory, pickups are blocked, recipes disappear, and locked items show their requirements in the tooltip.
+
+## Define the stages
+
+```groovy title="scripts/server/<bundle>/Server.groovy"
+import de.luckymcdev.foundryengine.common.Common
+import de.luckymcdev.foundryengine.common.event.StageEvents
+import net.minecraft.network.chat.Component
+
+def handler = Common.getGameStageHandler()
+
+def registry = handler.getStageRegistry()
+registry.register(id("beginner"), Component.literal("Beginner"), Component.literal("Just starting out"))
+registry.register(id("explorer"), Component.literal("Explorer"), Component.literal("Traveled far and wide"), id("beginner"))
+```
+
+The last argument to `register` is the parent stage. Granting a child stage automatically grants its parents.
+
+## Lock objects behind stages
+
+```groovy
+def gem = ItemBuilder.create(id("magic_gem")).stacksTo(16)
+def recipe = RecipeBuilder.shaped(id("gem_crafting"), Items.DIAMOND) /* ... */
+
+handler.item().requireStages(gem, id("explorer"))
+handler.recipes().requireStages(recipe, id("beginner"))
+```
+
+The addons hang off the handler:
+
+| Addon | Method on handler | Object type |
+| --- | --- | --- |
+| `handler.item()` | `.requireStages(item, stages...)` | `Item` |
+| `handler.blocks()` | `.requireStages(block, stages...)` | `Block` |
+| `handler.mobs()` | `.requireStages(entityType, stages...)` | `EntityType` |
+| `handler.recipes()` | `.requireStages(recipe, stages...)` | `Recipe` |
+| `handler.dimensions()` | `.requireStages(dimension, stages...)` | `ResourceKey<Level>` |
+
+Pass a `Component` before the stages to set a custom locked message: `requireStages(object, Component.literal("..."), id("explorer"))`.
+
+## Grant stages
+
+```groovy
+handler.addStage(player, id("explorer"))
+handler.hasStage(player, id("explorer"))
+handler.removeStage(player, id("explorer"))
+```
+
+Listen for the change:
+
+```groovy
+StageEvents.added { event ->
+    player.sendSystemMessage(Component.literal("New stage: ${event.stage}"))
+}
+```
+
+## Related
+
+- Walk through the flow: [Stages and game sessions tutorial](../../getting-started/stages-and-game-sessions).
+- How stages and sessions fit together: [Explanation](../../concepts/stages-and-progression).

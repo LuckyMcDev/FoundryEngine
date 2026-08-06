@@ -1,0 +1,72 @@
+---
+sidebar_position: 5
+---
+
+# Sounds and particles
+
+This lesson registers a sound and a particle effect, and plays them in the game. It assumes you finished [Your first block and recipe](your-first-block-and-recipe).
+
+## A sound
+
+Sound works in two parts: a sound definition and an audio file. The builder creates the definition.
+
+```groovy
+import de.luckymcdev.foundryengine.common.builder.sound.SoundBuilder
+
+def sound = SoundBuilder.create(id("magic_chime"))
+        .subtitle("Magic Chime")
+        .addSound(id("magic_chime"))
+        .range(16.0f)
+
+BundleEvents.registry {
+    it.sounds(sound)
+}
+```
+
+- `.subtitle("Magic Chime")` sets the caption shown when the sound plays with subtitles on.
+- `.addSound(id("magic_chime"))` points the definition at a sound file.
+- `.range(16.0f)` sets how many blocks away the sound is audible.
+
+Put the audio file at `src/main/resources/assets/mybundle/sounds/magic_chime.ogg`. The file name matches the path you passed to `addSound`. The showcase bundle uses an OGG file; that is the format Minecraft expects by default.
+
+## A particle
+
+A particle describes how a single particle appears and moves. The particle builder adds keyframed data: a value that changes over the particle's lifetime.
+
+```groovy
+import de.luckymcdev.foundryengine.client.particle.ParticleLayer
+import de.luckymcdev.foundryengine.client.particle.data.KeyframeSequence
+import de.luckymcdev.foundryengine.client.particle.data.ParticleScaleData
+import de.luckymcdev.foundryengine.common.builder.particle.ParticleBuilder
+import de.luckymcdev.foundryengine.common.easing.Easing
+import de.luckymcdev.foundryengine.common.util.color.Color
+import org.joml.Vector3d
+
+def particle = ParticleBuilder.create(id("sparkle"))
+        .alwaysShow()
+        .lifetime(30)
+        .layer(ParticleLayer.TRANSLUCENT)
+        .color(Color.WHITE, Color.RED, Easing.SINE_IN)
+        .scaleData(new ParticleScaleData(new KeyframeSequence<Float>()
+                .add(0.5f, 0f, Easing.LINEAR)
+                .add(1.5f, 1f, Easing.SINE_OUT)))
+        .velocity(new Vector3d(0.0, 0.1, 0.0))
+
+BundleEvents.registry {
+    it.particles(particle)
+}
+```
+
+What each line does:
+
+- `.lifetime(30)` sets how long the particle lives, in ticks. 20 ticks is one second.
+- `.layer(ParticleLayer.TRANSLUCENT)` picks how the particle blends. TRANSLUCENT is the usual choice for glows and effects.
+- `.color(Color.WHITE, Color.RED, Easing.SINE_IN)` makes the particle start white and ease toward red over its life.
+- `.scaleData(...)` animates size with a keyframe sequence: at 0% of the life the scale is 0.5, at 100% it is 1.5, with easing between.
+- `.velocity(...)` gives the particle a starting speed. Here it drifts upward at 0.1 blocks per tick.
+
+## Play them
+
+Particles and sounds are registered content. To see the particle in action, spawn it from a command in the [next lesson's](a-branching-dialogue) style, or use the `/engine` tools. For a quick check, register a command that plays the sound and spawns the particle; the [Add a command](../guides/registration/add-command) recipe shows the pattern.
+
+Next, [write a branching dialogue](a-branching-dialogue).

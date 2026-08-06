@@ -1,0 +1,47 @@
+---
+sidebar_position: 1
+title: BundleEvents
+description: Reference for bundle lifecycle events.
+---
+
+# BundleEvents
+
+`BundleEvents` is the static entry point for the bundle lifecycle. Every method takes a callback and returns void; callbacks run inside the bundle's Groovy context.
+
+## Registry
+
+| Method | Runs |
+| --- | --- |
+| `registry { it -> ... }` | When content registers. The lambda gets a `RegistryEvent`; call `it.items(...)`, `it.blocks(...)`, `it.recipes(...)`, `it.sounds(...)`, `it.particles(...)`. |
+
+## Setup
+
+| Method | When |
+| --- | --- |
+| `commonSetup { event -> ... }` | FML common setup. |
+| `clientSetup { event -> ... }` | FML client setup. |
+| `dedicatedServerSetup { event -> ... }` | FML dedicated server setup. |
+| `postInit { event -> ... }` | After mod initialization. |
+
+## Runtime
+
+| Method | When |
+| --- | --- |
+| `vanillaGame { event -> ... }` | A vanilla game event (block, entity, etc.) is posted. |
+| `dataGen { event -> ... }` | During data generation; use `event.addProvider(...)`. |
+| `custom(Class, callback)` | Register a callback for a custom event class. |
+
+## Example
+
+```groovy
+BundleEvents.registry {
+    it.items(gem)
+    it.blocks(glow)
+    it.recipes(recipe)
+    it.sounds(sound)
+}
+```
+
+## Related
+
+- Content registration: [Explanation](../../concepts/bundles-to-registry-pipeline).

@@ -1,0 +1,56 @@
+---
+sidebar_position: 6
+title: Add a command
+description: Register server commands from your bundle.
+---
+
+# Add a command
+
+Server commands are registered from the **server** entrypoint, where the game's command dispatcher is available.
+
+## Register commands
+
+```groovy title="scripts/server/<bundle>/Server.groovy"
+import com.mojang.brigadier.Command
+import com.mojang.brigadier.arguments.StringArgumentType
+import de.luckymcdev.foundryengine.common.event.CommandEvents
+import net.minecraft.commands.Commands
+import net.minecraft.network.chat.Component
+
+@Override
+void onLoad() {
+    CommandEvents.register { event ->
+        def dispatcher = event.getDispatcher()
+
+        dispatcher.register(
+                Commands.literal("showcase")
+                        .then(Commands.literal("hello")
+                                .executes { ctx ->
+                                    ctx.getSource().sendSuccess(
+                                            Component.literal("Hello from the bundle!"), false)
+                                    Command.SINGLE_SUCCESS
+                                }))
+    }
+}
+```
+
+## Arguments
+
+Commands use the vanilla [Brigadier](https://github.com/Mojang/brigadier) library. Arguments come from `net.minecraft.commands.arguments`:
+
+```groovy
+import net.minecraft.commands.arguments.ResourceLocationArgument
+
+.then(Commands.argument("target", ResourceLocationArgument.id())
+        .executes { ctx ->
+            def id = ResourceLocationArgument.getId(ctx, "target")
+            // ...
+            Command.SINGLE_SUCCESS
+        })
+```
+
+Inside the closure, `ctx` is the command context. `ctx.getSource()` gives you the command source. Call `getPlayerOrException()` to get the executing player.
+
+## Related
+
+- Command helpers and the full engine command set: [Engine commands reference](../engine-commands).

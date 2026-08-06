@@ -1,0 +1,39 @@
+---
+sidebar_position: 3
+title: BlockEvents
+description: Reference for block interaction events.
+---
+
+# BlockEvents
+
+`BlockEvents` posts callbacks around block interactions. Each callback receives an event object with fields like `event.pos`, `event.state`, and `event.player`.
+
+## Break and place
+
+| Method | When |
+| --- | --- |
+| `broken { event -> ... }` | A block is broken. Event exposes `pos`, `state`, `player`. |
+| `placed { event -> ... }` | A block is placed. |
+| `postBroken` / `postPlaced` | After the engine's own handling. |
+
+## Click handling
+
+| Method | When |
+| --- | --- |
+| `leftClicked` / `rightClicked` | A player clicks a block. |
+| `postLeftClicked` / `postRightClicked` | Afterwards. |
+| `neighborNotify` | A neighbor block changes. |
+| `modification` | The block is modified in place. |
+| `farmlandTrampled` | An entity tramples farmland. |
+
+## Example
+
+```groovy
+BlockEvents.broken { event ->
+    println "[Showcase] ${event.player.name} broke ${event.state.block} at ${event.pos}"
+}
+```
+
+## Related
+
+- [BundleEvents](BundleEvents).

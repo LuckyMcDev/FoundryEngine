@@ -1,0 +1,44 @@
+---
+sidebar_position: 3
+title: Bundles to registry pipeline
+description: How scripts become registered content and generated data.
+---
+
+# Bundles to registry pipeline
+
+A bundle is text on disk. What Minecraft sees is content in registries and JSON files. This page walks the path in between.
+
+## Step 1: The engine discovers the bundle
+
+At startup the engine scans the bundle directory for folders with a `.bundles.toml` file. Each one becomes a `Bundle` with an id, a version, and its script folders. Bundles are loaded in priority order per script folder.
+
+## Step 2: Scripts register content
+
+The engine instantiates one entrypoint object per script folder and calls `onLoad()`. Inside, your code builds content with the builders and hands it to `BundleEvents.registry`:
+
+```groovy
+def gem = ItemBuilder.create(id("magic_gem")).stacksTo(16)
+BundleEvents.registry {
+    it.items(gem)
+}
+```
+
+The registry event is the moment content is pushed into Minecraft's registries. Items, blocks, recipes, sounds, and particles all go through the same door.
+
+## Step 3: The data generator writes JSON
+
+Minecraft reads most content from JSON files, not from memory. The data generator walks the registered content and writes the files the game expects: item models, block states, recipes, sound definitions. Run it with `./gradlew runData`.
+
+Two consequences follow from this split:
+
+- **Registration and files must match.** If the generator did not write a file, or you removed content but kept the JSON, the game complains.
+- **The bundle folder is the source of truth.** Generated JSON is derived output. You can commit it, but you edit the scripts, not the JSON.
+
+## Step 4: The game runs the bundle
+
+Once registered, content behaves like native content. Items render, blocks place, recipes craft. Runtime features like areas and waypoints are not registry entries at all; they are state the managers keep and save.
+
+## Related
+
+- The registration API: [BundleEvents](../guides/events/BundleEvents).
+- Generating files: [Generate data](../guides/packaging/generate-data).

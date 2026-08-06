@@ -1,0 +1,30 @@
+---
+sidebar_position: 7
+title: Runtime worlds
+description: How custom worlds are created and sandboxed.
+---
+
+# Runtime worlds
+
+The engine can create and manage worlds at runtime, for the game engine use case that is the whole point of the project.
+
+## Areas live in dimensions
+
+An area is scoped to a dimension. When the engine checks membership, it looks up the areas for the dimension, tests entity positions against their bounds, and dispatches enter, leave, and tick events. A spatial index splits each dimension into cells so the check only looks at areas near the entity, not every area.
+
+## Membership is recomputed, not tracked
+
+The engine does not keep a subscription list. Every tick it recomputes who is inside each area and compares with the previous frame to decide who just entered or left. That makes the model robust: teleporting a player, moving an area, or a chunk reload cannot leave stale members behind.
+
+## Modules describe behaviour
+
+An area on its own is just bounds. Behaviour comes from modules attached to it. Modules are classes registered by id, and each area lists which modules it uses. The same module can serve many areas, which is why presets exist: a preset bundles a color and a module list, and every area placed with it inherits the same behaviour.
+
+## Sandboxing
+
+Runtime worlds and their entities run inside the normal Minecraft world model. The engine's sandboxing applies to the scripts that drive them, not to the worlds themselves; see [sandbox and security](sandbox-and-security) for what that means.
+
+## Related
+
+- Create one: [Create an area](../guides/world/create-area).
+- The managers: [AreaManager](../guides/managers).

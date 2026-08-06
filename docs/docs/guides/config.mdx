@@ -1,0 +1,42 @@
+---
+sidebar_position: 5
+title: Configuration
+description: The NeoForge config files and their options.
+---
+
+# Configuration
+
+FoundryEngine uses NeoForge config files. The relevant one for everyday use is the **client** config; the common config holds engine-wide switches.
+
+## Common config
+
+`common.toml`
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `PACK_MODE` | `""` | Set to `"dev"` (case-insensitive) to load bundle saves directly without instancing. |
+| `SCREEN_EFFECT_COMMAND_CHAINING` | `true` | Allow `/engine screeneffect` to chain a server command after the effect. |
+| `CUTSCENE_COMMAND_EXECUTION` | `true` | Allow cutscenes to execute server commands. |
+| `SKIP_EXPERIMENTAL_WARNING` | `true` | Skip the experimental warning on world join. |
+| `FILENAME_HASH_COMPONENTS` | `true` | MD5-hash component file names in the icon exporter. |
+
+## Client config
+
+`client.toml`
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `SELECTED_THEME` | `Bess Dark` | ImGui theme for the editor. |
+| `TEXT_EDITOR_THEME` | `dark` | Code editor theme. |
+| `FONT_OPTION` | `NORMAL` | `MINIMAL`, `NORMAL`, or `DISABLED`. |
+| `RENDER_OFFHAND` | `false` | Render the offhand like the main hand. |
+| `AUTO_EXPORT` | `true` | Run the icon exporter on login when the registry changed. |
+| `ICON_SIZE` | `64` | Icon exporter size, 16 to 256. |
+| `SHOW_SLOT_TOOLTIP` | `true` | Show slot tooltips. |
+| `BLOCK_ENTITY_RENDER_DISTANCE` | `vanilla` | `full`, `half`, or `vanilla`. |
+| `CUSTOM_SKYBOX` | `false` | Use the custom skybox renderer. |
+| `MOD_PATH_BROADCAST_PORT` | `56656` | Port the mod path broadcaster connects to. |
+
+## Related
+
+- Themes in game: [Themes and shortcuts](../guides/editor/themes-and-shortcuts).

@@ -1,0 +1,49 @@
+---
+sidebar_position: 2
+title: PlayerEvents
+description: Reference for player lifecycle and interaction events.
+---
+
+# PlayerEvents
+
+`PlayerEvents` posts callbacks around player actions. Each callback receives an event object; access the player with `event.entity`.
+
+## Lifecycle
+
+| Method | When |
+| --- | --- |
+| `loggedIn { event -> ... }` | A player joins. |
+| `postLoggedIn { ... }` | After the login handling finishes. |
+| `loggedOut { ... }` | A player leaves. |
+| `postLoggedOut { ... }` | After the logout handling finishes. |
+| `respawned { ... }` | A player respawns. |
+
+## Per tick
+
+| Method | When |
+| --- | --- |
+| `tick { event -> ... }` | Every tick for each player. |
+| `postTick { ... }` | After the per-player tick handling. |
+
+## Interaction
+
+| Method | When |
+| --- | --- |
+| `chat { ... }` | A player sends a chat message. |
+| `advancement { ... }` | A player earns an advancement. |
+| `chestOpened` / `chestClosed` | A player opens or closes a container. |
+
+The `post*` variants run after the engine's own handling of the same event.
+
+## Example
+
+```groovy
+PlayerEvents.loggedIn { event ->
+    def player = event.entity as ServerPlayer
+    player.sendSystemMessage(Component.literal("Welcome back!"))
+}
+```
+
+## Related
+
+- [Entrypoint lifecycle](../entrypoint-lifecycle).

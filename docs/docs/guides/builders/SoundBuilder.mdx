@@ -1,0 +1,39 @@
+---
+sidebar_position: 4
+title: SoundBuilder
+description: Reference for the SoundBuilder fluent API.
+---
+
+# SoundBuilder
+
+`SoundBuilder` builds a sound event. Create one with `SoundBuilder.create(Identifier)` and register it through `BundleEvents.registry { it.sounds(...) }`.
+
+## Creation
+
+| Method | Returns |
+| --- | --- |
+| `static create(Identifier id)` | builder |
+
+## Configuration
+
+| Method | Notes |
+| --- | --- |
+| `.subtitle(String)` | The subtitle shown above the hotbar. |
+| `.range(float)` | Audible range in blocks. |
+| `.replace()` | Replace the vanilla sound definition instead of extending it. |
+| `.addSound(Identifier)` | Point at a file under `assets/<ns>/sounds/<path>.ogg`. |
+| `.addSound(Identifier, SoundFileEntry)` | Add a file with volume/pitch hints. |
+| `.generateData(boolean)` | Skip JSON generation for the sound definition. |
+
+## Example
+
+```groovy
+def chime = SoundBuilder.create(id("magic_chime"))
+        .subtitle("Magic Chime")
+        .addSound(id("magic_chime"))
+        .range(16.0f)
+```
+
+## Related
+
+- Registering: [Add a sound](../registration/add-sound).

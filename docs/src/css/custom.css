@@ -6,31 +6,25 @@
 
 /* You can override the default Infima variables here. */
 :root {
-	--ifm-color-primary: #ed7e37;
-	--ifm-color-primary-dark: #d86b29;
-	--ifm-color-primary-darker: #c65f23;
-	--ifm-color-primary-darkest: #a34e1c;
-	--ifm-color-primary-light: #f08f52;
-	--ifm-color-primary-lighter: #f19a63;
-	--ifm-color-primary-lightest: #f5b186;
+	--ifm-color-primary: #c65812;
+	--ifm-color-primary-dark: #ae4e10;
+	--ifm-color-primary-darker: #a0470e;
+	--ifm-color-primary-darkest: #893d0c;
+	--ifm-color-primary-light: #dd6214;
+	--ifm-color-primary-lighter: #ea6916;
+	--ifm-color-primary-lightest: #ed7e37;
 	--ifm-code-font-size: 95%;
 	--docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
 }
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
 [data-theme='dark'] {
-	--ifm-color-primary: #f0944b;
-	--ifm-color-primary-dark: #ec7f30;
-	--ifm-color-primary-darker: #d86b29;
-	--ifm-color-primary-darkest: #a34e1c;
-	--ifm-color-primary-light: #f5ab74;
-	--ifm-color-primary-lighter: #f7b989;
-	--ifm-color-primary-lightest: #facfac;
-	--docusaurus-highlighted-code-line-bg: rgba(237, 126, 55, 0.3);
-}
-
-/* Keep the top border of the first heading after a section consistent with VitePress. */
-.markdown > h2 {
-	border-top: none;
-	padding-top: 12px;
+	--ifm-color-primary: #ed7e37;
+	--ifm-color-primary-dark: #eb6f20;
+	--ifm-color-primary-darker: #e66715;
+	--ifm-color-primary-darkest: #c65812;
+	--ifm-color-primary-light: #ef8d4e;
+	--ifm-color-primary-lighter: #f0965c;
+	--ifm-color-primary-lightest: #f3ab7d;
+	--docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }

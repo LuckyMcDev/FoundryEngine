@@ -1,0 +1,36 @@
+---
+sidebar_position: 5
+title: CommandEvents
+description: Reference for registering commands from bundles.
+---
+
+# CommandEvents
+
+`CommandEvents` is how bundles add commands. The callback receives an event with the command dispatcher; register Brigadier commands on it.
+
+## Register
+
+| Method | When |
+| --- | --- |
+| `register { event -> ... }` | Called on the server with `event.getDispatcher()`. |
+| `registerClient { event -> ... }` | Called on the client with the client dispatcher. |
+
+## Example
+
+```groovy
+CommandEvents.register { event ->
+    def dispatcher = event.getDispatcher()
+    dispatcher.register(
+            Commands.literal("hello")
+                    .executes { ctx ->
+                        ctx.getSource().sendSuccess(
+                                Component.literal("Hello from the bundle!"), false)
+                        Command.SINGLE_SUCCESS
+                    })
+}
+```
+
+## Related
+
+- Registering commands: [Add a command](../registration/add-command).
+- Engine's own commands: [Engine commands](../engine-commands).

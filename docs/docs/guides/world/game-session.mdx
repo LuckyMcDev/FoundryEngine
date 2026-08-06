@@ -1,0 +1,64 @@
+---
+sidebar_position: 6
+title: Build a game session
+description: Start and stop a session with lifecycle and tick handlers on world load.
+---
+
+# Build a game session
+
+A game session bundles persistent data with lifecycle and tick handlers. It can auto-start when the world loads and its data survives server restarts.
+
+## Define the session
+
+```groovy title="scripts/server/<bundle>/Server.groovy"
+import de.luckymcdev.foundryengine.common.Common
+import de.luckymcdev.foundryengine.common.game.GameData
+import de.luckymcdev.foundryengine.common.game.GameSession
+
+def data = new GameData(id("my_session"))
+
+def session = new GameSession(id("my_session"), data)
+session.autoStart(true)
+session.onStarting {
+    println "Session starting"
+}
+session.onStopping {
+    println "Session stopping"
+}
+session.onServerTick { server, level ->
+    println "Tick ${level.getGameTime()}"
+}
+
+Common.getGameManager().register(session)
+```
+
+`autoStart(true)` starts the session automatically when the world reaches the running lifecycle. Handlers attach with fluent calls; each returns the session.
+
+## Handler reference
+
+| Handler | Signature | Runs |
+| --- | --- | --- |
+| `.onCommonTick` | `(Level) -> void` | every tick, both sides |
+| `.onServerTick` | `(MinecraftServer, ServerLevel) -> void` | every server tick |
+| `.onClientTick` | `(Minecraft, ClientLevel) -> void` | every client tick |
+| `.onStarting` | `() -> void` | once, when the session starts |
+| `.onStopping` | `() -> void` | once, when the session stops |
+| `.onInit` | `() -> void` | once, first time data initializes |
+
+## Persistent data
+
+`GameData` is an NBT-backed store identified by an `Identifier`. Read and write typed values:
+
+```groovy
+def data = session.data()
+data.putBoolean("intro_seen", true)
+data.putInt("score", 42)
+def score = data.getInt("score")
+```
+
+Save with `session.save()` and load with `session.load()`. Sessions registered for a world persist under that world's data directory.
+
+## Related
+
+- Follow the walkthrough: [Stages and game sessions tutorial](../../getting-started/stages-and-game-sessions).
+- Session lifecycle and state: [Explanation](../../concepts/stages-and-progression).

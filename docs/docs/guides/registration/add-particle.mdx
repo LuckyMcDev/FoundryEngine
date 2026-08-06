@@ -1,0 +1,51 @@
+---
+sidebar_position: 5
+title: Add a particle
+description: Register a custom particle from your bundle's client entrypoint.
+---
+
+# Add a particle
+
+Particles are visual only, so they are registered from the **client** entrypoint.
+
+## Use the ParticleBuilder
+
+```groovy title="scripts/client/<bundle>/Client.groovy"
+import de.luckymcdev.foundryengine.client.particle.ParticleLayer
+import de.luckymcdev.foundryengine.client.particle.data.KeyframeSequence
+import de.luckymcdev.foundryengine.client.particle.data.ParticleScaleData
+import de.luckymcdev.foundryengine.common.builder.particle.ParticleBuilder
+import de.luckymcdev.foundryengine.common.easing.Easing
+import de.luckymcdev.foundryengine.common.util.color.Color
+import org.joml.Vector3d
+
+def sparkle = ParticleBuilder.create(id("sparkle"))
+        .alwaysShow()
+        .lifetime(30)
+        .layer(ParticleLayer.TRANSLUCENT)
+        .color(Color.WHITE, Color.RED, Easing.SINE_IN)
+        .scaleData(new ParticleScaleData(new KeyframeSequence<Float>()
+                .add(0.5f, 0f, Easing.LINEAR)
+                .add(1.5f, 1f, Easing.SINE_OUT)))
+        .velocity(new Vector3d(0.0, 0.1, 0.0))
+
+BundleEvents.registry {
+    it.particles(sparkle)
+}
+```
+
+## What each call does
+
+| Call | Effect |
+| --- | --- |
+| `.lifetime(n)` | Particle lives for `n` ticks. |
+| `.layer(ParticleLayer.TRANSLUCENT)` | Render layer; `OPAQUE` for solid particles. |
+| `.color(start, end, easing)` | Color fades from start to end. |
+| `.scaleData(...)` | Size over time, driven by keyframes. |
+| `.velocity(Vector3d)` | Movement in blocks per second. |
+| `.alwaysShow()` | Visible regardless of the player's particle settings. |
+
+## Related
+
+- All builder calls: [ParticleBuilder reference](../builders/ParticleBuilder).
+- Keyframes and easing: [ParticleBuilder reference](../builders/ParticleBuilder).

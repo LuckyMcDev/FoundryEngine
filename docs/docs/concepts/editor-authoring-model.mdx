@@ -1,0 +1,43 @@
+---
+sidebar_position: 4
+title: Editor authoring model
+description: How the in-game editor writes what the engine systems consume.
+---
+
+# Editor authoring model
+
+The in-game editor is not a separate tool. It lives inside the game and edits the same files the engine reads. That single source of truth is the whole point.
+
+## One set of files, two ways to edit
+
+Everything the engine consumes lives in the bundle folders on disk:
+
+- Scripts, edited as text.
+- Areas, waypoints, and other runtime state, edited through panels that write the same data the managers use.
+- Recipes and dialogue, edited through dedicated panels.
+
+The explorer panel shows these files, and panels like the area tool or dialogue editor edit them. Whether you write a script or drag a box, the engine sees the change at the next reload.
+
+## The editor writes script state, not magic
+
+An area you draw with the area tool becomes an `Area` object with modules. A dialogue you build in the dialogue editor becomes a `DialogueTree`. The editor does not invent a parallel format; it produces the same objects your scripts would. That is why the two approaches are interchangeable.
+
+## Errors surface while you type
+
+Because the editor parses Groovy, syntax errors appear in the code editor and in the Problems panel as you type. Script errors that survive to a reload show up in the console. You fix them in place and reload again.
+
+## Reload is the loop
+
+The authoring loop is short:
+
+1. Edit a file or a panel.
+2. Save.
+3. Run `/engine reload`.
+4. See the result.
+
+Sessions stop and restart during reload, so state you want to keep must be in persistent data, not in memory.
+
+## Related
+
+- [Editor panels](../guides/editor-panels).
+- [Reload in game](../guides/packaging/reload-in-game).

@@ -1,0 +1,116 @@
+---
+sidebar_position: 7
+---
+
+# Areas and waypoints
+
+This lesson makes a zone that reacts when a player enters or leaves it, and places a marker on the map. It assumes you finished the earlier lessons.
+
+## An area with modules
+
+An area is a spatial zone. Behavior attaches to it through modules: small classes that run on enter, on leave, on tick, or when a block changes.
+
+Import the area types and reach the area manager:
+
+```groovy
+import de.luckymcdev.foundryengine.common.Common
+import de.luckymcdev.foundryengine.common.area.Area
+import de.luckymcdev.foundryengine.common.area.preset.AreaPreset
+import de.luckymcdev.foundryengine.common.area.module.AreaEnterModule
+import de.luckymcdev.foundryengine.common.area.module.AreaLeaveModule
+import de.luckymcdev.foundryengine.common.area.module.AreaTickModule
+import de.luckymcdev.foundryengine.common.util.color.Color
+import net.minecraft.network.chat.Component
+import net.minecraft.server.level.ServerPlayer
+import net.minecraft.server.level.ServerLevel
+
+void onLoad() {
+    def manager = Common.getAreaManager()
+
+    manager.registerModuleType(new MyEnterModule())
+    manager.registerModuleType(new MyLeaveModule())
+    manager.registerModuleType(new MyHealModule())
+}
+```
+
+A module is a class that implements one of the module interfaces. Each interface needs an `id()` method that names the module, plus the behavior method.
+
+```groovy
+static class MyEnterModule implements AreaEnterModule {
+    Identifier id() { return id("my_enter") }
+    void onEnter(ServerPlayer player, Area area) {
+        player.sendSystemMessage(
+                Component.literal("§aEntered area: ${area.id()}"))
+    }
+}
+
+static class MyLeaveModule implements AreaLeaveModule {
+    Identifier id() { return id("my_leave") }
+    void onLeave(ServerPlayer player, Area area) {
+        player.sendSystemMessage(
+                Component.literal("§cLeft area: ${area.id()}"))
+    }
+}
+```
+
+The tick module runs on a schedule and can affect players inside the area:
+
+```groovy
+static class MyHealModule implements AreaTickModule {
+    Identifier id() { return id("my_heal") }
+    void tick(ServerLevel level, Area area) {
+        level.players().each { p ->
+            if (area.contains(p.blockPosition()) && p.tickCount % 40 == 0) {
+                p.heal(0.5f)
+            }
+        }
+    }
+}
+```
+
+The heal module reads as: every tick, look at each player, and if they stand inside the area and 40 ticks have passed, heal them half a heart.
+
+## Make a preset
+
+A preset bundles the modules into a reusable area definition, with a color for the in-world rendering.
+
+```groovy
+def preset = AreaPreset.builder(id("healing_zone"))
+        .color(new Color(100, 200, 100))
+        .module(id("my_enter"))
+        .module(id("my_leave"))
+        .module(id("my_heal"))
+        .build()
+
+manager.registerPreset(preset)
+```
+
+`AreaPreset.builder(id)` starts a preset. `.module(...)` attaches each module by its id. `.build()` finishes it, and `registerPreset` makes it available.
+
+An area of this preset is then created in the world, either in game with the area tool or from a command. The guides [Create an area](../guides/world/create-area) recipe covers creating the actual zone.
+
+## A waypoint
+
+A waypoint is a persistent marker at a position. It survives across sessions because it is saved data. A `Waypoint` is a record: a name, an icon character, a position, and a color.
+
+```groovy
+import de.luckymcdev.foundryengine.common.waypoint.Waypoint
+
+def manager = Common.getWaypointManager()
+
+def wp = new Waypoint(
+        "My Spot",
+        "I",
+        100, 80, 200,
+        new Color(255, 255, 255))
+```
+
+Then register it for the current level:
+
+```groovy
+manager.addWaypoint(player.level() as ServerLevel, wp)
+```
+
+`addWaypoint` stores the marker under the level's dimension and saves it. In game, waypoints render as markers over the world, and the `/engine waypoint` command manages them.
+
+Next, [author a cutscene](a-cutscene).

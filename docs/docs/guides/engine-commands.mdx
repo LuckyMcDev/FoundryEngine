@@ -1,0 +1,77 @@
+---
+sidebar_position: 4
+title: Engine commands
+description: The /engine command tree and its subcommands.
+---
+
+# Engine commands
+
+The engine registers a single root command, `/engine`, with subcommands for the built-in features. Most need operator permissions.
+
+## Bundle and scripts
+
+| Command | Does |
+| --- | --- |
+| `/engine reload` | Reload all bundles. |
+| `/engine eval <expr>` | Run a Groovy expression directly. |
+
+## Stages
+
+| Command | Does |
+| --- | --- |
+| `/engine stage add <player> <stage>` | Grant a stage. |
+| `/engine stage remove <player> <stage>` | Revoke a stage. |
+| `/engine stage clear <player>` | Remove all stages. |
+| `/engine stage list [player]` | List stages. |
+| `/engine stage award <stage>` | Grant to self, with notification. |
+| `/engine stage silentaward <stage>` | Grant to self, silently. |
+| `/engine stage table ...` | Stage table commands. |
+
+## Waypoints
+
+| Command | Does |
+| --- | --- |
+| `/engine waypoint add <name> <icon>` | Add a waypoint at your position. |
+| `/engine waypoint remove <x> <y> <z>` | Remove a waypoint. |
+| `/engine waypoint clear` | Clear all waypoints. |
+| `/engine waypoint list` | List waypoints. |
+
+## Dialogue
+
+| Command | Does |
+| --- | --- |
+| `/engine dialogue start <player> <tree>` | Start a dialogue. |
+| `/engine dialogue next` / `/engine dialogue select <option>` | Advance the player's dialogue. |
+| `/engine dialogue screen` / `/engine dialogue chat` | Choose the dialogue render mode. |
+| `/engine dialogue end` | End the current dialogue. |
+| `/engine dialogue list` | List registered trees. |
+
+## Cutscenes
+
+| Command | Does |
+| --- | --- |
+| `/engine cutscene play <name>` | Play a cutscene. |
+| `/engine cutscene cancel` | Cancel the running cutscene. |
+| `/engine cutscene list` | List cutscenes. |
+| `/engine cutscene add` / `/engine cutscene remove` | Manage cutscene definitions. |
+| `/engine cutscene linearize` | Convert a cutscene to a flat timeline. |
+| `/engine cutscene confirm` / `/engine cutscene resetAll` | Batch confirm and reset. |
+
+## Effects
+
+| Command | Does |
+| --- | --- |
+| `/engine screeneffect <effect> [intro] [hold] [outro] [lerp]` | Run a screen effect. |
+
+## Testing and tools
+
+| Command | Does |
+| --- | --- |
+| `/engine test ...` | Test-world commands: `world`, `open`, `delete`, `unload`, `fake`, `spawn`, `font`, `check`. |
+| `/engine dump all` / `/engine dump registry` | Dump registry contents. |
+| `/engine hand` | Inspect the item in hand. |
+| `/engine blocktodisplay` | Convert a block to a display entity. |
+
+## Related
+
+- Adding your own: [Add a command](../guides/registration/add-command).

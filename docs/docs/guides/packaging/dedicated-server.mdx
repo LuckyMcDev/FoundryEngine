@@ -1,0 +1,35 @@
+---
+sidebar_position: 3
+title: Run a dedicated server
+description: Load bundles on a dedicated server with no client.
+---
+
+# Run a dedicated server
+
+Bundles run on a dedicated server exactly as they do in singleplayer, with one difference: client-only scripts never load.
+
+## What runs where
+
+| Script folder | Singleplayer | Dedicated server |
+| --- | --- | --- |
+| `scripts/common/` | runs | runs |
+| `scripts/server/` | runs | runs |
+| `scripts/client/` | runs | does not run |
+
+Content registered from common and server scripts (items, blocks, recipes, commands, areas, stages, sessions) works on a server. Anything that needs the client renderer, like particles and screen effects, has to be authored and tested in a client, because a dedicated server has no renderer at all.
+
+## Place the bundles
+
+Copy the bundle folders (or jars) into the server's bundle directory, the same path the client uses under the game directory. The server scans it at startup and loads every valid bundle.
+
+## Serve the client side
+
+For multiplayer you also need the client side on each player's machine:
+
+- The FoundryEngine mod itself, matching the server version.
+- Bundle files in the bundle directory, if the bundle registers items or blocks. Content that is only server-side (commands, stages, areas) needs no client copy.
+
+## Related
+
+- What a bundle contains: [Bundle layout](../bundle-metadata).
+- Distributing to players: [Distribute a bundle](distribute).

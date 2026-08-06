@@ -1,0 +1,54 @@
+---
+sidebar_position: 4
+title: Entrypoint lifecycle
+description: The BundleEntrypoint interface and how bundles load and unload.
+---
+
+# Entrypoint lifecycle
+
+Every bundle declares entrypoint scripts by folder. The engine loads one entrypoint object per folder and calls its lifecycle methods.
+
+## The interface
+
+```groovy
+import de.luckymcdev.foundryengine.common.script.BundleEntrypoint
+
+class MyEntrypoint implements BundleEntrypoint {
+    @Override
+    Priority getPriority() {
+        return Priority.DEFAULT
+    }
+
+    @Override
+    void onLoad() {
+        // register content, hooks, callbacks
+    }
+
+    @Override
+    void onUnload() {
+        // clean up
+    }
+}
+```
+
+`getPriority()` has a default implementation; override it only when load order matters. `onLoad` runs when the bundle loads, `onUnload` when it is unloaded or reloaded.
+
+## Which scripts run where
+
+| Script folder | Runs on |
+| --- | --- |
+| `scripts/common/` | client and server |
+| `scripts/server/` | server only |
+| `scripts/client/` | client only |
+
+Register content that must exist on both sides (items, blocks, recipes, sounds) from a common entrypoint; server-only logic (commands, stages, dialogue) from a server entrypoint; rendering-only features (particles) from a client entrypoint.
+
+## Loading and unloading
+
+- **Load**: bundle is discovered and its scripts run `onLoad`, in priority order per folder.
+- **Reload**: every bundle receives `onUnload`, then `onLoad` again. Sessions stop and restart.
+- **Remove**: `onUnload` runs and the bundle's content is deregistered.
+
+## Related
+
+- Reloading in game: [Reload in game](../guides/packaging/reload-in-game).

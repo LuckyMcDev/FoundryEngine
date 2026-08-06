@@ -1,0 +1,44 @@
+---
+sidebar_position: 5
+title: Network and persistence
+description: How server state stays in sync with clients and survives restarts.
+---
+
+# Network and persistence
+
+Two problems repeat across every feature in the engine: keeping the server and client in agreement, and keeping state across restarts. This page explains the two mechanisms.
+
+## Server is the source of truth
+
+In multiplayer, the server owns the real state. Areas, waypoints, stages, sessions, and dialogues all live in server-side managers. The client renders views of that state and sends requests, not decisions. That is why these managers are reached from `Common` but mostly used from server scripts.
+
+## Persistence: save sections
+
+State that must survive restarts is written to the save data. Managers own a section of it:
+
+| Manager | Section |
+| --- | --- |
+| `AreaManager` | `areas` |
+| `WaypointManager` | `waypoints` |
+| `SavedDataManager` | all sections |
+
+When a manager saves, it hands its section to `SavedDataManager`, which writes the file. On load, the reverse happens. A waypoint you place with a script is still there next session because the manager serialized it.
+
+## Game sessions have their own data
+
+Sessions keep persistent data in `GameData`, keyed by the session id and saved per world. Reading and writing typed values happens through the session's data object, and `save()` writes it to disk.
+
+## Network sync
+
+The network manager handles the packets that keep clients in sync:
+
+- Content changes from a reload are pushed to connected clients.
+- Area membership is computed server-side and dispatched as enter/leave events.
+- Waypoints are synced when they change.
+
+Because each feature has a dedicated sync path, the engine can guarantee the client is never the one deciding what is true.
+
+## Related
+
+- Saving state from scripts: [WaypointManager](../guides/managers).
+- Sessions: [Build a game session](../guides/world/game-session).

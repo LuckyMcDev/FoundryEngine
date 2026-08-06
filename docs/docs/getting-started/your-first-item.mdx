@@ -1,0 +1,74 @@
+---
+sidebar_position: 3
+---
+
+# Your first item
+
+This lesson registers an item in your bundle and finds it in the creative tab. It assumes you finished [Your first bundle](your-first-bundle) and have a bundle that loads.
+
+You will learn the smallest amount of Groovy you need to register content: classes, methods, and a builder.
+
+## Where content gets registered
+
+Content is registered when the bundle loads. Inside `onLoad()`, you build the content with a builder, then hand it to the registry.
+
+A builder is a class that describes one piece of content with chained method calls. Each call returns the builder again, so you keep adding to the same description.
+
+## The id helper
+
+Every item needs a unique name: an `Identifier` with a namespace and a path, written `namespace:path`. The showcase bundle uses `showcase:magic_gem`.
+
+Add this helper to your entrypoint so you can write `id("magic_gem")` instead of the full name:
+
+```groovy
+import net.minecraft.resources.Identifier
+
+static Identifier id(String path) {
+    return Identifier.fromNamespaceAndPath("mybundle", path)
+}
+```
+
+The `static` keyword means you can call `id(...)` without creating an instance. It is a small helper that turns a short path into a full name.
+
+## Build an item
+
+Import the item builder and the registry event, then build an item in `onLoad()`:
+
+```groovy
+import de.luckymcdev.foundryengine.common.builder.item.ItemBuilder
+import de.luckymcdev.foundryengine.common.event.BundleEvents
+
+@Override
+void onLoad() {
+    def gem = ItemBuilder.create(id("magic_gem"))
+            .stacksTo(16)
+
+    BundleEvents.registry {
+        it.items(gem)
+    }
+}
+```
+
+Two pieces of Groovy syntax to know:
+
+- `def gem = ...` declares a variable named `gem` that holds whatever the builder produced. `def` lets Groovy figure out the type.
+- `BundleEvents.registry { it.items(gem) }` passes a block of code to the registry event. The block runs when the registry is ready. Inside it, `it` is the object that can register content, and `it.items(gem)` registers your item.
+
+## Give the item a texture
+
+The item needs a texture or it renders as the missing texture checkerboard. The template packs `src/main/resources` into the bundle, so add a texture file:
+
+1. Create `src/main/resources/assets/mybundle/textures/item/magic_gem.png`.
+2. Put a 16 by 16 pixel image there, named exactly `magic_gem.png`. The path must match the item's path: item `id("magic_gem")` looks for `textures/item/magic_gem.png`.
+
+The model that points the item at the texture is generated for you by the data generator. You only supply the texture.
+
+## Run the game
+
+Run the `runClient` task in the Gradle tool window. When the game loads, open the creative tab and search for `magic_gem`. It appears with your texture.
+
+## What you built
+
+You registered an item with a texture. The builder described the item, the registry event registered it, and the texture made it visible.
+
+Next, [add a block and a recipe](your-first-block-and-recipe) to give it a place in the world.

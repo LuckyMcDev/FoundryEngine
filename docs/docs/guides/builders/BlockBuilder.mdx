@@ -1,0 +1,78 @@
+---
+sidebar_position: 2
+title: BlockBuilder
+description: Reference for the BlockBuilder fluent API.
+---
+
+# BlockBuilder
+
+`BlockBuilder` builds a `Block`. Create one with `BlockBuilder.create(Identifier)` and register it through `BundleEvents.registry { it.blocks(...) }`.
+
+## Creation
+
+| Method | Returns |
+| --- | --- |
+| `static create(Identifier id)` | builder |
+
+## Properties
+
+| Method | Notes |
+| --- | --- |
+| `.properties { it -> ... }` | Configure `BlockBehaviour.Properties`. Common calls inside: `strength`, `lightLevel`, `noCollision`, `requiresCorrectToolForDrops`. |
+| `.noItem()` | Register the block without an item. |
+| `.hasItem()` | Register the block with its item. |
+| `.itemProperties { ... }` | Configure the item for the block. |
+| `.generateData(boolean)` | `false` skips JSON generation for the block. |
+| `.blockEntity(...)` | Attach a block entity. |
+
+## Behaviour callbacks
+
+| Method | Runs |
+| --- | --- |
+| `.stepOn { level, pos, state, entity -> ... }` | An entity stands on the block. |
+| `.destroy { level, pos, state -> ... }` | The block is destroyed. |
+| `.use { ... }` | A player right-clicks the block. |
+| `.animateTick { ... }` | Client-side random animation (particles, sounds). |
+| `.playerWillDestroy` / `.playerDestroy` | Player-related destruction hooks. |
+| `.fallOn` / `.wasExploded` | Entity falls on the block / the block explodes. |
+
+## Item callbacks
+
+Prefix with `item` and they apply to the block's item:
+
+| Method | Notes |
+| --- | --- |
+| `.itemInventoryTick { ... }` | Item ticks in an inventory. |
+| `.itemUseOn { ... }` | Item used on a block. |
+| `.itemHurtEnemy` / `.itemPostHurtEnemy` | Item hits an entity. |
+| `.itemFinishUsing` / `.itemReleaseUsing` | Eating / releasing. |
+| `.itemOnCraftedPostProcess` | After crafting. |
+
+## Shapes
+
+Shape helpers build common shapes in one call:
+
+`stairs`, `slab`, `wall`, `fence`, `fenceGate`, `door`, `trapdoor`, `pressurePlate`, `button`, `pillar`, `glass`, `bars`, `carpet`, `chain`, `lantern`, `ladder`, `endRod`, `lever`, `observer`, `dispenser`, `dropper`, `hopper`, `anvil`, `grindstone`, `composter`, `redstoneLamp`, `daylightDetector`, `beacon`, `lightningRod`.
+
+## Drops
+
+| Method | Notes |
+| --- | --- |
+| `.dropsSelf()` | Drops the block itself. |
+| `.dropsNothing()` | No drops. |
+| `.dropsCustom(...)` | Custom drop table. |
+
+## Tags
+
+`.tag(BlockTagBuilder)` or `.tag(Identifier)` adds the block to a tag.
+
+## Example
+
+```groovy
+def glow = BlockBuilder.create(id("glowing_stone"))
+        .properties { it.strength(3.0f, 6.0f).lightLevel { 15 } }
+```
+
+## Related
+
+- Registering: [Add a block](../registration/add-block).

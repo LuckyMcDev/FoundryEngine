@@ -1,0 +1,74 @@
+---
+sidebar_position: 4
+title: Run a dialogue
+description: Start a dialogue tree from a command or a player event.
+---
+
+# Run a dialogue
+
+A dialogue is a tree of nodes, each with speaker text and options that lead to other nodes. Trees and actions are registered from the **server** entrypoint, because dialogue sessions run on the server.
+
+## Build the tree
+
+```groovy title="scripts/server/<bundle>/Server.groovy"
+import de.luckymcdev.foundryengine.common.Common
+import de.luckymcdev.foundryengine.common.dialogue.DialogueTree
+import de.luckymcdev.foundryengine.common.dialogue.DialogueNode
+import de.luckymcdev.foundryengine.common.dialogue.DialogueOption
+import de.luckymcdev.foundryengine.common.dialogue.DialogueStyle
+
+def manager = Common.getDialogueManager()
+
+def tree = new DialogueTree(id("welcome_guide"), "start")
+
+def start = new DialogueNode("start", "Guide",
+        "Welcome, adventurer! I can teach you about this world.")
+def farewell = new DialogueNode("farewell", "Guide",
+        "Good luck on your journey!")
+
+start.getOptions().add(new DialogueOption("opt_items", "Tell me about items", "explain_items"))
+start.getOptions().add(new DialogueOption("opt_leave", "Goodbye!", "farewell"))
+
+tree.addNode(start)
+tree.addNode(farewell)
+tree.setStyle(new DialogueStyle())
+
+manager.registerTree(tree)
+```
+
+A `DialogueTree` takes an id and the id of the starting node. A `DialogueNode` takes an id, a speaker name, and the text. A `DialogueOption` takes an option id, the text shown to the player, and the node id it moves to.
+
+## Run code on a node
+
+Register an action, then attach it to a node's enter actions:
+
+```groovy
+import de.luckymcdev.foundryengine.common.dialogue.DialogueAction
+
+manager.registerAction("give_starting_kit", { player, session ->
+    player.sendSystemMessage(Component.literal("You received a starting kit!"))
+} as DialogueAction)
+
+farewell.getEnterActionIds().add("give_starting_kit")
+```
+
+## Start the dialogue
+
+```groovy
+import de.luckymcdev.foundryengine.common.event.PlayerEvents
+import net.minecraft.server.level.ServerPlayer
+
+PlayerEvents.loggedIn { event ->
+    def player = event.entity as ServerPlayer
+    if (player.server.isSingleplayer()) {
+        Common.getDialogueManager().startDialogue(player, id("welcome_guide"))
+    }
+}
+```
+
+`startDialogue(serverPlayer, treeId)` opens the dialogue for that player. You can call it from any event handler or command; the client renders the panel automatically.
+
+## Related
+
+- Follow the full tree: [A branching dialogue tutorial](../../getting-started/a-branching-dialogue).
+- All manager methods: [DialogueManager reference](../managers).

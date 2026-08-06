@@ -1,0 +1,45 @@
+---
+sidebar_position: 9
+title: Rendering pipeline
+description: How depth, effects, particles, and the skybox compose.
+---
+
+# Rendering pipeline
+
+The client replaces parts of Minecraft's renderer to get the compositing that a game engine needs. The stages below run in order each frame.
+
+## Render phases
+
+The image is built in phases, and post-processing effects pick a phase:
+
+- **World render**: the scene, including entities, blocks, and the fog.
+- **Post render**: composited full-screen passes on top of the world.
+
+Effects choose their phase through `PostEffectConfig`. Cutscene fades (`black`, `star`, `circle`, `cinematic`) run on `POST_RENDER` with a high priority so they sit on top of everything.
+
+## Post effects
+
+A post effect is a screen-space shader bound to a priority and a set of uniforms. The `PostEffectManager` owns the effect handles:
+
+- **Conditional effects** run only while their condition is true and fade when it updates.
+- **Blur and vignette** take a uniform like `Radius` or `Intensity`, either constant or driven by a supplier.
+- **Screen effects** are timed: a name, an intro, a hold, an outro, and a lerp type. The intensity is computed per frame and pushed into the `Intensity` uniform.
+
+Because intensities are lerped on a curve, fades look smooth rather than instant.
+
+## Depth
+
+Depth passes capture the world depth in a texture that post effects can read. The depth snapshot is what lets depth-aware effects know where the nearest surface is before they blend.
+
+## Particles
+
+Particles are little quads with a lifetime, a render layer (opaque or translucent), and keyframed data. Keyframe sequences define size, color, and velocity over time; the particle interpolates between keyframes with the chosen easing. Particles render in their layer, so translucent ones blend and opaque ones write depth normally.
+
+## Skybox
+
+The custom skybox is a separate render path. When `CUSTOM_SKYBOX` is enabled, the engine replaces the vanilla sky with its own renderer. The config also controls whether that path is active at all.
+
+## Related
+
+- Drive effects from scripts: [Add screen effects](../guides/world/screen-effects).
+- Particle definitions: [ParticleBuilder](../guides/builders/ParticleBuilder).

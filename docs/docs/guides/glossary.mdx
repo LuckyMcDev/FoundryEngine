@@ -1,0 +1,79 @@
+---
+sidebar_position: 2
+---
+
+# Glossary
+
+Terms in plain language. If you meet a word in the docs that is not here, tell us and we will add it.
+
+## Bundle
+
+A self-contained content pack. A bundle is a folder with Groovy scripts, textures, and data. The game loads it at runtime, so you change content without recompiling Java.
+
+FoundryEngine itself is a bundle. Gameplay created with it, like a minigame or a map, is also written as a bundle.
+
+## Bundle metadata
+
+The file at the top of a bundle, named `<id>.bundles.toml`. It holds the bundle's id, version, display name, authors, and dependencies. See [Bundle metadata](../guides/bundle-metadata).
+
+## Entrypoint
+
+A class in a bundle's scripts that implements the `BundleEntrypoint` interface. The game calls `onLoad()` when it loads the bundle and `onUnload()` when it reloads or removes it. A bundle can have more than one entrypoint, split into common, server, and client scripts.
+
+## Script
+
+A Groovy file. Groovy runs on the Java platform but needs less boilerplate. Most of the docs' code is Groovy. A script contains the entrypoints and helpers that make up a bundle's behavior.
+
+## Builder
+
+A class that registers content. Builders use fluent calls, where each method returns the builder itself, so calls chain together. `ItemBuilder.create(id("wand")).stacksTo(1).use { ... }` is a builder. Builders exist for items, blocks, recipes, sounds, and particles.
+
+## Identifier
+
+A name made of a namespace and a path, written as `namespace:path`. It uniquely names one piece of content. Item id `showcase:magic_gem` has namespace `showcase` and path `magic_gem`.
+
+The helper `id("path")` builds an `Identifier` using the bundle's own namespace, so `id("magic_gem")` produces `showcase:magic_gem` in the showcase bundle.
+
+## Event
+
+A point in time where code can run in response to something. Events carry data and fire at a known moment, like when a player breaks a block or a bundle starts loading. The docs group them into event groups such as `BundleEvents`, `PlayerEvents`, and `BlockEvents`.
+
+## Event group
+
+A class that collects related events and how to register a handler for them. Inside a bundle script you write `PlayerEvents.tick { event -> ... }` to run code on every player tick.
+
+## Manager
+
+A singleton object that owns one part of the engine and is reachable through `Common`. The area manager owns `Area` objects, the dialogue manager owns dialogue trees, and so on. `Common.getAreaManager()` returns the area manager.
+
+## Registry
+
+The game's list of registered content, one list per kind of content (items, blocks, recipes, sounds, particles). A builder adds its content to the right registry. When a registry entry exists, the engine knows how to use it.
+
+## Saves / Saved data
+
+The server state that persists. FoundryEngine writes it to `<levelDir>/foundryengine/engine.dat`, with sections for areas, cutscenes, dialogue, and waypoints.
+
+## Stage
+
+A progression marker a player has or does not have. Content can require a stage before it works, such as an item a player can use only after a stage called "explorer" is on their account.
+
+## Game session
+
+A named, running game within the world, with its own state that starts when the world loads and stops when the world saves. Minigames are built as sessions.
+
+## Runtime world
+
+A level that the engine creates and manages while the game runs. It can be temporary or persistent, and uses custom chunk generators.
+
+## Sandbox
+
+A layer that blocks a script from doing dangerous things. Scripts run in a sandbox that forbids some process, I/O, and reflection calls.
+
+## Side
+
+The logical split of code. The common side runs everywhere, the server side runs on the server, the client side runs in the client that renders the game. A bundle's scripts can live in `scripts/common`, `scripts/server`, or `scripts/client`.
+
+## Data pack / resource pack
+
+The two kinds of packs Minecraft loads. Data packs hold game logic such as recipes, loot, and tags. Resource packs change how the game looks: models, textures, sounds. A bundle ships the assets and data it needs, and the engine merges them in at runtime.

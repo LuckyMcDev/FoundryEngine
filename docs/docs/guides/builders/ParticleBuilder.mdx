@@ -1,0 +1,58 @@
+---
+sidebar_position: 5
+title: ParticleBuilder
+description: Reference for the ParticleBuilder fluent API.
+---
+
+# ParticleBuilder
+
+`ParticleBuilder` builds a particle definition. Create one with `ParticleBuilder.create(Identifier)` and register it through `BundleEvents.registry { it.particles(...) }` from a **client** entrypoint.
+
+## Creation
+
+| Method | Returns |
+| --- | --- |
+| `static create(Identifier id)` | builder |
+
+## Core settings
+
+| Method | Notes |
+| --- | --- |
+| `.lifetime(int ticks)` | How long the particle lives. |
+| `.layer(ParticleLayer)` | `TRANSLUCENT` or `OPAQUE` render layer. |
+| `.alwaysShow()` | Visible even with reduced particle settings. |
+| `.factory(...)` | Swap the particle implementation. |
+| `.generateData(boolean)` | Skip JSON generation. |
+
+## Colour and size
+
+| Method | Notes |
+| --- | --- |
+| `.color(Color)` | Single color. |
+| `.color(Color start, Color end, Easing)` | Fade between two colors. |
+| `.colorData(...)` | Raw color data object. |
+| `.scale(float)` / `.scaleData(ParticleScaleData)` | Size over time, optionally keyframed. |
+
+## Motion
+
+| Method | Notes |
+| --- | --- |
+| `.velocity(Vector3d)` | Constant velocity in blocks per second. |
+| `.velocityData(...)` | Velocity over time. |
+| `.positionData(...)` / `.rotationData(...)` | Position and rotation over time. |
+
+## Keyframes
+
+Keyframed data uses `KeyframeSequence<T>`:
+
+```groovy
+new KeyframeSequence<Float>()
+        .add(value, time, easing)
+        .add(value, time, easing)
+```
+
+Each `.add` is a point on the curve. Between points the engine interpolates with the easing function.
+
+## Related
+
+- Registering: [Add a particle](../registration/add-particle).
