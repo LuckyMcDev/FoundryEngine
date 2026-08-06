@@ -164,6 +164,22 @@ public class ParticleBuilder extends AbstractBuilder<ParticleType<?>> {
 		return rotationData;
 	}
 
+	/**
+	 * The first position keyframe, or {@link Vector3d#ZERO} when none is defined.
+	 */
+	public Vector3d startPosition() {
+		Vector3d value = positionData == null ? null : positionData.getSequence().getFirstValue();
+		return value == null ? new Vector3d(0, 0, 0) : value;
+	}
+
+	/**
+	 * The first velocity keyframe, or {@link Vector3d#ZERO} when none is defined.
+	 */
+	public Vector3d startVelocity() {
+		Vector3d value = velocityData == null ? null : velocityData.getSequence().getFirstValue();
+		return value == null ? new Vector3d(0, 0, 0) : value;
+	}
+
 	public int getLifetime() {
 		return lifetime;
 	}

@@ -21,6 +21,7 @@ import imgui.type.ImFloat;
 import imgui.type.ImInt;
 import imgui.type.ImString;
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.phys.Vec2;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
 import java.util.Arrays;
@@ -237,7 +238,7 @@ public class CutscenePanel extends EditorPanel {
 		ImGui.sameLine();
 		if (ImGui.button(ImIcons.CHECK + " Apply")) {
 			c.setAnchorRotation(selectedNodeIndex.get(),
-				new net.minecraft.world.phys.Vec2(selectedNodePitch.get(), selectedNodeYaw.get()));
+				new Vec2(selectedNodePitch.get(), selectedNodeYaw.get()));
 			ClientPacketDistributor.sendToServer(new CutscenePacket(Client.getCutsceneEditor().toNbt()));
 			setStatus("Rotation updated for node " + selectedNodeIndex.get() + ".");
 		}

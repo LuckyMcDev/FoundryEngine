@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.BiConsumer;
 
 public class AreaManager {
 	public static final String SAVE_SECTION = "areas";
@@ -49,6 +50,10 @@ public class AreaManager {
 
 	private static long spatialCellKey(int cellX, int cellZ) {
 		return ((long) cellX << 32) | (cellZ & 0xFFFFFFFFL);
+	}
+
+	private static int cellCoordinate(int blockCoordinate) {
+		return Math.floorDiv(blockCoordinate, SPATIAL_CELL_SIZE);
 	}
 
 	public void registerModuleType(AreaModule module) {
@@ -177,10 +182,6 @@ public class AreaManager {
 		savedDataManager.syncToAll();
 	}
 
-	public void syncToPlayer(ServerPlayer player) {
-		savedDataManager.syncToPlayer(player);
-	}
-
 	public void onLevelTick(LevelTickEvent.Post event) {
 		if (!(event.getLevel() instanceof ServerLevel level)) {
 			return;
@@ -209,7 +210,7 @@ public class AreaManager {
 
 		for (Entity entity : entitiesByUuid.values()) {
 			var pos = entity.blockPosition();
-			long cellKey = spatialCellKey(pos.getX() >> 5, pos.getZ() >> 5);
+			long cellKey = spatialCellKey(cellCoordinate(pos.getX()), cellCoordinate(pos.getZ()));
 			List<Area> candidates = spatial != null ? spatial.getOrDefault(cellKey, List.of()) : areas;
 
 			for (Area area : candidates) {
@@ -254,10 +255,10 @@ public class AreaManager {
 
 	private void indexAreaSpatially(Area area) {
 		var bounds = area.bounds();
-		int minCellX = (int) Math.floor(bounds.minX) >> 5;
-		int maxCellX = (int) Math.floor(bounds.maxX) >> 5;
-		int minCellZ = (int) Math.floor(bounds.minZ) >> 5;
-		int maxCellZ = (int) Math.floor(bounds.maxZ) >> 5;
+		int minCellX = cellCoordinate((int) Math.floor(bounds.minX));
+		int maxCellX = cellCoordinate((int) Math.floor(bounds.maxX));
+		int minCellZ = cellCoordinate((int) Math.floor(bounds.minZ));
+		int maxCellZ = cellCoordinate((int) Math.floor(bounds.maxZ));
 		var grid = areaSpatialIndex.computeIfAbsent(area.dimension(), k -> new HashMap<>());
 		for (int cx = minCellX; cx <= maxCellX; cx++) {
 			for (int cz = minCellZ; cz <= maxCellZ; cz++) {
@@ -310,18 +311,8 @@ public class AreaManager {
 		}
 		BlockPos pos = event.getPos();
 		BlockState state = event.getState();
-
-		for (Area area : areasNearBlock(level.dimension(), pos)) {
-			if (!area.contains(pos)) {
-				continue;
-			}
-			for (Identifier mid : area.moduleIds()) {
-				AreaModule module = moduleTypes.get(mid);
-				if (module instanceof AreaBlockModule block) {
-					block.onBlockBreak(event, level, area, pos, state, player);
-				}
-			}
-		}
+		forEachBlockModule(level, pos, state, player, (block, area) ->
+			block.onBlockBreak(event, level, area, pos, state, player));
 	}
 
 	public void onBlockPlace(BlockEvent.EntityPlaceEvent event) {
@@ -335,6 +326,12 @@ public class AreaManager {
 		BlockPos pos = event.getPos();
 		BlockState state = event.getState();
 
+		forEachBlockModule(level, pos, state, player, (block, area) ->
+			block.onBlockPlace(event, level, area, pos, state, player));
+	}
+
+	private void forEachBlockModule(ServerLevel level, BlockPos pos, BlockState state, ServerPlayer player,
+	                                BiConsumer<AreaBlockModule, Area> action) {
 		for (Area area : areasNearBlock(level.dimension(), pos)) {
 			if (!area.contains(pos)) {
 				continue;
@@ -342,7 +339,7 @@ public class AreaManager {
 			for (Identifier mid : area.moduleIds()) {
 				AreaModule module = moduleTypes.get(mid);
 				if (module instanceof AreaBlockModule block) {
-					block.onBlockPlace(event, level, area, pos, state, player);
+					action.accept(block, area);
 				}
 			}
 		}
@@ -356,24 +353,9 @@ public class AreaManager {
 	private List<Area> areasNearBlock(ResourceKey<Level> dimension, BlockPos pos) {
 		Map<Long, List<Area>> grid = areaSpatialIndex.get(dimension);
 		if (grid == null) {
-			return areasInDimension(dimension);
+			return getAreasForDimension(dimension);
 		}
-		long cellKey = spatialCellKey(pos.getX() >> 5, pos.getZ() >> 5);
+		long cellKey = spatialCellKey(cellCoordinate(pos.getX()), cellCoordinate(pos.getZ()));
 		return grid.getOrDefault(cellKey, List.of());
-	}
-
-	private List<Area> areasInDimension(ResourceKey<Level> dimension) {
-		List<Identifier> ids = areaIdsByDimension.getOrDefault(dimension, Collections.emptyList());
-		if (ids.isEmpty()) {
-			return Collections.emptyList();
-		}
-		List<Area> result = new ArrayList<>(ids.size());
-		for (Identifier aid : ids) {
-			Area a = areasById.get(aid);
-			if (a != null) {
-				result.add(a);
-			}
-		}
-		return result;
 	}
 }

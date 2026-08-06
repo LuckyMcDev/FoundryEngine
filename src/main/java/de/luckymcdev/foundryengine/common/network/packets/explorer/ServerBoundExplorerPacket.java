@@ -66,10 +66,8 @@ public record ServerBoundExplorerPacket(
 
 	@Override
 	public void handleServer(IPayloadContext ctx) {
-		if (!(ctx.player() instanceof ServerPlayer player)) {
-			return;
-		}
-		if (!PermissionChecks.COMMANDS_OWNER.check(player.permissions())) {
+		ServerPlayer player = AbstractPacket.serverPlayer(ctx);
+		if (player == null || !PermissionChecks.COMMANDS_OWNER.check(player.permissions())) {
 			return;
 		}
 

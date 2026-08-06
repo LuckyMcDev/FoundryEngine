@@ -47,10 +47,8 @@ public record WaypointPacket(
 
 	private static void handleServer(WaypointPacket packet, IPayloadContext ctx) {
 		ctx.enqueueWork(() -> {
-			if (!(ctx.player() instanceof ServerPlayer player)) {
-				return;
-			}
-			if (!PermissionChecks.COMMANDS_GAMEMASTER.check(player.permissions())) {
+			ServerPlayer player = AbstractPacket.serverPlayer(ctx);
+			if (player == null || !PermissionChecks.COMMANDS_GAMEMASTER.check(player.permissions())) {
 				return;
 			}
 			ServerLevel level = player.level();

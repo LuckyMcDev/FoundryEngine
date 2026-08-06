@@ -20,6 +20,7 @@ import imgui.ImDrawList;
 import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.flag.ImGuiCol;
+import imgui.flag.ImGuiHoveredFlags;
 import imgui.flag.ImGuiKey;
 import imgui.flag.ImGuiMouseCursor;
 import imgui.flag.ImGuiWindowFlags;
@@ -322,7 +323,7 @@ public final class ImGuiCoreTextEditor {
 
 		editorFocused = ImGui.isWindowFocused();
 		boolean focused = editorFocused;
-		boolean hovered = ImGui.isWindowHovered(imgui.flag.ImGuiHoveredFlags.ChildWindows);
+		boolean hovered = ImGui.isWindowHovered(ImGuiHoveredFlags.ChildWindows);
 
 		if (hovered) {
 			ImGui.setMouseCursor(ImGuiMouseCursor.TextInput);

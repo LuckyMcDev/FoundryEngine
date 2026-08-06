@@ -9,7 +9,6 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import org.jspecify.annotations.Nullable;
 
@@ -133,10 +132,6 @@ public class CutsceneManager {
 
 	public void load() {
 		fromNbt(savedDataManager.getSection(SAVE_SECTION));
-	}
-
-	public void syncToPlayer(ServerPlayer player) {
-		savedDataManager.syncToPlayer(player);
 	}
 
 	public void syncToAll() {

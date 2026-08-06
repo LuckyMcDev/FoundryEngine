@@ -11,7 +11,6 @@ import de.luckymcdev.foundryengine.mixin.MinecraftServerAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
@@ -148,18 +147,10 @@ public class SavedDataManager {
 	}
 
 	/**
-	 * Requests a broadcast of the full engine data. Coalesced: the next server tick sends a single
-	 * {@link SavedDataSyncPacket} to all players if anything changed since the last send.
+	 * Requests a broadcast of the full engine data. The snapshot is sent to all players, so there
+	 * is no need for a per-player variant: any targeted request is a subset of this broadcast.
 	 */
 	public void syncToAll() {
-		broadcastPending = true;
-	}
-
-	/**
-	 * Requests a broadcast of the full engine data. Coalesced with {@link #syncToAll()}; the data
-	 * is always a full snapshot so sending to all players satisfies the per-player request.
-	 */
-	public void syncToPlayer(ServerPlayer player) {
 		broadcastPending = true;
 	}
 

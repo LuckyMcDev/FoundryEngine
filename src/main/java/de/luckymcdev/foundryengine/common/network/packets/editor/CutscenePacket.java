@@ -17,6 +17,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
 public record CutscenePacket(CompoundTag nbt) implements AbstractPacket<CutscenePacket> {
 
@@ -27,7 +28,7 @@ public record CutscenePacket(CompoundTag nbt) implements AbstractPacket<Cutscene
 		CutscenePacket::handleClient,
 		CutscenePacket::handleServer
 	);
-	public static volatile java.util.function.Consumer<CutscenePacket> CLIENT_HANDLER;
+	public static volatile Consumer<CutscenePacket> CLIENT_HANDLER;
 	private static boolean clientHandlerWarned;
 
 	public static CutscenePacket addAction(String name) {
@@ -107,10 +108,8 @@ public record CutscenePacket(CompoundTag nbt) implements AbstractPacket<Cutscene
 
 	@Override
 	public void handleServer(IPayloadContext ctx) {
-		if (!(ctx.player() instanceof ServerPlayer player)) {
-			return;
-		}
-		if (!PermissionChecks.COMMANDS_GAMEMASTER.check(player.permissions())) {
+		ServerPlayer player = AbstractPacket.serverPlayer(ctx);
+		if (player == null || !PermissionChecks.COMMANDS_GAMEMASTER.check(player.permissions())) {
 			return;
 		}
 
@@ -119,7 +118,7 @@ public record CutscenePacket(CompoundTag nbt) implements AbstractPacket<Cutscene
 		var cutsceneManager = Common.getCutsceneManager();
 
 		if (this.nbt.getBooleanOr("Request", false)) {
-			cutsceneManager.syncToPlayer(player);
+			cutsceneManager.syncToAll();
 			return;
 		}
 
@@ -191,7 +190,7 @@ public record CutscenePacket(CompoundTag nbt) implements AbstractPacket<Cutscene
 				playTag.putInt("holdStart", holdStart);
 				playTag.putInt("holdEnd", holdEnd);
 
-				cutsceneManager.syncToPlayer(target);
+				cutsceneManager.syncToAll();
 				int total = length + holdStart + holdEnd + cutscene.getTotalAnchorHoldTicks();
 				Common.getCutsceneSessionManager().addInstance(target, total);
 				PacketDistributor.sendToPlayer(target, new CutscenePacket(playTag));

@@ -10,12 +10,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.util.FormattedCharSink;
 import net.minecraft.util.Util;
+import net.minecraft.world.item.ItemStackTemplate;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -122,7 +124,7 @@ public class ImGuiCharSink implements FormattedCharSink {
 				if (player == null) {
 					break;
 				}
-				player.connection.sendUnattendedCommand(net.minecraft.commands.Commands.trimOptionalPrefix(cmd), minecraft.screen);
+				player.connection.sendUnattendedCommand(Commands.trimOptionalPrefix(cmd), minecraft.screen);
 				break;
 			}
 			case ClickEvent.CopyToClipboard(final String text): {
@@ -142,7 +144,7 @@ public class ImGuiCharSink implements FormattedCharSink {
 	private void handleHover() {
 		final Minecraft minecraft = Minecraft.getInstance();
 		switch (this.hoverEvent) {
-			case HoverEvent.ShowItem(final net.minecraft.world.item.ItemStackTemplate item): {
+			case HoverEvent.ShowItem(final ItemStackTemplate item): {
 				final List<Component> tooltip = Screen.getTooltipFromItem(minecraft, item.create());
 				ImGui.beginTooltip();
 				for (final Component line : tooltip) {

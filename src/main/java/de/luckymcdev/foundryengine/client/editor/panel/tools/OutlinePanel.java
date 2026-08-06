@@ -13,6 +13,11 @@ import imgui.ImGui;
 import imgui.flag.ImGuiSelectableFlags;
 import imgui.flag.ImGuiTreeNodeFlags;
 import net.minecraft.resources.Identifier;
+import org.codehaus.groovy.ast.expr.ClosureExpression;
+import org.codehaus.groovy.ast.expr.MethodCallExpression;
+import org.codehaus.groovy.ast.stmt.BlockStatement;
+import org.codehaus.groovy.ast.stmt.ExpressionStatement;
+import org.codehaus.groovy.ast.stmt.Statement;
 import org.codehaus.groovy.control.CompilationUnit;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.Phases;
@@ -79,9 +84,9 @@ public class OutlinePanel extends EditorPanel {
 		if (nodes.isEmpty()) {
 			var stmts = module.getStatementBlock().getStatements();
 			for (var stmt : stmts) {
-				if (stmt instanceof org.codehaus.groovy.ast.stmt.ExpressionStatement es) {
+				if (stmt instanceof ExpressionStatement es) {
 					var expr = es.getExpression();
-					if (expr instanceof org.codehaus.groovy.ast.expr.MethodCallExpression mce) {
+					if (expr instanceof MethodCallExpression mce) {
 						String name = mce.getMethodAsString();
 						if (name != null && !name.isEmpty()) {
 							nodes.add(new OutlineNode(name, OutlineKind.EXPRESSION,
@@ -95,20 +100,20 @@ public class OutlinePanel extends EditorPanel {
 		return nodes;
 	}
 
-	private static void collectNodes(org.codehaus.groovy.ast.stmt.Statement stmt, List<OutlineNode> nodes, int depth) {
+	private static void collectNodes(Statement stmt, List<OutlineNode> nodes, int depth) {
 		if (stmt == null) {
 			return;
 		}
 
-		if (stmt instanceof org.codehaus.groovy.ast.stmt.ExpressionStatement es) {
+		if (stmt instanceof ExpressionStatement es) {
 			var expr = es.getExpression();
-			if (expr instanceof org.codehaus.groovy.ast.expr.MethodCallExpression mce) {
+			if (expr instanceof MethodCallExpression mce) {
 				String name = mce.getMethodAsString();
 				if (name != null && !name.isEmpty() && depth == 0) {
 					nodes.add(new OutlineNode(name, OutlineKind.EXPRESSION,
 						es.getLineNumber(), es.getLastLineNumber()));
 				}
-			} else if (expr instanceof org.codehaus.groovy.ast.expr.ClosureExpression) {
+			} else if (expr instanceof ClosureExpression) {
 				if (depth == 0) {
 					nodes.add(new OutlineNode("closure", OutlineKind.EXPRESSION,
 						es.getLineNumber(), es.getLastLineNumber()));
@@ -116,7 +121,7 @@ public class OutlinePanel extends EditorPanel {
 			}
 		}
 
-		if (stmt instanceof org.codehaus.groovy.ast.stmt.BlockStatement bs) {
+		if (stmt instanceof BlockStatement bs) {
 			for (var s : bs.getStatements()) {
 				collectNodes(s, nodes, depth + 1);
 			}

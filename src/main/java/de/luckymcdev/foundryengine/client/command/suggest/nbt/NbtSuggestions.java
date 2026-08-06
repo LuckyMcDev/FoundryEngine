@@ -3,6 +3,7 @@ package de.luckymcdev.foundryengine.client.command.suggest.nbt;
 import de.luckymcdev.foundryengine.mixin.suggest.EntitySelectorAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.coordinates.Coordinates;
 import net.minecraft.commands.arguments.coordinates.WorldCoordinates;
 import net.minecraft.commands.arguments.selector.EntitySelector;
@@ -35,6 +36,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
+import java.util.function.Function;
 
 public class NbtSuggestions {
 	private static final Map<String, List<FieldDef>> ROOT_FIELDS = new LinkedHashMap<>();
@@ -884,7 +887,7 @@ public class NbtSuggestions {
 			return null;
 		}
 
-		BlockPos pos = coords.getBlockPos(new net.minecraft.commands.CommandSourceStack(
+		BlockPos pos = coords.getBlockPos(new CommandSourceStack(
 			null, Vec3.ZERO, Vec2.ZERO, null, PermissionSet.NO_PERMISSIONS, null, null, null, null));
 		Block block = level.getBlockState(pos).getBlock();
 
@@ -903,7 +906,7 @@ public class NbtSuggestions {
 			return "entity/" + EntityType.getKey(entityType);
 		}
 
-		java.util.UUID uuid = accessor.getEntityUUID();
+		UUID uuid = accessor.getEntityUUID();
 		if (uuid != null) {
 			Entity entity = level.getEntity(uuid);
 			if (entity != null) {
@@ -1058,7 +1061,7 @@ public class NbtSuggestions {
 			return registry.keySet().stream().map(Identifier::toString).sorted().toList();
 		}
 
-		private static <T> List<String> enumNames(T[] values, java.util.function.Function<T, String> namer) {
+		private static <T> List<String> enumNames(T[] values, Function<T, String> namer) {
 			return Arrays.stream(values).map(namer).toList();
 		}
 

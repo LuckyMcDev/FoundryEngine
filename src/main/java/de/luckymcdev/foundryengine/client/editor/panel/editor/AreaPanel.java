@@ -13,6 +13,7 @@ import de.luckymcdev.foundryengine.common.util.color.Color;
 import imgui.ImGui;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiColorEditFlags;
+import imgui.flag.ImGuiInputTextFlags;
 import imgui.flag.ImGuiMouseCursor;
 import imgui.type.ImBoolean;
 import imgui.type.ImInt;
@@ -102,7 +103,7 @@ public class AreaPanel extends EditorPanel {
 
 		ImGui.setNextItemWidth(-1);
 		ImGui.inputTextWithHint("##newname", "area_name (or namespace:path)", newAreaName,
-			imgui.flag.ImGuiInputTextFlags.EnterReturnsTrue);
+			ImGuiInputTextFlags.EnterReturnsTrue);
 
 		ImGui.checkbox("Single Block", creatingBlockArea);
 		ImGui.sameLine();

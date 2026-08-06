@@ -395,9 +395,7 @@ public class FoundryEngineMod {
 		Path worldDataPath = storageAccess.getLevelDirectory().path().resolve("foundryengine").resolve("game");
 		Common.getGameManager().setWorldDataPath(worldName, worldDataPath);
 		Common.getGameManager().autoStartAll(worldName);
-		server.getPlayerList().getPlayers().forEach(player -> {
-			Common.getSavedDataManager().syncToPlayer(player);
-		});
+		Common.getSavedDataManager().syncToAll();
 	}
 
 	private void onServerStopping(ServerStoppingEvent event) {
@@ -436,7 +434,7 @@ public class FoundryEngineMod {
 
 	private void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
 		if (event.getEntity() instanceof ServerPlayer player) {
-			Common.getSavedDataManager().syncToPlayer(player);
+			Common.getSavedDataManager().syncToAll();
 		}
 	}
 }

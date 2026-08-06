@@ -44,13 +44,11 @@ public record CutsceneCommandPacket(String command) implements AbstractPacket<Cu
 
 	@Override
 	public void handleServer(IPayloadContext ctx) {
-		if (!(ctx.player() instanceof ServerPlayer player)) {
+		ServerPlayer player = AbstractPacket.serverPlayer(ctx);
+		if (player == null || !PermissionChecks.COMMANDS_GAMEMASTER.check(player.permissions())) {
 			return;
 		}
 		if (this.command == null || this.command.isBlank()) {
-			return;
-		}
-		if (!PermissionChecks.COMMANDS_GAMEMASTER.check(player.permissions())) {
 			return;
 		}
 		if (!CommonConfig.CUTSCENE_COMMAND_EXECUTION.get()) {

@@ -49,7 +49,8 @@ public record BundleHashPacket(String clientHash) implements AbstractPacket<Bund
 			try {
 				String serverHash = FolderHash.hashFolder(Common.BUNDLES);
 				if (!Objects.equals(clientHash, serverHash)) {
-					if (ctx.player() instanceof ServerPlayer player) {
+					ServerPlayer player = AbstractPacket.serverPlayer(ctx);
+					if (player != null) {
 						player.sendSystemMessage(Component.translatable("foundryengine.bundle.mismatch"));
 						Common.LOGGER.warn("Bundle hash mismatch for player {}: Client={} Server={}",
 							player.getScoreboardName(), clientHash, serverHash);

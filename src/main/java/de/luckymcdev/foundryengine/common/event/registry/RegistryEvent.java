@@ -15,10 +15,13 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.neoforged.bus.api.Event;
+import net.neoforged.fml.ModLoader;
+import net.neoforged.fml.ModLoadingIssue;
 import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
@@ -97,7 +100,7 @@ public class RegistryEvent extends Event implements IModBusEvent {
 
 		List<BlockEntityBuilder<?>> attachedBes = Stream.of(builders)
 			.map(BlockBuilder::getBlockEntityBuilder)
-			.filter(java.util.Objects::nonNull)
+			.filter(Objects::nonNull)
 			.toList();
 		if (!attachedBes.isEmpty()) {
 			blockEntities(attachedBes.toArray(BlockEntityBuilder[]::new));
@@ -177,8 +180,9 @@ public class RegistryEvent extends Event implements IModBusEvent {
 		}
 		List<String> idList = ids.get();
 		if (LOGGED_SKIPS.add(kind + ":" + idList)) {
-			Common.LOGGER.error("Compatibility mode {}: cannot register {} content (requires {}). Skipping: {}",
-				Common.getCompatibilityMode().getName(), kind, requires, idList);
+			var loadingIssue = ModLoadingIssue.warning("Compatibility mode %s: cannot register %s content (requires %s). Skipping: %s".formatted(Common.getCompatibilityMode().getName(), kind, requires, idList));
+			Common.LOGGER.warn(loadingIssue.toString());
+			ModLoader.addLoadingIssue(loadingIssue);
 		}
 		return true;
 	}

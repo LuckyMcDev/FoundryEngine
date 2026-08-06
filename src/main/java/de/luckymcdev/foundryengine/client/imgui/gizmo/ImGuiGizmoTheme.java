@@ -1,5 +1,7 @@
 package de.luckymcdev.foundryengine.client.imgui.gizmo;
 
+import imgui.ImGui;
+
 // Colors are ABGR packed ints (0xAABBGGRR) to match ImGui's native format.
 public final class ImGuiGizmoTheme {
 
@@ -127,7 +129,7 @@ public final class ImGuiGizmoTheme {
 		float b = ((abgr >>> 16) & 0xFF) / 255.0f;
 		float g = ((abgr >>> 8) & 0xFF) / 255.0f;
 		float r = (abgr & 0xFF) / 255.0f;
-		imgui.ImGui.pushStyleColor(slot, r, g, b, a);
+		ImGui.pushStyleColor(slot, r, g, b, a);
 	}
 
 	public ImGuiGizmoTheme withBorderArgb(int c) {

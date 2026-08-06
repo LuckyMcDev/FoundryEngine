@@ -175,14 +175,14 @@ public final class Client {
 	 * Sends a chat command to the server.
 	 */
 	public static void sendCommand(String command) {
-		Objects.requireNonNull(getConnection()).sendCommand(command);
+		Objects.requireNonNull(getConnection(), "Not connected to a server").sendCommand(command);
 	}
 
 	/**
 	 * Sends a network packet to the server.
 	 */
 	public static void sendPacket(Packet<?> packet) {
-		Objects.requireNonNull(getConnection()).send(packet);
+		Objects.requireNonNull(getConnection(), "Not connected to a server").send(packet);
 	}
 
 	/**

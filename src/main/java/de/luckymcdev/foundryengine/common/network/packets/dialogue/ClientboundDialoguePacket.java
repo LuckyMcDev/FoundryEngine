@@ -12,6 +12,8 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
+import java.util.function.Consumer;
+
 /**
  * Server-to-client packet for dialogue lifecycle.
  * Carries serialized {@link DialogueSession} and {@link DialogueNode} to the
@@ -39,7 +41,7 @@ public record ClientboundDialoguePacket(
 		(packet, ctx) -> handleClient(packet, ctx),
 		null
 	);
-	public static volatile java.util.function.Consumer<ClientboundDialoguePacket> CLIENT_HANDLER;
+	public static volatile Consumer<ClientboundDialoguePacket> CLIENT_HANDLER;
 	private static boolean clientHandlerWarned;
 
 	public static ClientboundDialoguePacket show(Identifier treeId, DialogueSession session, DialogueNode node) {

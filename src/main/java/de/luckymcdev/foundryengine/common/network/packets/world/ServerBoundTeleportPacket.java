@@ -38,11 +38,10 @@ public record ServerBoundTeleportPacket(Vector3fc position) implements AbstractP
 
 	@Override
 	public void handleServer(IPayloadContext ctx) {
-		if (ctx.player() instanceof ServerPlayer player) {
-			if (!PermissionChecks.COMMANDS_GAMEMASTER.check(player.permissions())) {
-				return;
-			}
-			player.teleportTo(position.x(), position.y(), position.z());
+		ServerPlayer player = AbstractPacket.serverPlayer(ctx);
+		if (player == null || !PermissionChecks.COMMANDS_GAMEMASTER.check(player.permissions())) {
+			return;
 		}
+		player.teleportTo(position.x(), position.y(), position.z());
 	}
 }

@@ -42,10 +42,8 @@ public record DialogueSavePacket(CompoundTag data) implements AbstractPacket<Dia
 	@Override
 	public void handleServer(IPayloadContext ctx) {
 		ctx.enqueueWork(() -> {
-			if (!(ctx.player() instanceof ServerPlayer player)) {
-				return;
-			}
-			if (!PermissionChecks.COMMANDS_GAMEMASTER.check(player.permissions())) {
+			ServerPlayer player = AbstractPacket.serverPlayer(ctx);
+			if (player == null || !PermissionChecks.COMMANDS_GAMEMASTER.check(player.permissions())) {
 				return;
 			}
 			var mgr = Common.getDialogueManager();

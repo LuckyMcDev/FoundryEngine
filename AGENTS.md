@@ -198,11 +198,11 @@ src/main/java/de/luckymcdev/foundryengine/
 
 ## On-Demand Reference (read the file only when relevant)
 
-| Topic                                                     | File                            |
-|-----------------------------------------------------------|---------------------------------|
-| Troubleshooting (build/test/mixin/bundle/packet failures) | `docs/agent/troubleshooting.md` |
-| Performance considerations                                | `docs/agent/performance.md`     |
-| Security best practices                                   | `docs/agent/security.md`        |
-| Bundles system & generated code                           | `docs/agent/bundles.md`         |
-| Mixin development                                         | `docs/agent/mixin.md`           |
-| Docs site & CI/CD                                         | `docs/agent/docs-cicd.md`       |
+| Topic                                                     | File                         |
+|-----------------------------------------------------------|------------------------------|
+| Troubleshooting (build/test/mixin/bundle/packet failures) | `.agents/troubleshooting.md` |
+| Performance considerations                                | `.agents/performance.md`     |
+| Security best practices                                   | `.agents/security.md`        |
+| Bundles system & generated code                           | `.agents/bundles.md`         |
+| Mixin development                                         | `.agents/mixin.md`           |
+| Docs site & CI/CD                                         | `.agents/docs-cicd.md`       |

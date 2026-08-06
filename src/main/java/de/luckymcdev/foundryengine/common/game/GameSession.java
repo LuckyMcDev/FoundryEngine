@@ -19,7 +19,7 @@ import java.util.function.Consumer;
 public class GameSession {
 	final GameData data;
 	private final Identifier id;
-	boolean started;
+	private boolean started;
 	private GameState publicState = SimpleState.LOBBY;
 	private boolean autoStart;
 	private @Nullable Path worldDataPath;
@@ -61,6 +61,20 @@ public class GameSession {
 	 */
 	public GameState publicState() {
 		return publicState;
+	}
+
+	/**
+	 * Returns true if the session has been started and this started, or false otherwise.
+	 */
+	boolean isStarted() {
+		return started;
+	}
+
+	/**
+	 * Marks the session as started or stopped. Owned by {@link GameManager}.
+	 */
+	void setStarted(boolean started) {
+		this.started = started;
 	}
 
 	/**

@@ -47,7 +47,8 @@ public record ServerboundDialoguePacket(
 
 	private static void handleServer(ServerboundDialoguePacket packet, IPayloadContext ctx) {
 		ctx.enqueueWork(() -> {
-			if (!(ctx.player() instanceof ServerPlayer player)) {
+			ServerPlayer player = AbstractPacket.serverPlayer(ctx);
+			if (player == null) {
 				return;
 			}
 			var dialogueManager = Common.getDialogueManager();

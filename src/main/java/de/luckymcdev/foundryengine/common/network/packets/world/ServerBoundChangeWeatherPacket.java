@@ -42,19 +42,18 @@ public record ServerBoundChangeWeatherPacket(
 
 	@Override
 	public void handleServer(IPayloadContext ctx) {
-		if (ctx.player() instanceof ServerPlayer player) {
-			if (!PermissionChecks.COMMANDS_GAMEMASTER.check(player.permissions())) {
-				return;
-			}
+		ServerPlayer player = AbstractPacket.serverPlayer(ctx);
+		if (player == null || !PermissionChecks.COMMANDS_GAMEMASTER.check(player.permissions())) {
+			return;
+		}
 
-			MinecraftServer server = player.level().getServer();
-			int duration = 6000;
+		MinecraftServer server = player.level().getServer();
+		int duration = 6000;
 
-			switch (weatherType) {
-				case "clear" -> server.setWeatherParameters(0, duration, false, false);
-				case "rain" -> server.setWeatherParameters(0, duration, true, false);
-				case "thunder" -> server.setWeatherParameters(0, duration, true, true);
-			}
+		switch (weatherType) {
+			case "clear" -> server.setWeatherParameters(0, duration, false, false);
+			case "rain" -> server.setWeatherParameters(0, duration, true, false);
+			case "thunder" -> server.setWeatherParameters(0, duration, true, true);
 		}
 	}
 }

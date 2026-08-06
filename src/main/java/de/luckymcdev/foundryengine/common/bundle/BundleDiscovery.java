@@ -11,6 +11,7 @@ import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoadingIssue;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
+import org.apache.maven.artifact.versioning.InvalidVersionSpecificationException;
 import org.apache.maven.artifact.versioning.VersionRange;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -247,7 +248,7 @@ public class BundleDiscovery {
 			}
 			VersionRange range = VersionRange.createFromVersionSpec(rangeSpec);
 			return range.containsVersion(current);
-		} catch (RuntimeException | org.apache.maven.artifact.versioning.InvalidVersionSpecificationException e) {
+		} catch (RuntimeException | InvalidVersionSpecificationException e) {
 			LOGGER.error("Failed to parse version range '{}' or version '{}'", rangeSpec, currentVersion);
 			return false;
 		}

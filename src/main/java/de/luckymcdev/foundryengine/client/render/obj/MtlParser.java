@@ -10,9 +10,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayDeque;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public class MtlParser {
 	private final Map<String, Material> materials = new LinkedHashMap<>();
@@ -73,7 +75,7 @@ public class MtlParser {
 	}
 
 	private static String normalize(String path) {
-		java.util.ArrayDeque<String> stack = new java.util.ArrayDeque<>();
+		ArrayDeque<String> stack = new ArrayDeque<>();
 		for (String segment : path.split("/")) {
 			if (segment.isEmpty() || segment.equals(".")) {
 				continue;
@@ -152,7 +154,7 @@ public class MtlParser {
 		materials.put(name, current);
 	}
 
-	private void ifCurrent(java.util.function.Consumer<Material> action) {
+	private void ifCurrent(Consumer<Material> action) {
 		if (current == null) {
 			Common.LOGGER.warn("Material property found before any 'newmtl' — ignoring");
 			return;

@@ -40,9 +40,9 @@ public class GroovyScriptLoader {
 		return map;
 	}
 
-	private static void reportOnLoadFailure(EnvType envType, String bundleId, String message) {
+	private static void reportOnLoadFailure(EnvType envType, String bundleId, String message, Throwable cause) {
 		LOGGER.warn("Failed to run onLoad for {} script in bundle '{}': {}",
-			envType.getName(), bundleId, message);
+			envType.getName(), bundleId, message, cause);
 		ModLoadingIssue issue = ModLoadingIssue.error(String.format(
 			"Failed to run onLoad for %s script in bundle '%s': %s",
 			envType.getName(), bundleId, message));
@@ -89,9 +89,10 @@ public class GroovyScriptLoader {
 				LOGGER.error("onLoad timed out for {} script in bundle '{}' after {}s, skipping",
 					envType.getName(), bundleId, StartupConfig.SCRIPT_TIMEOUT_SECONDS.get());
 				reportOnLoadFailure(envType, bundleId,
-					"timed out after " + StartupConfig.SCRIPT_TIMEOUT_SECONDS.get() + " seconds (entrypoint skipped)");
+					"timed out after " + StartupConfig.SCRIPT_TIMEOUT_SECONDS.get() + " seconds (entrypoint skipped)",
+					ste);
 			} catch (Exception e) {
-				reportOnLoadFailure(envType, bundleId, e.getMessage());
+				reportOnLoadFailure(envType, bundleId, e.getMessage(), e);
 			}
 		}
 
@@ -179,7 +180,7 @@ public class GroovyScriptLoader {
 				definedClasses.put(gc.getName(), clazz);
 			} catch (Exception e) {
 				LOGGER.warn("Failed to define class '{}' in bundle '{}': {}",
-					gc.getName(), bundleId, e.getMessage());
+					gc.getName(), bundleId, e.getMessage(), e);
 			}
 		}
 
@@ -225,7 +226,7 @@ public class GroovyScriptLoader {
 			} catch (Exception e) {
 				String filename = sourcePath.getFileName().toString();
 				LOGGER.warn("Failed to instantiate entrypoint '{}' in bundle '{}': {}",
-					filename, bundleId, e.getMessage());
+					filename, bundleId, e.getMessage(), e);
 			}
 		}
 

@@ -22,7 +22,6 @@ import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.List;
-import java.util.Optional;
 
 public record AreaPacket(
 	AreaPacket.Action action,
@@ -120,7 +119,7 @@ public record AreaPacket(
 
 			switch (packet.action()) {
 				case REQUEST_SYNC -> {
-					areaManager.syncToPlayer(player);
+					areaManager.syncToAll();
 				}
 				case REMOVE -> {
 					Area area = areaManager.getArea(packet.id());
@@ -170,7 +169,7 @@ public record AreaPacket(
 		}
 		CompoundTag links = packet.linkedAreas();
 		for (String key : links.keySet()) {
-			Identifier linked = links.getString(key).flatMap(value -> Optional.ofNullable(Identifier.tryParse(value))).orElse(null);
+			Identifier linked = links.getString(key).map(Identifier::tryParse).orElse(null);
 			if (linked == null) {
 				Common.LOGGER.warn("AreaPacket: skipping link with malformed identifier '{}'", key);
 				continue;

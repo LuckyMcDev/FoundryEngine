@@ -37,16 +37,14 @@ public record ServerBoundSetTimePacket(int timeValue) implements AbstractPacket<
 
 	@Override
 	public void handleServer(IPayloadContext ctx) {
-		if (ctx.player() instanceof ServerPlayer player) {
-
-			if (!PermissionChecks.COMMANDS_GAMEMASTER.check(player.permissions())) {
-				return;
-			}
-
-			player.level().dimensionTypeRegistration().value().defaultClock().ifPresent(clock -> {
-				player.level().clockManager().setTotalTicks(clock, timeValue);
-				Common.LOGGER.info("Player {} set time to {}", player.getName().getString(), timeValue);
-			});
+		ServerPlayer player = AbstractPacket.serverPlayer(ctx);
+		if (player == null || !PermissionChecks.COMMANDS_GAMEMASTER.check(player.permissions())) {
+			return;
 		}
+
+		player.level().dimensionTypeRegistration().value().defaultClock().ifPresent(clock -> {
+			player.level().clockManager().setTotalTicks(clock, timeValue);
+			Common.LOGGER.info("Player {} set time to {}", player.getName().getString(), timeValue);
+		});
 	}
 }

@@ -15,6 +15,8 @@ import org.slf4j.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.security.CodeSource;
+import java.security.cert.Certificate;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -62,7 +64,8 @@ public final class ScriptShell {
 			}
 		}
 
-		CompilationUnit unit = new CompilationUnit(compilerConfig, null, loader);
+		CodeSource codeSource = new CodeSource(root.toUri().toURL(), (Certificate[]) null);
+		CompilationUnit unit = new CompilationUnit(compilerConfig, codeSource, loader);
 		for (Path scriptPath : scriptPaths) {
 			unit.addSource(new File(scriptPath.toUri()));
 		}

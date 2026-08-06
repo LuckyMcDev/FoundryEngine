@@ -6,6 +6,7 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import de.luckymcdev.foundryengine.client.command.suggest.nbt.NbtSuggestionEngine;
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.resources.Identifier;
@@ -55,7 +56,7 @@ public class BlockStateParserMixin {
 		if (state == null) {
 			return Suggestions.empty();
 		}
-		Identifier id = net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(state.getBlock());
+		Identifier id = BuiltInRegistries.BLOCK.getKey(state.getBlock());
 		return NbtSuggestionEngine.suggest("block/" + id, builder);
 	}
 }

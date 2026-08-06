@@ -368,7 +368,7 @@ public class GroovyReflectionAutocompleteProvider implements IAutocompleteProvid
 			}
 		}
 
-		for (java.lang.reflect.Field f : clazz.getFields()) {
+		for (Field f : clazz.getFields()) {
 			int mod = f.getModifiers();
 			if (!Modifier.isPublic(mod)) {
 				continue;

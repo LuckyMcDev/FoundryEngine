@@ -11,6 +11,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
@@ -105,7 +106,7 @@ public class BlockToDisplayCommand implements EngineCommand {
 		return 1;
 	}
 
-	private void spawnBlockDisplay(net.minecraft.server.level.ServerLevel level, BlockPos pos) {
+	private void spawnBlockDisplay(ServerLevel level, BlockPos pos) {
 		BlockState state = level.getBlockState(pos);
 		Vec3 center = new Vec3(pos.getX(), pos.getY(), pos.getZ());
 

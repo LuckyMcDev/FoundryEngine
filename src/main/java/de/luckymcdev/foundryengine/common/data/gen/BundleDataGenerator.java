@@ -27,6 +27,7 @@ import de.luckymcdev.foundryengine.server.data.providers.tags.EngineBlockTagsPro
 import de.luckymcdev.foundryengine.server.data.providers.tags.EngineItemTagsProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.LayeredRegistryAccess;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.server.RegistryLayer;
@@ -158,10 +159,10 @@ public class BundleDataGenerator {
 			gen.addProvider(new EngineRecipeProvider.Runner(pOut, lookupProvider, namespace, recipeBuilders));
 			gen.addProvider(new EngineRecipePrioritiesProvider(pOut, lookupProvider, namespace));
 			var blockTagBuilders = tagBuilders.stream()
-				.filter(b -> b.registry().equals(net.minecraft.core.registries.Registries.BLOCK))
+				.filter(b -> b.registry().equals(Registries.BLOCK))
 				.toList();
 			var itemTagBuilders = tagBuilders.stream()
-				.filter(b -> b.registry().equals(net.minecraft.core.registries.Registries.ITEM))
+				.filter(b -> b.registry().equals(Registries.ITEM))
 				.toList();
 
 			gen.addProvider(new EngineBlockTagsProvider(pOut, lookupProvider, namespace, blockTagBuilders));

@@ -16,13 +16,14 @@ import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 
 /**
  * Manages the lifecycle and tick dispatch of game sessions, scoped per world.
@@ -110,7 +111,7 @@ public class GameManager implements BundleLifecycleListener {
 			return;
 		}
 		GameSession session = sessions.remove(id);
-		if (session != null && session.started) {
+		if (session != null && session.isStarted()) {
 			stopSession(worldName, id);
 		}
 		LOGGER.debug("Unregistered game session [{}] from world [{}]", id, worldName);
@@ -145,13 +146,9 @@ public class GameManager implements BundleLifecycleListener {
 	 * Returns all sessions across all worlds and global sessions.
 	 */
 	public Collection<GameSession> getAllSessions() {
-		List<GameSession> all = new ArrayList<>(globalSessions.values());
+		Set<GameSession> all = new LinkedHashSet<>(globalSessions.values());
 		for (Map<Identifier, GameSession> s : worlds.values()) {
-			for (GameSession session : s.values()) {
-				if (!all.contains(session)) {
-					all.add(session);
-				}
-			}
+			all.addAll(s.values());
 		}
 		return Collections.unmodifiableCollection(all);
 	}
@@ -216,7 +213,7 @@ public class GameManager implements BundleLifecycleListener {
 
 		worldLifecycles.put(worldName, GameLifecycle.STARTING);
 		for (GameSession session : sessions.values()) {
-			if (session.autoStart() && !session.started) {
+			if (session.autoStart() && !session.isStarted()) {
 				startSession(worldName, session.id(), dataPath);
 			}
 		}
@@ -237,7 +234,7 @@ public class GameManager implements BundleLifecycleListener {
 			LOGGER.warn("Cannot start unknown session [{}] for world [{}]", id, worldName);
 			return false;
 		}
-		if (session.started) {
+		if (session.isStarted()) {
 			return false;
 		}
 
@@ -248,7 +245,7 @@ public class GameManager implements BundleLifecycleListener {
 
 		session.load(dataPath);
 		session.onStarting();
-		session.started = true;
+		session.setStarted(true);
 
 		NeoForge.EVENT_BUS.post(new GameSessionEvent.Started(id));
 		LOGGER.debug("Started game session [{}] for world [{}]", id, worldName);
@@ -263,7 +260,7 @@ public class GameManager implements BundleLifecycleListener {
 		if (session == null) {
 			return false;
 		}
-		if (!session.started) {
+		if (!session.isStarted()) {
 			return false;
 		}
 
@@ -277,7 +274,7 @@ public class GameManager implements BundleLifecycleListener {
 			session.onStopping();
 			session.save(dataPath);
 		} finally {
-			session.started = false;
+			session.setStarted(false);
 		}
 
 		NeoForge.EVENT_BUS.post(new GameSessionEvent.Stopped(id));
@@ -312,6 +309,25 @@ public class GameManager implements BundleLifecycleListener {
 	 * Ticks all started sessions for the world of the given level.
 	 */
 	public void tickCommon(Level level) {
+		forEachActiveSession(level, tickedCommonSessions, session -> session.onCommonTick(level));
+	}
+
+	/**
+	 * Ticks all started sessions for the world of the given client level.
+	 */
+	public void tickClient(Minecraft client, Level level) {
+		forEachActiveSession(level, null, session -> session.onClientTick(client, level));
+	}
+
+	/**
+	 * Ticks all started sessions for the world of the given server level.
+	 */
+	public void tickServer(MinecraftServer server, ServerLevel level) {
+		forEachActiveSession(level, tickedServerSessions, session -> session.onServerTick(server, level));
+	}
+
+	private void forEachActiveSession(Level level, @Nullable Set<GameSession> deduplicate,
+	                                  Consumer<GameSession> action) {
 		String name = worldName(level);
 		if (worldLifecycle(name) != GameLifecycle.RUNNING) {
 			return;
@@ -322,50 +338,9 @@ public class GameManager implements BundleLifecycleListener {
 		}
 
 		for (GameSession session : sessions.values()) {
-			if (session.started && session.publicState().isActive()
-				&& tickedCommonSessions.add(session)) {
-				session.onCommonTick(level);
-			}
-		}
-	}
-
-	/**
-	 * Ticks all started sessions for the world of the given client level.
-	 */
-	public void tickClient(Minecraft client, Level level) {
-		String name = worldName(level);
-		if (worldLifecycle(name) != GameLifecycle.RUNNING) {
-			return;
-		}
-		Map<Identifier, GameSession> sessions = worlds.get(name);
-		if (sessions == null) {
-			return;
-		}
-
-		for (GameSession session : sessions.values()) {
-			if (session.started && session.publicState().isActive()) {
-				session.onClientTick(client, level);
-			}
-		}
-	}
-
-	/**
-	 * Ticks all started sessions for the world of the given server level.
-	 */
-	public void tickServer(MinecraftServer server, ServerLevel level) {
-		String name = worldName(level);
-		if (worldLifecycle(name) != GameLifecycle.RUNNING) {
-			return;
-		}
-		Map<Identifier, GameSession> sessions = worlds.get(name);
-		if (sessions == null) {
-			return;
-		}
-
-		for (GameSession session : sessions.values()) {
-			if (session.started && session.publicState().isActive()
-				&& tickedServerSessions.add(session)) {
-				session.onServerTick(server, level);
+			if (session.isStarted() && session.publicState().isActive()
+				&& (deduplicate == null || deduplicate.add(session))) {
+				action.accept(session);
 			}
 		}
 	}

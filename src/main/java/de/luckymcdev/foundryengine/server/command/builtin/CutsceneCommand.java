@@ -232,7 +232,7 @@ public class CutsceneCommand implements EngineCommand {
 		tag.putInt("holdStart", holdStart);
 		tag.putInt("holdEnd", holdEnd);
 
-		manager.syncToPlayer(targetPlayer);
+		manager.syncToAll();
 		int total = length + holdStart + holdEnd + cutscene.getTotalAnchorHoldTicks();
 		Common.getCutsceneSessionManager().addInstance(targetPlayer, total);
 		PacketDistributor.sendToPlayer(targetPlayer, new CutscenePacket(tag));

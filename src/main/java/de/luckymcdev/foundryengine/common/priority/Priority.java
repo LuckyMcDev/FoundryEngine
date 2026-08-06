@@ -37,7 +37,7 @@ public enum Priority {
 	 * @param keyExtractor function to extract priority from object
 	 * @return comparator for sorting objects by priority
 	 */
-	public static <T> Comparator<T> comparing(java.util.function.Function<? super T, Priority> keyExtractor) {
+	public static <T> Comparator<T> comparing(Function<? super T, Priority> keyExtractor) {
 		return Comparator.comparingInt(obj -> keyExtractor.apply(obj).value);
 	}
 

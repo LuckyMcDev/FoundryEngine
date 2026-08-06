@@ -12,17 +12,7 @@ public class ParticleManager {
 	 * Spawns a particle at the position provided by the first keyframe of the position data.
 	 */
 	public void spawn(ParticleBuilder builder) {
-		Vector3d startPos = builder.getPositionData().getSequence().getFirstValue();
-		Vector3d startVel = builder.getVelocityData().getSequence().getFirstValue();
-
-		if (startPos == null) {
-			startPos = new Vector3d(0, 0, 0);
-		}
-		if (startVel == null) {
-			startVel = new Vector3d(0, 0, 0);
-		}
-
-		spawn(builder, startPos, startVel);
+		spawn(builder, builder.startPosition(), builder.startVelocity());
 	}
 
 	public void spawn(ParticleBuilder builder, double x, double y, double z) {

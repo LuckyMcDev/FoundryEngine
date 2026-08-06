@@ -8,6 +8,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jspecify.annotations.Nullable;
 
@@ -45,6 +46,14 @@ public interface AbstractPacket<T extends AbstractPacket<T>> extends CustomPacke
 
 	static <T extends CustomPacketPayload> Type<T> createType(Identifier id) {
 		return new Type<>(id);
+	}
+
+	/**
+	 * The server-side player that sent the payload, or {@code null} when the payload was received
+	 * on a side without a player (e.g. dedicated server startup or client-bound traffic).
+	 */
+	static @Nullable ServerPlayer serverPlayer(IPayloadContext ctx) {
+		return ctx.player() instanceof ServerPlayer player ? player : null;
 	}
 
 	@Override

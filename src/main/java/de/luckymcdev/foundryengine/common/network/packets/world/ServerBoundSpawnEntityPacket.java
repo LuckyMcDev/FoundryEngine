@@ -60,10 +60,8 @@ public record ServerBoundSpawnEntityPacket(
 
 	@Override
 	public void handleServer(IPayloadContext ctx) {
-		if (!(ctx.player() instanceof ServerPlayer serverPlayer)) {
-			return;
-		}
-		if (!PermissionChecks.COMMANDS_GAMEMASTER.check(serverPlayer.permissions())) {
+		ServerPlayer serverPlayer = AbstractPacket.serverPlayer(ctx);
+		if (serverPlayer == null || !PermissionChecks.COMMANDS_GAMEMASTER.check(serverPlayer.permissions())) {
 			return;
 		}
 

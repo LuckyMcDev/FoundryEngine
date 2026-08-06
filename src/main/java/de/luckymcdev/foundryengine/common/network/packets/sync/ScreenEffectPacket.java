@@ -8,6 +8,8 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
+import java.util.function.Consumer;
+
 public record ScreenEffectPacket(
 	String name,
 	int introTicks,
@@ -30,7 +32,7 @@ public record ScreenEffectPacket(
 		ScreenEffectPacket::handleClient,
 		null
 	);
-	public static volatile java.util.function.Consumer<ScreenEffectPacket> CLIENT_HANDLER;
+	public static volatile Consumer<ScreenEffectPacket> CLIENT_HANDLER;
 	private static boolean clientHandlerWarned;
 
 	@Override
