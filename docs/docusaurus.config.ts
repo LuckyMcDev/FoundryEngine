@@ -9,6 +9,15 @@ const config: Config = {
 	tagline: 'Turn Minecraft into a game engine, one bundle at a time',
 	favicon: 'img/favicon.png',
 
+	plugins: [
+		[
+			"@cmfcmf/docusaurus-search-local",
+			{
+				// Options here
+			},
+		],
+	],
+
 	// Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
 	future: {
 		v4: true, // Improve compatibility with the upcoming Docusaurus v4
@@ -73,20 +82,6 @@ const config: Config = {
 					customCss: './src/css/custom.css',
 				},
 			} satisfies Preset.Options,
-		],
-	],
-
-	themes: [
-		[
-			require.resolve('@easyops-cn/docusaurus-search-local'),
-			/** @type {import('@easyops-cn/docusaurus-search-local').PluginOptions} */
-			({
-				hashed: true,
-				indexDocs: true,
-				indexBlog: true,
-				indexPages: false,
-				docsRouteBasePath: '/',
-			}),
 		],
 	],
 
