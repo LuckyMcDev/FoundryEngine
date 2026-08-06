@@ -5,18 +5,18 @@ plugins {
 }
 
 version = libs.versions.minecraft.version.get() + "-" + libs.versions.mod.version.get()
-group = libs.versions.mod.group.getOrElse('de.luckymcdev')
+group = libs.versions.mod.group.get()
 base {
 	archivesName.set(libs.versions.mod.id)
 }
 
 foundryengine {
 	mod {
-		id = 'foundryengine'
-		name = 'Foundry Engine'
-		license = 'All Rights Reserved'
-		authors = 'LuckyMcDev'
-		description = 'Turn Minecraft into a Game Engine'
+		id = libs.versions.mod.id
+		name = libs.versions.mod.name
+		license = libs.versions.mod.license
+		authors = libs.versions.mod.authors
+		description = libs.versions.mod.description
 		logoFile = 'assets/foundryengine/textures/logo_transparent.png'
 		credits = 'Silhouette of cog icon from https://game-icons.net/ modified by Auseawesome. Originally licensed under CC-BY-3.0, full text available at https://creativecommons.org/licenses/by/3.0/'
 	}

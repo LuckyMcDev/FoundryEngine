@@ -4,7 +4,7 @@ license = "All Rights Reserved"
 
 [[mods]]
 modId = "foundryengine"
-version = "0.1.5"
+version = "0.1.6"
 displayName = "Foundry Engine"
 logoFile = "assets/foundryengine/textures/logo_transparent.png"
 credits = "Silhouette of cog icon from https://game-icons.net/ modified by Auseawesome. Originally licensed under CC-BY-3.0, full text available at https://creativecommons.org/licenses/by/3.0/"

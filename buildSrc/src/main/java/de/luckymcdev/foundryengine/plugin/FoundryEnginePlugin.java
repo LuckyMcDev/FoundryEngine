@@ -42,9 +42,9 @@ public class FoundryEnginePlugin implements Plugin<Project> {
 		extension.getMod().getAuthors().convention(reader.value("mod_authors", "mod-authors"));
 		extension.getMod().getDescription().convention(reader.value("mod_description", "mod-description"));
 
-		extension.getMinecraft().getMinecraftVersion().convention(reader.value("minecraft_version", "minecraft"));
+		extension.getMinecraft().getMinecraftVersion().convention(reader.value("minecraft_version", "minecraft-version"));
 		extension.getMinecraft().getMinecraftVersionRange().convention(reader.value("minecraft_version_range", "minecraft-range"));
-		extension.getMinecraft().getNeoVersion().convention(reader.value("neo_version", "neo"));
+		extension.getMinecraft().getNeoVersion().convention(reader.value("neo_version", "neo-version"));
 		extension.getMinecraft().getNeoVersionRange().convention(reader.value("neo_version_range", "neo-range"));
 		extension.getMinecraft().getLoaderVersionRange().convention(reader.value("loader_version_range", "loader-range"));
 	}

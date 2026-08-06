@@ -5,7 +5,11 @@ neo-version = "26.1.2.93"
 neo-range = "[26.1.2.71,26.2)"
 loader-range = "[4,)"
 
-mod-version = "0.1.5"
+mod-name = "Foundry Engine"
+mod-license = "All Rights Reserved"
+mod-authors = "LuckyMcDev"
+mod-description = "A Mod that turns Minecraft into a Game Engine."
+mod-version = "0.1.6"
 mod-group = "de.luckymcdev"
 mod-id = "foundryengine"
 
