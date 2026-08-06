@@ -76,6 +76,20 @@ const config: Config = {
 		],
 	],
 
+	themes: [
+		[
+			require.resolve('@easyops-cn/docusaurus-search-local'),
+			/** @type {import('@easyops-cn/docusaurus-search-local').PluginOptions} */
+			({
+				hashed: true,
+				indexDocs: true,
+				indexBlog: true,
+				indexPages: false,
+				docsRouteBasePath: '/',
+			}),
+		],
+	],
+
 	themeConfig: {
 		colorMode: {
 			respectPrefersColorScheme: true,
@@ -115,6 +129,10 @@ const config: Config = {
 					label: 'GitHub',
 					position: 'right',
 				},
+				{
+					type: 'search',
+					position: 'right',
+				}
 			],
 		},
 		footer: {
