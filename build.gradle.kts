@@ -1,9 +1,9 @@
 import me.modmuss50.mpp.ReleaseType
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.bundling.Jar
+import org.gradle.api.tasks.javadoc.Javadoc
 import org.gradle.external.javadoc.JavadocMemberLevel
 import org.gradle.external.javadoc.StandardJavadocDocletOptions
-import org.gradle.jvm.tasks.Javadoc
 
 plugins {
     id("java-library")
@@ -13,14 +13,13 @@ plugins {
     id("me.modmuss50.mod-publish-plugin")
 }
 
-version = "${property("mod.version")}+${sc.current.version}"
+version = "${sc.current.version}+${property("mod.version")}"
 group = property("mod.group") as String
 base.archivesName = property("mod.id") as String
 
 val modId = property("mod.id") as String
 val modVersion = property("mod.version") as String
-val mcReleases = (sc.properties["mod.mc_releases"] as? List<*>)?.map { it.toString() }
-    ?: listOf(property("mod.mc") as String)
+val mcReleases = sc.versions.map { it.version }
 
 repositories {
     mavenLocal()
@@ -79,7 +78,7 @@ neoForge {
             programArguments.addAll(
                 "--mod", modId,
                 "--all",
-                "--output", project.layout.buildDirectory.dir("generated/resources").get().asFile.absolutePath,
+                "--output", layout.buildDirectory.dir("generated/resources").get().asFile.absolutePath,
                 "--existing", rootProject.file("src/main/resources").absolutePath,
             )
             gameDirectory = file("../../runs/data")
@@ -89,6 +88,7 @@ neoForge {
 
 java {
     withSourcesJar()
+    withJavadocJar()
     sourceCompatibility = JavaVersion.VERSION_25
     targetCompatibility = JavaVersion.VERSION_25
     toolchain {
@@ -171,19 +171,11 @@ tasks {
         (options as StandardJavadocDocletOptions).apply {
             encoding = "UTF-8"
             memberLevel = JavadocMemberLevel.PROTECTED
-            link("https://docs.oracle.com/en/java/javase/25/docs/api/")
+            links("https://docs.oracle.com/en/java/javase/25/docs/api/")
         }
         isFailOnError = false
         exclude("**/internal/**")
-        setSource(sourceSets.main.get().allJava)
-    }
-
-    register<Jar>("javadocJar") {
-        group = "documentation"
-        description = "A Javadoc JAR built with the standard Javadoc tool."
-        dependsOn(tasks.named("javadoc"))
-        from(tasks.named<Javadoc>("javadoc").map { it.destinationDir })
-        archiveClassifier.set("javadoc")
+		source = sourceSets.main.get().allJava
     }
 
     named("assemble") {
@@ -194,11 +186,8 @@ tasks {
         group = "build"
         description = "Builds the mod jar and copies it to `build/libs/{version}/`."
         inputs.property("version", modVersion)
-        dependsOn(tasks.named("jar"), tasks.named("sourcesJar"))
-        from(
-            tasks.named<Jar>("jar").flatMap { it.archiveFile },
-            tasks.named<Jar>("sourcesJar").flatMap { it.archiveFile },
-        )
+        dependsOn(named("jar"), named("sourcesJar"))
+        from(named("jar"), named("sourcesJar"))
         into(rootProject.layout.buildDirectory.dir("libs/$modVersion"))
     }
 
@@ -215,8 +204,6 @@ publishing {
     publications {
         register<MavenPublication>("mavenJava") {
             from(components["java"])
-            artifact(tasks.named<Jar>("javadocJar"))
-            artifact(tasks.named<Jar>("sourcesJar"))
         }
     }
     repositories {
@@ -233,10 +220,10 @@ publishMods {
     modLoaders.add("neoforge")
     version = modVersion
     displayName = "${property("mod.name")} $modVersion"
-    file = tasks.named<Jar>("jar").flatMap { it.archiveFile }
+    file = tasks.named("jar").flatMap { (it as Jar).archiveFile }
     additionalFiles.from(
-        tasks.named<Jar>("javadocJar").flatMap { it.archiveFile },
-        tasks.named<Jar>("sourcesJar").flatMap { it.archiveFile },
+        tasks.named("javadocJar").map { (it as Jar).archiveFile.get() },
+        tasks.named("sourcesJar").map { (it as Jar).archiveFile.get() },
     )
 
     github {
@@ -256,7 +243,6 @@ publishMods {
     modrinth {
         accessToken = providers.environmentVariable("MODRINTH_TOKEN")
         projectId = "AaUmWHXd"
-        versionType = "alpha"
         minecraftVersions.addAll(mcReleases)
     }
 }
