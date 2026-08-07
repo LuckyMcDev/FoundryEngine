@@ -47,7 +47,7 @@ public class MinecraftPanelRequirements implements PanelRequirements {
 			textDenied("World Required", "You need to join a world for this panel to work.");
 			return false;
 		}
-		if (!mc.isSingleplayer()) {
+		if (isSinglePlayer(mc)) {
 			if (!Client.getPlayer().permissions().hasPermission(new Permission.HasCommandLevel(level))) {
 				textDenied("Insufficient permissions", customMessage);
 				return false;
@@ -64,7 +64,7 @@ public class MinecraftPanelRequirements implements PanelRequirements {
 	@Override
 	public boolean requireLevelOnServer(PermissionLevel level, String customMessage) {
 		var mc = Minecraft.getInstance();
-		if (mc.level != null && !mc.isSingleplayer()) {
+		if (isSinglePlayer(mc)) {
 			if (mc.player == null) {
 				textDenied("Insufficient permissions", customMessage);
 				return false;
@@ -80,11 +80,19 @@ public class MinecraftPanelRequirements implements PanelRequirements {
 	@Override
 	public boolean requireLocal() {
 		var mc = Minecraft.getInstance();
-		if (mc.level != null && !mc.isSingleplayer()) {
+		if (!isSinglePlayer(mc)) {
 			textDenied("Not Available",
 				"This panel is not available while connected to a server.");
 			return false;
 		}
 		return true;
+	}
+
+	private boolean isSinglePlayer(Minecraft mc) {
+		//? if 26.1 {
+		/*return (mc.level != null && mc.isSingleplayer());
+		 *///?} else {
+		return (mc.level != null && mc.hasSingleplayerServer());
+		//?}
 	}
 }

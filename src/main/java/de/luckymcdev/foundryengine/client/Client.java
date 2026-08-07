@@ -140,14 +140,22 @@ public final class Client {
 	 * Returns the main render target.
 	 */
 	public static RenderTarget getMainRenderTarget() {
-		return getMc().getMainRenderTarget();
+		//? if 26.1 {
+		/*return getMc().getMainRenderTarget();
+		 *///?} else {
+		return getMc().gameRenderer.mainRenderTarget();
+		//?}
 	}
 
 	/**
 	 * Returns the main game camera.
 	 */
 	public static Camera getMainCamera() {
-		return getGameRenderer().getMainCamera();
+		//? if 26.1 {
+		/*return getGameRenderer().getMainCamera();
+		 *///?} else {
+		return getGameRenderer().mainCamera();
+		//?}
 	}
 
 	/**
@@ -168,7 +176,11 @@ public final class Client {
 	 * Sets the current screen overlay.
 	 */
 	public static void setScreen(Screen screen) {
-		getMc().setScreen(screen);
+		//? if 26.1 {
+		/*getMc().setScreen(screen);
+		 *///?} else {
+		getMc().gui.setScreen(screen);
+		//?}
 	}
 
 	/**

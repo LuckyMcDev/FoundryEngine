@@ -132,7 +132,11 @@ public class ImGuiImplGl3 {
 			glEnable(GL_SCISSOR_TEST);
 		} else {
 			// MAIN WINDOW: Use GlStateManager so Minecraft's state cache stays perfectly in sync
-			GlStateManager._enableBlend();
+			//? if 26.1 {
+			/*GlStateManager._enableBlend();
+			 *///?} else {
+			GlStateManager._enableBlend(0);
+			//?}
 			glBlendEquation(GlConst.GL_FUNC_ADD);
 			GlStateManager._blendFuncSeparate(GlConst.GL_SRC_ALPHA, GlConst.GL_ONE_MINUS_SRC_ALPHA, GlConst.GL_ONE, GlConst.GL_ONE_MINUS_SRC_ALPHA);
 			GlStateManager._disableCull();
@@ -371,9 +375,17 @@ public class ImGuiImplGl3 {
 			glBlendEquationSeparate(props.lastBlendEquationRgb[0], props.lastBlendEquationAlpha[0]);
 			GlStateManager._blendFuncSeparate(props.lastBlendSrcRgb[0], props.lastBlendDstRgb[0], props.lastBlendSrcAlpha[0], props.lastBlendDstAlpha[0]);
 			if (props.lastEnableBlend) {
-				GlStateManager._enableBlend();
+				//? if 26.1 {
+				/*GlStateManager._enableBlend();
+				 *///?} else {
+				GlStateManager._enableBlend(0);
+				//?}
 			} else {
-				GlStateManager._disableBlend();
+				//? if 26.1 {
+				/*GlStateManager._disableBlend();
+				 *///?} else {
+				GlStateManager._disableBlend(0);
+				//?}
 			}
 			if (props.lastEnableCullFace) {
 				GlStateManager._enableCull();

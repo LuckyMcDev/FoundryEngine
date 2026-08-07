@@ -15,7 +15,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Display;
-import net.minecraft.world.entity.EntityType;
+//? if 26.1 {
+/*import net.minecraft.world.entity.EntityType;
+ *///?} else {
+import net.minecraft.world.entity.EntityTypes;
+//?}
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -133,7 +137,11 @@ public class BlockToDisplayCommand implements EngineCommand {
 
 		Display.BlockDisplay display = EntitySpawner.spawnServer(
 			level,
-			EntityType.BLOCK_DISPLAY,
+			//? if 26.1 {
+			/*EntityType.BLOCK_DISPLAY,
+			 *///?} else {
+			EntityTypes.BLOCK_DISPLAY,
+			//?}
 			center,
 			entity -> {
 				entity.setBlockState(state);

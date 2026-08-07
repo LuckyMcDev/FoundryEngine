@@ -92,7 +92,13 @@ public class ClientCutsceneManager {
 			return;
 		}
 
-		mc.options.hideGui = true;
+		//? if 26.1 {
+		/*mc.options.hideGui = true;
+		 *///?} else {
+		if (!mc.gui.hud.isHidden()) {
+			mc.gui.hud.toggle();
+		}
+		//?}
 
 		float deltaTicks = mc.getDeltaTracker().getGameTimeDeltaTicks();
 
@@ -106,7 +112,13 @@ public class ClientCutsceneManager {
 			if (cutsceneQueue.isEmpty()) {
 				currentCutscene = null;
 				if (!Client.getPostEffectManager().inScreenEffect()) {
-					mc.options.hideGui = false;
+					//? if 26.1 {
+					/*mc.options.hideGui = false;
+					 *///?} else {
+					if (mc.gui.hud.isHidden()) {
+						mc.gui.hud.toggle();
+					}
+					//?}
 				}
 				return;
 			}
@@ -137,7 +149,13 @@ public class ClientCutsceneManager {
 				currentLengthInTicks = 0;
 				holdTimeEnd = 0;
 				holdTimeStart = 0;
-				Minecraft.getInstance().options.hideGui = false;
+				//? if 26.1 {
+				/*Minecraft.getInstance().options.hideGui = false;
+				 *///?} else {
+				if (Minecraft.getInstance().gui.hud.isHidden()) {
+					Minecraft.getInstance().gui.hud.toggle();
+				}
+				//?}
 				return;
 			}
 			setCutscene(cutsceneQueue.getFirst());

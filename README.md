@@ -53,9 +53,7 @@ Foundry Engine provides a large set of tools to ease the development of Minecraf
 
 ## Project Structure
 
-Follows a normal Java project structure, with the addition of a custom Gradle plugin in [`buildSrc`](buildSrc).
-
-Check [`build.gradle`](build.gradle) for how it's wired up, and see [`libs.versions.toml`](gradle/libs.versions.toml) for library versions.
+Follows a normal Java project structure. Now uses The Stonecutter library to manage developing for both 26.1 and 26.2 simultaneously. I recommend installing the Intellij companion for stonecutter to ease development.
 
 ## Contributing
 

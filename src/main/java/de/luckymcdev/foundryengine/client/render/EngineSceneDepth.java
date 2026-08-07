@@ -1,5 +1,6 @@
 package de.luckymcdev.foundryengine.client.render;
 
+import com.mojang.blaze3d.GpuFormat;
 import com.mojang.blaze3d.opengl.GlTexture;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
@@ -8,6 +9,9 @@ import de.luckymcdev.foundryengine.common.Common;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.resources.Identifier;
+
+//? if 26.2 {
+//?}
 
 public final class EngineSceneDepth extends AbstractTexture {
 	public static final Identifier ID = Identifier.fromNamespaceAndPath(Common.MODID, "engine_scene_depth");
@@ -21,7 +25,11 @@ public final class EngineSceneDepth extends AbstractTexture {
 
 	public static boolean update() {
 		Minecraft mc = Minecraft.getInstance();
-		RenderTarget main = mc.getMainRenderTarget();
+		//? if 26.1 {
+		/*RenderTarget main = mc.getMainRenderTarget();
+		 *///?} else {
+		RenderTarget main = mc.gameRenderer.mainRenderTarget();
+		//?}
 		if (main == null || !main.useDepth || main.getDepthTexture() == null) {
 			return false;
 		}
@@ -48,7 +56,11 @@ public final class EngineSceneDepth extends AbstractTexture {
 
 	private boolean capture(RenderTarget src) {
 		if (snapshot == null) {
-			snapshot = new TextureTarget("engine_scene_depth", src.width, src.height, true);
+			//? if 26.1 {
+			/*snapshot = new TextureTarget("engine_scene_depth", src.width, src.height, true);
+			 *///?} else {
+			snapshot = new TextureTarget("engine_scene_depth", src.width, src.height, true, GpuFormat.RGBA8_UNORM);
+			//?}
 		} else if (snapshot.width != src.width || snapshot.height != src.height) {
 			snapshot.resize(src.width, src.height);
 		}

@@ -67,6 +67,13 @@ public class VoidChunkGenerator extends ChunkGenerator {
 			return this;
 		}
 
+		//? if 26.2 {
+		@Override
+		public DensityFunction mapChildren(Visitor visitor) {
+			return this;
+		}
+		//?}
+
 		@Override
 		public double minValue() {
 			return 0;

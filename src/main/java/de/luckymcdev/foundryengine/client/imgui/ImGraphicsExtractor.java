@@ -1,16 +1,15 @@
 package de.luckymcdev.foundryengine.client.imgui;
 
+import com.mojang.blaze3d.GpuFormat;
 import com.mojang.blaze3d.ProjectionType;
 import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.opengl.GlTexture;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.platform.NativeImage;
-import com.mojang.blaze3d.systems.CommandEncoder;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.textures.GpuTexture;
 import com.mojang.blaze3d.textures.GpuTextureView;
-import com.mojang.blaze3d.textures.TextureFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcon;
@@ -46,6 +45,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import org.joml.Vector4f;
 import org.jspecify.annotations.Nullable;
 import org.lwjgl.opengl.GL11;
 
@@ -63,6 +63,13 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.function.Function;
+
+//? if 26.1 {
+/*import com.mojang.blaze3d.textures.TextureFormat;
+ */
+//?}
+//? if 26.2 {
+//?}
 
 public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorConsumer {
 	private static final int MAX_ICON_LOADS_PER_FRAME = 25;
@@ -222,7 +229,11 @@ public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorCons
 		ensureFramebuffer(size);
 		var device = RenderSystem.getDevice();
 
-		device.createCommandEncoder().clearColorAndDepthTextures(fbColorTex, 0, fbDepthTex, 1.0);
+		//? if 26.1 {
+		/*device.createCommandEncoder().clearColorAndDepthTextures(fbColorTex, 0, fbDepthTex, 1.0);
+		 *///?} else {
+		device.createCommandEncoder().clearColorAndDepthTextures(fbColorTex, new Vector4f(0.0F, 0.0F, 0.0F, 1.0F), fbDepthTex, 1.0);
+		//?}
 		RenderSystem.outputColorTextureOverride = fbColorView;
 		RenderSystem.outputDepthTextureOverride = fbDepthView;
 
@@ -232,7 +243,8 @@ public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorCons
 		RenderSystem.backupProjectionMatrix();
 		RenderSystem.setProjectionMatrix(fbProjBuf.getBuffer(projection), ProjectionType.ORTHOGRAPHIC);
 
-		var resolver = mc.getItemModelResolver();
+		//? if 26.1 {
+		/*var resolver = mc.getItemModelResolver();
 		var submitNodeCollector = mc.gameRenderer.getSubmitNodeStorage();
 		var featureDispatcher = mc.gameRenderer.getFeatureRenderDispatcher();
 		var bufferSource = mc.renderBuffers().bufferSource();
@@ -252,16 +264,43 @@ public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorCons
 
 		featureDispatcher.renderAllFeatures();
 		bufferSource.endBatch();
+		*///?} else {
+		var resolver = mc.getItemModelResolver();
+		var submitNodes = new net.minecraft.client.renderer.SubmitNodeStorage();
+		var featureDispatcher = mc.gameRenderer.featureRenderDispatcher();
+		var lighting = mc.gameRenderer.lighting();
+		var player = mc.player;
+
+		TrackingItemStackRenderState renderState = new TrackingItemStackRenderState();
+		resolver.updateForTopItem(renderState, stack, ItemDisplayContext.GUI, level, player, 0);
+
+		Lighting.Entry lightingEntry = renderState.usesBlockLight() ? Lighting.Entry.ITEMS_3D : Lighting.Entry.ITEMS_FLAT;
+		lighting.setupFor(lightingEntry);
+
+		PoseStack poseStack = new PoseStack();
+		poseStack.translate(size / 2.0F, size / 2.0F, 0.0F);
+		poseStack.scale(size, -size, size);
+		renderState.submit(poseStack, submitNodes, 15728880, OverlayTexture.NO_OVERLAY, 0);
+
+		featureDispatcher.renderAllFeatures(submitNodes);
+		//?}
 
 		RenderSystem.restoreProjectionMatrix();
 		RenderSystem.outputColorTextureOverride = null;
 		RenderSystem.outputDepthTextureOverride = null;
 
-		int pixelSize = TextureFormat.RGBA8.pixelSize();
+//? if 26.1 {
+		/*int pixelSize = TextureFormat.RGBA8.pixelSize();
 		GpuBuffer readBuffer = device.createBuffer(() -> "item_icon_read", GpuBuffer.USAGE_MAP_READ | GpuBuffer.USAGE_COPY_DST, (long) size * size * pixelSize);
 		CommandEncoder encoder = device.createCommandEncoder();
 		device.createCommandEncoder().copyTextureToBuffer(fbColorTex, readBuffer, 0, () -> {
 			try (var mapped = encoder.mapBuffer(readBuffer, true, false)) {
+			*///?} else {
+		int pixelSize = GpuFormat.RGBA8_UNORM.blockSize();
+		GpuBuffer readBuffer = device.createBuffer(() -> "item_icon_read", GpuBuffer.USAGE_MAP_READ | GpuBuffer.USAGE_COPY_DST, (long) size * size * pixelSize);
+		device.createCommandEncoder().copyTextureToBuffer(fbColorTex, readBuffer, 0, () -> {
+			try (var mapped = readBuffer.map(true, false)) {
+				//?}
 				NativeImage image = new NativeImage(size, size, false);
 				for (int y = 0; y < size; y++) {
 					for (int x = 0; x < size; x++) {
@@ -303,10 +342,17 @@ public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorCons
 		closeFramebuffer();
 		fbSize = size;
 		var device = RenderSystem.getDevice();
-		fbColorTex = device.createTexture(() -> "item_icon_fb", 13, TextureFormat.RGBA8, size, size, 1, 1);
+//? if 26.1 {
+		/*fbColorTex = device.createTexture(() -> "item_icon_fb", 13, TextureFormat.RGBA8, size, size, 1, 1);
 		fbColorView = device.createTextureView(fbColorTex);
 		fbDepthTex = device.createTexture(() -> "item_icon_fb_depth", 9, TextureFormat.DEPTH32, size, size, 1, 1);
 		fbDepthView = device.createTextureView(fbDepthTex);
+		*///?} else {
+		fbColorTex = device.createTexture(() -> "item_icon_fb", GpuTexture.USAGE_RENDER_ATTACHMENT | GpuTexture.USAGE_TEXTURE_BINDING | GpuTexture.USAGE_COPY_SRC | GpuTexture.USAGE_COPY_DST, GpuFormat.RGBA8_UNORM, size, size, 1, 1);
+		fbColorView = device.createTextureView(fbColorTex);
+		fbDepthTex = device.createTexture(() -> "item_icon_fb_depth", GpuTexture.USAGE_RENDER_ATTACHMENT | GpuTexture.USAGE_TEXTURE_BINDING | GpuTexture.USAGE_COPY_SRC | GpuTexture.USAGE_COPY_DST, GpuFormat.D32_FLOAT, size, size, 1, 1);
+		fbDepthView = device.createTextureView(fbDepthTex);
+		//?}
 		fbProjBuf = new ProjectionMatrixBuffer("item_icon_fb_proj");
 	}
 

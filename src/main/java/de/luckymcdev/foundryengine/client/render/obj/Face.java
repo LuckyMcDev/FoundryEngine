@@ -4,15 +4,23 @@ import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import de.luckymcdev.foundryengine.client.Client;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
+import de.luckymcdev.foundryengine.client.render.MeshRenderer;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
+
+//? if 26.1 {
+/*import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.MultiBufferSource;
+*/
+//?}
+//? if 26.2 {
+//?}
 
 public record Face(List<Vertex> vertices, Material material) {
 	public Face(List<Vertex> vertices, @Nullable Material material) {
@@ -98,7 +106,8 @@ public record Face(List<Vertex> vertices, Material material) {
 
 	private void renderFace(PoseStack poseStack, RenderType renderType, int packedLight,
 	                        float r, float g, float b, float a) {
-		MultiBufferSource.BufferSource mcBufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
+		//? if 26.1 {
+		/*MultiBufferSource.BufferSource mcBufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
 		VertexConsumer consumer = mcBufferSource.getBuffer(renderType);
 		int count = vertices.size();
 
@@ -111,6 +120,22 @@ public record Face(List<Vertex> vertices, Material material) {
 		} else {
 			Client.LOGGER.warn("Skipping face with invalid vertex count: {}", count);
 		}
+		*///?} else {
+		try (MeshRenderer.DrawSession session = Client.getMeshRenderer().begin(renderType, new Matrix4f())) {
+			VertexConsumer consumer = session.buffer();
+			int count = vertices.size();
+
+			if (count == 4) {
+				renderQuad(poseStack, consumer, packedLight, r, g, b, a);
+			} else if (count == 3) {
+				renderTriangle(poseStack, consumer, packedLight, r, g, b, a);
+			} else if (count > 4) {
+				renderNgon(poseStack, consumer, packedLight, r, g, b, a);
+			} else {
+				Client.LOGGER.warn("Skipping face with invalid vertex count: {}", count);
+			}
+		}
+		//?}
 	}
 
 	private void addVertex(VertexConsumer buffer, Vertex vertex, PoseStack poseStack, int packedLight,

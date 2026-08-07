@@ -213,14 +213,24 @@ public final class ImGuiManager implements ResourceManagerReloadListener, Native
 			return;
 		}
 
-		final RenderTarget framebuffer = Minecraft.getInstance().getMainRenderTarget();
+		//? if 26.1 {
+		/*final RenderTarget framebuffer = Minecraft.getInstance().getMainRenderTarget();
+		 *///?} else {
+		final RenderTarget framebuffer = Minecraft.getInstance().gameRenderer.mainRenderTarget();
+		//?}
 		GlTexture colorTexture = Client.getGlColTexture();
 		GlDevice device = Client.getGlDevice();
 
 		previousFramebuffer = GL11.glGetInteger(GL30C.GL_FRAMEBUFFER_BINDING);
-		GlStateManager._glBindFramebuffer(
+		//? if 26.1 {
+		/*GlStateManager._glBindFramebuffer(
 			GL30C.GL_FRAMEBUFFER, colorTexture.getFbo(device.directStateAccess(), null)
 		);
+		*///?} else {
+		GlStateManager._glBindFramebuffer(
+			GL30C.GL_FRAMEBUFFER, device.frameBufferCache().getFbo(device.directStateAccess(), java.util.List.of(colorTexture), null)
+		);
+		//?}
 		GL11.glViewport(0, 0, framebuffer.width, framebuffer.height);
 
 		imGuiImplGl3.newFrame();

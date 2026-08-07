@@ -1,8 +1,6 @@
 package de.luckymcdev.foundryengine;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.command.FoundryCommandsClient;
@@ -42,6 +40,7 @@ import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.bundle.modcompat.BundleModContainer;
 import de.luckymcdev.foundryengine.common.dialogue.DialogueNode;
 import de.luckymcdev.foundryengine.common.dialogue.DialogueSession;
+import de.luckymcdev.foundryengine.common.exceptions.EngineException;
 import de.luckymcdev.foundryengine.common.network.packets.BundleHashPacket;
 import de.luckymcdev.foundryengine.common.network.packets.dialogue.ClientboundDialoguePacket;
 import de.luckymcdev.foundryengine.common.network.packets.editor.CutscenePacket;
@@ -52,6 +51,7 @@ import de.luckymcdev.foundryengine.common.util.FolderHash;
 import de.luckymcdev.foundryengine.common.util.color.Color;
 import de.luckymcdev.foundryengine.config.Config;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.PreferredGraphicsApi;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.Vec3i;
 import net.minecraft.resources.Identifier;
@@ -115,6 +115,10 @@ public class FoundryEngineModClient {
 	}
 
 	private void onClientSetup(FMLClientSetupEvent event) {
+		if (Minecraft.getInstance().options.preferredGraphicsBackend().get() == PreferredGraphicsApi.VULKAN) {
+			throw new EngineException("Sadly due to how FoundryEngine renders its InGame Editor, Vulkan is not supported at this Time. Switch to OpenGL. or delte the Mod.");
+		}
+
 		NbtSuggestions.init();
 		LOGGER.debug("FoundryEngineModClient setup called");
 		ModPathRecorder.record();
@@ -271,7 +275,8 @@ public class FoundryEngineModClient {
 		EngineSceneDepth.update();
 	}
 
-	private void onRenderLevel(RenderLevelStageEvent.AfterLevel event) {
+	//? if 26.1 {
+	/*private void onRenderLevel(RenderLevelStageEvent.AfterLevel event) {
 		var camState = event.getLevelRenderState().cameraRenderState;
 		Client.updateMain(camState.viewRotationMatrix, camState.projectionMatrix);
 
@@ -292,6 +297,25 @@ public class FoundryEngineModClient {
 		GizmoRenderer.render(poseStack, bufferSource, camState, camState.viewRotationMatrix);
 		modelViewStack.popMatrix();
 	}
+	*///?} else {
+	private void onRenderLevel(RenderLevelStageEvent.AfterLevel event) {
+		var camState = event.getLevelRenderState().cameraRenderState;
+		Client.updateMain(camState.viewRotationMatrix, camState.projectionMatrix);
+
+		GizmoBuffer.startFrame();
+
+		Client.getCutsceneManager().renderTick();
+		Client.getEditorController().renderFeatures();
+
+		var mc = Minecraft.getInstance();
+		var submitNodeStorage = new net.minecraft.client.renderer.SubmitNodeStorage();
+		Client.getWaypointRenderer().renderWaypoints(event, submitNodeStorage);
+		Client.getAreaRenderer().renderAreaModules(event, submitNodeStorage);
+		GizmoRenderer.render(submitNodeStorage, camState, false);
+
+		mc.gameRenderer.featureRenderDispatcher().renderAllFeatures(submitNodeStorage);
+	}
+	//?}
 
 	private void onClientTickPre(ClientTickEvent.Pre event) {
 		Client.getSkyboxManager().tick(event);

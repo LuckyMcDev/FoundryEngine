@@ -2,7 +2,10 @@ package de.luckymcdev.foundryengine.client.command.suggest.nbt;
 
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import net.minecraft.ChatFormatting;
+import de.luckymcdev.foundryengine.mixin.render.TextColorAccessor;
+//? if 26.1 {
+/*import net.minecraft.ChatFormatting;
+ *///?}
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -19,7 +22,15 @@ public class JsonComponentSuggestions {
 		"obfuscated", "insertion", "clickEvent", "hoverEvent"
 	);
 
-	private static final List<String> COLORS = ChatFormatting.getNames(true, false).stream().toList();
+	private static final List<String> COLORS = colors();
+
+	private static List<String> colors() {
+		//? if 26.1 {
+		/*return ChatFormatting.getNames(true, false).stream().toList();
+		 *///?} else {
+		return TextColorAccessor.engine$getNamedColors().keySet().stream().toList();
+		//?}
+	}
 
 	private static final List<String> FONTS = List.of(
 		"minecraft:default", "minecraft:uniform", "minecraft:alt", "minecraft:illageralt"

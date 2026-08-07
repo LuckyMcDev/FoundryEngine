@@ -162,7 +162,11 @@ public class ItemStages extends StageAddon<Item> {
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGH)
-	public void onItemUseOnEntitySpecific(PlayerInteractEvent.EntityInteractSpecific event) {
+		//? if 26.1 {
+	/*public void onItemUseOnEntitySpecific(PlayerInteractEvent.EntityInteractSpecific event) {
+	 *///?} else {
+	public void onItemUseOnEntitySpecific(PlayerInteractEvent.EntityInteract event) {
+		//?}
 		var player = event.getEntity();
 		var stack = event.getItemStack();
 		if (stack.isEmpty()) {

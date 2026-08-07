@@ -21,25 +21,28 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class ItemInHandRendererMixin {
 
 	@Invoker("renderPlayerArm")
-	abstract void invokeRenderPlayerArm(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int light,
-	                                    float equippedProgress, float swingProgress, HumanoidArm arm);
+	abstract void invokeRenderPlayerArm(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int lightCoords, float inverseArmHeight, float attackValue, HumanoidArm arm);
 
 	/**
-	 * Injects at tail of renderArmWithItem to render the offhand arm when empty.
+	 * Injects at the tail of renderArmWithItem to render the offhand arm when empty.
 	 */
-	@Inject(method = "renderArmWithItem", at = @At("TAIL"))
-	private void renderOffhandArmWhenEmpty(AbstractClientPlayer player, float f, float g, InteractionHand hand, float swingProgress, ItemStack stack, float equippedProgress,
+	//? if 26.1 {
+	/*@Inject(method = "renderArmWithItem", at = @At("TAIL"))
+	 *///?} else {
+	@Inject(method = "submitArmWithItem", at = @At("TAIL"))
+		//?}
+	private void renderOffhandArmWhenEmpty(AbstractClientPlayer player, float frameInterp, float xRot, InteractionHand hand, float attack, ItemStack itemStack, float inverseArmHeight,
 	                                       PoseStack poseStack, SubmitNodeCollector submitNodeCollector,
-	                                       int light, CallbackInfo ci) {
+	                                       int lightCoords, CallbackInfo ci) {
 
 
 		if (!ClientConfig.RENDER_OFFHAND.getAsBoolean()) {
 			return;
 		}
 
-		if (hand == InteractionHand.OFF_HAND && stack.isEmpty()) {
+		if (hand == InteractionHand.OFF_HAND && itemStack.isEmpty()) {
 			HumanoidArm offArm = player.getMainArm().getOpposite();
-			invokeRenderPlayerArm(poseStack, submitNodeCollector, light, equippedProgress, swingProgress, offArm);
+			invokeRenderPlayerArm(poseStack, submitNodeCollector, lightCoords, inverseArmHeight, attack, offArm);
 		}
 	}
 }

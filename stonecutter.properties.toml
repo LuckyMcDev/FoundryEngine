@@ -40,6 +40,6 @@ deps.jei = "29.5.0.28"
 mod.mc = "26.2"
 mod.mc_compat = "[26.2,26.3)"
 mod.mc_releases = ["26.2"]
-deps.neo_loader = "26.2.0.43-beta"
+deps.neo_loader = "26.2.0.49-beta"
 mod.neo_range = "[26.2,26.3)"
 mod.loader_range = "[4,)"

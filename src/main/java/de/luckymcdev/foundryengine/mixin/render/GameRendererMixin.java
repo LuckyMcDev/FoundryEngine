@@ -84,7 +84,11 @@ public class GameRendererMixin implements EngineGameRenderer {
 		Minecraft mc = Minecraft.getInstance();
 		if (Client.getPostEffectManager().getRegistry().hasEnabledEffectInPhase(RenderPhase.PRE_GUI)
 			|| Client.getPostEffectManager().getRegistry().hasEnabledEffectInPhase(RenderPhase.POST_RENDER)) {
-			Client.getPostEffectManager().getRegistry().captureWorldDepthSnapshot(mc.getMainRenderTarget());
+			//? if 26.1 {
+			/*Client.getPostEffectManager().getRegistry().captureWorldDepthSnapshot(mc.getMainRenderTarget());
+			 *///?} else {
+			Client.getPostEffectManager().getRegistry().captureWorldDepthSnapshot(mc.gameRenderer.mainRenderTarget());
+			//?}
 		}
 		Client.getPostEffectManager().getRegistry().applyAll(RenderPhase.POST_WORLD, ticker.getGameTimeDeltaPartialTick(true), resourcePool);
 	}
@@ -107,7 +111,11 @@ public class GameRendererMixin implements EngineGameRenderer {
 
 		Minecraft mc = Minecraft.getInstance();
 		if (Client.getPostEffectManager().getRegistry().hasEnabledEffectInPhase(RenderPhase.POST_RENDER)) {
-			Client.getPostEffectManager().getRegistry().capturePostRenderDepthSnapshot(mc.getMainRenderTarget());
+			//? if 26.1 {
+			/*Client.getPostEffectManager().getRegistry().capturePostRenderDepthSnapshot(mc.getMainRenderTarget());
+			 *///?} else {
+			Client.getPostEffectManager().getRegistry().capturePostRenderDepthSnapshot(mc.gameRenderer.mainRenderTarget());
+			//?}
 		}
 		Client.getPostEffectManager().getRegistry().applyAll(RenderPhase.PRE_GUI, ticker.getGameTimeDeltaPartialTick(true), resourcePool);
 	}
@@ -119,7 +127,11 @@ public class GameRendererMixin implements EngineGameRenderer {
 	private void engine$onPostRender(DeltaTracker ticker, boolean renderLevel, CallbackInfo ci) {
 		Minecraft mc = Minecraft.getInstance();
 		if (Client.getPostEffectManager().getRegistry().hasEnabledEffectInPhase(RenderPhase.POST_RENDER)) {
-			Client.getPostEffectManager().getRegistry().restorePostRenderDepthSnapshotInto(mc.getMainRenderTarget());
+			//? if 26.1 {
+			/*Client.getPostEffectManager().getRegistry().restorePostRenderDepthSnapshotInto(mc.getMainRenderTarget());
+			 *///?} else {
+			Client.getPostEffectManager().getRegistry().restorePostRenderDepthSnapshotInto(mc.gameRenderer.mainRenderTarget());
+			//?}
 		}
 		Client.getPostEffectManager().getRegistry().applyAll(RenderPhase.POST_RENDER, ticker.getGameTimeDeltaPartialTick(true), resourcePool);
 	}

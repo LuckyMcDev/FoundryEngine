@@ -102,13 +102,25 @@ public class ImGuiCharSink implements FormattedCharSink {
 				}
 
 				if (minecraft.options.chatLinksPrompt().get()) {
-					final Screen oldScreen = minecraft.screen;
-					minecraft.setScreen(new ConfirmLinkScreen((confirm) -> {
+					//? if 26.1 {
+					/*final Screen oldScreen = minecraft.screen;
+					 *///?} else {
+					final Screen oldScreen = minecraft.gui.screen();
+					//?}
+					//? if 26.1 {
+					/*minecraft.setScreen(new ConfirmLinkScreen((confirm) -> {
+					 *///?} else {
+					minecraft.gui.setScreen(new ConfirmLinkScreen((confirm) -> {
+						//?}
 						if (confirm) {
 							openUri(uri1);
 						}
 
-						minecraft.setScreen(oldScreen);
+						//? if 26.1 {
+						/*minecraft.setScreen(oldScreen);
+						 *///?} else {
+						minecraft.gui.setScreen(oldScreen);
+						//?}
 					}, uri1.toString(), false));
 				} else {
 					openUri(uri1);
@@ -124,7 +136,11 @@ public class ImGuiCharSink implements FormattedCharSink {
 				if (player == null) {
 					break;
 				}
-				player.connection.sendUnattendedCommand(Commands.trimOptionalPrefix(cmd), minecraft.screen);
+				//? if 26.1 {
+				/*player.connection.sendUnattendedCommand(Commands.trimOptionalPrefix(cmd), minecraft.screen);
+				 *///?} else {
+				player.connection.sendUnattendedCommand(Commands.trimOptionalPrefix(cmd), minecraft.gui.screen());
+				//?}
 				break;
 			}
 			case ClickEvent.CopyToClipboard(final String text): {
