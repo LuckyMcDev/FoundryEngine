@@ -21,8 +21,6 @@ lib.jlayer = "1.0.1.4"
 lib.jflac = "1.5.2"
 lib.junit = "5.7.1"
 lib.junit_platform = "1.7.1"
-lib.sodium = "UETw0GTI"
-lib.iris = "BO8hxvMR"
 
 ["26.1"]
 # Minecraft version to compile against.

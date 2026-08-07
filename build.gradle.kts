@@ -6,6 +6,7 @@ plugins {
     id("neoforge-mutex")
     id("maven-publish")
     id("me.modmuss50.mod-publish-plugin")
+	id("dev.kikugie.fletching-table.neoforge") version "0.1.0-alpha.22"
 }
 
 version = "${sc.current.version}-${property("mod.version")}"
@@ -17,8 +18,8 @@ val modVersion = property("mod.version") as String
 val mcReleases = sc.versions.map { it.version }
 
 repositories {
-    mavenLocal()
-    mavenCentral()
+	mavenLocal()
+	mavenCentral()
     maven("https://maven.neoforged.net/releases") { name = "NeoForged" }
     maven("https://maven.latvian.dev/releases") { name = "Latvian" }
     maven("https://maven.blamejared.com/") { name = "Jared's maven" }
@@ -122,14 +123,12 @@ dependencies {
 
     // Third-party MC integrations are pinned only for 26.1 until 26.2 builds are published.
     if (sc.current.version == "26.1") {
-        compileOnly("maven.modrinth:AANobbMI:${property("lib.sodium")}")
-        runtimeOnly("maven.modrinth:AANobbMI:${property("lib.sodium")}")
-        compileOnly("maven.modrinth:YL57xq9U:${property("lib.iris")}")
-        runtimeOnly("maven.modrinth:YL57xq9U:${property("lib.iris")}")
-
-        val jei = property("deps.jei") as String
-        compileOnly("mezz.jei:jei-${property("mod.mc")}-neoforge-api:$jei")
-        runtimeOnly("mezz.jei:jei-${property("mod.mc")}-neoforge:$jei")
+        compileOnly(fletchingTable.modrinth("sodium", "26.1.2", "neoforge"))
+        runtimeOnly(fletchingTable.modrinth("sodium", "26.1.2", "neoforge"))
+        compileOnly(fletchingTable.modrinth("iris", "26.1.2", "neoforge"))
+        runtimeOnly(fletchingTable.modrinth("iris", "26.1.2", "neoforge"))
+        compileOnly(fletchingTable.modrinth("rei", "26.1.2", "neoforge"))
+        runtimeOnly(fletchingTable.modrinth("jei", "26.1.2", "neoforge"))
     }
 
     testImplementation("org.junit.jupiter:junit-jupiter:${property("lib.junit")}")
@@ -240,4 +239,15 @@ publishMods {
         projectId = "AaUmWHXd"
         minecraftVersions.addAll(mcReleases)
     }
+}
+
+fletchingTable {
+	lang.create("main") {
+		patterns.add("assets/$modId/lang/**")
+	}
+	lang.all {
+		sortKeys = true
+		prettyPrint = true
+		flatteningMode = "JOIN"
+	}
 }
