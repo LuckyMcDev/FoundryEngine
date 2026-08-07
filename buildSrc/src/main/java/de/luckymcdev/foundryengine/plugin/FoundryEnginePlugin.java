@@ -28,7 +28,7 @@ public class FoundryEnginePlugin implements Plugin<Project> {
 			new MixinComponent(extension),
 			new BundlesComponent(extension),
 			new PublishingComponent(extension),
-			new VitePressComponent(extension));
+			new DocusaurusComponent(extension));
 
 		components.forEach(component -> component.apply(project));
 	}
