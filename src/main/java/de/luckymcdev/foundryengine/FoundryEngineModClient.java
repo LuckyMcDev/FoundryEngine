@@ -32,7 +32,7 @@ import de.luckymcdev.foundryengine.client.editor.panel.view.HotkeySettingsPanel;
 import de.luckymcdev.foundryengine.client.editor.panel.view.InfoPanel;
 import de.luckymcdev.foundryengine.client.editor.panel.view.ThemeSelectorPanel;
 import de.luckymcdev.foundryengine.client.event.registry.RegistryEventClient;
-import de.luckymcdev.foundryengine.client.ext.ModPathBroadcaster;
+import de.luckymcdev.foundryengine.client.ext.ModPathRecorder;
 import de.luckymcdev.foundryengine.client.gizmo.GizmoBuffer;
 import de.luckymcdev.foundryengine.client.gizmo.GizmoRenderer;
 import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
@@ -117,7 +117,7 @@ public class FoundryEngineModClient {
 	private void onClientSetup(FMLClientSetupEvent event) {
 		NbtSuggestions.init();
 		LOGGER.debug("FoundryEngineModClient setup called");
-		ModPathBroadcaster.broadcast();
+		ModPathRecorder.record();
 
 		var collector = Common.getRegistryCollector();
 		if (collector != null) {
