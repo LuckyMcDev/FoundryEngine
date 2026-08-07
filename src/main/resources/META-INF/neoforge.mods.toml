@@ -1,0 +1,59 @@
+modLoader = "javafml"
+loaderVersion = "${loader_version}"
+license = "${license}"
+
+[[mods]]
+modId = "${id}"
+version = "${version}"
+displayName = "${name}"
+logoFile = "${logo}"
+credits = "${credits}"
+authors = "${authors}"
+description = "${description}"
+
+[[mixins]]
+config = "mixins/foundryengine.clock.mixins.json"
+
+[[mixins]]
+config = "mixins/foundryengine.command.mixins.json"
+
+[[mixins]]
+config = "mixins/foundryengine.input.mixins.json"
+
+[[mixins]]
+config = "mixins/foundryengine.level.mixins.json"
+
+[[mixins]]
+config = "mixins/foundryengine.mixins.json"
+
+[[mixins]]
+config = "mixins/foundryengine.render.mixins.json"
+
+[[mixins]]
+config = "mixins/foundryengine.screen.mixins.json"
+
+[[mixins]]
+config = "mixins/foundryengine.slot.mixins.json"
+
+[[mixins]]
+config = "mixins/foundryengine.sound.mixins.json"
+
+[[mixins]]
+config = "mixins/foundryengine.suggest.mixins.json"
+
+[[mixins]]
+config = "mixins/foundryengine.world.mixins.json"
+
+[[dependencies."foundryengine"]]
+modId = "neoforge"
+type = "required"
+versionRange = "${neo_range}"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies."foundryengine"]]
+modId = "minecraft"
+type = "required"
+versionRange = "${mc_compat}"
+ordering = "NONE"
+side = "BOTH"

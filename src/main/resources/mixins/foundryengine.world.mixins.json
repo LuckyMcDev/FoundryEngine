@@ -1,0 +1,18 @@
+{
+	"required": true,
+	"minVersion": "0.8",
+	"package": "de.luckymcdev.foundryengine.mixin.world",
+	"compatibilityLevel": "JAVA_25",
+	"mixins": [
+		"BlockBehaviorMixin",
+		"BlockStateBaseMixin"
+	],
+	"client": [],
+	"plugin": "de.luckymcdev.foundryengine.mixin.FoundryEngineMixinPlugin",
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
+	}
+}

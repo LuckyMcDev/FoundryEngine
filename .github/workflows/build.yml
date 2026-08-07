@@ -4,6 +4,12 @@ on:
     branches: [ master ]
     paths:
       - 'src/**'
+      - 'build.gradle.kts'
+      - 'settings.gradle.kts'
+      - 'stonecutter.gradle.kts'
+      - 'stonecutter.properties.toml'
+      - 'buildSrc/**'
+      - '.github/workflows/build.yml'
   workflow_dispatch:
 jobs:
   build:
@@ -26,4 +32,6 @@ jobs:
 
       - name: Build Project
         # Needed since tests are broken for no reason?
-        run: ./gradlew build -x test
+        # :26.2 is pinned for local work but its source is not 26.2-API-compatible yet,
+        # so CI gates on the vcs/stable version (26.1) only.
+        run: ./gradlew :26.1:build -x test

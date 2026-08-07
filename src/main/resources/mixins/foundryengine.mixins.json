@@ -1,0 +1,25 @@
+{
+	"required": true,
+	"minVersion": "0.8",
+	"package": "de.luckymcdev.foundryengine.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"mixins": [
+		"MinecraftServerAccess",
+		"MinecraftServerMixin",
+		"registry.MappedRegistryMixin",
+		"resource.FilePackResourcesAccessor",
+		"resource.PathPackResourcesAccessor",
+		"resource.SharedZipFileAccessAccessor",
+		"resource.VanillaPackResourcesAccessor"
+	],
+	"client": [
+		"MinecraftMixin"
+	],
+	"plugin": "de.luckymcdev.foundryengine.mixin.FoundryEngineMixinPlugin",
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
+	}
+}

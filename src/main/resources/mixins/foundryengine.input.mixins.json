@@ -1,0 +1,18 @@
+{
+	"required": true,
+	"minVersion": "0.8",
+	"package": "de.luckymcdev.foundryengine.mixin.input",
+	"compatibilityLevel": "JAVA_25",
+	"mixins": [],
+	"client": [
+		"KeyboardHandlerMixin",
+		"MouseHandlerMixin"
+	],
+	"plugin": "de.luckymcdev.foundryengine.mixin.FoundryEngineMixinPlugin",
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
+	}
+}
