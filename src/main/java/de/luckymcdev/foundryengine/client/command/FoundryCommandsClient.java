@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.client.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import de.luckymcdev.foundryengine.client.command.builtin.BrowseCommand;
 import de.luckymcdev.foundryengine.client.command.builtin.GenerateIconsCommand;
 import de.luckymcdev.foundryengine.server.command.EngineCommand;
 import net.minecraft.commands.CommandBuildContext;
@@ -16,7 +17,8 @@ import java.util.List;
  */
 public class FoundryCommandsClient {
 	private static final List<EngineCommand> COMMANDS = List.of(
-		new GenerateIconsCommand()
+		new GenerateIconsCommand(),
+		new BrowseCommand()
 	);
 
 	public static void registerAll(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext context) {

@@ -1,5 +1,7 @@
 package de.luckymcdev.foundryengine.server.command.builtin;
 
+import com.mojang.brigadier.arguments.BoolArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import de.luckymcdev.foundryengine.common.Common;
@@ -15,6 +17,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -26,24 +30,41 @@ public class BlockToDisplayCommand implements EngineCommand {
 	private static final String NAME = "block_to_display";
 	private static final String ARG_POS = "pos1";
 	private static final String ARG_POS_2 = "pos2";
+	private static final String ARG_REPLACE = "replace_with_air";
+	private static final String ARG_TAG = "custom_tag";
 
 	@Override
 	public LiteralArgumentBuilder<CommandSourceStack> build(CommandBuildContext buildContext) {
 		return Commands.literal(NAME)
-			.executes(ctx -> executeSingle(ctx, null))
+			// 0 Args (Looking at block)
+			.executes(ctx -> executeSingle(ctx, null, false, null))
+			.then(Commands.argument(ARG_REPLACE, BoolArgumentType.bool())
+				.executes(ctx -> executeSingle(ctx, null, BoolArgumentType.getBool(ctx, ARG_REPLACE), null))
+				.then(Commands.argument(ARG_TAG, StringArgumentType.string())
+					.executes(ctx -> executeSingle(ctx, null, BoolArgumentType.getBool(ctx, ARG_REPLACE), StringArgumentType.getString(ctx, ARG_TAG)))))
+
+			// 1 Arg (Specific block)
 			.then(Commands.argument(ARG_POS, BlockPosArgument.blockPos())
-				.executes(ctx -> executeSingle(ctx, BlockPosArgument.getBlockPos(ctx, ARG_POS)))
+				.executes(ctx -> executeSingle(ctx, BlockPosArgument.getBlockPos(ctx, ARG_POS), false, null))
+				.then(Commands.argument(ARG_REPLACE, BoolArgumentType.bool())
+					.executes(ctx -> executeSingle(ctx, BlockPosArgument.getBlockPos(ctx, ARG_POS), BoolArgumentType.getBool(ctx, ARG_REPLACE), null))
+					.then(Commands.argument(ARG_TAG, StringArgumentType.string())
+						.executes(ctx -> executeSingle(ctx, BlockPosArgument.getBlockPos(ctx, ARG_POS), BoolArgumentType.getBool(ctx, ARG_REPLACE), StringArgumentType.getString(ctx, ARG_TAG)))))
+
+				// 2 Args (Region)
 				.then(Commands.argument(ARG_POS_2, BlockPosArgument.blockPos())
-					.executes(ctx -> executeRegion(ctx,
-						BlockPosArgument.getBlockPos(ctx, ARG_POS),
-						BlockPosArgument.getBlockPos(ctx, ARG_POS_2)))));
+					.executes(ctx -> executeRegion(ctx, BlockPosArgument.getBlockPos(ctx, ARG_POS), BlockPosArgument.getBlockPos(ctx, ARG_POS_2), false, null))
+					.then(Commands.argument(ARG_REPLACE, BoolArgumentType.bool())
+						.executes(ctx -> executeRegion(ctx, BlockPosArgument.getBlockPos(ctx, ARG_POS), BlockPosArgument.getBlockPos(ctx, ARG_POS_2), BoolArgumentType.getBool(ctx, ARG_REPLACE), null))
+						.then(Commands.argument(ARG_TAG, StringArgumentType.string())
+							.executes(ctx -> executeRegion(ctx, BlockPosArgument.getBlockPos(ctx, ARG_POS), BlockPosArgument.getBlockPos(ctx, ARG_POS_2), BoolArgumentType.getBool(ctx, ARG_REPLACE), StringArgumentType.getString(ctx, ARG_TAG)))))));
 	}
 
 	/**
 	 * Spawn a single block display.
 	 * If pos is null, use the block the player is looking at (or standing on).
 	 */
-	private int executeSingle(CommandContext<CommandSourceStack> context, @Nullable BlockPos pos) {
+	private int executeSingle(CommandContext<CommandSourceStack> context, @Nullable BlockPos pos, boolean replace, @Nullable String tag) {
 		CommandSourceStack source = context.getSource();
 		var level = source.getLevel();
 
@@ -61,7 +82,7 @@ public class BlockToDisplayCommand implements EngineCommand {
 			}
 		}
 
-		spawnBlockDisplay(level, pos);
+		spawnBlockDisplay(level, pos, replace, tag);
 		return 1;
 	}
 
@@ -69,7 +90,7 @@ public class BlockToDisplayCommand implements EngineCommand {
 	 * Spawn block displays for every block in the axis‑aligned bounding box
 	 * defined by pos1 and pos2.
 	 */
-	private int executeRegion(CommandContext<CommandSourceStack> context, BlockPos pos1, BlockPos pos2) {
+	private int executeRegion(CommandContext<CommandSourceStack> context, BlockPos pos1, BlockPos pos2, boolean replace, @Nullable String tag) {
 		var level = context.getSource().getLevel();
 
 		int minX = Math.min(pos1.getX(), pos2.getX());
@@ -94,7 +115,7 @@ public class BlockToDisplayCommand implements EngineCommand {
 			for (int y = minY; y <= maxY; y++) {
 				for (int z = minZ; z <= maxZ; z++) {
 					mutablePos.set(x, y, z);
-					spawnBlockDisplay(level, mutablePos);
+					spawnBlockDisplay(level, mutablePos, replace, tag);
 				}
 			}
 		}
@@ -106,7 +127,7 @@ public class BlockToDisplayCommand implements EngineCommand {
 		return 1;
 	}
 
-	private void spawnBlockDisplay(ServerLevel level, BlockPos pos) {
+	private void spawnBlockDisplay(ServerLevel level, BlockPos pos, boolean replace, @Nullable String tag) {
 		BlockState state = level.getBlockState(pos);
 		Vec3 center = new Vec3(pos.getX(), pos.getY(), pos.getZ());
 
@@ -117,7 +138,14 @@ public class BlockToDisplayCommand implements EngineCommand {
 			entity -> {
 				entity.setBlockState(state);
 				entity.addTag(Common.BLOCK_DISPLAY_TAG);
+				if (tag != null && !tag.isBlank()) {
+					entity.addTag(tag);
+				}
 			}
 		);
+
+		if (replace) {
+			level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
+		}
 	}
 }
