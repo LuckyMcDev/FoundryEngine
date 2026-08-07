@@ -1,9 +1,4 @@
 import me.modmuss50.mpp.ReleaseType
-import org.gradle.api.publish.maven.MavenPublication
-import org.gradle.api.tasks.bundling.Jar
-import org.gradle.api.tasks.javadoc.Javadoc
-import org.gradle.external.javadoc.JavadocMemberLevel
-import org.gradle.external.javadoc.StandardJavadocDocletOptions
 
 plugins {
     id("java-library")
@@ -13,7 +8,7 @@ plugins {
     id("me.modmuss50.mod-publish-plugin")
 }
 
-version = "${sc.current.version}+${property("mod.version")}"
+version = "${sc.current.version}-${property("mod.version")}"
 group = property("mod.group") as String
 base.archivesName = property("mod.id") as String
 
