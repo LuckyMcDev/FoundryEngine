@@ -1,6 +1,5 @@
 package de.luckymcdev.foundryengine.client.icons;
 
-import com.mojang.blaze3d.GpuFormat;
 import com.mojang.blaze3d.ProjectionType;
 import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.mojang.blaze3d.platform.Lighting;
@@ -39,10 +38,11 @@ import java.util.List;
 import java.util.Queue;
 
 //? if 26.1 {
-/*import com.mojang.blaze3d.textures.TextureFormat;
- */
+import com.mojang.blaze3d.textures.TextureFormat;
+import com.mojang.blaze3d.systems.CommandEncoder;
 //?} else {
-//?}
+/*import com.mojang.blaze3d.GpuFormat;
+*///?}
 
 public class IconExporterLayer implements GuiLayer {
 	private static final int ITEMS_PER_BATCH = 256;
@@ -180,18 +180,18 @@ public class IconExporterLayer implements GuiLayer {
 		var device = RenderSystem.getDevice();
 
 //? if 26.1 {
-		/*GpuTexture colorTex = device.createTexture(() -> "Icons color", 13, TextureFormat.RGBA8, texWidth, texHeight, 1, 1);
+		GpuTexture colorTex = device.createTexture(() -> "Icons color", 13, TextureFormat.RGBA8, texWidth, texHeight, 1, 1);
 		GpuTextureView colorView = device.createTextureView(colorTex);
 		GpuTexture depthTex = device.createTexture(() -> "Icons depth", 9, TextureFormat.DEPTH32, texWidth, texHeight, 1, 1);
 		GpuTextureView depthView = device.createTextureView(depthTex);
 		device.createCommandEncoder().clearColorAndDepthTextures(colorTex, 0, depthTex, 1.0);
-		*///?} else {
-		GpuTexture colorTex = device.createTexture(() -> "Icons color", GpuTexture.USAGE_RENDER_ATTACHMENT | GpuTexture.USAGE_TEXTURE_BINDING | GpuTexture.USAGE_COPY_SRC | GpuTexture.USAGE_COPY_DST, GpuFormat.RGBA8_UNORM, texWidth, texHeight, 1, 1);
+		//?} else {
+		/*GpuTexture colorTex = device.createTexture(() -> "Icons color", GpuTexture.USAGE_RENDER_ATTACHMENT | GpuTexture.USAGE_TEXTURE_BINDING | GpuTexture.USAGE_COPY_SRC | GpuTexture.USAGE_COPY_DST, GpuFormat.RGBA8_UNORM, texWidth, texHeight, 1, 1);
 		GpuTextureView colorView = device.createTextureView(colorTex);
 		GpuTexture depthTex = device.createTexture(() -> "Icons depth", GpuTexture.USAGE_RENDER_ATTACHMENT | GpuTexture.USAGE_TEXTURE_BINDING | GpuTexture.USAGE_COPY_SRC | GpuTexture.USAGE_COPY_DST, GpuFormat.D32_FLOAT, texWidth, texHeight, 1, 1);
 		GpuTextureView depthView = device.createTextureView(depthTex);
 		device.createCommandEncoder().clearColorAndDepthTextures(colorTex, new Vector4f(0.0F, 0.0F, 0.0F, 1.0F), depthTex, 1.0);
-		//?}
+		*///?}
 
 		RenderSystem.outputColorTextureOverride = colorView;
 		RenderSystem.outputDepthTextureOverride = depthView;
@@ -205,7 +205,7 @@ public class IconExporterLayer implements GuiLayer {
 			RenderSystem.setProjectionMatrix(projBuf.getBuffer(projection), ProjectionType.ORTHOGRAPHIC);
 
 			//? if 26.1 {
-			/*var lighting = gameRenderer.getLighting();
+			var lighting = gameRenderer.getLighting();
 			var submitNodeCollector = gameRenderer.getSubmitNodeStorage();
 			var featureDispatcher = gameRenderer.getFeatureRenderDispatcher();
 			var bufferSource = mc.renderBuffers().bufferSource();
@@ -243,8 +243,8 @@ public class IconExporterLayer implements GuiLayer {
 
 			featureDispatcher.renderAllFeatures();
 			bufferSource.endBatch();
-			*///?} else {
-			var lighting = gameRenderer.lighting();
+			//?} else {
+			/*var lighting = gameRenderer.lighting();
 			var submitNodes = new net.minecraft.client.renderer.SubmitNodeStorage();
 			var featureDispatcher = gameRenderer.featureRenderDispatcher();
 			var resolver = mc.getItemModelResolver();
@@ -280,24 +280,24 @@ public class IconExporterLayer implements GuiLayer {
 			}
 
 			featureDispatcher.renderAllFeatures(submitNodes);
-			//?}
+			*///?}
 
 			RenderSystem.restoreProjectionMatrix();
 			RenderSystem.outputColorTextureOverride = null;
 			RenderSystem.outputDepthTextureOverride = null;
 
 			//? if 26.1 {
-			/*int pixelSize = TextureFormat.RGBA8.pixelSize();
+			int pixelSize = TextureFormat.RGBA8.pixelSize();
 			GpuBuffer readBuffer = device.createBuffer(() -> "Icons read", GpuBuffer.USAGE_MAP_READ | GpuBuffer.USAGE_COPY_DST, (long) texWidth * texHeight * pixelSize);
 			CommandEncoder encoder = device.createCommandEncoder();
 			device.createCommandEncoder().copyTextureToBuffer(colorTex, readBuffer, 0, () -> {
 				try (var mapped = encoder.mapBuffer(readBuffer, true, false)) {
-				*///?} else {
-			int pixelSize = GpuFormat.RGBA8_UNORM.blockSize();
+				//?} else {
+			/*int pixelSize = GpuFormat.RGBA8_UNORM.blockSize();
 			GpuBuffer readBuffer = device.createBuffer(() -> "Icons read", GpuBuffer.USAGE_MAP_READ | GpuBuffer.USAGE_COPY_DST, (long) texWidth * texHeight * pixelSize);
 			device.createCommandEncoder().copyTextureToBuffer(colorTex, readBuffer, 0, () -> {
 				try (var mapped = readBuffer.map(true, false)) {
-					//?}
+					*///?}
 					NativeImage image = new NativeImage(texWidth, texHeight, false);
 					for (int y = 0; y < texHeight; y++) {
 						for (int x = 0; x < texWidth; x++) {

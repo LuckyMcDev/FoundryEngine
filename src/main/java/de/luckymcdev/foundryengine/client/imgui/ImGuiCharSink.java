@@ -103,24 +103,24 @@ public class ImGuiCharSink implements FormattedCharSink {
 
 				if (minecraft.options.chatLinksPrompt().get()) {
 					//? if 26.1 {
-					/*final Screen oldScreen = minecraft.screen;
-					 *///?} else {
-					final Screen oldScreen = minecraft.gui.screen();
-					//?}
+					final Screen oldScreen = minecraft.screen;
+					 //?} else {
+					/*final Screen oldScreen = minecraft.gui.screen();
+					*///?}
 					//? if 26.1 {
-					/*minecraft.setScreen(new ConfirmLinkScreen((confirm) -> {
-					 *///?} else {
-					minecraft.gui.setScreen(new ConfirmLinkScreen((confirm) -> {
-						//?}
+					minecraft.setScreen(new ConfirmLinkScreen((confirm) -> {
+					 //?} else {
+					/*minecraft.gui.setScreen(new ConfirmLinkScreen((confirm) -> {
+						*///?}
 						if (confirm) {
 							openUri(uri1);
 						}
 
 						//? if 26.1 {
-						/*minecraft.setScreen(oldScreen);
-						 *///?} else {
-						minecraft.gui.setScreen(oldScreen);
-						//?}
+						minecraft.setScreen(oldScreen);
+						 //?} else {
+						/*minecraft.gui.setScreen(oldScreen);
+						*///?}
 					}, uri1.toString(), false));
 				} else {
 					openUri(uri1);
@@ -137,10 +137,10 @@ public class ImGuiCharSink implements FormattedCharSink {
 					break;
 				}
 				//? if 26.1 {
-				/*player.connection.sendUnattendedCommand(Commands.trimOptionalPrefix(cmd), minecraft.screen);
-				 *///?} else {
-				player.connection.sendUnattendedCommand(Commands.trimOptionalPrefix(cmd), minecraft.gui.screen());
-				//?}
+				player.connection.sendUnattendedCommand(Commands.trimOptionalPrefix(cmd), minecraft.screen);
+				 //?} else {
+				/*player.connection.sendUnattendedCommand(Commands.trimOptionalPrefix(cmd), minecraft.gui.screen());
+				*///?}
 				break;
 			}
 			case ClickEvent.CopyToClipboard(final String text): {

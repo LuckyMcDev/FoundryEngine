@@ -4,8 +4,8 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import de.luckymcdev.foundryengine.mixin.render.TextColorAccessor;
 //? if 26.1 {
-/*import net.minecraft.ChatFormatting;
- *///?}
+import net.minecraft.ChatFormatting;
+ //?}
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -26,10 +26,10 @@ public class JsonComponentSuggestions {
 
 	private static List<String> colors() {
 		//? if 26.1 {
-		/*return ChatFormatting.getNames(true, false).stream().toList();
-		 *///?} else {
-		return TextColorAccessor.engine$getNamedColors().keySet().stream().toList();
-		//?}
+		return ChatFormatting.getNames(true, false).stream().toList();
+		 //?} else {
+		/*return TextColorAccessor.engine$getNamedColors().keySet().stream().toList();
+		*///?}
 	}
 
 	private static final List<String> FONTS = List.of(

@@ -293,10 +293,10 @@ public final class PostEffectEntry {
 
 	private void renderProcessor(Minecraft mc, PostChain processor, GraphicsResourceAllocator allocator, Set<Identifier> effectiveExternalTargets) {
 		//? if 26.1 {
-		/*RenderTarget mainFramebuffer = mc.getMainRenderTarget();
-		 *///?} else {
-		RenderTarget mainFramebuffer = mc.gameRenderer.mainRenderTarget();
-		//?}
+		RenderTarget mainFramebuffer = mc.getMainRenderTarget();
+		 //?} else {
+		/*RenderTarget mainFramebuffer = mc.gameRenderer.mainRenderTarget();
+		*///?}
 		if (effectiveExternalTargets.equals(Set.of(PostChain.MAIN_TARGET_ID))) {
 			FrameGraphBuilder frame = new FrameGraphBuilder();
 			PostChain.TargetBundle targets = PostChain.TargetBundle.of(PostChain.MAIN_TARGET_ID, frame.importExternal("main", mainFramebuffer));
@@ -334,45 +334,45 @@ public final class PostEffectEntry {
 		}
 		if (targetId.equals(PostChain.MAIN_TARGET_ID)) {
 			//? if 26.1 {
-			/*return mc.getMainRenderTarget();
-			 *///?} else {
-			return mc.gameRenderer.mainRenderTarget();
-			//?}
+			return mc.getMainRenderTarget();
+			 //?} else {
+			/*return mc.gameRenderer.mainRenderTarget();
+			*///?}
 		}
 		if (targetId.equals(LevelTargetBundle.TRANSLUCENT_TARGET_ID)) {
 			//? if 26.1 {
-			/*return mc.levelRenderer.getTranslucentTarget();
-			 *///?} else {
-			return mc.levelRenderer.translucentTarget();
-			//?}
+			return mc.levelRenderer.getTranslucentTarget();
+			 //?} else {
+			/*return mc.levelRenderer.translucentTarget();
+			*///?}
 		}
 		if (targetId.equals(LevelTargetBundle.ITEM_ENTITY_TARGET_ID)) {
 			//? if 26.1 {
-			/*return mc.levelRenderer.getItemEntityTarget();
-			 *///?} else {
-			return mc.levelRenderer.itemEntityTarget();
-			//?}
+			return mc.levelRenderer.getItemEntityTarget();
+			 //?} else {
+			/*return mc.levelRenderer.itemEntityTarget();
+			*///?}
 		}
 		if (targetId.equals(LevelTargetBundle.PARTICLES_TARGET_ID)) {
 			//? if 26.1 {
-			/*return mc.levelRenderer.getParticlesTarget();
-			 *///?} else {
-			return mc.levelRenderer.particlesTarget();
-			//?}
+			return mc.levelRenderer.getParticlesTarget();
+			 //?} else {
+			/*return mc.levelRenderer.particlesTarget();
+			*///?}
 		}
 		if (targetId.equals(LevelTargetBundle.WEATHER_TARGET_ID)) {
 			//? if 26.1 {
-			/*return mc.levelRenderer.getWeatherTarget();
-			 *///?} else {
-			return mc.levelRenderer.weatherTarget();
-			//?}
+			return mc.levelRenderer.getWeatherTarget();
+			 //?} else {
+			/*return mc.levelRenderer.weatherTarget();
+			*///?}
 		}
 		if (targetId.equals(LevelTargetBundle.CLOUDS_TARGET_ID)) {
 			//? if 26.1 {
-			/*return mc.levelRenderer.getCloudsTarget();
-			 *///?} else {
-			return mc.levelRenderer.cloudsTarget();
-			//?}
+			return mc.levelRenderer.getCloudsTarget();
+			 //?} else {
+			/*return mc.levelRenderer.cloudsTarget();
+			*///?}
 		}
 		if (targetId.equals(LevelTargetBundle.ENTITY_OUTLINE_TARGET_ID)) {
 			return mc.levelRenderer.entityOutlineTarget();

@@ -85,10 +85,10 @@ public class GameRendererMixin implements EngineGameRenderer {
 		if (Client.getPostEffectManager().getRegistry().hasEnabledEffectInPhase(RenderPhase.PRE_GUI)
 			|| Client.getPostEffectManager().getRegistry().hasEnabledEffectInPhase(RenderPhase.POST_RENDER)) {
 			//? if 26.1 {
-			/*Client.getPostEffectManager().getRegistry().captureWorldDepthSnapshot(mc.getMainRenderTarget());
-			 *///?} else {
-			Client.getPostEffectManager().getRegistry().captureWorldDepthSnapshot(mc.gameRenderer.mainRenderTarget());
-			//?}
+			Client.getPostEffectManager().getRegistry().captureWorldDepthSnapshot(mc.getMainRenderTarget());
+			 //?} else {
+			/*Client.getPostEffectManager().getRegistry().captureWorldDepthSnapshot(mc.gameRenderer.mainRenderTarget());
+			*///?}
 		}
 		Client.getPostEffectManager().getRegistry().applyAll(RenderPhase.POST_WORLD, ticker.getGameTimeDeltaPartialTick(true), resourcePool);
 	}
@@ -112,10 +112,10 @@ public class GameRendererMixin implements EngineGameRenderer {
 		Minecraft mc = Minecraft.getInstance();
 		if (Client.getPostEffectManager().getRegistry().hasEnabledEffectInPhase(RenderPhase.POST_RENDER)) {
 			//? if 26.1 {
-			/*Client.getPostEffectManager().getRegistry().capturePostRenderDepthSnapshot(mc.getMainRenderTarget());
-			 *///?} else {
-			Client.getPostEffectManager().getRegistry().capturePostRenderDepthSnapshot(mc.gameRenderer.mainRenderTarget());
-			//?}
+			Client.getPostEffectManager().getRegistry().capturePostRenderDepthSnapshot(mc.getMainRenderTarget());
+			 //?} else {
+			/*Client.getPostEffectManager().getRegistry().capturePostRenderDepthSnapshot(mc.gameRenderer.mainRenderTarget());
+			*///?}
 		}
 		Client.getPostEffectManager().getRegistry().applyAll(RenderPhase.PRE_GUI, ticker.getGameTimeDeltaPartialTick(true), resourcePool);
 	}
@@ -128,10 +128,10 @@ public class GameRendererMixin implements EngineGameRenderer {
 		Minecraft mc = Minecraft.getInstance();
 		if (Client.getPostEffectManager().getRegistry().hasEnabledEffectInPhase(RenderPhase.POST_RENDER)) {
 			//? if 26.1 {
-			/*Client.getPostEffectManager().getRegistry().restorePostRenderDepthSnapshotInto(mc.getMainRenderTarget());
-			 *///?} else {
-			Client.getPostEffectManager().getRegistry().restorePostRenderDepthSnapshotInto(mc.gameRenderer.mainRenderTarget());
-			//?}
+			Client.getPostEffectManager().getRegistry().restorePostRenderDepthSnapshotInto(mc.getMainRenderTarget());
+			 //?} else {
+			/*Client.getPostEffectManager().getRegistry().restorePostRenderDepthSnapshotInto(mc.gameRenderer.mainRenderTarget());
+			*///?}
 		}
 		Client.getPostEffectManager().getRegistry().applyAll(RenderPhase.POST_RENDER, ticker.getGameTimeDeltaPartialTick(true), resourcePool);
 	}

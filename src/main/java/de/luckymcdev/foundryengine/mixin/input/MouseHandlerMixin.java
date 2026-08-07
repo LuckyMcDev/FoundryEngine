@@ -46,10 +46,10 @@ public class MouseHandlerMixin implements EngineMouseHandler {
 
 		// In-world editor uses scroll to push/pull points.
 		//? if 26.1 {
-		/*if (Minecraft.getInstance().screen == null && Client.getEditorController().onScroll(vertical)) {
-		 *///?} else {
-		if (Minecraft.getInstance().gui.screen() == null && Client.getEditorController().onScroll(vertical)) {
-			//?}
+		if (Minecraft.getInstance().screen == null && Client.getEditorController().onScroll(vertical)) {
+		 //?} else {
+		/*if (Minecraft.getInstance().gui.screen() == null && Client.getEditorController().onScroll(vertical)) {
+			*///?}
 			ci.cancel();
 		}
 	}

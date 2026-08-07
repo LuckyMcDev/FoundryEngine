@@ -4,4 +4,4 @@ plugins {
     id("me.modmuss50.mod-publish-plugin") version "1.1.0" apply false
 }
 
-stonecutter active "26.2"
+stonecutter active "26.1"

@@ -141,10 +141,10 @@ public final class Client {
 	 */
 	public static RenderTarget getMainRenderTarget() {
 		//? if 26.1 {
-		/*return getMc().getMainRenderTarget();
-		 *///?} else {
-		return getMc().gameRenderer.mainRenderTarget();
-		//?}
+		return getMc().getMainRenderTarget();
+		 //?} else {
+		/*return getMc().gameRenderer.mainRenderTarget();
+		*///?}
 	}
 
 	/**
@@ -152,10 +152,10 @@ public final class Client {
 	 */
 	public static Camera getMainCamera() {
 		//? if 26.1 {
-		/*return getGameRenderer().getMainCamera();
-		 *///?} else {
-		return getGameRenderer().mainCamera();
-		//?}
+		return getGameRenderer().getMainCamera();
+		 //?} else {
+		/*return getGameRenderer().mainCamera();
+		*///?}
 	}
 
 	/**
@@ -177,10 +177,10 @@ public final class Client {
 	 */
 	public static void setScreen(Screen screen) {
 		//? if 26.1 {
-		/*getMc().setScreen(screen);
-		 *///?} else {
-		getMc().gui.setScreen(screen);
-		//?}
+		getMc().setScreen(screen);
+		 //?} else {
+		/*getMc().gui.setScreen(screen);
+		*///?}
 	}
 
 	/**

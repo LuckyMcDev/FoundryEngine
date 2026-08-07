@@ -58,14 +58,14 @@ public class ScreenDialogueDisplay implements IDialogueDisplay {
 		}
 		var mc = Client.getMc();
 		//? if 26.1 {
-		/*if (mc.screen instanceof DialogueScreen) {
+		if (mc.screen instanceof DialogueScreen) {
 			mc.setScreen(null);
 		}
-		*///?} else {
-		if (mc.gui.screen() instanceof DialogueScreen) {
+		//?} else {
+		/*if (mc.gui.screen() instanceof DialogueScreen) {
 			mc.gui.setScreen(null);
 		}
-		//?}
+		*///?}
 	}
 
 	@Override

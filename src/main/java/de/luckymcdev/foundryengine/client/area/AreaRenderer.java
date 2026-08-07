@@ -58,7 +58,7 @@ public class AreaRenderer {
 	}
 
 	//? if 26.1 {
-	/*public void renderAreaModules(RenderLevelStageEvent.AfterLevel event) {
+	public void renderAreaModules(RenderLevelStageEvent.AfterLevel event) {
 		var mc = Minecraft.getInstance();
 		if (!(mc.level instanceof ClientLevel level)) {
 			return;
@@ -77,8 +77,8 @@ public class AreaRenderer {
 			}
 		}
 	}
-	*///?} else {
-	public void renderAreaModules(RenderLevelStageEvent.AfterLevel event, net.minecraft.client.renderer.SubmitNodeStorage submitNodes) {
+	//?} else {
+	/*public void renderAreaModules(RenderLevelStageEvent.AfterLevel event, net.minecraft.client.renderer.SubmitNodeStorage submitNodes) {
 		var mc = Minecraft.getInstance();
 		if (!(mc.level instanceof ClientLevel level)) {
 			return;
@@ -96,5 +96,5 @@ public class AreaRenderer {
 			}
 		}
 	}
-	//?}
+	*///?}
 }

@@ -27,10 +27,10 @@ public abstract class ItemInHandRendererMixin {
 	 * Injects at the tail of renderArmWithItem to render the offhand arm when empty.
 	 */
 	//? if 26.1 {
-	/*@Inject(method = "renderArmWithItem", at = @At("TAIL"))
-	 *///?} else {
-	@Inject(method = "submitArmWithItem", at = @At("TAIL"))
-		//?}
+	@Inject(method = "renderArmWithItem", at = @At("TAIL"))
+	 //?} else {
+	/*@Inject(method = "submitArmWithItem", at = @At("TAIL"))
+		*///?}
 	private void renderOffhandArmWhenEmpty(AbstractClientPlayer player, float frameInterp, float xRot, InteractionHand hand, float attack, ItemStack itemStack, float inverseArmHeight,
 	                                       PoseStack poseStack, SubmitNodeCollector submitNodeCollector,
 	                                       int lightCoords, CallbackInfo ci) {

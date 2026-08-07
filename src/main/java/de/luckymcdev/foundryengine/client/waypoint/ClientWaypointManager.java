@@ -20,19 +20,19 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import org.joml.Matrix4f;
 import org.lwjgl.glfw.GLFW;
 
-//? if 26.2 {
-//?}
 //? if 26.1 {
-/*import net.minecraft.client.gui.Font;
+import net.minecraft.network.chat.Component;
+import de.luckymcdev.foundryengine.common.util.ChatIcons;
+import de.luckymcdev.foundryengine.client.render.WorldViewMatrix;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
-*/
 //?}
-//? if 26.1 {
-/*import org.joml.Matrix4f;
- */
-//?}
+//? if 26.2 {
+/*import com.mojang.blaze3d.GpuFormat;
+ *///?}
 
 public class ClientWaypointManager {
 	public static final KeyMapping PRIMARY_WAYPOINT_KEY = new KeyMapping(
@@ -49,7 +49,7 @@ public class ClientWaypointManager {
 	);
 
 	//? if 26.1 {
-	/*public void renderWaypoints(RenderLevelStageEvent.AfterLevel context) {
+	public void renderWaypoints(RenderLevelStageEvent.AfterLevel context) {
 		Minecraft mc = Client.getMc();
 		if (mc.level == null) {
 			return;
@@ -142,8 +142,8 @@ public class ClientWaypointManager {
 
 		renderState.submit(poseStack, submitNodeCollector, 15728880, OverlayTexture.NO_OVERLAY, 0);
 	}
-	*///?} else {
-	public void renderWaypoints(RenderLevelStageEvent.AfterLevel context, SubmitNodeStorage submitNodes) {
+	//?} else {
+	/*public void renderWaypoints(RenderLevelStageEvent.AfterLevel context, SubmitNodeStorage submitNodes) {
 		Minecraft mc = Client.getMc();
 		if (mc.level == null) {
 			return;
@@ -196,5 +196,5 @@ public class ClientWaypointManager {
 
 		renderState.submit(poseStack, submitNodes, 15728880, OverlayTexture.NO_OVERLAY, 0);
 	}
-	//?}
+	*///?}
 }

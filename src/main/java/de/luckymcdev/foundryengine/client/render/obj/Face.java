@@ -15,9 +15,9 @@ import org.jspecify.annotations.Nullable;
 import java.util.List;
 
 //? if 26.1 {
-/*import net.minecraft.client.Minecraft;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-*/
+
 //?}
 //? if 26.2 {
 //?}
@@ -107,7 +107,7 @@ public record Face(List<Vertex> vertices, Material material) {
 	private void renderFace(PoseStack poseStack, RenderType renderType, int packedLight,
 	                        float r, float g, float b, float a) {
 		//? if 26.1 {
-		/*MultiBufferSource.BufferSource mcBufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
+		MultiBufferSource.BufferSource mcBufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
 		VertexConsumer consumer = mcBufferSource.getBuffer(renderType);
 		int count = vertices.size();
 
@@ -120,8 +120,8 @@ public record Face(List<Vertex> vertices, Material material) {
 		} else {
 			Client.LOGGER.warn("Skipping face with invalid vertex count: {}", count);
 		}
-		*///?} else {
-		try (MeshRenderer.DrawSession session = Client.getMeshRenderer().begin(renderType, new Matrix4f())) {
+		//?} else {
+		/*try (MeshRenderer.DrawSession session = Client.getMeshRenderer().begin(renderType, new Matrix4f())) {
 			VertexConsumer consumer = session.buffer();
 			int count = vertices.size();
 
@@ -135,7 +135,7 @@ public record Face(List<Vertex> vertices, Material material) {
 				Client.LOGGER.warn("Skipping face with invalid vertex count: {}", count);
 			}
 		}
-		//?}
+		*///?}
 	}
 
 	private void addVertex(VertexConsumer buffer, Vertex vertex, PoseStack poseStack, int packedLight,

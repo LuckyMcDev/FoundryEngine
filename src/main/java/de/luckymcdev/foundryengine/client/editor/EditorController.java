@@ -25,10 +25,10 @@ public class EditorController {
 	public static boolean isUsingEditorItem() {
 		Minecraft mc = Minecraft.getInstance();
 		//? if 26.1 {
-		/*if (mc.screen != null || mc.player == null || mc.isPaused()) {
-		 *///?} else {
-		if (mc.gui.screen() != null || mc.player == null || mc.isPaused()) {
-			//?}
+		if (mc.screen != null || mc.player == null || mc.isPaused()) {
+		 //?} else {
+		/*if (mc.gui.screen() != null || mc.player == null || mc.isPaused()) {
+			*///?}
 			return false;
 		}
 		return isHoldingEditorItem() && mc.options.keyUse.isDown();

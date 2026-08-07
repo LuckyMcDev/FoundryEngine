@@ -51,7 +51,6 @@ import de.luckymcdev.foundryengine.common.util.FolderHash;
 import de.luckymcdev.foundryengine.common.util.color.Color;
 import de.luckymcdev.foundryengine.config.Config;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.PreferredGraphicsApi;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.Vec3i;
 import net.minecraft.resources.Identifier;
@@ -81,6 +80,15 @@ import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import org.slf4j.Logger;
 
 import java.util.concurrent.CompletableFuture;
+
+//? if 26.1 {
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+//?}
+//? if 26.2 {
+/*import net.minecraft.client.PreferredGraphicsApi;
+ 
+*///?}
 
 /**
  * Client-side entrypoint for FoundryEngine. Registers client event listeners, panels, and key bindings.
@@ -115,9 +123,12 @@ public class FoundryEngineModClient {
 	}
 
 	private void onClientSetup(FMLClientSetupEvent event) {
-		if (Minecraft.getInstance().options.preferredGraphicsBackend().get() == PreferredGraphicsApi.VULKAN) {
+		//? if 26.2 {
+		/*if (Minecraft.getInstance().options.preferredGraphicsBackend().get() == PreferredGraphicsApi.VULKAN) {
 			throw new EngineException("Sadly due to how FoundryEngine renders its InGame Editor, Vulkan is not supported at this Time. Switch to OpenGL. or delte the Mod.");
 		}
+		
+		*///?}
 
 		NbtSuggestions.init();
 		LOGGER.debug("FoundryEngineModClient setup called");
@@ -276,7 +287,7 @@ public class FoundryEngineModClient {
 	}
 
 	//? if 26.1 {
-	/*private void onRenderLevel(RenderLevelStageEvent.AfterLevel event) {
+	private void onRenderLevel(RenderLevelStageEvent.AfterLevel event) {
 		var camState = event.getLevelRenderState().cameraRenderState;
 		Client.updateMain(camState.viewRotationMatrix, camState.projectionMatrix);
 
@@ -297,8 +308,8 @@ public class FoundryEngineModClient {
 		GizmoRenderer.render(poseStack, bufferSource, camState, camState.viewRotationMatrix);
 		modelViewStack.popMatrix();
 	}
-	*///?} else {
-	private void onRenderLevel(RenderLevelStageEvent.AfterLevel event) {
+	//?} else {
+	/*private void onRenderLevel(RenderLevelStageEvent.AfterLevel event) {
 		var camState = event.getLevelRenderState().cameraRenderState;
 		Client.updateMain(camState.viewRotationMatrix, camState.projectionMatrix);
 
@@ -315,7 +326,7 @@ public class FoundryEngineModClient {
 
 		mc.gameRenderer.featureRenderDispatcher().renderAllFeatures(submitNodeStorage);
 	}
-	//?}
+	*///?}
 
 	private void onClientTickPre(ClientTickEvent.Pre event) {
 		Client.getSkyboxManager().tick(event);
