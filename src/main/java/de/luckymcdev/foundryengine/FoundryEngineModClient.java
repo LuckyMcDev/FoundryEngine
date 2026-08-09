@@ -51,8 +51,6 @@ import de.luckymcdev.foundryengine.common.util.FolderHash;
 import de.luckymcdev.foundryengine.common.util.color.Color;
 import de.luckymcdev.foundryengine.config.Config;
 import foundry.imgui.api.ImGuiMC;
-import foundry.imgui.impl.ImGuiHandler;
-import foundry.imgui.impl.ImGuiMCImpl;
 import foundry.imgui.neoforge.api.event.ImGuiLoadEventsNeoforge;
 import foundry.imgui.neoforge.api.event.RegisterImGuiFontsEventNeoforge;
 import foundry.imgui.neoforge.api.event.RenderImGuiEventsNeoforge;
@@ -221,13 +219,12 @@ public class FoundryEngineModClient {
 	private void registerImGuiFonts(RegisterImGuiFontsEventNeoforge event) {
 		try(var ctx = ImGuiMC.withImGui()) {
 			ctx.io().setFontDefault(ImGuiMC.getFont(ImGuiManager.FONT, false, false));
+			ctx.io().setFontGlobalScale(ImGuiManager.scaleOverride);
 		}
 	}
 
 	private void loadImGuiEvent(ImGuiLoadEventsNeoforge.Pre event) {
-		var mc = Minecraft.getInstance();
-		var window = mc.getWindow();
-		Client.getImGuiManager().create(window.handle(), mc.getResourceManager());
+		Client.getImGuiManager().create();
 		Client.getMainMenu().register();
 	}
 
@@ -247,12 +244,6 @@ public class FoundryEngineModClient {
 				editorManager.handleRender();
 			} catch (Exception e) {
 				LOGGER.error("ImGui editor frame failed, restoring rendering state", e);
-			} finally {
-				try {
-					imguiManager.end();
-				} catch (Exception e) {
-					LOGGER.error("ImGui frame teardown failed", e);
-				}
 			}
 		}
 	}

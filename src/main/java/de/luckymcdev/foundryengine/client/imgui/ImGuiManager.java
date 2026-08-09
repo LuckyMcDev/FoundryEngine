@@ -1,19 +1,11 @@
 package de.luckymcdev.foundryengine.client.imgui;
 
-import com.mojang.blaze3d.platform.Window;
-import com.mojang.logging.LogUtils;
+import de.luckymcdev.foundryengine.config.ClientConfig;
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.styles.ImTheme;
 import de.luckymcdev.foundryengine.client.editor.styles.ImThemes;
 import de.luckymcdev.foundryengine.common.Common;
-import de.luckymcdev.foundryengine.config.ClientConfig;
 import de.luckymcdev.foundryengine.mixin.MinecraftMixin;
-import de.luckymcdev.foundryengine.mixin.render.GameRendererMixin;
-import foundry.imgui.api.ImGuiMC;
-import foundry.imgui.impl.ImGuiMCImpl;
-import imgui.ImFont;
-import imgui.ImFontAtlas;
-import imgui.ImFontConfig;
 import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.extension.imnodes.ImNodes;
@@ -21,43 +13,36 @@ import imgui.extension.imnodes.ImNodesContext;
 import imgui.flag.ImGuiConfigFlags;
 import imgui.flag.ImGuiDockNodeFlags;
 import imgui.internal.ImGuiDockNode;
-import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.input.InputQuirks;
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.packs.resources.ResourceManager;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.system.NativeResource;
-import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * The Central ImGui Manager.
+ * The central ImGui manager. Configures the ImGui docking space, theme and editor enable state.
+ * <p>
+ * The ImGui context, renderer, fonts and viewports are all owned by ImGuiMC: see
+ * the {@code ImGuiLoadEventsNeoforge} and {@code RenderImGuiEventsNeoforge} wiring in
+ * {@code FoundryEngineModClient}.
  */
 public final class ImGuiManager implements NativeResource {
-	private static final Logger LOGGER = LogUtils.getLogger();
 	private final AtomicBoolean enabled = new AtomicBoolean(false);
 	private final AtomicBoolean menuBarVisible = new AtomicBoolean(true);
 	public static final Identifier FONT = Common.id("jetbrains_mono_nf");
+	public static float scaleOverride = 1.4f;
 	private @Nullable ImNodesContext imNodesContext;
-	private boolean shouldBlockInput = false;
+	private boolean blockInput;
 	private int dockId;
 	private ImTheme currentTheme;
 
 	/**
-	 * Creates a new ImGui context for the given window handle.
-	 * See {@link GameRendererMixin#engine$renderHead(DeltaTracker, boolean, CallbackInfo)} for usage.
-	 *
-	 * @param handle          the window handle, e.g. {@link Window#handle()}
-	 * @param resourceManager the resource manager for loading fonts
+	 * Creates the ImNodes context and applies the ImGui IO flags.
+	 * Called from {@code ImGuiLoadEventsNeoforge.Pre}, where the ImGui context is already current.
 	 */
-	public void create(final long handle, final ResourceManager resourceManager) {
+	public void create() {
 		imNodesContext = ImNodes.createContext();
 		ImNodes.setCurrentContext(imNodesContext);
 
@@ -163,7 +148,6 @@ public final class ImGuiManager implements NativeResource {
 		if (saveToConfig) {
 			saveThemeToConfig(theme);
 		}
-		LOGGER.info("Applied theme '{}'", theme.getName());
 	}
 
 	/**
@@ -174,7 +158,7 @@ public final class ImGuiManager implements NativeResource {
 	}
 
 	/**
-	 * Prepares the frame for ImGui rendering: custom framebuffer, ImGui new frame, docking setup.
+	 * Prepares the docking space for an ImGui frame.
 	 */
 	public void begin() {
 		final ImGuiIO io = ImGui.getIO();
@@ -189,57 +173,33 @@ public final class ImGuiManager implements NativeResource {
 			io.setMousePos(-1, -1);
 		}
 
-
-		dockId = ImGui.dockSpaceOverViewport(ImGui.getID(ImGui.getMainViewport().ptr), ImGui.getMainViewport(), ImGuiDockNodeFlags.PassthruCentralNode + ImGuiDockNodeFlags.AutoHideTabBar);
+		dockId = ImGui.dockSpaceOverViewport(
+			ImGui.getID(ImGui.getMainViewport().ptr),
+			ImGui.getMainViewport(),
+			ImGuiDockNodeFlags.PassthruCentralNode + ImGuiDockNodeFlags.AutoHideTabBar
+		);
 		ImGuiDockNode centralNode = imgui.internal.ImGui.dockBuilderGetCentralNode(dockId);
-		shouldBlockInput = centralNode.isLeafNode() && !centralNode.isEmpty();
+		blockInput = centralNode.isLeafNode() && !centralNode.isEmpty();
 	}
 
 	/**
-	 * Ends ImGui rendering, draws the result and restores the default framebuffer.
-	 * This method is just fully useless.
-	 */
-	public void end() {
-		// TODO: remove this method? Figure out what to do with it.
-	}
-
-	/**
-	 * Returns the current dock space ID.
+	 * @return the current dock space ID.
 	 */
 	public int getDockId() {
 		return dockId;
 	}
 
 	/**
-	 * Returns whether ImGui should capture mouse input.
+	 * Returns whether a docked window fully covers the central dock node, in which case
+	 * the game must not receive any input. This complements ImGuiMC's own want-capture
+	 * flags, which are handled by ImGuiMC's mixins.
 	 */
-	public boolean shouldInterceptMouse() {
-		if (!enabled.get()) {
-			return false;
-		}
-		if (shouldBlockInput) {
-			return true;
-		}
-		try (ImGuiMC.ActiveContext ignored = ImGuiMC.withImGui()) {
-			return ImGui.getIO().getWantCaptureMouse() && !Client.getMc().mouseHandler.isMouseGrabbed();
-		}
-	}
-
-	public boolean shouldInterceptKeyboard() {
-		if (!enabled.get()) {
-			return false;
-		}
-		if (shouldBlockInput) {
-			return true;
-		}
-		try (ImGuiMC.ActiveContext ignored = ImGuiMC.withImGui()) {
-			return ImGui.getIO().getWantCaptureKeyboard();
-		}
+	public boolean shouldBlockInput() {
+		return enabled.get() && blockInput;
 	}
 
 	/**
-	 * Disposes all ImGui implementations and resources.
-	 * Called from {@link MinecraftMixin#engine$close(CallbackInfo)} and {@link #free()}.
+	 * Disposes all ImGui resources. Called from {@link MinecraftMixin#engine$close(CallbackInfo)}.
 	 */
 	public void dispose() {
 		if (Client.getImGraphics().getStackDepth() > 0) {

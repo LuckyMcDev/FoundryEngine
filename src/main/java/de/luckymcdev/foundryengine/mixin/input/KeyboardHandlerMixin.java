@@ -15,8 +15,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 
 /**
- * See {@link de.luckymcdev.foundryengine.client.imgui.ImGuiManager#shouldInterceptKeyboard()}
- * Cancels Minecraft Keyboard inputs if ImGui captures the keyboard.
+ * Blocks game input while a docked window fully covers the game view
+ * (see {@link de.luckymcdev.foundryengine.client.imgui.ImGuiManager#shouldBlockInput()}).
+ * Input that ImGui itself captures is already cancelled by ImGuiMC's input mixins.
  */
 @Mixin(KeyboardHandler.class)
 public class KeyboardHandlerMixin implements EngineKeyboardHandler {
@@ -26,7 +27,7 @@ public class KeyboardHandlerMixin implements EngineKeyboardHandler {
 	 */
 	@Inject(method = "keyPress", at = @At("HEAD"), cancellable = true)
 	public void engine$keyPress(long handle, int action, KeyEvent event, CallbackInfo ci) {
-		if (Client.getImGuiManager().shouldInterceptKeyboard() || Client.getImGuiManager().shouldInterceptMouse()) {
+		if (Client.getImGuiManager().shouldBlockInput()) {
 			ci.cancel();
 			return;
 		}
@@ -50,12 +51,12 @@ public class KeyboardHandlerMixin implements EngineKeyboardHandler {
 	}
 
 	/**
-	 * Cancels char-typed events when ImGui captures the keyboard.
+	 * Cancels char-typed events while the dock blocks game input.
 	 */
 	@Override
 	@Inject(method = "charTyped", at = @At("HEAD"), cancellable = true)
 	public void engine$charTyped(long handle, CharacterEvent event, CallbackInfo ci) {
-		if (Client.getImGuiManager().shouldInterceptKeyboard() || Client.getImGuiManager().shouldInterceptMouse()) {
+		if (Client.getImGuiManager().shouldBlockInput()) {
 			ci.cancel();
 		}
 	}
