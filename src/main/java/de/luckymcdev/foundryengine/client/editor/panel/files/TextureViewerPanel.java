@@ -63,7 +63,7 @@ public class TextureViewerPanel extends EditorPanel {
 
 	@Override
 	public void content(ImGraphicsExtractor g) {
-		if (image.glId() == -1 || image.width() <= 0 || image.height() <= 0) {
+		if (image.texture() == null || image.width() <= 0 || image.height() <= 0) {
 			ImGui.textColored(1.0f, 0.4f, 0.4f, 1.0f, "Failed to load texture:");
 			ImGui.textWrapped(sourcePath);
 			if (ImGui.button("Retry")) {
@@ -99,7 +99,7 @@ public class TextureViewerPanel extends EditorPanel {
 		}
 
 		drawCheckerboard(displayW, displayH);
-		g.drawImage(image.glId(), displayW, displayH);
+		g.drawImage(image, displayW, displayH);
 
 		if (ImGui.isItemHovered()) {
 			ImGui.beginTooltip();

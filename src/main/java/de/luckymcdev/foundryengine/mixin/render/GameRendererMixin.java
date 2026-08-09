@@ -44,29 +44,7 @@ public class GameRendererMixin implements EngineGameRenderer {
 	@Override
 	@Inject(method = "render", at = @At("RETURN"))
 	public void engine$renderReturn(DeltaTracker deltaTracker, boolean advanceGameTime, CallbackInfo ci) {
-		var imguiManager = Client.getImGuiManager();
 
-		if (imguiManager.isEnabled()) {
-			var mainMenu = Client.getMainMenu();
-			var editorManager = Client.getEditorManager();
-
-			try {
-				imguiManager.begin();
-				mainMenu.handleShortcuts();
-				if (imguiManager.isMenuBarVisible()) {
-					mainMenu.render();
-				}
-				editorManager.handleRender();
-			} catch (Exception e) {
-				engine$LOGGER.error("ImGui editor frame failed, restoring rendering state", e);
-			} finally {
-				try {
-					imguiManager.end();
-				} catch (Exception e) {
-					engine$LOGGER.error("ImGui frame teardown failed", e);
-				}
-			}
-		}
 	}
 
 	/**

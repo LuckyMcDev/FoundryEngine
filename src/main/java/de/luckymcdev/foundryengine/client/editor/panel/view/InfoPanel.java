@@ -1,13 +1,17 @@
 package de.luckymcdev.foundryengine.client.editor.panel.view;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import de.luckymcdev.foundryengine.FoundryEngineMod;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
 import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.common.Common;
+import foundry.imgui.impl.ImGuiWindowHandler;
 import imgui.ImGui;
 import net.minecraft.SharedConstants;
+
+import java.util.Locale;
 
 import static org.lwjgl.opengl.GL11C.*;
 import static org.lwjgl.opengl.GL20.GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS;
@@ -39,10 +43,16 @@ public class InfoPanel extends EditorPanel {
 		String arch = System.getProperty("os.arch");
 		int cores = Runtime.getRuntime().availableProcessors();
 		String mcVersion = SharedConstants.getCurrentVersion().toString();
+		//? if 26.1 {
+		String backendName = RenderSystem.getDevice().getBackendName();
+		 //?} else {
+		/*String backendName = RenderSystem.getDevice().getDeviceInfo().backendName();
+		*///?}
 
 		formatted(ImGraphicsExtractor.icon(ImIcons.WINDOWS) + "  OS", "%s (%s)", os, arch);
 		formatted(ImGraphicsExtractor.icon(ImIcons.MICROCHIP) + "  CPU Cores", "%d", cores);
 		formatted(ImGraphicsExtractor.icon(ImIcons.CUBE) + "  Minecraft", "%s", mcVersion);
+		formatted(ImGraphicsExtractor.icon(ImIcons.VUEJS) + "  Graphics backend", "%s", backendName);
 	}
 
 	private void renderJavaMemoryInfo(ImGraphicsExtractor g) {

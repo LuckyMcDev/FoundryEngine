@@ -2,8 +2,6 @@ package de.luckymcdev.foundryengine.client.imgui;
 
 import com.mojang.blaze3d.ProjectionType;
 import com.mojang.blaze3d.buffers.GpuBuffer;
-import com.mojang.blaze3d.opengl.GlStateManager;
-import com.mojang.blaze3d.opengl.GlTexture;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -17,6 +15,8 @@ import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.font.BuiltInFonts;
 import de.luckymcdev.foundryengine.common.util.color.Color;
 import de.luckymcdev.foundryengine.config.ClientConfig;
+import foundry.imgui.api.ImGuiMC;
+import foundry.imgui.impl.ImGuiMCImpl;
 import imgui.ImFont;
 import imgui.ImGui;
 import imgui.ImVec4;
@@ -46,7 +46,6 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.joml.Vector4f;
 import org.jspecify.annotations.Nullable;
-import org.lwjgl.opengl.GL11;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -54,7 +53,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayDeque;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -74,8 +72,7 @@ import com.mojang.blaze3d.systems.CommandEncoder;
 public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorConsumer {
 	private static final int MAX_ICON_LOADS_PER_FRAME = 25;
 	private static final int MAX_ICON_CACHE_SIZE = 256;
-	private static final Map<String, Integer> iconCache = new LinkedHashMap<>();
-	private static final Map<String, DynamicTexture> iconTextures = new HashMap<>();
+	private static final Map<String, Image> iconCache = new LinkedHashMap<>();
 	private static final Set<String> pendingKeys = new HashSet<>();
 	private static final Queue<ItemStack> renderQueue = new ArrayDeque<>();
 	private @Nullable
@@ -92,35 +89,6 @@ public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorCons
 	private VarStack stack;
 
 	public ImGraphicsExtractor() {
-	}
-
-	/**
-	 * Fully renders wrapped Minecraft text into ImGui.
-	 *
-	 * @param text      The text to render
-	 * @param wrapWidth The width to wrap to
-	 * @since 2.0.0
-	 */
-	static void component(final FormattedText text, final float wrapWidth) {
-		ImGuiManager.IMGUI_CHAR_SINK.setup();
-		for (final FormattedCharSequence part : Language.getInstance().getVisualOrder(ImGuiManager.IM_GUI_SPLITTER.splitLines(text, (int) wrapWidth, Style.EMPTY))) {
-			part.accept(ImGuiManager.IMGUI_CHAR_SINK);
-			ImGuiManager.IMGUI_CHAR_SINK.finish();
-			ImGui.newLine();
-		}
-		ImGuiManager.IMGUI_CHAR_SINK.reset();
-	}
-
-	/**
-	 * Retrieves the ImGui font to use for the specified Minecraft style.
-	 *
-	 * @param style The style to get the font for
-	 * @return The ImFont to use
-	 * @since 2.0.0
-	 */
-	public static ImFont getStyleFont(final Style style) {
-		var fm = Client.getImGuiManager().getFontManager();
-		return fm.getFont(BuiltInFonts.face(style.isBold(), style.isItalic()));
 	}
 
 	public static int getColor(final int color) {
@@ -145,42 +113,42 @@ public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorCons
 	}
 
 	private static <T> Image loadTexture(String type, T idOrFile) {
-		int textureId = -1;
-		int width = -1;
-		int height = -1;
 		if (type.equals("identifier")) {
 			AbstractTexture texture = Minecraft.getInstance().getTextureManager().getTexture((Identifier) idOrFile);
 			if (texture != null) {
 				GpuTextureView textureView = texture.getTextureView();
-				GlTexture glTexture = (GlTexture) texture.getTexture();
-				textureId = glTexture.glId();
-				width = textureView.getWidth(textureView.baseMipLevel());
-				height = textureView.getHeight(textureView.baseMipLevel());
+				if (textureView != null) {
+					int width = textureView.getWidth(textureView.baseMipLevel());
+					int height = textureView.getHeight(textureView.baseMipLevel());
+					return new Image(texture, width, height);
+				}
 			}
-			return new Image(textureId, width, height);
-		} else {
-			File file = (File) idOrFile;
-			try (InputStream is = new FileInputStream(file)) {
-				NativeImage nativeImage = NativeImage.read(is);
-				DynamicTexture texture = new DynamicTexture(() -> "EditorView_" + file.getName(), nativeImage);
-				GpuTextureView textureView = texture.getTextureView();
-				GlTexture glTexture = (GlTexture) texture.getTexture();
-				textureId = glTexture.glId();
-				width = textureView.getWidth(textureView.baseMipLevel());
-				height = textureView.getHeight(textureView.baseMipLevel());
-				return new Image(textureId, width, height, texture);
-			} catch (IOException e) {
-				Common.LOGGER.error("Failed to load texture for viewer: {}", file.getAbsolutePath(), e);
-				return new Image(-1, -1, -1);
+			return new Image(null, -1, -1);
+		}
+
+		File file = (File) idOrFile;
+		try (InputStream is = new FileInputStream(file)) {
+			NativeImage nativeImage = NativeImage.read(is);
+			DynamicTexture texture = new DynamicTexture(() -> "EditorView_" + file.getName(), nativeImage);
+			GpuTextureView textureView = texture.getTextureView();
+			if (textureView != null) {
+				int width = textureView.getWidth(textureView.baseMipLevel());
+				int height = textureView.getHeight(textureView.baseMipLevel());
+				return new Image(texture, width, height, texture);
 			}
+			texture.close();
+			return new Image(null, -1, -1);
+		} catch (IOException e) {
+			Common.LOGGER.error("Failed to load texture for viewer: {}", file.getAbsolutePath(), e);
+			return new Image(null, -1, -1);
 		}
 	}
 
-	public static int getOrCreateItemIcon(ItemStack stack) {
+	public static @Nullable Image getOrCreateItemIcon(ItemStack stack) {
 		int size = ClientConfig.ICON_SIZE.get();
 		String key = BuiltInRegistries.ITEM.getKey(stack.getItem()) + "@" + size;
 
-		Integer cached = iconCache.get(key);
+		Image cached = iconCache.get(key);
 		if (cached != null) {
 			return cached;
 		}
@@ -189,7 +157,7 @@ public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorCons
 			pendingKeys.add(key);
 			renderQueue.add(stack);
 		}
-		return -1;
+		return null;
 	}
 
 	public static void processIconQueue() {
@@ -210,10 +178,9 @@ public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorCons
 	public static void clearItemIconCache() {
 		renderQueue.clear();
 		pendingKeys.clear();
-		for (DynamicTexture tex : iconTextures.values()) {
-			tex.close();
+		for (Image image : iconCache.values()) {
+			image.close();
 		}
-		iconTextures.clear();
 		iconCache.clear();
 		closeFramebuffer();
 	}
@@ -309,9 +276,7 @@ public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorCons
 					}
 				}
 				DynamicTexture dynTex = new DynamicTexture(() -> "item_icon_" + cacheKey, image);
-				int glId = ((GlTexture) dynTex.getTexture()).glId();
-				iconCache.put(cacheKey, glId);
-				iconTextures.put(cacheKey, dynTex);
+				iconCache.put(cacheKey, new Image(dynTex, size, size, dynTex));
 				evictOldestIconIfNeeded();
 				pendingKeys.remove(cacheKey);
 			} catch (Exception e) {
@@ -326,10 +291,10 @@ public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorCons
 		while (iconCache.size() > MAX_ICON_CACHE_SIZE) {
 			Iterator<String> it = iconCache.keySet().iterator();
 			String oldestKey = it.next();
+			Image image = iconCache.get(oldestKey);
 			it.remove();
-			DynamicTexture texture = iconTextures.remove(oldestKey);
-			if (texture != null) {
-				texture.close();
+			if (image != null) {
+				image.close();
 			}
 			pendingKeys.remove(oldestKey);
 		}
@@ -380,8 +345,11 @@ public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorCons
 		fbSize = 0;
 	}
 
-	public void component(final FormattedText text) {
-		component(text, Float.POSITIVE_INFINITY);
+	public static long textureId(@Nullable Image image) {
+		if (image == null || image.texture() == null || ImGuiMCImpl.handler == null) {
+			return 0;
+		}
+		return ImGuiMCImpl.handler.getRenderer().getImGuiId(ImGuiMC.getTexture(image.texture()), null);
 	}
 
 	public void pushStack() {
@@ -690,13 +658,6 @@ public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorCons
 		ImGui.textDisabled(value);
 	}
 
-	public void withFont(FontDescription.Resource font, Runnable body) {
-		var fonts = Client.getImGuiManager().getFontManager();
-		fonts.pushFont(font);
-		body.run();
-		fonts.popFont();
-	}
-
 	public void treeSection(String label, Runnable body) {
 		int flags = ImGuiTreeNodeFlags.SpanAvailWidth
 			| ImGuiTreeNodeFlags.DefaultOpen
@@ -753,31 +714,34 @@ public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorCons
 		return false;
 	}
 
-	public void drawImage(int id, float w, float h) {
-		GlStateManager._bindTexture(id);
-		GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
-		GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+	public void component(final FormattedText text) {
+		ImGuiMC.component(text);
+	}
+
+	public void drawImage(@Nullable Image image) {
+		if (image == null || image.texture() == null) {
+			return;
+		}
+		drawImage(image, image.width(), image.height());
+	}
+
+	public void drawImage(@Nullable Image image, float w, float h) {
+		if (image == null || image.texture() == null) {
+			return;
+		}
 		pushStack();
 		setStyleVar(ImGuiStyleVar.FramePadding, 0, 0);
-		ImGui.image(id, w, h, 0, 0, 1, 1);
+		ImGuiMC.image(ImGuiMC.getTexture(image.texture()), w, h, 0, 0, 1, 1);
 		popStack();
 	}
 
-	public void drawImage(Image image) {
-		drawImage(image.glId(), image.width(), image.height());
-	}
-
-	public void drawImage(Image image, float w, float h) {
-		drawImage(image.glId(), w, h);
-	}
-
-	public void drawImageButton(int id, float w, float h) {
-		GlStateManager._bindTexture(id);
-		GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
-		GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+	public void drawImageButton(@Nullable Image image, float w, float h) {
+		if (image == null || image.texture() == null) {
+			return;
+		}
 		pushStack();
 		setStyleVar(ImGuiStyleVar.FramePadding, 0, 0);
-		ImGui.imageButton(String.valueOf(id), id, w, h, 0, 0, 1, 1);
+		ImGuiMC.imageButton("##image", ImGuiMC.getTexture(image.texture()), w, h, 0, 0, 1, 1);
 		popStack();
 	}
 
@@ -833,9 +797,9 @@ public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorCons
 		private FloatList pushedFontScales = null;
 	}
 
-	public record Image(int glId, int width, int height, @Nullable DynamicTexture ownedTexture) {
-		public Image(int glId, int width, int height) {
-			this(glId, width, height, null);
+	public record Image(@Nullable AbstractTexture texture, int width, int height, @Nullable DynamicTexture ownedTexture) {
+		public Image(@Nullable AbstractTexture texture, int width, int height) {
+			this(texture, width, height, null);
 		}
 
 		public void close() {

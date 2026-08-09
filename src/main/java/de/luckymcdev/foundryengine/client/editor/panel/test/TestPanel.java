@@ -9,7 +9,6 @@ import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.client.ui.ExampleScreen;
 import de.luckymcdev.foundryengine.common.Common;
-import de.luckymcdev.foundryengine.common.font.BuiltInFonts;
 import de.luckymcdev.foundryengine.common.util.color.Color;
 import imgui.ImGui;
 import imgui.extension.imguiknobs.ImGuiKnobs;
@@ -46,13 +45,7 @@ public class TestPanel extends Panel {
 		ImGui.text("You dont know what i do? Hover it.");
 		g.helpTooltip("BOO!");
 
-		g.withFont(BuiltInFonts.LIGHT, () -> ImGui.text("Hello World (Light)"));
-		g.withFont(BuiltInFonts.REGULAR, () -> ImGui.text("Hello World (Regular)"));
-		g.withFont(BuiltInFonts.MEDIUM, () -> ImGui.text("Hello World (Medium)"));
-		g.withFont(BuiltInFonts.SEMIBOLD, () -> ImGui.text("Hello World (SemiBold)"));
-		g.withFont(BuiltInFonts.BOLD, () -> ImGui.text("Hello World (Bold)"));
-		g.withFont(BuiltInFonts.ITALIC, () -> ImGui.text("Hello World (Italic)"));
-		g.withFont(BuiltInFonts.BOLD_ITALIC, () -> ImGui.text("Hello World (Bold Italic)"));
+		// TODO: Font test
 
 		g.textCentered("center center", ImGui.getWindowWidth());
 		g.identifier(Common.id("imguiiscool"));
@@ -81,7 +74,7 @@ public class TestPanel extends Panel {
 		if (cataloguePayload != null) {
 			ImGui.text("Dropped: " + cataloguePayload.type() + " - " + cataloguePayload.id());
 			float wh = 64;
-			g.drawImage(cataloguePayload.texture().glId(), wh, wh);
+			g.drawImage(cataloguePayload.texture(), wh, wh);
 		} else {
 			ImGui.text("Drop something from the Catalogue panel!");
 		}

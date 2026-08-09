@@ -34,13 +34,13 @@ import de.luckymcdev.foundryengine.client.ext.ModPathRecorder;
 import de.luckymcdev.foundryengine.client.gizmo.GizmoBuffer;
 import de.luckymcdev.foundryengine.client.gizmo.GizmoRenderer;
 import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
+import de.luckymcdev.foundryengine.client.imgui.ImGuiManager;
 import de.luckymcdev.foundryengine.client.render.EngineSceneDepth;
 import de.luckymcdev.foundryengine.client.waypoint.ClientWaypointManager;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.bundle.modcompat.BundleModContainer;
 import de.luckymcdev.foundryengine.common.dialogue.DialogueNode;
 import de.luckymcdev.foundryengine.common.dialogue.DialogueSession;
-import de.luckymcdev.foundryengine.common.exceptions.EngineException;
 import de.luckymcdev.foundryengine.common.network.packets.BundleHashPacket;
 import de.luckymcdev.foundryengine.common.network.packets.dialogue.ClientboundDialoguePacket;
 import de.luckymcdev.foundryengine.common.network.packets.editor.CutscenePacket;
@@ -50,6 +50,12 @@ import de.luckymcdev.foundryengine.common.network.packets.sync.ScreenEffectPacke
 import de.luckymcdev.foundryengine.common.util.FolderHash;
 import de.luckymcdev.foundryengine.common.util.color.Color;
 import de.luckymcdev.foundryengine.config.Config;
+import foundry.imgui.api.ImGuiMC;
+import foundry.imgui.impl.ImGuiHandler;
+import foundry.imgui.impl.ImGuiMCImpl;
+import foundry.imgui.neoforge.api.event.ImGuiLoadEventsNeoforge;
+import foundry.imgui.neoforge.api.event.RegisterImGuiFontsEventNeoforge;
+import foundry.imgui.neoforge.api.event.RenderImGuiEventsNeoforge;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.Vec3i;
@@ -87,7 +93,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 //?}
 //? if 26.2 {
 /*import net.minecraft.client.PreferredGraphicsApi;
- 
+import de.luckymcdev.foundryengine.common.exceptions.EngineException;
 *///?}
 
 /**
@@ -109,6 +115,8 @@ public class FoundryEngineModClient {
 		modBus.addListener(this::onRegisterDebugRenderers);
 		modBus.addListener(this::onRegisterGuiLayers);
 		modBus.addListener(this::onRegisterParticleProviders);
+		modBus.addListener(this::loadImGuiEvent);
+		modBus.addListener(this::registerImGuiFonts);
 		BUS.addListener(this::onClientTickPost);
 		BUS.addListener(this::onRenderLevel);
 		BUS.addListener(this::onAfterOpaqueFeatures);
@@ -118,6 +126,7 @@ public class FoundryEngineModClient {
 		BUS.addListener(this::onRenderFramePost);
 		BUS.addListener(this::onItemTooltip);
 		BUS.addListener(this::onRightClickItem);
+		BUS.addListener(this::renderImGuiEvent);
 
 		Config.registerClient(modContainer);
 	}
@@ -125,9 +134,8 @@ public class FoundryEngineModClient {
 	private void onClientSetup(FMLClientSetupEvent event) {
 		//? if 26.2 {
 		/*if (Minecraft.getInstance().options.preferredGraphicsBackend().get() == PreferredGraphicsApi.VULKAN) {
-			throw new EngineException("Sadly due to how FoundryEngine renders its InGame Editor, Vulkan is not supported at this Time. Switch to OpenGL. or delte the Mod.");
+			//throw new EngineException("Sadly due to how FoundryEngine renders its InGame Editor, Vulkan is not supported at this Time. Switch to OpenGL. or delte the Mod.");
 		}
-		
 		*///?}
 
 		NbtSuggestions.init();
@@ -210,6 +218,45 @@ public class FoundryEngineModClient {
 		});
 	}
 
+	private void registerImGuiFonts(RegisterImGuiFontsEventNeoforge event) {
+		try(var ctx = ImGuiMC.withImGui()) {
+			ctx.io().setFontDefault(ImGuiMC.getFont(ImGuiManager.FONT, false, false));
+		}
+	}
+
+	private void loadImGuiEvent(ImGuiLoadEventsNeoforge.Pre event) {
+		var mc = Minecraft.getInstance();
+		var window = mc.getWindow();
+		Client.getImGuiManager().create(window.handle(), mc.getResourceManager());
+		Client.getMainMenu().register();
+	}
+
+	private void renderImGuiEvent(RenderImGuiEventsNeoforge.Pre event) {
+		var imguiManager = Client.getImGuiManager();
+
+		if (imguiManager.isEnabled()) {
+			var mainMenu = Client.getMainMenu();
+			var editorManager = Client.getEditorManager();
+
+			try {
+				imguiManager.begin();
+				mainMenu.handleShortcuts();
+				if (imguiManager.isMenuBarVisible()) {
+					mainMenu.render();
+				}
+				editorManager.handleRender();
+			} catch (Exception e) {
+				LOGGER.error("ImGui editor frame failed, restoring rendering state", e);
+			} finally {
+				try {
+					imguiManager.end();
+				} catch (Exception e) {
+					LOGGER.error("ImGui frame teardown failed", e);
+				}
+			}
+		}
+	}
+
 	private void onRegisterGuiLayers(RegisterGuiLayersEvent event) {
 		event.registerAboveAll(Common.id("icon_exporter"), Client.getIconExporterLayer());
 	}
@@ -227,7 +274,6 @@ public class FoundryEngineModClient {
 
 
 	private void addClientReloadListener(AddClientReloadListenersEvent event) {
-		event.addListener(Common.id("imgui_handler"), Client.getImGuiManager());
 		event.addListener(Common.id("obj_models"), createReloadListener(() -> Client.getObjModelManager().loadModels()));
 		event.addListener(Common.id("post_effects"), createReloadListener(() -> Client.getPostEffectManager().getRegistry().invalidatePipelineCaches()));
 		event.addListener(Common.id("item_icon_cache"), createReloadListener(ImGraphicsExtractor::clearItemIconCache));

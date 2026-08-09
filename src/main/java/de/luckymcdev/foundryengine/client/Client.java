@@ -276,48 +276,6 @@ public final class Client {
 	}
 
 	/**
-	 * Returns the OpenGL device from the GPU backend.
-	 */
-	public static GlDevice getGlDevice() {
-		return (GlDevice) ((EngineGpuDevice) RenderSystem.getDevice()).engine$getBackend();
-	}
-
-	/**
-	 * Returns the color texture of the main render target.
-	 */
-	public static GlTexture getGlColTexture() {
-		return getGlColTexture(getMainRenderTarget());
-	}
-
-	/**
-	 * Returns the color texture of the given render target.
-	 */
-	public static GlTexture getGlColTexture(RenderTarget target) {
-		return unwrapTexture(target.getColorTexture());
-	}
-
-	/**
-	 * Returns the depth texture of the main render target.
-	 */
-	public static GlTexture getGlDepthTexture() {
-		return getGlDepthTexture(getMainRenderTarget());
-	}
-
-	/**
-	 * Returns the depth texture of the given render target.
-	 */
-	public static GlTexture getGlDepthTexture(RenderTarget target) {
-		return unwrapTexture(target.getDepthTexture());
-	}
-
-	/**
-	 * Unwraps a Minecraft texture object to its GL texture handle.
-	 */
-	public static GlTexture unwrapTexture(Object tex) {
-		return (GlTexture) tex;
-	}
-
-	/**
 	 * Returns the waypoint renderer.
 	 */
 	public static ClientWaypointManager getWaypointRenderer() {

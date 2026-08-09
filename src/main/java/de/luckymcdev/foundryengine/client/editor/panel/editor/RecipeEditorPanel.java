@@ -39,7 +39,7 @@ public class RecipeEditorPanel extends EditorPanel {
 	private static final int TEXT_SHADOW = 0x80000000;
 
 	private final Map<String, SlotData> slots = new LinkedHashMap<>();
-	private final Map<Identifier, Integer> itemTextureCache = new HashMap<>();
+	private final Map<Identifier, ImGraphicsExtractor.Image> itemTextureCache = new HashMap<>();
 	private final Map<Identifier, ImGraphicsExtractor.Image> bgTextureCache = new HashMap<>();
 	private final ImString recipeIdInput = new ImString("modid:recipe_name", 256);
 	private final ImString groupInput = new ImString("", 128);
@@ -111,10 +111,10 @@ public class RecipeEditorPanel extends EditorPanel {
 
 		var drawList = ImGui.getWindowDrawList();
 
-		if (bg != null && bg.glId() != -1) {
+		if (bg != null && bg.texture() != null) {
 			float u2 = GUI_TEX_WIDTH / (float) bg.width();
 			float v2 = GUI_TEX_HEIGHT / (float) bg.height();
-			drawList.addImage(bg.glId(), startX, startY, startX + texW, startY + texH, 0, 0, u2, v2);
+			drawList.addImage(ImGraphicsExtractor.textureId(bg), startX, startY, startX + texW, startY + texH, 0, 0, u2, v2);
 		} else {
 			drawList.addRectFilled(startX, startY, startX + texW, startY + texH, 0xFF2D2D2D);
 		}
@@ -165,9 +165,9 @@ public class RecipeEditorPanel extends EditorPanel {
 
 		SlotData data = slots.get(key);
 		if (data != null) {
-			Integer texId = itemTextureCache.get(data.item);
-			if (texId != null && texId != -1) {
-				drawList.addImage(texId, screenX, screenY, screenX + size, screenY + size, 0, 0, 1, 1);
+			ImGraphicsExtractor.Image icon = itemTextureCache.get(data.item);
+			if (icon != null && icon.texture() != null) {
+				drawList.addImage(ImGraphicsExtractor.textureId(icon), screenX, screenY, screenX + size, screenY + size, 0, 0, 1, 1);
 			} else {
 				String letter = data.item.getPath().substring(0, 1).toUpperCase();
 				float tw = ImGui.calcTextSize(letter).x;
@@ -420,7 +420,7 @@ public class RecipeEditorPanel extends EditorPanel {
 			try {
 				return ImGraphicsExtractor.getTexture(id);
 			} catch (Exception e) {
-				return new ImGraphicsExtractor.Image(-1, 0, 0);
+				return new ImGraphicsExtractor.Image(null, 0, 0);
 			}
 		});
 	}
@@ -440,14 +440,14 @@ public class RecipeEditorPanel extends EditorPanel {
 			File[] matches = iconDir.listFiles((dir, name) -> name.startsWith(prefix) && name.endsWith(".png"));
 			if (matches != null && matches.length > 0) {
 				ImGraphicsExtractor.Image img = ImGraphicsExtractor.getTexture(matches[0]);
-				if (img.glId() > 0) {
-					itemTextureCache.put(itemId, img.glId());
+				if (img.texture() != null) {
+					itemTextureCache.put(itemId, img);
 					return;
 				}
 			}
 		}
 
-		itemTextureCache.put(itemId, -1);
+		itemTextureCache.put(itemId, null);
 	}
 
 	private enum RecipeType {
