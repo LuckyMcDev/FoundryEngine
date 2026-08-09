@@ -54,6 +54,7 @@ import foundry.imgui.api.ImGuiMC;
 import foundry.imgui.neoforge.api.event.ImGuiLoadEventsNeoforge;
 import foundry.imgui.neoforge.api.event.RegisterImGuiFontsEventNeoforge;
 import foundry.imgui.neoforge.api.event.RenderImGuiEventsNeoforge;
+import imgui.ImGui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.Vec3i;
@@ -219,7 +220,7 @@ public class FoundryEngineModClient {
 	private void registerImGuiFonts(RegisterImGuiFontsEventNeoforge event) {
 		try(var ctx = ImGuiMC.withImGui()) {
 			ctx.io().setFontDefault(ImGuiMC.getFont(ImGuiManager.FONT, false, false));
-			ctx.io().setFontGlobalScale(ImGuiManager.scaleOverride);
+			ImGui.getStyle().setFontScaleMain(ImGuiManager.scaleOverride);
 		}
 	}
 
