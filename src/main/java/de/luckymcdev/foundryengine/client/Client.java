@@ -1,11 +1,8 @@
 package de.luckymcdev.foundryengine.client;
 
-import com.mojang.blaze3d.opengl.GlDevice;
-import com.mojang.blaze3d.opengl.GlTexture;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.Window;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.client.area.AreaRenderer;
 import de.luckymcdev.foundryengine.client.command.ItemCommandManager;
@@ -30,7 +27,6 @@ import de.luckymcdev.foundryengine.client.waypoint.ClientWaypointManager;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.exceptions.UtilityClassException;
 import de.luckymcdev.foundryengine.interfaces.EngineMinecraft;
-import de.luckymcdev.foundryengine.interfaces.render.EngineGpuDevice;
 import net.minecraft.client.Camera;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -40,6 +36,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.Vec3i;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FontDescription;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -384,5 +381,26 @@ public final class Client {
 		PROJECTION.set(projection);
 		WORLD.set(projection).mul(modelView);
 		INVERSE_WORLD.set(WORLD).invert();
+	}
+
+	public enum Fonts {
+		LIGHT(new FontDescription.Resource(Common.id("jbmononflight"))),
+		REGULAR(new FontDescription.Resource(Common.id("jbmononfregular"))),
+		MEDIUM(new FontDescription.Resource(Common.id("jbmononfmedium"))),
+		SEMIBOLD(new FontDescription.Resource(Common.id("jbmononfsemibold"))),
+		BOLD(new FontDescription.Resource(Common.id("jbmononfbold"))),
+		ITALIC(new FontDescription.Resource(Common.id("jbmononfitalic"))),
+		BOLD_ITALIC(new FontDescription.Resource(Common.id("jbmononfbolditalic"))),
+		FALLBACK(new FontDescription.Resource(Common.id("jbregular")));
+
+		private final FontDescription.Resource fontDescription;
+
+		Fonts(FontDescription.Resource fontDescription) {
+			this.fontDescription = fontDescription;
+		}
+
+		public FontDescription.Resource get() {
+			return fontDescription;
+		}
 	}
 }
