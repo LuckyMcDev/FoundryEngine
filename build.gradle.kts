@@ -131,17 +131,12 @@ dependencies {
     // Third-party MC integrations are pinned only for 26.1 until 26.2 builds are published.
     if (sc.current.version == "26.1") {
 		var mcVersion = property("mod.mc") as String
-        compileOnly(fletchingTable.modrinth("sodium", mcVersion, "neoforge"))
-        runtimeOnly(fletchingTable.modrinth("sodium", mcVersion, "neoforge"))
-        compileOnly(fletchingTable.modrinth("iris", mcVersion, "neoforge"))
-        runtimeOnly(fletchingTable.modrinth("iris", mcVersion, "neoforge"))
-        compileOnly(fletchingTable.modrinth("rei", mcVersion, "neoforge"))
         runtimeOnly(fletchingTable.modrinth("jei", mcVersion, "neoforge"))
-
 		compileOnly("foundry.imguimc:imguimc-neoforge-${sc.current.version}:${imguimc}")
 		runtimeOnly("foundry.imguimc:imguimc-neoforge-${sc.current.version}:${imguimc}")
     } else {
 		var mcVersion = property("mod.mc") as String
+		runtimeOnly(fletchingTable.modrinth("jei", mcVersion, "neoforge"))
 		compileOnly("foundry.imguimc:imguimc-neoforge-${mcVersion}:${imguimc}")
 		runtimeOnly("foundry.imguimc:imguimc-neoforge-${sc.current.version}:${imguimc}")
 	}
