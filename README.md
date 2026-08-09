@@ -14,6 +14,9 @@
     <a href="https://www.codefactor.io/repository/github/luckymcdev/foundryengine">
         <img src="https://www.codefactor.io/repository/github/luckymcdev/foundryengine/badge" alt="CodeFactor" />
     </a>
+    <a href='https://moddex.gg/mod/foundryengine'>
+        <img src='https://moddex.gg/badges/projects/foundryengine/rating.svg' alt='ModDex rating'>
+    </a>
   </p>
 
 A NeoForge Minecraft mod that turns Minecraft into a development-ready game engine.
