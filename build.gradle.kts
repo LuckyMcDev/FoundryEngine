@@ -171,6 +171,7 @@ tasks {
             register("loader_version", "mod.loader_range")
             register("neo_range", "mod.neo_range")
             register("mc_compat", "mod.mc_compat")
+			register("imguimc_compat", "lib.imguimc")
         }
 
         filesMatching("META-INF/neoforge.mods.toml") { expand(props) }
