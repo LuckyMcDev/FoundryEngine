@@ -32,8 +32,6 @@ mod.mc_releases = ["26.1.2"]
 deps.neo_loader = "26.1.2.93"
 mod.neo_range = "[26.1.2.71,26.2)"
 mod.loader_range = "[4,)"
-# JEI artifacts are versioned per Minecraft version.
-deps.jei = "29.5.0.28"
 
 ["26.2"]
 mod.mc = "26.2"
