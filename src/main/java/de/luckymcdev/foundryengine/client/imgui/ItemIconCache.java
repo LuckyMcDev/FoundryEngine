@@ -34,9 +34,17 @@ import java.util.Set;
  */
 public class ItemIconCache {
 	private static final int MAX_PER_FRAME = 25;
-	private static final int MAX_CACHE_SIZE = 2048;
-
-	private final Map<String, ImTexture> cache = new LinkedHashMap<>();
+	private final Map<String, ImTexture> cache = new LinkedHashMap<>(16, 0.75f, true) {
+		@Override
+		protected boolean removeEldestEntry(Map.Entry<String, ImTexture> eldest) {
+			boolean shouldRemove = size() > getDynamicMaxCacheSize();
+			if (shouldRemove) {
+				eldest.getValue().close();
+				pending.remove(eldest.getKey());
+			}
+			return shouldRemove;
+		}
+	};
 	private final Set<String> pending = new HashSet<>();
 	private final Queue<ItemStack> queue = new ArrayDeque<>();
 
@@ -46,7 +54,9 @@ public class ItemIconCache {
 
 	private static int sizeFromKey(String key) {
 		int at = key.lastIndexOf('@');
-		if (at < 0) return 64;
+		if (at < 0) {
+			return 64;
+		}
 		try {
 			return Integer.parseInt(key.substring(at + 1));
 		} catch (NumberFormatException e) {
@@ -90,13 +100,17 @@ public class ItemIconCache {
 
 		int dispatched = 0;
 		var mc = Minecraft.getInstance();
-		if (mc.level == null) return;
+		if (mc.level == null) {
+			return;
+		}
 
 		while (!queue.isEmpty() && dispatched < MAX_PER_FRAME) {
 			ItemStack stack = queue.poll();
 			int size = ClientConfig.ICON_SIZE.get();
 			String key = cacheKey(stack, size);
-			if (cache.containsKey(key)) continue;
+			if (cache.containsKey(key)) {
+				continue;
+			}
 
 			renderer.renderAsync(size, key, (colorView, depthView, projBuf, s) -> {
 				//? if 26.1 {
@@ -169,12 +183,25 @@ public class ItemIconCache {
 	}
 
 	private void evict() {
-		while (cache.size() > MAX_CACHE_SIZE) {
+		int maxSize = getDynamicMaxCacheSize();
+		while (cache.size() > maxSize) {
 			Iterator<Map.Entry<String, ImTexture>> it = cache.entrySet().iterator();
 			Map.Entry<String, ImTexture> oldest = it.next();
 			it.remove();
 			oldest.getValue().close();
 			pending.remove(oldest.getKey());
 		}
+	}
+
+	/**
+	 * Idk how good this is but it exists now
+	 */
+	private int getDynamicMaxCacheSize() {
+		int iconSize = ClientConfig.ICON_SIZE.get();
+		long bytesPerIcon = (long) iconSize * iconSize * 4L + 2048L;
+		long maxHeap = Runtime.getRuntime().maxMemory();
+		long allowedMemory = (long) (maxHeap * 0.12);
+		int calculated = (int) (allowedMemory / bytesPerIcon);
+		return Math.clamp(calculated, 25, 1500);
 	}
 }
