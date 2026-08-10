@@ -4,6 +4,7 @@ import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
 import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
+import de.luckymcdev.foundryengine.client.imgui.ImTexture;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.network.packets.editor.GiveItemPacket;
@@ -333,7 +334,7 @@ public class CataloguePanel extends EditorPanel {
 		ImGui.popStyleVar();
 	}
 
-	private ImGraphicsExtractor.@Nullable Image getOrLoadIcon(Identifier location) {
+	private @Nullable ImTexture getOrLoadIcon(Identifier location) {
 		var item = BuiltInRegistries.ITEM.getOptional(location);
 		if (item.isEmpty()) {
 			return null;
@@ -350,11 +351,11 @@ public class CataloguePanel extends EditorPanel {
 		String type,
 		List<String> tags,
 		Identifier iconLocation,
-		ImGraphicsExtractor.Image texture,
+		ImTexture texture,
 		String displayName
 	) {
 		public boolean hasTexture() {
-			return texture != null && texture.texture() != null;
+			return texture != null && texture.getTexture() != null;
 		}
 	}
 

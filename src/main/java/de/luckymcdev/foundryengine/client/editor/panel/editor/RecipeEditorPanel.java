@@ -4,6 +4,7 @@ import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.panel.tools.CataloguePanel;
 import de.luckymcdev.foundryengine.client.icons.ImageExportUtil;
 import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
+import de.luckymcdev.foundryengine.client.imgui.ImTexture;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.config.ClientConfig;
@@ -39,8 +40,8 @@ public class RecipeEditorPanel extends EditorPanel {
 	private static final int TEXT_SHADOW = 0x80000000;
 
 	private final Map<String, SlotData> slots = new LinkedHashMap<>();
-	private final Map<Identifier, ImGraphicsExtractor.Image> itemTextureCache = new HashMap<>();
-	private final Map<Identifier, ImGraphicsExtractor.Image> bgTextureCache = new HashMap<>();
+	private final Map<Identifier, ImTexture> itemTextureCache = new HashMap<>();
+	private final Map<Identifier, ImTexture> bgTextureCache = new HashMap<>();
 	private final ImString recipeIdInput = new ImString("modid:recipe_name", 256);
 	private final ImString groupInput = new ImString("", 128);
 	private RecipeType selectedType = RecipeType.SHAPED;
@@ -101,7 +102,7 @@ public class RecipeEditorPanel extends EditorPanel {
 
 	private void renderRecipeGrid() {
 		RecipeLayout layout = getLayout();
-		ImGraphicsExtractor.Image bg = getBgTexture(layout.tex());
+		ImTexture bg = getBgTexture(layout.tex());
 
 		float availX = ImGui.getContentRegionAvailX();
 		float texW = GUI_TEX_WIDTH * TEXTURE_SCALE;
@@ -111,9 +112,9 @@ public class RecipeEditorPanel extends EditorPanel {
 
 		var drawList = ImGui.getWindowDrawList();
 
-		if (bg != null && bg.texture() != null) {
-			float u2 = GUI_TEX_WIDTH / (float) bg.width();
-			float v2 = GUI_TEX_HEIGHT / (float) bg.height();
+		if (bg != null && bg.getTexture() != null) {
+			float u2 = GUI_TEX_WIDTH / bg.width();
+			float v2 = GUI_TEX_HEIGHT / bg.height();
 			drawList.addImage(ImGraphicsExtractor.textureId(bg), startX, startY, startX + texW, startY + texH, 0, 0, u2, v2);
 		} else {
 			drawList.addRectFilled(startX, startY, startX + texW, startY + texH, 0xFF2D2D2D);
@@ -165,8 +166,8 @@ public class RecipeEditorPanel extends EditorPanel {
 
 		SlotData data = slots.get(key);
 		if (data != null) {
-			ImGraphicsExtractor.Image icon = itemTextureCache.get(data.item);
-			if (icon != null && icon.texture() != null) {
+			ImTexture icon = itemTextureCache.get(data.item);
+			if (icon != null && icon.getTexture() != null) {
 				drawList.addImage(ImGraphicsExtractor.textureId(icon), screenX, screenY, screenX + size, screenY + size, 0, 0, 1, 1);
 			} else {
 				String letter = data.item.getPath().substring(0, 1).toUpperCase();
@@ -415,12 +416,12 @@ public class RecipeEditorPanel extends EditorPanel {
 			new SlotDef("result", "Result", 133, 47));
 	}
 
-	private ImGraphicsExtractor.Image getBgTexture(Identifier texId) {
+	private ImTexture getBgTexture(Identifier texId) {
 		return bgTextureCache.computeIfAbsent(texId, id -> {
 			try {
 				return ImGraphicsExtractor.getTexture(id);
 			} catch (Exception e) {
-				return new ImGraphicsExtractor.Image(null, 0, 0);
+				return ImTexture.EMPTY;
 			}
 		});
 	}
@@ -439,8 +440,8 @@ public class RecipeEditorPanel extends EditorPanel {
 			String prefix = ImageExportUtil.sanitizeFilename(itemId.getPath());
 			File[] matches = iconDir.listFiles((dir, name) -> name.startsWith(prefix) && name.endsWith(".png"));
 			if (matches != null && matches.length > 0) {
-				ImGraphicsExtractor.Image img = ImGraphicsExtractor.getTexture(matches[0]);
-				if (img.texture() != null) {
+				ImTexture img = ImGraphicsExtractor.getTexture(matches[0]);
+				if (img.getTexture() != null) {
 					itemTextureCache.put(itemId, img);
 					return;
 				}
