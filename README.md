@@ -30,40 +30,48 @@ A NeoForge Minecraft mod that turns Minecraft into a development-ready game engi
 
 ---
 
-Foundry Engine provides a large set of tools to ease the development of Minecraft additions. 
-It does this by providing a new API called **Bundles**. A new way of loading content into the game. 
-With Bundles, you can create custom Items, Blocks and more, such as Fully Custom Games.
+Foundry Engine gives you a large set of tools for building Minecraft content. At the center of it is a new API called **Bundles**: a way to load scripts, assets, and data into the game as one package. With Bundles you can make custom items, custom blocks, and even fully custom games.
 
 ## Features
 
-- Custom scripting in Groovy
-- Cutscene engine
-- In-game development GUI
-- Game stages
-- Area management
-- Waypoints
+### Core
 
-> Runs on both client and server but can function on either alone.
-> Some features may not work when running on only one side.
+- **Groovy scripting** - write mod-like content with hot reload support
+- **Bundle system** - package scripts, assets, and data together, then load them like a lightweight mod
+- **In-game editor** - a Dear ImGui based editor for creating cutscenes, editing JSON files, managing areas, and more, without leaving the game
+
+### Additional
+
+- **Instanced worlds** - save a world in a bundle and run a copy of it, so the original is never modified
+- **Cutscenes** - a custom cutscene system
+- **Game stages** - gate content behind unlockable stages
+- **Areas** - custom regions that trigger things
+- **Post-processing** - custom post-processing effects
+- **Game sessions** - the system that manages custom games
+- **Waypoints** - mark and navigate to saved locations
+
+> Runs on both the client and server, and can run on either alone.
+> Some features only work fully when both sides are present.
 
 ## Project Structure
 
-Follows a normal Java project structure. Now uses The Stonecutter library to manage developing for both 26.1 and 26.2 simultaneously. I recommend installing the Intellij companion for stonecutter to ease development.
+A standard Java project structure. Uses [Stonecutter](https://stonecutter.kikugie.dev/) to develop for both Minecraft 26.1 and 26.2 at the same time. Installing the IntelliJ companion for Stonecutter makes development easier.
 
 ## Contributing
 
-Contributions like additions to the event system or full features are appreciated. Open an issue or pull request on the [GitHub repository](https://github.com/LuckyMcDev/FoundryEngine).
+Contributions are welcome, whether it is an addition to the event system or a full feature. Open an issue or a pull request on the [GitHub repository](https://github.com/LuckyMcDev/FoundryEngine).
 
 ## Credits
 
-- [LuckyMcDev](https://github.com/LuckyMcDev) - Main Developer
-- [Auseawesome](https://github.com/Auseawesome) - helped with the design of features
+- [LuckyMcDev](https://github.com/LuckyMcDev) - main developer
+- [Auseawesome](https://github.com/Auseawesome) - helped with feature design
 - [G_cat](https://github.com/gcat101) - alpha testing
 
 ## Acknowledgements
 
-- [NeoForge](https://neoforged.net/) for their mod loader
+- [NeoForge](https://neoforged.net/) for the mod loader
 - [KubeJS](https://kubejs.com/) - inspired Foundry Engine
 - [Ocornut](https://github.com/ocornut) and [SpaiR](https://github.com/SpaiR) for [ImGui](https://github.com/ocornut/imgui) and [imgui-java](https://github.com/SpaiR/imgui-java)
+- [ImGuiMc](https://modrinth.com/mod/imguimc) adds an imgui implementation for Minecraft.
 - Apache for the Groovy language
-- https://game-icons.net/ for the Logo
+- [game-icons.net](https://game-icons.net/) for the logo
