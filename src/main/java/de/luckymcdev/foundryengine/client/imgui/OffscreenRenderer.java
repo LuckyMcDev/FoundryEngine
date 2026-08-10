@@ -2,9 +2,11 @@ package de.luckymcdev.foundryengine.client.imgui;
 
 import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.mojang.blaze3d.platform.NativeImage;
+import com.mojang.blaze3d.systems.CommandEncoder;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.textures.GpuTexture;
 import com.mojang.blaze3d.textures.GpuTextureView;
+import com.mojang.blaze3d.textures.TextureFormat;
 import de.luckymcdev.foundryengine.common.Common;
 import net.minecraft.client.renderer.ProjectionMatrixBuffer;
 import org.jspecify.annotations.Nullable;
@@ -14,8 +16,6 @@ import java.util.Queue;
 import java.util.function.Consumer;
 
 //? if 26.1 {
-import com.mojang.blaze3d.textures.TextureFormat;
-import com.mojang.blaze3d.systems.CommandEncoder;
 //?}
 //? if 26.2 {
 /*import com.mojang.blaze3d.GpuFormat;
@@ -129,11 +129,26 @@ public class OffscreenRenderer {
 	}
 
 	public void close() {
-		if (colorTex != null) { colorTex.close(); colorTex = null; }
-		if (colorView != null) { colorView.close(); colorView = null; }
-		if (depthTex != null) { depthTex.close(); depthTex = null; }
-		if (depthView != null) { depthView.close(); depthView = null; }
-		if (projBuf != null) { projBuf.close(); projBuf = null; }
+		if (colorTex != null) {
+			colorTex.close();
+			colorTex = null;
+		}
+		if (colorView != null) {
+			colorView.close();
+			colorView = null;
+		}
+		if (depthTex != null) {
+			depthTex.close();
+			depthTex = null;
+		}
+		if (depthView != null) {
+			depthView.close();
+			depthView = null;
+		}
+		if (projBuf != null) {
+			projBuf.close();
+			projBuf = null;
+		}
 		currentSize = 0;
 	}
 
@@ -141,5 +156,6 @@ public class OffscreenRenderer {
 		void render(GpuTextureView colorTarget, GpuTextureView depthTarget, ProjectionMatrixBuffer projBuf, int size);
 	}
 
-	public record PendingResult(String key, NativeImage image) {}
+	public record PendingResult(String key, NativeImage image) {
+	}
 }

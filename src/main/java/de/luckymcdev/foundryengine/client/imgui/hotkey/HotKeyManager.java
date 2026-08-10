@@ -113,7 +113,6 @@ public class HotKeyManager {
 	}
 
 
-	// TODO: Fix this. ImGuiGLFWKeyThing is stupid
 	public long pack(int... glfwKeys) {
 		int[] imguiKeys = new int[glfwKeys.length];
 		for (int i = 0; i < glfwKeys.length; i++) {

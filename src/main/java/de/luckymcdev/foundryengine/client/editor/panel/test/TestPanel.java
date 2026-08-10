@@ -45,8 +45,6 @@ public class TestPanel extends Panel {
 		ImGui.text("You dont know what i do? Hover it.");
 		g.helpTooltip("BOO!");
 
-		// TODO: Font test
-
 		g.textCentered("center center", ImGui.getWindowWidth());
 		g.identifier(Common.id("imguiiscool"));
 
