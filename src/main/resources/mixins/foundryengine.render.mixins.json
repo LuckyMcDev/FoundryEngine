@@ -10,7 +10,6 @@
     "CameraMixin",
     "CutsceneCameraMixin",
     "GameRendererMixin",
-    "GlCommandEncoderMixin",
     "GlGpuBufferAccessor",
     "GpuDeviceMixin",
     "ItemInHandRendererMixin",
