@@ -24,10 +24,10 @@ const config: Config = {
 	},
 
 	// Set the production url of your site here
-	url: 'https://luckymcdev.github.io',
+	url: 'https://luckymcdev.github.io/',
 	// Set the /<baseUrl>/ pathname under which your site is served
 	// For GitHub pages deployment, it is often '/<projectName>/'
-	baseUrl: '/FoundryEngine/',
+	baseUrl: 'FoundryEngine',
 
 	// GitHub pages deployment config.
 	// If you aren't using GitHub pages, you don't need these.
