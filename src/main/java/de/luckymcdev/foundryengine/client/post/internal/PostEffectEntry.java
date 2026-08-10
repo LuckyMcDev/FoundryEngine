@@ -6,11 +6,11 @@ import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.resource.GraphicsResourceAllocator;
 import com.mojang.blaze3d.resource.ResourceHandle;
 import com.mojang.serialization.JsonOps;
+import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.post.PostEffectContext;
 import de.luckymcdev.foundryengine.client.post.RenderPhase;
 import de.luckymcdev.foundryengine.mixin.render.ShaderLoaderAccessor;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.LevelTargetBundle;
 import net.minecraft.client.renderer.PostChain;
 import net.minecraft.client.renderer.PostChainConfig;
 import net.minecraft.client.renderer.Projection;
@@ -220,7 +220,7 @@ public final class PostEffectEntry {
 		if (onBeforeApply != null) {
 			onBeforeApply.accept(ctx);
 		}
-		renderProcessor(mc, processor, allocator, effectiveExternalTargets);
+		renderProcessor(processor, allocator, effectiveExternalTargets);
 		if (onAfterApply != null) {
 			onAfterApply.accept(ctx);
 		}
@@ -291,12 +291,8 @@ public final class PostEffectEntry {
 		return Set.copyOf(effective);
 	}
 
-	private void renderProcessor(Minecraft mc, PostChain processor, GraphicsResourceAllocator allocator, Set<Identifier> effectiveExternalTargets) {
-		//? if 26.1 {
-		RenderTarget mainFramebuffer = mc.getMainRenderTarget();
-		 //?} else {
-		/*RenderTarget mainFramebuffer = mc.gameRenderer.mainRenderTarget();
-		*///?}
+	private void renderProcessor(PostChain processor, GraphicsResourceAllocator allocator, Set<Identifier> effectiveExternalTargets) {
+		RenderTarget mainFramebuffer = Client.getMainRenderTarget();
 		if (effectiveExternalTargets.equals(Set.of(PostChain.MAIN_TARGET_ID))) {
 			FrameGraphBuilder frame = new FrameGraphBuilder();
 			PostChain.TargetBundle targets = PostChain.TargetBundle.of(PostChain.MAIN_TARGET_ID, frame.importExternal("main", mainFramebuffer));
@@ -314,7 +310,7 @@ public final class PostEffectEntry {
 				continue;
 			}
 
-			RenderTarget framebuffer = resolveExternalFramebuffer(mc, targetId);
+			RenderTarget framebuffer = resolveExternalFramebuffer(targetId);
 			if (framebuffer == null) {
 				LOGGER.warn("Skipping post effect {} because external target {} is unavailable", id, targetId);
 				return;
@@ -327,55 +323,17 @@ public final class PostEffectEntry {
 		frameGraph.execute(allocator);
 	}
 
-	private RenderTarget resolveExternalFramebuffer(Minecraft mc, Identifier targetId) {
+	private RenderTarget resolveExternalFramebuffer(Identifier targetId) {
 		Supplier<RenderTarget> customTarget = externalTargetSuppliers.get(targetId);
 		if (customTarget != null) {
 			return customTarget.get();
 		}
 		if (targetId.equals(PostChain.MAIN_TARGET_ID)) {
-			//? if 26.1 {
-			return mc.getMainRenderTarget();
-			 //?} else {
-			/*return mc.gameRenderer.mainRenderTarget();
-			*///?}
+			return Client.getMainRenderTarget();
 		}
-		if (targetId.equals(LevelTargetBundle.TRANSLUCENT_TARGET_ID)) {
-			//? if 26.1 {
-			return mc.levelRenderer.getTranslucentTarget();
-			 //?} else {
-			/*return mc.levelRenderer.translucentTarget();
-			*///?}
-		}
-		if (targetId.equals(LevelTargetBundle.ITEM_ENTITY_TARGET_ID)) {
-			//? if 26.1 {
-			return mc.levelRenderer.getItemEntityTarget();
-			 //?} else {
-			/*return mc.levelRenderer.itemEntityTarget();
-			*///?}
-		}
-		if (targetId.equals(LevelTargetBundle.PARTICLES_TARGET_ID)) {
-			//? if 26.1 {
-			return mc.levelRenderer.getParticlesTarget();
-			 //?} else {
-			/*return mc.levelRenderer.particlesTarget();
-			*///?}
-		}
-		if (targetId.equals(LevelTargetBundle.WEATHER_TARGET_ID)) {
-			//? if 26.1 {
-			return mc.levelRenderer.getWeatherTarget();
-			 //?} else {
-			/*return mc.levelRenderer.weatherTarget();
-			*///?}
-		}
-		if (targetId.equals(LevelTargetBundle.CLOUDS_TARGET_ID)) {
-			//? if 26.1 {
-			return mc.levelRenderer.getCloudsTarget();
-			 //?} else {
-			/*return mc.levelRenderer.cloudsTarget();
-			*///?}
-		}
-		if (targetId.equals(LevelTargetBundle.ENTITY_OUTLINE_TARGET_ID)) {
-			return mc.levelRenderer.entityOutlineTarget();
+		RenderTarget levelTarget = Client.getLevelRendererTarget(targetId);
+		if (levelTarget != null) {
+			return levelTarget;
 		}
 		if (targetId.equals(WorldDepthSnapshot.TARGET_ID)) {
 			return WorldDepthSnapshot.getFramebuffer();

@@ -48,7 +48,7 @@ public class MinecraftPanelRequirements implements PanelRequirements {
 			return false;
 		}
 		if (isSinglePlayer(mc)) {
-			if (!Client.getPlayer().permissions().hasPermission(new Permission.HasCommandLevel(level))) {
+			if (!Minecraft.getInstance().player.permissions().hasPermission(new Permission.HasCommandLevel(level))) {
 				textDenied("Insufficient permissions", customMessage);
 				return false;
 			}
@@ -69,7 +69,7 @@ public class MinecraftPanelRequirements implements PanelRequirements {
 				textDenied("Insufficient permissions", customMessage);
 				return false;
 			}
-			if (!Client.getPlayer().permissions().hasPermission(new Permission.HasCommandLevel(level))) {
+			if (!Minecraft.getInstance().player.permissions().hasPermission(new Permission.HasCommandLevel(level))) {
 				textDenied("Insufficient permissions", customMessage);
 				return false;
 			}

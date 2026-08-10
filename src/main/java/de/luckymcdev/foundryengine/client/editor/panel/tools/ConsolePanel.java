@@ -13,6 +13,7 @@ import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiInputTextFlags;
 import imgui.flag.ImGuiKey;
 import imgui.type.ImString;
+import net.minecraft.client.Minecraft;
 import net.neoforged.fml.event.lifecycle.FMLConstructModEvent;
 import org.apache.logging.log4j.Level;
 
@@ -139,8 +140,8 @@ public class ConsolePanel extends EditorPanel {
 			trimmedCommand = trimmedCommand.substring(1);
 		}
 
-		if (Client.getMc().getConnection() != null) {
-			Client.sendCommand(trimmedCommand);
+		if (Minecraft.getInstance().getConnection() != null) {
+			Minecraft.getInstance().getConnection().sendCommand(trimmedCommand);
 		}
 	}
 

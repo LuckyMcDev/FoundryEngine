@@ -50,7 +50,7 @@ public class ClientWaypointManager {
 
 	//? if 26.1 {
 	public void renderWaypoints(RenderLevelStageEvent.AfterLevel context) {
-		Minecraft mc = Client.getMc();
+		Minecraft mc = Minecraft.getInstance();
 		if (mc.level == null) {
 			return;
 		}
@@ -144,7 +144,7 @@ public class ClientWaypointManager {
 	}
 	//?} else {
 	/*public void renderWaypoints(RenderLevelStageEvent.AfterLevel context, SubmitNodeStorage submitNodes) {
-		Minecraft mc = Client.getMc();
+		Minecraft mc = Minecraft.getInstance();
 		if (mc.level == null) {
 			return;
 		}

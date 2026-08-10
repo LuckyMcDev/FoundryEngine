@@ -4,7 +4,6 @@ import com.mojang.blaze3d.resource.CrossFrameResourcePool;
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.post.RenderPhase;
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -35,14 +34,9 @@ public class GameRendererMixin {
 		)
 	)
 	private void engine$onPostWorldRender(DeltaTracker ticker, CallbackInfo ci) {
-		Minecraft mc = Minecraft.getInstance();
 		if (Client.getPostEffectManager().getRegistry().hasEnabledEffectInPhase(RenderPhase.PRE_GUI)
 			|| Client.getPostEffectManager().getRegistry().hasEnabledEffectInPhase(RenderPhase.POST_RENDER)) {
-			//? if 26.1 {
-			Client.getPostEffectManager().getRegistry().captureWorldDepthSnapshot(mc.getMainRenderTarget());
-			 //?} else {
-			/*Client.getPostEffectManager().getRegistry().captureWorldDepthSnapshot(mc.gameRenderer.mainRenderTarget());
-			*///?}
+			Client.getPostEffectManager().getRegistry().captureWorldDepthSnapshot(Client.getMainRenderTarget());
 		}
 		Client.getPostEffectManager().getRegistry().applyAll(RenderPhase.POST_WORLD, ticker.getGameTimeDeltaPartialTick(true), resourcePool);
 	}
@@ -63,13 +57,8 @@ public class GameRendererMixin {
 			return;
 		}
 
-		Minecraft mc = Minecraft.getInstance();
 		if (Client.getPostEffectManager().getRegistry().hasEnabledEffectInPhase(RenderPhase.POST_RENDER)) {
-			//? if 26.1 {
-			Client.getPostEffectManager().getRegistry().capturePostRenderDepthSnapshot(mc.getMainRenderTarget());
-			 //?} else {
-			/*Client.getPostEffectManager().getRegistry().capturePostRenderDepthSnapshot(mc.gameRenderer.mainRenderTarget());
-			*///?}
+			Client.getPostEffectManager().getRegistry().capturePostRenderDepthSnapshot(Client.getMainRenderTarget());
 		}
 		Client.getPostEffectManager().getRegistry().applyAll(RenderPhase.PRE_GUI, ticker.getGameTimeDeltaPartialTick(true), resourcePool);
 	}
@@ -79,13 +68,8 @@ public class GameRendererMixin {
 	 */
 	@Inject(method = "render", at = @At("TAIL"))
 	private void engine$onPostRender(DeltaTracker ticker, boolean renderLevel, CallbackInfo ci) {
-		Minecraft mc = Minecraft.getInstance();
 		if (Client.getPostEffectManager().getRegistry().hasEnabledEffectInPhase(RenderPhase.POST_RENDER)) {
-			//? if 26.1 {
-			Client.getPostEffectManager().getRegistry().restorePostRenderDepthSnapshotInto(mc.getMainRenderTarget());
-			 //?} else {
-			/*Client.getPostEffectManager().getRegistry().restorePostRenderDepthSnapshotInto(mc.gameRenderer.mainRenderTarget());
-			*///?}
+			Client.getPostEffectManager().getRegistry().restorePostRenderDepthSnapshotInto(Client.getMainRenderTarget());
 		}
 		Client.getPostEffectManager().getRegistry().applyAll(RenderPhase.POST_RENDER, ticker.getGameTimeDeltaPartialTick(true), resourcePool);
 	}

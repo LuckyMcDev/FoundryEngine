@@ -1,5 +1,6 @@
 package de.luckymcdev.foundryengine.client.editor;
 
+import de.luckymcdev.foundryengine.client.Client;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -24,11 +25,7 @@ public class EditorController {
 
 	public static boolean isUsingEditorItem() {
 		Minecraft mc = Minecraft.getInstance();
-		//? if 26.1 {
-		if (mc.screen != null || mc.player == null || mc.isPaused()) {
-		 //?} else {
-		/*if (mc.gui.screen() != null || mc.player == null || mc.isPaused()) {
-			*///?}
+		if (Client.getCurrentScreen() != null || mc.player == null || mc.isPaused()) {
 			return false;
 		}
 		return isHoldingEditorItem() && mc.options.keyUse.isDown();

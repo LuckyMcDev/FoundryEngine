@@ -194,8 +194,8 @@ public class CataloguePanel extends EditorPanel {
 						recipeId -> CRAFTING_TABLE_ID,
 						false,
 						recipeId -> {
-							if (Client.getPlayer() != null) {
-								Client.getPlayer().sendSystemMessage(
+							if (Minecraft.getInstance().player != null) {
+								Minecraft.getInstance().player.sendSystemMessage(
 									Component.literal("Recipe: " + recipeId)
 								);
 							}

@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.client.debug.screen;
 
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.common.Common;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.debug.DebugEntryCategory;
 import net.minecraft.client.gui.components.debug.DebugScreenDisplayer;
 import net.minecraft.client.gui.components.debug.DebugScreenEntry;
@@ -23,7 +24,7 @@ public class GameStagesDebugEntry implements DebugScreenEntry {
 	@Override
 	public void display(@NonNull DebugScreenDisplayer displayer, @Nullable Level level, @Nullable LevelChunk clientChunk, @Nullable LevelChunk serverChunk) {
 		List<String> infoLines = new ArrayList<>();
-		Player player = Client.getPlayer();
+		Player player = Minecraft.getInstance().player;
 		if (null == player) {
 			infoLines.add("None, no Player exists.");
 			displayer.addToGroup(GROUP, infoLines);

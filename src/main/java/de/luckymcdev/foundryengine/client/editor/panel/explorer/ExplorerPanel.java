@@ -21,6 +21,7 @@ import imgui.flag.ImGuiKey;
 import imgui.flag.ImGuiMouseButton;
 import imgui.flag.ImGuiTreeNodeFlags;
 import imgui.type.ImString;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
@@ -90,11 +91,11 @@ public class ExplorerPanel extends EditorPanel {
 	}
 
 	private static boolean hasServer() {
-		return Client.getMc().level != null;
+		return Minecraft.getInstance().level != null;
 	}
 
 	private static boolean isMultiplayer() {
-		return Client.getMc().getCurrentServer() != null;
+		return Minecraft.getInstance().getCurrentServer() != null;
 	}
 
 	private static String fileNameFrom(String path) {
@@ -223,7 +224,7 @@ public class ExplorerPanel extends EditorPanel {
 
 	private void buildClientResources() {
 		try {
-			PackResourceScanner.scanAll(Client.getResourceManager(), PackType.CLIENT_RESOURCES,
+			PackResourceScanner.scanAll(Minecraft.getInstance().getResourceManager(), PackType.CLIENT_RESOURCES,
 				(id, file) -> resourceTree.add(id));
 		} catch (Exception e) {
 			LOGGER.debug("Failed to list client resources: {}", e.getMessage());
@@ -553,7 +554,7 @@ public class ExplorerPanel extends EditorPanel {
 		}
 
 		// Try client resources first
-		var opt = Client.getResourceManager().getResource(id);
+		var opt = Minecraft.getInstance().getResourceManager().getResource(id);
 		if (opt.isPresent()) {
 			openResourceFromStream(id, opt.get());
 			return;

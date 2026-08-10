@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.client;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
+import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.logging.LogUtils;
@@ -28,12 +29,17 @@ import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.exceptions.UtilityClassException;
 import de.luckymcdev.foundryengine.interfaces.EngineMinecraft;
 import net.minecraft.client.Camera;
+
+//? if 26.2 {
+/*import com.mojang.blaze3d.GpuFormat;
+*///?}
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.LevelTargetBundle;
 import net.minecraft.core.Vec3i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FontDescription;
@@ -106,99 +112,10 @@ public final class Client {
 	}
 
 	/**
-	 * Returns the Minecraft instance via the engine interface.
-	 */
-	public static Minecraft getMc() {
-		return ((EngineMinecraft) Minecraft.getInstance()).engine$self();
-	}
-
-	/**
-	 * Returns the current resource manager.
-	 */
-	public static ResourceManager getResourceManager() {
-		return getMc().getResourceManager();
-	}
-
-	/**
-	 * Returns the main game window.
-	 */
-	public static Window getWindow() {
-		return getMc().getWindow();
-	}
-
-	/**
-	 * Returns the game renderer.
-	 */
-	public static GameRenderer getGameRenderer() {
-		return getMc().gameRenderer;
-	}
-
-	/**
-	 * Returns the main render target.
-	 */
-	public static RenderTarget getMainRenderTarget() {
-		//? if 26.1 {
-		return getMc().getMainRenderTarget();
-		 //?} else {
-		/*return getMc().gameRenderer.mainRenderTarget();
-		*///?}
-	}
-
-	/**
-	 * Returns the main game camera.
-	 */
-	public static Camera getMainCamera() {
-		//? if 26.1 {
-		return getGameRenderer().getMainCamera();
-		 //?} else {
-		/*return getGameRenderer().mainCamera();
-		*///?}
-	}
-
-	/**
-	 * Returns the client network connection, or null.
-	 */
-	public static @Nullable ClientPacketListener getConnection() {
-		return getMc().getConnection();
-	}
-
-	/**
-	 * Returns the local player, or null.
-	 */
-	public static @Nullable LocalPlayer getPlayer() {
-		return getMc().player;
-	}
-
-	/**
-	 * Sets the current screen overlay.
-	 */
-	public static void setScreen(Screen screen) {
-		//? if 26.1 {
-		getMc().setScreen(screen);
-		 //?} else {
-		/*getMc().gui.setScreen(screen);
-		*///?}
-	}
-
-	/**
-	 * Sends a chat command to the server.
-	 */
-	public static void sendCommand(String command) {
-		Objects.requireNonNull(getConnection(), "Not connected to a server").sendCommand(command);
-	}
-
-	/**
-	 * Sends a network packet to the server.
-	 */
-	public static void sendPacket(Packet<?> packet) {
-		Objects.requireNonNull(getConnection(), "Not connected to a server").send(packet);
-	}
-
-	/**
 	 * Returns the recipe manager from the integrated server, or null.
 	 */
 	public static @Nullable RecipeManager getRecipeManager() {
-		Minecraft mc = getMc();
+		Minecraft mc = Minecraft.getInstance();
 		if (mc.getSingleplayerServer() != null) {
 			return mc.getSingleplayerServer().getRecipeManager();
 		}
@@ -346,12 +263,105 @@ public final class Client {
 	 * Returns the block position the player is looking at, or null.
 	 */
 	public static @Nullable Vec3i getBlockHitOrNull() {
-		HitResult hit = getMc().hitResult;
+		HitResult hit = Minecraft.getInstance().hitResult;
 		if (hit != null && hit.getType() == (HitResult.Type.BLOCK)) {
 			BlockHitResult blockHit = (BlockHitResult) hit;
 			return blockHit.getBlockPos();
 		}
 		return null;
+	}
+
+	/**
+	 * Returns the main render target, abstracting over per-version access paths.
+	 */
+	public static RenderTarget getMainRenderTarget() {
+		Minecraft mc = Minecraft.getInstance();
+		//? if 26.1 {
+		return mc.getMainRenderTarget();
+		 //?} else {
+		/*return mc.gameRenderer.mainRenderTarget();
+		*///?}
+	}
+
+	/**
+	 * Returns the currently displayed screen, or null.
+	 */
+	public static @Nullable Screen getCurrentScreen() {
+		Minecraft mc = Minecraft.getInstance();
+		//? if 26.1 {
+		return mc.screen;
+		 //?} else {
+		/*return mc.gui.screen();
+		*///?}
+	}
+
+	/**
+	 * Sets the currently displayed screen, abstracting over per-version access paths.
+	 */
+	public static void setScreen(@Nullable Screen screen) {
+		Minecraft mc = Minecraft.getInstance();
+		//? if 26.1 {
+		mc.setScreen(screen);
+		 //?} else {
+		/*mc.gui.setScreen(screen);
+		*///?}
+	}
+
+	/**
+	 * Returns the level renderer render target for the given target id, or null if unavailable.
+	 */
+	public static @Nullable RenderTarget getLevelRendererTarget(Identifier targetId) {
+		Minecraft mc = Minecraft.getInstance();
+		if (targetId.equals(LevelTargetBundle.TRANSLUCENT_TARGET_ID)) {
+			//? if 26.1 {
+			return mc.levelRenderer.getTranslucentTarget();
+			 //?} else {
+			/*return mc.levelRenderer.translucentTarget();
+			*///?}
+		}
+		if (targetId.equals(LevelTargetBundle.ITEM_ENTITY_TARGET_ID)) {
+			//? if 26.1 {
+			return mc.levelRenderer.getItemEntityTarget();
+			 //?} else {
+			/*return mc.levelRenderer.itemEntityTarget();
+			*///?}
+		}
+		if (targetId.equals(LevelTargetBundle.PARTICLES_TARGET_ID)) {
+			//? if 26.1 {
+			return mc.levelRenderer.getParticlesTarget();
+			 //?} else {
+			/*return mc.levelRenderer.particlesTarget();
+			*///?}
+		}
+		if (targetId.equals(LevelTargetBundle.WEATHER_TARGET_ID)) {
+			//? if 26.1 {
+			return mc.levelRenderer.getWeatherTarget();
+			 //?} else {
+			/*return mc.levelRenderer.weatherTarget();
+			*///?}
+		}
+		if (targetId.equals(LevelTargetBundle.CLOUDS_TARGET_ID)) {
+			//? if 26.1 {
+			return mc.levelRenderer.getCloudsTarget();
+			 //?} else {
+			/*return mc.levelRenderer.cloudsTarget();
+			*///?}
+		}
+		if (targetId.equals(LevelTargetBundle.ENTITY_OUTLINE_TARGET_ID)) {
+			return mc.levelRenderer.entityOutlineTarget();
+		}
+		return null;
+	}
+
+	/**
+	 * Creates a depth-capable {@link TextureTarget}, abstracting over per-version constructors.
+	 */
+	public static TextureTarget createSnapshotTarget(String name, int width, int height) {
+		//? if 26.1 {
+		return new TextureTarget(name, width, height, true);
+		 //?} else {
+		/*return new TextureTarget(name, width, height, true, GpuFormat.RGBA8_UNORM);
+		*///?}
 	}
 
 	/**
@@ -365,7 +375,7 @@ public final class Client {
 	 * Returns the content of the resource at {@code location} decoded with {@code charset}.
 	 */
 	public static String getIdSource(Identifier location, Charset charset) {
-		try (InputStream stream = getResourceManager().getResourceOrThrow(location).open()) {
+		try (InputStream stream = Minecraft.getInstance().getResourceManager().getResourceOrThrow(location).open()) {
 			return new String(stream.readAllBytes(), charset);
 		} catch (IOException e) {
 			LOGGER.error("Failed to load resource: {}", location, e);

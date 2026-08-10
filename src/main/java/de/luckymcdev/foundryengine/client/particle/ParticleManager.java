@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.client.particle;
 
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.common.builder.particle.ParticleBuilder;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.core.particles.SimpleParticleType;
 import org.joml.Vector3d;
@@ -22,14 +23,14 @@ public class ParticleManager {
 	public void spawn(ParticleBuilder builder, double x, double y, double z, double vx, double vy, double vz) {
 
 		// Use the Minecraft particle engine to create the instance
-		Particle particle = Client.getMc().particleEngine.createParticle(
+		Particle particle = Minecraft.getInstance().particleEngine.createParticle(
 			(SimpleParticleType) builder.get(),
 			x, y, z,
 			vx, vy, vz
 		);
 
 		if (particle != null) {
-			Client.getMc().particleEngine.add(particle);
+			Minecraft.getInstance().particleEngine.add(particle);
 		}
 	}
 

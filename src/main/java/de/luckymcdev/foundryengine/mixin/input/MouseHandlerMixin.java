@@ -2,7 +2,6 @@ package de.luckymcdev.foundryengine.mixin.input;
 
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.interfaces.input.EngineMouseHandler;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.client.input.MouseButtonInfo;
 import org.spongepowered.asm.mixin.Mixin;
@@ -46,11 +45,7 @@ public class MouseHandlerMixin implements EngineMouseHandler {
 		}
 
 		// In-world editor uses scroll to push/pull points.
-		//? if 26.1 {
-		if (Minecraft.getInstance().screen == null && Client.getEditorController().onScroll(vertical)) {
-		 //?} else {
-		/*if (Minecraft.getInstance().gui.screen() == null && Client.getEditorController().onScroll(vertical)) {
-			*///?}
+		if (Client.getCurrentScreen() == null && Client.getEditorController().onScroll(vertical)) {
 			ci.cancel();
 		}
 	}

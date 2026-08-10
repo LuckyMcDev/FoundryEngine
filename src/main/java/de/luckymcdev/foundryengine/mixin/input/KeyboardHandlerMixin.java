@@ -32,18 +32,14 @@ public class KeyboardHandlerMixin implements EngineKeyboardHandler {
 			return;
 		}
 
-		if (handle == Client.getWindow().handle() && action == GLFW_PRESS && Client.MENU_BAR_KEY.matches(event)) {
+		if (handle == Minecraft.getInstance().getWindow().handle() && action == GLFW_PRESS && Client.MENU_BAR_KEY.matches(event)) {
 			Client.getImGuiManager().toggleMenuBar();
 		}
 
-		if (handle == Client.getWindow().handle() && action == GLFW_PRESS && Client.EDITOR_KEY.matches(event)) {
+		if (handle == Minecraft.getInstance().getWindow().handle() && action == GLFW_PRESS && Client.EDITOR_KEY.matches(event)) {
 			if (event.hasControlDown()) {
 				Client.getImGuiManager().enable();
-				//? if 26.1 {
-				Minecraft.getInstance().setScreen(new EditorScreen(true));
-				 //?} else {
-				/*Minecraft.getInstance().gui.setScreen(new EditorScreen(true));
-				*///?}
+				Client.setScreen(new EditorScreen(true));
 			} else {
 				Client.getImGuiManager().toggle();
 			}

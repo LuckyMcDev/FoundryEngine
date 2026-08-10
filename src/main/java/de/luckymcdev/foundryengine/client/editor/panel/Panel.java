@@ -10,6 +10,7 @@ import de.luckymcdev.foundryengine.client.imgui.icon.ImIcon;
 import imgui.ImGui;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImBoolean;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.permissions.PermissionLevel;
@@ -198,7 +199,7 @@ public abstract class Panel {
 				flags |= ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoDecoration;
 			}
 
-			ImGui.setNextWindowSizeConstraints(0.0F, 0.0F, 600.0F, Client.getWindow().getHeight() - 80.0F);
+			ImGui.setNextWindowSizeConstraints(0.0F, 0.0F, 600.0F, Minecraft.getInstance().getWindow().getHeight() - 80.0F);
 		} else {
 			ImGui.setNextWindowSizeConstraints(160.0F, 90.0F, Float.MAX_VALUE, Float.MAX_VALUE);
 		}
@@ -220,7 +221,7 @@ public abstract class Panel {
 				this.focused = false;
 			}
 
-			windowType = ImGuiWindowType.get(Client.getWindow().handle());
+			windowType = ImGuiWindowType.get(Minecraft.getInstance().getWindow().handle());
 		} finally {
 			ImGui.end();
 			g.popStack();

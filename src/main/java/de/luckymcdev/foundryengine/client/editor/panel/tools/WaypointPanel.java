@@ -238,8 +238,8 @@ public class WaypointPanel extends EditorPanel {
 	}
 
 	private void teleportTo(Waypoint wp) {
-		if (Client.getConnection() != null) {
-			Client.getConnection().send(new ServerBoundTeleportPacket(
+		if (Minecraft.getInstance().getConnection() != null) {
+			Minecraft.getInstance().getConnection().send(new ServerBoundTeleportPacket(
 				new Vector3f(wp.x() + 0.5f, wp.y() + 1.0f, wp.z() + 0.5f)
 			));
 			setStatus("Teleported to waypoint: " + wp.name());

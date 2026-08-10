@@ -13,6 +13,7 @@ import imgui.extension.imnodes.ImNodesContext;
 import imgui.flag.ImGuiConfigFlags;
 import imgui.flag.ImGuiDockNodeFlags;
 import imgui.internal.ImGuiDockNode;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.input.InputQuirks;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
@@ -169,7 +170,7 @@ public final class ImGuiManager implements NativeResource {
 			return;
 		}
 
-		if (Client.getMc().mouseHandler.isMouseGrabbed()) {
+		if (Minecraft.getInstance().mouseHandler.isMouseGrabbed()) {
 			io.setMousePos(-1, -1);
 		}
 

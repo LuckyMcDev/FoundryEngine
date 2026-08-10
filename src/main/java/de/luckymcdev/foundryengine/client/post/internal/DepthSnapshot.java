@@ -2,10 +2,7 @@ package de.luckymcdev.foundryengine.client.post.internal;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
-
-//? if 26.2 {
-/*import com.mojang.blaze3d.GpuFormat;
-*///?}
+import de.luckymcdev.foundryengine.client.Client;
 
 final class DepthSnapshot {
 
@@ -26,11 +23,7 @@ final class DepthSnapshot {
 		}
 
 		if (snapshot == null) {
-			//? if 26.1 {
-			snapshot = new TextureTarget(name, source.width, source.height, true);
-			 //?} else {
-			/*snapshot = new TextureTarget(name, source.width, source.height, true, GpuFormat.RGBA8_UNORM);
-			*///?}
+			snapshot = Client.createSnapshotTarget(name, source.width, source.height);
 		} else if (snapshot.width != source.width || snapshot.height != source.height) {
 			snapshot.resize(source.width, source.height);
 		}

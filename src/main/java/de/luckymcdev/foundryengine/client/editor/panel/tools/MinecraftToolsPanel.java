@@ -11,6 +11,7 @@ import de.luckymcdev.foundryengine.common.network.packets.world.ServerBoundChang
 import de.luckymcdev.foundryengine.common.network.packets.world.ServerBoundSetTimePacket;
 import imgui.ImGui;
 import imgui.type.ImString;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.protocol.game.ServerboundChangeGameModePacket;
 import net.minecraft.network.protocol.game.ServerboundSetGameRulePacket;
@@ -38,7 +39,7 @@ public class MinecraftToolsPanel extends EditorPanel {
 		}
 
 		g.section("Permissions");
-		PermissionSet pSet = Client.getPlayer().permissions();
+		PermissionSet pSet = Minecraft.getInstance().player.permissions();
 		if (pSet instanceof LevelBasedPermissionSet levelSet) {
 			ImGui.text("Access Level: " + levelSet.level().name());
 		} else {
@@ -76,7 +77,7 @@ public class MinecraftToolsPanel extends EditorPanel {
 		long maxMemory = runtime.maxMemory();
 		long usedMemory = totalMemory - freeMemory;
 
-		ImGui.text("FPS: " + Client.getMc().getFps());
+		ImGui.text("FPS: " + Minecraft.getInstance().getFps());
 		ImGui.separator();
 
 		ImGui.text(String.format("Used Memory: %dMB (%d%%)",
@@ -92,7 +93,7 @@ public class MinecraftToolsPanel extends EditorPanel {
 
 	private void particles() {
 		ImGui.text("Particles");
-		ImGui.text("Count: " + Client.getMc().particleEngine.countParticles());
+		ImGui.text("Count: " + Minecraft.getInstance().particleEngine.countParticles());
 	}
 
 	private long toMB(long bytes) {
@@ -101,7 +102,7 @@ public class MinecraftToolsPanel extends EditorPanel {
 
 	private void commandBindings(ImGraphicsExtractor g) {
 		ImGui.text("Command Bindings");
-		var player = Client.getPlayer();
+		var player = Minecraft.getInstance().player;
 		if (player == null) {
 			return;
 		}
@@ -121,32 +122,32 @@ public class MinecraftToolsPanel extends EditorPanel {
 	}
 
 	private void timeSelector(ImGraphicsExtractor g) {
-		if (Client.getConnection() == null) {
+		if (Minecraft.getInstance().getConnection() == null) {
 			return;
 		}
 
 		ImGui.text("Time Selector");
 
 		if (ImGui.button("Day")) {
-			Client.getConnection().send(new ServerBoundSetTimePacket(1000));
+			Minecraft.getInstance().getConnection().send(new ServerBoundSetTimePacket(1000));
 		}
 		ImGui.sameLine();
 		if (ImGui.button("Noon")) {
-			Client.getConnection().send(new ServerBoundSetTimePacket(6000));
+			Minecraft.getInstance().getConnection().send(new ServerBoundSetTimePacket(6000));
 		}
 		ImGui.sameLine();
 		if (ImGui.button("Night")) {
-			Client.getConnection().send(new ServerBoundSetTimePacket(13000));
+			Minecraft.getInstance().getConnection().send(new ServerBoundSetTimePacket(13000));
 		}
 		ImGui.sameLine();
 		if (ImGui.button("Midnight")) {
-			Client.getConnection().send(new ServerBoundSetTimePacket(18000));
+			Minecraft.getInstance().getConnection().send(new ServerBoundSetTimePacket(18000));
 		}
 		ImGui.sameLine();
 		if (ImGui.button("Lock " + ImGraphicsExtractor.icon(ImIcons.LOCK) + "##time")) {
 			BuiltInRegistries.GAME_RULE.getResourceKey(GameRules.ADVANCE_TIME).ifPresent(key -> {
 				var entry = new ServerboundSetGameRulePacket.Entry(key, "false");
-				Client.getConnection().send(new ServerboundSetGameRulePacket(List.of(entry)));
+				Minecraft.getInstance().getConnection().send(new ServerboundSetGameRulePacket(List.of(entry)));
 			});
 		}
 		if (ImGui.isItemHovered()) {
@@ -155,27 +156,27 @@ public class MinecraftToolsPanel extends EditorPanel {
 	}
 
 	private void weatherSelector(ImGraphicsExtractor g) {
-		if (Client.getConnection() == null) {
+		if (Minecraft.getInstance().getConnection() == null) {
 			return;
 		}
 		ImGui.text("Weather");
 
 		if (ImGui.button("Clear")) {
-			Client.getConnection().send(new ServerBoundChangeWeatherPacket("clear"));
+			Minecraft.getInstance().getConnection().send(new ServerBoundChangeWeatherPacket("clear"));
 		}
 		ImGui.sameLine();
 		if (ImGui.button("Rain")) {
-			Client.getConnection().send(new ServerBoundChangeWeatherPacket("rain"));
+			Minecraft.getInstance().getConnection().send(new ServerBoundChangeWeatherPacket("rain"));
 		}
 		ImGui.sameLine();
 		if (ImGui.button("Thunder")) {
-			Client.getConnection().send(new ServerBoundChangeWeatherPacket("thunder"));
+			Minecraft.getInstance().getConnection().send(new ServerBoundChangeWeatherPacket("thunder"));
 		}
 		ImGui.sameLine();
 		if (ImGui.button("Lock " + ImGraphicsExtractor.icon(ImIcons.LOCK) + "##weather")) {
 			BuiltInRegistries.GAME_RULE.getResourceKey(GameRules.ADVANCE_WEATHER).ifPresent(key -> {
 				var entry = new ServerboundSetGameRulePacket.Entry(key, "false");
-				Client.getConnection().send(new ServerboundSetGameRulePacket(List.of(entry)));
+				Minecraft.getInstance().getConnection().send(new ServerboundSetGameRulePacket(List.of(entry)));
 			});
 		}
 		if (ImGui.isItemHovered()) {
@@ -184,26 +185,26 @@ public class MinecraftToolsPanel extends EditorPanel {
 	}
 
 	private void gameModeSelector(ImGraphicsExtractor g) {
-		if (Client.getConnection() == null) {
+		if (Minecraft.getInstance().getConnection() == null) {
 			return;
 		}
 
 		ImGui.text("Game mode");
 
 		if (ImGui.button("Creative")) {
-			Client.getConnection().send(new ServerboundChangeGameModePacket(GameType.CREATIVE));
+			Minecraft.getInstance().getConnection().send(new ServerboundChangeGameModePacket(GameType.CREATIVE));
 		}
 		ImGui.sameLine();
 		if (ImGui.button("Survival")) {
-			Client.getConnection().send(new ServerboundChangeGameModePacket(GameType.SURVIVAL));
+			Minecraft.getInstance().getConnection().send(new ServerboundChangeGameModePacket(GameType.SURVIVAL));
 		}
 		ImGui.sameLine();
 		if (ImGui.button("Adventure")) {
-			Client.getConnection().send(new ServerboundChangeGameModePacket(GameType.ADVENTURE));
+			Minecraft.getInstance().getConnection().send(new ServerboundChangeGameModePacket(GameType.ADVENTURE));
 		}
 		ImGui.sameLine();
 		if (ImGui.button("Spectator")) {
-			Client.getConnection().send(new ServerboundChangeGameModePacket(GameType.SPECTATOR));
+			Minecraft.getInstance().getConnection().send(new ServerboundChangeGameModePacket(GameType.SPECTATOR));
 		}
 	}
 }

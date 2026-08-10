@@ -12,6 +12,7 @@ import de.luckymcdev.foundryengine.common.util.color.Color;
 import dev.vfyjxf.taffy.style.AlignContent;
 import dev.vfyjxf.taffy.style.AlignItems;
 import dev.vfyjxf.taffy.style.FlexDirection;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import org.slf4j.Logger;
 
@@ -47,7 +48,7 @@ public class ExampleScreen extends EngineScreen {
 
 		ButtonWidget button = new ButtonWidget((mouseX, mouseY, btn) -> {
 			LOGGER.debug("Button clicked! Mouse: {} {} | Button ID: {}", mouseX, mouseY, btn);
-			Client.getPlayer().connection.sendChat("HELLO");
+			Minecraft.getInstance().player.connection.sendChat("HELLO");
 		});
 		button.setSize(100, 20);
 		button.setFlexShrink(0);
