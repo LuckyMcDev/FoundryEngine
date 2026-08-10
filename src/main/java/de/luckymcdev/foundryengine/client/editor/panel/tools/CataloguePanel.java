@@ -4,6 +4,7 @@ import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
 import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
+import de.luckymcdev.foundryengine.client.imgui.ImTexture;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.network.packets.editor.GiveItemPacket;
@@ -23,6 +24,8 @@ import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -242,10 +245,10 @@ public class CataloguePanel extends EditorPanel {
 				ImGui.pushID(name);
 
 				Identifier iconToLoad = iconProvider.apply(location);
-				int textureId = getOrLoadIcon(iconToLoad);
+				var texture = getOrLoadIcon(iconToLoad);
 
-				if (textureId != -1) {
-					g.drawImageButton(textureId, ITEM_SIZE, ITEM_SIZE);
+				if (texture != null) {
+					g.drawImageButton(texture, ITEM_SIZE, ITEM_SIZE);
 					if (textOnIcon) {
 						drawLetterOverlay(location);
 					}
@@ -262,15 +265,15 @@ public class CataloguePanel extends EditorPanel {
 					typeId,
 					List.of(location.getNamespace()),
 					iconToLoad,
-					new ImGraphicsExtractor.Image(textureId, ClientConfig.ICON_SIZE.get(), ClientConfig.ICON_SIZE.get()),
+					texture,
 					location.toString()
 				);
 
 				if (ImGui.beginDragDropSource()) {
 					ImGui.setDragDropPayload("CATALOGUE_ENTRY", payload);
 					ImGui.text("Placing " + typeId + ": " + name);
-					if (textureId != -1) {
-						g.drawImageButton(textureId, 32, 32);
+					if (texture != null) {
+						g.drawImageButton(texture, 32, 32);
 					}
 					ImGui.endDragDropSource();
 				}
@@ -331,10 +334,10 @@ public class CataloguePanel extends EditorPanel {
 		ImGui.popStyleVar();
 	}
 
-	private int getOrLoadIcon(Identifier location) {
+	private @Nullable ImTexture getOrLoadIcon(Identifier location) {
 		var item = BuiltInRegistries.ITEM.getOptional(location);
 		if (item.isEmpty()) {
-			return -1;
+			return null;
 		}
 		return ImGraphicsExtractor.getOrCreateItemIcon(new ItemStack(item.get()));
 	}
@@ -348,11 +351,11 @@ public class CataloguePanel extends EditorPanel {
 		String type,
 		List<String> tags,
 		Identifier iconLocation,
-		ImGraphicsExtractor.Image texture,
+		ImTexture texture,
 		String displayName
 	) {
 		public boolean hasTexture() {
-			return texture.glId() != -1;
+			return texture != null && texture.getTexture() != null;
 		}
 	}
 

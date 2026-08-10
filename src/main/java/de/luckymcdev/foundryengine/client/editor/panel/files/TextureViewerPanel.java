@@ -3,6 +3,7 @@ package de.luckymcdev.foundryengine.client.editor.panel.files;
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
 import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
+import de.luckymcdev.foundryengine.client.imgui.ImTexture;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import imgui.ImGui;
 import imgui.ImVec2;
@@ -21,7 +22,7 @@ public class TextureViewerPanel extends EditorPanel {
 	private final Identifier textureIdentifier;
 	private final File textureFile;
 
-	private ImGraphicsExtractor.Image image;
+	private ImTexture image;
 	private String sourcePath;
 
 	private boolean fitToWindow = true;
@@ -46,7 +47,7 @@ public class TextureViewerPanel extends EditorPanel {
 	}
 
 	private void loadTexture() {
-		ImGraphicsExtractor.Image old = this.image;
+		ImTexture old = this.image;
 		if (textureIdentifier != null) {
 			this.image = ImGraphicsExtractor.getTexture(textureIdentifier);
 			this.sourcePath = textureIdentifier.toString();
@@ -63,7 +64,7 @@ public class TextureViewerPanel extends EditorPanel {
 
 	@Override
 	public void content(ImGraphicsExtractor g) {
-		if (image.glId() == -1 || image.width() <= 0 || image.height() <= 0) {
+		if (image.getTexture() == null || image.width() <= 0 || image.height() <= 0) {
 			ImGui.textColored(1.0f, 0.4f, 0.4f, 1.0f, "Failed to load texture:");
 			ImGui.textWrapped(sourcePath);
 			if (ImGui.button("Retry")) {
@@ -99,7 +100,7 @@ public class TextureViewerPanel extends EditorPanel {
 		}
 
 		drawCheckerboard(displayW, displayH);
-		g.drawImage(image.glId(), displayW, displayH);
+		g.drawImage(image, displayW, displayH);
 
 		if (ImGui.isItemHovered()) {
 			ImGui.beginTooltip();

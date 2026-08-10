@@ -44,16 +44,23 @@ config = "mixins/foundryengine.suggest.mixins.json"
 [[mixins]]
 config = "mixins/foundryengine.world.mixins.json"
 
-[[dependencies."foundryengine"]]
+[[dependencies."${id}"]]
 modId = "neoforge"
 type = "required"
 versionRange = "${neo_range}"
 ordering = "NONE"
 side = "BOTH"
 
-[[dependencies."foundryengine"]]
+[[dependencies."${id}"]]
 modId = "minecraft"
 type = "required"
 versionRange = "${mc_compat}"
 ordering = "NONE"
 side = "BOTH"
+
+[[dependencies."${id}"]]
+modId = "imguimc"
+type = "required"
+versionRange = "${imguimc_compat}"
+ordering = "NONE"
+side = "CLIENT"

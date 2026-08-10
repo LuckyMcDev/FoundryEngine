@@ -1,0 +1,13 @@
+{
+  "imguimc:font_ranges": {
+    "ranges": [
+      "cyrillic",
+      "japanese",
+      { "min": 57856, "max": 57961 },
+      { "min": 60672, "max": 62207 }
+    ]
+  },
+  "imguimc:font_size": {
+    "size": 40.0
+  }
+}

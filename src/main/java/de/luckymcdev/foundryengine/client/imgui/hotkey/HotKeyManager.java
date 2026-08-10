@@ -2,7 +2,7 @@ package de.luckymcdev.foundryengine.client.imgui.hotkey;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import de.luckymcdev.foundryengine.client.editor.panel.Panel;
-import de.luckymcdev.foundryengine.client.imgui.backend.ImGuiImplGlfw;
+import de.luckymcdev.foundryengine.client.util.ImGuiGLFWKeyThing;
 import de.luckymcdev.foundryengine.common.Common;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -112,10 +112,11 @@ public class HotKeyManager {
 		pendingHotkeySection.getLong(key).ifPresent(v -> entry.hotKey().functionKeys = v);
 	}
 
+
 	public long pack(int... glfwKeys) {
 		int[] imguiKeys = new int[glfwKeys.length];
 		for (int i = 0; i < glfwKeys.length; i++) {
-			imguiKeys[i] = ImGuiImplGlfw.glfwKeyToImGuiKey(glfwKeys[i]);
+			imguiKeys[i] = ImGuiGLFWKeyThing.glfwKeyToImGuiKey(glfwKeys[i]);
 		}
 		return imHotKey.pack(imguiKeys);
 	}

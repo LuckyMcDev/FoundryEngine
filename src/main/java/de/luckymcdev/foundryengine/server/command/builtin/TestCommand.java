@@ -2,7 +2,7 @@ package de.luckymcdev.foundryengine.server.command.builtin;
 
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import de.luckymcdev.foundryengine.common.font.BuiltInFonts;
+import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.common.world.entity.EntitySpawner;
 import de.luckymcdev.foundryengine.common.world.level.EngineLevels;
 import de.luckymcdev.foundryengine.common.world.level.runtime.RuntimeLevelConfig;
@@ -161,7 +161,7 @@ public class TestCommand implements EngineCommand {
 		fake.then(Commands.literal("check")
 			.executes(context -> {
 				var player = context.getSource().getPlayer();
-				player.sendSystemMessage(Component.literal("Component Test").withStyle(style -> style.withFont(BuiltInFonts.BOLD_ITALIC)));
+				player.sendSystemMessage(Component.literal("Component Test").withStyle(style -> style.withFont(Client.Fonts.BOLD_ITALIC.get())));
 				return 1;
 			})
 		);

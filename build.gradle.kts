@@ -32,6 +32,12 @@ repositories {
         forRepository { maven("https://www.cursemaven.com") { name = "CurseForge" } }
         filter { includeGroup("curse.maven") }
     }
+	exclusiveContent { // ImGuiMC
+		forRepository { maven("https://maven.ryanhcode.dev/releases") { name = "RyanHCode Maven" } }
+		filter {
+			includeGroup("foundry.imguimc")
+		}
+	}
 }
 
 neoForge {
@@ -96,6 +102,7 @@ java {
 dependencies {
     val imgui = property("lib.imgui") as String
     val commonmark = property("lib.commonmark") as String
+	val imguimc = property("lib.imguimc") as String
 
     listOf(
         "org.commonmark:commonmark:$commonmark",
@@ -123,13 +130,16 @@ dependencies {
 
     // Third-party MC integrations are pinned only for 26.1 until 26.2 builds are published.
     if (sc.current.version == "26.1") {
-        compileOnly(fletchingTable.modrinth("sodium", "26.1.2", "neoforge"))
-        runtimeOnly(fletchingTable.modrinth("sodium", "26.1.2", "neoforge"))
-        compileOnly(fletchingTable.modrinth("iris", "26.1.2", "neoforge"))
-        runtimeOnly(fletchingTable.modrinth("iris", "26.1.2", "neoforge"))
-        compileOnly(fletchingTable.modrinth("rei", "26.1.2", "neoforge"))
-        runtimeOnly(fletchingTable.modrinth("jei", "26.1.2", "neoforge"))
-    }
+		var mcVersion = property("mod.mc") as String
+        runtimeOnly(fletchingTable.modrinth("jei", mcVersion, "neoforge"))
+		compileOnly("foundry.imguimc:imguimc-neoforge-${sc.current.version}:${imguimc}")
+		runtimeOnly("foundry.imguimc:imguimc-neoforge-${sc.current.version}:${imguimc}")
+    } else {
+		var mcVersion = property("mod.mc") as String
+		runtimeOnly(fletchingTable.modrinth("jei", mcVersion, "neoforge"))
+		compileOnly("foundry.imguimc:imguimc-neoforge-${mcVersion}:${imguimc}")
+		runtimeOnly("foundry.imguimc:imguimc-neoforge-${sc.current.version}:${imguimc}")
+	}
 
     testImplementation("org.junit.jupiter:junit-jupiter:${property("lib.junit")}")
     testImplementation("net.neoforged:testframework:${property("deps.neo_loader")}")
@@ -156,6 +166,7 @@ tasks {
             register("loader_version", "mod.loader_range")
             register("neo_range", "mod.neo_range")
             register("mc_compat", "mod.mc_compat")
+			register("imguimc_compat", "lib.imguimc")
         }
 
         filesMatching("META-INF/neoforge.mods.toml") { expand(props) }

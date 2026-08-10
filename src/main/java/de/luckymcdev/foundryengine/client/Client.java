@@ -1,11 +1,8 @@
 package de.luckymcdev.foundryengine.client;
 
-import com.mojang.blaze3d.opengl.GlDevice;
-import com.mojang.blaze3d.opengl.GlTexture;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.Window;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.client.area.AreaRenderer;
 import de.luckymcdev.foundryengine.client.command.ItemCommandManager;
@@ -30,7 +27,6 @@ import de.luckymcdev.foundryengine.client.waypoint.ClientWaypointManager;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.exceptions.UtilityClassException;
 import de.luckymcdev.foundryengine.interfaces.EngineMinecraft;
-import de.luckymcdev.foundryengine.interfaces.render.EngineGpuDevice;
 import net.minecraft.client.Camera;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -40,6 +36,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.Vec3i;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FontDescription;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -276,48 +273,6 @@ public final class Client {
 	}
 
 	/**
-	 * Returns the OpenGL device from the GPU backend.
-	 */
-	public static GlDevice getGlDevice() {
-		return (GlDevice) ((EngineGpuDevice) RenderSystem.getDevice()).engine$getBackend();
-	}
-
-	/**
-	 * Returns the color texture of the main render target.
-	 */
-	public static GlTexture getGlColTexture() {
-		return getGlColTexture(getMainRenderTarget());
-	}
-
-	/**
-	 * Returns the color texture of the given render target.
-	 */
-	public static GlTexture getGlColTexture(RenderTarget target) {
-		return unwrapTexture(target.getColorTexture());
-	}
-
-	/**
-	 * Returns the depth texture of the main render target.
-	 */
-	public static GlTexture getGlDepthTexture() {
-		return getGlDepthTexture(getMainRenderTarget());
-	}
-
-	/**
-	 * Returns the depth texture of the given render target.
-	 */
-	public static GlTexture getGlDepthTexture(RenderTarget target) {
-		return unwrapTexture(target.getDepthTexture());
-	}
-
-	/**
-	 * Unwraps a Minecraft texture object to its GL texture handle.
-	 */
-	public static GlTexture unwrapTexture(Object tex) {
-		return (GlTexture) tex;
-	}
-
-	/**
 	 * Returns the waypoint renderer.
 	 */
 	public static ClientWaypointManager getWaypointRenderer() {
@@ -426,5 +381,26 @@ public final class Client {
 		PROJECTION.set(projection);
 		WORLD.set(projection).mul(modelView);
 		INVERSE_WORLD.set(WORLD).invert();
+	}
+
+	public enum Fonts {
+		LIGHT(new FontDescription.Resource(Common.id("jbmononflight"))),
+		REGULAR(new FontDescription.Resource(Common.id("jbmononfregular"))),
+		MEDIUM(new FontDescription.Resource(Common.id("jbmononfmedium"))),
+		SEMIBOLD(new FontDescription.Resource(Common.id("jbmononfsemibold"))),
+		BOLD(new FontDescription.Resource(Common.id("jbmononfbold"))),
+		ITALIC(new FontDescription.Resource(Common.id("jbmononfitalic"))),
+		BOLD_ITALIC(new FontDescription.Resource(Common.id("jbmononfbolditalic"))),
+		FALLBACK(new FontDescription.Resource(Common.id("jbregular")));
+
+		private final FontDescription.Resource fontDescription;
+
+		Fonts(FontDescription.Resource fontDescription) {
+			this.fontDescription = fontDescription;
+		}
+
+		public FontDescription.Resource get() {
+			return fontDescription;
+		}
 	}
 }

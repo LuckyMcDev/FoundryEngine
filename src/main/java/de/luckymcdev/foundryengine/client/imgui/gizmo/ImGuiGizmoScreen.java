@@ -1,11 +1,14 @@
 package de.luckymcdev.foundryengine.client.imgui.gizmo;
 
+import foundry.imgui.api.ImGuiMC;
 import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.extension.imguizmo.flag.Operation;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiStyleVar;
 import imgui.flag.ImGuiWindowFlags;
+import net.minecraft.client.renderer.texture.AbstractTexture;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 
 public final class ImGuiGizmoScreen {
@@ -19,7 +22,7 @@ public final class ImGuiGizmoScreen {
 	private ImGuiGizmoMiniBar miniBar;
 	private float width = 0.0f;
 	private float height = 0.0f;
-	private int textureId = -1;
+	private @Nullable AbstractTexture texture;
 	private boolean flipTextureY = true;
 	private boolean wasUsedLastFrame = false;
 
@@ -47,8 +50,8 @@ public final class ImGuiGizmoScreen {
 		return this;
 	}
 
-	public ImGuiGizmoScreen setTextureId(int id) {
-		textureId = id;
+	public ImGuiGizmoScreen setTexture(@Nullable AbstractTexture texture) {
+		this.texture = texture;
 		return this;
 	}
 
@@ -110,11 +113,11 @@ public final class ImGuiGizmoScreen {
 			ctx.drawGrid(gs);
 		}
 
-		if (textureId > 0) {
+		if (texture != null) {
 			float v0 = flipTextureY ? 1.0f : 0.0f;
 			float v1 = flipTextureY ? 0.0f : 1.0f;
 			ImGui.setCursorPos(0.0f, 0.0f);
-			ImGui.image(textureId, ww, wh, 0.0f, v0, 1.0f, v1);
+			ImGuiMC.image(ImGuiMC.getTexture(texture), ww, wh, 0.0f, v0, 1.0f, v1);
 			ctx.reanchor();
 		}
 

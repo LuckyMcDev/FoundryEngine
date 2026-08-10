@@ -1,22 +1,15 @@
 package de.luckymcdev.foundryengine.client.imgui;
 
-import com.mojang.blaze3d.ProjectionType;
-import com.mojang.blaze3d.buffers.GpuBuffer;
-import com.mojang.blaze3d.opengl.GlStateManager;
-import com.mojang.blaze3d.opengl.GlTexture;
-import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.platform.NativeImage;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.GpuTexture;
 import com.mojang.blaze3d.textures.GpuTextureView;
-import com.mojang.blaze3d.vertex.PoseStack;
 import de.luckymcdev.foundryengine.client.Client;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcon;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.font.BuiltInFonts;
 import de.luckymcdev.foundryengine.common.util.color.Color;
-import de.luckymcdev.foundryengine.config.ClientConfig;
+import foundry.imgui.api.ImGuiMC;
+import foundry.imgui.impl.ImGuiMCImpl;
 import imgui.ImFont;
 import imgui.ImGui;
 import imgui.ImVec4;
@@ -29,98 +22,32 @@ import imgui.type.ImBoolean;
 import it.unimi.dsi.fastutil.floats.FloatArrayList;
 import it.unimi.dsi.fastutil.floats.FloatList;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.Projection;
-import net.minecraft.client.renderer.ProjectionMatrixBuffer;
-import net.minecraft.client.renderer.item.TrackingItemStackRenderState;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.DynamicTexture;
-import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.FontDescription;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import org.joml.Vector4f;
 import org.jspecify.annotations.Nullable;
-import org.lwjgl.opengl.GL11;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayDeque;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Set;
 import java.util.function.Function;
 
-//? if 26.1 {
-import com.mojang.blaze3d.textures.TextureFormat;
-import com.mojang.blaze3d.systems.CommandEncoder;
-//?}
-//? if 26.2 {
-/*import com.mojang.blaze3d.GpuFormat;
-*///?}
+
 
 public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorConsumer {
-	private static final int MAX_ICON_LOADS_PER_FRAME = 25;
-	private static final int MAX_ICON_CACHE_SIZE = 256;
-	private static final Map<String, Integer> iconCache = new LinkedHashMap<>();
-	private static final Map<String, DynamicTexture> iconTextures = new HashMap<>();
-	private static final Set<String> pendingKeys = new HashSet<>();
-	private static final Queue<ItemStack> renderQueue = new ArrayDeque<>();
-	private @Nullable
-	static GpuTexture fbColorTex;
-	private @Nullable
-	static GpuTextureView fbColorView;
-	private @Nullable
-	static GpuTexture fbDepthTex;
-	private @Nullable
-	static GpuTextureView fbDepthView;
-	private @Nullable
-	static ProjectionMatrixBuffer fbProjBuf;
-	private static int fbSize;
+	private static final OffscreenRenderer offscreenRenderer = new OffscreenRenderer();
+	private static final ItemIconCache itemIconCache = new ItemIconCache();
 	private VarStack stack;
 
 	public ImGraphicsExtractor() {
-	}
-
-	/**
-	 * Fully renders wrapped Minecraft text into ImGui.
-	 *
-	 * @param text      The text to render
-	 * @param wrapWidth The width to wrap to
-	 * @since 2.0.0
-	 */
-	static void component(final FormattedText text, final float wrapWidth) {
-		ImGuiManager.IMGUI_CHAR_SINK.setup();
-		for (final FormattedCharSequence part : Language.getInstance().getVisualOrder(ImGuiManager.IM_GUI_SPLITTER.splitLines(text, (int) wrapWidth, Style.EMPTY))) {
-			part.accept(ImGuiManager.IMGUI_CHAR_SINK);
-			ImGuiManager.IMGUI_CHAR_SINK.finish();
-			ImGui.newLine();
-		}
-		ImGuiManager.IMGUI_CHAR_SINK.reset();
-	}
-
-	/**
-	 * Retrieves the ImGui font to use for the specified Minecraft style.
-	 *
-	 * @param style The style to get the font for
-	 * @return The ImFont to use
-	 * @since 2.0.0
-	 */
-	public static ImFont getStyleFont(final Style style) {
-		var fm = Client.getImGuiManager().getFontManager();
-		return fm.getFont(BuiltInFonts.face(style.isBold(), style.isItalic()));
 	}
 
 	public static int getColor(final int color) {
@@ -136,252 +63,82 @@ public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorCons
 		return icon + suffix;
 	}
 
-	public static Image getTexture(Identifier texture) {
-		return loadTexture("identifier", texture);
+	public static ImTexture getTexture(Identifier texture) {
+		return loadTexture(TextureType.IDENTIFIER, texture);
 	}
 
-	public static Image getTexture(File imageFile) {
-		return loadTexture("file", imageFile);
+	public static ImTexture getTexture(File imageFile) {
+		return loadTexture(TextureType.FILE, imageFile);
 	}
 
-	private static <T> Image loadTexture(String type, T idOrFile) {
-		int textureId = -1;
-		int width = -1;
-		int height = -1;
-		if (type.equals("identifier")) {
-			AbstractTexture texture = Minecraft.getInstance().getTextureManager().getTexture((Identifier) idOrFile);
-			if (texture != null) {
-				GpuTextureView textureView = texture.getTextureView();
-				GlTexture glTexture = (GlTexture) texture.getTexture();
-				textureId = glTexture.glId();
-				width = textureView.getWidth(textureView.baseMipLevel());
-				height = textureView.getHeight(textureView.baseMipLevel());
+	private static <T> ImTexture loadTexture(TextureType type, T idOrFile) {
+		switch (type) {
+			case IDENTIFIER -> {
+				Identifier identifier = (Identifier) idOrFile;
+				AbstractTexture texture = Minecraft.getInstance().getTextureManager().getTexture(identifier);
+				if (texture != null) {
+					GpuTextureView textureView = texture.getTextureView();
+					if (textureView != null) {
+						int width = textureView.getWidth(textureView.baseMipLevel());
+						int height = textureView.getHeight(textureView.baseMipLevel());
+						return new ImTexture(texture, false, width, height);
+					}
+				}
+				return ImTexture.EMPTY;
 			}
-			return new Image(textureId, width, height);
-		} else {
-			File file = (File) idOrFile;
-			try (InputStream is = new FileInputStream(file)) {
-				NativeImage nativeImage = NativeImage.read(is);
-				DynamicTexture texture = new DynamicTexture(() -> "EditorView_" + file.getName(), nativeImage);
-				GpuTextureView textureView = texture.getTextureView();
-				GlTexture glTexture = (GlTexture) texture.getTexture();
-				textureId = glTexture.glId();
-				width = textureView.getWidth(textureView.baseMipLevel());
-				height = textureView.getHeight(textureView.baseMipLevel());
-				return new Image(textureId, width, height, texture);
-			} catch (IOException e) {
-				Common.LOGGER.error("Failed to load texture for viewer: {}", file.getAbsolutePath(), e);
-				return new Image(-1, -1, -1);
+
+			case FILE -> {
+				File file = (File) idOrFile;
+				try (InputStream is = new FileInputStream(file)) {
+					NativeImage nativeImage = NativeImage.read(is);
+					DynamicTexture texture = new DynamicTexture(() -> "EditorView_" + file.getName(), nativeImage);
+					GpuTextureView textureView = texture.getTextureView();
+					if (textureView != null) {
+						int width = textureView.getWidth(textureView.baseMipLevel());
+						int height = textureView.getHeight(textureView.baseMipLevel());
+						return new ImTexture(texture, true, width, height);
+					}
+					texture.close();
+					return ImTexture.EMPTY;
+				} catch (IOException e) {
+					Common.LOGGER.error("Failed to load texture for viewer: {}", file.getAbsolutePath(), e);
+					return ImTexture.EMPTY;
+				}
 			}
+
+			default -> throw new IllegalArgumentException("Unexpected texture type: " + type);
 		}
 	}
 
-	public static int getOrCreateItemIcon(ItemStack stack) {
-		int size = ClientConfig.ICON_SIZE.get();
-		String key = BuiltInRegistries.ITEM.getKey(stack.getItem()) + "@" + size;
-
-		Integer cached = iconCache.get(key);
-		if (cached != null) {
-			return cached;
-		}
-
-		if (!pendingKeys.contains(key)) {
-			pendingKeys.add(key);
-			renderQueue.add(stack);
-		}
-		return -1;
+	public static @Nullable ImTexture getOrCreateItemIcon(ItemStack stack) {
+		return itemIconCache.get(stack);
 	}
 
 	public static void processIconQueue() {
-		int loads = 0;
-		while (!renderQueue.isEmpty() && loads < MAX_ICON_LOADS_PER_FRAME) {
-			ItemStack stack = renderQueue.poll();
-			int size = ClientConfig.ICON_SIZE.get();
-			String key = BuiltInRegistries.ITEM.getKey(stack.getItem()) + "@" + size;
-			if (iconCache.containsKey(key)) {
-				continue;
-			}
-
-			renderOne(stack, size, key);
-			loads++;
-		}
+		itemIconCache.processQueue(offscreenRenderer);
 	}
 
 	public static void clearItemIconCache() {
-		renderQueue.clear();
-		pendingKeys.clear();
-		for (DynamicTexture tex : iconTextures.values()) {
-			tex.close();
-		}
-		iconTextures.clear();
-		iconCache.clear();
-		closeFramebuffer();
+		itemIconCache.clear();
+		offscreenRenderer.close();
 	}
 
-	private static void renderOne(ItemStack stack, int size, String cacheKey) {
-		var mc = Minecraft.getInstance();
-		var level = mc.level;
-		if (level == null) {
-			pendingKeys.remove(cacheKey);
+	public static OffscreenRenderer getOffscreenRenderer() {
+		return offscreenRenderer;
+	}
+
+	public static long textureId(@Nullable ImTexture image) {
+		if (image == null || image.getTexture() == null || ImGuiMCImpl.handler == null) {
+			return 0;
+		}
+		return ImGuiMCImpl.handler.getRenderer().getImGuiId(image.getProvider(), null);
+	}
+
+	public void drawImage(@Nullable ImTexture texture) {
+		if (texture == null || texture.getTexture() == null) {
 			return;
 		}
-
-		ensureFramebuffer(size);
-		var device = RenderSystem.getDevice();
-
-		//? if 26.1 {
-		device.createCommandEncoder().clearColorAndDepthTextures(fbColorTex, 0, fbDepthTex, 1.0);
-		 //?} else {
-		/*device.createCommandEncoder().clearColorAndDepthTextures(fbColorTex, new Vector4f(0.0F, 0.0F, 0.0F, 1.0F), fbDepthTex, 1.0);
-		*///?}
-		RenderSystem.outputColorTextureOverride = fbColorView;
-		RenderSystem.outputDepthTextureOverride = fbDepthView;
-
-		Projection projection = new Projection();
-		projection.setupOrtho(-1000.0F, 1000.0F, size, size, true);
-
-		RenderSystem.backupProjectionMatrix();
-		RenderSystem.setProjectionMatrix(fbProjBuf.getBuffer(projection), ProjectionType.ORTHOGRAPHIC);
-
-		//? if 26.1 {
-		var resolver = mc.getItemModelResolver();
-		var submitNodeCollector = mc.gameRenderer.getSubmitNodeStorage();
-		var featureDispatcher = mc.gameRenderer.getFeatureRenderDispatcher();
-		var bufferSource = mc.renderBuffers().bufferSource();
-		var lighting = mc.gameRenderer.getLighting();
-		var player = mc.player;
-
-		TrackingItemStackRenderState renderState = new TrackingItemStackRenderState();
-		resolver.updateForTopItem(renderState, stack, ItemDisplayContext.GUI, level, player, 0);
-
-		Lighting.Entry lightingEntry = renderState.usesBlockLight() ? Lighting.Entry.ITEMS_3D : Lighting.Entry.ITEMS_FLAT;
-		lighting.setupFor(lightingEntry);
-
-		PoseStack poseStack = new PoseStack();
-		poseStack.translate(size / 2.0F, size / 2.0F, 0.0F);
-		poseStack.scale(size, -size, size);
-		renderState.submit(poseStack, submitNodeCollector, 15728880, OverlayTexture.NO_OVERLAY, 0);
-
-		featureDispatcher.renderAllFeatures();
-		bufferSource.endBatch();
-		//?} else {
-		/*var resolver = mc.getItemModelResolver();
-		var submitNodes = new net.minecraft.client.renderer.SubmitNodeStorage();
-		var featureDispatcher = mc.gameRenderer.featureRenderDispatcher();
-		var lighting = mc.gameRenderer.lighting();
-		var player = mc.player;
-
-		TrackingItemStackRenderState renderState = new TrackingItemStackRenderState();
-		resolver.updateForTopItem(renderState, stack, ItemDisplayContext.GUI, level, player, 0);
-
-		Lighting.Entry lightingEntry = renderState.usesBlockLight() ? Lighting.Entry.ITEMS_3D : Lighting.Entry.ITEMS_FLAT;
-		lighting.setupFor(lightingEntry);
-
-		PoseStack poseStack = new PoseStack();
-		poseStack.translate(size / 2.0F, size / 2.0F, 0.0F);
-		poseStack.scale(size, -size, size);
-		renderState.submit(poseStack, submitNodes, 15728880, OverlayTexture.NO_OVERLAY, 0);
-
-		featureDispatcher.renderAllFeatures(submitNodes);
-		*///?}
-
-		RenderSystem.restoreProjectionMatrix();
-		RenderSystem.outputColorTextureOverride = null;
-		RenderSystem.outputDepthTextureOverride = null;
-
-		//? if 26.1 {
-		int pixelSize = TextureFormat.RGBA8.pixelSize();
-		GpuBuffer readBuffer = device.createBuffer(() -> "item_icon_read", GpuBuffer.USAGE_MAP_READ | GpuBuffer.USAGE_COPY_DST, (long) size * size * pixelSize);
-		CommandEncoder encoder = device.createCommandEncoder();
-		device.createCommandEncoder().copyTextureToBuffer(fbColorTex, readBuffer, 0, () -> {
-		try (var mapped = encoder.mapBuffer(readBuffer, true, false)) {
-		//?} else {
-		/*int pixelSize = GpuFormat.RGBA8_UNORM.blockSize();
-		GpuBuffer readBuffer = device.createBuffer(() -> "item_icon_read", GpuBuffer.USAGE_MAP_READ | GpuBuffer.USAGE_COPY_DST, (long) size * size * pixelSize);
-		device.createCommandEncoder().copyTextureToBuffer(fbColorTex, readBuffer, 0, () -> {
-			try (var mapped = readBuffer.map(true, false)) {
-				*///?}
-				NativeImage image = new NativeImage(size, size, false);
-				for (int y = 0; y < size; y++) {
-					for (int x = 0; x < size; x++) {
-						int pixel = mapped.data().getInt((x + y * size) * pixelSize);
-						image.setPixelABGR(x, size - y - 1, pixel);
-					}
-				}
-				DynamicTexture dynTex = new DynamicTexture(() -> "item_icon_" + cacheKey, image);
-				int glId = ((GlTexture) dynTex.getTexture()).glId();
-				iconCache.put(cacheKey, glId);
-				iconTextures.put(cacheKey, dynTex);
-				evictOldestIconIfNeeded();
-				pendingKeys.remove(cacheKey);
-			} catch (Exception e) {
-				Common.LOGGER.error("Failed to read back item icon for {}", cacheKey, e);
-				pendingKeys.remove(cacheKey);
-			}
-			readBuffer.close();
-		}, 0);
-	}
-
-	private static void evictOldestIconIfNeeded() {
-		while (iconCache.size() > MAX_ICON_CACHE_SIZE) {
-			Iterator<String> it = iconCache.keySet().iterator();
-			String oldestKey = it.next();
-			it.remove();
-			DynamicTexture texture = iconTextures.remove(oldestKey);
-			if (texture != null) {
-				texture.close();
-			}
-			pendingKeys.remove(oldestKey);
-		}
-	}
-
-	private static void ensureFramebuffer(int size) {
-		if (fbSize == size && fbColorTex != null && !fbColorTex.isClosed()) {
-			return;
-		}
-		closeFramebuffer();
-		fbSize = size;
-		var device = RenderSystem.getDevice();
-//? if 26.1 {
-		fbColorTex = device.createTexture(() -> "item_icon_fb", 13, TextureFormat.RGBA8, size, size, 1, 1);
-		fbColorView = device.createTextureView(fbColorTex);
-		fbDepthTex = device.createTexture(() -> "item_icon_fb_depth", 9, TextureFormat.DEPTH32, size, size, 1, 1);
-		fbDepthView = device.createTextureView(fbDepthTex);
-		//?} else {
-		/*fbColorTex = device.createTexture(() -> "item_icon_fb", GpuTexture.USAGE_RENDER_ATTACHMENT | GpuTexture.USAGE_TEXTURE_BINDING | GpuTexture.USAGE_COPY_SRC | GpuTexture.USAGE_COPY_DST, GpuFormat.RGBA8_UNORM, size, size, 1, 1);
-		fbColorView = device.createTextureView(fbColorTex);
-		fbDepthTex = device.createTexture(() -> "item_icon_fb_depth", GpuTexture.USAGE_RENDER_ATTACHMENT | GpuTexture.USAGE_TEXTURE_BINDING | GpuTexture.USAGE_COPY_SRC | GpuTexture.USAGE_COPY_DST, GpuFormat.D32_FLOAT, size, size, 1, 1);
-		fbDepthView = device.createTextureView(fbDepthTex);
-		*///?}
-		fbProjBuf = new ProjectionMatrixBuffer("item_icon_fb_proj");
-	}
-
-	private static void closeFramebuffer() {
-		if (fbColorTex != null) {
-			fbColorTex.close();
-			fbColorTex = null;
-		}
-		if (fbColorView != null) {
-			fbColorView.close();
-			fbColorView = null;
-		}
-		if (fbDepthTex != null) {
-			fbDepthTex.close();
-			fbDepthTex = null;
-		}
-		if (fbDepthView != null) {
-			fbDepthView.close();
-			fbDepthView = null;
-		}
-		if (fbProjBuf != null) {
-			fbProjBuf.close();
-			fbProjBuf = null;
-		}
-		fbSize = 0;
-	}
-
-	public void component(final FormattedText text) {
-		component(text, Float.POSITIVE_INFINITY);
+		drawImage(texture, texture.width(), texture.height());
 	}
 
 	public void pushStack() {
@@ -690,13 +447,6 @@ public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorCons
 		ImGui.textDisabled(value);
 	}
 
-	public void withFont(FontDescription.Resource font, Runnable body) {
-		var fonts = Client.getImGuiManager().getFontManager();
-		fonts.pushFont(font);
-		body.run();
-		fonts.popFont();
-	}
-
 	public void treeSection(String label, Runnable body) {
 		int flags = ImGuiTreeNodeFlags.SpanAvailWidth
 			| ImGuiTreeNodeFlags.DefaultOpen
@@ -753,32 +503,33 @@ public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorCons
 		return false;
 	}
 
-	public void drawImage(int id, float w, float h) {
-		GlStateManager._bindTexture(id);
-		GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
-		GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+	public void component(final FormattedText text) {
+		ImGuiMC.component(text);
+	}
+
+	public void drawImage(@Nullable ImTexture texture, float w, float h) {
+		if (texture == null || texture.getTexture() == null) {
+			return;
+		}
 		pushStack();
 		setStyleVar(ImGuiStyleVar.FramePadding, 0, 0);
-		ImGui.image(id, w, h, 0, 0, 1, 1);
+		ImGuiMC.image(texture.getProvider(), w, h, 0, 0, 1, 1);
 		popStack();
 	}
 
-	public void drawImage(Image image) {
-		drawImage(image.glId(), image.width(), image.height());
-	}
-
-	public void drawImage(Image image, float w, float h) {
-		drawImage(image.glId(), w, h);
-	}
-
-	public void drawImageButton(int id, float w, float h) {
-		GlStateManager._bindTexture(id);
-		GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
-		GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+	public void drawImageButton(@Nullable ImTexture image, float w, float h) {
+		if (image == null || image.getTexture() == null) {
+			return;
+		}
 		pushStack();
 		setStyleVar(ImGuiStyleVar.FramePadding, 0, 0);
-		ImGui.imageButton(String.valueOf(id), id, w, h, 0, 0, 1, 1);
+		ImGuiMC.imageButton("##image", image.getProvider(), w, h, 0, 0, 1, 1);
 		popStack();
+	}
+
+	enum TextureType {
+		IDENTIFIER,
+		FILE
 	}
 
 	public String timer(long time) {
@@ -831,17 +582,5 @@ public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorCons
 		private int pushedItemFlags = 0;
 		private float currentFontScale = 1.0F;
 		private FloatList pushedFontScales = null;
-	}
-
-	public record Image(int glId, int width, int height, @Nullable DynamicTexture ownedTexture) {
-		public Image(int glId, int width, int height) {
-			this(glId, width, height, null);
-		}
-
-		public void close() {
-			if (ownedTexture != null) {
-				ownedTexture.close();
-			}
-		}
 	}
 }
