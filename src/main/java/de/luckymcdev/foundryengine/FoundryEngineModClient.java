@@ -54,7 +54,9 @@ import foundry.imgui.api.ImGuiMC;
 import foundry.imgui.neoforge.api.event.ImGuiLoadEventsNeoforge;
 import foundry.imgui.neoforge.api.event.RegisterImGuiFontsEventNeoforge;
 import foundry.imgui.neoforge.api.event.RenderImGuiEventsNeoforge;
+import imgui.ImFontAtlas;
 import imgui.ImGui;
+import imgui.flag.ImFontAtlasFlags;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.Vec3i;
@@ -219,8 +221,11 @@ public class FoundryEngineModClient {
 
 	private void registerImGuiFonts(RegisterImGuiFontsEventNeoforge event) {
 		try(var ctx = ImGuiMC.withImGui()) {
-			ctx.io().setFontDefault(ImGuiMC.getFont(ImGuiManager.FONT, false, false));
-			ImGui.getStyle().setFontScaleMain(ImGuiManager.scaleOverride);
+			var font = ImGuiMC.getFont(ImGuiManager.FONT, false, false);
+			font.setScale(font.getScale() * ImGuiManager.scaleOverride);
+			ctx.io().setFontDefault(font);
+			event.getAtlas().setFreeTypeRenderer(true);
+			// its a bit better i guess
 		}
 	}
 
