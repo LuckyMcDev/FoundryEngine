@@ -26,12 +26,7 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      pages: write
-      id-token: write
-
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      contents: write
 
     steps:
       - uses: actions/download-artifact@v8
@@ -53,11 +48,10 @@ jobs:
             cp -r site/javadoc/* final/javadoc/
           fi
 
-      - uses: actions/upload-pages-artifact@v5
+      - name: Deploy to docs branch
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          path: final
-          retention-days: 1
-
-      - name: Deploy
-        id: deployment
-        uses: actions/deploy-pages@v5
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./final
+          publish_branch: docs
+          force_orphan: true
