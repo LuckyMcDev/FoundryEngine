@@ -6,7 +6,6 @@ import com.mojang.blaze3d.systems.CommandEncoder;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.textures.GpuTexture;
 import com.mojang.blaze3d.textures.GpuTextureView;
-import com.mojang.blaze3d.textures.TextureFormat;
 import de.luckymcdev.foundryengine.common.Common;
 import net.minecraft.client.renderer.ProjectionMatrixBuffer;
 import org.jspecify.annotations.Nullable;
@@ -16,6 +15,7 @@ import java.util.Queue;
 import java.util.function.Consumer;
 
 //? if 26.1 {
+import com.mojang.blaze3d.textures.TextureFormat;
 //?}
 //? if 26.2 {
 /*import com.mojang.blaze3d.GpuFormat;
