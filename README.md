@@ -30,7 +30,9 @@ A NeoForge Minecraft mod that turns Minecraft into a development-ready game engi
 
 ---
 
-Foundry Engine provides a large set of tools to ease the development of Minecraft additions. It does this by providing a new API called **Bundles**, a new way of loading content into the game. The mod is focused on allowing you to create custom games inside Minecraft.
+Foundry Engine provides a large set of tools to ease the development of Minecraft additions. 
+It does this by providing a new API called **Bundles**. A new way of loading content into the game. 
+With Bundles, you can create custom Items, Blocks and more, such as Fully Custom Games.
 
 ## Features
 
