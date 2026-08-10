@@ -177,7 +177,9 @@ const config: Config = {
 					],
 				},
 			],
-			copyright: `Copyright © ${new Date().getFullYear()} LuckyMcDev. Built with Docusaurus.`,
+			copyright: `Copyright © ${new Date().getFullYear()} LuckyMcDev. Built with Docusaurus.
+			<br />
+			NOT AN OFFICIAL MINECRAFT SERVICE. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT.`,
 		},
 		prism: {
 			theme: prismThemes.github,
