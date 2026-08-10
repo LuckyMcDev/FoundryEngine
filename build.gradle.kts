@@ -9,7 +9,7 @@ plugins {
 	id("dev.kikugie.fletching-table.neoforge") version "0.1.0-alpha.22"
 }
 
-version = "${sc.current.version}-${property("mod.version")}"
+version = "${sc.current.version}-${property("mod.version")}-${property("mod.suffix")}"
 group = property("mod.group") as String
 base.archivesName = property("mod.id") as String
 
@@ -160,6 +160,7 @@ tasks {
             register("version", "mod.version")
             register("license", "mod.license")
             register("logo", "mod.logo")
+			register("logo_key", "mod.logo_key")
             register("credits", "mod.credits")
             register("authors", "mod.authors")
             register("description", "mod.description")
