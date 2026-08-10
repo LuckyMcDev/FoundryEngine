@@ -29,7 +29,7 @@ mod.mc = "26.1.2"
 # Compatibility range written into neoforge.mods.toml and used for publishing.
 mod.mc_compat = "[26.1.1,26.2)"
 mod.mc_releases = ["26.1.2"]
-deps.neo_loader = "26.1.2.93"
+deps.neo_loader = "26.1.2.94"
 mod.neo_range = "[26.1.2.71,26.2)"
 mod.loader_range = "[4,)"
 
