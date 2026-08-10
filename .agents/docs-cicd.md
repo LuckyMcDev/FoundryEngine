@@ -13,7 +13,6 @@ Read this file when working on documentation or CI.
 - Build output: `docs/build`
 - Base URL: `/FoundryEngine/` (GitHub Pages project site)
 - Deploy: `.github/workflows/build-docusaurus.yml` + `.github/workflows/deploy.yml`
-- Deployment model: on push to `master`, docs and javadoc are built, merged (docusaurus at root, javadoc under `javadoc/`), and published to the `docs` branch (root) via `peaceiris/actions-gh-pages@v4`. GitHub Pages source must be set to **Deploy from a branch: `docs` / root** in repo settings.
 - Agent reference docs live in `.agents/` (not part of the published Docusaurus site)
 
 ## Code Documentation
