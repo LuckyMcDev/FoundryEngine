@@ -249,7 +249,7 @@ public class FoundryEngineModClient {
 				}
 				editorManager.handleRender();
 			} catch (Exception e) {
-				LOGGER.error("ImGui editor frame failed, restoring rendering state", e);
+				LOGGER.error("ImGui editor frame failed", e);
 			}
 		}
 	}
