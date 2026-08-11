@@ -1,302 +1,301 @@
 package de.luckymcdev.foundryengine.common.md;
 
+import com.vladsch.flexmark.ast.*;
+import com.vladsch.flexmark.ext.gfm.strikethrough.Strikethrough;
+import com.vladsch.flexmark.ext.gfm.tasklist.TaskListItem;
+import com.vladsch.flexmark.ext.tables.*;
+import com.vladsch.flexmark.util.ast.Node;
+import com.vladsch.flexmark.util.ast.NodeVisitor;
+import com.vladsch.flexmark.util.ast.VisitHandler;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
-import org.commonmark.ext.gfm.strikethrough.Strikethrough;
-import org.commonmark.ext.gfm.tables.TableBlock;
-import org.commonmark.ext.gfm.tables.TableBody;
-import org.commonmark.ext.gfm.tables.TableCell;
-import org.commonmark.ext.gfm.tables.TableHead;
-import org.commonmark.ext.gfm.tables.TableRow;
-import org.commonmark.node.AbstractVisitor;
-import org.commonmark.node.BlockQuote;
-import org.commonmark.node.BulletList;
-import org.commonmark.node.Code;
-import org.commonmark.node.Emphasis;
-import org.commonmark.node.FencedCodeBlock;
-import org.commonmark.node.HardLineBreak;
-import org.commonmark.node.Heading;
-import org.commonmark.node.HtmlBlock;
-import org.commonmark.node.HtmlInline;
-import org.commonmark.node.Image;
-import org.commonmark.node.IndentedCodeBlock;
-import org.commonmark.node.Link;
-import org.commonmark.node.ListItem;
-import org.commonmark.node.Node;
-import org.commonmark.node.OrderedList;
-import org.commonmark.node.Paragraph;
-import org.commonmark.node.SoftLineBreak;
-import org.commonmark.node.StrongEmphasis;
-import org.commonmark.node.Text;
-import org.commonmark.node.ThematicBreak;
 
 import java.net.URI;
 import java.util.Stack;
 
-/**
- * Visitor that converts GFM Markdown AST to Minecraft Components.
- */
-public class MarkdownComponentVisitor extends AbstractVisitor {
+public class MarkdownComponentVisitor {
 	private final Stack<MutableComponent> stack = new Stack<>();
 	private int listDepth = 0;
 	private int orderedListIndex = 1;
+	private final NodeVisitor visitor = new NodeVisitor(
+		new VisitHandler<>(Text.class, this::visitText),
+		new VisitHandler<>(StrongEmphasis.class, this::visitStrongEmphasis),
+		new VisitHandler<>(Emphasis.class, this::visitEmphasis),
+		new VisitHandler<>(Strikethrough.class, this::visitStrikethrough),
+		new VisitHandler<>(Code.class, this::visitCode),
+		new VisitHandler<>(Link.class, this::visitLink),
+		new VisitHandler<>(Image.class, this::visitImage),
+		new VisitHandler<>(SoftLineBreak.class, this::visitSoftLineBreak),
+		new VisitHandler<>(HardLineBreak.class, this::visitHardLineBreak),
+		new VisitHandler<>(Paragraph.class, this::visitParagraph),
+		new VisitHandler<>(Heading.class, this::visitHeading),
+		new VisitHandler<>(FencedCodeBlock.class, this::visitFencedCodeBlock),
+		new VisitHandler<>(IndentedCodeBlock.class, this::visitIndentedCodeBlock),
+		new VisitHandler<>(BlockQuote.class, this::visitBlockQuote),
+		new VisitHandler<>(ThematicBreak.class, this::visitThematicBreak),
+		new VisitHandler<>(BulletList.class, this::visitBulletList),
+		new VisitHandler<>(OrderedList.class, this::visitOrderedList),
+		new VisitHandler<>(BulletListItem.class, this::visitBulletListItem),
+		new VisitHandler<>(OrderedListItem.class, this::visitOrderedListItem),
+		new VisitHandler<>(TaskListItem.class, this::visitTaskListItem),
+		new VisitHandler<>(TableBlock.class, this::visitTableBlock),
+		new VisitHandler<>(TableHead.class, this::visitTableHead),
+		new VisitHandler<>(TableBody.class, this::visitTableBody),
+		new VisitHandler<>(TableRow.class, this::visitTableRow),
+		new VisitHandler<>(TableCell.class, this::visitTableCell),
+		new VisitHandler<>(HtmlBlock.class, this::visitHtmlBlock),
+		new VisitHandler<>(HtmlInline.class, this::visitHtmlInline),
+		new VisitHandler<>(MailLink.class, this::visitMailLink)
+	);
 
 	public MarkdownComponentVisitor() {
 		stack.push(Component.literal(""));
 	}
 
-	/**
-	 * Returns the accumulated formatted component after visiting all nodes.
-	 */
 	public MutableComponent getComponent() {
 		return stack.peek();
 	}
 
-	@Override
-	public void visit(Text text) {
-		stack.peek().append(text.getLiteral());
+	public void visit(Node document) {
+		visitor.visit(document);
 	}
 
-	@Override
-	public void visit(StrongEmphasis strongEmphasis) {
-		MutableComponent parent = Component.literal("");
-		stack.push(parent);
-		visitChildren(strongEmphasis);
+	private void visitText(Text node) {
+		stack.peek().append(node.getChars().toString());
+	}
+
+	private void visitStrongEmphasis(StrongEmphasis node) {
+		MutableComponent c = Component.literal("");
+		stack.push(c);
+		visitor.visitChildren(node);
 		stack.pop();
-		stack.peek().append(parent.withStyle(style -> style.withBold(true)));
+		stack.peek().append(c.withStyle(s -> s.withBold(true)));
 	}
 
-	@Override
-	public void visit(Emphasis emphasis) {
-		MutableComponent parent = Component.literal("");
-		stack.push(parent);
-		visitChildren(emphasis);
+	private void visitEmphasis(Emphasis node) {
+		MutableComponent c = Component.literal("");
+		stack.push(c);
+		visitor.visitChildren(node);
 		stack.pop();
-		stack.peek().append(parent.withStyle(style -> style.withItalic(true)));
+		stack.peek().append(c.withStyle(s -> s.withItalic(true)));
 	}
 
-	public void visit(Strikethrough strikethrough) {
-		MutableComponent parent = Component.literal("");
-		stack.push(parent);
-		visitChildren(strikethrough);
+	private void visitStrikethrough(Strikethrough node) {
+		MutableComponent c = Component.literal("");
+		stack.push(c);
+		visitor.visitChildren(node);
 		stack.pop();
-		stack.peek().append(parent.withStyle(style -> style.withStrikethrough(true)));
+		stack.peek().append(c.withStyle(s -> s.withStrikethrough(true)));
 	}
 
-	@Override
-	public void visit(Code code) {
-		MutableComponent codeComponent = Component.literal(code.getLiteral())
-			.withStyle(style -> style.withColor(0xE6E6E6));
-		stack.peek().append(codeComponent);
+	private void visitCode(Code node) {
+		stack.peek().append(
+			Component.literal(node.getText().toString())
+				.withStyle(s -> s.withColor(0xE6E6E6))
+		);
 	}
 
-	@Override
-	public void visit(Link link) {
-		MutableComponent linkComponent = Component.literal("");
-		stack.push(linkComponent);
-		visitChildren(link);
+	private void visitLink(Link node) {
+		MutableComponent c = Component.literal("");
+		stack.push(c);
+		visitor.visitChildren(node);
 		stack.pop();
 
-		String destination = link.getDestination();
-		String title = link.getTitle();
+		String url = node.getUrl().toString();
+		String title = node.getTitle().toString();
 
-		Component hoverText = title != null && !title.isEmpty()
-			? Component.literal(title + "\n" + destination)
-			: Component.literal(destination);
+		Component hover = !title.isEmpty()
+			? Component.literal(title + "\n" + url)
+			: Component.literal(url);
 
-		linkComponent = linkComponent.withStyle(style -> style
+		stack.peek().append(c.withStyle(s -> s
 			.withUnderlined(true)
 			.withColor(0x5555FF)
-			.withClickEvent(new ClickEvent.OpenUrl(URI.create(destination)))
-			.withHoverEvent(new HoverEvent.ShowText(hoverText))
-		);
-		stack.peek().append(linkComponent);
+			.withClickEvent(new ClickEvent.OpenUrl(URI.create(url)))
+			.withHoverEvent(new HoverEvent.ShowText(hover))
+		));
 	}
 
-	@Override
-	public void visit(Image image) {
-		String destination = image.getDestination();
-		String title = image.getTitle();
+	private void visitImage(Image node) {
+		String url = node.getUrl().toString();
+		String title = node.getTitle().toString();
 
-		MutableComponent imageAlt = Component.literal("");
-		stack.push(imageAlt);
-		visitChildren(image);
+		MutableComponent alt = Component.literal("");
+		stack.push(alt);
+		visitor.visitChildren(node);
 		stack.pop();
 
-		String altText = imageAlt.getString();
-		String displayText = "[Image: " + (altText.isEmpty() ? "image" : altText) + "]";
+		String altText = alt.getString();
+		String display = "[Image: " + (altText.isEmpty() ? "image" : altText) + "]";
+		Component hover = Component.literal((!title.isEmpty() ? title + "\n" : "") + "URL: " + url);
 
-		Component hoverText = Component.literal(
-			(title != null && !title.isEmpty() ? title + "\n" : "") +
-				"URL: " + destination
-		);
-
-		MutableComponent imageComponent = Component.literal(displayText)
-			.withStyle(style -> style
+		stack.peek().append(
+			Component.literal(display).withStyle(s -> s
 				.withColor(0xFF55FF)
 				.withItalic(true)
-				.withClickEvent(new ClickEvent.OpenUrl(URI.create(destination)))
-				.withHoverEvent(new HoverEvent.ShowText(hoverText))
-			);
-
-		stack.peek().append(imageComponent);
+				.withClickEvent(new ClickEvent.OpenUrl(URI.create(url)))
+				.withHoverEvent(new HoverEvent.ShowText(hover))
+			)
+		);
 	}
 
-	@Override
-	public void visit(SoftLineBreak softLineBreak) {
+	private void visitMailLink(MailLink node) {
+		String address = node.getText().toString();
+		stack.peek().append(
+			Component.literal(address).withStyle(s -> s
+				.withUnderlined(true)
+				.withColor(0x5555FF)
+				.withClickEvent(new ClickEvent.OpenUrl(URI.create("mailto:" + address)))
+				.withHoverEvent(new HoverEvent.ShowText(Component.literal("mailto:" + address)))
+			)
+		);
+	}
+
+	private void visitSoftLineBreak(SoftLineBreak node) {
 		stack.peek().append(" ");
 	}
 
-	@Override
-	public void visit(HardLineBreak hardLineBreak) {
+	private void visitHardLineBreak(HardLineBreak node) {
 		stack.peek().append("\n");
 	}
 
-	@Override
-	public void visit(Paragraph paragraph) {
-		MutableComponent para = Component.literal("");
-		stack.push(para);
-		visitChildren(paragraph);
+	private void visitParagraph(Paragraph node) {
+		MutableComponent c = Component.literal("");
+		stack.push(c);
+		visitor.visitChildren(node);
 		stack.pop();
-		para.append("\n");
-		stack.peek().append(para);
+		c.append("\n");
+		stack.peek().append(c);
 	}
 
-	@Override
-	public void visit(Heading heading) {
-		MutableComponent headingComponent = Component.literal("");
-		stack.push(headingComponent);
-		visitChildren(heading);
+	private void visitHeading(Heading node) {
+		MutableComponent c = Component.literal("");
+		stack.push(c);
+		visitor.visitChildren(node);
 		stack.pop();
 
-		int level = heading.getLevel();
-		headingComponent = headingComponent.withStyle(style -> {
-			var styledStyle = style.withBold(true);
+		int level = node.getLevel();
+		MutableComponent styled = c.withStyle(s -> {
+			var bold = s.withBold(true);
 			return switch (level) {
-				case 2 -> styledStyle.withColor(0xEEEEEE);
-				case 3 -> styledStyle.withColor(0xDDDDDD);
-				case 4 -> styledStyle.withColor(0xCCCCCC);
-				case 5 -> styledStyle.withColor(0xBBBBBB);
-				case 6 -> styledStyle.withColor(0xAAAAAA);
-				default -> styledStyle.withColor(0xFFFFFF);
+				case 2 -> bold.withColor(0xEEEEEE);
+				case 3 -> bold.withColor(0xDDDDDD);
+				case 4 -> bold.withColor(0xCCCCCC);
+				case 5 -> bold.withColor(0xBBBBBB);
+				case 6 -> bold.withColor(0xAAAAAA);
+				default -> bold.withColor(0xFFFFFF);
 			};
 		});
-
-		headingComponent.append("\n");
-		stack.peek().append(headingComponent);
+		styled.append("\n");
+		stack.peek().append(styled);
 	}
 
-	@Override
-	public void visit(FencedCodeBlock fencedCodeBlock) {
-		String info = fencedCodeBlock.getInfo();
+	private void visitFencedCodeBlock(FencedCodeBlock node) {
+		String info = node.getInfo().toString();
 
-		if (info != null && !info.isEmpty()) {
-			MutableComponent label = Component.literal("```" + info)
-				.withStyle(style -> style.withColor(0x888888).withItalic(true));
-			stack.peek().append(label).append("\n");
+		if (!info.isEmpty()) {
+			stack.peek().append(
+				Component.literal("```" + info)
+					.withStyle(s -> s.withColor(0x888888).withItalic(true))
+			).append("\n");
 		}
 
-		MutableComponent codeBlock = Component.literal(fencedCodeBlock.getLiteral())
-			.withStyle(style -> style.withColor(0xE6E6E6));
-		stack.peek().append(codeBlock);
+		stack.peek().append(
+			Component.literal(node.getContentChars().toString().stripTrailing())
+				.withStyle(s -> s.withColor(0xE6E6E6))
+		);
 
-		if (info != null && !info.isEmpty()) {
-			stack.peek().append(Component.literal("```")
-				.withStyle(style -> style.withColor(0x888888).withItalic(true)));
+		if (!info.isEmpty()) {
+			stack.peek().append(
+				Component.literal("```")
+					.withStyle(s -> s.withColor(0x888888).withItalic(true))
+			);
 		}
 		stack.peek().append("\n");
 	}
 
-	@Override
-	public void visit(IndentedCodeBlock indentedCodeBlock) {
-		MutableComponent codeBlock = Component.literal(indentedCodeBlock.getLiteral())
-			.withStyle(style -> style.withColor(0xE6E6E6));
-		stack.peek().append(codeBlock).append("\n");
+	private void visitIndentedCodeBlock(IndentedCodeBlock node) {
+		stack.peek().append(
+			Component.literal(node.getContentChars().toString().stripTrailing())
+				.withStyle(s -> s.withColor(0xE6E6E6))
+		).append("\n");
 	}
 
-	@Override
-	public void visit(BlockQuote blockQuote) {
-		MutableComponent quote = Component.literal("");
-		stack.push(quote);
-		visitChildren(blockQuote);
+	private void visitBlockQuote(BlockQuote node) {
+		MutableComponent inner = Component.literal("");
+		stack.push(inner);
+		visitor.visitChildren(node);
 		stack.pop();
 
-		String quoteText = quote.getString();
-		String[] lines = quoteText.split("\n");
-		for (int i = 0; i < lines.length; i++) {
-			if (!lines[i].isEmpty() || i < lines.length - 1) {
+		for (String line : inner.getString().split("\n", -1)) {
+			if (!line.isEmpty()) {
 				stack.peek()
-					.append(Component.literal("│ ")
-						.withStyle(style -> style.withColor(0x888888)))
-					.append(Component.literal(lines[i])
-						.withStyle(style -> style.withItalic(true).withColor(0xCCCCCC)))
+					.append(Component.literal("│ ").withStyle(s -> s.withColor(0x888888)))
+					.append(Component.literal(line).withStyle(s -> s.withItalic(true).withColor(0xCCCCCC)))
 					.append("\n");
 			}
 		}
 		stack.peek().append("\n");
 	}
 
-	@Override
-	public void visit(ThematicBreak thematicBreak) {
-		MutableComponent hr = Component.literal("─".repeat(50))
-			.withStyle(style -> style.withColor(0x888888));
-		stack.peek().append(hr).append("\n\n");
+	private void visitThematicBreak(ThematicBreak node) {
+		stack.peek().append(
+			Component.literal("─".repeat(50)).withStyle(s -> s.withColor(0x888888))
+		).append("\n\n");
 	}
 
-	@Override
-	public void visit(BulletList bulletList) {
+	private void visitBulletList(BulletList node) {
 		listDepth++;
-		visitChildren(bulletList);
+		visitor.visitChildren(node);
 		listDepth--;
-		if (listDepth == 0) {
-			stack.peek().append("\n");
-		}
+		if (listDepth == 0) stack.peek().append("\n");
 	}
 
-	@Override
-	public void visit(OrderedList orderedList) {
+	private void visitOrderedList(OrderedList node) {
 		listDepth++;
-		int savedIndex = orderedListIndex;
-		orderedListIndex = orderedList.getMarkerStartNumber();
-		visitChildren(orderedList);
-		orderedListIndex = savedIndex;
+		int saved = orderedListIndex;
+		orderedListIndex = node.getStartNumber();
+		visitor.visitChildren(node);
+		orderedListIndex = saved;
 		listDepth--;
-		if (listDepth == 0) {
-			stack.peek().append("\n");
-		}
+		if (listDepth == 0) stack.peek().append("\n");
 	}
 
-	@Override
-	public void visit(ListItem listItem) {
+	private void visitBulletListItem(BulletListItem node) {
+		visitListItemInternal(node, "• ");
+	}
+
+	private void visitOrderedListItem(OrderedListItem node) {
+		String marker = orderedListIndex + ". ";
+		orderedListIndex++;
+		visitListItemInternal(node, marker);
+	}
+
+	private void visitTaskListItem(TaskListItem node) {
+		String marker = node.isItemDoneMarker() ? "☑ " : "☐ ";
+		visitListItemInternal(node, marker);
+	}
+
+	private void visitListItemInternal(ListItem node, String marker) {
 		String indent = "  ".repeat(Math.max(0, listDepth - 1));
-
-		Node parent = listItem.getParent();
-		String marker;
-		if (parent instanceof OrderedList) {
-			marker = orderedListIndex + ". ";
-			orderedListIndex++;
-		} else {
-			marker = "• ";
-		}
-
 		MutableComponent item = Component.literal(indent + marker);
 		stack.push(item);
 
-		Node child = listItem.getFirstChild();
-		boolean firstChild = true;
+		Node child = node.getFirstChild();
+		boolean first = true;
 		while (child != null) {
-			if (child instanceof Paragraph && firstChild) {
+			if (child instanceof Paragraph && first) {
 				MutableComponent para = Component.literal("");
 				stack.push(para);
-				visitChildren(child);
+				visitor.visitChildren(child);
 				stack.pop();
 				item.append(para);
 			} else {
-				child.accept(this);
+				visitor.visit(child);
 			}
-			firstChild = false;
+			first = false;
 			child = child.getNext();
 		}
 
@@ -305,100 +304,72 @@ public class MarkdownComponentVisitor extends AbstractVisitor {
 		stack.peek().append(item);
 	}
 
-	public void visit(TableBlock tableBlock) {
+	private void visitTableBlock(TableBlock node) {
 		stack.peek().append("\n");
-		visitChildren(tableBlock);
+		visitor.visitChildren(node);
 		stack.peek().append("\n");
 	}
 
-	public void visit(TableHead tableHead) {
-		visitChildren(tableHead);
+	private void visitTableHead(TableHead node) {
+		visitor.visitChildren(node);
 
-		TableRow row = (TableRow) tableHead.getFirstChild();
+		TableRow row = (TableRow) node.getFirstChild();
 		if (row != null) {
-			int cellCount = countCells(row);
-			MutableComponent separator = Component.literal("─".repeat(cellCount * 15))
-				.withStyle(style -> style.withColor(0x888888));
-			stack.peek().append(separator).append("\n");
+			int cols = countCells(row);
+			stack.peek().append(
+				Component.literal("─".repeat(cols * 15)).withStyle(s -> s.withColor(0x888888))
+			).append("\n");
 		}
 	}
 
-	public void visit(TableBody tableBody) {
-		visitChildren(tableBody);
+	private void visitTableBody(TableBody node) {
+		visitor.visitChildren(node);
 	}
 
-	public void visit(TableRow tableRow) {
-		MutableComponent rowComp = Component.literal("│ ");
-		stack.push(rowComp);
-		visitChildren(tableRow);
+	private void visitTableRow(TableRow node) {
+		MutableComponent row = Component.literal("│ ");
+		stack.push(row);
+		visitor.visitChildren(node);
 		stack.pop();
-		stack.peek().append(rowComp).append("\n");
+		stack.peek().append(row).append("\n");
 	}
 
-	public void visit(TableCell tableCell) {
-		MutableComponent cellComp = Component.literal("");
-		stack.push(cellComp);
-		visitChildren(tableCell);
+	private void visitTableCell(TableCell node) {
+		MutableComponent cell = Component.literal("");
+		stack.push(cell);
+		visitor.visitChildren(node);
 		stack.pop();
 
-		boolean isHeader = tableCell.getParent().getParent() instanceof TableHead;
+		boolean header = node.getParent() != null && node.getParent().getParent() instanceof TableHead;
+		if (header) cell = cell.withStyle(s -> s.withBold(true));
 
-		if (isHeader) {
-			cellComp = cellComp.withStyle(style -> style.withBold(true));
-		}
-
-		String cellText = cellComp.getString();
-		int padding = Math.max(0, 12 - cellText.length());
-
-		MutableComponent paddedCell = Component.literal("")
-			.append(cellComp)
-			.append(" ".repeat(padding))
-			.append(" │ ");
-
-		stack.peek().append(paddedCell);
+		int padding = Math.max(0, 12 - cell.getString().length());
+		stack.peek().append(
+			Component.literal("").append(cell).append(" ".repeat(padding)).append(" │ ")
+		);
 	}
 
 	private int countCells(TableRow row) {
 		int count = 0;
 		Node child = row.getFirstChild();
 		while (child != null) {
-			if (child instanceof TableCell) {
-				count++;
-			}
+			if (child instanceof TableCell) count++;
 			child = child.getNext();
 		}
 		return count;
 	}
 
-	@Override
-	public void visit(HtmlBlock htmlBlock) {
-		MutableComponent html = Component.literal("[HTML]\n" + htmlBlock.getLiteral())
-			.withStyle(style -> style.withColor(0xFFAA00).withItalic(true));
-		stack.peek().append(html).append("\n");
+	private void visitHtmlBlock(HtmlBlock node) {
+		stack.peek().append(
+			Component.literal("[HTML]\n" + node.getChars())
+				.withStyle(s -> s.withColor(0xFFAA00).withItalic(true))
+		).append("\n");
 	}
 
-	@Override
-	public void visit(HtmlInline htmlInline) {
-		MutableComponent html = Component.literal(htmlInline.getLiteral())
-			.withStyle(style -> style.withColor(0xFFAA00));
-		stack.peek().append(html);
-	}
-
-	@Override
-	protected void visitChildren(Node parent) {
-		Node node = parent.getFirstChild();
-		while (node != null) {
-			Node next = node.getNext();
-			switch (node) {
-				case Strikethrough strikethrough -> visit(strikethrough);
-				case TableBlock tableBlock -> visit(tableBlock);
-				case TableHead tableHead -> visit(tableHead);
-				case TableBody tableBody -> visit(tableBody);
-				case TableRow tableRow -> visit(tableRow);
-				case TableCell tableCell -> visit(tableCell);
-				default -> node.accept(this);
-			}
-			node = next;
-		}
+	private void visitHtmlInline(HtmlInline node) {
+		stack.peek().append(
+			Component.literal(node.getChars().toString())
+				.withStyle(s -> s.withColor(0xFFAA00))
+		);
 	}
 }

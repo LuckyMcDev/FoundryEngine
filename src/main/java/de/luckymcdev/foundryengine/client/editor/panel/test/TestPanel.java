@@ -7,6 +7,7 @@ import de.luckymcdev.foundryengine.client.editor.panel.Panel;
 import de.luckymcdev.foundryengine.client.editor.panel.tools.CataloguePanel;
 import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
+import de.luckymcdev.foundryengine.client.md.MdScreen;
 import de.luckymcdev.foundryengine.client.ui.ExampleScreen;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.util.color.Color;
@@ -75,6 +76,10 @@ public class TestPanel extends Panel {
 			g.drawImage(cataloguePayload.texture(), wh, wh);
 		} else {
 			ImGui.text("Drop something from the Catalogue panel!");
+		}
+
+		if(ImGui.button("MarkdownScreen")) {
+			Client.setScreen(new MdScreen(Component.literal("markdownscreen"),Common.id("md/test.md")));
 		}
 
 		ImGui.colorPicker3("Pick a color", FLOAT2.getData(), ImGuiColorEditFlags.PickerHueWheel);

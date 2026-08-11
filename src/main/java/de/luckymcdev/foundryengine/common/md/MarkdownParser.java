@@ -1,13 +1,13 @@
 package de.luckymcdev.foundryengine.common.md;
 
 import com.mojang.logging.LogUtils;
+import com.vladsch.flexmark.ext.autolink.AutolinkExtension;
+import com.vladsch.flexmark.ext.gfm.strikethrough.StrikethroughExtension;
+import com.vladsch.flexmark.ext.tables.TablesExtension;
+import com.vladsch.flexmark.parser.Parser;
+import com.vladsch.flexmark.util.ast.Node;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import org.commonmark.ext.autolink.AutolinkExtension;
-import org.commonmark.ext.gfm.strikethrough.StrikethroughExtension;
-import org.commonmark.ext.gfm.tables.TablesExtension;
-import org.commonmark.node.Node;
-import org.commonmark.parser.Parser;
 import org.slf4j.Logger;
 
 import java.util.List;
@@ -40,7 +40,7 @@ public class MarkdownParser {
 		try {
 			Node document = PARSER.parse(markdown);
 			MarkdownComponentVisitor visitor = new MarkdownComponentVisitor();
-			document.accept(visitor);
+			visitor.visit(document);
 			return visitor.getComponent();
 		} catch (Exception e) {
 			LOGGER.error("Failed to parse markdown", e);

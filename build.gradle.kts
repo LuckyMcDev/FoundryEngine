@@ -102,14 +102,8 @@ java {
 }
 
 dependencies {
-    val commonmark = property("lib.commonmark") as String
-	val imguimc = property("lib.imguimc") as String
-
     listOf(
-        "org.commonmark:commonmark:$commonmark",
-        "org.commonmark:commonmark-ext-gfm-tables:$commonmark",
-        "org.commonmark:commonmark-ext-gfm-strikethrough:$commonmark",
-        "org.commonmark:commonmark-ext-autolink:$commonmark",
+        "com.vladsch.flexmark:flexmark-all:${property("lib.flexmark")}",
         "org.apache.groovy:groovy:${property("lib.groovy")}",
         "com.googlecode.soundlibs:jlayer:${property("lib.jlayer")}",
         "org.jflac:jflac-codec:${property("lib.jflac")}",
@@ -124,13 +118,13 @@ dependencies {
     if (sc.current.version == "26.1") {
 		var mcVersion = property("mod.mc") as String
         runtimeOnly(fletchingTable.modrinth("jei", mcVersion, "neoforge"))
-		compileOnly("foundry.imguimc:imguimc-neoforge-${sc.current.version}:${imguimc}")
-		runtimeOnly("foundry.imguimc:imguimc-neoforge-${sc.current.version}:${imguimc}")
+		compileOnly("foundry.imguimc:imguimc-neoforge-${sc.current.version}:${property("lib.imguimc")}")
+		runtimeOnly("foundry.imguimc:imguimc-neoforge-${sc.current.version}:${property("lib.imguimc")}")
     } else {
 		var mcVersion = property("mod.mc") as String
 		runtimeOnly(fletchingTable.modrinth("jei", mcVersion, "neoforge"))
-		compileOnly("foundry.imguimc:imguimc-neoforge-${mcVersion}:${imguimc}")
-		runtimeOnly("foundry.imguimc:imguimc-neoforge-${sc.current.version}:${imguimc}")
+		compileOnly("foundry.imguimc:imguimc-neoforge-${mcVersion}:${property("lib.imguimc")}")
+		runtimeOnly("foundry.imguimc:imguimc-neoforge-${mcVersion}:${property("lib.imguimc")}")
 	}
 }
 

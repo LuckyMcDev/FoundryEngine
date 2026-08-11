@@ -13,15 +13,11 @@ mod.github_commitish = "master"
 mod.suffix = "alpha"
 
 # Library versions shared across all Minecraft versions.
-lib.imgui = "1.92.7.1"
-lib.commonmark = "0.27.1"
+lib.flexmark = "0.64.8"
 lib.groovy = "5.0.4"
-lib.renderdoc = "1.0.1-build.2"
 lib.taffy = "1.1.4"
 lib.jlayer = "1.0.1.4"
 lib.jflac = "1.5.2"
-lib.junit = "5.7.1"
-lib.junit_platform = "1.7.1"
 lib.imguimc = "[2.0.5,2.1)"
 
 ["26.1"]
