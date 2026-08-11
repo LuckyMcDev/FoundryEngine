@@ -15,7 +15,9 @@ base.archivesName = property("mod.id") as String
 
 val modId = property("mod.id") as String
 val modVersion = property("mod.version") as String
-val mcReleases = sc.versions.map { it.version }
+val mcReleases = (sc.properties["mod.mc_releases"] as String)
+	.split(",")
+	.map { it.trim() }
 
 repositories {
 	mavenLocal()
@@ -100,7 +102,6 @@ java {
 }
 
 dependencies {
-    val imgui = property("lib.imgui") as String
     val commonmark = property("lib.commonmark") as String
 	val imguimc = property("lib.imguimc") as String
 
@@ -112,21 +113,12 @@ dependencies {
         "org.apache.groovy:groovy:${property("lib.groovy")}",
         "com.googlecode.soundlibs:jlayer:${property("lib.jlayer")}",
         "org.jflac:jflac-codec:${property("lib.jflac")}",
-        "dev.latvian.mods:renderdoc-support:${property("lib.renderdoc")}",
         "dev.vfyjxf:taffy:${property("lib.taffy")}",
-        "io.github.spair:imgui-java-binding:$imgui",
-        "io.github.spair:imgui-java-natives-windows:$imgui",
-        "io.github.spair:imgui-java-natives-linux:$imgui",
-        "io.github.spair:imgui-java-natives-macos:$imgui",
     ).forEach { gav ->
         implementation(gav)
         api(gav)
         jarJar(gav)
     }
-
-    implementation("io.github.spair:imgui-java-lwjgl3:$imgui") { exclude(group = "org.lwjgl") }
-    api("io.github.spair:imgui-java-lwjgl3:$imgui") { exclude(group = "org.lwjgl") }
-    jarJar("io.github.spair:imgui-java-lwjgl3:$imgui") { exclude(group = "org.lwjgl") }
 
     // Third-party MC integrations are pinned only for 26.1 until 26.2 builds are published.
     if (sc.current.version == "26.1") {
@@ -140,10 +132,6 @@ dependencies {
 		compileOnly("foundry.imguimc:imguimc-neoforge-${mcVersion}:${imguimc}")
 		runtimeOnly("foundry.imguimc:imguimc-neoforge-${sc.current.version}:${imguimc}")
 	}
-
-    testImplementation("org.junit.jupiter:junit-jupiter:${property("lib.junit")}")
-    testImplementation("net.neoforged:testframework:${property("deps.neo_loader")}")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher:${property("lib.junit_platform")}")
 }
 
 tasks {
@@ -221,36 +209,44 @@ publishing {
 }
 
 publishMods {
-    changelog = providers.environmentVariable("CHANGELOG").orElse("No changelog provided.")
-    type = ReleaseType.ALPHA
-    modLoaders.add("neoforge")
-    version = modVersion
-    displayName = "${property("mod.name")} $modVersion"
-    file = tasks.named("jar").flatMap { (it as Jar).archiveFile }
-    additionalFiles.from(
-        tasks.named("javadocJar").map { (it as Jar).archiveFile.get() },
-        tasks.named("sourcesJar").map { (it as Jar).archiveFile.get() },
-    )
+	changelog = providers.fileContents(rootProject.layout.projectDirectory.file("CHANGELOG.md")).asText
+		.orElse(providers.environmentVariable("CHANGELOG"))
+		.orElse("No changelog provided.")
+	type = ReleaseType.ALPHA
+	modLoaders.add("neoforge")
+	version = "${sc.current.version}-$modVersion"
+	displayName = "${property("mod.name")} ${sc.current.version}-$modVersion"
+	file = tasks.named("jar").flatMap { (it as Jar).archiveFile }
+	additionalFiles.from(
+		tasks.named("javadocJar").map { (it as Jar).archiveFile.get() },
+		tasks.named("sourcesJar").map { (it as Jar).archiveFile.get() },
+	)
 
-    github {
-        accessToken = providers.environmentVariable("GITHUB_TOKEN")
-        repository = property("mod.github") as String
-        commitish = property("mod.github_commitish") as String
-        tagName = "v$modVersion"
-    }
-    curseforge {
-        accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
-        projectId = "1605117"
-        minecraftVersions.addAll(mcReleases)
-        javaVersions.add(JavaVersion.VERSION_25)
-        clientRequired = true
-        serverRequired = true
-    }
-    modrinth {
-        accessToken = providers.environmentVariable("MODRINTH_TOKEN")
-        projectId = "AaUmWHXd"
-        minecraftVersions.addAll(mcReleases)
-    }
+	github {
+		accessToken = providers.environmentVariable("GITHUB_TOKEN")
+		repository = property("mod.github") as String
+		commitish = property("mod.github_commitish") as String
+		tagName = "v${sc.current.version}-$modVersion"
+	}
+	curseforge {
+		accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
+		projectId = "1605117"
+		minecraftVersions.addAll(mcReleases)
+		javaVersions.add(JavaVersion.VERSION_25)
+		clientRequired = true
+		serverRequired = true
+		requires {
+			slug = "imguimc"
+		}
+	}
+	modrinth {
+		accessToken = providers.environmentVariable("MODRINTH_TOKEN")
+		projectId = "AaUmWHXd"
+		minecraftVersions.addAll(mcReleases)
+		requires {
+			slug = "imguimc"
+		}
+	}
 }
 
 fletchingTable {

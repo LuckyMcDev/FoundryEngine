@@ -2,7 +2,7 @@
 mod.id = "foundryengine"
 mod.name = "Foundry Engine"
 mod.group = "de.luckymcdev"
-mod.version = "0.1.6"
+mod.version = "0.1.7"
 mod.license = "All Rights Reserved"
 mod.authors = "LuckyMcDev"
 mod.description = "A Mod that turns Minecraft into a Game Engine."
@@ -29,7 +29,7 @@ lib.imguimc = "[2.0.5,2.1)"
 mod.mc = "26.1.2"
 # Compatibility range written into neoforge.mods.toml and used for publishing.
 mod.mc_compat = "[26.1.1,26.2)"
-mod.mc_releases = ["26.1.2"]
+mod.mc_releases = "26.1.2"
 deps.neo_loader = "26.1.2.94"
 mod.neo_range = "[26.1.2.71,26.2)"
 mod.loader_range = "[4,)"
@@ -38,7 +38,7 @@ mod.logo_key = "logoFile"
 ["26.2"]
 mod.mc = "26.2"
 mod.mc_compat = "[26.2,26.3)"
-mod.mc_releases = ["26.2"]
+mod.mc_releases = "26.2"
 deps.neo_loader = "26.2.0.59"
 mod.neo_range = "[26.2,26.3)"
 mod.loader_range = "[4,)"

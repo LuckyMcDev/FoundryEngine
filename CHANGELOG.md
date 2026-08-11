@@ -1,0 +1,2 @@
+- Fix accidental deletion of BundleModProvider
+- code cleanup
