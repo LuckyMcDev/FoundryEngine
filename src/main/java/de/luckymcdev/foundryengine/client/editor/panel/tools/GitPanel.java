@@ -6,15 +6,19 @@ import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.client.imgui.text.ImGuiCoreTextEditor;
 import de.luckymcdev.foundryengine.client.imgui.text.editor.EditorTheme;
+import de.luckymcdev.foundryengine.client.imgui.text.preset.git.GitColorizer;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.service.EngineServiceResult;
 import de.luckymcdev.foundryengine.common.service.GitService;
 import imgui.ImGui;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiInputTextFlags;
+import imgui.flag.ImGuiSelectableFlags;
 import imgui.type.ImInt;
 import imgui.type.ImString;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -30,32 +34,35 @@ public class GitPanel extends EditorPanel {
 	private static final int TAB_REMOTE = 4;
 	private static final int TAB_STASH = 5;
 	private static final int TAB_TAGS = 6;
-	// diff viewer
+
 	private final ImGuiCoreTextEditor diffViewer;
-	// plain output (non-diff tabs)
-	private final List<OutputLine> output = new ArrayList<>();
-	// shared ref input (branch name, commit hash, etc.)
+	private final ImGuiCoreTextEditor outputEditor;
+
 	private final ImString refInput = new ImString(128);
 	private final ImString commitMessage = new ImString(256);
-	// remote tab
 	private final ImString remoteName = new ImString(64);
 	private final ImString remoteUrl = new ImString(256);
 	private final ImString pushRemote = new ImString(64);
 	private final ImString pushBranch = new ImString(128);
-	// stash tab
 	private final ImString stashMessage = new ImString(128);
-	// tag tab
 	private final ImString tagName = new ImString(64);
 	private final ImString tagMessage = new ImString(256);
 	private final ImString tagCommit = new ImString(64);
-	private int activeTab = TAB_STATUS;
-	private boolean running = false;
 	private final ImInt stashIndex = new ImInt(0);
-	// status tab
+
+	private int activeTab = TAB_STATUS;
+	private int previousTab = -1;
+	private boolean running = false;
+	private boolean autoRefresh = true;
+
 	private String currentBranch = "";
 	private String currentCommit = "";
-	// log tab
 	private int logLimit = 20;
+
+	private final List<BranchEntry> branches = new ArrayList<>();
+	private boolean branchesLoaded = false;
+
+	private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm:ss");
 
 	private GitPanel() {
 		super(new Builder(Common.id("git"))
@@ -63,21 +70,30 @@ public class GitPanel extends EditorPanel {
 			.category(PanelCategory.TOOLS)
 			.menuBar(true));
 
-		EditorTheme theme = EditorTheme.monokai().build();
-		this.diffViewer = ImGuiCoreTextEditor.createForLanguage(ImGuiCoreTextEditor.Language.DIFF, theme);
-		this.diffViewer.setReadOnly(true);
+		EditorTheme diffTheme = EditorTheme.monokai().build();
+		diffViewer = ImGuiCoreTextEditor.createForLanguage(ImGuiCoreTextEditor.Language.DIFF, diffTheme);
+		diffViewer.setReadOnly(true);
+
+		EditorTheme outputTheme = EditorTheme.dark().build();
+		outputEditor = new ImGuiCoreTextEditor(new GitColorizer(), null, outputTheme);
+		outputEditor.setReadOnly(true);
+		outputEditor.setText("Ready.");
 	}
 
 	@Override
 	public void content(ImGraphicsExtractor g) {
 		Optional<GitService> git = Common.getEngineServiceManager().get(GitService.class);
-
 		if (git.isEmpty()) {
 			g.centeredMessage(ImIcons.EXCLAMATION_TRIANGLE + "  git is not available on this system.");
 			return;
 		}
 
 		renderMenuBar(git.get());
+
+		if (activeTab != previousTab && autoRefresh && !running) {
+			onTabChanged(activeTab, git.get());
+			previousTab = activeTab;
+		}
 
 		switch (activeTab) {
 			case TAB_STATUS -> renderStatusTab(g, git.get());
@@ -89,20 +105,15 @@ public class GitPanel extends EditorPanel {
 			case TAB_TAGS -> renderTagsTab(g, git.get());
 		}
 
-		// Output panel only on non-diff tabs
 		if (activeTab != TAB_DIFF) {
 			renderOutput(g);
 		}
 	}
 
-	// -------------------------------------------------------------------------
-	// Menu bar
-	// -------------------------------------------------------------------------
-
 	private void renderMenuBar(GitService git) {
 		menuBar(() -> {
 			if (ImGui.menuItem(ImIcons.REFRESH + " Refresh")) {
-				refreshStatus(git);
+				onTabChanged(activeTab, git);
 			}
 
 			ImGui.separator();
@@ -110,15 +121,11 @@ public class GitPanel extends EditorPanel {
 			String[] tabs = {"Status", "Diff", "Log", "Branch", "Remote", "Stash", "Tags"};
 			for (int i = 0; i < tabs.length; i++) {
 				boolean selected = activeTab == i;
-				if (selected) {
-					ImGui.pushStyleColor(ImGuiCol.Text, 0xFF4CAF50);
-				}
+				if (selected) ImGui.pushStyleColor(ImGuiCol.Text, 0xFF4CAF50);
 				if (ImGui.menuItem(tabs[i])) {
 					activeTab = i;
 				}
-				if (selected) {
-					ImGui.popStyleColor();
-				}
+				if (selected) ImGui.popStyleColor();
 			}
 
 			ImGui.separator();
@@ -129,15 +136,35 @@ public class GitPanel extends EditorPanel {
 				}
 			} else {
 				if (ImGui.menuItem(ImIcons.TRASH + " Clear Output")) {
-					output.clear();
+					outputEditor.setText("");
 				}
+			}
+
+			ImGui.separator();
+
+			if (ImGui.menuItem(ImIcons.REFRESH + " Auto Refresh", null, autoRefresh)) {
+				autoRefresh = !autoRefresh;
 			}
 		});
 	}
 
-	// -------------------------------------------------------------------------
-	// Status tab
-	// -------------------------------------------------------------------------
+	private void onTabChanged(int tab, GitService git) {
+		switch (tab) {
+			case TAB_STATUS -> {
+				refreshStatus(git);
+				run(git.status(), "Status");
+			}
+			case TAB_LOG -> run(git.log(logLimit), "Log");
+			case TAB_BRANCH -> {
+				run(git.branch(), "Branch");
+				loadBranches(git);
+			}
+			case TAB_REMOTE -> run(git.remoteList(), "Remote List");
+			case TAB_STASH -> run(git.stashList(), "Stash List");
+			case TAB_TAGS -> run(git.tagList(), "Tag List");
+			case TAB_DIFF -> {}
+		}
+	}
 
 	private void renderStatusTab(ImGraphicsExtractor g, GitService git) {
 		g.cardBegin("##git_info_card");
@@ -156,11 +183,11 @@ public class GitPanel extends EditorPanel {
 		ImGui.spacing();
 
 		if (button(ImIcons.LIST + " Status")) {
-			run(git.status());
+			run(git.status(), "Status");
 		}
 		ImGui.sameLine();
 		if (button(ImIcons.PLUS + " Add All")) {
-			run(git.addAll());
+			run(git.addAll(), "Add All");
 		}
 
 		ImGui.spacing();
@@ -173,14 +200,14 @@ public class GitPanel extends EditorPanel {
 		if (button(ImIcons.CHECK + " Commit")) {
 			if (!commitMessage.isEmpty()) {
 				String msg = commitMessage.get();
-				run(git.addAll().thenCompose(r -> git.commit(msg)));
+				run(git.addAll().thenCompose(r -> git.commit(msg)), "Commit");
 				commitMessage.set("");
 			}
 		}
 
 		ImGui.spacing();
 		if (button(ImIcons.UNDO + " Amend (no edit)")) {
-			run(git.commitAmendNoEdit());
+			run(git.commitAmendNoEdit(), "Amend");
 		}
 		g.helpTooltip("Amend the last commit without changing its message.");
 		g.cardEnd();
@@ -191,11 +218,11 @@ public class GitPanel extends EditorPanel {
 		ImGui.text(ImIcons.BROOM + "  Cleanup");
 		ImGui.spacing();
 		if (button(ImIcons.TRASH + " Clean (files)")) {
-			run(git.clean(true, false));
+			run(git.clean(true, false), "Clean");
 		}
 		ImGui.sameLine();
 		if (button(ImIcons.TRASH + " Clean (+ dirs)")) {
-			run(git.clean(true, true));
+			run(git.clean(true, true), "Clean (dirs)");
 		}
 		g.cardEnd();
 
@@ -204,21 +231,17 @@ public class GitPanel extends EditorPanel {
 		}
 	}
 
-	// -------------------------------------------------------------------------
-	// Diff tab — uses the DiffColorizer-backed text editor
-	// -------------------------------------------------------------------------
-
 	private void renderDiffTab(ImGraphicsExtractor g, GitService git) {
 		g.cardBegin("##git_diff_controls");
 		ImGui.text(ImIcons.SEARCH + "  Diff");
 		ImGui.spacing();
 
 		if (button(ImIcons.SEARCH + " Working Tree")) {
-			runDiff(git.diff());
+			runDiff(git.diff(), "Diff (Working Tree)");
 		}
 		ImGui.sameLine();
 		if (button(ImIcons.SEARCH + " Staged")) {
-			runDiff(git.diffStaged());
+			runDiff(git.diffStaged(), "Diff (Staged)");
 		}
 
 		ImGui.spacing();
@@ -228,11 +251,10 @@ public class GitPanel extends EditorPanel {
 		ImGui.sameLine();
 		if (button(ImIcons.SEARCH + " Show")) {
 			if (!refInput.isEmpty()) {
-				runDiff(git.show(refInput.get()));
+				runDiff(git.show(refInput.get()), "Show " + refInput.get());
 			}
 		}
 		g.helpTooltip("Show a specific commit or ref as a diff.");
-
 		g.cardEnd();
 
 		ImGui.spacing();
@@ -245,10 +267,6 @@ public class GitPanel extends EditorPanel {
 		float availH = ImGui.getContentRegionAvailY();
 		diffViewer.render("##diff_view", ImGui.getContentRegionAvailX(), availH, false);
 	}
-
-	// -------------------------------------------------------------------------
-	// Log tab
-	// -------------------------------------------------------------------------
 
 	private void renderLogTab(ImGraphicsExtractor g, GitService git) {
 		g.cardBegin("##git_log_card");
@@ -266,19 +284,19 @@ public class GitPanel extends EditorPanel {
 		ImGui.spacing();
 
 		if (button(ImIcons.LIST + " Log")) {
-			run(git.log(logLimit));
+			run(git.log(logLimit), "Log");
 		}
 		ImGui.sameLine();
 		if (button(ImIcons.LIST + " Oneline")) {
-			run(git.logOneline(logLimit));
+			run(git.logOneline(logLimit), "Log Oneline");
 		}
 		ImGui.sameLine();
 		if (button(ImIcons.SITEMAP + " Graph")) {
-			run(git.logGraph(logLimit));
+			run(git.logGraph(logLimit), "Log Graph");
 		}
 		ImGui.sameLine();
 		if (button(ImIcons.TAG + " Describe Tag")) {
-			run(git.describeTag());
+			run(git.describeTag(), "Describe Tag");
 		}
 
 		ImGui.spacing();
@@ -291,28 +309,48 @@ public class GitPanel extends EditorPanel {
 		if (button(ImIcons.EYE + " Show in Diff")) {
 			if (!refInput.isEmpty()) {
 				activeTab = TAB_DIFF;
-				runDiff(git.show(refInput.get()));
+				runDiff(git.show(refInput.get()), "Show " + refInput.get());
 			}
 		}
 		g.helpTooltip("Opens the commit in the Diff viewer.");
-
 		g.cardEnd();
 	}
-
-	// -------------------------------------------------------------------------
-	// Branch tab
-	// -------------------------------------------------------------------------
 
 	private void renderBranchTab(ImGraphicsExtractor g, GitService git) {
 		g.cardBegin("##git_branch_list_card");
 		ImGui.text(ImIcons.CODE_BRANCH + "  Branches");
 		ImGui.spacing();
-		if (button(ImIcons.LIST + " Local")) {
-			run(git.branch());
+
+		if (branchesLoaded && !branches.isEmpty()) {
+			ImGui.text("Click a branch to check it out:");
+			ImGui.spacing();
+
+			float listHeight = Math.min(200, branches.size() * ImGui.getFontSize() * 1.2f);
+			ImGui.beginChild("##branch_list", 0, listHeight, true);
+			for (BranchEntry entry : branches) {
+				boolean isCurrent = entry.isCurrent;
+				if (isCurrent) {
+					ImGui.pushStyleColor(ImGuiCol.Text, 0xFF4CAF50);
+					ImGui.pushStyleColor(ImGuiCol.Header, 0x334CAF50);
+				}
+				if (ImGui.selectable((isCurrent ? "* " : "  ") + entry.name, false, ImGuiSelectableFlags.None)) {
+					if (!entry.isCurrent) {
+						run(git.checkout(entry.name), "Checkout " + entry.name);
+						loadBranches(git);
+					}
+				}
+				if (isCurrent) {
+					ImGui.popStyleColor(2);
+				}
+			}
+			ImGui.endChild();
+		} else {
+			ImGui.textDisabled("No branches loaded. Click Refresh or switch to this tab.");
 		}
-		ImGui.sameLine();
-		if (button(ImIcons.GLOBE + " All (incl. remote)")) {
-			run(git.branchAll());
+
+		ImGui.spacing();
+		if (button(ImIcons.REFRESH + " Refresh List")) {
+			loadBranches(git);
 		}
 		g.cardEnd();
 
@@ -328,19 +366,22 @@ public class GitPanel extends EditorPanel {
 
 		if (button(ImIcons.PLUS + " Create")) {
 			if (!refInput.isEmpty()) {
-				run(git.branchCreate(refInput.get()));
+				run(git.branchCreate(refInput.get()), "Create Branch");
+				loadBranches(git);
 			}
 		}
 		ImGui.sameLine();
 		if (button(ImIcons.SIGN_OUT + " Checkout")) {
 			if (!refInput.isEmpty()) {
-				run(git.checkout(refInput.get()));
+				run(git.checkout(refInput.get()), "Checkout");
+				loadBranches(git);
 			}
 		}
 		ImGui.sameLine();
 		if (button(ImIcons.SIGN_OUT + " Create & Checkout")) {
 			if (!refInput.isEmpty()) {
-				run(git.checkoutNew(refInput.get()));
+				run(git.checkoutNew(refInput.get()), "Create & Checkout");
+				loadBranches(git);
 			}
 		}
 
@@ -348,13 +389,15 @@ public class GitPanel extends EditorPanel {
 
 		if (button(ImIcons.TRASH + " Delete (safe)")) {
 			if (!refInput.isEmpty()) {
-				run(git.branchDelete(refInput.get()));
+				run(git.branchDelete(refInput.get()), "Delete Branch");
+				loadBranches(git);
 			}
 		}
 		ImGui.sameLine();
 		if (button(ImIcons.EXCLAMATION_TRIANGLE + " Force Delete")) {
 			if (!refInput.isEmpty()) {
-				run(git.branchDeleteForce(refInput.get()));
+				run(git.branchDeleteForce(refInput.get()), "Force Delete");
+				loadBranches(git);
 			}
 		}
 		g.cardEnd();
@@ -367,35 +410,31 @@ public class GitPanel extends EditorPanel {
 
 		if (button(ImIcons.CODE_BRANCH + " Merge")) {
 			if (!refInput.isEmpty()) {
-				run(git.merge(refInput.get()));
+				run(git.merge(refInput.get()), "Merge");
 			}
 		}
 		ImGui.sameLine();
 		if (button(ImIcons.TIMES + " Abort Merge")) {
-			run(git.mergeAbort());
+			run(git.mergeAbort(), "Abort Merge");
 		}
 
 		ImGui.spacing();
 
 		if (button(ImIcons.EXCHANGE + " Rebase")) {
 			if (!refInput.isEmpty()) {
-				run(git.rebase(refInput.get()));
+				run(git.rebase(refInput.get()), "Rebase");
 			}
 		}
 		ImGui.sameLine();
 		if (button(ImIcons.TIMES + " Abort Rebase")) {
-			run(git.rebaseAbort());
+			run(git.rebaseAbort(), "Abort Rebase");
 		}
 		ImGui.sameLine();
 		if (button(ImIcons.CHECK + " Continue Rebase")) {
-			run(git.rebaseContinue());
+			run(git.rebaseContinue(), "Continue Rebase");
 		}
 		g.cardEnd();
 	}
-
-	// -------------------------------------------------------------------------
-	// Remote tab
-	// -------------------------------------------------------------------------
 
 	private void renderRemoteTab(ImGraphicsExtractor g, GitService git) {
 		g.cardBegin("##git_sync_card");
@@ -403,38 +442,38 @@ public class GitPanel extends EditorPanel {
 		ImGui.spacing();
 
 		if (button(ImIcons.DOWNLOAD + " Pull")) {
-			run(git.pull());
+			run(git.pull(), "Pull");
 		}
 		ImGui.sameLine();
 		if (button(ImIcons.EXCHANGE + " Pull --rebase")) {
-			run(git.pullRebase());
+			run(git.pullRebase(), "Pull (rebase)");
 		}
 		ImGui.sameLine();
 		if (button(ImIcons.UPLOAD + " Push")) {
-			run(git.push());
+			run(git.push(), "Push");
 		}
 		ImGui.sameLine();
 		if (button(ImIcons.EXCLAMATION_TRIANGLE + " Force Push")) {
-			run(git.pushForce());
+			run(git.pushForce(), "Force Push");
 		}
 		g.helpTooltip("Uses --force-with-lease.");
 
 		ImGui.spacing();
 
 		if (button(ImIcons.REFRESH + " Fetch")) {
-			run(git.fetch());
+			run(git.fetch(), "Fetch");
 		}
 		ImGui.sameLine();
 		if (button(ImIcons.REFRESH + " Fetch All")) {
-			run(git.fetchAll());
+			run(git.fetchAll(), "Fetch All");
 		}
 		ImGui.sameLine();
 		if (button(ImIcons.REFRESH + " Fetch + Prune")) {
-			run(git.fetchPrune());
+			run(git.fetchPrune(), "Fetch + Prune");
 		}
 		ImGui.sameLine();
 		if (button(ImIcons.UPLOAD + " Push Tags")) {
-			run(git.pushTags());
+			run(git.pushTags(), "Push Tags");
 		}
 		g.cardEnd();
 
@@ -453,7 +492,7 @@ public class GitPanel extends EditorPanel {
 		if (button(ImIcons.UPLOAD + " Push")) {
 			String r = pushRemote.isEmpty() ? "origin" : pushRemote.get();
 			String b = pushBranch.isEmpty() ? "main" : pushBranch.get();
-			run(git.pushSetUpstream(r, b));
+			run(git.pushSetUpstream(r, b), "Push Upstream");
 		}
 		g.cardEnd();
 
@@ -464,7 +503,7 @@ public class GitPanel extends EditorPanel {
 		ImGui.spacing();
 
 		if (button(ImIcons.LIST + " List Remotes")) {
-			run(git.remoteList());
+			run(git.remoteList(), "Remote List");
 		}
 
 		ImGui.spacing();
@@ -478,7 +517,7 @@ public class GitPanel extends EditorPanel {
 
 		if (button(ImIcons.PLUS + " Add")) {
 			if (!remoteName.isEmpty() && !remoteUrl.isEmpty()) {
-				run(git.remoteAdd(remoteName.get(), remoteUrl.get()));
+				run(git.remoteAdd(remoteName.get(), remoteUrl.get()), "Add Remote");
 			}
 		}
 
@@ -486,25 +525,25 @@ public class GitPanel extends EditorPanel {
 
 		if (button(ImIcons.PENCIL + " Set URL")) {
 			if (!remoteName.isEmpty() && !remoteUrl.isEmpty()) {
-				run(git.remoteSetUrl(remoteName.get(), remoteUrl.get()));
+				run(git.remoteSetUrl(remoteName.get(), remoteUrl.get()), "Set Remote URL");
 			}
 		}
 		ImGui.sameLine();
 		if (button(ImIcons.TRASH + " Remove")) {
 			if (!remoteName.isEmpty()) {
-				run(git.remoteRemove(remoteName.get()));
+				run(git.remoteRemove(remoteName.get()), "Remove Remote");
 			}
 		}
 		g.cardEnd();
 	}
-	
+
 	private void renderStashTab(ImGraphicsExtractor g, GitService git) {
 		g.cardBegin("##git_stash_card");
 		ImGui.text(ImIcons.ARCHIVE + "  Stash");
 		ImGui.spacing();
 
 		if (button(ImIcons.LIST + " List")) {
-			run(git.stashList());
+			run(git.stashList(), "Stash List");
 		}
 
 		ImGui.spacing();
@@ -515,7 +554,7 @@ public class GitPanel extends EditorPanel {
 		if (button(ImIcons.INBOX + " Stash")) {
 			if (!stashMessage.isEmpty()) {
 				String msg = stashMessage.get();
-				run(git.stashPush(msg));
+				run(git.stashPush(msg), "Stash");
 				stashMessage.set("");
 			}
 		}
@@ -532,15 +571,15 @@ public class GitPanel extends EditorPanel {
 		ImGui.spacing();
 
 		if (button(ImIcons.SIGN_OUT + " Pop")) {
-			run(git.stashPop());
+			run(git.stashPop(), "Stash Pop");
 		}
 		ImGui.sameLine();
 		if (button(ImIcons.SIGN_OUT + " Apply [n]")) {
-			run(git.stashApply(stashIndex.get()));
+			run(git.stashApply(stashIndex.get()), "Stash Apply");
 		}
 		ImGui.sameLine();
 		if (button(ImIcons.TRASH + " Drop [n]")) {
-			run(git.stashDrop(stashIndex.get()));
+			run(git.stashDrop(stashIndex.get()), "Stash Drop");
 		}
 		g.cardEnd();
 	}
@@ -551,11 +590,11 @@ public class GitPanel extends EditorPanel {
 		ImGui.spacing();
 
 		if (button(ImIcons.LIST + " List Tags")) {
-			run(git.tagList());
+			run(git.tagList(), "Tag List");
 		}
 		ImGui.sameLine();
 		if (button(ImIcons.TAG + " Describe")) {
-			run(git.describeTag());
+			run(git.describeTag(), "Describe Tag");
 		}
 
 		ImGui.spacing();
@@ -575,29 +614,29 @@ public class GitPanel extends EditorPanel {
 		if (button(ImIcons.PLUS + " Lightweight")) {
 			if (!tagName.isEmpty()) {
 				if (tagCommit.isEmpty()) {
-					run(git.tagCreate(tagName.get()));
+					run(git.tagCreate(tagName.get()), "Create Tag");
 				} else {
-					run(git.tagCreateAt(tagName.get(), tagCommit.get()));
+					run(git.tagCreateAt(tagName.get(), tagCommit.get()), "Create Tag");
 				}
 			}
 		}
 		ImGui.sameLine();
 		if (button(ImIcons.PLUS + " Annotated")) {
 			if (!tagName.isEmpty() && !tagMessage.isEmpty()) {
-				run(git.tagCreateAnnotated(tagName.get(), tagMessage.get()));
+				run(git.tagCreateAnnotated(tagName.get(), tagMessage.get()), "Create Annotated Tag");
 			}
 		}
 		g.helpTooltip("Annotated tags store author, date, and message — recommended for mod releases.");
 		ImGui.sameLine();
 		if (button(ImIcons.TRASH + " Delete")) {
 			if (!tagName.isEmpty()) {
-				run(git.tagDelete(tagName.get()));
+				run(git.tagDelete(tagName.get()), "Delete Tag");
 			}
 		}
 
 		ImGui.spacing();
 		if (button(ImIcons.UPLOAD + " Push Tags to Remote")) {
-			run(git.pushTags());
+			run(git.pushTags(), "Push Tags");
 		}
 		g.cardEnd();
 	}
@@ -617,17 +656,63 @@ public class GitPanel extends EditorPanel {
 			availH = 120;
 		}
 
-		g.scrollableRegion("##git_output", 0, availH, false, () -> {
-			for (OutputLine line : output) {
-				if (line.error()) {
-					ImGui.pushStyleColor(ImGuiCol.Text, 1.0f, 0.33f, 0.33f, 1.0f);
-					ImGui.textUnformatted(line.text());
-					ImGui.popStyleColor();
-				} else {
-					ImGui.textUnformatted(line.text());
+		outputEditor.render("##output_editor", ImGui.getContentRegionAvailX(), availH, false);
+	}
+
+	private void loadBranches(GitService git) {
+		git.branch().thenAccept(result -> {
+			if (result.success()) {
+				branches.clear();
+				String[] lines = result.stdout().split("\n");
+				for (String line : lines) {
+					if (line.trim().isEmpty()) continue;
+					boolean isCurrent = line.startsWith("*");
+					String name = line.replace("*", "").trim();
+					branches.add(new BranchEntry(name, isCurrent));
 				}
+				branchesLoaded = true;
+			} else {
+				branchesLoaded = false;
 			}
-			ImGui.setScrollHereY(1.0f);
+		});
+	}
+
+	private record BranchEntry(String name, boolean isCurrent) {}
+
+	private void runDiff(CompletableFuture<EngineServiceResult> future, String label) {
+		running = true;
+		activeTab = TAB_DIFF;
+		diffViewer.setText("Loading diff...");
+		final String timestamp = "[" + LocalTime.now().format(TIME_FORMAT) + "] ";
+		future.thenAccept(result -> {
+			running = false;
+			String content = result.stdout().isEmpty() ? result.stderr() : result.stdout();
+			if (content.isEmpty()) {
+				content = result.success() ? "(empty diff)" : "Failed (exit " + result.exitCode() + ")";
+			}
+			diffViewer.setText(timestamp + label + ":\n" + content);
+		});
+	}
+
+	private void run(CompletableFuture<EngineServiceResult> future, String label) {
+		running = true;
+		outputEditor.setText("Running " + label + "...");
+		final String timestamp = "[" + LocalTime.now().format(TIME_FORMAT) + "] ";
+		future.thenAccept(result -> {
+			running = false;
+			StringBuilder sb = new StringBuilder();
+			sb.append(timestamp).append(label).append(":\n");
+			if (!result.stdout().isEmpty()) {
+				sb.append(result.stdout());
+			}
+			if (!result.stderr().isEmpty()) {
+				if (!sb.isEmpty() && !sb.toString().endsWith("\n")) sb.append('\n');
+				sb.append(result.stderr());
+			}
+			if (sb.isEmpty() || sb.toString().endsWith(":\n")) {
+				sb.append(result.success() ? "Completed successfully." : "Failed (exit " + result.exitCode() + ").");
+			}
+			outputEditor.setText(sb.toString());
 		});
 	}
 
@@ -644,50 +729,7 @@ public class GitPanel extends EditorPanel {
 		});
 	}
 
-	/**
-	 * Run a command whose output goes into the diff viewer. Switches to the diff tab.
-	 */
-	private void runDiff(CompletableFuture<EngineServiceResult> future) {
-		running = true;
-		activeTab = TAB_DIFF;
-		diffViewer.setText("Loading...");
-		future.thenAccept(result -> {
-			running = false;
-			String content = result.stdout().isEmpty() ? result.stderr() : result.stdout();
-			if (content.isEmpty()) {
-				content = result.success() ? "(empty diff)" : "Failed (exit " + result.exitCode() + ")";
-			}
-			diffViewer.setText(content);
-		});
-	}
-
-	/**
-	 * Run a command whose output goes into the plain output log.
-	 */
-	private void run(CompletableFuture<EngineServiceResult> future) {
-		running = true;
-		future.thenAccept(result -> {
-			running = false;
-			if (!result.stdout().isEmpty()) {
-				for (String line : result.stdout().split("\n")) {
-					output.add(new OutputLine(line, false));
-				}
-			}
-			if (!result.stderr().isEmpty()) {
-				for (String line : result.stderr().split("\n")) {
-					output.add(new OutputLine(line, true));
-				}
-			}
-			if (result.stdout().isEmpty() && result.stderr().isEmpty()) {
-				output.add(new OutputLine(result.success() ? "Done." : "Failed (exit " + result.exitCode() + ").", !result.success()));
-			}
-		});
-	}
-
 	private boolean button(String label) {
 		return !running && ImGui.button(label);
-	}
-
-	private record OutputLine(String text, boolean error) {
 	}
 }
