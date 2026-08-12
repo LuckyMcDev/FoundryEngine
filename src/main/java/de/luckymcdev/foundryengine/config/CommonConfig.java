@@ -3,6 +3,9 @@ package de.luckymcdev.foundryengine.config;
 import de.luckymcdev.foundryengine.common.Common;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
+import java.util.Collections;
+import java.util.List;
+
 public final class CommonConfig {
 	public static final ModConfigSpec SPEC;
 
@@ -12,6 +15,7 @@ public final class CommonConfig {
 	public static final ModConfigSpec.BooleanValue SCREEN_EFFECT_COMMAND_CHAINING;
 	public static final ModConfigSpec.BooleanValue CUTSCENE_COMMAND_EXECUTION;
 	public static final ModConfigSpec.BooleanValue SKIP_EXPERIMENTAL_WARNING;
+	public static final ModConfigSpec.ConfigValue<List<?>> ALLOWED_EXPLORER_FOLDERS;
 
 	static {
 		ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -45,6 +49,10 @@ public final class CommonConfig {
 			.comment("Skip the Experimental warning on world join.")
 			.translation("foundryengine.configuration.skip_experimental_warning")
 			.define("SKIP_EXPERIMENTAL_WARNING", true);
+
+		ALLOWED_EXPLORER_FOLDERS = builder
+			.comment("A list of folders that are displayed in the Explorer.")
+			.defineList("ALLOWED_EXPLORER_FOLDERS", List.of("config", "FoundryEngine"), value -> value instanceof String);
 
 		SPEC = builder.build();
 	}

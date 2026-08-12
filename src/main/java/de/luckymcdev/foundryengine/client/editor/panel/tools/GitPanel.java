@@ -1,10 +1,10 @@
 package de.luckymcdev.foundryengine.client.editor.panel.tools;
 
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
-import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
 import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
 import de.luckymcdev.foundryengine.client.imgui.text.ImGuiCoreTextEditor;
+import de.luckymcdev.foundryengine.client.imgui.text.color.IEditorColorizer;
 import de.luckymcdev.foundryengine.client.imgui.text.editor.EditorTheme;
 import de.luckymcdev.foundryengine.client.imgui.text.preset.git.GitColorizer;
 import de.luckymcdev.foundryengine.common.Common;
@@ -17,14 +17,12 @@ import imgui.flag.ImGuiSelectableFlags;
 import imgui.type.ImInt;
 import imgui.type.ImString;
 
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-public class GitPanel extends EditorPanel {
+public class GitPanel extends EngineServicePanel<GitService> {
 	public static final GitPanel INSTANCE = new GitPanel();
 
 	private static final int TAB_STATUS = 0;
@@ -36,7 +34,6 @@ public class GitPanel extends EditorPanel {
 	private static final int TAB_TAGS = 6;
 
 	private final ImGuiCoreTextEditor diffViewer;
-	private final ImGuiCoreTextEditor outputEditor;
 
 	private final ImString refInput = new ImString(128);
 	private final ImString commitMessage = new ImString(256);
@@ -49,20 +46,11 @@ public class GitPanel extends EditorPanel {
 	private final ImString tagMessage = new ImString(256);
 	private final ImString tagCommit = new ImString(64);
 	private final ImInt stashIndex = new ImInt(0);
-
-	private int activeTab = TAB_STATUS;
-	private int previousTab = -1;
-	private boolean running = false;
-	private boolean autoRefresh = true;
-
+	private final List<BranchEntry> branches = new ArrayList<>();
 	private String currentBranch = "";
 	private String currentCommit = "";
 	private int logLimit = 20;
-
-	private final List<BranchEntry> branches = new ArrayList<>();
 	private boolean branchesLoaded = false;
-
-	private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm:ss");
 
 	private GitPanel() {
 		super(new Builder(Common.id("git"))
@@ -73,82 +61,25 @@ public class GitPanel extends EditorPanel {
 		EditorTheme diffTheme = EditorTheme.monokai().build();
 		diffViewer = ImGuiCoreTextEditor.createForLanguage(ImGuiCoreTextEditor.Language.DIFF, diffTheme);
 		diffViewer.setReadOnly(true);
-
-		EditorTheme outputTheme = EditorTheme.dark().build();
-		outputEditor = new ImGuiCoreTextEditor(new GitColorizer(), null, outputTheme);
-		outputEditor.setReadOnly(true);
-		outputEditor.setText("Ready.");
 	}
 
 	@Override
-	public void content(ImGraphicsExtractor g) {
-		Optional<GitService> git = Common.getEngineServiceManager().get(GitService.class);
-		if (git.isEmpty()) {
-			g.centeredMessage(ImIcons.EXCLAMATION_TRIANGLE + "  git is not available on this system.");
-			return;
-		}
-
-		renderMenuBar(git.get());
-
-		if (activeTab != previousTab && autoRefresh && !running) {
-			onTabChanged(activeTab, git.get());
-			previousTab = activeTab;
-		}
-
-		switch (activeTab) {
-			case TAB_STATUS -> renderStatusTab(g, git.get());
-			case TAB_DIFF -> renderDiffTab(g, git.get());
-			case TAB_LOG -> renderLogTab(g, git.get());
-			case TAB_BRANCH -> renderBranchTab(g, git.get());
-			case TAB_REMOTE -> renderRemoteTab(g, git.get());
-			case TAB_STASH -> renderStashTab(g, git.get());
-			case TAB_TAGS -> renderTagsTab(g, git.get());
-		}
-
-		if (activeTab != TAB_DIFF) {
-			renderOutput(g);
-		}
+	protected IEditorColorizer createOutputColorizer() {
+		return new GitColorizer();
 	}
 
-	private void renderMenuBar(GitService git) {
-		menuBar(() -> {
-			if (ImGui.menuItem(ImIcons.REFRESH + " Refresh")) {
-				onTabChanged(activeTab, git);
-			}
-
-			ImGui.separator();
-
-			String[] tabs = {"Status", "Diff", "Log", "Branch", "Remote", "Stash", "Tags"};
-			for (int i = 0; i < tabs.length; i++) {
-				boolean selected = activeTab == i;
-				if (selected) ImGui.pushStyleColor(ImGuiCol.Text, 0xFF4CAF50);
-				if (ImGui.menuItem(tabs[i])) {
-					activeTab = i;
-				}
-				if (selected) ImGui.popStyleColor();
-			}
-
-			ImGui.separator();
-
-			if (activeTab == TAB_DIFF) {
-				if (ImGui.menuItem(ImIcons.COPY + " Copy")) {
-					ImGui.setClipboardText(diffViewer.getText());
-				}
-			} else {
-				if (ImGui.menuItem(ImIcons.TRASH + " Clear Output")) {
-					outputEditor.setText("");
-				}
-			}
-
-			ImGui.separator();
-
-			if (ImGui.menuItem(ImIcons.REFRESH + " Auto Refresh", null, autoRefresh)) {
-				autoRefresh = !autoRefresh;
-			}
-		});
+	@Override
+	protected String[] getTabNames() {
+		return new String[]{"Status", "Diff", "Log", "Branch", "Remote", "Stash", "Tags"};
 	}
 
-	private void onTabChanged(int tab, GitService git) {
+	@Override
+	protected GitService getService() {
+		return Common.getEngineServiceManager().get(GitService.class).orElse(null);
+	}
+
+	@Override
+	protected void onTabChanged(int tab, GitService git) {
 		switch (tab) {
 			case TAB_STATUS -> {
 				refreshStatus(git);
@@ -162,7 +93,30 @@ public class GitPanel extends EditorPanel {
 			case TAB_REMOTE -> run(git.remoteList(), "Remote List");
 			case TAB_STASH -> run(git.stashList(), "Stash List");
 			case TAB_TAGS -> run(git.tagList(), "Tag List");
-			case TAB_DIFF -> {}
+			case TAB_DIFF -> {
+			}
+		}
+	}
+
+	@Override
+	protected void renderTabContent(ImGraphicsExtractor g, GitService git) {
+		switch (activeTab) {
+			case TAB_STATUS -> renderStatusTab(g, git);
+			case TAB_DIFF -> renderDiffTab(g, git);
+			case TAB_LOG -> renderLogTab(g, git);
+			case TAB_BRANCH -> renderBranchTab(g, git);
+			case TAB_REMOTE -> renderRemoteTab(g, git);
+			case TAB_STASH -> renderStashTab(g, git);
+			case TAB_TAGS -> renderTagsTab(g, git);
+		}
+	}
+
+	@Override
+	protected void extraMenuItems(GitService git) {
+		if (activeTab == TAB_DIFF) {
+			if (ImGui.menuItem(ImIcons.COPY + " Copy")) {
+				ImGui.setClipboardText(diffViewer.getText());
+			}
 		}
 	}
 
@@ -641,49 +595,13 @@ public class GitPanel extends EditorPanel {
 		g.cardEnd();
 	}
 
-	private void renderOutput(ImGraphicsExtractor g) {
-		ImGui.spacing();
-		ImGui.separator();
-
-		g.section("Output");
-
-		if (running) {
-			ImGui.textDisabled(ImIcons.SPINNER + "  Running...");
-		}
-
-		float availH = ImGui.getContentRegionAvailY();
-		if (availH < 60) {
-			availH = 120;
-		}
-
-		outputEditor.render("##output_editor", ImGui.getContentRegionAvailX(), availH, false);
-	}
-
-	private void loadBranches(GitService git) {
-		git.branch().thenAccept(result -> {
-			if (result.success()) {
-				branches.clear();
-				String[] lines = result.stdout().split("\n");
-				for (String line : lines) {
-					if (line.trim().isEmpty()) continue;
-					boolean isCurrent = line.startsWith("*");
-					String name = line.replace("*", "").trim();
-					branches.add(new BranchEntry(name, isCurrent));
-				}
-				branchesLoaded = true;
-			} else {
-				branchesLoaded = false;
-			}
-		});
-	}
-
-	private record BranchEntry(String name, boolean isCurrent) {}
+	// ---- Helper methods ----
 
 	private void runDiff(CompletableFuture<EngineServiceResult> future, String label) {
 		running = true;
 		activeTab = TAB_DIFF;
 		diffViewer.setText("Loading diff...");
-		final String timestamp = "[" + LocalTime.now().format(TIME_FORMAT) + "] ";
+		final String timestamp = timestamp();
 		future.thenAccept(result -> {
 			running = false;
 			String content = result.stdout().isEmpty() ? result.stderr() : result.stdout();
@@ -694,25 +612,23 @@ public class GitPanel extends EditorPanel {
 		});
 	}
 
-	private void run(CompletableFuture<EngineServiceResult> future, String label) {
-		running = true;
-		outputEditor.setText("Running " + label + "...");
-		final String timestamp = "[" + LocalTime.now().format(TIME_FORMAT) + "] ";
-		future.thenAccept(result -> {
-			running = false;
-			StringBuilder sb = new StringBuilder();
-			sb.append(timestamp).append(label).append(":\n");
-			if (!result.stdout().isEmpty()) {
-				sb.append(result.stdout());
+	private void loadBranches(GitService git) {
+		git.branch().thenAccept(result -> {
+			if (result.success()) {
+				branches.clear();
+				String[] lines = result.stdout().split("\n");
+				for (String line : lines) {
+					if (line.trim().isEmpty()) {
+						continue;
+					}
+					boolean isCurrent = line.startsWith("*");
+					String name = line.replace("*", "").trim();
+					branches.add(new BranchEntry(name, isCurrent));
+				}
+				branchesLoaded = true;
+			} else {
+				branchesLoaded = false;
 			}
-			if (!result.stderr().isEmpty()) {
-				if (!sb.isEmpty() && !sb.toString().endsWith("\n")) sb.append('\n');
-				sb.append(result.stderr());
-			}
-			if (sb.isEmpty() || sb.toString().endsWith(":\n")) {
-				sb.append(result.success() ? "Completed successfully." : "Failed (exit " + result.exitCode() + ").");
-			}
-			outputEditor.setText(sb.toString());
 		});
 	}
 
@@ -729,7 +645,6 @@ public class GitPanel extends EditorPanel {
 		});
 	}
 
-	private boolean button(String label) {
-		return !running && ImGui.button(label);
+	private record BranchEntry(String name, boolean isCurrent) {
 	}
 }

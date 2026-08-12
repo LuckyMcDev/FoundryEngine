@@ -14,6 +14,7 @@ import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.network.packets.explorer.ClientBoundExplorerPacket;
 import de.luckymcdev.foundryengine.common.network.packets.explorer.ServerBoundExplorerPacket;
 import de.luckymcdev.foundryengine.common.util.PackResourceScanner;
+import de.luckymcdev.foundryengine.config.CommonConfig;
 import de.luckymcdev.foundryengine.server.Server;
 import imgui.ImGui;
 import imgui.flag.ImGuiCol;
@@ -59,7 +60,7 @@ public class ExplorerPanel extends EditorPanel {
 		DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneId.systemDefault());
 
 	private static final List<String> BLACKLISTED_EXTENSIONS = Arrays.asList("bak", "tmp");
-	private final List<File> rootDirs = List.of(Common.DIRECTORY.toFile(), Common.CONFIG.toFile());
+	private final List<File> rootDirs = new ArrayList<>();
 	private final ImString searchFilter = new ImString(256);
 	private boolean initialized = false;
 	private boolean rootReadable = true;
@@ -76,6 +77,9 @@ public class ExplorerPanel extends EditorPanel {
 		super(new Builder(Common.id("explorer"))
 			.icon(ImIcons.FILES_O)
 			.category(PanelCategory.EDITOR_EXPLORER));
+		for (var folder : CommonConfig.ALLOWED_EXPLORER_FOLDERS.get()) {
+			rootDirs.add(Common.GAMEDIR.resolve(folder.toString()).toFile());
+		}
 	}
 
 	private static boolean isBlacklisted(String fileName) {
