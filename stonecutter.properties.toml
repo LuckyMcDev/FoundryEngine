@@ -2,7 +2,7 @@
 mod.id = "foundryengine"
 mod.name = "Foundry Engine"
 mod.group = "de.luckymcdev"
-mod.version = "0.1.7"
+mod.version = "0.1.8"
 mod.license = "All Rights Reserved"
 mod.authors = "LuckyMcDev"
 mod.description = "A Mod that turns Minecraft into a Game Engine."
