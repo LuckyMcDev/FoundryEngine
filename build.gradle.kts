@@ -208,8 +208,8 @@ publishMods {
 		.orElse("No changelog provided.")
 	type = ReleaseType.ALPHA
 	modLoaders.add("neoforge")
-	version = "${sc.current.version}-$modVersion"
-	displayName = "${property("mod.name")} ${sc.current.version}-$modVersion"
+	version = "$modVersion-${sc.current.version}"
+	displayName = "${property("mod.name")} $modVersion-${sc.current.version}"
 	file = tasks.named("jar").flatMap { (it as Jar).archiveFile }
 	additionalFiles.from(
 		tasks.named("javadocJar").map { (it as Jar).archiveFile.get() },
@@ -220,7 +220,7 @@ publishMods {
 		accessToken = providers.environmentVariable("GITHUB_TOKEN")
 		repository = property("mod.github") as String
 		commitish = property("mod.github_commitish") as String
-		tagName = "v${sc.current.version}-$modVersion"
+		tagName = "v$modVersion-${sc.current.version}"
 	}
 	curseforge {
 		accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
