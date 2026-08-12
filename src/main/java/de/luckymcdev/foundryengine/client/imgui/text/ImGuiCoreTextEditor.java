@@ -7,6 +7,7 @@ import de.luckymcdev.foundryengine.client.imgui.text.editor.EditorCoordinates;
 import de.luckymcdev.foundryengine.client.imgui.text.editor.EditorGlyph;
 import de.luckymcdev.foundryengine.client.imgui.text.editor.EditorState;
 import de.luckymcdev.foundryengine.client.imgui.text.editor.EditorTheme;
+import de.luckymcdev.foundryengine.client.imgui.text.preset.diff.DiffColorizer;
 import de.luckymcdev.foundryengine.client.imgui.text.preset.glsl.GLSLAutocompleteProvider;
 import de.luckymcdev.foundryengine.client.imgui.text.preset.glsl.GLSLColorizer;
 import de.luckymcdev.foundryengine.client.imgui.text.preset.groovy.GroovyColorizer;
@@ -1327,6 +1328,18 @@ public final class ImGuiCoreTextEditor {
 			@Override
 			public IAutocompleteProvider createProvider(IEditorColorizer colorizer) {
 				return new TomlAutocompleteProvider((TomlColorizer) colorizer);
+			}
+		},
+
+		DIFF("diff", "patch") {
+			@Override
+			public IEditorColorizer createColorizer() {
+				return new DiffColorizer();
+			}
+
+			@Override
+			public IAutocompleteProvider createProvider(IEditorColorizer colorizer) {
+				return null;
 			}
 		},
 

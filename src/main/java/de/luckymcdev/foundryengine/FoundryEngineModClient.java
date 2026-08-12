@@ -21,6 +21,7 @@ import de.luckymcdev.foundryengine.client.editor.panel.tools.CataloguePanel;
 import de.luckymcdev.foundryengine.client.editor.panel.tools.ConsolePanel;
 import de.luckymcdev.foundryengine.client.editor.panel.tools.DevToolsPanel;
 import de.luckymcdev.foundryengine.client.editor.panel.tools.EffectPanel;
+import de.luckymcdev.foundryengine.client.editor.panel.tools.GitPanel;
 import de.luckymcdev.foundryengine.client.editor.panel.tools.MinecraftToolsPanel;
 import de.luckymcdev.foundryengine.client.editor.panel.tools.OutlinePanel;
 import de.luckymcdev.foundryengine.client.editor.panel.tools.ProblemsPanel;
@@ -197,7 +198,8 @@ public class FoundryEngineModClient {
 			WaypointPanel.INSTANCE,
 			NodeTestPanel.INSTANCE,
 			DialogueEditorPanel.INSTANCE,
-			HotkeySettingsPanel.INSTANCE
+			HotkeySettingsPanel.INSTANCE,
+			GitPanel.INSTANCE
 		);
 		var hkm = Client.getHotKeyManager();
 		hkm.register(Common.id("code_editor.save"), "Save", "Save active file", null, InputConstants.KEY_LCONTROL, InputConstants.KEY_S);
