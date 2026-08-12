@@ -46,11 +46,16 @@ public abstract class EngineServicePanel<T extends EngineService> extends Editor
 		// hook for subclasses to add additional menu items
 	}
 
+	protected String customNotAvailableMessage() {
+		return "";
+	}
+
 	@Override
 	public void content(ImGraphicsExtractor g) {
 		T service = getService();
 		if (service == null) {
-			g.centeredMessage(ImIcons.EXCLAMATION_TRIANGLE + "  Service not available.");
+			ImGui.text(ImIcons.EXCLAMATION_TRIANGLE + " Service not available.");
+			ImGui.text(customNotAvailableMessage());
 			return;
 		}
 

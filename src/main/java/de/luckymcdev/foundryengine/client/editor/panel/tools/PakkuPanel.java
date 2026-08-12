@@ -67,6 +67,11 @@ public class PakkuPanel extends EngineServicePanel<PakkuService> {
 		}
 	}
 
+	@Override
+	protected String customNotAvailableMessage() {
+		return "To install, visit: https://github.com/juraj-hrivnak/Pakku/releases/latest and place pakku.jar into /FoundryEngine/.cache/pakku ";
+	}
+
 	private void renderListTab(ImGraphicsExtractor g, PakkuService pakku) {
 		g.cardBegin("##pakku_list_card");
 		ImGui.text(ImIcons.LIST + "  List Projects");

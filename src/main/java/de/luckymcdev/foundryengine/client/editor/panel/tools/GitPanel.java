@@ -120,6 +120,11 @@ public class GitPanel extends EngineServicePanel<GitService> {
 		}
 	}
 
+	@Override
+	protected String customNotAvailableMessage() {
+		return "To install, visit: https://git-scm.com/";
+	}
+
 	private void renderStatusTab(ImGraphicsExtractor g, GitService git) {
 		g.cardBegin("##git_info_card");
 		ImGui.text(ImIcons.CODE_BRANCH + "  Branch:  ");
