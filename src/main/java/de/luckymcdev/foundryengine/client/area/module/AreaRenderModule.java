@@ -16,7 +16,7 @@ import org.jetbrains.annotations.ApiStatus;
 public interface AreaRenderModule extends AreaModule {
 	//? if 26.1 {
 	void render(ClientLevel level, Area area, PoseStack poseStack, MultiBufferSource buffer, float partialTick);
-	 //?} else {
+	 //?} elif 26.2 {
 	/*void render(ClientLevel level, Area area, PoseStack poseStack, SubmitNodeCollector collector, float partialTick);
 	*///?}
 }

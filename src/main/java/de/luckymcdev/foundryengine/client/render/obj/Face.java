@@ -120,7 +120,7 @@ public record Face(List<Vertex> vertices, Material material) {
 		} else {
 			Client.LOGGER.warn("Skipping face with invalid vertex count: {}", count);
 		}
-		//?} else {
+		//?} elif 26.2 {
 		/*try (MeshRenderer.DrawSession session = Client.getMeshRenderer().begin(renderType, new Matrix4f())) {
 			VertexConsumer consumer = session.buffer();
 			int count = vertices.size();

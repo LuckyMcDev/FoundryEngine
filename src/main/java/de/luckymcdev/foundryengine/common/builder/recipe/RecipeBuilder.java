@@ -3,7 +3,7 @@ package de.luckymcdev.foundryengine.common.builder.recipe;
 import de.luckymcdev.foundryengine.common.builder.AbstractBuilder;
 //? if 26.1 {
 import net.minecraft.advancements.Criterion;
- //?} else {
+ //?} elif 26.2 {
 /*import net.minecraft.advancements.triggers.Criterion;
 *///?}
 import net.minecraft.core.HolderGetter;

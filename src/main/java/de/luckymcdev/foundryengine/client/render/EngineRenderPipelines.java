@@ -38,7 +38,7 @@ public class EngineRenderPipelines {
 			.withLocation(Common.id("pipeline/obj_entity_cutout"))
 			//? if 26.1 {
 			.withVertexFormat(DefaultVertexFormat.ENTITY, VertexFormat.Mode.QUADS)
-			 //?} else {
+			 //?} elif 26.2 {
 			/*.withVertexBinding(0, DefaultVertexFormat.ENTITY).withPrimitiveTopology(PrimitiveTopology.QUADS)
 			*///?}
 			.withVertexShader(Identifier.withDefaultNamespace("core/entity"))
@@ -47,7 +47,7 @@ public class EngineRenderPipelines {
 			.withSampler("Sampler0")
 			.withSampler("Sampler1")
 			.withSampler("Sampler2")
-			//?} else {
+			//?} elif 26.2 {
 			/*.withBindGroupLayout(BindGroupLayout.builder().withSampler("Sampler0").withSampler("Sampler1").withSampler("Sampler2").build())
 			*///?}
 			.withShaderDefine("ALPHA_CUTOUT", 0.1F)
@@ -61,7 +61,7 @@ public class EngineRenderPipelines {
 			.withLocation(Common.id("pipeline/obj_entity_translucent"))
 			//? if 26.1 {
 			.withVertexFormat(DefaultVertexFormat.ENTITY, VertexFormat.Mode.QUADS)
-			 //?} else {
+			 //?} elif 26.2 {
 			/*.withVertexBinding(0, DefaultVertexFormat.ENTITY).withPrimitiveTopology(PrimitiveTopology.QUADS)
 			*///?}
 			.withVertexShader(Identifier.withDefaultNamespace("core/entity"))
@@ -70,7 +70,7 @@ public class EngineRenderPipelines {
 			.withSampler("Sampler0")
 			.withSampler("Sampler1")
 			.withSampler("Sampler2")
-			//?} else {
+			//?} elif 26.2 {
 			/*.withBindGroupLayout(BindGroupLayout.builder().withSampler("Sampler0").withSampler("Sampler1").withSampler("Sampler2").build())
 			*///?}
 			.withShaderDefine("ALPHA_CUTOUT", 0.1F)
@@ -92,7 +92,7 @@ public class EngineRenderPipelines {
 		public static final RenderPipeline.Snippet POSITION_SN = base()
 			//? if 26.1 {
 			.withVertexFormat(DefaultVertexFormat.POSITION, VertexFormat.Mode.QUADS)
-			 //?} else {
+			 //?} elif 26.2 {
 			/*.withVertexBinding(0, DefaultVertexFormat.POSITION).withPrimitiveTopology(PrimitiveTopology.QUADS)
 			*///?}
 			.withVertexShader(Common.id("core/position"))
@@ -101,7 +101,7 @@ public class EngineRenderPipelines {
 		public static final RenderPipeline.Snippet POSITION_COLOR_SN = base()
 			//? if 26.1 {
 			.withVertexFormat(DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS)
-			 //?} else {
+			 //?} elif 26.2 {
 			/*.withVertexBinding(0, DefaultVertexFormat.POSITION_COLOR).withPrimitiveTopology(PrimitiveTopology.QUADS)
 			*///?}
 			.withVertexShader(Common.id("core/position_color"))
@@ -110,7 +110,7 @@ public class EngineRenderPipelines {
 		public static final RenderPipeline.Snippet POSITION_COLOR_NORMAL_SN = base()
 			//? if 26.1 {
 			.withVertexFormat(DefaultVertexFormat.POSITION_COLOR_NORMAL, VertexFormat.Mode.QUADS)
-			 //?} else {
+			 //?} elif 26.2 {
 			/*.withVertexBinding(0, DefaultVertexFormat.POSITION_COLOR_NORMAL).withPrimitiveTopology(PrimitiveTopology.QUADS)
 			*///?}
 			.withVertexShader(Common.id("core/position_color_lit"))
@@ -119,12 +119,12 @@ public class EngineRenderPipelines {
 		public static final RenderPipeline.Snippet POSITION_TEX_COLOR_SN = base()
 			//? if 26.1 {
 			.withVertexFormat(DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS)
-			 //?} else {
+			 //?} elif 26.2 {
 			/*.withVertexBinding(0, DefaultVertexFormat.POSITION_TEX_COLOR).withPrimitiveTopology(PrimitiveTopology.QUADS)
 			*///?}
 			//? if 26.1 {
 			.withSampler("Sampler0")
-			 //?} else {
+			 //?} elif 26.2 {
 			/*.withBindGroupLayout(BindGroupLayout.builder().withSampler("Sampler0").build())
 			*///?}
 			.withVertexShader(Common.id("core/position_tex_color"))
@@ -133,7 +133,7 @@ public class EngineRenderPipelines {
 		public static final RenderPipeline.Snippet LINE_SN = base()
 			//? if 26.1 {
 			.withVertexFormat(DefaultVertexFormat.POSITION_COLOR_NORMAL_LINE_WIDTH, VertexFormat.Mode.LINES)
-			 //?} else {
+			 //?} elif 26.2 {
 			/*.withVertexBinding(0, DefaultVertexFormat.POSITION_COLOR_NORMAL_LINE_WIDTH).withPrimitiveTopology(PrimitiveTopology.LINES)
 			*///?}
 			.withCull(false)

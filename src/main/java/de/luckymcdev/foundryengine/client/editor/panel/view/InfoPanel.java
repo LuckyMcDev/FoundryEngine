@@ -45,7 +45,7 @@ public class InfoPanel extends EditorPanel {
 		String mcVersion = SharedConstants.getCurrentVersion().toString();
 		//? if 26.1 {
 		String backendName = RenderSystem.getDevice().getBackendName();
-		 //?} else {
+		 //?} elif 26.2 {
 		/*String backendName = RenderSystem.getDevice().getDeviceInfo().backendName();
 		*///?}
 

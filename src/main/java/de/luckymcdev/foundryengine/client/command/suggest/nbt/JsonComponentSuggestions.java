@@ -27,7 +27,7 @@ public class JsonComponentSuggestions {
 	private static List<String> colors() {
 		//? if 26.1 {
 		return ChatFormatting.getNames(true, false).stream().toList();
-		 //?} else {
+		 //?} elif 26.2 {
 		/*return TextColorAccessor.engine$getNamedColors().keySet().stream().toList();
 		*///?}
 	}

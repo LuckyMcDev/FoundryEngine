@@ -923,7 +923,7 @@ public class NbtSuggestions {
 				if (player.getGameProfile().name().equals(playerName)) {
 					//? if 26.1 {
 					return "entity/" + EntityType.getKey(EntityType.PLAYER);
-					 //?} else {
+					 //?} elif 26.2 {
 					/*return "entity/" + EntityType.getKey(EntityTypes.PLAYER);
 					*///?}
 				}

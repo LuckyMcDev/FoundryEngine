@@ -94,7 +94,7 @@ public class ClientCutsceneManager {
 
 		//? if 26.1 {
 		mc.options.hideGui = true;
-		 //?} else {
+		 //?} elif 26.2 {
 		/*if (!mc.gui.hud.isHidden()) {
 			mc.gui.hud.toggle();
 		}
@@ -114,7 +114,7 @@ public class ClientCutsceneManager {
 				if (!Client.getPostEffectManager().inScreenEffect()) {
 					//? if 26.1 {
 					mc.options.hideGui = false;
-					 //?} else {
+					 //?} elif 26.2 {
 					/*if (mc.gui.hud.isHidden()) {
 						mc.gui.hud.toggle();
 					}
@@ -151,7 +151,7 @@ public class ClientCutsceneManager {
 				holdTimeStart = 0;
 				//? if 26.1 {
 				Minecraft.getInstance().options.hideGui = false;
-				 //?} else {
+				 //?} elif 26.2 {
 				/*if (Minecraft.getInstance().gui.hud.isHidden()) {
 					Minecraft.getInstance().gui.hud.toggle();
 				}

@@ -28,7 +28,7 @@ public abstract class ItemInHandRendererMixin {
 	 */
 	//? if 26.1 {
 	@Inject(method = "renderArmWithItem", at = @At("TAIL"))
-	 //?} else {
+	 //?} elif 26.2 {
 	/*@Inject(method = "submitArmWithItem", at = @At("TAIL"))
 		*///?}
 	private void renderOffhandArmWhenEmpty(AbstractClientPlayer player, float frameInterp, float xRot, InteractionHand hand, float attack, ItemStack itemStack, float inverseArmHeight,

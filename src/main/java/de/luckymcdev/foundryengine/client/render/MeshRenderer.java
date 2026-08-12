@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 import com.mojang.blaze3d.shaders.UniformType;
 import com.mojang.blaze3d.vertex.MeshData;
 import com.mojang.blaze3d.vertex.VertexFormat;
-//?} else {
+//?} elif 26.2 {
 /*import com.mojang.blaze3d.PrimitiveTopology;
 import com.mojang.blaze3d.pipeline.BindGroupLayout;
 import net.minecraft.client.renderer.StagedVertexBuffer;
@@ -106,7 +106,7 @@ public class MeshRenderer implements AutoCloseable {
 			.withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, true))
 			.withCull(false)
 			.build();
-		//?} else {
+		//?} elif 26.2 {
 		/*return RenderPipeline.builder()
 			.withLocation(location)
 			.withVertexShader(vertexShader)
@@ -137,7 +137,7 @@ public class MeshRenderer implements AutoCloseable {
 			.withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, false))
 			.withCull(true)
 			.build();
-		//?} else {
+		//?} elif 26.2 {
 		/*return RenderPipeline.builder()
 			.withLocation(fragmentShader)
 			.withVertexShader(vertexShader)
@@ -168,7 +168,7 @@ public class MeshRenderer implements AutoCloseable {
 		} finally {
 			RenderSystem.getModelViewStack().popMatrix();
 		}
-		//?} else {
+		//?} elif 26.2 {
 		/*StagedVertexBuffer staged = new StagedVertexBuffer(() -> "engine_mesh", RenderType.SMALL_BUFFER_SIZE);
 		try {
 			StagedVertexBuffer.Draw draw = staged.appendDraw(renderType.format(), renderType.primitiveTopology());
@@ -216,7 +216,7 @@ public class MeshRenderer implements AutoCloseable {
 			//? if 26.1 {
 			RenderPipeline pipeline = renderType.pipeline();
 			this.builder = new BufferBuilder(ALLOCATOR, pipeline.getVertexFormatMode(), pipeline.getVertexFormat());
-			//?} else {
+			//?} elif 26.2 {
 			/*this.staged = new StagedVertexBuffer(() -> "engine_mesh", RenderType.SMALL_BUFFER_SIZE);
 			this.draw = staged.appendDraw(renderType.format(), renderType.primitiveTopology());
 			this.builder = (BufferBuilder) staged.getVertexBuilder(this.draw);
@@ -248,7 +248,7 @@ public class MeshRenderer implements AutoCloseable {
 			} finally {
 				RenderSystem.getModelViewStack().popMatrix();
 			}
-			//?} else {
+			//?} elif 26.2 {
 			/*staged.upload();
 			RenderSystem.getModelViewStack().pushMatrix().mul(modelView);
 			try {

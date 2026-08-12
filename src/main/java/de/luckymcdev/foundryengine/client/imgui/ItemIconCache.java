@@ -139,7 +139,7 @@ public class ItemIconCache {
 				features.renderAllFeatures();
 				buffers.endBatch();
 				RenderSystem.restoreProjectionMatrix();
-				//?} else {
+				//?} elif 26.2 {
                 /*Projection projection = new Projection();
                 projection.setupOrtho(-1000.0F, 1000.0F, s, s, true);
                 RenderSystem.backupProjectionMatrix();

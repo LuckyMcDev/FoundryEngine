@@ -40,7 +40,7 @@ import java.util.Queue;
 //? if 26.1 {
 import com.mojang.blaze3d.textures.TextureFormat;
 import com.mojang.blaze3d.systems.CommandEncoder;
-//?} else {
+//?} elif 26.2 {
 /*import com.mojang.blaze3d.GpuFormat;
 *///?}
 
@@ -185,7 +185,7 @@ public class IconExporterLayer implements GuiLayer {
 		GpuTexture depthTex = device.createTexture(() -> "Icons depth", 9, TextureFormat.DEPTH32, texWidth, texHeight, 1, 1);
 		GpuTextureView depthView = device.createTextureView(depthTex);
 		device.createCommandEncoder().clearColorAndDepthTextures(colorTex, 0, depthTex, 1.0);
-		//?} else {
+		//?} elif 26.2 {
 		/*GpuTexture colorTex = device.createTexture(() -> "Icons color", GpuTexture.USAGE_RENDER_ATTACHMENT | GpuTexture.USAGE_TEXTURE_BINDING | GpuTexture.USAGE_COPY_SRC | GpuTexture.USAGE_COPY_DST, GpuFormat.RGBA8_UNORM, texWidth, texHeight, 1, 1);
 		GpuTextureView colorView = device.createTextureView(colorTex);
 		GpuTexture depthTex = device.createTexture(() -> "Icons depth", GpuTexture.USAGE_RENDER_ATTACHMENT | GpuTexture.USAGE_TEXTURE_BINDING | GpuTexture.USAGE_COPY_SRC | GpuTexture.USAGE_COPY_DST, GpuFormat.D32_FLOAT, texWidth, texHeight, 1, 1);
@@ -243,7 +243,7 @@ public class IconExporterLayer implements GuiLayer {
 
 			featureDispatcher.renderAllFeatures();
 			bufferSource.endBatch();
-			//?} else {
+			//?} elif 26.2 {
 			/*var lighting = gameRenderer.lighting();
 			var submitNodes = new net.minecraft.client.renderer.SubmitNodeStorage();
 			var featureDispatcher = gameRenderer.featureRenderDispatcher();
@@ -292,7 +292,7 @@ public class IconExporterLayer implements GuiLayer {
 			CommandEncoder encoder = device.createCommandEncoder();
 			device.createCommandEncoder().copyTextureToBuffer(colorTex, readBuffer, 0, () -> {
 				try (var mapped = encoder.mapBuffer(readBuffer, true, false)) {
-				//?} else {
+				//?} elif 26.2 {
 			/*int pixelSize = GpuFormat.RGBA8_UNORM.blockSize();
 			GpuBuffer readBuffer = device.createBuffer(() -> "Icons read", GpuBuffer.USAGE_MAP_READ | GpuBuffer.USAGE_COPY_DST, (long) texWidth * texHeight * pixelSize);
 			device.createCommandEncoder().copyTextureToBuffer(colorTex, readBuffer, 0, () -> {

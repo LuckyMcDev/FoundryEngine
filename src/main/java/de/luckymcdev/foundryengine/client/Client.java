@@ -278,7 +278,7 @@ public final class Client {
 		Minecraft mc = Minecraft.getInstance();
 		//? if 26.1 {
 		return mc.getMainRenderTarget();
-		 //?} else {
+		 //?} elif 26.2 {
 		/*return mc.gameRenderer.mainRenderTarget();
 		*///?}
 	}
@@ -290,7 +290,7 @@ public final class Client {
 		Minecraft mc = Minecraft.getInstance();
 		//? if 26.1 {
 		return mc.screen;
-		 //?} else {
+		 //?} elif 26.2 {
 		/*return mc.gui.screen();
 		*///?}
 	}
@@ -302,7 +302,7 @@ public final class Client {
 		Minecraft mc = Minecraft.getInstance();
 		//? if 26.1 {
 		mc.setScreen(screen);
-		 //?} else {
+		 //?} elif 26.2 {
 		/*mc.gui.setScreen(screen);
 		*///?}
 	}
@@ -315,35 +315,35 @@ public final class Client {
 		if (targetId.equals(LevelTargetBundle.TRANSLUCENT_TARGET_ID)) {
 			//? if 26.1 {
 			return mc.levelRenderer.getTranslucentTarget();
-			 //?} else {
+			 //?} elif 26.2 {
 			/*return mc.levelRenderer.translucentTarget();
 			*///?}
 		}
 		if (targetId.equals(LevelTargetBundle.ITEM_ENTITY_TARGET_ID)) {
 			//? if 26.1 {
 			return mc.levelRenderer.getItemEntityTarget();
-			 //?} else {
+			 //?} elif 26.2 {
 			/*return mc.levelRenderer.itemEntityTarget();
 			*///?}
 		}
 		if (targetId.equals(LevelTargetBundle.PARTICLES_TARGET_ID)) {
 			//? if 26.1 {
 			return mc.levelRenderer.getParticlesTarget();
-			 //?} else {
+			 //?} elif 26.2 {
 			/*return mc.levelRenderer.particlesTarget();
 			*///?}
 		}
 		if (targetId.equals(LevelTargetBundle.WEATHER_TARGET_ID)) {
 			//? if 26.1 {
 			return mc.levelRenderer.getWeatherTarget();
-			 //?} else {
+			 //?} elif 26.2 {
 			/*return mc.levelRenderer.weatherTarget();
 			*///?}
 		}
 		if (targetId.equals(LevelTargetBundle.CLOUDS_TARGET_ID)) {
 			//? if 26.1 {
 			return mc.levelRenderer.getCloudsTarget();
-			 //?} else {
+			 //?} elif 26.2 {
 			/*return mc.levelRenderer.cloudsTarget();
 			*///?}
 		}
@@ -359,7 +359,7 @@ public final class Client {
 	public static TextureTarget createSnapshotTarget(String name, int width, int height) {
 		//? if 26.1 {
 		return new TextureTarget(name, width, height, true);
-		 //?} else {
+		 //?} elif 26.2 {
 		/*return new TextureTarget(name, width, height, true, GpuFormat.RGBA8_UNORM);
 		*///?}
 	}

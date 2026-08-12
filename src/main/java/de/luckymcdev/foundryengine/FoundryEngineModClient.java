@@ -351,7 +351,7 @@ public class FoundryEngineModClient {
 		GizmoRenderer.render(poseStack, bufferSource, camState, camState.viewRotationMatrix);
 		modelViewStack.popMatrix();
 	}
-	//?} else {
+	//?} elif 26.2 {
 	/*private void onRenderLevel(RenderLevelStageEvent.AfterLevel event) {
 		var camState = event.getLevelRenderState().cameraRenderState;
 		Client.updateMain(camState.viewRotationMatrix, camState.projectionMatrix);

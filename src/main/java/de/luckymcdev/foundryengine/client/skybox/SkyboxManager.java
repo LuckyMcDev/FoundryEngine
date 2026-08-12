@@ -8,7 +8,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Display;
 //? if 26.1 {
 import net.minecraft.world.entity.EntityType;
- //?} else {
+ //?} elif 26.2 {
 /*import net.minecraft.world.entity.EntityTypes;
 *///?}
 import net.minecraft.world.item.ItemStack;
@@ -57,7 +57,7 @@ public class SkyboxManager {
 		if (skyboxEntity == null || !skyboxEntity.isAlive()) {
 			//? if 26.1 {
 			skyboxEntity = new Display.ItemDisplay(EntityType.ITEM_DISPLAY, mc.level);
-			 //?} else {
+			 //?} elif 26.2 {
 			/*skyboxEntity = new Display.ItemDisplay(EntityTypes.ITEM_DISPLAY, mc.level);
 			*///?}
 			skyboxEntity.setItemStack(skyboxItemStack);

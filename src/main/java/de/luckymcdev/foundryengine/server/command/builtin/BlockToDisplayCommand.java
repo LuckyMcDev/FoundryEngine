@@ -17,7 +17,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Display;
 //? if 26.1 {
 import net.minecraft.world.entity.EntityType;
- //?} else {
+ //?} elif 26.2 {
 /*import net.minecraft.world.entity.EntityTypes;
 *///?}
 import net.minecraft.world.entity.player.Player;
@@ -139,7 +139,7 @@ public class BlockToDisplayCommand implements EngineCommand {
 			level,
 			//? if 26.1 {
 			EntityType.BLOCK_DISPLAY,
-			 //?} else {
+			 //?} elif 26.2 {
 			/*EntityTypes.BLOCK_DISPLAY,
 			*///?}
 			center,

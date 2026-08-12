@@ -142,7 +142,7 @@ public class ClientWaypointManager {
 
 		renderState.submit(poseStack, submitNodeCollector, 15728880, OverlayTexture.NO_OVERLAY, 0);
 	}
-	//?} else {
+	//?} elif 26.2 {
 	/*public void renderWaypoints(RenderLevelStageEvent.AfterLevel context, SubmitNodeStorage submitNodes) {
 		Minecraft mc = Minecraft.getInstance();
 		if (mc.level == null) {
