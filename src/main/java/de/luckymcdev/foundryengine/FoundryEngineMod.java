@@ -268,6 +268,7 @@ public class FoundryEngineMod {
 		try {
 			Common.getBundleManager().discover(Common.BUNDLES);
 			Common.getBundleManager().refreshModList();
+			Common.getBundleManager().reportScriptErrors();
 		} catch (IOException e) {
 			LOGGER.error("Error while loading bundles: {}", (Object) e.getStackTrace());
 		}
@@ -386,6 +387,7 @@ public class FoundryEngineMod {
 		Common.getCutsceneManager().load();
 		Common.getDialogueManager().load();
 		Common.getBundleManager().loadServerScripts();
+		Common.getBundleManager().reportScriptErrors();
 	}
 
 	private void onServerStarted(ServerStartedEvent event) {

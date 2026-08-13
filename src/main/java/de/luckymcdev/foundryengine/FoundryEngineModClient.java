@@ -214,6 +214,7 @@ public class FoundryEngineModClient {
 
 		event.enqueueWork(() -> {
 			Common.getBundleManager().loadClientScripts();
+			Common.getBundleManager().reportScriptErrors();
 			for (var container : Common.getBundleManager().getBundleContainers()) {
 				if (container instanceof BundleModContainer) {
 					container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);

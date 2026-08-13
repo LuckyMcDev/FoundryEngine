@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.common.script;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.common.Common;
+import de.luckymcdev.foundryengine.common.util.ErrorHandler;
 import de.luckymcdev.foundryengine.common.bundle.info.BundleFiles;
 import de.luckymcdev.foundryengine.common.priority.Priority;
 import de.luckymcdev.foundryengine.config.StartupConfig;
@@ -26,6 +27,13 @@ import java.util.function.Function;
 
 public class GroovyScriptLoader {
 	private static final Logger LOGGER = LogUtils.getLogger();
+	private static final Map<String, List<Throwable>> collectedErrors = new ConcurrentHashMap<>();
+
+	public static Map<String, List<Throwable>> getAndClearErrors() {
+		Map<String, List<Throwable>> errors = new HashMap<>(collectedErrors);
+		collectedErrors.clear();
+		return errors;
+	}
 
 	private final Map<String, BundleCompileResult> bundleCache = new ConcurrentHashMap<>();
 
@@ -41,15 +49,21 @@ public class GroovyScriptLoader {
 	}
 
 	private static void reportOnLoadFailure(EnvType envType, String bundleId, String message, Throwable cause) {
-		LOGGER.warn("Failed to run onLoad for {} script in bundle '{}': {}",
-			envType.getName(), bundleId, message, cause);
-		ModLoadingIssue issue = ModLoadingIssue.error(String.format(
-			"Failed to run onLoad for %s script in bundle '%s': %s",
-			envType.getName(), bundleId, message));
-		ModLoader.addLoadingIssue(issue);
+		StackTraceElement scriptFrame = ErrorHandler.findScriptFrame(cause);
+		String scriptLoc = scriptFrame != null ? " at " + scriptFrame.getFileName() + ":" + scriptFrame.getLineNumber() : "";
+
+		LOGGER.warn("Failed to run onLoad for {} script in bundle '{}': {}{}",
+			envType.getName(), bundleId, message, scriptLoc, cause);
+		collectedErrors.computeIfAbsent(bundleId, k -> new ArrayList<>()).add(cause);
+
 		if (Server.getServer() != null) {
+			String loc = scriptFrame != null
+				? " (" + scriptFrame.getFileName() + ":" + scriptFrame.getLineNumber() + ")"
+				: (cause.getStackTrace().length > 0
+					? " (" + cause.getStackTrace()[0].getFileName() + ":" + cause.getStackTrace()[0].getLineNumber() + ")"
+					: "");
 			Server.getServer().getPlayerList().broadcastSystemMessage(
-				Component.literal("§c[Script Error] onLoad " + envType.getName() + " script in bundle '" + bundleId + "': " + message),
+				Component.literal("§c[Script Error] onLoad " + envType.getName() + " script in bundle '" + bundleId + "': " + message + loc),
 				false);
 		}
 	}
@@ -259,28 +273,30 @@ public class GroovyScriptLoader {
 					}
 				}
 				LOGGER.warn("Failed to compile script '{}' for bundle '{}'", filename, bundleId, mce);
-				ModLoadingIssue issue = ModLoadingIssue.error(String.format(
-					"Failed to compile script '%s' for bundle '%s': %s", filename, bundleId, mce.getMessage()));
-				ModLoader.addLoadingIssue(issue);
+				collectedErrors.computeIfAbsent(bundleId, k -> new ArrayList<>()).add(mce);
 				if (Server.getServer() != null) {
-					String loc = mce.getStackTrace().length > 0
-						? " (" + mce.getStackTrace()[0].getFileName() + ":" + mce.getStackTrace()[0].getLineNumber() + ")"
-						: "";
+					StackTraceElement scriptFrame = ErrorHandler.findScriptFrame(mce);
+					String loc = scriptFrame != null
+						? " (" + scriptFrame.getFileName() + ":" + scriptFrame.getLineNumber() + ")"
+						: (mce.getStackTrace().length > 0
+							? " (" + mce.getStackTrace()[0].getFileName() + ":" + mce.getStackTrace()[0].getLineNumber() + ")"
+							: "");
 					Server.getServer().getPlayerList().broadcastSystemMessage(
-						Component.literal("§c[Script Error] Compile script '" + filename + "' for bundle '" + bundleId + "': " + mce + loc),
+						Component.literal("§c[Script Error] Compile script '" + filename + "' for bundle '" + bundleId + "': " + ErrorHandler.getShortErrorMessage(mce) + loc),
 						false);
 				}
 			} catch (Exception e) {
 				LOGGER.warn("Failed to compile script '{}' for bundle '{}'", filename, bundleId, e);
-				ModLoadingIssue issue = ModLoadingIssue.error(String.format(
-					"Failed to compile script '%s' for bundle '%s': %s", filename, bundleId, e.getMessage()));
-				ModLoader.addLoadingIssue(issue);
+				collectedErrors.computeIfAbsent(bundleId, k -> new ArrayList<>()).add(e);
 				if (Server.getServer() != null) {
-					String loc = e.getStackTrace().length > 0
-						? " (" + e.getStackTrace()[0].getFileName() + ":" + e.getStackTrace()[0].getLineNumber() + ")"
-						: "";
+					StackTraceElement scriptFrame = ErrorHandler.findScriptFrame(e);
+					String loc = scriptFrame != null
+						? " (" + scriptFrame.getFileName() + ":" + scriptFrame.getLineNumber() + ")"
+						: (e.getStackTrace().length > 0
+							? " (" + e.getStackTrace()[0].getFileName() + ":" + e.getStackTrace()[0].getLineNumber() + ")"
+							: "");
 					Server.getServer().getPlayerList().broadcastSystemMessage(
-						Component.literal("§c[Script Error] Compile script '" + filename + "' for bundle '" + bundleId + "': " + e + loc),
+						Component.literal("§c[Script Error] Compile script '" + filename + "' for bundle '" + bundleId + "': " + ErrorHandler.getShortErrorMessage(e) + loc),
 						false);
 				}
 			}

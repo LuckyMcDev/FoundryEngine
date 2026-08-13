@@ -8,6 +8,7 @@ import de.luckymcdev.foundryengine.common.script.ScriptConfig;
 import de.luckymcdev.foundryengine.common.script.ScriptSandbox;
 import de.luckymcdev.foundryengine.common.script.ScriptTimeout;
 import de.luckymcdev.foundryengine.common.script.ScriptTimeoutException;
+import de.luckymcdev.foundryengine.common.util.ErrorHandler;
 import de.luckymcdev.foundryengine.config.StartupConfig;
 import de.luckymcdev.foundryengine.server.command.EngineCommand;
 import groovy.lang.Binding;
@@ -82,8 +83,10 @@ public class EvalCommand implements EngineCommand {
 			sendFailure(ctx, "Eval timed out after " + StartupConfig.SCRIPT_TIMEOUT_SECONDS.get() + "s");
 		} catch (Exception e) {
 			System.setOut(oldOut);
-			LOGGER.error("Error evaluating code: {}", e.getMessage());
-			sendFailure(ctx, "Error: " + e.getMessage());
+			StackTraceElement scriptFrame = ErrorHandler.findScriptFrame(e);
+			String loc = scriptFrame != null ? " at line " + scriptFrame.getLineNumber() : "";
+			LOGGER.error("Error evaluating code{}: {}", loc, e.getMessage(), e);
+			sendFailure(ctx, "Error: " + ErrorHandler.getShortErrorMessage(e) + loc);
 		}
 		return 1;
 	}

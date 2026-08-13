@@ -47,8 +47,9 @@ public final class Common {
 	public static final Path GAMEDIR = FMLPaths.GAMEDIR.get().normalize().toAbsolutePath();
 	public static final Path CONFIG = FMLPaths.CONFIGDIR.get();
 	public static final Path TEMP_DIR = Path.of(SystemProperties.getProperty("java.io.tmpdir")).resolve(MODID);
-	private static final boolean FIRST_RUN = FirstRun.isFor(MODID);
 	public static final String BLOCK_DISPLAY_TAG = MODID + "_blockdisplay";
+	public static final Path FIRST_RUN_CACHE = GAMEDIR.resolve(".cache").resolve(".fruncache.txt");
+	private static final boolean FIRST_RUN = FirstRun.isFor(MODID);
 	public static final Path DIRECTORY = dir(GAMEDIR.resolve(MODNAME));
 	public static final Path BUNDLES = dir(DIRECTORY.resolve("bundles"));
 	public static final Path CACHE = dir(DIRECTORY.resolve(".cache"));
@@ -57,6 +58,19 @@ public final class Common {
 	public static final Path ENGINE_DATA = CACHE.resolve("engine.dat");
 	public static final Path PAKKU = dir(CACHE.resolve("pakku"));
 	public static final boolean IS_PAKKU = PAKKU.resolve("pakku.jar").toFile().exists();
+	public static final Path GITIGNORE = file(GAMEDIR.resolve(".gitignore"), """
+		# FoundryEngine Default gitignore
+		/*
+		
+		!/config
+		!/FoundryEngine
+		!/pakku*.json
+		!/icon.png
+		!/LICENSE.md
+		
+		/FoundryEngine/.cache/icons
+		/FoundryEngine/.cache/pakku/
+		""");
 	public static final Path CONFIG_FE = dir(DIRECTORY.resolve("config"));
 	private static final NetworkManager NETWORK_MANAGER = new NetworkManager();
 	private static final SavedDataManager SAVED_DATA_MANAGER = new SavedDataManager(NETWORK_MANAGER);
@@ -260,6 +274,22 @@ public final class Common {
 			}
 		}
 		return path;
+	}
+
+	static Path file(Path path, String content) {
+		if (Files.notExists(path) && FIRST_RUN) {
+			try {
+				Files.createDirectories(path.getParent());
+				Files.writeString(path, content);
+			} catch (IOException e) {
+				LOGGER.error("Failed to create file: {}", path, e);
+			}
+		}
+		return path;
+	}
+
+	static Path file(Path path) {
+		return file(path, "");
 	}
 
 	/**

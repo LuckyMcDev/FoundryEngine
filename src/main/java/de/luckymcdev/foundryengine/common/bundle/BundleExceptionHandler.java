@@ -17,7 +17,7 @@ public final class BundleExceptionHandler {
 
 	public static void handle(String context, Exception e) {
 		LOGGER.error("{}: {}", context, e.getMessage(), e);
-		ModLoadingIssue issue = ModLoadingIssue.error(context + ": " + e.getMessage());
+		ModLoadingIssue issue = ModLoadingIssue.warning(context + ": " + e.getMessage()).withCause(e);
 		ModLoader.addLoadingIssue(issue);
 		if (Server.getServer() != null) {
 			String loc = e.getStackTrace().length > 0

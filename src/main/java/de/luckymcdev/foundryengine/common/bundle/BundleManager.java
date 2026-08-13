@@ -2,11 +2,13 @@ package de.luckymcdev.foundryengine.common.bundle;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.common.Common;
+import de.luckymcdev.foundryengine.common.bundle.info.BundleDependency;
 import de.luckymcdev.foundryengine.common.bundle.modcompat.BundleModContainer;
 import de.luckymcdev.foundryengine.common.bundle.modcompat.BundleModFileInfo;
 import de.luckymcdev.foundryengine.common.bundle.modcompat.BundleModInfo;
 import de.luckymcdev.foundryengine.common.registry.GenericRegistry;
 import de.luckymcdev.foundryengine.common.script.GroovyScriptLoader;
+import de.luckymcdev.foundryengine.common.util.ErrorHandler;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.Commands;
 import net.minecraft.server.MinecraftServer;
@@ -15,10 +17,14 @@ import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
+import net.neoforged.fml.ModLoader;
+import net.neoforged.fml.ModLoadingIssue;
 import net.neoforged.fml.config.ConfigTracker;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import org.codehaus.groovy.control.MultipleCompilationErrorsException;
+import org.codehaus.groovy.control.messages.SyntaxErrorMessage;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -52,6 +58,7 @@ public class BundleManager implements ResourceManagerReloadListener {
 	private final GenericRegistry<String, Bundle> bundles = new GenericRegistry<>();
 	private final List<ModContainer> bundleContainers = new ArrayList<>();
 	private final Set<String> registeredConfigs = ConcurrentHashMap.newKeySet();
+	private final Set<String> failedBundleIds = ConcurrentHashMap.newKeySet();
 	private final BundleDiscovery bundleDiscovery;
 	private final GroovyScriptLoader scriptLoader;
 	private final BundleLifecycleDispatcher lifecycleDispatcher = new BundleLifecycleDispatcher();
@@ -83,17 +90,34 @@ public class BundleManager implements ResourceManagerReloadListener {
 		bundles.register(bundle.info().id(), bundle);
 		var container = createModContainer(bundle);
 		bundleContainers.add(container);
-		try {
-			bundle.loadCommon(scriptLoader);
-		} catch (Exception e) {
-			BundleExceptionHandler.handle(
-				"Failed to load common scripts for bundle '" + bundle.info().id() + "'", e);
+
+		String bundleId = bundle.info().id();
+		boolean depsFailed = false;
+		for (BundleDependency dep : bundle.info().dependencies()) {
+			if (dep.type() == BundleDependency.Type.BUNDLE && failedBundleIds.contains(dep.id())) {
+				LOGGER.error("Skipping script loading for bundle '{}' because its dependency '{}' failed to load scripts.", bundleId, dep.id());
+				failedBundleIds.add(bundleId);
+				depsFailed = true;
+
+				String msg = String.format("Bundle '%s' skipped script loading because its dependency '%s' failed to load scripts.", bundleId, dep.id());
+				ModLoader.addLoadingIssue(ModLoadingIssue.warning(msg));
+				break;
+			}
 		}
-		var id = bundle.info().id();
+
+		if (!depsFailed) {
+			try {
+				bundle.loadCommon(scriptLoader);
+			} catch (Exception e) {
+				BundleExceptionHandler.handle(
+					"Failed to load common scripts for bundle '" + bundleId + "'", e);
+			}
+		}
+
 		var spec = bundle.configSpec().build();
-		if (!registeredConfigs.contains(id)) {
+		if (!registeredConfigs.contains(bundleId)) {
 			container.registerConfig(ModConfig.Type.COMMON, spec);
-			registeredConfigs.add(id);
+			registeredConfigs.add(bundleId);
 		} else {
 			// Config is already registered in ConfigTracker from a previous load;
 			// re-registering would throw a "config file conflict" on reload.
@@ -143,11 +167,15 @@ public class BundleManager implements ResourceManagerReloadListener {
 	 */
 	public void loadClientScripts() {
 		for (Bundle bundle : bundles.values()) {
+			String bundleId = bundle.info().id();
+			if (failedBundleIds.contains(bundleId)) {
+				continue;
+			}
 			try {
 				bundle.loadClient(scriptLoader);
 			} catch (Exception e) {
 				BundleExceptionHandler.handle(
-					"Failed to load client scripts for bundle '" + bundle.info().id() + "'", e);
+					"Failed to load client scripts for bundle '" + bundleId + "'", e);
 			}
 		}
 	}
@@ -158,11 +186,44 @@ public class BundleManager implements ResourceManagerReloadListener {
 	 */
 	public void loadServerScripts() {
 		for (Bundle bundle : bundles.values()) {
+			String bundleId = bundle.info().id();
+			if (failedBundleIds.contains(bundleId)) {
+				continue;
+			}
 			try {
 				bundle.loadServer(scriptLoader);
 			} catch (Exception e) {
 				BundleExceptionHandler.handle(
-					"Failed to load server scripts for bundle '" + bundle.info().id() + "'", e);
+					"Failed to load server scripts for bundle '" + bundleId + "'", e);
+			}
+		}
+	}
+
+	public void reportScriptErrors() {
+		Map<String, List<Throwable>> errors = GroovyScriptLoader.getAndClearErrors();
+		for (Map.Entry<String, List<Throwable>> entry : errors.entrySet()) {
+			String bundleId = entry.getKey();
+			failedBundleIds.add(bundleId);
+			for (Throwable t : entry.getValue()) {
+				if (t instanceof MultipleCompilationErrorsException mce) {
+					for (var errorObj : mce.getErrorCollector().getErrors()) {
+						String detail = errorObj.toString();
+						if (errorObj instanceof SyntaxErrorMessage sem) {
+							detail = String.format("%s (line %d, col %d)",
+								sem.getCause().getMessage(), sem.getCause().getLine(), sem.getCause().getStartColumn());
+						}
+						String message = String.format("Bundle '%s' script compilation failed: %s", bundleId, detail);
+						ModLoader.addLoadingIssue(ModLoadingIssue.warning(message).withCause(t));
+					}
+				} else {
+					String humanMsg = ErrorHandler.getFormattedMessage(t);
+					String type = t.getClass().getSimpleName();
+					StackTraceElement scriptFrame = ErrorHandler.findScriptFrame(t);
+					String loc = scriptFrame != null ? " at " + scriptFrame.getFileName() + ":" + scriptFrame.getLineNumber() : "";
+
+					String message = String.format("Bundle '%s' script error: %s [%s]%s", bundleId, humanMsg, type, loc);
+					ModLoader.addLoadingIssue(ModLoadingIssue.warning(message).withCause(t));
+				}
 			}
 		}
 	}
@@ -227,6 +288,7 @@ public class BundleManager implements ResourceManagerReloadListener {
 
 			Common.getScriptShell().invalidateAll();
 			scriptLoader.invalidateCache();
+			failedBundleIds.clear();
 
 			try {
 				discover(Common.BUNDLES);
@@ -236,6 +298,7 @@ public class BundleManager implements ResourceManagerReloadListener {
 
 			refreshModList();
 			loadServerScripts();
+			reportScriptErrors();
 
 			if (server != null) {
 				// Commands are normally registered once at server start; re-posting the
