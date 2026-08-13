@@ -12,7 +12,7 @@ Progression in FoundryEngine is built from two pieces: **stages**, which are per
 
 A stage is a named flag on a player, stored as a NeoForge attachment. Stages carry no other state. You define the names and the graph of parents, and you decide when players earn them.
 
-Two things make stages powerful:
+Two things make stages useful:
 
 - **Parents.** A stage can declare a parent. Granting a child grants the parents too, so you can model "Explorer (requires Beginner)" without writing the logic.
 - **Addons gate real objects.** The built-in addons attach stage requirements to items, blocks, mobs, recipes, loot, and dimensions. Locked items drop from the inventory, pickups are refused, recipes vanish, and requirements appear in tooltips.

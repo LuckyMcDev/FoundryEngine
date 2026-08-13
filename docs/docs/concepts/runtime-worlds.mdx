@@ -6,7 +6,7 @@ description: How custom worlds are created and sandboxed.
 
 # Runtime worlds
 
-The engine can create and manage worlds at runtime, for the game engine use case that is the whole point of the project.
+The engine can create and manage worlds at runtime. This capability is central to the project's goal of acting as a game engine.
 
 ## Areas live in dimensions
 
@@ -14,7 +14,7 @@ An area is scoped to a dimension. When the engine checks membership, it looks up
 
 ## Membership is recomputed, not tracked
 
-The engine does not keep a subscription list. Every tick it recomputes who is inside each area and compares with the previous frame to decide who just entered or left. That makes the model robust: teleporting a player, moving an area, or a chunk reload cannot leave stale members behind.
+The engine does not keep a subscription list. Every tick it recomputes who is inside each area and compares with the previous frame to decide who just entered or left. That makes the model reliable: teleporting a player, moving an area, or a chunk reload cannot leave stale members behind.
 
 ## Modules describe behaviour
 
