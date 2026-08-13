@@ -1,3 +1,1 @@
-- Add Service System
-- Add Git Service + Panel
-- Add Pakku Service + Panel
+- Add better error handling in Scripting
