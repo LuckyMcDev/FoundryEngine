@@ -52,9 +52,9 @@ const config: Config = {
 					sidebarPath: './sidebars.ts',
 					editUrl:
 						'https://github.com/LuckyMcDev/FoundryEngine/tree/master/',
-					// Docs are versioned per Minecraft version. The live ./docs folder is
-					// always the newest MC version; older MC versions are frozen snapshots
-					// created with `npm run docs:version <mc>`.
+					// Docs are versioned per mod version. The live ./docs folder is
+					// always the newest mod version; older mod versions are frozen snapshots
+					// created with `npm run docs:version <version>`.
 					lastVersion: 'current',
 					includeCurrentVersion: true,
 					versions: require('./version_labels.json'),
@@ -115,6 +115,21 @@ const config: Config = {
 					label: 'Concepts',
 				},
 				{to: '/news', label: 'News', position: 'left'},
+				{
+					type: 'dropdown',
+					label: 'Javadoc',
+					position: 'left',
+					items: [
+						{
+							label: '26.1',
+							to: 'pathname:///javadoc/26.1/',
+						},
+						{
+							label: '26.2',
+							to: 'pathname:///javadoc/26.2/',
+						},
+					],
+				},
 				{
 					type: 'docsVersionDropdown',
 					position: 'right',

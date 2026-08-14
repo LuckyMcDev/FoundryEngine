@@ -31,15 +31,40 @@ Builds static content into the `build` directory. The build fails on broken link
 - `docs/blog/`: the news and changelog feed at `/news`.
 - `docs/version_labels.json`: the label for the current version.
 
-## Versioning
+## Versioning & Releases
 
-The live `docs/docs/` folder always documents the current Minecraft version (labeled `26.1`). To freeze a version:
+FoundryEngine uses unified mod versioning across all supported Minecraft editions.
+
+### 1. View Current Version
 
 ```bash
-npm run docs:version <version>
+./gradlew currentVersion
 ```
 
-This copies the current content into a versioned folder and lets you continue editing the live one. Update `version_labels.json` whenever the current label changes. See `.agents/docs-cicd.md` in the repository root for the full workflow.
+### 2. Bump Mod Version Locally
+
+Run the `bumpVersion` task to update `stonecutter.properties.toml`, `docs/version_labels.json`, and optionally create Git commits and tags:
+
+```bash
+# Bump patch version (e.g. 0.1.9 -> 0.1.10)
+./gradlew bumpVersion --bump=patch
+
+# Bump minor version (e.g. 0.1.9 -> 0.2.0)
+./gradlew bumpVersion --bump=minor
+
+# Set an explicit version and suffix
+./gradlew bumpVersion --to=0.2.0 --suffix=beta
+
+# Freeze current docs snapshot before bumping, commit, and tag
+./gradlew bumpVersion --bump=minor --snapshot-docs --commit --tag
+```
+
+### 3. GitHub Actions Release Workflow
+
+Releases and documentation deployments can be triggered in two ways:
+
+1. **Pushing a Git Tag**: Pushing any tag starting with `v*` (e.g. `v0.1.9` or `v0.1.9-26.1`) runs `.github/workflows/release.yml`, building all Stonecutter targets and publishing to GitHub Releases, CurseForge, and Modrinth.
+2. **Workflow Dispatch**: Run **Release & Publish** under GitHub Actions with inputs for `bump_type`, `suffix`, `snapshot_docs`, and `dry_run`. The workflow automatically handles bumping files, committing as `github-actions[bot]`, creating Git tags, publishing artifacts, and deploying updated docs.
 
 ## Writing
 

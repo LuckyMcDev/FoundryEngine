@@ -5,6 +5,9 @@ on:
     branches: [ master ]
     paths:
       - 'docs/**'
+      - 'src/**'
+      - 'versions/**'
+      - 'stonecutter.properties.toml'
       - '.github/workflows/build-docusaurus.yml'
       - '.github/workflows/build-javadoc.yml'
       - '.github/workflows/deploy.yml'
