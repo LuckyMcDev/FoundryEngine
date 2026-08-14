@@ -2,7 +2,19 @@ name: Build Javadoc
 
 on:
   workflow_call:
+    inputs:
+      version:
+        description: 'Minecraft version subproject for Javadoc generation'
+        required: false
+        default: '26.2'
+        type: string
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Minecraft version subproject for Javadoc generation'
+        required: false
+        default: '26.2'
+        type: string
 
 jobs:
   build:
@@ -24,39 +36,10 @@ jobs:
         run: chmod +x gradlew
 
       - name: Generate Javadoc
-        run: ./gradlew :26.1:javadoc :26.2:javadoc
-
-      - name: Prepare Javadoc structure
-        run: |
-          mkdir -p javadoc_output/26.1 javadoc_output/26.2
-          if [ -d "versions/26.1/build/docs/javadoc" ]; then
-            cp -r versions/26.1/build/docs/javadoc/. javadoc_output/26.1/
-          fi
-          if [ -d "versions/26.2/build/docs/javadoc" ]; then
-            cp -r versions/26.2/build/docs/javadoc/. javadoc_output/26.2/
-          fi
-          cat << 'EOF' > javadoc_output/index.html
-          <!DOCTYPE html>
-          <html lang="en">
-          <head>
-            <meta charset="utf-8">
-            <title>FoundryEngine Javadoc</title>
-            <meta http-equiv="refresh" content="0; url=26.1/">
-            <link rel="canonical" href="26.1/">
-          </head>
-          <body>
-            <h1>FoundryEngine Javadoc</h1>
-            <p>Redirecting to <a href="26.1/">Minecraft 26.1 Javadoc</a>...</p>
-            <ul>
-              <li><a href="26.1/">Minecraft 26.1 Javadoc</a></li>
-              <li><a href="26.2/">Minecraft 26.2 Javadoc</a></li>
-            </ul>
-          </body>
-          </html>
-          EOF
+        run: ./gradlew :${{ inputs.version || '26.2' }}:javadoc
 
       - name: Upload Javadoc
         uses: actions/upload-artifact@v7
         with:
           name: javadoc
-          path: javadoc_output
+          path: versions/${{ inputs.version || '26.2' }}/build/docs/javadoc

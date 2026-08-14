@@ -116,19 +116,9 @@ const config: Config = {
 				},
 				{to: '/news', label: 'News', position: 'left'},
 				{
-					type: 'dropdown',
+					to: 'pathname:///javadoc/',
 					label: 'Javadoc',
 					position: 'left',
-					items: [
-						{
-							label: '26.1',
-							to: 'pathname:///javadoc/26.1/',
-						},
-						{
-							label: '26.2',
-							to: 'pathname:///javadoc/26.2/',
-						},
-					],
 				},
 				{
 					type: 'docsVersionDropdown',
