@@ -40,18 +40,20 @@ jobs:
 
       - name: Merge artifacts
         run: |
-          mkdir final
+          mkdir -p final
           
           # Copy Docusaurus if it exists
           if [ -d "site/docusaurus" ]; then
-            cp -r site/docusaurus/* final/
+            cp -r site/docusaurus/. final/
           fi
           
           # Copy Javadoc if it exists
           if [ -d "site/javadoc" ]; then
             mkdir -p final/javadoc
-            cp -r site/javadoc/* final/javadoc/
+            cp -r site/javadoc/. final/javadoc/
           fi
+
+          touch final/.nojekyll
 
       - uses: actions/upload-pages-artifact@v5
         with:

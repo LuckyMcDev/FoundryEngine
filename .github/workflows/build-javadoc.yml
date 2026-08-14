@@ -30,4 +30,4 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: javadoc
-          path: build/docs
+          path: versions/26.1/build/docs/javadoc
