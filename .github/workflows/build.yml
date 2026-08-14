@@ -31,7 +31,4 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build Project
-        # Needed since tests are broken for no reason?
-        # :26.2 is pinned for local work but its source is not 26.2-API-compatible yet,
-        # so CI gates on the vcs/stable version (26.1) only.
-        run: ./gradlew :26.1:build -x test
+        run: ./gradlew build -x test
