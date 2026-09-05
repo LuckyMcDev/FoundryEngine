@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2025 LuckyMcDev
- * All Rights Reserved.
- *
- * Last modified: 2025-11-30 18:10:34
- */
-
 package de.luckymcdev.foundryengine.common.easing;
 
 import com.mojang.serialization.Codec;
