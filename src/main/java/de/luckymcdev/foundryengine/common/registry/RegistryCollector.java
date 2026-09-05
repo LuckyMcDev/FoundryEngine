@@ -4,6 +4,7 @@ import de.luckymcdev.foundryengine.common.builder.block.BlockBuilder;
 import de.luckymcdev.foundryengine.common.builder.blockentity.BlockEntityBuilder;
 import de.luckymcdev.foundryengine.common.builder.item.ItemBuilder;
 import de.luckymcdev.foundryengine.common.builder.item.ToolMaterialBuilder;
+import de.luckymcdev.foundryengine.common.builder.menu.MenuBuilder;
 import de.luckymcdev.foundryengine.common.builder.particle.ParticleBuilder;
 import de.luckymcdev.foundryengine.common.builder.recipe.RecipeBuilder;
 import de.luckymcdev.foundryengine.common.builder.sound.SoundBuilder;
@@ -24,6 +25,7 @@ public class RegistryCollector {
 	private final Map<Identifier, RecipeBuilder> recipes = new LinkedHashMap<>();
 	private final Map<Identifier, TagBuilder<?>> tags = new LinkedHashMap<>();
 	private final Map<Identifier, BlockEntityBuilder<?>> blockEntities = new LinkedHashMap<>();
+	private final Map<Identifier, MenuBuilder<?>> menus = new LinkedHashMap<>();
 
 	public void addItem(ItemBuilder builder) {
 		items.put(builder.getId(), builder);
@@ -57,6 +59,10 @@ public class RegistryCollector {
 		blockEntities.put(builder.getId(), builder);
 	}
 
+	public void addMenu(MenuBuilder<?> builder) {
+		menus.put(builder.getId(), builder);
+	}
+
 	public Collection<ItemBuilder> getItems() {
 		return Collections.unmodifiableCollection(items.values());
 	}
@@ -87,5 +93,9 @@ public class RegistryCollector {
 
 	public Collection<BlockEntityBuilder<?>> getBlockEntities() {
 		return Collections.unmodifiableCollection(blockEntities.values());
+	}
+
+	public Collection<MenuBuilder<?>> getMenus() {
+		return Collections.unmodifiableCollection(menus.values());
 	}
 }

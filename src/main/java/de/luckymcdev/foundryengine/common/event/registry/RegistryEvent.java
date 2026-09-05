@@ -6,6 +6,7 @@ import de.luckymcdev.foundryengine.common.builder.block.BlockBuilder;
 import de.luckymcdev.foundryengine.common.builder.blockentity.BlockEntityBuilder;
 import de.luckymcdev.foundryengine.common.builder.item.ItemBuilder;
 import de.luckymcdev.foundryengine.common.builder.item.ToolMaterialBuilder;
+import de.luckymcdev.foundryengine.common.builder.menu.MenuBuilder;
 import de.luckymcdev.foundryengine.common.builder.particle.ParticleBuilder;
 import de.luckymcdev.foundryengine.common.builder.recipe.RecipeBuilder;
 import de.luckymcdev.foundryengine.common.builder.sound.SoundBuilder;
@@ -105,6 +106,20 @@ public class RegistryEvent extends Event implements IModBusEvent {
 			.toList();
 		if (!attachedBes.isEmpty()) {
 			blockEntities(attachedBes.toArray(BlockEntityBuilder[]::new));
+		}
+	}
+
+	public void menus(MenuBuilder<?>... builders) {
+		if (blockContent("menu", Common.getCompatibilityMode().requiresBothSides(), "both the client and the server", () -> contentIds(builders))) {
+			return;
+		}
+		inner.register(BuiltInRegistries.MENU.key(), helper -> {
+			for (MenuBuilder<?> builder : builders) {
+				builder.register(helper);
+			}
+		});
+		for (MenuBuilder<?> builder : builders) {
+			collector.addMenu(builder);
 		}
 	}
 
