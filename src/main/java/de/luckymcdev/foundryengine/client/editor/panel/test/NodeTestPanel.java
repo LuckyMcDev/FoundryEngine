@@ -1,4 +1,4 @@
-package de.luckymcdev.foundryengine.client.editor.panel;
+package de.luckymcdev.foundryengine.client.editor.panel.test;
 
 import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
