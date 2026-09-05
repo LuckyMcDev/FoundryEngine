@@ -6,23 +6,51 @@ import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.panel.editor.EditorPanel;
 import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
+import de.luckymcdev.foundryengine.client.imgui.text.ImGuiCoreTextEditor;
+import de.luckymcdev.foundryengine.client.imgui.text.editor.EditorTheme;
 import de.luckymcdev.foundryengine.common.Common;
-import foundry.imgui.impl.ImGuiWindowHandler;
 import imgui.ImGui;
 import net.minecraft.SharedConstants;
-
-import java.util.Locale;
 
 import static org.lwjgl.opengl.GL11C.*;
 import static org.lwjgl.opengl.GL20.GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS;
 
 public class InfoPanel extends EditorPanel {
 	public static final InfoPanel INSTANCE = new InfoPanel();
+	private final ImGuiCoreTextEditor licenseFoundryEditor;
+	private final ImGuiCoreTextEditor licenseImGuiEditor;
+	private final ImGuiCoreTextEditor licenseGroovyEditor;
 
 	protected InfoPanel() {
 		super(new Builder(Common.id("info"))
 			.icon(ImIcons.INFO_CIRCLE)
 			.category(PanelCategory.VIEW));
+
+		licenseFoundryEditor = new ImGuiCoreTextEditor(null, null, EditorTheme.dark().build());
+		licenseFoundryEditor.setReadOnly(true);
+		licenseFoundryEditor.setText("""
+			Copyright LuckyMcDev""");
+
+		licenseImGuiEditor = new ImGuiCoreTextEditor(null, null, EditorTheme.dark().build());
+		licenseImGuiEditor.setReadOnly(true);
+		licenseImGuiEditor.setText("""
+			MIT License - Copyright (c) 2019-present, Ilya "SpaiR" Prymshyts
+			
+			Permission is hereby granted, free of charge, to any person obtaining
+			a copy of this software and associated documentation files (the
+			"Software"), to deal in the Software without restriction, including
+			without limitation the rights to use, copy, modify, merge, publish,
+			distribute, sublicense, and/or sell copies of the Software, and to
+			permit persons to whom the Software is furnished to do so.""");
+
+		licenseGroovyEditor = new ImGuiCoreTextEditor(null, null, EditorTheme.dark().build());
+		licenseGroovyEditor.setReadOnly(true);
+		licenseGroovyEditor.setText("""
+			Apache License, Version 2.0
+			
+			You may use, modify, and distribute this software under the terms
+			of the Apache 2.0 license. A copy is included in the distribution.
+			https://www.apache.org/licenses/LICENSE-2.0""");
 	}
 
 	@Override
@@ -45,7 +73,7 @@ public class InfoPanel extends EditorPanel {
 		String mcVersion = SharedConstants.getCurrentVersion().toString();
 		//? if 26.1 {
 		String backendName = RenderSystem.getDevice().getBackendName();
-		 //?} elif 26.2 {
+		//?} elif 26.2 {
 		/*String backendName = RenderSystem.getDevice().getDeviceInfo().backendName();
 		*///?}
 
@@ -88,25 +116,16 @@ public class InfoPanel extends EditorPanel {
 	}
 
 	private void renderLicenses() {
-		if (ImGui.collapsingHeader(ImGraphicsExtractor.icon(ImIcons.COPYRIGHT) + " FoundryEngine (All Rights Reserved)")) {
-			ImGui.beginChild("##license_fe", 0, 60, true);
-			ImGui.textWrapped("All Rights Reserved — This software is proprietary and may not be copied, distributed, or modified without explicit permission.");
-			ImGui.endChild();
+		if (ImGui.collapsingHeader(ImGraphicsExtractor.icon(ImIcons.COPYRIGHT) + " FoundryEngine (PolyForm Shield License 1.0.0)")) {
+			licenseFoundryEditor.render("##license_fe", ImGui.getContentRegionAvailX(), 80, false);
 		}
 
 		if (ImGui.collapsingHeader(ImGraphicsExtractor.icon(ImIcons.COPYRIGHT) + " ImGui (MIT)")) {
-			ImGui.beginChild("##license_imgui", 0, 120, true);
-			ImGui.textWrapped("""
-				MIT License — Copyright (c) 2019-present, Ilya "SpaiR" Prymshyts
-				Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so.""");
-			ImGui.endChild();
+			licenseImGuiEditor.render("##license_imgui", ImGui.getContentRegionAvailX(), 140, false);
 		}
 
 		if (ImGui.collapsingHeader(ImGraphicsExtractor.icon(ImIcons.COPYRIGHT) + " Apache Groovy (Apache 2.0)")) {
-			ImGui.beginChild("##license_groovy", 0, 80, true);
-			ImGui.textWrapped("""
-				Apache License, Version 2.0 — You may use, modify, and distribute this software under the terms of the Apache 2.0 license. A copy is included in the distribution.""");
-			ImGui.endChild();
+			licenseGroovyEditor.render("##license_groovy", ImGui.getContentRegionAvailX(), 100, false);
 		}
 	}
 
