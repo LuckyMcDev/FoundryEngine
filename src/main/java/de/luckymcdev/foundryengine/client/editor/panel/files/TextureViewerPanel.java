@@ -174,11 +174,4 @@ public class TextureViewerPanel extends EditorPanel {
 			}
 		}
 	}
-
-	@Override
-	protected void onClosed() {
-		if (image != null) {
-			image.close();
-		}
-	}
 }
