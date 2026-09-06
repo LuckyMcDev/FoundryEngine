@@ -2,10 +2,10 @@
 
 An in-game development platform and scripting engine built as a NeoForge Minecraft mod.
 
-[![CurseForge](https://img.shields.io/badge/CurseForge-Get%20it-orange?logo=curseforge&logoColor=white&style=for-the-badge)](https://www.curseforge.com/minecraft/mc-mods/foundry-engine)
-[![Modrinth](https://img.shields.io/badge/Modrinth-Get%20it-green?logo=modrinth&logoColor=white&style=for-the-badge)](https://modrinth.com/project/foundryengine)
-[![GitHub](https://img.shields.io/badge/GitHub-View%20Source-black?logo=github&logoColor=white&style=for-the-badge)](https://github.com/LuckyMcDev/FoundryEngine)
-[![Wiki](https://img.shields.io/badge/Wiki-Documentation-blue?logo=docusaurus&logoColor=white&style=for-the-badge)](https://luckymcdev.github.io/FoundryEngine)
+[![CurseForge](https://img.shields.io/badge/CurseForge-orange?logo=curseforge&logoColor=white&style=for-the-badge)](https://www.curseforge.com/minecraft/mc-mods/foundry-engine)
+[![Modrinth](https://img.shields.io/badge/Modrinth-green?logo=modrinth&logoColor=white&style=for-the-badge)](https://modrinth.com/project/foundryengine)
+[![GitHub](https://img.shields.io/badge/GitHub-black?logo=github&logoColor=white&style=for-the-badge)](https://github.com/LuckyMcDev/FoundryEngine)
+[![Wiki](https://img.shields.io/badge/Wiki-blue?logo=docusaurus&logoColor=white&style=for-the-badge)](https://luckymcdev.github.io/FoundryEngine)
 [![Java 25](https://img.shields.io/badge/Java-25-orange?logo=openjdk&logoColor=white&style=for-the-badge)](https://adoptium.net/)
 [![NeoForge](https://img.shields.io/badge/NeoForge-Latest-e67e22?style=for-the-badge)](https://neoforged.net/)
 

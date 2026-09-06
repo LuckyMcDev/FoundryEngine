@@ -4,16 +4,16 @@
   <p>An in-game development platform and scripting engine built as a Minecraft mod.</p>
   <p>
     <a href="https://www.curseforge.com/minecraft/mc-mods/foundry-engine">
-      <img src="https://img.shields.io/badge/CurseForge-Get%20it-orange?logo=curseforge&logoColor=white&style=for-the-badge" alt="CurseForge"/>
+      <img src="https://img.shields.io/badge/CurseForge-orange?logo=curseforge&logoColor=white&style=for-the-badge" alt="CurseForge"/>
     </a>
     <a href="https://modrinth.com/project/foundryengine">
-      <img src="https://img.shields.io/badge/Modrinth-Get%20it-green?logo=modrinth&logoColor=white&style=for-the-badge" alt="Modrinth"/>
+      <img src="https://img.shields.io/badge/Modrinth-green?logo=modrinth&logoColor=white&style=for-the-badge" alt="Modrinth"/>
     </a>
     <a href="https://github.com/LuckyMcDev/FoundryEngine">
-      <img src="https://img.shields.io/badge/GitHub-View%20Source-black?logo=github&logoColor=white&style=for-the-badge" alt="GitHub"/>
+      <img src="https://img.shields.io/badge/GitHub-black?logo=github&logoColor=white&style=for-the-badge" alt="GitHub"/>
     </a>
     <a href="https://luckymcdev.github.io/FoundryEngine">
-      <img src="https://img.shields.io/badge/Docs-Documentation-blue?logo=docusaurus&logoColor=white&style=for-the-badge" alt="Documentation"/>
+      <img src="https://img.shields.io/badge/Docs-blue?logo=docusaurus&logoColor=white&style=for-the-badge" alt="Documentation"/>
     </a>
     <a href="https://www.codefactor.io/repository/github/luckymcdev/foundryengine">
       <img src="https://www.codefactor.io/repository/github/luckymcdev/foundryengine/badge?style=for-the-badge" alt="CodeFactor"/>
