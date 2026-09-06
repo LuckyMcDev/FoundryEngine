@@ -76,8 +76,9 @@ public class DialogueTree {
 		return nodes.get(nodeId);
 	}
 
-	public void addNode(DialogueNode node) {
+	public DialogueNode addNode(DialogueNode node) {
 		nodes.put(node.getId(), node);
+		return node;
 	}
 
 	public void removeNode(String nodeId) {
