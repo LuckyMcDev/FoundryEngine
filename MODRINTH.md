@@ -29,7 +29,7 @@ Content is authored in Groovy scripts and organized into self-contained bundles.
 ## Key Features
 
 ### Bundles and Scripting
-- Self-contained packages: Group scripts, models, textures, and sounds into isolated folders inside `.minecraft/FoundryEngine/bundles/`
+- Bundle packages: Group scripts, models, textures, and sounds into isolated folders inside `.minecraft/FoundryEngine/bundles/`
 - Live reloading: Test script logic and asset changes live with `/engine reload`. (Registry changes require a game restart and cannot be hot reloaded yet.)
 - Clear structure: Organize your code across dedicated `common`, `server`, and `client` entrypoints.
 
@@ -52,15 +52,15 @@ Content is authored in Groovy scripts and organized into self-contained bundles.
 ## Getting Started
 
 ### For Players and Server Hosts
-1. Install NeoForge on Minecraft 26.1.2 or 26.2 using Java 25.
+1. Install NeoForge on Minecraft 26.1.2 or 26.2
 2. Place `FoundryEngine` and its required dependencies into your `mods/` directory.
-3. Put downloaded content packages into the `.minecraft/FoundryEngine/bundles/` folder (or `FoundryEngine/bundles/` on a server).
+3. Put downloaded content packages into the `/FoundryEngine/bundles/` folder.
 4. Start the game or server.
 
 ### For Creators and Pack Authors
 1. Check the [FoundryEngine Wiki](https://luckymcdev.github.io/FoundryEngine) for guides, builder tutorials, and API documentation.
 2. Open the in-game editor using the configured shortcut or menu.
-3. Create a new bundle in your `.minecraft/FoundryEngine/bundles/` directory (or `FoundryEngine/bundles/` on a server) or start from the [ExampleBundle](https://github.com/LuckyMcDev/ExampleBundle) template.
+3. Create a new bundle in your `/FoundryEngine/bundles/` directory or start from the [ExampleBundle](https://github.com/LuckyMcDev/ExampleBundle) template.
 4. Write your registration and gameplay logic in Groovy scripts.
 5. Run `/engine reload` to test script and asset changes in real time. (Registry changes require a game restart.)
 
@@ -89,4 +89,4 @@ Content is authored in Groovy scripts and organized into self-contained bundles.
 - [LuckyMcDev](https://github.com/LuckyMcDev): Creator and lead developer
 - [Auseawesome](https://github.com/Auseawesome): Feature design and logo artwork
 - [G_cat](https://github.com/gcat101): Alpha testing
-- Built using [NeoForge](https://neoforged.net/), [Apache Groovy](https://groovy-lang.org/), [Dear ImGui](https://github.com/ocornut/imgui), [imgui-java](https://github.com/SpaiR/imgui-java), [ImGuiMc](https://modrinth.com/mod/imguimc), and [Stonecutter](https://stonecutter.kikugie.dev/).
+- Built using [NeoForge](https://neoforged.net/), [Apache Groovy](https://groovy-lang.org/), [ImGuiMc](https://modrinth.com/mod/imguimc), and [Stonecutter](https://stonecutter.kikugie.dev/).

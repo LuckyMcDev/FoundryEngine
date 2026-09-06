@@ -47,25 +47,24 @@ Content is packaged into bundles that contain Groovy scripts, textures, models, 
 ### Bundles and Scripting
 - Self-contained packages: Store scripts, assets, and configurations in individual bundle folders inside `.minecraft/FoundryEngine/bundles/` (or `FoundryEngine/bundles/` on dedicated servers).
 - Live reloading: Run `/engine reload` to apply script and asset edits immediately. (Registry changes require a game restart and cannot be hot reloaded at runtime.)
-- Isolated namespaces: Bundles register content under their own namespace to avoid ID conflicts.
 - Separate entrypoints: Organize logic across `common`, `server`, and `client` lifecycle scripts.
 
 ### In-Game ImGui Editor
 - Script editor: Write and inspect Groovy scripts and JSON files in-game with syntax highlighting and error diagnostics.
-- Dialogue editor: Build branching conversations with player options, requirements, and script triggers.
-- Cutscene timeline: Set keyframes, camera paths, focal points, and easing curves visually.
-- Spatial area gizmos: Draw 3D bounding boxes in the world to define trigger regions.
-- Developer utilities: Browse files, inspect textures, edit recipes, view console output, and manage Git commits.
+- Dialogue editor: Build branching conversations with options and branching sequences.
+- Cutscene timeline: Animate the Camera by placing points in the world and using bezier handles to define its movement.
+- Spatial area gizmos: 3D areas in the world that trigger script based actions.
+- Developer utilities: Browse files, inspect textures, view console output, and manage Git commits.
 
 ### Engine Subsystems
 - Registry builders: Register items, blocks, block entities, recipes, sounds, particles, and tags using fluent Java/Groovy APIs.
 - Event system: Subscribe to player actions, block interactions, entity lifecycles, ticks, and engine events.
 - Spatial triggers: Define box or block regions backed by spatial hashing to run logic when entities enter, leave, or stay inside.
-- Dialogue system: Play branching conversations in chat or on-screen with player choices and script triggers.
+- Dialogue system: Play branching conversations in chat or on-screen with player choices.
 - Cutscenes: Animate camera paths with configurable interpolation (such as sine, cubic, bounce, and elastic) and screen fades.
-- Post-processing: Apply screen shaders, vignette, depth blur, color transitions, and custom skyboxes.
+- Post-processing: Apply screen shaders, vignette, depth blur, color transitions, and any other shader effect.
 - Progression stages: Gate items, blocks, mobs, recipes, and dimensions behind player stages.
-- Instanced dimensions: Create temporary dimension copies for custom game modes or minigames without altering the main save.
+- Instanced dimensions: Instance a world so the main copy doesn't get modified while playing in it.
 
 ---
 
@@ -87,10 +86,10 @@ To switch the active target version in your IDE or terminal, run the correspondi
 
 ```bash
 # Switch active version to Minecraft 26.1.2
-./gradlew SetActive26_1
+./gradlew "Set active project to 26.1"
 
 # Switch active version to Minecraft 26.2
-./gradlew SetActive26_2
+./gradlew "Set active project to 26.2"
 ```
 
 When using IntelliJ IDEA, the Stonecutter plugin automatically syncs the active version with your project view.
@@ -111,15 +110,15 @@ git clone https://github.com/LuckyMcDev/FoundryEngine.git
 cd FoundryEngine
 
 # Switch active Minecraft target version
-./gradlew SetActive26_1
+./gradlew "Set active project to 26.1"
 # or
-./gradlew SetActive26_2
+./gradlew "Set active project to 26.2"
 
 # Launch the Minecraft client
-./gradlew runClient
+./gradlew 26.1:runClient
 
 # Build the mod JAR for the active version
-./gradlew build
+./gradlew 26.1:build
 ```
 
 ---
@@ -141,7 +140,7 @@ cd FoundryEngine
 ### Libraries and Tools
 - [NeoForge](https://neoforged.net/): Mod loading framework
 - [Apache Groovy](https://groovy-lang.org/): Dynamic scripting runtime
-- [Dear ImGui](https://github.com/ocornut/imgui), [imgui-java](https://github.com/SpaiR/imgui-java), and [ImGuiMc](https://modrinth.com/mod/imguimc): In-game UI system
+- [ImGuiMc](https://modrinth.com/mod/imguimc): In-game UI system
 - [Stonecutter](https://stonecutter.kikugie.dev/): Multi-version build tool
 - [KubeJS](https://kubejs.com/): Workflow inspiration
 - [game-icons.net](https://game-icons.net/): Original cog icon base (CC-BY-3.0)

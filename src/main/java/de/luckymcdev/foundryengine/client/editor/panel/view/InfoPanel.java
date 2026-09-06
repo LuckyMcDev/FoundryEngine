@@ -29,7 +29,7 @@ public class InfoPanel extends EditorPanel {
 		licenseFoundryEditor = new ImGuiCoreTextEditor(null, null, EditorTheme.dark().build());
 		licenseFoundryEditor.setReadOnly(true);
 		licenseFoundryEditor.setText("""
-			Copyright LuckyMcDev""");
+			BSD 3-Clause-License - Copyright LuckyMcDev""");
 
 		licenseImGuiEditor = new ImGuiCoreTextEditor(null, null, EditorTheme.dark().build());
 		licenseImGuiEditor.setReadOnly(true);
