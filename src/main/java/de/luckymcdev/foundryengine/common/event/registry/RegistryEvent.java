@@ -30,6 +30,10 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+/**
+ * Due to how the event works right now it fires over and over again for every registry.
+ * Im working on a way to fix that at some point.
+ */
 public class RegistryEvent extends Event implements IModBusEvent {
 	private static final Set<String> LOGGED_SKIPS = ConcurrentHashMap.newKeySet();
 
