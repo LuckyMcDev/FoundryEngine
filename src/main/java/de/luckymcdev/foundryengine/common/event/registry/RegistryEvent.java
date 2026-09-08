@@ -23,7 +23,6 @@ import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,12 +37,11 @@ public class RegistryEvent extends Event implements IModBusEvent {
 		Common.registerEventClear(LOGGED_SKIPS::clear);
 	}
 
-	private final Map<ResourceKey<? extends Registry<?>>, RegisterEvent> eventMap;
+	private final RegisterEvent inner;
 	private final RegistryCollector collector;
 
-	public RegistryEvent(Map<ResourceKey<? extends Registry<?>>, RegisterEvent> eventMap,
-	                     RegistryCollector collector) {
-		this.eventMap = eventMap;
+	public RegistryEvent(RegisterEvent inner, RegistryCollector collector) {
+		this.inner = inner;
 		this.collector = collector;
 	}
 
@@ -53,20 +51,11 @@ public class RegistryEvent extends Event implements IModBusEvent {
 			.toList();
 	}
 
-	@SuppressWarnings("unchecked")
-	private <T> void registerInner(ResourceKey<? extends Registry<T>> key,
-	                               Consumer<RegisterEvent.RegisterHelper<T>> action) {
-		RegisterEvent inner = eventMap.get(key);
-		if (inner != null) {
-			inner.register(key, action);
-		}
-	}
-
 	public void items(ItemBuilder... builders) {
 		if (blockContent("item", Common.getCompatibilityMode().requiresBothSides(), "both the client and the server", () -> contentIds(builders))) {
 			return;
 		}
-		registerInner(BuiltInRegistries.ITEM.key(), helper -> {
+		inner.register(BuiltInRegistries.ITEM.key(), helper -> {
 			for (ItemBuilder builder : builders) {
 				builder.register(helper);
 			}
@@ -90,7 +79,7 @@ public class RegistryEvent extends Event implements IModBusEvent {
 		if (blockContent("block", Common.getCompatibilityMode().requiresBothSides(), "both the client and the server", () -> contentIds(builders))) {
 			return;
 		}
-		registerInner(BuiltInRegistries.BLOCK.key(), helper -> {
+		inner.register(BuiltInRegistries.BLOCK.key(), helper -> {
 			for (BlockBuilder builder : builders) {
 				builder.registerBlock(helper);
 			}
@@ -104,7 +93,7 @@ public class RegistryEvent extends Event implements IModBusEvent {
 			.filter(BlockBuilder::hasItem)
 			.toList();
 		if (!withItem.isEmpty()) {
-			registerInner(BuiltInRegistries.ITEM.key(), helper -> {
+			inner.register(BuiltInRegistries.ITEM.key(), helper -> {
 				for (BlockBuilder builder : withItem) {
 					builder.registerItem(helper);
 				}
@@ -124,7 +113,7 @@ public class RegistryEvent extends Event implements IModBusEvent {
 		if (blockContent("menu", Common.getCompatibilityMode().requiresBothSides(), "both the client and the server", () -> contentIds(builders))) {
 			return;
 		}
-		registerInner(BuiltInRegistries.MENU.key(), helper -> {
+		inner.register(BuiltInRegistries.MENU.key(), helper -> {
 			for (MenuBuilder<?> builder : builders) {
 				builder.register(helper);
 			}
@@ -147,7 +136,7 @@ public class RegistryEvent extends Event implements IModBusEvent {
 		if (blockContent("particle", Common.getCompatibilityMode().supportsClient(), "the client", () -> contentIds(builders))) {
 			return;
 		}
-		registerInner(BuiltInRegistries.PARTICLE_TYPE.key(), helper -> {
+		inner.register(BuiltInRegistries.PARTICLE_TYPE.key(), helper -> {
 			for (ParticleBuilder builder : builders) {
 				builder.register(helper);
 			}
@@ -161,7 +150,7 @@ public class RegistryEvent extends Event implements IModBusEvent {
 		if (blockContent("sound", Common.getCompatibilityMode().supportsClient(), "the client", () -> contentIds(builders))) {
 			return;
 		}
-		registerInner(BuiltInRegistries.SOUND_EVENT.key(), helper -> {
+		inner.register(BuiltInRegistries.SOUND_EVENT.key(), helper -> {
 			for (SoundBuilder builder : builders) {
 				builder.register(helper);
 			}
@@ -175,7 +164,7 @@ public class RegistryEvent extends Event implements IModBusEvent {
 		if (blockContent("block entity", Common.getCompatibilityMode().requiresBothSides(), "both the client and the server", () -> contentIds(builders))) {
 			return;
 		}
-		registerInner(BuiltInRegistries.BLOCK_ENTITY_TYPE.key(), helper -> {
+		inner.register(BuiltInRegistries.BLOCK_ENTITY_TYPE.key(), helper -> {
 			for (BlockEntityBuilder<?> builder : builders) {
 				builder.register(helper);
 			}
@@ -194,12 +183,11 @@ public class RegistryEvent extends Event implements IModBusEvent {
 		}
 	}
 
-	public <T> void register(ResourceKey<Registry<T>> key,
-	                         Consumer<RegisterEvent.RegisterHelper<T>> action) {
+	public <T> void register(ResourceKey<Registry<T>> key, Consumer<RegisterEvent.RegisterHelper<T>> action) {
 		if (blockContent("registry", Common.getCompatibilityMode().requiresBothSides(), "both the client and the server", () -> List.of(key.identifier().toString()))) {
 			return;
 		}
-		registerInner(key, action);
+		inner.register(key, action);
 	}
 
 	private boolean blockContent(String kind, boolean allowed, String requires, Supplier<List<String>> ids) {

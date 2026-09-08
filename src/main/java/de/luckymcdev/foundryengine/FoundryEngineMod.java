@@ -51,10 +51,8 @@ import de.luckymcdev.foundryengine.mixin.MinecraftServerAccess;
 import de.luckymcdev.foundryengine.server.command.FoundryCommands;
 import de.luckymcdev.foundryengine.server.packs.DynamicPackRepository;
 import net.minecraft.SharedConstants;
-import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.Pack;
@@ -96,9 +94,7 @@ import org.slf4j.Logger;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Main entrypoint for FoundryEngine. Registers all event bus listeners, packets, and subsystems.
@@ -109,8 +105,6 @@ public class FoundryEngineMod {
 	private static final IEventBus BUS = NeoForge.EVENT_BUS;
 	public static @Nullable ArtifactVersion modVersion;
 	private static @Nullable IEventBus modBus;
-	private final Map<ResourceKey<? extends Registry<?>>, RegisterEvent> eventMap = new HashMap<>();
-	private boolean registryEventPosted = false;
 
 	public FoundryEngineMod(IEventBus modBus, ModContainer modContainer) {
 		FoundryEngineMod.modBus = modBus;
@@ -259,17 +253,14 @@ public class FoundryEngineMod {
 	}
 
 	private void onEngineRegister(RegisterEvent event) {
-		eventMap.put(event.getRegistryKey(), event);
-	}
-
-	private void postFoundryRegistryEvent() {
 		if (modBus == null) {
 			return;
 		}
 		RegistryCollector collector = new RegistryCollector();
 		Common.setRegistryCollector(collector);
-		RegistryEvent registryEvent = new RegistryEvent(eventMap, collector);
+		RegistryEvent registryEvent = new RegistryEvent(event, collector);
 		modBus.post(registryEvent);
+		//ModLoader.postEventWrapContainerInModOrder(registryEvent);
 		BundleEvents.Internal.postRegistry(registryEvent);
 	}
 
@@ -286,10 +277,6 @@ public class FoundryEngineMod {
 	}
 
 	private void onCommonSetup(FMLCommonSetupEvent event) {
-		if (!registryEventPosted) {
-			registryEventPosted = true;
-			postFoundryRegistryEvent();
-		}
 		BundleEvents.Internal.postCommonSetup(event);
 		BundleDataGenerator.runAll();
 
