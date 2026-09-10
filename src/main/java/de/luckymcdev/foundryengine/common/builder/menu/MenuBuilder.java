@@ -1,28 +1,27 @@
 package de.luckymcdev.foundryengine.common.builder.menu;
 
 import de.luckymcdev.foundryengine.common.builder.AbstractBuilder;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.MenuProvider;
-import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.flag.FeatureFlags;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.registries.RegisterEvent;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
+import org.jetbrains.annotations.Nullable;
 
-public class MenuBuilder<M extends AbstractContainerMenu> extends AbstractBuilder<MenuType<M>> {
+public class MenuBuilder<M extends AbstractContainerMenu> extends AbstractBuilder<MenuType<M>> implements MenuProvider {
 
-	private BiFunction<Integer, Inventory, M> menuSupplier;
-	private MenuExtraFactory<M> extraFactory;
+	private Supplier<M> supplier;
+	private ContainerFactory<M> containerFactory;
 	private FeatureFlagSet featureFlags = FeatureFlags.DEFAULT_FLAGS;
+	private @Nullable ScreenFactory<M> screenFactory;
+	private boolean screenDisabled = false;
 
 	private MenuBuilder(Identifier id) {
 		super(id);
@@ -32,20 +31,13 @@ public class MenuBuilder<M extends AbstractContainerMenu> extends AbstractBuilde
 		return new MenuBuilder<>(id);
 	}
 
-	public static MenuBuilder<SimpleMenu> chestMenu(Identifier id, int rows) {
-		return MenuBuilder.<SimpleMenu>create(id)
-			.supplier((containerId, playerInventory) ->
-				SimpleMenu.chest(containerId, playerInventory, rows)
-			);
-	}
-
-	public MenuBuilder<M> supplier(BiFunction<Integer, Inventory, M> supplier) {
-		this.menuSupplier = supplier;
+	public MenuBuilder<M> supplier(Supplier<M> supplier) {
+		this.supplier = supplier;
 		return this;
 	}
 
-	public MenuBuilder<M> extraFactory(MenuExtraFactory<M> factory) {
-		this.extraFactory = factory;
+	public MenuBuilder<M> containerFactory(ContainerFactory<M> factory) {
+		this.containerFactory = factory;
 		return this;
 	}
 
@@ -54,33 +46,57 @@ public class MenuBuilder<M extends AbstractContainerMenu> extends AbstractBuilde
 		return this;
 	}
 
-	public MenuProvider createProvider(Component displayName) {
-		if (menuSupplier == null) {
-			throw new IllegalStateException("No server factory set.");
-		}
-		return new SimpleMenuProvider(
-			(containerId, inv, player) -> menuSupplier.apply(containerId, inv),
-			displayName
-		);
+	public MenuBuilder<M> screen(ScreenFactory<M> screenFactory) {
+		this.screenFactory = screenFactory;
+		this.screenDisabled = false;
+		return this;
 	}
 
-	public void open(ServerPlayer player, Component displayName) {
-		if (extraFactory != null) {
-			throw new IllegalStateException(
-				"This menu requires extra data. Use open(player, displayName, extraDataWriter) instead."
-			);
-		}
-		player.openMenu(createProvider(displayName));
+	public MenuBuilder<M> disableMenuScreen() {
+		this.screenDisabled = true;
+		return this;
 	}
 
-	public void open(ServerPlayer player, Component displayName,
-	                 Consumer<RegistryFriendlyByteBuf> extraDataWriter) {
-		if (extraFactory == null) {
-			throw new IllegalStateException(
-				"This menu does not support extra data. Use open(player, displayName) instead."
+	public boolean isScreenDisabled() {
+		return screenDisabled;
+	}
+
+	public @Nullable ScreenFactory<M> getScreenFactory() {
+		return screenFactory;
+	}
+
+	@Override
+	public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
+		MenuType<M> type = get();
+		if (supplier != null) {
+			return supplier.create(type, containerId, playerInventory);
+		}
+		if (containerFactory != null) {
+			return containerFactory.create(type, containerId, playerInventory, null);
+		}
+		throw new IllegalStateException("No supplier or container factory set.");
+	}
+
+	@Override
+	public Component getDisplayName() {
+		return Component.empty();
+	}
+
+	@Override
+	public MenuType<M> build() {
+		if (supplier == null && containerFactory == null) {
+			throw new IllegalStateException("Either a supplier or a container factory must be provided.");
+		}
+		if (containerFactory != null) {
+			ContainerFactory<M> factory = containerFactory;
+			return IMenuTypeExtension.create(
+				(containerId, playerInventory, extraData) ->
+					factory.create(null, containerId, playerInventory, extraData)
 			);
 		}
-		player.openMenu(createProvider(displayName), extraDataWriter);
+		Supplier<M> s = supplier;
+		return new MenuType<>((containerId, playerInventory) ->
+			s.create(null, containerId, playerInventory), featureFlags);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -91,22 +107,18 @@ public class MenuBuilder<M extends AbstractContainerMenu> extends AbstractBuilde
 		return menuType;
 	}
 
-	public MenuType<M> build() {
-		if (menuSupplier == null && extraFactory == null) {
-			throw new IllegalStateException("Either a supplier or an extra factory must be provided.");
-		}
-		if (extraFactory != null) {
-			return IMenuTypeExtension.create(
-				(containerId, playerInventory, extraData) ->
-					extraFactory.create(containerId, playerInventory, extraData)
-			);
-		} else {
-			return new MenuType<>(menuSupplier::apply, featureFlags);
-		}
+	@FunctionalInterface
+	public interface Supplier<M extends AbstractContainerMenu> {
+		M create(MenuType<M> type, int containerId, Inventory playerInventory);
 	}
 
 	@FunctionalInterface
-	public interface MenuExtraFactory<M extends AbstractContainerMenu> {
-		M create(int containerId, Inventory playerInventory, FriendlyByteBuf extraData);
+	public interface ContainerFactory<M extends AbstractContainerMenu> {
+		M create(MenuType<M> type, int containerId, Inventory playerInventory, @Nullable RegistryFriendlyByteBuf extraData);
+	}
+
+	@FunctionalInterface
+	public interface ScreenFactory<M extends AbstractContainerMenu> {
+		Object create(M menu, Inventory inventory, Component title);
 	}
 }

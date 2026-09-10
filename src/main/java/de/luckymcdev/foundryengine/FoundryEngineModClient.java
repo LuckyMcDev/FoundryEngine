@@ -74,6 +74,7 @@ import net.neoforged.neoforge.client.event.RegisterDebugEntriesEvent;
 import net.neoforged.neoforge.client.event.RegisterDebugRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.client.event.RenderFrameEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
@@ -115,6 +116,7 @@ public class FoundryEngineModClient {
 		modBus.addListener(this::onRegisterDebugRenderers);
 		modBus.addListener(this::onRegisterGuiLayers);
 		modBus.addListener(this::onRegisterParticleProviders);
+		modBus.addListener(this::onRegisterMenuScreens);
 		modBus.addListener(this::loadImGuiEvent);
 		modBus.addListener(this::registerImGuiFonts);
 		BUS.addListener(this::onClientTickPost);
@@ -264,6 +266,13 @@ public class FoundryEngineModClient {
 		var collector = Common.getRegistryCollector();
 		if (collector != null) {
 			RegistryEventClient.registerParticleProviders(event, collector);
+		}
+	}
+
+	private void onRegisterMenuScreens(RegisterMenuScreensEvent event) {
+		var collector = Common.getRegistryCollector();
+		if (collector != null) {
+			RegistryEventClient.registerMenuScreens(event, collector);
 		}
 	}
 

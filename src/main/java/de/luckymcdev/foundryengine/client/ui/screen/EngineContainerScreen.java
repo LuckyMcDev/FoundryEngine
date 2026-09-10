@@ -3,28 +3,38 @@ package de.luckymcdev.foundryengine.client.ui.screen;
 import de.luckymcdev.foundryengine.client.ui.UIArea;
 import de.luckymcdev.foundryengine.client.ui.widget.WidgetBase;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 
-public abstract class EngineScreen extends Screen {
+/**
+ * Base class for container screens that integrates the Taffy-based widget system.
+ * Extends {@link AbstractContainerScreen}
+ * to provide slot rendering alongside custom widgets (buttons, panels, text, etc.).
+ */
+public abstract class EngineContainerScreen<M extends AbstractContainerMenu> extends AbstractContainerScreen<M> {
+
 	private final WidgetBase root;
+	private final WidgetBase backgroundRoot;
 	private final boolean debug;
 	float tick = 0.0f;
 	long lastNanos = 0;
 	private boolean widgetsInitialized;
 
-	public EngineScreen(boolean debug) {
-		super(Component.empty());
+	public EngineContainerScreen(M menu, Inventory inventory, Component title, boolean debug) {
+		super(menu, inventory, title);
 		this.root = new WidgetBase();
+		this.backgroundRoot = new WidgetBase();
 		this.debug = debug;
 	}
 
-	public EngineScreen() {
-		this(false);
+	public EngineContainerScreen(M menu, Inventory inventory, Component title) {
+		this(menu, inventory, title, false);
 	}
 
 	public boolean shouldDebug() {
@@ -45,54 +55,106 @@ public abstract class EngineScreen extends Screen {
 	}
 
 	/**
-	 * Whether {@link #init()} has completed at least once (i.e. the widget tree exists).
+	 * Whether {@link #init()} has completed at least once (i.e. the widget trees exist).
 	 */
 	protected final boolean isWidgetsInitialized() {
 		return widgetsInitialized;
 	}
 
+	/**
+	 * Area the widget trees are laid out within. Defaults to the full screen.
+	 * Override and return {@link #getGuiArea()} to place widgets relative to the
+	 * container GUI (so their coordinates ignore where the GUI is on-screen).
+	 */
+	protected UIArea getWidgetArea() {
+		return new UIArea(0, 0, this.width, this.height);
+	}
+
+	/**
+	 * The pixel rect occupied by the container GUI (slots + labels). Widgets laid out
+	 * against this rect use {@code (0,0)} as the top-left of the container frame.
+	 */
+	protected final UIArea getGuiArea() {
+		return new UIArea(this.leftPos, this.topPos, this.imageWidth, this.imageHeight);
+	}
+
 	@Override
 	protected void init() {
+		super.init();
 		lastNanos = System.nanoTime();
 		this.root.onInit();
 		this.root.updateArea(this.getWidgetArea());
+		this.backgroundRoot.onInit();
+		this.backgroundRoot.updateArea(this.getWidgetArea());
 	}
 
 	@Override
 	public void resize(int width, int height) {
 		super.resize(width, height);
 		this.root.updateArea(this.getWidgetArea());
+		this.backgroundRoot.updateArea(this.getWidgetArea());
 	}
 
 	/**
-	 * Area the widget tree is laid out within. Defaults to the full screen.
+	 * Adds a foreground widget (rendered above slots, below carried item / tooltips).
 	 */
-	protected UIArea getWidgetArea() {
-		return new UIArea(0, 0, this.width, this.height);
-	}
-
-	public void addWidgets(WidgetBase... widgets) {
-		for (WidgetBase w : widgets) {
-			this.root.addWidget(w);
-		}
-	}
-
 	public void addWidget(WidgetBase widget) {
 		this.root.addWidget(widget);
 	}
 
+	/**
+	 * Adds foreground widgets.
+	 */
+	public void addWidgets(WidgetBase... widgets) {
+		for (WidgetBase widget : widgets) {
+			this.root.addWidget(widget);
+		}
+	}
+
+	/**
+	 * Removes a foreground widget.
+	 */
 	public void removeWidget(WidgetBase widget) {
 		this.root.removeWidget(widget);
 	}
 
-	@Override
-	public final void tick() {
-		this.root.preTick();
-		doTick();
-		this.root.tick();
+	/**
+	 * Adds a background widget (rendered behind slots & labels).
+	 */
+	public void addBackgroundWidget(WidgetBase widget) {
+		this.backgroundRoot.addWidget(widget);
 	}
 
+	/**
+	 * Adds background widgets.
+	 */
+	public void addBackgroundWidgets(WidgetBase... widgets) {
+		for (WidgetBase widget : widgets) {
+			this.backgroundRoot.addWidget(widget);
+		}
+	}
+
+	/**
+	 * Removes a background widget.
+	 */
+	public void removeBackgroundWidget(WidgetBase widget) {
+		this.backgroundRoot.removeWidget(widget);
+	}
+
+	/**
+	 * Override to run per-game-tick logic alongside the widgets.
+	 */
 	public void doTick() {
+	}
+
+	@Override
+	protected final void containerTick() {
+		super.containerTick();
+		this.root.preTick();
+		this.root.tick();
+		this.backgroundRoot.preTick();
+		this.backgroundRoot.tick();
+		this.doTick();
 	}
 
 	private void renderWidget(WidgetBase widget, GuiGraphicsExtractor graphics, int mouseX, int mouseY, float tickDelta) {
@@ -108,13 +170,27 @@ public abstract class EngineScreen extends Screen {
 	}
 
 	@Override
+	public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+		super.extractBackground(graphics, mouseX, mouseY, partialTick);
+		renderWidget(this.backgroundRoot, graphics, mouseX, mouseY, 1.0f);
+	}
+
+	@Override
 	public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
-		long diffNanos = System.nanoTime() - lastNanos;
-		tick += diffNanos / 50_000_000.0f;
+		long now = System.nanoTime();
+		tick += (now - lastNanos) / 50_000_000.0f;
 		float tickDelta = tick - Mth.floor(tick);
-		lastNanos = System.nanoTime();
+		lastNanos = now;
+
+		extractContents(guiGraphics, mouseX, mouseY, partialTick);
 
 		renderWidget(this.root, guiGraphics, mouseX, mouseY, tickDelta);
+
+		extractCarriedItem(guiGraphics, mouseX, mouseY);
+		//? if 26.1 {
+		extractSnapbackItem(guiGraphics);
+		//?}
+		extractTooltip(guiGraphics, mouseX, mouseY);
 	}
 
 	@Override
