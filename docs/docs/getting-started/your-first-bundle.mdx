@@ -68,10 +68,10 @@ The folder name of the deployed bundle uses the `bundleId` and `version` from `g
 
 A bundle needs at least one entrypoint. Create a Groovy class that implements `BundleEntrypoint` under `src/main/groovy`.
 
-`src/main/groovy/mybundle/MyBundle.groovy`:
+`src/main/groovy/common/mybundle/MyBundle.groovy`:
 
 ```groovy
-package mybundle
+package common.mybundle
 
 import de.luckymcdev.foundryengine.common.script.BundleEntrypoint
 
