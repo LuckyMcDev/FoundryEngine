@@ -58,19 +58,6 @@ public final class Common {
 	public static final Path ENGINE_DATA = CACHE.resolve("engine.dat");
 	public static final Path PAKKU = dir(CACHE.resolve("pakku"));
 	public static final boolean IS_PAKKU = PAKKU.resolve("pakku.jar").toFile().exists();
-	public static final Path GITIGNORE = file(GAMEDIR.resolve(".gitignore"), """
-		# FoundryEngine Default gitignore
-		/*
-		
-		!/config
-		!/FoundryEngine
-		!/pakku*.json
-		!/icon.png
-		!/LICENSE.md
-		
-		/FoundryEngine/.cache/icons
-		/FoundryEngine/.cache/pakku/
-		""");
 	public static final Path CONFIG_FE = dir(DIRECTORY.resolve("config"));
 	private static final NetworkManager NETWORK_MANAGER = new NetworkManager();
 	private static final SavedDataManager SAVED_DATA_MANAGER = new SavedDataManager(NETWORK_MANAGER);

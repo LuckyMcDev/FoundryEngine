@@ -1,0 +1,16 @@
+pluginManagement {
+    repositories {
+        mavenLocal()
+        gradlePluginPortal()
+        maven { url = 'https://maven.neoforged.net/releases' }
+    }
+}
+
+rootProject.name = 'foundry-bundles'
+
+file('FoundryEngine/bundles').listFiles()?.each { dir ->
+    if (dir.isDirectory() && dir.listFiles({ it.name.endsWith('.bundles.toml') } as FileFilter)) {
+        include ":${dir.name}"
+        project(":${dir.name}").projectDir = dir
+    }
+}

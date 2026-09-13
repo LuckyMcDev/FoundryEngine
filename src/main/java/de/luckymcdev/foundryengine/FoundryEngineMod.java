@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.cutscene.util.ServerScreenEffectManager;
 import de.luckymcdev.foundryengine.common.data.gen.BundleDataGenerator;
+import de.luckymcdev.foundryengine.common.util.FirstRun;
 import de.luckymcdev.foundryengine.common.event.BlockEvents;
 import de.luckymcdev.foundryengine.common.event.BundleEvents;
 import de.luckymcdev.foundryengine.common.event.ClientEvents;
@@ -71,6 +72,7 @@ import net.neoforged.fml.event.lifecycle.FMLConstructModEvent;
 import net.neoforged.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.fml.event.lifecycle.InterModProcessEvent;
+import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeVersion;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
@@ -265,6 +267,7 @@ public class FoundryEngineMod {
 	}
 
 	private void onConstruct(FMLConstructModEvent event) {
+		EngineLogAppender.Holder.addAppender();
 		try {
 			Common.getBundleManager().discover(Common.BUNDLES);
 			Common.getBundleManager().refreshModList();
@@ -272,8 +275,23 @@ public class FoundryEngineMod {
 		} catch (IOException e) {
 			LOGGER.error("Error while loading bundles: {}", (Object) e.getStackTrace());
 		}
+		extractGradleTemplates();
+	}
 
-		EngineLogAppender.Holder.addAppender();
+	private void extractGradleTemplates() {
+		// Find a better solution than this?
+		var gradleFiles = List.of("build.gradle", "settings.gradle", "gradle.properties", ".gitignore");
+		for (String fileName : gradleFiles) {
+			String resourcePath = "assets/foundryengine/gradle/" + fileName;
+			try (var stream = getClass().getClassLoader().getResourceAsStream(resourcePath)) {
+				if (stream != null) {
+					Files.copy(stream, Common.GAMEDIR.resolve(fileName));
+					LOGGER.debug("Extracted gradle template: {}", fileName);
+				}
+			} catch (Exception e) {
+				LOGGER.warn("Failed to extract gradle template {}: {}", fileName, e.getMessage());
+			}
+		}
 	}
 
 	private void onCommonSetup(FMLCommonSetupEvent event) {
