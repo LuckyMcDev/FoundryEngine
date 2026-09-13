@@ -69,16 +69,12 @@ public class StorageSourceManager {
 	 * Adds an additional directory to search for world data.
 	 */
 	public static void addAdditionalPath(Path path) {
-		if (path != null && Files.isDirectory(path)) {
-			Path normalized = path.toAbsolutePath().normalize();
-			synchronized (LOCK) {
-				if (!additionalBaseDirs.contains(normalized)) {
-					additionalBaseDirs.add(normalized);
-					LOGGER.info("Added extra world directory: {}", normalized);
-				}
+		Path normalized = path.toAbsolutePath().normalize();
+		synchronized (LOCK) {
+			if (!additionalBaseDirs.contains(normalized)) {
+				additionalBaseDirs.add(normalized);
+				LOGGER.info("Added extra world directory: {}", normalized);
 			}
-		} else {
-			LOGGER.warn("Attempted to add invalid or non-existent path: {}", path);
 		}
 	}
 
