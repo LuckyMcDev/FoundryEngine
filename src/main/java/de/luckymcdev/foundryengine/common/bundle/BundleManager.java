@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.bundle.info.BundleDependency;
 import de.luckymcdev.foundryengine.common.bundle.modcompat.BundleModContainer;
+import de.luckymcdev.foundryengine.common.bundle.modcompat.BundleModFile;
 import de.luckymcdev.foundryengine.common.bundle.modcompat.BundleModFileInfo;
 import de.luckymcdev.foundryengine.common.bundle.modcompat.BundleModInfo;
 import de.luckymcdev.foundryengine.common.registry.GenericRegistry;
@@ -76,6 +77,9 @@ public class BundleManager implements ResourceManagerReloadListener {
 		var modInfo = new BundleModInfo(bundleInfo, null);
 		var owningFile = new BundleModFileInfo(modInfo, bundleInfo, modInfo);
 		modInfo.setOwningFile(owningFile);
+		var modFile = new BundleModFile(bundleInfo, bundle.bundleFiles().root());
+		modFile.setModFileInfo(owningFile);
+		owningFile.setModFile(modFile);
 		return new BundleModContainer(modInfo, bundle);
 	}
 

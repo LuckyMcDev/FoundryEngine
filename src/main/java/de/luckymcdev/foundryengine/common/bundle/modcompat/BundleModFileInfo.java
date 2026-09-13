@@ -14,11 +14,16 @@ public class BundleModFileInfo implements IModFileInfo {
 	private final BundleModInfo modInfo;
 	private final BundleInfo bundleInfo;
 	private final IConfigurable config;
+	private BundleModFile modFile;
 
 	public BundleModFileInfo(BundleModInfo modInfo, BundleInfo bundleInfo, IConfigurable config) {
 		this.modInfo = modInfo;
 		this.bundleInfo = bundleInfo;
 		this.config = config;
+	}
+
+	public void setModFile(BundleModFile modFile) {
+		this.modFile = modFile;
 	}
 
 	@Override
@@ -63,7 +68,7 @@ public class BundleModFileInfo implements IModFileInfo {
 
 	@Override
 	public IModFile getFile() {
-		return null;
+		return modFile;
 	}
 
 	@Override
