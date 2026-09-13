@@ -34,35 +34,22 @@ The first Gradle sync downloads NeoForge and Minecraft and decompiles them. This
 
 ## Set the identity of the bundle
 
-A bundle knows who it is through two files that must agree: `gradle.properties` and the bundle metadata file.
+A bundle knows who it is through one file.
 
-Open `gradle.properties` and set your own values:
-
-```properties
-bundleId = mybundle
-version = 0.0.1
-displayName = My Bundle
-displayURL = https://example.com
-authors = You
-description = My first bundle.
-```
-
-Open `src/main/resources/mybundle.bundles.toml` (it ships as `examplebundle.bundles.toml`; rename it to your `bundleId`) and make its fields match:
+Open `mybundle.bundles.toml` and set your own values:
 
 ```toml
 [[bundles]]
 bundleId = "mybundle"
-version = "0.0.1"
+version = "1.0.0"
 displayName = "My Bundle"
-displayURL = "https://example.com"
-authors = "You"
-description = "My first bundle."
+displayURL = "https://example.com/my-bundle"
+authors = "Your Name"
+description = "What this bundle does."
 dependencies = [
     "mod:neoforge@26.1.0.1-beta"
 ]
 ```
-
-The folder name of the deployed bundle uses the `bundleId` and `version` from `gradle.properties`, so the two files must agree.
 
 ## Add an entrypoint
 
