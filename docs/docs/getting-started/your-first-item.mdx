@@ -56,16 +56,16 @@ Two pieces of Groovy syntax to know:
 
 ## Give the item a texture
 
-The item needs a texture or it renders as the missing texture checkerboard. The template packs `src/main/resources` into the bundle, so add a texture file:
+The item needs a texture or it renders as the missing texture checkerboard. Place the texture in your bundle's assets folder:
 
-1. Create `src/main/resources/assets/mybundle/textures/item/magic_gem.png`.
+1. Create `FoundryEngine/bundles/mybundle/assets/mybundle/textures/item/magic_gem.png`.
 2. Put a 16 by 16 pixel image there, named exactly `magic_gem.png`. The path must match the item's path: item `id("magic_gem")` looks for `textures/item/magic_gem.png`.
 
 The model that points the item at the texture is generated for you by the data generator. You only supply the texture.
 
 ## Run the game
 
-Run the `runClient` task in the Gradle tool window. When the game loads, open the creative tab and search for `magic_gem`. It appears with your texture.
+Run the game from your launcher. When it loads, open the creative tab and search for `magic_gem`. It appears with your texture.
 
 ## What you built
 

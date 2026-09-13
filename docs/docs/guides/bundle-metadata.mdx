@@ -33,10 +33,6 @@ dependencies = [
 | `description` | Short summary. |
 | `dependencies` | List of dependencies, like `mod:neoforge@26.1.0.1-beta`. |
 
-## Version must match
-
-The version in `gradle.properties` has to match the `.bundles.toml` version. The bundle is deployed as `<bundleId>-<version>`; a mismatch is reported when the bundle is built or loaded.
-
 ## The bundle id is the namespace
 
 `bundleId` becomes the namespace of every `Identifier` you create, so `id("magic_gem")` with bundle id `mybundle` resolves to `mybundle:magic_gem`. Two bundles with the same id collide, so keep ids unique.

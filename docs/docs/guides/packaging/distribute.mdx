@@ -8,15 +8,13 @@ description: Hand your bundle to other players.
 
 A bundle is the folder with your scripts, assets, and data, plus a `.bundles.toml` metadata file. Distributing it means giving that to someone else to drop into their bundle directory.
 
-## Build a release
-
-- Make sure the bundle id and version in `gradle.properties` match `.bundles.toml`.
-- Run the deploy task so the bundle is assembled with its assets. On a development machine this happens automatically when you launch the client (`runClient` depends on `deployBundle`).
-- The assembled bundle lands under the engine's bundle path as `<id>-<version>`.
-
 ## Share the files
 
 Zip the bundle directory and send it. The recipient unzips it into their bundle directory and restarts, or runs `/engine reload` if the engine is already running.
+
+:::note
+Technically it doesnt need to be unzipped, im just not sure which is more performant.
+:::
 
 ## What the recipient needs
 

@@ -10,33 +10,27 @@ You need Java 25 and the IntelliJ IDEA IDE. If you do not have them, install a J
 
 ## What a bundle is
 
-A bundle is a folder of Groovy scripts, textures, and data. The game reads it at runtime, so you change content without compiling Java. This tutorial uses the template on GitHub, [ExampleBundle](https://github.com/LuckyMcDev/ExampleBundle), which is a ready-to-run bundle project.
+A bundle is a folder of Groovy scripts, textures, and data. The game reads it at runtime, so you change content without compiling Java. This tutorial uses a copy of the Minimal Bundle found in the FoundryEngine repository.
 
-## Clone the template
+## Launch the Game one time
 
-Open a terminal and clone the repository.
+The game must be launched once to generate all necessary files.
 
-```bash
-git clone https://github.com/LuckyMcDev/ExampleBundle my-bundle
-```
+## Open the Minecraft Folder in IntelliJ
 
-Move into the folder:
-
-```bash
-cd my-bundle
-```
-
-## Open it in IntelliJ
-
-Open IntelliJ IDEA, then open the `my-bundle` folder as a project. IntelliJ imports it as a Gradle project.
+Open IntelliJ IDEA, then open the `minecraft` folder as a project. IntelliJ imports it as a Gradle project.
 
 The first Gradle sync downloads NeoForge and Minecraft and decompiles them. This can take up to an hour on a slow machine. Let it finish. When it is done, the project compiles and IntelliJ shows the Gradle tool window.
+
+
+## Copy the Minimal Bundle
+Copy the minimal bundle from the FoundryEngine repository, specifically under the "ExampleBundles" folder. Place it in `FoundryEngine/bundles/` inside your `.minecraft` directory.
 
 ## Set the identity of the bundle
 
 A bundle knows who it is through one file.
 
-Open `mybundle.bundles.toml` and set your own values:
+Open `minimal.bundles.toml` and set your own values:
 
 ```toml
 [[bundles]]
@@ -53,9 +47,9 @@ dependencies = [
 
 ## Add an entrypoint
 
-A bundle needs at least one entrypoint. Create a Groovy class that implements `BundleEntrypoint` under `src/main/groovy`.
+A bundle needs at least one entrypoint. Create a Groovy class that implements `BundleEntrypoint` under `scripts`.
 
-`src/main/groovy/common/mybundle/MyBundle.groovy`:
+`scripts/common/mybundle/MyBundle.groovy` is a good place to start:
 
 ```groovy
 package common.mybundle
@@ -78,30 +72,20 @@ class MyBundle implements BundleEntrypoint {
 
 `onLoad` runs when the bundle loads. `onUnload` runs when it reloads or is removed.
 
-## Link the FoundryEngine mod
-
-The template needs the FoundryEngine mod on its classpath before these imports resolve. The template reads a `dynamic-mods.properties` file to find the folder that holds the mod jar.
-
-:::note
-The exact way to obtain and point at the FoundryEngine jar depends on your setup. The development workflow is not yet covered in full in the docs. The template has a `modPathListener` task that receives a broadcast mod path and a `refreshDynamicMods` task to pick it up. Set the path, then re-sync the Gradle project.
-:::
-
 ## Run the game
 
-In the Gradle tool window, run the `runClient` task. It builds the bundle and deploys it to `run/FoundryEngine/bundles/mybundle-0.0.1`, then starts the game.
+Now just run the game from your launcher.
 
-`runClient` depends on the `deployBundle` task, which copies the scripts and resources out of `src/` and into that `bundles` folder before the game starts.
-
-When the game reaches the title screen, your bundle has loaded. Confirm it by watching the log for the line `My bundle loaded!`. On the debug screen, the bundle appears on the bundle list.
+:::note
+Support for running from intellij will come soon.
+:::
 
 ## Check the outcome
 
-You built and ran a bundle. It does nothing yet beyond printing a line, which is enough to prove the cycle works: write a script, run `runClient`, see it load.
+You should now see the message "My bundle loaded!" in the console.
 
 Next, give the bundle content. Continue to [Your first item](your-first-item).
 
 ## Troubleshooting
 
 - **The first sync is slow.** NeoForge is large. Let it finish once; later syncs are faster.
-- **The bundle id does not match.** The metadata in `gradle.properties` and the `.bundles.toml` must agree, or the deployed folder name will not point at the right bundle.
-- **Imports do not resolve.** The FoundryEngine jar is not on the classpath. Point `dynamic-mods.properties` at the mod jar and re-sync.

@@ -27,7 +27,7 @@ What the properties do:
 - `.lightLevel { 15 }` makes the block emit the maximum light level.
 - `it.blocks(glow)` registers the block in the registry event.
 
-The block needs a texture the same way the item did. Put a 16 by 16 image at `src/main/resources/assets/mybundle/textures/block/glowing_stone.png`, with the file name matching the block's path.
+The block needs a texture the same way the item did. Put a 16 by 16 image at `FoundryEngine/bundles/mybundle/assets/mybundle/textures/block/glowing_stone.png`, with the file name matching the block's path.
 
 ## A crafting recipe
 
@@ -68,6 +68,6 @@ def shapeless = RecipeBuilder.shapeless(id("gems_from_glowstone"), id("magic_gem
 
 ## Run the game
 
-Run `runClient`, open the recipe book, and craft your gem or your block. A glowing block made from your own item is a good checkpoint: it proves items, blocks, and recipes all registered together.
+Run the game from your launcher, open the recipe book, and craft your gem or your block. A glowing block made from your own item is a good checkpoint: it proves items, blocks, and recipes all registered together.
 
 Next, add [sounds and particles](sounds-and-particles).
