@@ -1,0 +1,27 @@
+---
+sidebar_position: 11
+title: NetworkEvents
+description: Reference for custom network data events.
+---
+
+# NetworkEvents
+
+`NetworkEvents` posts callbacks when custom network data is received from the other side (client or server).
+
+## Events
+
+| Method | When |
+| --- | --- |
+| `onCustomDataReceived { event -> ... }` | Custom network data is received. |
+
+## Example
+
+```groovy
+NetworkEvents.onCustomDataReceived { event ->
+    println "Received custom data: ${event.data}"
+}
+```
+
+## Related
+
+- [BundleEvents](BundleEvents).

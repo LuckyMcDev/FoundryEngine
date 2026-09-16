@@ -1,0 +1,30 @@
+---
+sidebar_position: 7
+title: GameEvents
+description: Reference for game session lifecycle events.
+---
+
+# GameEvents
+
+`GameEvents` posts callbacks around game session state changes. Each callback receives an event with `event.sessionId` (the `Identifier` of the session).
+
+## Events
+
+| Method | When |
+| --- | --- |
+| `onStarting { event -> ... }` | A game session is about to start. |
+| `onStarted { event -> ... }` | A game session has started. |
+| `onStopping { event -> ... }` | A game session is about to stop. |
+| `onStopped { event -> ... }` | A game session has stopped. |
+
+## Example
+
+```groovy
+GameEvents.onStarted { event ->
+    println "Session ${event.sessionId} started!"
+}
+```
+
+## Related
+
+- Stages and sessions: [Stages and game sessions](../../getting-started/stages-and-game-sessions).

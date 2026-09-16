@@ -1,0 +1,29 @@
+---
+sidebar_position: 12
+title: RecipeEvents
+description: Reference for recipe sync and modification events.
+---
+
+# RecipeEvents
+
+`RecipeEvents` posts callbacks around recipe synchronization and modification.
+
+## Events
+
+| Method | When |
+| --- | --- |
+| `recipesReceived { event -> ... }` | The server sends the recipe list to the client. |
+| `modifyRecipes { event -> ... }` | Recipes are being modified before they are applied. |
+
+## Example
+
+```groovy
+RecipeEvents.modifyRecipes { event ->
+    // Modify recipe JSONs here
+    println "Modifying recipes"
+}
+```
+
+## Related
+
+- [BundleEvents](BundleEvents).

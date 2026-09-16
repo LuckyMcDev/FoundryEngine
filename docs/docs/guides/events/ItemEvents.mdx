@@ -1,0 +1,38 @@
+---
+sidebar_position: 8
+title: ItemEvents
+description: Reference for item interaction events.
+---
+
+# ItemEvents
+
+`ItemEvents` posts callbacks around item interactions. Each callback receives the relevant NeoForge event object.
+
+## Events
+
+| Method | When |
+| --- | --- |
+| `pickedUp { event -> ... }` | An item entity is picked up by a player. |
+| `destroyed { event -> ... }` | A player's item is destroyed (breaks, consumed). |
+| `rightClicked { event -> ... }` | A player right-clicks while holding an item. |
+| `crafted { event -> ... }` | A player crafts an item. |
+| `dropped { event -> ... }` | A player drops an item. |
+| `foodEaten { event -> ... }` | A player finishes eating food. |
+| `smelted { event -> ... }` | An item is smelted for a player. |
+| `dynamicTooltips { event -> ... }` | Item tooltips are being built. Modify the tooltip list here. |
+| `entityInteracted { event -> ... }` | A player interacts with an entity while holding an item. |
+| `firstLeftClicked { event -> ... }` | A player left-clicks with nothing targeted (empty hit). |
+| `firstRightClicked { event -> ... }` | A player right-clicks with nothing targeted (empty use). |
+| `modification { event -> ... }` | An item is being modified (default components). |
+
+## Example
+
+```groovy
+ItemEvents.crafted { event ->
+    println "Player crafted: ${event.crafting}"
+}
+```
+
+## Related
+
+- [BundleEvents](BundleEvents).

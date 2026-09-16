@@ -40,7 +40,7 @@ import net.minecraft.world.item.Items
 
 def shaped = RecipeBuilder.shaped(id("gem_block_recipe"), net.minecraft.world.level.block.Blocks.GLOWSTONE)
         .pattern("GGG", "GGG", "GGG")
-        .define('G' as char, id("magic_gem"))
+        .define('G' as char, Items.DIAMOND)
         .unlockedBy("has_magic_gem", InventoryChangeTrigger.TriggerInstance.hasItems(Items.DIAMOND))
 
 BundleEvents.registry {

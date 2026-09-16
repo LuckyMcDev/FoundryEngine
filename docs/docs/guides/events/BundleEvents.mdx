@@ -12,7 +12,7 @@ description: Reference for bundle lifecycle events.
 
 | Method | Runs |
 | --- | --- |
-| `registry { it -> ... }` | When content registers. The lambda gets a `RegistryEvent`; call `it.items(...)`, `it.blocks(...)`, `it.recipes(...)`, `it.sounds(...)`, `it.particles(...)`. |
+| `registry { it -> ... }` | When content registers. The lambda gets a `RegistryEvent`; call `it.items(...)`, `it.blocks(...)`, `it.recipes(...)`, `it.sounds(...)`, `it.particles(...)`, `it.toolMaterials(...)`, `it.menus(...)`, `it.blockEntities(...)`, `it.tags(...)`. |
 
 ## Setup
 
@@ -20,16 +20,16 @@ description: Reference for bundle lifecycle events.
 | --- | --- |
 | `commonSetup { event -> ... }` | FML common setup. |
 | `clientSetup { event -> ... }` | FML client setup. |
-| `dedicatedServerSetup { event -> ... }` | FML dedicated server setup. |
-| `postInit { event -> ... }` | After mod initialization. |
+| `dedicatedServerSetup { event -> ... }` | FML dedicated server setup. Runs only on dedicated servers. |
+| `postInit { event -> ... }` | After mod initialization (InterModProcessEvent). |
 
 ## Runtime
 
 | Method | When |
 | --- | --- |
-| `vanillaGame { event -> ... }` | A vanilla game event (block, entity, etc.) is posted. |
-| `dataGen { event -> ... }` | During data generation; use `event.addProvider(...)`. |
-| `custom(Class, callback)` | Register a callback for a custom event class. |
+| `vanillaGame { event -> ... }` | A vanilla game event (block, entity, etc.) is posted on the NeoForge bus. |
+| `dataGen { event -> ... }` | During data generation (runs automatically on every startup). The event exposes `event.getGenerator()` and a convenience `event.addProvider(...)`. |
+| `custom(Class, callback)` | Register a callback for a NeoForge `Event` subclass. The class must extend `net.neoforged.neoforge.event.Event`. |
 
 ## Example
 
@@ -39,6 +39,15 @@ BundleEvents.registry {
     it.blocks(glow)
     it.recipes(recipe)
     it.sounds(sound)
+    it.particles(sparkle)
+}
+
+BundleEvents.commonSetup { event ->
+    println "Common setup"
+}
+
+BundleEvents.dataGen { event ->
+    event.addProvider(myDataProvider)
 }
 ```
 

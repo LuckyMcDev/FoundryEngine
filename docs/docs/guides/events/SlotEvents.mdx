@@ -1,0 +1,27 @@
+---
+sidebar_position: 10
+title: SlotEvents
+description: Reference for container slot events.
+---
+
+# SlotEvents
+
+`SlotEvents` posts callbacks when a container is opened, allowing modification of its slots.
+
+## Events
+
+| Method | When |
+| --- | --- |
+| `modification { event -> ... }` | A container is opened. The event object is the `AbstractContainerMenu`. |
+
+## Example
+
+```groovy
+SlotEvents.modification { event ->
+    println "Container opened: ${event.menu}"
+}
+```
+
+## Related
+
+- [BundleEvents](BundleEvents).

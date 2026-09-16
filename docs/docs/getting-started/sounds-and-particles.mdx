@@ -63,7 +63,7 @@ What each line does:
 - `.layer(ParticleLayer.TRANSLUCENT)` picks how the particle blends. TRANSLUCENT is the usual choice for glows and effects.
 - `.color(Color.WHITE, Color.RED, Easing.SINE_IN)` makes the particle start white and ease toward red over its life.
 - `.scaleData(...)` animates size with a keyframe sequence: at 0% of the life the scale is 0.5, at 100% it is 1.5, with easing between.
-- `.velocity(...)` gives the particle a starting speed. Here it drifts upward at 0.1 blocks per tick.
+- `.velocity(...)` gives the particle a starting speed in blocks per second. Here it drifts upward at 0.1 blocks per second.
 
 ## Play them
 

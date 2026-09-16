@@ -1,0 +1,32 @@
+---
+sidebar_position: 9
+title: LevelEvents
+description: Reference for level lifecycle and world events.
+---
+
+# LevelEvents
+
+`LevelEvents` posts callbacks around level (world) state changes.
+
+## Events
+
+| Method | When |
+| --- | --- |
+| `load { event -> ... }` | A level loads. |
+| `unload { event -> ... }` | A level unloads. |
+| `save { event -> ... }` | A level saves. |
+| `tick { event -> ... }` | After a level tick. |
+| `beforeExplosion { event -> ... }` | Before an explosion detonates. Cancel to prevent it. |
+| `afterExplosion { event -> ... }` | After an explosion has detonated and blocks are affected. |
+
+## Example
+
+```groovy
+LevelEvents.load { event ->
+    println "Level loaded: ${event.level.dimension()}"
+}
+```
+
+## Related
+
+- [BundleEvents](BundleEvents).
