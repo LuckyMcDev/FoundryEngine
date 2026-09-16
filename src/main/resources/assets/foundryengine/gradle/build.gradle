@@ -1,5 +1,22 @@
 plugins {
-    id 'net.neoforged.moddev' version '2.0.140' apply false
+    id 'net.neoforged.moddev' version '2.0.140'
+}
+
+neoForge {
+    version = rootProject.findProperty('neo_version') ?: '26.1.2.94'
+
+    runs {
+        configureEach {
+            gameDirectory = file('.')
+        }
+        client {
+            client()
+        }
+        server {
+            server()
+            programArguments.add('--nogui')
+        }
+    }
 }
 
 subprojects {
