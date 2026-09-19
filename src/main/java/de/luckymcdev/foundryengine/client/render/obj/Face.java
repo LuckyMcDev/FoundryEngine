@@ -14,12 +14,11 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
-//? if 26.1 {
+//? if >= 26.2 {
+//?} else {
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 
-//?}
-//? if 26.2 {
 //?}
 
 public record Face(List<Vertex> vertices, Material material) {
@@ -106,21 +105,7 @@ public record Face(List<Vertex> vertices, Material material) {
 
 	private void renderFace(PoseStack poseStack, RenderType renderType, int packedLight,
 	                        float r, float g, float b, float a) {
-		//? if 26.1 {
-		MultiBufferSource.BufferSource mcBufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
-		VertexConsumer consumer = mcBufferSource.getBuffer(renderType);
-		int count = vertices.size();
-
-		if (count == 4) {
-			renderQuad(poseStack, consumer, packedLight, r, g, b, a);
-		} else if (count == 3) {
-			renderTriangle(poseStack, consumer, packedLight, r, g, b, a);
-		} else if (count > 4) {
-			renderNgon(poseStack, consumer, packedLight, r, g, b, a);
-		} else {
-			Client.LOGGER.warn("Skipping face with invalid vertex count: {}", count);
-		}
-		//?} elif 26.2 {
+		//? if >= 26.2 {
 		/*try (MeshRenderer.DrawSession session = Client.getMeshRenderer().begin(renderType, new Matrix4f())) {
 			VertexConsumer consumer = session.buffer();
 			int count = vertices.size();
@@ -135,7 +120,21 @@ public record Face(List<Vertex> vertices, Material material) {
 				Client.LOGGER.warn("Skipping face with invalid vertex count: {}", count);
 			}
 		}
-		*///?}
+		*///?} else {
+		MultiBufferSource.BufferSource mcBufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
+		VertexConsumer consumer = mcBufferSource.getBuffer(renderType);
+		int count = vertices.size();
+
+		if (count == 4) {
+			renderQuad(poseStack, consumer, packedLight, r, g, b, a);
+		} else if (count == 3) {
+			renderTriangle(poseStack, consumer, packedLight, r, g, b, a);
+		} else if (count > 4) {
+			renderNgon(poseStack, consumer, packedLight, r, g, b, a);
+		} else {
+			Client.LOGGER.warn("Skipping face with invalid vertex count: {}", count);
+		}
+		//?}
 	}
 
 	private void addVertex(VertexConsumer buffer, Vertex vertex, PoseStack poseStack, int packedLight,

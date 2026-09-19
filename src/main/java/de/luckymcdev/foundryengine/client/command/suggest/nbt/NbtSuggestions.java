@@ -17,7 +17,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.permissions.PermissionSet;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-//? if 26.2 {
+//? if >= 26.2 {
 /*import net.minecraft.world.entity.EntityTypes;
 *///?}
 import net.minecraft.world.entity.player.Player;
@@ -921,11 +921,11 @@ public class NbtSuggestions {
 		if (playerName != null) {
 			for (Player player : level.players()) {
 				if (player.getGameProfile().name().equals(playerName)) {
-					//? if 26.1 {
-					return "entity/" + EntityType.getKey(EntityType.PLAYER);
-					 //?} elif 26.2 {
+					//? if >= 26.2 {
 					/*return "entity/" + EntityType.getKey(EntityTypes.PLAYER);
-					*///?}
+					*///?} else {
+					return "entity/" + EntityType.getKey(EntityType.PLAYER);
+					//?}
 				}
 			}
 		}

@@ -237,11 +237,11 @@ public final class EngineLevels {
 		List<ServerPlayer> players = new ArrayList<>(level.players());
 
 		for (ServerPlayer player : players) {
-			//? if 26.1 {
-			Vec3 pos = player.adjustSpawnLocation(spawnLevel, spawnPoint.pos()).getBottomCenter();
-			 //?} elif 26.2 {
+			//? if >= 26.2 {
 			/*Vec3 pos = Vec3.atBottomCenterOf(player.adjustSpawnLocation(spawnLevel, spawnPoint.pos()));
-			*///?}
+			*///?} else {
+			Vec3 pos = player.adjustSpawnLocation(spawnLevel, spawnPoint.pos()).getBottomCenter();
+			//?}
 			TeleportTransition target = new TeleportTransition(spawnLevel, pos, Vec3.ZERO, spawnPoint.yaw(), spawnPoint.pitch(), TeleportTransition.DO_NOTHING);
 
 			player.teleport(target);

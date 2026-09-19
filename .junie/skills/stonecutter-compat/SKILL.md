@@ -15,9 +15,21 @@ Use this skill when editing files containing `//? if` blocks or when refactoring
 
 ## Pattern
 ```java
-//? if 26.1 {
+//? if >= 26.2 {
 import com.mojang.blaze3d.shaders.UniformType;
-//?} elif 26.2 {
+//?} else {
+import com.mojang.blaze3d.pipeline.UniformType;
+//?}
+```
+
+or, if there is a difference between 26.2 and .3
+
+```java
+//? if >= 26.3 {
+import com.mojang.blaze3d.shaders.UniformType;
+//? elif 26.2 {
+import com.mojang.blaze3d.shaders.UniformType;
+//?} else {
 import com.mojang.blaze3d.pipeline.UniformType;
 //?}
 ```

@@ -113,7 +113,31 @@ public class ItemIconCache {
 			}
 
 			renderer.renderAsync(size, key, (colorView, depthView, projBuf, s) -> {
-				//? if 26.1 {
+				//? if >= 26.2 {
+                /*Projection projection = new Projection();
+                projection.setupOrtho(-1000.0F, 1000.0F, s, s, true);
+                RenderSystem.backupProjectionMatrix();
+                RenderSystem.setProjectionMatrix(projBuf.getBuffer(projection), ProjectionType.ORTHOGRAPHIC);
+
+                var resolver = mc.getItemModelResolver();
+                var submitNodes = new net.minecraft.client.renderer.SubmitNodeStorage();
+                var features = mc.gameRenderer.featureRenderDispatcher();
+                var lighting = mc.gameRenderer.lighting();
+
+                TrackingItemStackRenderState renderState = new TrackingItemStackRenderState();
+                resolver.updateForTopItem(renderState, stack, ItemDisplayContext.GUI, mc.level, mc.player, 0);
+
+                Lighting.Entry lightEntry = renderState.usesBlockLight() ? Lighting.Entry.ITEMS_3D : Lighting.Entry.ITEMS_FLAT;
+                lighting.setupFor(lightEntry);
+
+                PoseStack pose = new PoseStack();
+                pose.translate(s / 2.0F, s / 2.0F, 0.0F);
+                pose.scale(s, -s, s);
+                renderState.submit(pose, submitNodes, 15728880, net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY, 0);
+
+                features.renderAllFeatures(submitNodes);
+                RenderSystem.restoreProjectionMatrix();
+                *///?} else {
 				Projection projection = new Projection();
 				projection.setupOrtho(-1000.0F, 1000.0F, s, s, true);
 				RenderSystem.backupProjectionMatrix();
@@ -139,31 +163,7 @@ public class ItemIconCache {
 				features.renderAllFeatures();
 				buffers.endBatch();
 				RenderSystem.restoreProjectionMatrix();
-				//?} elif 26.2 {
-                /*Projection projection = new Projection();
-                projection.setupOrtho(-1000.0F, 1000.0F, s, s, true);
-                RenderSystem.backupProjectionMatrix();
-                RenderSystem.setProjectionMatrix(projBuf.getBuffer(projection), ProjectionType.ORTHOGRAPHIC);
-
-                var resolver = mc.getItemModelResolver();
-                var submitNodes = new net.minecraft.client.renderer.SubmitNodeStorage();
-                var features = mc.gameRenderer.featureRenderDispatcher();
-                var lighting = mc.gameRenderer.lighting();
-
-                TrackingItemStackRenderState renderState = new TrackingItemStackRenderState();
-                resolver.updateForTopItem(renderState, stack, ItemDisplayContext.GUI, mc.level, mc.player, 0);
-
-                Lighting.Entry lightEntry = renderState.usesBlockLight() ? Lighting.Entry.ITEMS_3D : Lighting.Entry.ITEMS_FLAT;
-                lighting.setupFor(lightEntry);
-
-                PoseStack pose = new PoseStack();
-                pose.translate(s / 2.0F, s / 2.0F, 0.0F);
-                pose.scale(s, -s, s);
-                renderState.submit(pose, submitNodes, 15728880, net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY, 0);
-
-                features.renderAllFeatures(submitNodes);
-                RenderSystem.restoreProjectionMatrix();
-                *///?}
+				//?}
 			});
 			dispatched++;
 		}

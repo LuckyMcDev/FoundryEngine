@@ -30,7 +30,7 @@ import de.luckymcdev.foundryengine.common.exceptions.UtilityClassException;
 import de.luckymcdev.foundryengine.interfaces.EngineMinecraft;
 import net.minecraft.client.Camera;
 
-//? if 26.2 {
+//? if >= 26.2 {
 /*import com.mojang.blaze3d.GpuFormat;
 *///?}
 import net.minecraft.client.KeyMapping;
@@ -276,11 +276,11 @@ public final class Client {
 	 */
 	public static RenderTarget getMainRenderTarget() {
 		Minecraft mc = Minecraft.getInstance();
-		//? if 26.1 {
-		return mc.getMainRenderTarget();
-		 //?} elif 26.2 {
+		//? if >= 26.2 {
 		/*return mc.gameRenderer.mainRenderTarget();
-		*///?}
+		*///?} else {
+		return mc.getMainRenderTarget();
+		//?}
 	}
 
 	/**
@@ -288,11 +288,11 @@ public final class Client {
 	 */
 	public static @Nullable Screen getCurrentScreen() {
 		Minecraft mc = Minecraft.getInstance();
-		//? if 26.1 {
-		return mc.screen;
-		 //?} elif 26.2 {
+		//? if >= 26.2 {
 		/*return mc.gui.screen();
-		*///?}
+		*///?} else {
+		return mc.screen;
+		//?}
 	}
 
 	/**
@@ -300,11 +300,11 @@ public final class Client {
 	 */
 	public static void setScreen(@Nullable Screen screen) {
 		Minecraft mc = Minecraft.getInstance();
-		//? if 26.1 {
-		mc.setScreen(screen);
-		 //?} elif 26.2 {
+		//? if >= 26.2 {
 		/*mc.gui.setScreen(screen);
-		*///?}
+		*///?} else {
+		mc.setScreen(screen);
+		//?}
 	}
 
 	/**
@@ -313,39 +313,39 @@ public final class Client {
 	public static @Nullable RenderTarget getLevelRendererTarget(Identifier targetId) {
 		Minecraft mc = Minecraft.getInstance();
 		if (targetId.equals(LevelTargetBundle.TRANSLUCENT_TARGET_ID)) {
-			//? if 26.1 {
-			return mc.levelRenderer.getTranslucentTarget();
-			 //?} elif 26.2 {
+			//? if >= 26.2 {
 			/*return mc.levelRenderer.translucentTarget();
-			*///?}
+			*///?} else {
+			return mc.levelRenderer.getTranslucentTarget();
+			//?}
 		}
 		if (targetId.equals(LevelTargetBundle.ITEM_ENTITY_TARGET_ID)) {
-			//? if 26.1 {
-			return mc.levelRenderer.getItemEntityTarget();
-			 //?} elif 26.2 {
+			//? if >= 26.2 {
 			/*return mc.levelRenderer.itemEntityTarget();
-			*///?}
+			*///?} else {
+			return mc.levelRenderer.getItemEntityTarget();
+			//?}
 		}
 		if (targetId.equals(LevelTargetBundle.PARTICLES_TARGET_ID)) {
-			//? if 26.1 {
-			return mc.levelRenderer.getParticlesTarget();
-			 //?} elif 26.2 {
+			//? if >= 26.2 {
 			/*return mc.levelRenderer.particlesTarget();
-			*///?}
+			*///?} else {
+			return mc.levelRenderer.getParticlesTarget();
+			//?}
 		}
 		if (targetId.equals(LevelTargetBundle.WEATHER_TARGET_ID)) {
-			//? if 26.1 {
-			return mc.levelRenderer.getWeatherTarget();
-			 //?} elif 26.2 {
+			//? if >= 26.2 {
 			/*return mc.levelRenderer.weatherTarget();
-			*///?}
+			*///?} else {
+			return mc.levelRenderer.getWeatherTarget();
+			//?}
 		}
 		if (targetId.equals(LevelTargetBundle.CLOUDS_TARGET_ID)) {
-			//? if 26.1 {
-			return mc.levelRenderer.getCloudsTarget();
-			 //?} elif 26.2 {
+			//? if >= 26.2 {
 			/*return mc.levelRenderer.cloudsTarget();
-			*///?}
+			*///?} else {
+			return mc.levelRenderer.getCloudsTarget();
+			//?}
 		}
 		if (targetId.equals(LevelTargetBundle.ENTITY_OUTLINE_TARGET_ID)) {
 			return mc.levelRenderer.entityOutlineTarget();
@@ -357,11 +357,11 @@ public final class Client {
 	 * Creates a depth-capable {@link TextureTarget}, abstracting over per-version constructors.
 	 */
 	public static TextureTarget createSnapshotTarget(String name, int width, int height) {
-		//? if 26.1 {
-		return new TextureTarget(name, width, height, true);
-		 //?} elif 26.2 {
+		//? if >= 26.2 {
 		/*return new TextureTarget(name, width, height, true, GpuFormat.RGBA8_UNORM);
-		*///?}
+		*///?} else {
+		return new TextureTarget(name, width, height, true);
+		//?}
 	}
 
 	/**

@@ -20,16 +20,16 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
-//? if 26.1 {
-import com.mojang.blaze3d.shaders.UniformType;
-import com.mojang.blaze3d.vertex.MeshData;
-import com.mojang.blaze3d.vertex.VertexFormat;
-//?} elif 26.2 {
+//? if >= 26.2 {
 /*import com.mojang.blaze3d.PrimitiveTopology;
 import com.mojang.blaze3d.pipeline.BindGroupLayout;
 import net.minecraft.client.renderer.StagedVertexBuffer;
 import net.minecraft.client.renderer.rendertype.PreparedRenderType;
-*///?}
+*///?} else {
+import com.mojang.blaze3d.shaders.UniformType;
+import com.mojang.blaze3d.vertex.MeshData;
+import com.mojang.blaze3d.vertex.VertexFormat;
+//?}
 
 public class MeshRenderer implements AutoCloseable {
 	private static final int MAX_RENDER_TYPES = 256;
@@ -90,105 +90,105 @@ public class MeshRenderer implements AutoCloseable {
 
 	private static RenderPipeline buildCutoutPipeline(Identifier location, Identifier vertexShader,
 	                                                  Identifier fragmentShader) {
-		//? if 26.1 {
-		return RenderPipeline.builder()
-			.withLocation(location)
-			.withVertexShader(vertexShader)
-			.withFragmentShader(fragmentShader)
-			.withSampler("Sampler0")
-			.withSampler("Sampler1")
-			.withSampler("DepthSampler")
-			.withUniform("Projection", UniformType.UNIFORM_BUFFER)
-			.withUniform("DynamicTransforms", UniformType.UNIFORM_BUFFER)
-			.withUniform("Globals", UniformType.UNIFORM_BUFFER)
-			.withVertexFormat(DefaultVertexFormat.POSITION_TEX_COLOR_NORMAL, VertexFormat.Mode.QUADS)
-			.withColorTargetState(ColorTargetState.DEFAULT)
-			.withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, true))
-			.withCull(false)
-			.build();
-		//?} elif 26.2 {
-		/*return RenderPipeline.builder()
-			.withLocation(location)
-			.withVertexShader(vertexShader)
-			.withFragmentShader(fragmentShader)
-			.withBindGroupLayout(BindGroupLayout.builder().withSampler("Sampler0").withSampler("Sampler1").withSampler("DepthSampler").build())
-			.withVertexBinding(0, DefaultVertexFormat.POSITION_TEX_COLOR_NORMAL).withPrimitiveTopology(PrimitiveTopology.QUADS)
-			.withColorTargetState(ColorTargetState.DEFAULT)
-			.withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, true))
-			.withCull(false)
-			.build();
-		*///?}
+	//? if >= 26.2 {
+	/*return RenderPipeline.builder()
+		.withLocation(location)
+		.withVertexShader(vertexShader)
+		.withFragmentShader(fragmentShader)
+		.withBindGroupLayout(BindGroupLayout.builder().withSampler("Sampler0").withSampler("Sampler1").withSampler("DepthSampler").build())
+		.withVertexBinding(0, DefaultVertexFormat.POSITION_TEX_COLOR_NORMAL).withPrimitiveTopology(PrimitiveTopology.QUADS)
+		.withColorTargetState(ColorTargetState.DEFAULT)
+		.withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, true))
+		.withCull(false)
+		.build();
+	*///?} else {
+	return RenderPipeline.builder()
+		.withLocation(location)
+		.withVertexShader(vertexShader)
+		.withFragmentShader(fragmentShader)
+		.withSampler("Sampler0")
+		.withSampler("Sampler1")
+		.withSampler("DepthSampler")
+		.withUniform("Projection", UniformType.UNIFORM_BUFFER)
+		.withUniform("DynamicTransforms", UniformType.UNIFORM_BUFFER)
+		.withUniform("Globals", UniformType.UNIFORM_BUFFER)
+		.withVertexFormat(DefaultVertexFormat.POSITION_TEX_COLOR_NORMAL, VertexFormat.Mode.QUADS)
+		.withColorTargetState(ColorTargetState.DEFAULT)
+		.withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, true))
+		.withCull(false)
+		.build();
+	//?}
 	}
 
 	private static RenderPipeline buildPipeline(Identifier vertexShader, Identifier fragmentShader) {
-		//? if 26.1 {
-		return RenderPipeline.builder()
-			.withLocation(fragmentShader)
-			.withVertexShader(vertexShader)
-			.withFragmentShader(fragmentShader)
-			.withSampler("Sampler0")
-			.withSampler("Sampler1")
-			.withSampler("DepthSampler")
-			.withUniform("Projection", UniformType.UNIFORM_BUFFER)
-			.withUniform("DynamicTransforms", UniformType.UNIFORM_BUFFER)
-			.withUniform("Globals", UniformType.UNIFORM_BUFFER)
-			.withVertexFormat(DefaultVertexFormat.POSITION_TEX_COLOR_NORMAL, VertexFormat.Mode.QUADS)
-			.withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
-			.withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, false))
-			.withCull(true)
-			.build();
-		//?} elif 26.2 {
-		/*return RenderPipeline.builder()
-			.withLocation(fragmentShader)
-			.withVertexShader(vertexShader)
-			.withFragmentShader(fragmentShader)
-			.withBindGroupLayout(BindGroupLayout.builder().withSampler("Sampler0").withSampler("Sampler1").withSampler("DepthSampler").build())
-			.withVertexBinding(0, DefaultVertexFormat.POSITION_TEX_COLOR_NORMAL).withPrimitiveTopology(PrimitiveTopology.QUADS)
-			.withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
-			.withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, false))
-			.withCull(true)
-			.build();
-		*///?}
+	//? if >= 26.2 {
+	/*return RenderPipeline.builder()
+		.withLocation(fragmentShader)
+		.withVertexShader(vertexShader)
+		.withFragmentShader(fragmentShader)
+		.withBindGroupLayout(BindGroupLayout.builder().withSampler("Sampler0").withSampler("Sampler1").withSampler("DepthSampler").build())
+		.withVertexBinding(0, DefaultVertexFormat.POSITION_TEX_COLOR_NORMAL).withPrimitiveTopology(PrimitiveTopology.QUADS)
+		.withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
+		.withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, false))
+		.withCull(true)
+		.build();
+	*///?} else {
+	return RenderPipeline.builder()
+		.withLocation(fragmentShader)
+		.withVertexShader(vertexShader)
+		.withFragmentShader(fragmentShader)
+		.withSampler("Sampler0")
+		.withSampler("Sampler1")
+		.withSampler("DepthSampler")
+		.withUniform("Projection", UniformType.UNIFORM_BUFFER)
+		.withUniform("DynamicTransforms", UniformType.UNIFORM_BUFFER)
+		.withUniform("Globals", UniformType.UNIFORM_BUFFER)
+		.withVertexFormat(DefaultVertexFormat.POSITION_TEX_COLOR_NORMAL, VertexFormat.Mode.QUADS)
+		.withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
+		.withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, false))
+		.withCull(true)
+		.build();
+	//?}
 	}
 
 	public void draw(RenderType renderType, Matrix4fc modelView, Consumer<BufferBuilder> buildAction) {
-		//? if 26.1 {
-		RenderPipeline pipeline = renderType.pipeline();
-		BufferBuilder builder = new BufferBuilder(ALLOCATOR, pipeline.getVertexFormatMode(), pipeline.getVertexFormat());
-		buildAction.accept(builder);
-
-		MeshData mesh = builder.build();
-		if (mesh == null) {
-			return;
-		}
-
+	//? if >= 26.2 {
+	/*StagedVertexBuffer staged = new StagedVertexBuffer(() -> "engine_mesh", RenderType.SMALL_BUFFER_SIZE);
+	try {
+		StagedVertexBuffer.Draw draw = staged.appendDraw(renderType.format(), renderType.primitiveTopology());
+		buildAction.accept((BufferBuilder) staged.getVertexBuilder(draw));
+		staged.upload();
 		RenderSystem.getModelViewStack().pushMatrix().mul(modelView);
 		try {
-			renderType.draw(mesh);
+			PreparedRenderType prepared = renderType.prepare();
+			StagedVertexBuffer.ExecuteInfo info = staged.getExecuteInfo(draw);
+			if (info != null) {
+				prepared.drawFromBuffer(info);
+			}
 		} finally {
 			RenderSystem.getModelViewStack().popMatrix();
 		}
-		//?} elif 26.2 {
-		/*StagedVertexBuffer staged = new StagedVertexBuffer(() -> "engine_mesh", RenderType.SMALL_BUFFER_SIZE);
-		try {
-			StagedVertexBuffer.Draw draw = staged.appendDraw(renderType.format(), renderType.primitiveTopology());
-			buildAction.accept((BufferBuilder) staged.getVertexBuilder(draw));
-			staged.upload();
-			RenderSystem.getModelViewStack().pushMatrix().mul(modelView);
-			try {
-				PreparedRenderType prepared = renderType.prepare();
-				StagedVertexBuffer.ExecuteInfo info = staged.getExecuteInfo(draw);
-				if (info != null) {
-					prepared.drawFromBuffer(info);
-				}
-			} finally {
-				RenderSystem.getModelViewStack().popMatrix();
-			}
-			staged.endDraw();
-		} finally {
-			staged.close();
-		}
-		*///?}
+		staged.endDraw();
+	} finally {
+		staged.close();
+	}
+	*///?} else {
+	RenderPipeline pipeline = renderType.pipeline();
+	BufferBuilder builder = new BufferBuilder(ALLOCATOR, pipeline.getVertexFormatMode(), pipeline.getVertexFormat());
+	buildAction.accept(builder);
+
+	MeshData mesh = builder.build();
+	if (mesh == null) {
+		return;
+	}
+
+	RenderSystem.getModelViewStack().pushMatrix().mul(modelView);
+	try {
+		renderType.draw(mesh);
+	} finally {
+		RenderSystem.getModelViewStack().popMatrix();
+	}
+	//?}
 	}
 
 	public DrawSession begin(RenderType renderType, Matrix4fc modelView) {
@@ -204,7 +204,7 @@ public class MeshRenderer implements AutoCloseable {
 		private final RenderType renderType;
 		private final Matrix4fc modelView;
 		private final BufferBuilder builder;
-		//? if 26.2 {
+		//? if >= 26.2 {
 		/*private final StagedVertexBuffer staged;
 		private final StagedVertexBuffer.Draw draw;
 		*///?}
@@ -213,14 +213,14 @@ public class MeshRenderer implements AutoCloseable {
 		private DrawSession(RenderType renderType, Matrix4fc modelView) {
 			this.renderType = renderType;
 			this.modelView = modelView;
-			//? if 26.1 {
-			RenderPipeline pipeline = renderType.pipeline();
-			this.builder = new BufferBuilder(ALLOCATOR, pipeline.getVertexFormatMode(), pipeline.getVertexFormat());
-			//?} elif 26.2 {
+			//? if >= 26.2 {
 			/*this.staged = new StagedVertexBuffer(() -> "engine_mesh", RenderType.SMALL_BUFFER_SIZE);
 			this.draw = staged.appendDraw(renderType.format(), renderType.primitiveTopology());
 			this.builder = (BufferBuilder) staged.getVertexBuilder(this.draw);
-			*///?}
+			*///?} else {
+			RenderPipeline pipeline = renderType.pipeline();
+			this.builder = new BufferBuilder(ALLOCATOR, pipeline.getVertexFormatMode(), pipeline.getVertexFormat());
+			//?}
 		}
 
 		public BufferBuilder buffer() {
@@ -236,19 +236,7 @@ public class MeshRenderer implements AutoCloseable {
 			}
 			finished = true;
 
-			//? if 26.1 {
-			MeshData mesh = builder.build();
-			if (mesh == null) {
-				return;
-			}
-
-			RenderSystem.getModelViewStack().pushMatrix().mul(modelView);
-			try {
-				renderType.draw(mesh);
-			} finally {
-				RenderSystem.getModelViewStack().popMatrix();
-			}
-			//?} elif 26.2 {
+			//? if >= 26.2 {
 			/*staged.upload();
 			RenderSystem.getModelViewStack().pushMatrix().mul(modelView);
 			try {
@@ -260,7 +248,19 @@ public class MeshRenderer implements AutoCloseable {
 				RenderSystem.getModelViewStack().popMatrix();
 			}
 			staged.endDraw();
-			*///?}
+			*///?} else {
+			MeshData mesh = builder.build();
+			if (mesh == null) {
+				return;
+			}
+
+			RenderSystem.getModelViewStack().pushMatrix().mul(modelView);
+			try {
+				renderType.draw(mesh);
+			} finally {
+				RenderSystem.getModelViewStack().popMatrix();
+			}
+			//?}
 		}
 
 		@Override

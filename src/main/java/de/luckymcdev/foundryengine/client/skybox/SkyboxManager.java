@@ -6,11 +6,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Display;
-//? if 26.1 {
-import net.minecraft.world.entity.EntityType;
- //?} elif 26.2 {
+//? if >= 26.2 {
 /*import net.minecraft.world.entity.EntityTypes;
-*///?}
+*///?} else {
+import net.minecraft.world.entity.EntityType;
+//?}
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
@@ -55,11 +55,11 @@ public class SkyboxManager {
 		}
 
 		if (skyboxEntity == null || !skyboxEntity.isAlive()) {
-			//? if 26.1 {
-			skyboxEntity = new Display.ItemDisplay(EntityType.ITEM_DISPLAY, mc.level);
-			 //?} elif 26.2 {
+			//? if >= 26.2 {
 			/*skyboxEntity = new Display.ItemDisplay(EntityTypes.ITEM_DISPLAY, mc.level);
-			*///?}
+			*///?} else {
+			skyboxEntity = new Display.ItemDisplay(EntityType.ITEM_DISPLAY, mc.level);
+			//?}
 			skyboxEntity.setItemStack(skyboxItemStack);
 			skyboxEntity.setTransformation(new Transformation(
 				new Vector3f(),

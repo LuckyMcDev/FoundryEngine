@@ -16,7 +16,7 @@ import static com.mojang.blaze3d.pipeline.BlendFunction.TRANSLUCENT;
 import com.mojang.blaze3d.vertex.VertexFormat;
  
 //?}
-//? if 26.2 {
+//? if >= 26.2 {
 /*import com.mojang.blaze3d.PrimitiveTopology;
 import com.mojang.blaze3d.pipeline.BindGroupLayout;
 *///?}
@@ -36,20 +36,20 @@ public class EngineRenderPipelines {
 	public static final RenderPipeline OBJ_ENTITY_CUTOUT = RenderPipelinesInvoker.register(
 		RenderPipeline.builder(RenderPipelines.MATRICES_FOG_LIGHT_DIR_SNIPPET)
 			.withLocation(Common.id("pipeline/obj_entity_cutout"))
-			//? if 26.1 {
-			.withVertexFormat(DefaultVertexFormat.ENTITY, VertexFormat.Mode.QUADS)
-			 //?} elif 26.2 {
+			//? if >= 26.2 {
 			/*.withVertexBinding(0, DefaultVertexFormat.ENTITY).withPrimitiveTopology(PrimitiveTopology.QUADS)
-			*///?}
+			*///?} else {
+			.withVertexFormat(DefaultVertexFormat.ENTITY, VertexFormat.Mode.QUADS)
+			//?}
 			.withVertexShader(Identifier.withDefaultNamespace("core/entity"))
 			.withFragmentShader(Identifier.withDefaultNamespace("core/entity"))
-			//? if 26.1 {
+			//? if >= 26.2 {
+			/*.withBindGroupLayout(BindGroupLayout.builder().withSampler("Sampler0").withSampler("Sampler1").withSampler("Sampler2").build())
+			*///?} else {
 			.withSampler("Sampler0")
 			.withSampler("Sampler1")
 			.withSampler("Sampler2")
-			//?} elif 26.2 {
-			/*.withBindGroupLayout(BindGroupLayout.builder().withSampler("Sampler0").withSampler("Sampler1").withSampler("Sampler2").build())
-			*///?}
+			//?}
 			.withShaderDefine("ALPHA_CUTOUT", 0.1F)
 			.withColorTargetState(ColorTargetState.DEFAULT)
 			.withDepthStencilState(DepthStencilState.DEFAULT)
@@ -59,20 +59,20 @@ public class EngineRenderPipelines {
 	public static final RenderPipeline OBJ_ENTITY_TRANSLUCENT = RenderPipelinesInvoker.register(
 		RenderPipeline.builder(RenderPipelines.MATRICES_FOG_LIGHT_DIR_SNIPPET)
 			.withLocation(Common.id("pipeline/obj_entity_translucent"))
-			//? if 26.1 {
-			.withVertexFormat(DefaultVertexFormat.ENTITY, VertexFormat.Mode.QUADS)
-			 //?} elif 26.2 {
+			//? if >= 26.2 {
 			/*.withVertexBinding(0, DefaultVertexFormat.ENTITY).withPrimitiveTopology(PrimitiveTopology.QUADS)
-			*///?}
+			*///?} else {
+			.withVertexFormat(DefaultVertexFormat.ENTITY, VertexFormat.Mode.QUADS)
+			//?}
 			.withVertexShader(Identifier.withDefaultNamespace("core/entity"))
 			.withFragmentShader(Identifier.withDefaultNamespace("core/entity"))
-			//? if 26.1 {
+			//? if >= 26.2 {
+			/*.withBindGroupLayout(BindGroupLayout.builder().withSampler("Sampler0").withSampler("Sampler1").withSampler("Sampler2").build())
+			*///?} else {
 			.withSampler("Sampler0")
 			.withSampler("Sampler1")
 			.withSampler("Sampler2")
-			//?} elif 26.2 {
-			/*.withBindGroupLayout(BindGroupLayout.builder().withSampler("Sampler0").withSampler("Sampler1").withSampler("Sampler2").build())
-			*///?}
+			//?}
 			.withShaderDefine("ALPHA_CUTOUT", 0.1F)
 			.withColorTargetState(new ColorTargetState(TRANSLUCENT))
 			.withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, false))
@@ -90,52 +90,52 @@ public class EngineRenderPipelines {
 
 	public static class Snippets {
 		public static final RenderPipeline.Snippet POSITION_SN = base()
-			//? if 26.1 {
-			.withVertexFormat(DefaultVertexFormat.POSITION, VertexFormat.Mode.QUADS)
-			 //?} elif 26.2 {
+			//? if >= 26.2 {
 			/*.withVertexBinding(0, DefaultVertexFormat.POSITION).withPrimitiveTopology(PrimitiveTopology.QUADS)
-			*///?}
+			*///?} else {
+			.withVertexFormat(DefaultVertexFormat.POSITION, VertexFormat.Mode.QUADS)
+			//?}
 			.withVertexShader(Common.id("core/position"))
 			.withFragmentShader(Common.id("core/position"))
 			.buildSnippet();
 		public static final RenderPipeline.Snippet POSITION_COLOR_SN = base()
-			//? if 26.1 {
-			.withVertexFormat(DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS)
-			 //?} elif 26.2 {
+			//? if >= 26.2 {
 			/*.withVertexBinding(0, DefaultVertexFormat.POSITION_COLOR).withPrimitiveTopology(PrimitiveTopology.QUADS)
-			*///?}
+			*///?} else {
+			.withVertexFormat(DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS)
+			//?}
 			.withVertexShader(Common.id("core/position_color"))
 			.withFragmentShader(Common.id("core/position_color"))
 			.buildSnippet();
 		public static final RenderPipeline.Snippet POSITION_COLOR_NORMAL_SN = base()
-			//? if 26.1 {
-			.withVertexFormat(DefaultVertexFormat.POSITION_COLOR_NORMAL, VertexFormat.Mode.QUADS)
-			 //?} elif 26.2 {
+			//? if >= 26.2 {
 			/*.withVertexBinding(0, DefaultVertexFormat.POSITION_COLOR_NORMAL).withPrimitiveTopology(PrimitiveTopology.QUADS)
-			*///?}
+			*///?} else {
+			.withVertexFormat(DefaultVertexFormat.POSITION_COLOR_NORMAL, VertexFormat.Mode.QUADS)
+			//?}
 			.withVertexShader(Common.id("core/position_color_lit"))
 			.withFragmentShader(Common.id("core/position_color_lit"))
 			.buildSnippet();
 		public static final RenderPipeline.Snippet POSITION_TEX_COLOR_SN = base()
-			//? if 26.1 {
-			.withVertexFormat(DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS)
-			 //?} elif 26.2 {
+			//? if >= 26.2 {
 			/*.withVertexBinding(0, DefaultVertexFormat.POSITION_TEX_COLOR).withPrimitiveTopology(PrimitiveTopology.QUADS)
-			*///?}
-			//? if 26.1 {
-			.withSampler("Sampler0")
-			 //?} elif 26.2 {
+			*///?} else {
+			.withVertexFormat(DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS)
+			//?}
+			//? if >= 26.2 {
 			/*.withBindGroupLayout(BindGroupLayout.builder().withSampler("Sampler0").build())
-			*///?}
+			*///?} else {
+			.withSampler("Sampler0")
+			//?}
 			.withVertexShader(Common.id("core/position_tex_color"))
 			.withFragmentShader(Common.id("core/position_tex_color"))
 			.buildSnippet();
 		public static final RenderPipeline.Snippet LINE_SN = base()
-			//? if 26.1 {
-			.withVertexFormat(DefaultVertexFormat.POSITION_COLOR_NORMAL_LINE_WIDTH, VertexFormat.Mode.LINES)
-			 //?} elif 26.2 {
+			//? if >= 26.2 {
 			/*.withVertexBinding(0, DefaultVertexFormat.POSITION_COLOR_NORMAL_LINE_WIDTH).withPrimitiveTopology(PrimitiveTopology.LINES)
-			*///?}
+			*///?} else {
+			.withVertexFormat(DefaultVertexFormat.POSITION_COLOR_NORMAL_LINE_WIDTH, VertexFormat.Mode.LINES)
+			//?}
 			.withCull(false)
 			.withVertexShader(Common.id("core/lines"))
 			.withFragmentShader(Common.id("core/lines"))

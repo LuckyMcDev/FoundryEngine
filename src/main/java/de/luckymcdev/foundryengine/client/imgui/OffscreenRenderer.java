@@ -17,7 +17,7 @@ import java.util.function.Consumer;
 //? if 26.1 {
 import com.mojang.blaze3d.textures.TextureFormat;
 //?}
-//? if 26.2 {
+//? if >= 26.2 {
 /*import com.mojang.blaze3d.GpuFormat;
  *///?}
 
@@ -50,11 +50,11 @@ public class OffscreenRenderer {
 		ensure(size);
 		var device = RenderSystem.getDevice();
 
-		//? if 26.1 {
-		device.createCommandEncoder().clearColorAndDepthTextures(colorTex, 0, depthTex, 1.0);
-		//?} elif 26.2 {
+		//? if >= 26.2 {
 		/*device.createCommandEncoder().clearColorAndDepthTextures(colorTex, new org.joml.Vector4f(0, 0, 0, 0), depthTex, 1.0);
-		 *///?}
+		 *///?} else {
+		device.createCommandEncoder().clearColorAndDepthTextures(colorTex, 0, depthTex, 1.0);
+		//?}
 
 		RenderSystem.outputColorTextureOverride = colorView;
 		RenderSystem.outputDepthTextureOverride = depthView;
@@ -64,20 +64,20 @@ public class OffscreenRenderer {
 		RenderSystem.outputColorTextureOverride = null;
 		RenderSystem.outputDepthTextureOverride = null;
 
-		//? if 26.1 {
+		//? if >= 26.2 {
+        /*int pixelSize = GpuFormat.RGBA8_UNORM.blockSize();
+        GpuBuffer readBuffer = device.createBuffer(() -> "offscreen_read_" + key,
+            GpuBuffer.USAGE_MAP_READ | GpuBuffer.USAGE_COPY_DST, (long) size * size * pixelSize);
+        device.createCommandEncoder().copyTextureToBuffer(colorTex, readBuffer, 0, () -> {
+            try (var mapped = readBuffer.map(true, false)) {
+        *///?} else {
 		int pixelSize = TextureFormat.RGBA8.pixelSize();
 		GpuBuffer readBuffer = device.createBuffer(() -> "offscreen_read_" + key,
 			GpuBuffer.USAGE_MAP_READ | GpuBuffer.USAGE_COPY_DST, (long) size * size * pixelSize);
 		CommandEncoder enc = device.createCommandEncoder();
 		device.createCommandEncoder().copyTextureToBuffer(colorTex, readBuffer, 0, () -> {
 			try (var mapped = enc.mapBuffer(readBuffer, true, false)) {
-				//?} elif 26.2 {
-        /*int pixelSize = GpuFormat.RGBA8_UNORM.blockSize();
-        GpuBuffer readBuffer = device.createBuffer(() -> "offscreen_read_" + key,
-            GpuBuffer.USAGE_MAP_READ | GpuBuffer.USAGE_COPY_DST, (long) size * size * pixelSize);
-        device.createCommandEncoder().copyTextureToBuffer(colorTex, readBuffer, 0, () -> {
-            try (var mapped = readBuffer.map(true, false)) {
-        *///?}
+		//?}
 				NativeImage image = new NativeImage(size, size, false);
 				for (int y = 0; y < size; y++) {
 					for (int x = 0; x < size; x++) {
@@ -114,17 +114,17 @@ public class OffscreenRenderer {
 		close();
 		currentSize = size;
 		var device = RenderSystem.getDevice();
-		//? if 26.1 {
-		colorTex = device.createTexture(() -> "offscreen_color", 13, TextureFormat.RGBA8, size, size, 1, 1);
-		colorView = device.createTextureView(colorTex);
-		depthTex = device.createTexture(() -> "offscreen_depth", 9, TextureFormat.DEPTH32, size, size, 1, 1);
-		depthView = device.createTextureView(depthTex);
-		//?} elif 26.2 {
+		//? if >= 26.2 {
         /*colorTex = device.createTexture(() -> "offscreen_color", GpuTexture.USAGE_RENDER_ATTACHMENT | GpuTexture.USAGE_TEXTURE_BINDING | GpuTexture.USAGE_COPY_SRC | GpuTexture.USAGE_COPY_DST, GpuFormat.RGBA8_UNORM, size, size, 1, 1);
         colorView = device.createTextureView(colorTex);
         depthTex = device.createTexture(() -> "offscreen_depth", GpuTexture.USAGE_RENDER_ATTACHMENT | GpuTexture.USAGE_TEXTURE_BINDING | GpuTexture.USAGE_COPY_SRC | GpuTexture.USAGE_COPY_DST, GpuFormat.D32_FLOAT, size, size, 1, 1);
         depthView = device.createTextureView(depthTex);
-        *///?}
+        *///?} else {
+		colorTex = device.createTexture(() -> "offscreen_color", 13, TextureFormat.RGBA8, size, size, 1, 1);
+		colorView = device.createTextureView(colorTex);
+		depthTex = device.createTexture(() -> "offscreen_depth", 9, TextureFormat.DEPTH32, size, size, 1, 1);
+		depthView = device.createTextureView(depthTex);
+		//?}
 		projBuf = new ProjectionMatrixBuffer("offscreen_proj");
 	}
 

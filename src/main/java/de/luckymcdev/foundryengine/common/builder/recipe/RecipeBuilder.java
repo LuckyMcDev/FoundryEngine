@@ -1,11 +1,11 @@
 package de.luckymcdev.foundryengine.common.builder.recipe;
 
 import de.luckymcdev.foundryengine.common.builder.AbstractBuilder;
-//? if 26.1 {
-import net.minecraft.advancements.Criterion;
- //?} elif 26.2 {
+//? if >= 26.2 {
 /*import net.minecraft.advancements.triggers.Criterion;
-*///?}
+*///?} else {
+import net.minecraft.advancements.Criterion;
+//?}
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;

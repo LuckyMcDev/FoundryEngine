@@ -14,11 +14,11 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.IdentifierArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-//? if 26.1 {
-import net.minecraft.world.entity.EntityType;
- //?} elif 26.2 {
+//? if >= 26.2 {
 /*import net.minecraft.world.entity.EntityTypes;
-*///?}
+*///?} else {
+import net.minecraft.world.entity.EntityType;
+//?}
 import net.minecraft.world.entity.decoration.Mannequin;
 import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.portal.TeleportTransition;
@@ -142,11 +142,11 @@ public class TestCommand implements EngineCommand {
 
 		fake.then(Commands.literal("spawn")
 			.executes(context -> {
-				//? if 26.1 {
-				Mannequin test = EntitySpawner.spawnServer(context.getSource().getLevel(), EntityType.MANNEQUIN, new Vec3(0, 100, 0));
-				 //?} elif 26.2 {
-				/*Mannequin test = EntitySpawner.spawnServer(context.getSource().getLevel(), EntityTypes.MANNEQUIN, new Vec3(0, 100, 0));
-				*///?}
+			//? if >= 26.2 {
+			/*Mannequin test = EntitySpawner.spawnServer(context.getSource().getLevel(), EntityTypes.MANNEQUIN, new Vec3(0, 100, 0));
+			*///?} else {
+			Mannequin test = EntitySpawner.spawnServer(context.getSource().getLevel(), EntityType.MANNEQUIN, new Vec3(0, 100, 0));
+			//?}
 				test.setCustomName(Component.literal("supertest"));
 				return 1;
 			})

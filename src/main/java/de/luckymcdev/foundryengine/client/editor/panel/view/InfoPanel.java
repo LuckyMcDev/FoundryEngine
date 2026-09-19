@@ -71,11 +71,11 @@ public class InfoPanel extends EditorPanel {
 		String arch = System.getProperty("os.arch");
 		int cores = Runtime.getRuntime().availableProcessors();
 		String mcVersion = SharedConstants.getCurrentVersion().toString();
-		//? if 26.1 {
-		String backendName = RenderSystem.getDevice().getBackendName();
-		//?} elif 26.2 {
+		//? if >= 26.2 {
 		/*String backendName = RenderSystem.getDevice().getDeviceInfo().backendName();
-		*///?}
+		*///?} else {
+		String backendName = RenderSystem.getDevice().getBackendName();
+		//?}
 
 		formatted(ImGraphicsExtractor.icon(ImIcons.WINDOWS) + "  OS", "%s (%s)", os, arch);
 		formatted(ImGraphicsExtractor.icon(ImIcons.MICROCHIP) + "  CPU Cores", "%d", cores);

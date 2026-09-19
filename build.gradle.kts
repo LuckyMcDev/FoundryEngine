@@ -115,13 +115,16 @@ dependencies {
         jarJar(gav)
     }
 
-    // Third-party MC integrations are pinned only for 26.1 until 26.2 builds are published.
     if (sc.current.version == "26.1") {
+		// 26.1 needs special handling as the sc version is not the same as the version that imguimc needs (26.1.2 vs 26.1)
 		var mcVersion = property("mod.mc") as String
         runtimeOnly(fletchingTable.modrinth("jei", mcVersion, "neoforge"))
 		compileOnly("foundry.imguimc:imguimc-neoforge-${sc.current.version}:${property("lib.imguimc")}")
 		runtimeOnly("foundry.imguimc:imguimc-neoforge-${sc.current.version}:${property("lib.imguimc")}")
-    } else {
+    } else if (sc.current.version == "26.3") {
+		var mcVersion = property("mod.mc") as String
+		//runtimeOnly(fletchingTable.modrinth("jei", mcVersion, "neoforge")) not on 26.3
+	} else {
 		var mcVersion = property("mod.mc") as String
 		runtimeOnly(fletchingTable.modrinth("jei", mcVersion, "neoforge"))
 		compileOnly("foundry.imguimc:imguimc-neoforge-${mcVersion}:${property("lib.imguimc")}")
