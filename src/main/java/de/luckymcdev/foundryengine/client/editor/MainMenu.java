@@ -6,7 +6,10 @@ import de.luckymcdev.foundryengine.client.editor.config.PanelCategory;
 import de.luckymcdev.foundryengine.client.editor.menu.MenuSection;
 import de.luckymcdev.foundryengine.client.editor.menu.ShortcutHandler;
 import de.luckymcdev.foundryengine.client.editor.menu.builtin.CategoryMenuSection;
+import de.luckymcdev.foundryengine.client.imgui.ImColorVariant;
 import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
+import de.luckymcdev.foundryengine.client.imgui.icon.ImIcons;
+import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.registry.GenericRegistry;
 import imgui.ImGui;
 import imgui.flag.ImGuiStyleVar;
@@ -57,6 +60,10 @@ public class MainMenu {
 			g.pushStack();
 			menuSections.forEach(MenuSection::render);
 			g.popStack();
+
+			if (ImGui.menuItem("Reload Scripts " + ImIcons.ARROW_ROTATE_LEFT)) {
+				Common.getBundleManager().reload();
+			}
 
 			ImGui.endMainMenuBar();
 		}
