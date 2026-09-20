@@ -34,6 +34,15 @@ public class MainMenu {
 			this.register(category.name().toLowerCase(),
 				new CategoryMenuSection(editor, category, category.getMenuLabel()));
 		}
+
+		this.register("scriptreload", new MenuSection() {
+			@Override
+			public void render() {
+				if (ImGui.menuItem("Reload Scripts " + ImIcons.ARROW_ROTATE_LEFT)) {
+					Common.getBundleManager().reload();
+				}
+			}
+		});
 	}
 
 	private boolean isSubCategory(PanelCategory category) {
@@ -60,10 +69,6 @@ public class MainMenu {
 			g.pushStack();
 			menuSections.forEach(MenuSection::render);
 			g.popStack();
-
-			if (ImGui.menuItem("Reload Scripts " + ImIcons.ARROW_ROTATE_LEFT)) {
-				Common.getBundleManager().reload();
-			}
 
 			ImGui.endMainMenuBar();
 		}
