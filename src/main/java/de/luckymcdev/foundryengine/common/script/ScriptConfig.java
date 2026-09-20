@@ -28,8 +28,7 @@ public final class ScriptConfig {
 	}
 
 	private static ImportCustomizer createImportCustomizer() {
-		ImportCustomizer imports = new ImportCustomizer();
-		return imports;
+		return new ImportCustomizer();
 	}
 
 	private static SecureASTCustomizer createSecureCustomizer() {
@@ -37,21 +36,16 @@ public final class ScriptConfig {
 
 		secure.setClosuresAllowed(true);
 		secure.setMethodDefinitionAllowed(true);
-
-		// Prevent using fully qualified names
 		secure.setIndirectImportCheckEnabled(true);
 
 		// Blocklist for imports
 		secure.setDisallowedImports(List.of(
 			"java.io",
 			"java.net",
-			"java.nio",
-			"java.beans",
-			"java.util.zip",
-			"java.util.jar",
+			"java.lang.reflect",
+			"java.lang.invoke",
 			"java.util.prefs",
 			"java.rmi",
-			"javax",
 			"javax.script",
 			"sun",
 			"com.sun",
@@ -88,14 +82,9 @@ public final class ScriptConfig {
 			"java.nio.file.Files",
 			"java.nio.file.Paths",
 			"java.nio.file.FileSystem",
-			"java.beans.XMLDecoder",
-			"java.beans.XMLEncoder",
-			"java.util.zip.ZipInputStream",
-			"java.util.zip.ZipOutputStream",
-			"java.util.jar.JarFile",
-			"java.util.prefs.Preferences",
-			"java.rmi.Naming",
-			"javax.imageio.ImageIO"
+			"java.nio.file.FileSystems",
+			"java.nio.file.Path",
+			"java.rmi.Naming"
 		));
 
 		return secure;

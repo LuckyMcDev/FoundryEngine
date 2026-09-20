@@ -17,26 +17,25 @@ public final class ScriptSandbox {
 		"java.lang.Process",
 		"java.lang.ProcessHandle",
 		"java.lang.Compiler",
-		"java.lang.ClassLoader"
+		"java.lang.ClassLoader",
+		"java.nio.file.Files",
+		"java.nio.file.Paths",
+		"java.nio.file.FileSystem",
+		"java.nio.file.FileSystems"
 	);
+
 	private static final List<String> DENIED_PREFIXES = List.of(
 		"java.io.",
 		"java.net.",
-		"java.nio.",
 		"java.lang.reflect.",
 		"java.lang.invoke.",
-		"java.beans.",
-		"java.util.zip.",
-		"java.util.jar.",
 		"java.util.prefs.",
 		"java.rmi.",
-		"javax.imageio.",
-		"sun.misc.",
-		"jdk.",
-		"jdk.internal.",
+		"javax.script.",
 		"sun.",
 		"com.sun.",
-		"javax.",
+		"jdk.",
+		"jdk.internal.",
 		"org.spongepowered.",
 		"org.objectweb.asm."
 	);
@@ -68,10 +67,7 @@ public final class ScriptSandbox {
 
 	/**
 	 * A class loader that enforces {@link #isClassAllowed(String)} before
-	 * delegating to the real class loader. Intended to be passed as the parent
-	 * of a {@link groovy.util.GroovyScriptEngine GroovyScriptEngine} or
-	 * {@link groovy.lang.GroovyShell GroovyShell} so that compiled script
-	 * code cannot load dangerous classes.
+	 * delegating to the real class loader.
 	 */
 	public static final class FilteringClassLoader extends ClassLoader {
 
