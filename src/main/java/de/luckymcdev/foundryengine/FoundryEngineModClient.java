@@ -38,6 +38,7 @@ import de.luckymcdev.foundryengine.client.gizmo.GizmoRenderer;
 import de.luckymcdev.foundryengine.client.imgui.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.client.imgui.ImGuiManager;
 import de.luckymcdev.foundryengine.client.render.EngineSceneDepth;
+import de.luckymcdev.foundryengine.client.script.MaliciousScriptScreen;
 import de.luckymcdev.foundryengine.client.waypoint.ClientWaypointManager;
 import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.common.bundle.modcompat.BundleModContainer;
@@ -52,11 +53,14 @@ import de.luckymcdev.foundryengine.common.network.packets.sync.ScreenEffectPacke
 import de.luckymcdev.foundryengine.common.util.FolderHash;
 import de.luckymcdev.foundryengine.common.util.color.Color;
 import de.luckymcdev.foundryengine.config.Config;
+import de.luckymcdev.foundryengine.config.StartupConfig;
 import foundry.imgui.api.ImGuiMC;
 import foundry.imgui.neoforge.api.event.ImGuiLoadEventsNeoforge;
 import foundry.imgui.neoforge.api.event.RegisterImGuiFontsEventNeoforge;
 import foundry.imgui.neoforge.api.event.RenderImGuiEventsNeoforge;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.Vec3i;
 import net.minecraft.resources.Identifier;
@@ -78,6 +82,7 @@ import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.client.event.RenderFrameEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
@@ -88,7 +93,7 @@ import org.slf4j.Logger;
 
 import java.util.concurrent.CompletableFuture;
 
-//? if >= 26.2 {
+//? if >=26.2 {
 /*import net.minecraft.client.PreferredGraphicsApi;
 import de.luckymcdev.foundryengine.common.exceptions.EngineException;
 *///?} else {
@@ -101,11 +106,12 @@ import com.mojang.blaze3d.vertex.PoseStack;
  */
 @Mod(value = Common.MODID, dist = Dist.CLIENT)
 public class FoundryEngineModClient {
-	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final IEventBus BUS = NeoForge.EVENT_BUS;
 	public static final Identifier LOGO_TRANSPARENT = Common.id("textures/logo_transparent.png");
 	public static final Identifier LOGO_BLACK = Common.id("textures/logo_black.png");
 	public static final Identifier LOGO_WHITE = Common.id("textures/logo_white.png");
+	private static final Logger LOGGER = LogUtils.getLogger();
+	private static final IEventBus BUS = NeoForge.EVENT_BUS;
+	private static boolean handledClassFilter = false;
 
 	public FoundryEngineModClient(IEventBus modBus, ModContainer modContainer) {
 		modBus.addListener(this::onClientSetup);
@@ -128,12 +134,13 @@ public class FoundryEngineModClient {
 		BUS.addListener(this::onItemTooltip);
 		BUS.addListener(this::onRightClickItem);
 		BUS.addListener(this::renderImGuiEvent);
+		BUS.addListener(this::onScreenOpening);
 
 		Config.registerClient(modContainer);
 	}
 
 	private void onClientSetup(FMLClientSetupEvent event) {
-		//? if >= 26.2 {
+		//? if >=26.2 {
 		/*if (Minecraft.getInstance().options.preferredGraphicsBackend().get() == PreferredGraphicsApi.VULKAN) {
 			//throw new EngineException("Sadly due to how FoundryEngine renders its InGame Editor, Vulkan is not supported at this Time. Switch to OpenGL. or delte the Mod.");
 		}
@@ -222,14 +229,47 @@ public class FoundryEngineModClient {
 		});
 	}
 
+	private void checkMaliciousScriptConfig() {
+		if (StartupConfig.DISABLE_CLASS_FILTER.get() && !StartupConfig.CLASS_FILTER_ACKNOWLEDGED.get()) {
+			var parent = Client.getCurrentScreen();
+			Minecraft.getInstance().execute(() -> {
+				Client.setScreen(new MaliciousScriptScreen(parent, this::onClassFilterAccepted, this::onClassFilterDeclined));
+			});
+		}
+	}
+
+	private void onClassFilterAccepted() {
+		StartupConfig.CLASS_FILTER_ACKNOWLEDGED.set(true);
+		StartupConfig.CLASS_FILTER_ACKNOWLEDGED.save();
+		StartupConfig.SPEC.save();
+		LOGGER.info("Class filter acknowledged by user - disabling class filter");
+		Common.getScriptShell().invalidateAll();
+	}
+
+	private void onClassFilterDeclined() {
+		StartupConfig.DISABLE_CLASS_FILTER.set(false);
+		StartupConfig.DISABLE_CLASS_FILTER.save();
+		StartupConfig.SPEC.save();
+		LOGGER.info("User declined to disable class filter - keeping sandbox enabled");
+		Common.getScriptShell().invalidateAll();
+	}
+
 	private void registerImGuiFonts(RegisterImGuiFontsEventNeoforge event) {
-		try(var ctx = ImGuiMC.withImGui()) {
+		try (var ctx = ImGuiMC.withImGui()) {
 			var font = ImGuiMC.getFont(ImGuiManager.FONT, false, false);
 			font.setScale(font.getScale() * ImGuiManager.scaleOverride);
 			ctx.io().setFontDefault(font);
 			event.getAtlas().setFreeTypeRenderer(true);
 			// its a bit better i guess
 		}
+	}
+
+	private void onScreenOpening(ScreenEvent.Opening event) {
+		if (handledClassFilter || !(event.getNewScreen() instanceof TitleScreen title)) {
+			return;
+		}
+		handledClassFilter = true;
+		checkMaliciousScriptConfig();
 	}
 
 	private void loadImGuiEvent(ImGuiLoadEventsNeoforge.Pre event) {
@@ -339,7 +379,7 @@ public class FoundryEngineModClient {
 		EngineSceneDepth.update();
 	}
 
-	//? if >= 26.2 {
+	//? if >=26.2 {
 	/*private void onRenderLevel(RenderLevelStageEvent.AfterLevel event) {
 		var camState = event.getLevelRenderState().cameraRenderState;
 		Client.updateMain(camState.viewRotationMatrix, camState.projectionMatrix);

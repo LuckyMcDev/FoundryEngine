@@ -1,5 +1,6 @@
 package de.luckymcdev.foundryengine.common.script;
 
+import de.luckymcdev.foundryengine.config.StartupConfig;
 import org.jspecify.annotations.NullMarked;
 
 import java.util.List;
@@ -45,8 +46,13 @@ public final class ScriptSandbox {
 
 	/**
 	 * Checks whether a fully qualified class name may be loaded by scripts.
+	 * The check is skipped if the class filter is disabled AND acknowledged.
 	 */
 	static boolean isClassAllowed(String className) {
+		if (isFilterDisabled()) {
+			return true;
+		}
+
 		Objects.requireNonNull(className);
 
 		if (className.isEmpty() || className.startsWith("[")) {
@@ -63,6 +69,10 @@ public final class ScriptSandbox {
 		}
 
 		return true;
+	}
+
+	private static boolean isFilterDisabled() {
+		return StartupConfig.DISABLE_CLASS_FILTER.get() && StartupConfig.CLASS_FILTER_ACKNOWLEDGED.get();
 	}
 
 	/**

@@ -3,6 +3,7 @@ package de.luckymcdev.foundryengine.server.command.builtin;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import de.luckymcdev.foundryengine.client.Client;
+import de.luckymcdev.foundryengine.common.util.FirstRun;
 import de.luckymcdev.foundryengine.common.world.entity.EntitySpawner;
 import de.luckymcdev.foundryengine.common.world.level.EngineLevels;
 import de.luckymcdev.foundryengine.common.world.level.runtime.RuntimeLevelConfig;
@@ -169,11 +170,23 @@ public class TestCommand implements EngineCommand {
 		return fake;
 	}
 
+	private LiteralArgumentBuilder<CommandSourceStack> deleteFirstRunCache() {
+		var cmd = Commands.literal("deleteFirstRunCache");
+
+		cmd.executes(context -> {
+			FirstRun.resetCache();
+			return 1;
+		});
+
+		return cmd;
+	}
+
 	@Override
 	public LiteralArgumentBuilder<CommandSourceStack> build(CommandBuildContext buildContext) {
 		return Commands.literal("test").requires(this::isAdmin)
 			.then(worldSection())
 			.then(fakeSection())
+			.then(deleteFirstRunCache())
 			.then(fontTestSection());
 	}
 }

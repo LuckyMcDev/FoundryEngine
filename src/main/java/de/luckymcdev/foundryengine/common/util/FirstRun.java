@@ -62,12 +62,15 @@ public class FirstRun {
 		return true;
 	}
 
-	public static void resetCache() {
+	public static boolean resetCache() {
+		boolean ret;
 		seenMods.clear();
 		try {
-			Files.deleteIfExists(FIRST_RUN_CACHE);
+			ret = Files.deleteIfExists(FIRST_RUN_CACHE);
 		} catch (IOException e) {
+			ret = false;
 			LOGGER.error("Failed to delete cache file: {}", FIRST_RUN_CACHE, e);
 		}
+		return ret;
 	}
 }
