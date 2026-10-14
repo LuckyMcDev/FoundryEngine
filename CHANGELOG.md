@@ -1,13 +1,12 @@
-0.1.10
+0.1.11
 
 ---
 
-- Added a menu System
-- Storage Source no longer warns on empty path
-- Bundle scripts now compile correctly on server
-- addNode in DialogueTree returns the node itself
+- Add FileIO and JsonIO
+- Add Reload Scripts button to main menu
+- add Config to disable classloader restrictions
+
 
 ---
 
-- Fixed properties references in docs
-- update packages for my first bundle guide in docs
+- prep for 26.3 support
