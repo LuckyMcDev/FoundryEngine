@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,6 +48,7 @@ public final class Common {
 	public static final Path GAMEDIR = FMLPaths.GAMEDIR.get().normalize().toAbsolutePath();
 	public static final Path CONFIG = FMLPaths.CONFIGDIR.get();
 	public static final Path TEMP_DIR = Path.of(SystemProperties.getProperty("java.io.tmpdir")).resolve(MODID);
+	public static final Path USER_SPACE = Paths.get(System.getProperty("user.home"), ".foundryengine");
 	public static final String BLOCK_DISPLAY_TAG = MODID + "_blockdisplay";
 	public static final Path FIRST_RUN_CACHE = GAMEDIR.resolve(".cache").resolve(".fruncache.txt");
 	private static final boolean FIRST_RUN = FirstRun.isFor(MODID);

@@ -1,8 +1,13 @@
 package de.luckymcdev.foundryengine.common.script;
 
+import de.luckymcdev.foundryengine.common.Common;
 import de.luckymcdev.foundryengine.config.StartupConfig;
+import net.neoforged.fml.loading.FMLPaths;
 import org.jspecify.annotations.NullMarked;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 
@@ -41,12 +46,36 @@ public final class ScriptSandbox {
 		"org.objectweb.asm."
 	);
 
+	private static final Path ACCEPTED_FILE = Common.USER_SPACE.resolve(".sandbox_waiver");
+	private static volatile boolean accepted = Files.exists(ACCEPTED_FILE);
+
 	private ScriptSandbox() {
 	}
 
 	/**
+	 * Returns whether the user has accepted disabling the class filter.
+	 * The result is cached; deleting the marker file takes effect after a restart.
+	 */
+	public static boolean isAccepted() {
+		return accepted;
+	}
+
+	/**
+	 * Creates the acceptance marker file and remembers the acceptance.
+	 *
+	 * @throws IOException if the file or its parent directory could not be created
+	 */
+	public static void markAccepted() throws IOException {
+		Files.createDirectories(ACCEPTED_FILE.getParent());
+		if (Files.notExists(ACCEPTED_FILE)) {
+			Files.createFile(ACCEPTED_FILE);
+		}
+		accepted = true;
+	}
+
+	/**
 	 * Checks whether a fully qualified class name may be loaded by scripts.
-	 * The check is skipped if the class filter is disabled AND acknowledged.
+	 * The check is skipped if the class filter is disabled AND accepted.
 	 */
 	static boolean isClassAllowed(String className) {
 		if (isFilterDisabled()) {
@@ -71,8 +100,13 @@ public final class ScriptSandbox {
 		return true;
 	}
 
-	private static boolean isFilterDisabled() {
-		return StartupConfig.DISABLE_CLASS_FILTER.get() && StartupConfig.CLASS_FILTER_ACKNOWLEDGED.get();
+	/**
+	 * Whether the whole script sandbox (class loader filter and compile-time
+	 * AST restrictions) is disabled. Requires the config option AND the
+	 * user's acceptance.
+	 */
+	static boolean isFilterDisabled() {
+		return StartupConfig.DISABLE_CLASS_FILTER.get() && accepted;
 	}
 
 	/**

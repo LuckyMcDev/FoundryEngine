@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.client.ext;
 
 import com.mojang.logging.LogUtils;
+import de.luckymcdev.foundryengine.common.Common;
 import net.neoforged.fml.loading.FMLPaths;
 import org.slf4j.Logger;
 
@@ -12,7 +13,7 @@ import java.nio.file.Paths;
 
 public class ModPathRecorder {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final Path RECORD_FILE = Paths.get(System.getProperty("user.home"), ".foundryengine", "last-mods-path.properties");
+	private static final Path RECORD_FILE = Common.USER_SPACE.resolve("last-mods-path.properties");
 
 	public static void record() {
 		Path modsPath = FMLPaths.MODSDIR.get().toAbsolutePath();

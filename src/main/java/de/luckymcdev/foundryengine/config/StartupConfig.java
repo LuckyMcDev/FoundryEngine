@@ -9,7 +9,6 @@ public final class StartupConfig {
 	public static final ModConfigSpec.BooleanValue COMPATIBILITY_MODE_WARNING_SKIP;
 	public static final ModConfigSpec.BooleanValue SCRIPTING_ENABLED;
 	public static final ModConfigSpec.BooleanValue DISABLE_CLASS_FILTER;
-	public static final ModConfigSpec.BooleanValue CLASS_FILTER_ACKNOWLEDGED;
 	public static final ModConfigSpec.BooleanValue EVAL_COMMAND_ENABLED;
 	public static final ModConfigSpec.IntValue EVAL_COMMAND_PERMISSION;
 	public static final ModConfigSpec.IntValue SCRIPT_TIMEOUT_SECONDS;
@@ -39,12 +38,8 @@ public final class StartupConfig {
 
 		DISABLE_CLASS_FILTER = builder
 			.comment("Disables the blacklist filter on groovy scripts.")
-			.comment("requires approval by the user on first launch. If the user disagrees it will be set to false again.")
+			.comment("Requires approval by the user on first launch. If the user disagrees it will be set to false again.")
 			.define("DISABLE_CLASS_FILTER", false);
-
-		CLASS_FILTER_ACKNOWLEDGED = builder
-			.comment("Set automatically when the user approves disabling the class filter. Do not set this manually.")
-			.define("CLASS_FILTER_ACKNOWLEDGED", false);
 
 		EVAL_COMMAND_ENABLED = builder
 			.comment("Enables/disables the /engine eval command.")

@@ -1,6 +1,12 @@
 package de.luckymcdev.foundryengine.common.script;
 
+import org.codehaus.groovy.ast.ClassNode;
+import org.codehaus.groovy.classgen.GeneratorContext;
+import org.codehaus.groovy.control.CompilationFailedException;
+import org.codehaus.groovy.control.CompilePhase;
 import org.codehaus.groovy.control.CompilerConfiguration;
+import org.codehaus.groovy.control.SourceUnit;
+import org.codehaus.groovy.control.customizers.CompilationCustomizer;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
 import org.codehaus.groovy.control.customizers.SecureASTCustomizer;
 
@@ -31,7 +37,7 @@ public final class ScriptConfig {
 		return new ImportCustomizer();
 	}
 
-	private static SecureASTCustomizer createSecureCustomizer() {
+	private static CompilationCustomizer createSecureCustomizer() {
 		SecureASTCustomizer secure = new SecureASTCustomizer();
 
 		secure.setClosuresAllowed(true);
@@ -87,6 +93,15 @@ public final class ScriptConfig {
 			"java.rmi.Naming"
 		));
 
-		return secure;
+		return new CompilationCustomizer(CompilePhase.CANONICALIZATION) {
+			@Override
+			public void call(SourceUnit source, GeneratorContext context, ClassNode classNode)
+				throws CompilationFailedException {
+				if (ScriptSandbox.isFilterDisabled()) {
+					return;
+				}
+				secure.call(source, context, classNode);
+			}
+		};
 	}
 }
