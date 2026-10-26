@@ -39,12 +39,3 @@ deps.neo_loader = "26.2.0.88"
 mod.neo_range = "[26.2,26.3)"
 mod.loader_range = "[4,)"
 mod.logo_key = "iconFile"
-
-["26.3"]
-mod.mc = "26.3"
-mod.mc_compat = "[26.3,26.4)"
-mod.mc_releases = "26.3"
-deps.neo_loader = "26.3.0.4-beta"
-mod.neo_range = "[26.3,26.4)"
-mod.loader_range = "[4,)"
-mod.logo_key = "iconFile"
