@@ -50,7 +50,7 @@ import de.luckymcdev.foundryengine.common.network.packets.editor.CutscenePacket;
 import de.luckymcdev.foundryengine.common.network.packets.editor.WaypointPacket;
 import de.luckymcdev.foundryengine.common.network.packets.explorer.ClientBoundExplorerPacket;
 import de.luckymcdev.foundryengine.common.network.packets.sync.ScreenEffectPacket;
-import de.luckymcdev.foundryengine.common.script.ScriptSandbox;
+import de.luckymcdev.foundryengine.common.script.sandbox.SandboxWaiver;
 import de.luckymcdev.foundryengine.common.util.FolderHash;
 import de.luckymcdev.foundryengine.common.util.color.Color;
 import de.luckymcdev.foundryengine.config.Config;
@@ -60,7 +60,6 @@ import foundry.imgui.neoforge.api.event.ImGuiLoadEventsNeoforge;
 import foundry.imgui.neoforge.api.event.RegisterImGuiFontsEventNeoforge;
 import foundry.imgui.neoforge.api.event.RenderImGuiEventsNeoforge;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.Vec3i;
@@ -232,7 +231,7 @@ public class FoundryEngineModClient {
 	}
 
 	private void checkMaliciousScriptConfig() {
-		if (StartupConfig.DISABLE_CLASS_FILTER.get() && !ScriptSandbox.isAccepted()) {
+		if (StartupConfig.DISABLE_CLASS_FILTER.get() && !SandboxWaiver.isAccepted()) {
 			var parent = Client.getCurrentScreen();
 			Minecraft.getInstance().execute(() -> {
 				Client.setScreen(new MaliciousScriptScreen(parent, this::onClassFilterAccepted, this::onClassFilterDeclined));
@@ -242,13 +241,13 @@ public class FoundryEngineModClient {
 
 	private void onClassFilterAccepted() {
 		try {
-			ScriptSandbox.markAccepted();
+			SandboxWaiver.markAccepted();
 		} catch (IOException e) {
 			LOGGER.error("Failed to write class filter acceptance file", e);
 			return;
 		}
 		LOGGER.info("Class filter acknowledged by user - disabling class filter");
-		Common.getScriptShell().invalidateAll();
+		Common.getScriptManager().unloadAll();
 	}
 
 	private void onClassFilterDeclined() {
@@ -256,7 +255,7 @@ public class FoundryEngineModClient {
 		StartupConfig.DISABLE_CLASS_FILTER.save();
 		StartupConfig.SPEC.save();
 		LOGGER.info("User declined to disable class filter - keeping sandbox enabled");
-		Common.getScriptShell().invalidateAll();
+		Common.getScriptManager().unloadAll();
 	}
 
 	private void registerImGuiFonts(RegisterImGuiFontsEventNeoforge event) {

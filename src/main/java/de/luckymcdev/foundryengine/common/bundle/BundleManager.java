@@ -8,7 +8,6 @@ import de.luckymcdev.foundryengine.common.bundle.modcompat.BundleModFile;
 import de.luckymcdev.foundryengine.common.bundle.modcompat.BundleModFileInfo;
 import de.luckymcdev.foundryengine.common.bundle.modcompat.BundleModInfo;
 import de.luckymcdev.foundryengine.common.registry.GenericRegistry;
-import de.luckymcdev.foundryengine.common.script.GroovyScriptLoader;
 import de.luckymcdev.foundryengine.common.util.ErrorHandler;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.Commands;
@@ -61,14 +60,12 @@ public class BundleManager implements ResourceManagerReloadListener {
 	private final Set<String> registeredConfigs = ConcurrentHashMap.newKeySet();
 	private final Set<String> failedBundleIds = ConcurrentHashMap.newKeySet();
 	private final BundleDiscovery bundleDiscovery;
-	private final GroovyScriptLoader scriptLoader;
 	private final BundleLifecycleDispatcher lifecycleDispatcher = new BundleLifecycleDispatcher();
 	private volatile boolean reloading = false;
 	private @Nullable MinecraftServer server;
 
 	public BundleManager(IEventBus modBus) {
 		BundleFactory bundleFactory = new BundleFactory(modBus);
-		this.scriptLoader = bundleFactory.getScriptLoader();
 		this.bundleDiscovery = new BundleDiscovery(bundleFactory, this::register);
 	}
 
@@ -111,7 +108,7 @@ public class BundleManager implements ResourceManagerReloadListener {
 
 		if (!depsFailed) {
 			try {
-				bundle.loadCommon(scriptLoader);
+				bundle.loadCommon(Common.getScriptManager());
 			} catch (Exception e) {
 				BundleExceptionHandler.handle(
 					"Failed to load common scripts for bundle '" + bundleId + "'", e);
@@ -123,8 +120,6 @@ public class BundleManager implements ResourceManagerReloadListener {
 			container.registerConfig(ModConfig.Type.COMMON, spec);
 			registeredConfigs.add(bundleId);
 		} else {
-			// Config is already registered in ConfigTracker from a previous load;
-			// re-registering would throw a "config file conflict" on reload.
 			container.setConfigSpec(spec);
 		}
 		lifecycleDispatcher.fireLoaded(bundle);
@@ -176,7 +171,7 @@ public class BundleManager implements ResourceManagerReloadListener {
 				continue;
 			}
 			try {
-				bundle.loadClient(scriptLoader);
+				bundle.loadClient(Common.getScriptManager());
 			} catch (Exception e) {
 				BundleExceptionHandler.handle(
 					"Failed to load client scripts for bundle '" + bundleId + "'", e);
@@ -195,7 +190,7 @@ public class BundleManager implements ResourceManagerReloadListener {
 				continue;
 			}
 			try {
-				bundle.loadServer(scriptLoader);
+				bundle.loadServer(Common.getScriptManager());
 			} catch (Exception e) {
 				BundleExceptionHandler.handle(
 					"Failed to load server scripts for bundle '" + bundleId + "'", e);
@@ -204,7 +199,7 @@ public class BundleManager implements ResourceManagerReloadListener {
 	}
 
 	public void reportScriptErrors() {
-		Map<String, List<Throwable>> errors = GroovyScriptLoader.getAndClearErrors();
+		Map<String, List<Throwable>> errors = Common.getScriptManager().drainErrors();
 		for (Map.Entry<String, List<Throwable>> entry : errors.entrySet()) {
 			String bundleId = entry.getKey();
 			failedBundleIds.add(bundleId);
@@ -286,12 +281,9 @@ public class BundleManager implements ResourceManagerReloadListener {
 
 			unloadAllBundles();
 			bundles.clear();
-			// Drop the config bookkeeping from the previous load so re-registration
-			// below takes the fresh path and stays consistent with ConfigTracker.
 			registeredConfigs.clear();
 
-			Common.getScriptShell().invalidateAll();
-			scriptLoader.invalidateCache();
+			Common.getScriptManager().unloadAll();
 			failedBundleIds.clear();
 
 			try {
@@ -305,9 +297,6 @@ public class BundleManager implements ResourceManagerReloadListener {
 			reportScriptErrors();
 
 			if (server != null) {
-				// Commands are normally registered once at server start; re-posting the
-				// event here cannot re-run all of NeoForge's registry logic, so flag that
-				// command/registry state may be inconsistent until the server restarts.
 				LOGGER.warn("Reloading FoundryEngine Bundles while a server is live: command/registry state "
 					+ "may be inconsistent until restart.");
 				var commands = server.getCommands();
@@ -327,6 +316,7 @@ public class BundleManager implements ResourceManagerReloadListener {
 		}
 	}
 
+
 	private void unloadAllBundles() {
 		for (Bundle bundle : bundles.values()) {
 			unloadBundle(bundle);
@@ -343,10 +333,10 @@ public class BundleManager implements ResourceManagerReloadListener {
 		String id = bundle.info().id();
 		bundleContainers.removeIf(c ->
 			c instanceof BundleModContainer bmc && bmc.getBundle().info().id().equals(id));
-		// Remove the stale ModConfig so a reload can re-register the config cleanly.
 		removeBundleConfigFromTracker(id);
 		registeredConfigs.remove(id);
 		try {
+			Common.getScriptManager().unloadBundle(id);
 			bundle.unload();
 		} finally {
 			lifecycleDispatcher.fireUnloaded(bundle);

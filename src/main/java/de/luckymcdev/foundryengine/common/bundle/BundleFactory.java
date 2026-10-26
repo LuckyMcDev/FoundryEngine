@@ -4,7 +4,6 @@ import de.luckymcdev.foundryengine.common.bundle.config.BundleConfigSpec;
 import de.luckymcdev.foundryengine.common.bundle.info.BundleFiles;
 import de.luckymcdev.foundryengine.common.bundle.info.BundleInfo;
 import de.luckymcdev.foundryengine.common.bundle.registry.BundleCreativeModeTab;
-import de.luckymcdev.foundryengine.common.script.GroovyScriptLoader;
 import net.neoforged.bus.api.IEventBus;
 import org.jspecify.annotations.Nullable;
 
@@ -14,11 +13,9 @@ import java.nio.file.Path;
 
 public class BundleFactory {
 
-	private final GroovyScriptLoader scriptLoader;
 	private final IEventBus modBus;
 
 	public BundleFactory(IEventBus modBus) {
-		this.scriptLoader = new GroovyScriptLoader();
 		this.modBus = modBus;
 	}
 
@@ -28,9 +25,5 @@ public class BundleFactory {
 		BundleCreativeModeTab creativeTab = new BundleCreativeModeTab(info.id(), modBus);
 
 		return new Bundle(info, files, creativeTab, new BundleConfigSpec());
-	}
-
-	public GroovyScriptLoader getScriptLoader() {
-		return scriptLoader;
 	}
 }

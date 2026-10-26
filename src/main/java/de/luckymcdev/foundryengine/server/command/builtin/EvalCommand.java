@@ -5,9 +5,9 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.common.script.ScriptConfig;
-import de.luckymcdev.foundryengine.common.script.ScriptSandbox;
 import de.luckymcdev.foundryengine.common.script.ScriptTimeout;
 import de.luckymcdev.foundryengine.common.script.ScriptTimeoutException;
+import de.luckymcdev.foundryengine.common.script.sandbox.FilteringClassLoader;
 import de.luckymcdev.foundryengine.common.util.ErrorHandler;
 import de.luckymcdev.foundryengine.config.StartupConfig;
 import de.luckymcdev.foundryengine.server.command.EngineCommand;
@@ -52,11 +52,11 @@ public class EvalCommand implements EngineCommand {
 			binding.setVariable("source", ctx.getSource());
 
 			GroovyShell shell = new GroovyShell(
-				new ScriptSandbox.FilteringClassLoader(
+				new FilteringClassLoader(
 					Thread.currentThread().getContextClassLoader()
 				),
 				binding,
-				ScriptConfig.createCompilerConfig()
+				ScriptConfig.createBaseCompilerConfig()
 			);
 
 			Object result = ScriptTimeout.call(() -> shell.evaluate(code),

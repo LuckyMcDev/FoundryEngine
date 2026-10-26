@@ -5,7 +5,8 @@ import de.luckymcdev.foundryengine.common.bundle.info.BundleFiles;
 import de.luckymcdev.foundryengine.common.bundle.info.BundleInfo;
 import de.luckymcdev.foundryengine.common.bundle.registry.BundleCreativeModeTab;
 import de.luckymcdev.foundryengine.common.script.BundleEntrypoint;
-import de.luckymcdev.foundryengine.common.script.GroovyScriptLoader;
+import de.luckymcdev.foundryengine.common.script.ScriptManager;
+import de.luckymcdev.foundryengine.common.script.definition.ScriptEnv;
 import net.minecraft.resources.Identifier;
 
 import java.util.ArrayList;
@@ -23,23 +24,23 @@ public class Bundle {
 	private final List<BundleEntrypoint> serverEntrypoints = new ArrayList<>();
 
 	public Bundle(BundleInfo info, BundleFiles bundleFiles,
-	              BundleCreativeModeTab creativeModeTab, BundleConfigSpec configSpec) {
+				  BundleCreativeModeTab creativeModeTab, BundleConfigSpec configSpec) {
 		this.info = info;
 		this.bundleFiles = bundleFiles;
 		this.creativeModeTab = creativeModeTab;
 		this.configSpec = configSpec;
 	}
 
-	public void loadCommon(GroovyScriptLoader loader) {
-		commonEntrypoints.addAll(loader.loadCommon(bundleFiles, info.id()));
+	public void loadCommon(ScriptManager manager) {
+		commonEntrypoints.addAll(manager.load(info.id(), bundleFiles, ScriptEnv.COMMON));
 	}
 
-	public void loadClient(GroovyScriptLoader loader) {
-		clientEntrypoints.addAll(loader.loadClient(bundleFiles, info.id()));
+	public void loadClient(ScriptManager manager) {
+		clientEntrypoints.addAll(manager.load(info.id(), bundleFiles, ScriptEnv.CLIENT));
 	}
 
-	public void loadServer(GroovyScriptLoader loader) {
-		serverEntrypoints.addAll(loader.loadServer(bundleFiles, info.id()));
+	public void loadServer(ScriptManager manager) {
+		serverEntrypoints.addAll(manager.load(info.id(), bundleFiles, ScriptEnv.SERVER));
 	}
 
 	public List<BundleEntrypoint> entrypoints() {
@@ -60,8 +61,12 @@ public class Bundle {
 		return Collections.unmodifiableList(serverEntrypoints);
 	}
 
+	/**
+	 * Clears the cached entrypoint references. Unloading (calling {@code onUnload} and closing
+	 * the class loader) is owned by {@link ScriptManager} — callers must go through
+	 * {@code ScriptManager.unloadBundle(id)}.
+	 */
 	public void unload() {
-		entrypoints().forEach(BundleEntrypoint::onUnload);
 		commonEntrypoints.clear();
 		clientEntrypoints.clear();
 		serverEntrypoints.clear();

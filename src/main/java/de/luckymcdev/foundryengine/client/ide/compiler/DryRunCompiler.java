@@ -25,7 +25,7 @@ public final class DryRunCompiler {
 			return errors;
 		}
 
-		CompilerConfiguration config = ScriptConfig.createCompilerConfig();
+		CompilerConfiguration config = ScriptConfig.createBaseCompilerConfig();
 		GroovyClassLoader gcl = new GroovyClassLoader(
 			Thread.currentThread().getContextClassLoader(),
 			config
