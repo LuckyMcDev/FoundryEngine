@@ -1,4 +1,4 @@
-name: Build & Deploy Docs
+name: Deploy Docs
 
 on:
   push:
@@ -8,8 +8,6 @@ on:
       - 'src/**'
       - 'versions/**'
       - 'stonecutter.properties.toml'
-      - '.github/workflows/build-docusaurus.yml'
-      - '.github/workflows/build-javadoc.yml'
       - '.github/workflows/deploy.yml'
   workflow_dispatch:
 
@@ -17,45 +15,49 @@ concurrency:
   group: pages
   cancel-in-progress: false
 
+env:
+  MC_VERSION: '26.2'
+
 jobs:
-  docs:
-    uses: ./.github/workflows/build-docusaurus.yml
-
-  javadoc:
-    uses: ./.github/workflows/build-javadoc.yml
-
   deploy:
-    needs: [ docs, javadoc ]
     runs-on: ubuntu-latest
-
     permissions:
+      contents: read
       pages: write
       id-token: write
-
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-
     steps:
-      - uses: actions/download-artifact@v8
+      - uses: actions/checkout@v7
         with:
-          path: site
+          fetch-depth: 0
 
-      - name: Merge artifacts
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: docs/package-lock.json
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 25
+
+      - uses: gradle/actions/setup-gradle@v6
+
+      - name: Build Docusaurus
+        working-directory: docs
+        run: npm ci && npm run build
+
+      - name: Build Javadoc
+        run: ./gradlew ":${MC_VERSION}:javadoc"
+
+      - name: Assemble site
         run: |
-          mkdir -p final
-          
-          # Copy Docusaurus if it exists
-          if [ -d "site/docusaurus" ]; then
-            cp -r site/docusaurus/. final/
-          fi
-          
-          # Copy Javadoc if it exists
-          if [ -d "site/javadoc" ]; then
-            mkdir -p final/javadoc
-            cp -r site/javadoc/. final/javadoc/
-          fi
-
+          mkdir -p final/javadoc
+          cp -r docs/build/. final/
+          cp -r versions/${MC_VERSION}/build/docs/javadoc/. final/javadoc/
           touch final/.nojekyll
 
       - uses: actions/upload-pages-artifact@v5
@@ -63,6 +65,5 @@ jobs:
           path: final
           retention-days: 1
 
-      - name: Deploy
-        id: deployment
+      - id: deployment
         uses: actions/deploy-pages@v5
