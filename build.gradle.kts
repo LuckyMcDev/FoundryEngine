@@ -13,6 +13,7 @@ version = "${sc.current.version}-${property("mod.version")}-${property("mod.suff
 group = property("mod.group") as String
 base.archivesName = property("mod.id") as String
 
+val scVersion = sc.current.version as String
 val modId = property("mod.id") as String
 val modVersion = property("mod.version") as String
 val mcReleases = (sc.properties["mod.mc_releases"] as String)
@@ -75,6 +76,7 @@ neoForge {
         }
         register("gameTestServer") {
             type = "gameTestServer"
+			systemProperty("neoforge.enabledGameTestNamespaces", modId)
             gameDirectory = file("../../runs/gameTestServer")
         }
         register("data") {
@@ -115,20 +117,25 @@ dependencies {
         jarJar(gav)
     }
 
-    if (sc.current.version == "26.1") {
-		// 26.1 needs special handling as the sc version is not the same as the version that imguimc needs (26.1.2 vs 26.1)
-		var mcVersion = property("mod.mc") as String
-        runtimeOnly(fletchingTable.modrinth("jei", mcVersion, "neoforge"))
-		compileOnly("foundry.imguimc:imguimc-neoforge-${sc.current.version}:${property("lib.imguimc")}")
-		runtimeOnly("foundry.imguimc:imguimc-neoforge-${sc.current.version}:${property("lib.imguimc")}")
-    } else if (sc.current.version == "26.3") {
-		var mcVersion = property("mod.mc") as String
-		//runtimeOnly(fletchingTable.modrinth("jei", mcVersion, "neoforge")) not on 26.3
-	} else {
-		var mcVersion = property("mod.mc") as String
-		runtimeOnly(fletchingTable.modrinth("jei", mcVersion, "neoforge"))
-		compileOnly("foundry.imguimc:imguimc-neoforge-${mcVersion}:${property("lib.imguimc")}")
-		runtimeOnly("foundry.imguimc:imguimc-neoforge-${mcVersion}:${property("lib.imguimc")}")
+	//implementation("net.neoforged:testframework:${property("deps.neo_loader")}")
+
+	mcReleases.forEach { version ->
+		when (version) {
+			"26.1.2" -> {
+				// 26.1 needs special handling as the sc version is not the same as the version that imguimc needs (26.1.2 vs 26.1)
+				runtimeOnly(fletchingTable.modrinth("jei", version, "neoforge"))
+				compileOnly("foundry.imguimc:imguimc-neoforge-${scVersion}:${property("lib.imguimc")}")
+				runtimeOnly("foundry.imguimc:imguimc-neoforge-${scVersion}:${property("lib.imguimc")}")
+			}
+			"26.2" -> {
+				runtimeOnly(fletchingTable.modrinth("jei", version, "neoforge"))
+				compileOnly("foundry.imguimc:imguimc-neoforge-${version}:${property("lib.imguimc")}")
+				runtimeOnly("foundry.imguimc:imguimc-neoforge-${version}:${property("lib.imguimc")}")
+			}
+			else -> {
+				println("No specific configuration for version: $version")
+			}
+		}
 	}
 }
 
