@@ -4,8 +4,9 @@
 
 - Add FileIO and JsonIO
 - Add Reload Scripts button to main menu
-- add Config to disable classloader restrictions
-
+- Add Config to disable classloader restrictions
+- Big rewrite of Script Engine
+- Rework Gradle workflow to use IntelliJ Plugin
 
 ---
 
