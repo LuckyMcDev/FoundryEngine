@@ -33,12 +33,10 @@ lib.jflac = "1.5.2"
 lib.imguimc = "[2.0.5,2.1)"
 
 ["26.1"]
-# Minecraft version to compile against.
 mod.mc = "26.1.2"
-# Compatibility range written into neoforge.mods.toml and used for publishing.
 mod.mc_compat = "[26.1.1,26.2)"
 mod.mc_releases = "26.1.2"
-deps.neo_loader = "26.1.2.109"
+deps.neo_loader = "26.1.2.124"
 mod.neo_range = "[26.1.2.71,26.2)"
 mod.loader_range = "[4,)"
 mod.logo_key = "logoFile"
@@ -47,7 +45,7 @@ mod.logo_key = "logoFile"
 mod.mc = "26.2"
 mod.mc_compat = "[26.2,26.3)"
 mod.mc_releases = "26.2"
-deps.neo_loader = "26.2.0.88"
+deps.neo_loader = "26.2.0.93"
 mod.neo_range = "[26.2,26.3)"
 mod.loader_range = "[4,)"
 mod.logo_key = "iconFile"
