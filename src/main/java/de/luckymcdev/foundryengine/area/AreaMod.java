@@ -1,34 +1,41 @@
 package de.luckymcdev.foundryengine.area;
 
+import de.luckymcdev.foundryengine.Client;
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.editor.client.panel.editor.AreaPanel;
 import de.luckymcdev.foundryengine.network.common.packet.editor.AreaPacket;
+import de.luckymcdev.foundryengine.util.common.EngineModPart;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.level.BlockEvent;
-import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 
 @Mod(AreaMod.MODID)
-public final class AreaMod {
+public final class AreaMod implements EngineModPart {
 	public static final String MODID = "foundryengine_area";
 
 	public AreaMod(IEventBus modBus, ModContainer modContainer) {
-		var bus = NeoForge.EVENT_BUS;
-		bus.addListener(Common.getAreaManager()::onBlockBreak);
-		bus.addListener(Common.getAreaManager()::onBlockPlace);
-		bus.addListener(Common.getAreaManager()::onLevelTick);
-		bus.addListener(this::onServerStarting);
-		bus.addListener(this::onServerStopping);
-		modBus.addListener(this::onCommonSetup);
+		this.wire(modBus);
+		var b = bus();
+		var mgr = Common.getAreaManager();
+		b.addListener(mgr::onBlockBreak);
+		b.addListener(mgr::onBlockPlace);
+		b.addListener(mgr::onLevelTick);
+		b.addListener(this::onServerStarting);
+		b.addListener(this::onServerStopping);
 	}
 
-	private void onCommonSetup(FMLCommonSetupEvent event) {
-		var network = Common.getNetworkManager();
-		network.register(AreaPacket.DEFINITION);
+	@Override
+	public void onCommonSetup(FMLCommonSetupEvent event) {
+		Common.getNetworkManager().register(AreaPacket.DEFINITION);
+	}
+
+	@Override
+	public void onClientSetup(FMLClientSetupEvent event) {
+		Client.getEditorManager().register(AreaPanel.INSTANCE);
 	}
 
 	private void onServerStarting(ServerStartingEvent event) {

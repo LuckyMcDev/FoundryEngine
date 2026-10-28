@@ -16,8 +16,13 @@ mod.area_id = "foundryengine_area"
 mod.bundle_id = "foundryengine_bundle"
 mod.cutscene_id = "foundryengine_cutscene"
 mod.dialogue_id = "foundryengine_dialogue"
+mod.editor_id = "foundryengine_editor"
 mod.game_id = "foundryengine_game"
+mod.particle_id = "foundryengine_particle"
+mod.postprocessing_id = "foundryengine_postprocessing"
+mod.sound_id = "foundryengine_sound"
 mod.waypoint_id = "foundryengine_waypoint"
+mod.world_id = "foundryengine_world"
 
 # Library versions shared across all Minecraft versions.
 lib.flexmark = "0.64.8"

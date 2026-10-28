@@ -52,6 +52,16 @@ ${logo_key} = "${logo}"
 description = "Dialogue trees, sessions, and dialogue events for Foundry Engine."
 
 [[mods]]
+modId = "${editor_id}"
+version = "${version}"
+displayName = "Foundry Engine: Editor"
+license = "${license}"
+authors = "${authors}"
+credits = "${credits}"
+${logo_key} = "${logo}"
+description = "Visual Editor Tools for Foundry Engine."
+
+[[mods]]
 modId = "${game_id}"
 version = "${version}"
 displayName = "Foundry Engine: Game"
@@ -62,6 +72,36 @@ ${logo_key} = "${logo}"
 description = "Game sessions, stages, and runtime game management for Foundry Engine."
 
 [[mods]]
+modId = "${particle_id}"
+version = "${version}"
+displayName = "Foundry Engine: Particle"
+license = "${license}"
+authors = "${authors}"
+credits = "${credits}"
+${logo_key} = "${logo}"
+description = "Particle effects and systems for Foundry Engine."
+
+[[mods]]
+modId = "${postprocessing_id}"
+version = "${version}"
+displayName = "Foundry Engine: Post Processing"
+license = "${license}"
+authors = "${authors}"
+credits = "${credits}"
+${logo_key} = "${logo}"
+description = "Post Processing Tools for Foundry Engine."
+
+[[mods]]
+modId = "${sound_id}"
+version = "${version}"
+displayName = "Foundry Engine: Sound"
+license = "${license}"
+authors = "${authors}"
+credits = "${credits}"
+${logo_key} = "${logo}"
+description = "Sound management for Foundry Engine."
+
+[[mods]]
 modId = "${waypoint_id}"
 version = "${version}"
 displayName = "Foundry Engine: Waypoints"
@@ -70,6 +110,16 @@ authors = "${authors}"
 credits = "${credits}"
 ${logo_key} = "${logo}"
 description = "Waypoint storage and server lifecycle integration for Foundry Engine."
+
+[[mods]]
+modId = "${world_id}"
+version = "${version}"
+displayName = "Foundry Engine: World"
+license = "${license}"
+authors = "${authors}"
+credits = "${credits}"
+${logo_key} = "${logo}"
+description = "Runtime Dimensions Creation and other World tools for Foundry Engine."
 
 [[mixins]]
 config = "mixins/foundryengine.clock.mixins.json"
@@ -153,6 +203,13 @@ versionRange = "[${version},)"
 ordering = "AFTER"
 side = "BOTH"
 
+[[dependencies."${editor_id}"]]
+modId = "${id}"
+type = "required"
+versionRange = "[${version},)"
+ordering = "AFTER"
+side = "CLIENT"
+
 [[dependencies."${game_id}"]]
 modId = "${id}"
 type = "required"
@@ -160,7 +217,35 @@ versionRange = "[${version},)"
 ordering = "AFTER"
 side = "BOTH"
 
+[[dependencies."${particle_id}"]]
+modId = "${id}"
+type = "required"
+versionRange = "[${version},)"
+ordering = "AFTER"
+side = "BOTH" # not sure
+
+[[dependencies."${postprocessing_id}"]]
+modId = "${id}"
+type = "required"
+versionRange = "[${version},)"
+ordering = "AFTER"
+side = "CLIENT"
+
+[[dependencies."${sound_id}"]]
+modId = "${id}"
+type = "required"
+versionRange = "[${version},)"
+ordering = "AFTER"
+side = "CLIENT"
+
 [[dependencies."${waypoint_id}"]]
+modId = "${id}"
+type = "required"
+versionRange = "[${version},)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies."${world_id}"]]
 modId = "${id}"
 type = "required"
 versionRange = "[${version},)"
