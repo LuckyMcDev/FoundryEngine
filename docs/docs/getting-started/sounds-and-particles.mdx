@@ -11,7 +11,7 @@ This lesson registers a sound and a particle effect, and plays them in the game.
 Sound works in two parts: a sound definition and an audio file. The builder creates the definition.
 
 ```groovy
-import de.luckymcdev.foundryengine.common.builder.sound.SoundBuilder
+import de.luckymcdev.foundryengine.builder.common.sound.SoundBuilder
 
 def sound = SoundBuilder.create(id("magic_chime"))
         .subtitle("Magic Chime")
@@ -34,12 +34,12 @@ Put the audio file at `bundles/mybundle/assets/mybundle/sounds/magic_chime.ogg`.
 A particle describes how a single particle appears and moves. The particle builder adds keyframed data: a value that changes over the particle's lifetime.
 
 ```groovy
-import de.luckymcdev.foundryengine.client.particle.ParticleLayer
-import de.luckymcdev.foundryengine.client.particle.data.KeyframeSequence
-import de.luckymcdev.foundryengine.client.particle.data.ParticleScaleData
-import de.luckymcdev.foundryengine.common.builder.particle.ParticleBuilder
-import de.luckymcdev.foundryengine.common.easing.Easing
-import de.luckymcdev.foundryengine.common.util.color.Color
+import de.luckymcdev.foundryengine.particle.client.ParticleLayer
+import de.luckymcdev.foundryengine.particle.client.data.KeyframeSequence
+import de.luckymcdev.foundryengine.particle.client.data.ParticleScaleData
+import de.luckymcdev.foundryengine.builder.common.particle.ParticleBuilder
+import de.luckymcdev.foundryengine.easing.common.Easing
+import de.luckymcdev.foundryengine.util.common.color.Color
 import org.joml.Vector3d
 
 def particle = ParticleBuilder.create(id("sparkle"))

@@ -13,7 +13,7 @@ Screen effects are post-processing shaders applied after the world renders. You 
 The simplest case is a timed effect that fades in, holds, and fades out:
 
 ```groovy title="scripts/client/<bundle>/Client.groovy"
-import de.luckymcdev.foundryengine.client.Client
+import de.luckymcdev.foundryengine.Client
 
 Client.getPostEffectManager().startScreenEffect(
         "black",   // effect name
@@ -47,8 +47,8 @@ def intensity = Client.getPostEffectManager().vignette(
 Custom shaders need their JSON + shader files. Register the effect with its uniforms:
 
 ```groovy
-import de.luckymcdev.foundryengine.common.Common
-import de.luckymcdev.foundryengine.client.post.RenderPhase
+import de.luckymcdev.foundryengine.Common
+import de.luckymcdev.foundryengine.post.client.RenderPhase
 
 def handle = Client.getPostEffectManager().register(id("my_effect"), { cfg ->
     cfg.phase(RenderPhase.POST_RENDER)

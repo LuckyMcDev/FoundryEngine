@@ -1,7 +1,7 @@
 package de.luckymcdev.foundryengine.mixin;
 
 import com.mojang.blaze3d.platform.Window;
-import de.luckymcdev.foundryengine.client.Client;
+import de.luckymcdev.foundryengine.Client;
 import de.luckymcdev.foundryengine.interfaces.EngineMinecraft;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.main.GameConfig;

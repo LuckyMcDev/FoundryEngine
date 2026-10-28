@@ -11,11 +11,11 @@ A dialogue is a tree of nodes, each with speaker text and options that lead to o
 ## Build the tree
 
 ```groovy title="scripts/server/<bundle>/Server.groovy"
-import de.luckymcdev.foundryengine.common.Common
-import de.luckymcdev.foundryengine.common.dialogue.DialogueTree
-import de.luckymcdev.foundryengine.common.dialogue.DialogueNode
-import de.luckymcdev.foundryengine.common.dialogue.DialogueOption
-import de.luckymcdev.foundryengine.common.dialogue.DialogueStyle
+import de.luckymcdev.foundryengine.Common
+import de.luckymcdev.foundryengine.dialogue.common.DialogueTree
+import de.luckymcdev.foundryengine.dialogue.common.DialogueNode
+import de.luckymcdev.foundryengine.dialogue.common.DialogueOption
+import de.luckymcdev.foundryengine.dialogue.common.DialogueStyle
 
 def manager = Common.getDialogueManager()
 
@@ -43,7 +43,7 @@ A `DialogueTree` takes an id and the id of the starting node. A `DialogueNode` t
 Register an action, then attach it to a node's enter actions:
 
 ```groovy
-import de.luckymcdev.foundryengine.common.dialogue.DialogueAction
+import de.luckymcdev.foundryengine.dialogue.common.DialogueAction
 
 manager.registerAction("give_starting_kit", { player, session ->
     player.sendSystemMessage(Component.literal("You received a starting kit!"))
@@ -55,7 +55,7 @@ farewell.getEnterActionIds().add("give_starting_kit")
 ## Start the dialogue
 
 ```groovy
-import de.luckymcdev.foundryengine.common.event.PlayerEvents
+import de.luckymcdev.foundryengine.event.common.PlayerEvents
 import net.minecraft.server.level.ServerPlayer
 
 PlayerEvents.loggedIn { event ->

@@ -1,0 +1,82 @@
+package de.luckymcdev.foundryengine.network.common.packets.dialogue;
+
+import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.network.common.AbstractPacket;
+import de.luckymcdev.foundryengine.network.common.PacketBounds;
+import de.luckymcdev.foundryengine.network.common.codecs.ActionCodec;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+
+/**
+ * Client-to-server packet for dialogue interaction.
+ * Carries a SELECT_OPTION / ADVANCE_NEXT / END action and an optional optionId.
+ */
+public record ServerboundDialoguePacket(
+	Action action,
+	String optionId
+) implements AbstractPacket<ServerboundDialoguePacket> {
+
+	public static final Type<ServerboundDialoguePacket> TYPE = AbstractPacket.createType(Common.id("dialogue_server"));
+	public static final StreamCodec<RegistryFriendlyByteBuf, ServerboundDialoguePacket> CODEC = StreamCodec.composite(
+		ActionCodec.streamCodec(Action.values(), Action.END), ServerboundDialoguePacket::action,
+		ByteBufCodecs.stringUtf8(AbstractPacket.MAX_STRING_LENGTH), ServerboundDialoguePacket::optionId,
+		ServerboundDialoguePacket::new
+	);
+	public static final Definition<ServerboundDialoguePacket> DEFINITION = new Definition<>(
+		TYPE,
+		PacketBounds.SERVER,
+		CODEC,
+		null,
+		(packet, ctx) -> handleServer(packet, ctx)
+	);
+
+	public static ServerboundDialoguePacket selectOption(String optionId) {
+		return new ServerboundDialoguePacket(Action.SELECT_OPTION, optionId);
+	}
+
+	public static ServerboundDialoguePacket advanceNext() {
+		return new ServerboundDialoguePacket(Action.ADVANCE_NEXT, "");
+	}
+
+	public static ServerboundDialoguePacket end() {
+		return new ServerboundDialoguePacket(Action.END, "");
+	}
+
+	private static void handleServer(ServerboundDialoguePacket packet, IPayloadContext ctx) {
+		ctx.enqueueWork(() -> {
+			ServerPlayer player = AbstractPacket.serverPlayer(ctx);
+			if (player == null) {
+				return;
+			}
+			var dialogueManager = Common.getDialogueManager();
+			switch (packet.action()) {
+				case SELECT_OPTION -> dialogueManager.selectOption(player, packet.optionId());
+				case ADVANCE_NEXT -> dialogueManager.advanceNext(player);
+				case END -> dialogueManager.endDialogue(player);
+				default -> throw new IllegalStateException("Unexpected value: " + packet.action());
+			}
+		});
+	}
+
+	@Override
+	public Type<ServerboundDialoguePacket> getType() {
+		return TYPE;
+	}
+
+	@Override
+	public PacketBounds getBoundTo() {
+		return PacketBounds.SERVER;
+	}
+
+	@Override
+	public StreamCodec<RegistryFriendlyByteBuf, ServerboundDialoguePacket> getCodec() {
+		return CODEC;
+	}
+
+	public enum Action {
+		SELECT_OPTION, ADVANCE_NEXT, END
+	}
+}

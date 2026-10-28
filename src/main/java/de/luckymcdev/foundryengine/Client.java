@@ -1,0 +1,416 @@
+package de.luckymcdev.foundryengine;
+
+import com.mojang.blaze3d.pipeline.RenderTarget;
+import com.mojang.blaze3d.pipeline.TextureTarget;
+import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.platform.Window;
+import com.mojang.logging.LogUtils;
+import de.luckymcdev.foundryengine.area.client.AreaRenderer;
+import de.luckymcdev.foundryengine.command.client.ItemCommandManager;
+import de.luckymcdev.foundryengine.cutscene.client.ClientCutsceneManager;
+import de.luckymcdev.foundryengine.dialogue.client.ClientDialogueManager;
+import de.luckymcdev.foundryengine.editor.client.CutsceneTool;
+import de.luckymcdev.foundryengine.editor.client.EditorController;
+import de.luckymcdev.foundryengine.editor.client.EditorManager;
+import de.luckymcdev.foundryengine.editor.client.MainMenu;
+import de.luckymcdev.foundryengine.icons.client.IconExporterLayer;
+import de.luckymcdev.foundryengine.ide.client.WorkspaceState;
+import de.luckymcdev.foundryengine.imgui.client.ImGraphicsExtractor;
+import de.luckymcdev.foundryengine.imgui.client.ImGuiManager;
+import de.luckymcdev.foundryengine.imgui.client.hotkey.HotKeyManager;
+import de.luckymcdev.foundryengine.particle.client.ParticleManager;
+import de.luckymcdev.foundryengine.post.client.PostEffectManager;
+import de.luckymcdev.foundryengine.render.client.MeshRenderer;
+import de.luckymcdev.foundryengine.render.client.obj.ObjModelManager;
+import de.luckymcdev.foundryengine.skybox.client.SkyboxManager;
+import de.luckymcdev.foundryengine.tooltip.client.TooltipManager;
+import de.luckymcdev.foundryengine.waypoint.client.ClientWaypointManager;
+import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.exceptions.common.UtilityClassException;
+import de.luckymcdev.foundryengine.interfaces.EngineMinecraft;
+import net.minecraft.client.Camera;
+
+//? if >= 26.2 {
+/*import com.mojang.blaze3d.GpuFormat;
+*///?}
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.LevelTargetBundle;
+import net.minecraft.core.Vec3i;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FontDescription;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import org.apache.commons.lang3.mutable.MutableFloat;
+import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
+import org.jspecify.annotations.Nullable;
+import org.slf4j.Logger;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
+
+/**
+ * Client-side singleton providing access to all client subsystems and utility methods.
+ */
+public final class Client {
+	public static final Matrix4f MODEL_VIEW = new Matrix4f();
+	public static final Matrix4f PROJECTION = new Matrix4f();
+	public static final Matrix4f WORLD = new Matrix4f();
+	public static final Matrix4f INVERSE_WORLD = new Matrix4f();
+	public static final Matrix4f PERSPECTIVE = new Matrix4f();
+	public static final Matrix4f FRUSTUM = new Matrix4f();
+	public static final MutableFloat DEPTH_FAR = new MutableFloat(65536.0F);
+	public static final MutableFloat DEPTH_NEAR = new MutableFloat(0.05F);
+	public static final KeyMapping.Category EDITOR_CATEGORY = new KeyMapping.Category(Common.id("editor"));
+	public static final KeyMapping EDITOR_KEY = new KeyMapping(
+		Component.translatable("key.foundryengine.editor").getString(),
+		InputConstants.Type.KEYSYM,
+		InputConstants.KEY_F7,
+		EDITOR_CATEGORY
+	);
+	public static final KeyMapping MENU_BAR_KEY = new KeyMapping(
+		Component.translatable("key.foundryengine.menu_bar").getString(),
+		InputConstants.Type.KEYSYM,
+		InputConstants.KEY_F6,
+		EDITOR_CATEGORY
+	);
+	public static final Logger LOGGER = LogUtils.getLogger();
+	private static final ImGuiManager IMGUI_MANAGER = new ImGuiManager();
+	private static final ImGraphicsExtractor IM_GRAPHICS_EXTRACTOR = new ImGraphicsExtractor();
+	private static final MainMenu MAIN_MENU = new MainMenu();
+	private static final EditorManager EDITOR_MANAGER = new EditorManager();
+	private static final ParticleManager PARTICLE_MANAGER = new ParticleManager();
+	private static final ClientWaypointManager WAYPOINT_RENDERER = new ClientWaypointManager();
+	private static final AreaRenderer AREA_RENDERER = new AreaRenderer();
+	private static final MeshRenderer MESH_RENDERER = new MeshRenderer();
+	private static final ObjModelManager OBJ_MODEL_MANAGER = new ObjModelManager();
+	private static final ClientCutsceneManager CUTSCENE_MANAGER = new ClientCutsceneManager();
+	private static final PostEffectManager POST_EFFECT_MANAGER = new PostEffectManager();
+	private static final SkyboxManager SKYBOX_MANAGER = new SkyboxManager();
+	private static final EditorController EDITOR_CONTROLLER = new EditorController();
+	private static final ClientDialogueManager DIALOGUE_MANAGER = new ClientDialogueManager();
+	private static final ItemCommandManager ITEM_COMMAND_MANAGER = new ItemCommandManager();
+	private static final IconExporterLayer ICON_EXPORTER_LAYER = new IconExporterLayer();
+	private static final WorkspaceState WORKSPACE_STATE = new WorkspaceState();
+	private static final HotKeyManager HOTKEY_MANAGER = new HotKeyManager();
+	private static final TooltipManager TOOLTIP_MANAGER = new TooltipManager();
+
+	private Client() {
+		throw new UtilityClassException();
+	}
+
+	/**
+	 * Returns the recipe manager from the integrated server, or null.
+	 */
+	public static @Nullable RecipeManager getRecipeManager() {
+		Minecraft mc = Minecraft.getInstance();
+		if (mc.getSingleplayerServer() != null) {
+			return mc.getSingleplayerServer().getRecipeManager();
+		}
+		return null;
+	}
+
+	/**
+	 * Returns the ImGui manager.
+	 */
+	public static ImGuiManager getImGuiManager() {
+		return IMGUI_MANAGER;
+	}
+
+	/**
+	 * Returns the shared ImGraphicsExtractor for drawing ImGui widgets with style stacking.
+	 */
+	public static ImGraphicsExtractor getImGraphics() {
+		return IM_GRAPHICS_EXTRACTOR;
+	}
+
+	/**
+	 * Returns the main menu.
+	 */
+	public static MainMenu getMainMenu() {
+		return MAIN_MENU;
+	}
+
+	/**
+	 * Returns the editor manager.
+	 */
+	public static EditorManager getEditorManager() {
+		return EDITOR_MANAGER;
+	}
+
+	/**
+	 * Returns the particle manager.
+	 */
+	public static ParticleManager getParticleManager() {
+		return PARTICLE_MANAGER;
+	}
+
+	/**
+	 * Returns the mesh renderer.
+	 */
+	public static MeshRenderer getMeshRenderer() {
+		return MESH_RENDERER;
+	}
+
+	/**
+	 * Returns the OBJ model manager.
+	 */
+	public static ObjModelManager getObjModelManager() {
+		return OBJ_MODEL_MANAGER;
+	}
+
+	/**
+	 * Returns the skybox manager.
+	 */
+	public static SkyboxManager getSkyboxManager() {
+		return SKYBOX_MANAGER;
+	}
+
+	/**
+	 * Returns the workspace state.
+	 */
+	public static WorkspaceState getWorkspaceState() {
+		return WORKSPACE_STATE;
+	}
+
+	public static ItemCommandManager getItemCommandManager() {
+		return ITEM_COMMAND_MANAGER;
+	}
+
+	/**
+	 * Returns the waypoint renderer.
+	 */
+	public static ClientWaypointManager getWaypointRenderer() {
+		return WAYPOINT_RENDERER;
+	}
+
+	/**
+	 * Returns the area renderer.
+	 */
+	public static AreaRenderer getAreaRenderer() {
+		return AREA_RENDERER;
+	}
+
+	/**
+	 * Returns the client cutscene manager.
+	 */
+	public static ClientCutsceneManager getCutsceneManager() {
+		return CUTSCENE_MANAGER;
+	}
+
+	/**
+	 * Returns the post-effect manager.
+	 */
+	public static PostEffectManager getPostEffectManager() {
+		return POST_EFFECT_MANAGER;
+	}
+
+	/**
+	 * Returns the editor controller.
+	 */
+	public static EditorController getEditorController() {
+		return EDITOR_CONTROLLER;
+	}
+
+	/**
+	 * Returns the cutscene editor tool.
+	 */
+	public static CutsceneTool getCutsceneEditor() {
+		return EDITOR_CONTROLLER.getCutsceneTool();
+	}
+
+	/**
+	 * Returns the client dialogue manager.
+	 */
+	public static ClientDialogueManager getDialogueManager() {
+		return DIALOGUE_MANAGER;
+	}
+
+	/**
+	 * Returns the icon exporter layer for non-blocking icon generation.
+	 */
+	public static IconExporterLayer getIconExporterLayer() {
+		return ICON_EXPORTER_LAYER;
+	}
+
+	/**
+	 * Returns the hotkey manager.
+	 */
+	public static HotKeyManager getHotKeyManager() {
+		return HOTKEY_MANAGER;
+	}
+
+	/**
+	 * Returns the tooltip manager.
+	 */
+	public static TooltipManager getTooltipManager() {
+		return TOOLTIP_MANAGER;
+	}
+
+	/**
+	 * Returns the block position the player is looking at, or null.
+	 */
+	public static @Nullable Vec3i getBlockHitOrNull() {
+		HitResult hit = Minecraft.getInstance().hitResult;
+		if (hit != null && hit.getType() == (HitResult.Type.BLOCK)) {
+			BlockHitResult blockHit = (BlockHitResult) hit;
+			return blockHit.getBlockPos();
+		}
+		return null;
+	}
+
+	/**
+	 * Returns the main render target, abstracting over per-version access paths.
+	 */
+	public static RenderTarget getMainRenderTarget() {
+		Minecraft mc = Minecraft.getInstance();
+		//? if >= 26.2 {
+		/*return mc.gameRenderer.mainRenderTarget();
+		*///?} else {
+		return mc.getMainRenderTarget();
+		//?}
+	}
+
+	/**
+	 * Returns the currently displayed screen, or null.
+	 */
+	public static @Nullable Screen getCurrentScreen() {
+		Minecraft mc = Minecraft.getInstance();
+		//? if >= 26.2 {
+		/*return mc.gui.screen();
+		*///?} else {
+		return mc.screen;
+		//?}
+	}
+
+	/**
+	 * Sets the currently displayed screen, abstracting over per-version access paths.
+	 */
+	public static void setScreen(@Nullable Screen screen) {
+		Minecraft mc = Minecraft.getInstance();
+		//? if >= 26.2 {
+		/*mc.gui.setScreen(screen);
+		*///?} else {
+		mc.setScreen(screen);
+		//?}
+	}
+
+	/**
+	 * Returns the level renderer render target for the given target id, or null if unavailable.
+	 */
+	public static @Nullable RenderTarget getLevelRendererTarget(Identifier targetId) {
+		Minecraft mc = Minecraft.getInstance();
+		if (targetId.equals(LevelTargetBundle.TRANSLUCENT_TARGET_ID)) {
+			//? if >= 26.2 {
+			/*return mc.levelRenderer.translucentTarget();
+			*///?} else {
+			return mc.levelRenderer.getTranslucentTarget();
+			//?}
+		}
+		if (targetId.equals(LevelTargetBundle.ITEM_ENTITY_TARGET_ID)) {
+			//? if >= 26.2 {
+			/*return mc.levelRenderer.itemEntityTarget();
+			*///?} else {
+			return mc.levelRenderer.getItemEntityTarget();
+			//?}
+		}
+		if (targetId.equals(LevelTargetBundle.PARTICLES_TARGET_ID)) {
+			//? if >= 26.2 {
+			/*return mc.levelRenderer.particlesTarget();
+			*///?} else {
+			return mc.levelRenderer.getParticlesTarget();
+			//?}
+		}
+		if (targetId.equals(LevelTargetBundle.WEATHER_TARGET_ID)) {
+			//? if >= 26.2 {
+			/*return mc.levelRenderer.weatherTarget();
+			*///?} else {
+			return mc.levelRenderer.getWeatherTarget();
+			//?}
+		}
+		if (targetId.equals(LevelTargetBundle.CLOUDS_TARGET_ID)) {
+			//? if >= 26.2 {
+			/*return mc.levelRenderer.cloudsTarget();
+			*///?} else {
+			return mc.levelRenderer.getCloudsTarget();
+			//?}
+		}
+		if (targetId.equals(LevelTargetBundle.ENTITY_OUTLINE_TARGET_ID)) {
+			return mc.levelRenderer.entityOutlineTarget();
+		}
+		return null;
+	}
+
+	/**
+	 * Creates a depth-capable {@link TextureTarget}, abstracting over per-version constructors.
+	 */
+	public static TextureTarget createSnapshotTarget(String name, int width, int height) {
+		//? if >= 26.2 {
+		/*return new TextureTarget(name, width, height, true, GpuFormat.RGBA8_UNORM);
+		*///?} else {
+		return new TextureTarget(name, width, height, true);
+		//?}
+	}
+
+	/**
+	 * Returns the content of the resource at {@code location} as a UTF-8 string.
+	 */
+	public static String getIdSource(Identifier location) {
+		return getIdSource(location, StandardCharsets.UTF_8);
+	}
+
+	/**
+	 * Returns the content of the resource at {@code location} decoded with {@code charset}.
+	 */
+	public static String getIdSource(Identifier location, Charset charset) {
+		try (InputStream stream = Minecraft.getInstance().getResourceManager().getResourceOrThrow(location).open()) {
+			return new String(stream.readAllBytes(), charset);
+		} catch (IOException e) {
+			LOGGER.error("Failed to load resource: {}", location, e);
+			return "";
+		}
+	}
+
+	/**
+	 * Updates the main view and projection matrices and their derived matrices.
+	 */
+	public static void updateMain(Matrix4fc modelView, Matrix4fc projection) {
+		MODEL_VIEW.set(modelView);
+		PROJECTION.set(projection);
+		WORLD.set(projection).mul(modelView);
+		INVERSE_WORLD.set(WORLD).invert();
+	}
+
+	public enum Fonts {
+		LIGHT(new FontDescription.Resource(Common.id("jbmononflight"))),
+		REGULAR(new FontDescription.Resource(Common.id("jbmononfregular"))),
+		MEDIUM(new FontDescription.Resource(Common.id("jbmononfmedium"))),
+		SEMIBOLD(new FontDescription.Resource(Common.id("jbmononfsemibold"))),
+		BOLD(new FontDescription.Resource(Common.id("jbmononfbold"))),
+		ITALIC(new FontDescription.Resource(Common.id("jbmononfitalic"))),
+		BOLD_ITALIC(new FontDescription.Resource(Common.id("jbmononfbolditalic"))),
+		FALLBACK(new FontDescription.Resource(Common.id("jbregular")));
+
+		private final FontDescription.Resource fontDescription;
+
+		Fonts(FontDescription.Resource fontDescription) {
+			this.fontDescription = fontDescription;
+		}
+
+		public FontDescription.Resource get() {
+			return fontDescription;
+		}
+	}
+}

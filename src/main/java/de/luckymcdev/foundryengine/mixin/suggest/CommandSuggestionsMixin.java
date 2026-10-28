@@ -1,6 +1,6 @@
 package de.luckymcdev.foundryengine.mixin.suggest;
 
-import de.luckymcdev.foundryengine.client.command.suggest.nbt.SuggestionData;
+import de.luckymcdev.foundryengine.command.client.suggest.nbt.SuggestionData;
 import net.minecraft.client.gui.components.CommandSuggestions;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

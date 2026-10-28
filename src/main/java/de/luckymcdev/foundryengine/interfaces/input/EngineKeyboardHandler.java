@@ -1,6 +1,6 @@
 package de.luckymcdev.foundryengine.interfaces.input;
 
-import de.luckymcdev.foundryengine.common.exceptions.NoMixinException;
+import de.luckymcdev.foundryengine.exceptions.common.NoMixinException;
 import de.luckymcdev.foundryengine.interfaces.EngineInterface;
 import net.minecraft.client.KeyboardHandler;
 import net.minecraft.client.input.CharacterEvent;

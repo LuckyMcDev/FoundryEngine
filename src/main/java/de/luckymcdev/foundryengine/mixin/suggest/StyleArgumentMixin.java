@@ -4,7 +4,7 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import de.luckymcdev.foundryengine.client.command.suggest.nbt.JsonComponentSuggestions;
+import de.luckymcdev.foundryengine.command.client.suggest.nbt.JsonComponentSuggestions;
 import net.minecraft.commands.arguments.StyleArgument;
 import net.minecraft.network.chat.Style;
 import org.spongepowered.asm.mixin.Mixin;

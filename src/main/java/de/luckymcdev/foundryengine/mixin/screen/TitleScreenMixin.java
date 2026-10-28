@@ -1,6 +1,6 @@
 package de.luckymcdev.foundryengine.mixin.screen;
 
-import de.luckymcdev.foundryengine.common.event.modification.TitleScreenModificationEvent;
+import de.luckymcdev.foundryengine.event.common.modification.TitleScreenModificationEvent;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.neoforged.neoforge.common.NeoForge;

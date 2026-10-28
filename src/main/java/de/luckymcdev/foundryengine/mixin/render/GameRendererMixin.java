@@ -1,8 +1,8 @@
 package de.luckymcdev.foundryengine.mixin.render;
 
 import com.mojang.blaze3d.resource.CrossFrameResourcePool;
-import de.luckymcdev.foundryengine.client.Client;
-import de.luckymcdev.foundryengine.client.post.RenderPhase;
+import de.luckymcdev.foundryengine.Client;
+import de.luckymcdev.foundryengine.post.client.RenderPhase;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.renderer.GameRenderer;
 import org.spongepowered.asm.mixin.Final;

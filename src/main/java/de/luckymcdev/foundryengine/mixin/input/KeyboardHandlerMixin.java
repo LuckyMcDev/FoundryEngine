@@ -1,7 +1,7 @@
 package de.luckymcdev.foundryengine.mixin.input;
 
-import de.luckymcdev.foundryengine.client.Client;
-import de.luckymcdev.foundryengine.client.editor.EditorScreen;
+import de.luckymcdev.foundryengine.Client;
+import de.luckymcdev.foundryengine.editor.client.EditorScreen;
 import de.luckymcdev.foundryengine.interfaces.input.EngineKeyboardHandler;
 import net.minecraft.client.KeyboardHandler;
 import net.minecraft.client.Minecraft;
@@ -16,7 +16,7 @@ import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 
 /**
  * Blocks game input while a docked window fully covers the game view
- * (see {@link de.luckymcdev.foundryengine.client.imgui.ImGuiManager#shouldBlockInput()}).
+ * (see {@link de.luckymcdev.foundryengine.imgui.client.ImGuiManager#shouldBlockInput()}).
  * Input that ImGui itself captures is already cancelled by ImGuiMC's input mixins.
  */
 @Mixin(KeyboardHandler.class)

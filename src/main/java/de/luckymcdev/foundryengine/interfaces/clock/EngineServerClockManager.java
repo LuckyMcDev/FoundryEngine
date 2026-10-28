@@ -1,6 +1,6 @@
 package de.luckymcdev.foundryengine.interfaces.clock;
 
-import de.luckymcdev.foundryengine.common.exceptions.NoMixinException;
+import de.luckymcdev.foundryengine.exceptions.common.NoMixinException;
 import de.luckymcdev.foundryengine.interfaces.EngineInterface;
 import net.minecraft.core.Holder;
 import net.minecraft.world.clock.ServerClockManager;

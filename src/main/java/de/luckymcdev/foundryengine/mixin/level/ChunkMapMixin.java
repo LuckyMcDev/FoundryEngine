@@ -3,7 +3,7 @@ package de.luckymcdev.foundryengine.mixin.level;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
-import de.luckymcdev.foundryengine.common.world.level.util.ChunkGeneratorSettingsProvider;
+import de.luckymcdev.foundryengine.world.common.level.util.ChunkGeneratorSettingsProvider;
 import net.minecraft.server.level.ChunkMap;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.NoiseGeneratorSettings;
