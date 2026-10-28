@@ -12,6 +12,13 @@ mod.github = "LuckyMcDev/FoundryEngine"
 mod.github_commitish = "master"
 mod.suffix = "alpha"
 
+mod.area_id = "foundryengine_area"
+mod.bundle_id = "foundryengine_bundle"
+mod.cutscene_id = "foundryengine_cutscene"
+mod.dialogue_id = "foundryengine_dialogue"
+mod.game_id = "foundryengine_game"
+mod.waypoint_id = "foundryengine_waypoint"
+
 # Library versions shared across all Minecraft versions.
 lib.flexmark = "0.64.8"
 lib.groovy = "5.0.4"

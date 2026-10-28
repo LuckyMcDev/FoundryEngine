@@ -11,6 +11,66 @@ credits = "${credits}"
 authors = "${authors}"
 description = "${description}"
 
+[[mods]]
+modId = "${area_id}"
+version = "${version}"
+displayName = "Foundry Engine: Areas"
+license = "${license}"
+authors = "${authors}"
+credits = "${credits}"
+${logo_key} = "${logo}"
+description = "Area definitions, management, and area interactions for Foundry Engine."
+
+[[mods]]
+modId = "${bundle_id}"
+version = "${version}"
+displayName = "Foundry Engine: Bundles"
+license = "${license}"
+authors = "${authors}"
+credits = "${credits}"
+${logo_key} = "${logo}"
+description = "Bundle discovery, scripting, and dynamic resource packs for Foundry Engine."
+
+[[mods]]
+modId = "${cutscene_id}"
+version = "${version}"
+displayName = "Foundry Engine: Cutscenes"
+license = "${license}"
+authors = "${authors}"
+credits = "${credits}"
+${logo_key} = "${logo}"
+description = "Cutscene playback and screen effects for Foundry Engine."
+
+[[mods]]
+modId = "${dialogue_id}"
+version = "${version}"
+displayName = "Foundry Engine: Dialogue"
+license = "${license}"
+authors = "${authors}"
+credits = "${credits}"
+${logo_key} = "${logo}"
+description = "Dialogue trees, sessions, and dialogue events for Foundry Engine."
+
+[[mods]]
+modId = "${game_id}"
+version = "${version}"
+displayName = "Foundry Engine: Game"
+license = "${license}"
+authors = "${authors}"
+credits = "${credits}"
+${logo_key} = "${logo}"
+description = "Game sessions, stages, and runtime game management for Foundry Engine."
+
+[[mods]]
+modId = "${waypoint_id}"
+version = "${version}"
+displayName = "Foundry Engine: Waypoints"
+license = "${license}"
+authors = "${authors}"
+credits = "${credits}"
+${logo_key} = "${logo}"
+description = "Waypoint storage and server lifecycle integration for Foundry Engine."
+
 [[mixins]]
 config = "mixins/foundryengine.clock.mixins.json"
 
@@ -64,3 +124,45 @@ type = "required"
 versionRange = "${imguimc_compat}"
 ordering = "NONE"
 side = "CLIENT"
+
+[[dependencies."${area_id}"]]
+modId = "${id}"
+type = "required"
+versionRange = "[${version},)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies."${bundle_id}"]]
+modId = "${id}"
+type = "required"
+versionRange = "[${version},)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies."${cutscene_id}"]]
+modId = "${id}"
+type = "required"
+versionRange = "[${version},)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies."${dialogue_id}"]]
+modId = "${id}"
+type = "required"
+versionRange = "[${version},)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies."${game_id}"]]
+modId = "${id}"
+type = "required"
+versionRange = "[${version},)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies."${waypoint_id}"]]
+modId = "${id}"
+type = "required"
+versionRange = "[${version},)"
+ordering = "AFTER"
+side = "BOTH"

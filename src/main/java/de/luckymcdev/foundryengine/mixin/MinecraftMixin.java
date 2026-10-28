@@ -38,7 +38,7 @@ public class MinecraftMixin implements EngineMinecraft {
 	}
 
 	@Override
-	@Inject(method = "close", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/font/provider/FreeTypeUtil;destroy()V", shift = At.Shift.BEFORE))
+	@Inject(method = "close", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/font/providers/FreeTypeUtil;destroy()V", shift = At.Shift.BEFORE))
 	public void engine$close(CallbackInfo ci) {
 		Client.getImGuiManager().free();
 	}

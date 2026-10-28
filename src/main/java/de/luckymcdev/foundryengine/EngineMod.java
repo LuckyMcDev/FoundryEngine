@@ -1,17 +1,12 @@
 package de.luckymcdev.foundryengine;
 
 import com.mojang.logging.LogUtils;
-import de.luckymcdev.foundryengine.Common;
-import de.luckymcdev.foundryengine.cutscene.common.util.ServerScreenEffectManager;
 import de.luckymcdev.foundryengine.data.common.gen.BundleDataGenerator;
-import de.luckymcdev.foundryengine.util.common.FirstRun;
 import de.luckymcdev.foundryengine.event.common.BlockEvents;
 import de.luckymcdev.foundryengine.event.common.BundleEvents;
 import de.luckymcdev.foundryengine.event.common.ClientEvents;
 import de.luckymcdev.foundryengine.event.common.CommandEvents;
-import de.luckymcdev.foundryengine.event.common.DialogueEvents;
 import de.luckymcdev.foundryengine.event.common.EntityEvents;
-import de.luckymcdev.foundryengine.event.common.GameEvents;
 import de.luckymcdev.foundryengine.event.common.ItemEvents;
 import de.luckymcdev.foundryengine.event.common.LevelEvents;
 import de.luckymcdev.foundryengine.event.common.NetworkEvents;
@@ -48,7 +43,6 @@ import de.luckymcdev.foundryengine.world.common.level.util.TransientChunkGenerat
 import de.luckymcdev.foundryengine.world.common.level.util.VoidChunkGenerator;
 import de.luckymcdev.foundryengine.config.Config;
 import de.luckymcdev.foundryengine.config.StartupConfig;
-import de.luckymcdev.foundryengine.mixin.MinecraftServerAccess;
 import de.luckymcdev.foundryengine.command.server.FoundryCommands;
 import de.luckymcdev.foundryengine.pack.server.DynamicPackRepository;
 import net.minecraft.SharedConstants;
@@ -60,7 +54,6 @@ import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.util.Util;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.storage.LevelStorageSource;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.CrashReportCallables;
@@ -72,7 +65,6 @@ import net.neoforged.fml.event.lifecycle.FMLConstructModEvent;
 import net.neoforged.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.fml.event.lifecycle.InterModProcessEvent;
-import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeVersion;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
@@ -153,13 +145,11 @@ public class EngineMod {
 	}
 
 	private void registerModBus(IEventBus modBus) {
-		Common.getGameStageHandler().register(modBus);
 		ClientEvents.Internal.registerModBus(modBus);
 	}
 
 	private void registerInternalEvents() {
 		BlockEvents.Internal.register(BUS);
-		BundleEvents.Internal.register(BUS);
 		ClientEvents.Internal.register(BUS);
 		CommandEvents.Internal.register(BUS);
 		EntityEvents.Internal.register(BUS);
@@ -170,20 +160,13 @@ public class EngineMod {
 		RecipeEvents.Internal.register(BUS);
 		ServerEvents.Internal.register(BUS);
 		StageEvents.Internal.register(BUS);
-		GameEvents.Internal.register(BUS);
 		SlotEvents.Internal.register(BUS);
-		DialogueEvents.Internal.register(BUS);
 	}
 
 	private void registerModEventHandlers(IEventBus modBus) {
 		modBus.addListener(EventPriority.LOWEST, this::onRegisterEvent);
 		modBus.addListener(this::onCommonSetup);
-		modBus.addListener(this::onConstruct);
-		modBus.addListener(this::onAddPackFinders);
 		modBus.addListener(this::onRegisterPayloadHandlers);
-		modBus.addListener(this::onClientSetup);
-		modBus.addListener(this::onDedicatedServerSetup);
-		modBus.addListener(this::onPostInit);
 		modBus.addListener(EventPriority.LOWEST, this::onLoadComplete);
 		modBus.addListener(this::onItemModification);
 		modBus.addListener(this::onEngineRegister);
@@ -193,26 +176,9 @@ public class EngineMod {
 
 	private void registerNeoForgeEventHandlers() {
 		BUS.addListener(this::onRegisterCommands);
-		BUS.addListener(this::onServerAboutToStart);
-		BUS.addListener(this::onServerStarting);
 		BUS.addListener(this::onServerStarted);
 		BUS.addListener(this::onServerStopping);
-		BUS.addListener(this::onServerTick);
 
-		BUS.addListener(this::onLevelTick);
-
-		BUS.addListener(Common.getAreaManager()::onBlockBreak);
-		BUS.addListener(Common.getAreaManager()::onBlockPlace);
-
-		var stages = Common.getGameStageHandler();
-		BUS.register(stages.blocks());
-		BUS.register(stages.dimensions());
-		BUS.register(stages.item());
-		BUS.register(stages.loot());
-		BUS.register(stages.mobs());
-		BUS.register(stages.recipes());
-
-		BUS.addListener(this::onPlayerDisconnect);
 		BUS.addListener(this::onPlayerChangedDimension);
 	}
 
@@ -295,28 +261,22 @@ public class EngineMod {
 	}
 
 	private void onCommonSetup(FMLCommonSetupEvent event) {
-		BundleEvents.Internal.postCommonSetup(event);
-		BundleDataGenerator.runAll();
-
 		var network = Common.getNetworkManager();
+
 		network.register(ServerBoundSetTimePacket.DEFINITION);
 		network.register(ServerBoundChangeWeatherPacket.DEFINITION);
 		network.register(ServerBoundExplorerPacket.DEFINITION);
 		network.register(ClientBoundExplorerPacket.DEFINITION);
 		network.register(ServerBoundTeleportPacket.DEFINITION);
 		network.register(ServerBoundSpawnEntityPacket.DEFINITION);
-		network.register(BundleHashPacket.DEFINITION);
-		network.register(CutscenePacket.DEFINITION);
+
+		//not sure about this one
 		network.register(ScreenEffectPacket.DEFINITION);
-		network.register(CutsceneCommandPacket.DEFINITION);
+
 		network.register(GiveItemPacket.DEFINITION);
-		network.register(LinearizeCutscenePacket.DEFINITION);
-		network.register(AreaPacket.DEFINITION);
-		network.register(WaypointPacket.DEFINITION);
+
 		network.register(SavedDataSyncPacket.DEFINITION);
-		network.register(ClientboundDialoguePacket.DEFINITION);
-		network.register(ServerboundDialoguePacket.DEFINITION);
-		network.register(DialogueSavePacket.DEFINITION);
+
 		network.register(CustomDataPacket.DEFINITION);
 	}
 
@@ -409,47 +369,17 @@ public class EngineMod {
 	}
 
 	private void onServerStarted(ServerStartedEvent event) {
-		var server = event.getServer();
-		String worldName = server.getWorldData().getLevelName();
-		LevelStorageSource.LevelStorageAccess storageAccess = ((MinecraftServerAccess) server).getStorageSource();
-		Path worldDataPath = storageAccess.getLevelDirectory().path().resolve("foundryengine").resolve("game");
-		Common.getGameManager().setWorldDataPath(worldName, worldDataPath);
-		Common.getGameManager().autoStartAll(worldName);
 		Common.getSavedDataManager().syncToAll();
 	}
 
 	private void onServerStopping(ServerStoppingEvent event) {
-		Common.getGameManager().stopAll();
-		Common.getWaypointManager().save();
-		Common.getAreaManager().save();
-		Common.getCutsceneManager().save();
-		Common.getDialogueManager().save();
 		Common.getSavedDataManager().save();
-		Common.getBundleManager().setServer(null);
 	}
 
 	private void onServerTick(ServerTickEvent.Post event) {
-		var server = event.getServer();
-		Common.getGameManager().beginServerTick();
-		Common.getCutsceneSessionManager().tick(server);
-		Common.getGameStageHandler().onPlayerTick(event);
-		ServerScreenEffectManager.tick();
-		for (var level : server.getAllLevels()) {
-			Common.getGameManager().tickServer(server, level);
-		}
 	}
 
 	private void onLevelTick(LevelTickEvent.Post event) {
-		Common.getGameManager().tickCommon(event.getLevel());
-		Common.getAreaManager().onLevelTick(event);
-	}
-
-	private void onPlayerDisconnect(PlayerEvent.PlayerLoggedOutEvent event) {
-		if (event.getEntity() instanceof ServerPlayer player) {
-			Common.getCutsceneSessionManager().onPlayerDisconnect(player);
-			ServerScreenEffectManager.onPlayerDisconnect(player);
-			Common.getDialogueManager().onPlayerDisconnect(player);
-		}
 	}
 
 	private void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
