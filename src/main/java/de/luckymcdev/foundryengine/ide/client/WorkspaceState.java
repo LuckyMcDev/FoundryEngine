@@ -1,6 +1,6 @@
 package de.luckymcdev.foundryengine.ide.client;
 
-import de.luckymcdev.foundryengine.editor.client.panel.files.CodeEditor;
+import de.luckymcdev.foundryengine.editor.client.panel.file.CodeEditor;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.resources.Identifier;

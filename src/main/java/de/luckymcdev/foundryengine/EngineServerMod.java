@@ -2,7 +2,7 @@ package de.luckymcdev.foundryengine;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.config.Config;
-import de.luckymcdev.foundryengine.packs.server.ResourcePackMerger;
+import de.luckymcdev.foundryengine.pack.server.ResourcePackMerger;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;

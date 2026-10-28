@@ -8,7 +8,7 @@ import de.luckymcdev.foundryengine.area.common.AABBArea;
 import de.luckymcdev.foundryengine.area.common.Area;
 import de.luckymcdev.foundryengine.area.common.AreaManager;
 import de.luckymcdev.foundryengine.area.common.BlockArea;
-import de.luckymcdev.foundryengine.network.common.packets.editor.AreaPacket;
+import de.luckymcdev.foundryengine.network.common.packet.editor.AreaPacket;
 import de.luckymcdev.foundryengine.util.common.color.Color;
 import imgui.ImGui;
 import imgui.flag.ImGuiCol;

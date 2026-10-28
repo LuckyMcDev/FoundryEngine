@@ -3,7 +3,7 @@ package de.luckymcdev.foundryengine.bundle.common.toml;
 import com.electronwill.nightconfig.core.CommentedConfig;
 import com.electronwill.nightconfig.toml.TomlFormat;
 import de.luckymcdev.foundryengine.bundle.common.info.BundleInfo;
-import de.luckymcdev.foundryengine.exceptions.common.UtilityClassException;
+import de.luckymcdev.foundryengine.exception.common.UtilityClassException;
 
 import java.util.ArrayList;
 import java.util.List;

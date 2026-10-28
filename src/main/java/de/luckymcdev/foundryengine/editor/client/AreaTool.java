@@ -5,7 +5,7 @@ import de.luckymcdev.foundryengine.gizmo.client.WorldGizmo;
 import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.area.common.AABBArea;
 import de.luckymcdev.foundryengine.area.common.Area;
-import de.luckymcdev.foundryengine.network.common.packets.editor.AreaPacket;
+import de.luckymcdev.foundryengine.network.common.packet.editor.AreaPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;

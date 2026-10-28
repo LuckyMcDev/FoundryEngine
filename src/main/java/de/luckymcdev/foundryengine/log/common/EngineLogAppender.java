@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 /**
- * A Log Appender to make the {@link de.luckymcdev.foundryengine.editor.client.panel.tools.ConsolePanel} work.
+ * A Log Appender to make the {@link de.luckymcdev.foundryengine.editor.client.panel.tool.ConsolePanel} work.
  */
 public class EngineLogAppender extends AbstractAppender {
 	private final List<LogEntry> logHistory = new LinkedList<>();

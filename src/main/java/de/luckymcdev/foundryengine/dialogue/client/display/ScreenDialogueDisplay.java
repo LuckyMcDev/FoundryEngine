@@ -11,7 +11,7 @@ import de.luckymcdev.foundryengine.dialogue.common.DialogueNode;
 import de.luckymcdev.foundryengine.dialogue.common.DialogueSession;
 import de.luckymcdev.foundryengine.dialogue.common.DialogueStyle;
 import de.luckymcdev.foundryengine.dialogue.common.display.IDialogueDisplay;
-import de.luckymcdev.foundryengine.network.common.packets.dialogue.ServerboundDialoguePacket;
+import de.luckymcdev.foundryengine.network.common.packet.dialogue.ServerboundDialoguePacket;
 import dev.vfyjxf.taffy.style.AlignItems;
 import dev.vfyjxf.taffy.style.FlexDirection;
 import net.minecraft.client.Minecraft;

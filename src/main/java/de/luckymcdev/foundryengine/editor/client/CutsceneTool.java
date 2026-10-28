@@ -6,7 +6,7 @@ import de.luckymcdev.foundryengine.cutscene.common.model.Cutscene;
 import de.luckymcdev.foundryengine.easing.common.BezierPath;
 import de.luckymcdev.foundryengine.easing.common.BezierPoint;
 import de.luckymcdev.foundryengine.easing.common.BezierSpline;
-import de.luckymcdev.foundryengine.network.common.packets.editor.CutscenePacket;
+import de.luckymcdev.foundryengine.network.common.packet.editor.CutscenePacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;

@@ -9,7 +9,7 @@ import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.cutscene.common.model.Cutscene;
 import de.luckymcdev.foundryengine.cutscene.common.util.LerpType;
 import de.luckymcdev.foundryengine.easing.common.BezierPath;
-import de.luckymcdev.foundryengine.network.common.packets.editor.CutscenePacket;
+import de.luckymcdev.foundryengine.network.common.packet.editor.CutscenePacket;
 import de.luckymcdev.foundryengine.command.server.EngineCommand;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;

@@ -8,7 +8,7 @@ import de.luckymcdev.foundryengine.bundle.common.BundleSavePathListener;
 import de.luckymcdev.foundryengine.cutscene.common.CutsceneManager;
 import de.luckymcdev.foundryengine.cutscene.common.CutsceneSessionManager;
 import de.luckymcdev.foundryengine.dialogue.common.DialogueManager;
-import de.luckymcdev.foundryengine.exceptions.common.UtilityClassException;
+import de.luckymcdev.foundryengine.exception.common.UtilityClassException;
 import de.luckymcdev.foundryengine.game.common.GameManager;
 import de.luckymcdev.foundryengine.game.common.stage.GameStageHandler;
 import de.luckymcdev.foundryengine.game.common.stage.table.StageTableManager;

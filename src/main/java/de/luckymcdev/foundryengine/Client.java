@@ -13,7 +13,7 @@ import de.luckymcdev.foundryengine.editor.client.CutsceneTool;
 import de.luckymcdev.foundryengine.editor.client.EditorController;
 import de.luckymcdev.foundryengine.editor.client.EditorManager;
 import de.luckymcdev.foundryengine.editor.client.MainMenu;
-import de.luckymcdev.foundryengine.icons.client.IconExporterLayer;
+import de.luckymcdev.foundryengine.icon.client.IconExporterLayer;
 import de.luckymcdev.foundryengine.ide.client.WorkspaceState;
 import de.luckymcdev.foundryengine.imgui.client.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.imgui.client.ImGuiManager;
@@ -26,7 +26,7 @@ import de.luckymcdev.foundryengine.skybox.client.SkyboxManager;
 import de.luckymcdev.foundryengine.tooltip.client.TooltipManager;
 import de.luckymcdev.foundryengine.waypoint.client.ClientWaypointManager;
 import de.luckymcdev.foundryengine.Common;
-import de.luckymcdev.foundryengine.exceptions.common.UtilityClassException;
+import de.luckymcdev.foundryengine.exception.common.UtilityClassException;
 import de.luckymcdev.foundryengine.interfaces.EngineMinecraft;
 import net.minecraft.client.Camera;
 

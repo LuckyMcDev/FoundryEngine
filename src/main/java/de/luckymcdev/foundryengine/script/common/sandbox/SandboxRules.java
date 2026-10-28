@@ -56,7 +56,7 @@ final class SandboxRules {
 		"javax.naming.",
 		"javax.management.",
 		"javax.net.",
-		"javax.tools.",
+		"javax.tool.",
 		"sun.",
 		"com.sun.",
 		"jdk.",

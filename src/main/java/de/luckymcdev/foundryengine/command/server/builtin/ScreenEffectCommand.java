@@ -9,7 +9,7 @@ import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.cutscene.common.util.LerpType;
 
 import de.luckymcdev.foundryengine.cutscene.common.util.ServerScreenEffectManager;
-import de.luckymcdev.foundryengine.network.common.packets.sync.ScreenEffectPacket;
+import de.luckymcdev.foundryengine.network.common.packet.sync.ScreenEffectPacket;
 import de.luckymcdev.foundryengine.config.CommonConfig;
 import de.luckymcdev.foundryengine.command.server.EngineCommand;
 import net.minecraft.commands.CommandBuildContext;

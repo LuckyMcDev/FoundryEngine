@@ -4,7 +4,7 @@ import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.bundle.common.info.BundleDependency;
 import de.luckymcdev.foundryengine.bundle.common.info.BundleInfo;
 import de.luckymcdev.foundryengine.bundle.common.toml.BundleTomlParser;
-import de.luckymcdev.foundryengine.exceptions.common.EngineException;
+import de.luckymcdev.foundryengine.exception.common.EngineException;
 import de.luckymcdev.foundryengine.Server;
 import net.minecraft.network.chat.Component;
 import net.neoforged.fml.ModList;

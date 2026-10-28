@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import de.luckymcdev.foundryengine.Client;
 import de.luckymcdev.foundryengine.render.client.MeshRenderer;
 import de.luckymcdev.foundryengine.Common;
-import de.luckymcdev.foundryengine.exceptions.common.EngineException;
+import de.luckymcdev.foundryengine.exception.common.EngineException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.resources.Identifier;

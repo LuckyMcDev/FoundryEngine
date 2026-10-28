@@ -7,7 +7,7 @@ import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.dialogue.common.DialogueNode;
 import de.luckymcdev.foundryengine.dialogue.common.DialogueOption;
 import de.luckymcdev.foundryengine.dialogue.common.DialogueTree;
-import de.luckymcdev.foundryengine.network.common.packets.dialogue.DialogueSavePacket;
+import de.luckymcdev.foundryengine.network.common.packet.dialogue.DialogueSavePacket;
 import de.luckymcdev.foundryengine.util.common.color.Color;
 import imgui.ImGui;
 import imgui.flag.ImGuiCol;

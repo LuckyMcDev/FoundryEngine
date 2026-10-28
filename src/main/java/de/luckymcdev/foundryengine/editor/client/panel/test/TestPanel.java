@@ -4,7 +4,7 @@ import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.Client;
 import de.luckymcdev.foundryengine.editor.client.config.PanelCategory;
 import de.luckymcdev.foundryengine.editor.client.panel.Panel;
-import de.luckymcdev.foundryengine.editor.client.panel.tools.CataloguePanel;
+import de.luckymcdev.foundryengine.editor.client.panel.tool.CataloguePanel;
 import de.luckymcdev.foundryengine.imgui.client.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.imgui.client.icon.ImIcons;
 import de.luckymcdev.foundryengine.md.client.MdScreen;

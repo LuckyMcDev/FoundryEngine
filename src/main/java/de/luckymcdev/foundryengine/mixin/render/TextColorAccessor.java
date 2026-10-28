@@ -1,6 +1,6 @@
 package de.luckymcdev.foundryengine.mixin.render;
 
-import de.luckymcdev.foundryengine.exceptions.common.NoMixinException;
+import de.luckymcdev.foundryengine.exception.common.NoMixinException;
 import net.minecraft.network.chat.TextColor;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;

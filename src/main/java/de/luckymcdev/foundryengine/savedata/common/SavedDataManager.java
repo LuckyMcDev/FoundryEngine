@@ -5,7 +5,7 @@ import de.luckymcdev.foundryengine.area.common.AreaManager;
 import de.luckymcdev.foundryengine.cutscene.common.CutsceneManager;
 import de.luckymcdev.foundryengine.dialogue.common.DialogueManager;
 import de.luckymcdev.foundryengine.network.common.NetworkManager;
-import de.luckymcdev.foundryengine.network.common.packets.sync.SavedDataSyncPacket;
+import de.luckymcdev.foundryengine.network.common.packet.sync.SavedDataSyncPacket;
 import de.luckymcdev.foundryengine.waypoint.common.WaypointManager;
 import de.luckymcdev.foundryengine.mixin.MinecraftServerAccess;
 import net.minecraft.nbt.CompoundTag;

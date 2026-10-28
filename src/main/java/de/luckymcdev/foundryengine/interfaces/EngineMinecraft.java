@@ -1,6 +1,6 @@
 package de.luckymcdev.foundryengine.interfaces;
 
-import de.luckymcdev.foundryengine.exceptions.common.NoMixinException;
+import de.luckymcdev.foundryengine.exception.common.NoMixinException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.main.GameConfig;
 import net.minecraft.gizmos.SimpleGizmoCollector;

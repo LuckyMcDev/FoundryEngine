@@ -1,7 +1,7 @@
 package de.luckymcdev.foundryengine.dialogue.common;
 
 import de.luckymcdev.foundryengine.Common;
-import de.luckymcdev.foundryengine.network.common.packets.dialogue.ClientboundDialoguePacket;
+import de.luckymcdev.foundryengine.network.common.packet.dialogue.ClientboundDialoguePacket;
 import de.luckymcdev.foundryengine.savedata.common.SavedDataManager;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;

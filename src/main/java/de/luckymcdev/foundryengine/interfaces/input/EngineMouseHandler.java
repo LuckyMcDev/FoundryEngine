@@ -1,6 +1,6 @@
 package de.luckymcdev.foundryengine.interfaces.input;
 
-import de.luckymcdev.foundryengine.exceptions.common.NoMixinException;
+import de.luckymcdev.foundryengine.exception.common.NoMixinException;
 import de.luckymcdev.foundryengine.interfaces.EngineInterface;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.client.input.MouseButtonInfo;
