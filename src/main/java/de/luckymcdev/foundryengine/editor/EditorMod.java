@@ -10,7 +10,9 @@ import de.luckymcdev.foundryengine.editor.client.panel.tool.*;
 import de.luckymcdev.foundryengine.editor.client.panel.view.*;
 import de.luckymcdev.foundryengine.imgui.client.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.imgui.client.ImGuiManager;
+import de.luckymcdev.foundryengine.network.common.packet.editor.GiveItemPacket;
 import de.luckymcdev.foundryengine.network.common.packet.explorer.ClientBoundExplorerPacket;
+import de.luckymcdev.foundryengine.network.common.packet.explorer.ServerBoundExplorerPacket;
 import de.luckymcdev.foundryengine.util.common.EngineModPart;
 import foundry.imgui.api.ImGuiMC;
 import foundry.imgui.neoforge.api.event.*;
@@ -20,6 +22,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.client.event.*;
 import org.slf4j.Logger;
 
@@ -28,7 +31,7 @@ import java.util.concurrent.CompletableFuture;
 /**
  * Owns the ImGui editor, its panels, hotkeys, icon exporter and reload listeners.
  */
-@Mod(value = EditorMod.MODID, dist = Dist.CLIENT)
+@Mod(value = EditorMod.MODID)
 public final class EditorMod implements EngineModPart {
 	public static final String MODID = "foundryengine_editor";
 	private static final Logger LOGGER = LogUtils.getLogger();
@@ -44,6 +47,14 @@ public final class EditorMod implements EngineModPart {
 		b.addListener(this::renderImGuiEvent);
 		b.addListener(this::onClientTickPost);
 		b.addListener(this::onRenderFramePost);
+	}
+
+	@Override
+	public void onCommonSetup(FMLCommonSetupEvent event) {
+		var network = Common.getNetworkManager();
+		network.register(ServerBoundExplorerPacket.DEFINITION);
+		network.register(ClientBoundExplorerPacket.DEFINITION);
+		network.register(GiveItemPacket.DEFINITION);
 	}
 
 	@Override

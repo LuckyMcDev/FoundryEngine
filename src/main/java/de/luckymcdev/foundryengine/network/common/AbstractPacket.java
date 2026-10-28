@@ -32,12 +32,12 @@ public interface AbstractPacket<T extends AbstractPacket<T>> extends CustomPacke
 	/**
 	 * Maximum element count for list fields in packet payloads.
 	 */
-	int MAX_LIST_ELEMENT_COUNT = 4096;
+	int MAX_LIST_ELEMENT_COUNT = 16384;
 
 	/**
 	 * Maximum module count for area packets.
 	 */
-	int MAX_MODULE_COUNT = 256;
+	int MAX_MODULE_COUNT = 512;
 
 	/**
 	 * Bounded NBT codec with a generous quota for large editor/user payloads.
