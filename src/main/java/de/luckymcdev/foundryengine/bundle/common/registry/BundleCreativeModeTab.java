@@ -5,11 +5,16 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Block;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.jspecify.annotations.Nullable;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Supplier;
 
 public class BundleCreativeModeTab {
@@ -30,21 +35,25 @@ public class BundleCreativeModeTab {
 					.orElse(ItemStack.EMPTY))
 				.title(Component.translatable("itemGroup." + bundleId + "." + bundleId + "_creative_tab"))
 				.displayItems((params, output) -> {
+					Set<Item> added = new HashSet<>();
 					BuiltInRegistries.ITEM.stream()
 						.filter(item -> {
 							Identifier id = BuiltInRegistries.ITEM.getKey(item);
 							return id != null && id.getNamespace().equals(bundleId);
 						})
+						.filter(added::add)
 						.map(ItemStack::new)
 						.filter(stack -> !stack.isEmpty())
 						.forEach(output::accept);
+
 					BuiltInRegistries.BLOCK.stream()
 						.filter(block -> {
 							Identifier id = BuiltInRegistries.BLOCK.getKey(block);
 							return id != null && id.getNamespace().equals(bundleId);
 						})
+						.map(Block::asItem)
+						.filter(item -> item != Items.AIR && added.add(item))
 						.map(ItemStack::new)
-						.filter(stack -> !stack.isEmpty())
 						.forEach(output::accept);
 				})
 				.build()
