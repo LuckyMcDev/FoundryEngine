@@ -25,6 +25,14 @@ import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import org.slf4j.Logger;
 
+//? if >=26.2 {
+/*import net.minecraft.client.PreferredGraphicsApi;
+import de.luckymcdev.foundryengine.exception.common.EngineException;
+*///?} else {
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+//?}
+
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -55,6 +63,11 @@ public class EngineClientMod {
 	}
 
 	private void onClientSetup(FMLClientSetupEvent event) {
+		//? if >=26.2 {
+		/*if (Minecraft.getInstance().options.preferredGraphicsBackend().get() == PreferredGraphicsApi.VULKAN) {
+			//throw new EngineException("Sadly due to how FoundryEngine renders its InGame Editor, Vulkan is not supported at this Time. Switch to OpenGL. or delte the Mod.");
+		}
+		*///?}
 		NbtSuggestions.init();
 		ModPathRecorder.record();
 		var collector = Common.getRegistryCollector();
@@ -110,11 +123,31 @@ public class EngineClientMod {
 		Client.getSkyboxManager().tick(event);
 	}
 
+	//? if >=26.2 {
+	/*private void onRenderLevel(RenderLevelStageEvent.AfterLevel event) {
+		var camState = event.getLevelRenderState().cameraRenderState;
+		Client.updateMain(camState.viewRotationMatrix, camState.projectionMatrix);
+
+		GizmoBuffer.startFrame();
+
+		Client.getCutsceneManager().renderTick();
+		Client.getEditorController().renderFeatures();
+
+		var mc = Minecraft.getInstance();
+		var submitNodeStorage = new net.minecraft.client.renderer.SubmitNodeStorage();
+		Client.getWaypointRenderer().renderWaypoints(event, submitNodeStorage);
+		Client.getAreaRenderer().renderAreaModules(event, submitNodeStorage);
+		GizmoRenderer.render(submitNodeStorage, camState, false);
+
+		mc.gameRenderer.featureRenderDispatcher().renderAllFeatures(submitNodeStorage);
+	}
+	*///?} else {
 	private void onRenderLevel(RenderLevelStageEvent.AfterLevel event) {
 		var camState = event.getLevelRenderState().cameraRenderState;
 		Client.updateMain(camState.viewRotationMatrix, camState.projectionMatrix);
 
 		GizmoBuffer.startFrame();
+
 		Client.getCutsceneManager().renderTick();
 		Client.getEditorController().renderFeatures();
 		Client.getWaypointRenderer().renderWaypoints(event);
@@ -123,10 +156,12 @@ public class EngineClientMod {
 		var mc = Minecraft.getInstance();
 		var poseStack = new PoseStack();
 		var bufferSource = mc.renderBuffers().bufferSource();
+
 		var modelViewStack = RenderSystem.getModelViewStack();
 		modelViewStack.pushMatrix();
 		modelViewStack.mul(camState.viewRotationMatrix);
 		GizmoRenderer.render(poseStack, bufferSource, camState, camState.viewRotationMatrix);
 		modelViewStack.popMatrix();
 	}
+	//?}
 }

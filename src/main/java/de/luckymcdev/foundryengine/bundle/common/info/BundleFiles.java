@@ -21,6 +21,7 @@ import java.util.List;
  */
 public record BundleFiles(Path root, Path assets, Path data, ScriptFiles scripts, Path saves,
 						  @Nullable FileSystem zipFileSystem) {
+	public static final Codec<Path> PATH_CODEC = Codec.STRING.xmap(Paths::get, Path::toString);
 	public static final Codec<BundleFiles> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 		PATH_CODEC.fieldOf("root").forGetter(BundleFiles::root),
 		PATH_CODEC.fieldOf("assets").forGetter(BundleFiles::assets),
@@ -28,7 +29,6 @@ public record BundleFiles(Path root, Path assets, Path data, ScriptFiles scripts
 		ScriptFiles.CODEC.fieldOf("scripts").forGetter(BundleFiles::scripts),
 		PATH_CODEC.fieldOf("saves").forGetter(BundleFiles::saves)
 	).apply(instance, (root, assets, data, scripts, saves) -> new BundleFiles(root, assets, data, scripts, saves, null)));
-	private static final Codec<Path> PATH_CODEC = Codec.STRING.xmap(Paths::get, Path::toString);
 
 	public static BundleFilesBuilder builder() {
 		return new BundleFilesBuilder();
