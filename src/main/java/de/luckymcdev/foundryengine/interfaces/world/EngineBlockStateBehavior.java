@@ -1,6 +1,6 @@
 package de.luckymcdev.foundryengine.interfaces.world;
 
-import de.luckymcdev.foundryengine.common.exceptions.NoMixinException;
+import de.luckymcdev.foundryengine.exception.common.NoMixinException;
 import de.luckymcdev.foundryengine.interfaces.EngineInterface;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 

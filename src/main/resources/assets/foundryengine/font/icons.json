@@ -2,7 +2,7 @@
 	"providers": [
 		{
 			"type": "bitmap",
-			"file": "foundryengine:font/icons/small_space.png",
+			"file": "foundryengine:font/icon/small_space.png",
 			"ascent": 7,
 			"chars": [
 				"."
@@ -10,7 +10,7 @@
 		},
 		{
 			"type": "bitmap",
-			"file": "foundryengine:font/icons/error.png",
+			"file": "foundryengine:font/icon/error.png",
 			"ascent": 7,
 			"chars": [
 				"!"
@@ -18,7 +18,7 @@
 		},
 		{
 			"type": "bitmap",
-			"file": "foundryengine:font/icons/plus.png",
+			"file": "foundryengine:font/icon/plus.png",
 			"ascent": 7,
 			"chars": [
 				"+"
@@ -26,7 +26,7 @@
 		},
 		{
 			"type": "bitmap",
-			"file": "foundryengine:font/icons/minus.png",
+			"file": "foundryengine:font/icon/minus.png",
 			"ascent": 7,
 			"chars": [
 				"-"
@@ -34,7 +34,7 @@
 		},
 		{
 			"type": "bitmap",
-			"file": "foundryengine:font/icons/tilde.png",
+			"file": "foundryengine:font/icon/tilde.png",
 			"ascent": 7,
 			"chars": [
 				"~"
@@ -42,7 +42,7 @@
 		},
 		{
 			"type": "bitmap",
-			"file": "foundryengine:font/icons/bubble.png",
+			"file": "foundryengine:font/icon/bubble.png",
 			"ascent": 7,
 			"chars": [
 				"B"
@@ -50,7 +50,7 @@
 		},
 		{
 			"type": "bitmap",
-			"file": "foundryengine:font/icons/copy.png",
+			"file": "foundryengine:font/icon/copy.png",
 			"ascent": 7,
 			"chars": [
 				"C"
@@ -58,7 +58,7 @@
 		},
 		{
 			"type": "bitmap",
-			"file": "foundryengine:font/icons/id.png",
+			"file": "foundryengine:font/icon/id.png",
 			"ascent": 7,
 			"chars": [
 				"D"
@@ -66,7 +66,7 @@
 		},
 		{
 			"type": "bitmap",
-			"file": "foundryengine:font/icons/energy.png",
+			"file": "foundryengine:font/icon/energy.png",
 			"ascent": 7,
 			"chars": [
 				"E"
@@ -74,7 +74,7 @@
 		},
 		{
 			"type": "bitmap",
-			"file": "foundryengine:font/icons/fire.png",
+			"file": "foundryengine:font/icon/fire.png",
 			"ascent": 7,
 			"chars": [
 				"F"
@@ -82,7 +82,7 @@
 		},
 		{
 			"type": "bitmap",
-			"file": "foundryengine:font/icons/heart.png",
+			"file": "foundryengine:font/icon/heart.png",
 			"ascent": 7,
 			"chars": [
 				"H"
@@ -90,7 +90,7 @@
 		},
 		{
 			"type": "bitmap",
-			"file": "foundryengine:font/icons/half_heart.png",
+			"file": "foundryengine:font/icon/half_heart.png",
 			"ascent": 7,
 			"chars": [
 				"h"
@@ -98,7 +98,7 @@
 		},
 		{
 			"type": "bitmap",
-			"file": "foundryengine:font/icons/info.png",
+			"file": "foundryengine:font/icon/info.png",
 			"ascent": 7,
 			"chars": [
 				"I"
@@ -106,7 +106,7 @@
 		},
 		{
 			"type": "bitmap",
-			"file": "foundryengine:font/icons/food.png",
+			"file": "foundryengine:font/icon/food.png",
 			"ascent": 7,
 			"chars": [
 				"J"
@@ -114,7 +114,7 @@
 		},
 		{
 			"type": "bitmap",
-			"file": "foundryengine:font/icons/half_food.png",
+			"file": "foundryengine:font/icon/half_food.png",
 			"ascent": 7,
 			"chars": [
 				"j"
@@ -122,7 +122,7 @@
 		},
 		{
 			"type": "bitmap",
-			"file": "foundryengine:font/icons/cold.png",
+			"file": "foundryengine:font/icon/cold.png",
 			"ascent": 7,
 			"chars": [
 				"L"
@@ -130,7 +130,7 @@
 		},
 		{
 			"type": "bitmap",
-			"file": "foundryengine:font/icons/camera.png",
+			"file": "foundryengine:font/icon/camera.png",
 			"ascent": 7,
 			"chars": [
 				"M"
@@ -138,7 +138,7 @@
 		},
 		{
 			"type": "bitmap",
-			"file": "foundryengine:font/icons/poison.png",
+			"file": "foundryengine:font/icon/poison.png",
 			"ascent": 7,
 			"chars": [
 				"O"
@@ -146,7 +146,7 @@
 		},
 		{
 			"type": "bitmap",
-			"file": "foundryengine:font/icons/prototype_component.png",
+			"file": "foundryengine:font/icon/prototype_component.png",
 			"ascent": 7,
 			"chars": [
 				"P"
@@ -154,7 +154,7 @@
 		},
 		{
 			"type": "bitmap",
-			"file": "foundryengine:font/icons/patched_component.png",
+			"file": "foundryengine:font/icon/patched_component.png",
 			"ascent": 7,
 			"chars": [
 				"Q"
@@ -162,7 +162,7 @@
 		},
 		{
 			"type": "bitmap",
-			"file": "foundryengine:font/icons/tag.png",
+			"file": "foundryengine:font/icon/tag.png",
 			"ascent": 7,
 			"chars": [
 				"T"
@@ -170,7 +170,7 @@
 		},
 		{
 			"type": "bitmap",
-			"file": "foundryengine:font/icons/warn.png",
+			"file": "foundryengine:font/icon/warn.png",
 			"ascent": 7,
 			"chars": [
 				"W"
@@ -178,7 +178,7 @@
 		},
 		{
 			"type": "bitmap",
-			"file": "foundryengine:font/icons/no.png",
+			"file": "foundryengine:font/icon/no.png",
 			"ascent": 7,
 			"chars": [
 				"X"
@@ -186,7 +186,7 @@
 		},
 		{
 			"type": "bitmap",
-			"file": "foundryengine:font/icons/yes.png",
+			"file": "foundryengine:font/icon/yes.png",
 			"ascent": 7,
 			"chars": [
 				"Y"

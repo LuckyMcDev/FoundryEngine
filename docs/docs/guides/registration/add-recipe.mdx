@@ -11,7 +11,7 @@ Recipes are registered from the **common** entrypoint. The `RecipeBuilder` cover
 ## Shaped crafting
 
 ```groovy title="scripts/common/<bundle>/Common.groovy"
-import de.luckymcdev.foundryengine.common.builder.recipe.RecipeBuilder
+import de.luckymcdev.foundryengine.builder.common.recipe.RecipeBuilder
 import net.minecraft.world.item.Items
 
 def shaped = RecipeBuilder.shaped(id("wand_from_diamond"), Items.DIAMOND_HORSE_ARMOR)

@@ -1,6 +1,6 @@
 package de.luckymcdev.foundryengine.mixin.sound;
 
-import de.luckymcdev.foundryengine.client.sound.AudioFormats;
+import de.luckymcdev.foundryengine.sound.client.AudioFormats;
 import net.minecraft.client.resources.sounds.Sound;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.resources.Identifier;

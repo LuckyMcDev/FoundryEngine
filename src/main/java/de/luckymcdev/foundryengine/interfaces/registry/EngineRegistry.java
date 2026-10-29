@@ -1,6 +1,6 @@
 package de.luckymcdev.foundryengine.interfaces.registry;
 
-import de.luckymcdev.foundryengine.common.exceptions.NoMixinException;
+import de.luckymcdev.foundryengine.exception.common.NoMixinException;
 import de.luckymcdev.foundryengine.interfaces.EngineInterface;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;

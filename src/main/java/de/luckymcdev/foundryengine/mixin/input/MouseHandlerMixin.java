@@ -1,6 +1,6 @@
 package de.luckymcdev.foundryengine.mixin.input;
 
-import de.luckymcdev.foundryengine.client.Client;
+import de.luckymcdev.foundryengine.Client;
 import de.luckymcdev.foundryengine.interfaces.input.EngineMouseHandler;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.client.input.MouseButtonInfo;
@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
  * Blocks game input while a docked window fully covers the game view
- * (see {@link de.luckymcdev.foundryengine.client.imgui.ImGuiManager#shouldBlockInput()}).
+ * (see {@link de.luckymcdev.foundryengine.imgui.client.ImGuiManager#shouldBlockInput()}).
  * Input that ImGui itself captures is already cancelled by ImGuiMC's input mixins.
  */
 @Mixin(MouseHandler.class)

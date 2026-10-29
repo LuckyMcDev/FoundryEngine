@@ -3,7 +3,7 @@ package de.luckymcdev.foundryengine.mixin.suggest;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import de.luckymcdev.foundryengine.client.command.suggest.nbt.NbtSuggestionEngine;
+import de.luckymcdev.foundryengine.command.client.suggest.nbt.NbtSuggestionEngine;
 import net.minecraft.commands.arguments.selector.EntitySelectorParser;
 import net.minecraft.world.entity.EntityType;
 import org.jetbrains.annotations.Nullable;

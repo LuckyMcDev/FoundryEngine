@@ -37,7 +37,7 @@ Run the game once for them to be generated. No need to for a Gradle task.
 A custom provider runs during the same pass:
 
 ```groovy
-import de.luckymcdev.foundryengine.common.event.BundleEvents
+import de.luckymcdev.foundryengine.event.common.BundleEvents
 
 BundleEvents.dataGen { event ->
     event.addProvider(new MyProvider(event.getLookup()))

@@ -1,0 +1,66 @@
+package de.luckymcdev.foundryengine.network.common.packet;
+
+import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.network.common.AbstractPacket;
+import de.luckymcdev.foundryengine.network.common.PacketBounds;
+import de.luckymcdev.foundryengine.util.common.FolderHash;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Objects;
+
+/**
+ * Packet sent from Client to Server to verify bundle directory synchronization.
+ */
+public record BundleHashPacket(String clientHash) implements AbstractPacket<BundleHashPacket> {
+
+	public static final Definition<BundleHashPacket> DEFINITION = new Definition<>(
+		AbstractPacket.createType(Common.id("bundle_hash_packet")),
+		PacketBounds.SERVER,
+		StreamCodec.composite(ByteBufCodecs.stringUtf8(AbstractPacket.MAX_STRING_LENGTH), BundleHashPacket::clientHash, BundleHashPacket::new),
+		null,
+		BundleHashPacket::handleServer
+	);
+
+	@Override
+	public Type<BundleHashPacket> getType() {
+		return DEFINITION.type();
+	}
+
+	@Override
+	public PacketBounds getBoundTo() {
+		return DEFINITION.bounds();
+	}
+
+	@Override
+	public StreamCodec<RegistryFriendlyByteBuf, BundleHashPacket> getCodec() {
+		return DEFINITION.codec();
+	}
+
+	@Override
+	public void handleServer(IPayloadContext ctx) {
+		ctx.enqueueWork(() -> {
+			try {
+				String serverHash = FolderHash.hashFolder(Common.BUNDLES);
+				if (!Objects.equals(clientHash, serverHash)) {
+					ServerPlayer player = AbstractPacket.serverPlayer(ctx);
+					if (player != null) {
+						player.sendSystemMessage(Component.translatable("foundryengine.bundle.mismatch"));
+						Common.LOGGER.warn("Bundle hash mismatch for player {}: Client={} Server={}",
+							player.getScoreboardName(), clientHash, serverHash);
+					}
+				} else {
+					Common.LOGGER.info("Bundle hash verified on server");
+				}
+			} catch (IOException | NoSuchAlgorithmException e) {
+				Common.LOGGER.error("Failed to verify bundle hash on server", e);
+			}
+		});
+	}
+}

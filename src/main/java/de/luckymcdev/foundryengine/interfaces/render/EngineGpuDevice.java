@@ -2,7 +2,7 @@ package de.luckymcdev.foundryengine.interfaces.render;
 
 import com.mojang.blaze3d.systems.GpuDevice;
 import com.mojang.blaze3d.systems.GpuDeviceBackend;
-import de.luckymcdev.foundryengine.common.exceptions.NoMixinException;
+import de.luckymcdev.foundryengine.exception.common.NoMixinException;
 import de.luckymcdev.foundryengine.interfaces.EngineInterface;
 
 /**

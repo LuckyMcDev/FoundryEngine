@@ -1,6 +1,6 @@
 package de.luckymcdev.foundryengine.config;
 
-import de.luckymcdev.foundryengine.common.util.CompatibilityMode;
+import de.luckymcdev.foundryengine.util.common.CompatibilityMode;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 public final class StartupConfig {

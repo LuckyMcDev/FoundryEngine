@@ -11,7 +11,7 @@ This lesson registers a block and a crafting recipe for the item from the previo
 Import the block builder, build a block with properties, and register it alongside your item.
 
 ```groovy
-import de.luckymcdev.foundryengine.common.builder.block.BlockBuilder
+import de.luckymcdev.foundryengine.builder.common.block.BlockBuilder
 
 def glow = BlockBuilder.create(id("glowing_stone"))
         .properties { it.strength(3.0f, 6.0f).lightLevel { 15 } }
@@ -34,7 +34,7 @@ The block needs a texture the same way the item did. Put a 16 by 16 image at `Fo
 The recipe builder makes shaped, shapeless, and smelting recipes. A shaped recipe uses a pattern of letters, where each letter stands for an ingredient.
 
 ```groovy
-import de.luckymcdev.foundryengine.common.builder.recipe.RecipeBuilder
+import de.luckymcdev.foundryengine.builder.common.recipe.RecipeBuilder
 import net.minecraft.advancements.criterion.InventoryChangeTrigger
 import net.minecraft.world.item.Items
 

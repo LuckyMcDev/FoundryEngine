@@ -1,7 +1,7 @@
 package de.luckymcdev.foundryengine.mixin.suggest;
 
 import com.mojang.brigadier.suggestion.Suggestion;
-import de.luckymcdev.foundryengine.client.command.suggest.nbt.SuggestionData;
+import de.luckymcdev.foundryengine.command.client.suggest.nbt.SuggestionData;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.CommandSuggestions;
@@ -37,7 +37,7 @@ public abstract class SuggestionsListMixin {
 
 	@Inject(method = "<init>", at = @At("RETURN"))
 	private void onConstruct(CommandSuggestions commandSuggestions, int x, int y, int width,
-	                         List<Suggestion> suggestions, boolean narrated, CallbackInfo ci) {
+							 List<Suggestion> suggestions, boolean narrated, CallbackInfo ci) {
 		if (!SuggestionData.hasCustomSuggestions) {
 			return;
 		}

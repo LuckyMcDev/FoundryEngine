@@ -161,6 +161,18 @@ tasks {
             register("neo_range", "mod.neo_range")
             register("mc_compat", "mod.mc_compat")
 			register("imguimc_compat", "lib.imguimc")
+
+			register("area_id", "mod.area_id")
+			register("bundle_id", "mod.bundle_id")
+			register("cutscene_id", "mod.cutscene_id")
+			register("dialogue_id", "mod.dialogue_id")
+			register("editor_id", "mod.editor_id")
+			register("game_id", "mod.game_id")
+			register("particle_id", "mod.particle_id")
+			register("postprocessing_id", "mod.postprocessing_id")
+			register("sound_id", "mod.sound_id")
+			register("waypoint_id", "mod.waypoint_id")
+			register("world_id", "mod.world_id")
         }
 
         filesMatching("META-INF/neoforge.mods.toml") { expand(props) }

@@ -1,7 +1,7 @@
 package de.luckymcdev.foundryengine.config;
 
-import de.luckymcdev.foundryengine.client.editor.styles.ImThemes;
-import de.luckymcdev.foundryengine.client.imgui.text.editor.EditorTheme;
+import de.luckymcdev.foundryengine.editor.client.style.ImThemes;
+import de.luckymcdev.foundryengine.imgui.client.text.editor.EditorTheme;
 import net.minecraft.client.Minecraft;
 import net.neoforged.neoforge.common.ModConfigSpec;
 

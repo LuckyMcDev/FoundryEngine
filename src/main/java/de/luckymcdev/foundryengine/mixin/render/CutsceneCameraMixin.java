@@ -1,7 +1,7 @@
 package de.luckymcdev.foundryengine.mixin.render;
 
-import de.luckymcdev.foundryengine.client.Client;
-import de.luckymcdev.foundryengine.client.cutscene.ClientCutsceneManager;
+import de.luckymcdev.foundryengine.Client;
+import de.luckymcdev.foundryengine.cutscene.client.ClientCutsceneManager;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;

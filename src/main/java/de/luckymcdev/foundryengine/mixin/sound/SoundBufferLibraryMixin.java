@@ -1,7 +1,7 @@
 package de.luckymcdev.foundryengine.mixin.sound;
 
 import com.mojang.blaze3d.audio.SoundBuffer;
-import de.luckymcdev.foundryengine.client.sound.AudioFormats;
+import de.luckymcdev.foundryengine.sound.client.AudioFormats;
 import net.minecraft.client.sounds.AudioStream;
 import net.minecraft.client.sounds.FiniteAudioStream;
 import net.minecraft.client.sounds.SoundBufferLibrary;

@@ -11,9 +11,9 @@ A waypoint is a persistent marker at a position. It survives across sessions bec
 ## Create one
 
 ```groovy title="scripts/server/<bundle>/Server.groovy"
-import de.luckymcdev.foundryengine.common.Common
-import de.luckymcdev.foundryengine.common.waypoint.Waypoint
-import de.luckymcdev.foundryengine.common.util.color.Color
+import de.luckymcdev.foundryengine.Common
+import de.luckymcdev.foundryengine.waypoint.common.Waypoint
+import de.luckymcdev.foundryengine.util.common.color.Color
 
 def manager = Common.getWaypointManager()
 
@@ -28,7 +28,7 @@ manager.addWaypoint(level, wp)
 Adding on every event would create duplicates. Check whether the dimension already has waypoints first:
 
 ```groovy
-import de.luckymcdev.foundryengine.common.event.PlayerEvents
+import de.luckymcdev.foundryengine.event.common.PlayerEvents
 import net.minecraft.server.level.ServerPlayer
 
 PlayerEvents.loggedIn { event ->

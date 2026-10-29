@@ -1,6 +1,6 @@
 package de.luckymcdev.foundryengine.config;
 
-import de.luckymcdev.foundryengine.common.Common;
+import de.luckymcdev.foundryengine.Common;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 import java.util.Collections;

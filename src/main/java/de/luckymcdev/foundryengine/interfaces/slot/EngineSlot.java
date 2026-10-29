@@ -1,6 +1,6 @@
 package de.luckymcdev.foundryengine.interfaces.slot;
 
-import de.luckymcdev.foundryengine.common.exceptions.NoMixinException;
+import de.luckymcdev.foundryengine.exception.common.NoMixinException;
 import de.luckymcdev.foundryengine.interfaces.EngineInterface;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.Slot;

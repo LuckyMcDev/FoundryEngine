@@ -1,6 +1,6 @@
 package de.luckymcdev.foundryengine.mixin.render;
 
-import de.luckymcdev.foundryengine.client.Client;
+import de.luckymcdev.foundryengine.Client;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import org.objectweb.asm.Opcodes;

@@ -15,11 +15,11 @@ A dialogue is a `DialogueTree`. It starts at a node and moves between nodes as t
 Build a small guide conversation:
 
 ```groovy
-import de.luckymcdev.foundryengine.common.Common
-import de.luckymcdev.foundryengine.common.dialogue.DialogueTree
-import de.luckymcdev.foundryengine.common.dialogue.DialogueNode
-import de.luckymcdev.foundryengine.common.dialogue.DialogueOption
-import de.luckymcdev.foundryengine.common.dialogue.DialogueStyle
+import de.luckymcdev.foundryengine.Common
+import de.luckymcdev.foundryengine.dialogue.common.DialogueTree
+import de.luckymcdev.foundryengine.dialogue.common.DialogueNode
+import de.luckymcdev.foundryengine.dialogue.common.DialogueOption
+import de.luckymcdev.foundryengine.dialogue.common.DialogueStyle
 
 void onLoad() {
     def manager = Common.getDialogueManager()
@@ -59,7 +59,7 @@ tree.addNode(farewellNode)
 A node can run an action when the player enters it. Register an action by name, then attach that name to the node.
 
 ```groovy
-import de.luckymcdev.foundryengine.common.dialogue.DialogueAction
+import de.luckymcdev.foundryengine.dialogue.common.DialogueAction
 import net.minecraft.network.chat.Component
 
 manager.registerAction("give_starting_kit", { player, session ->
