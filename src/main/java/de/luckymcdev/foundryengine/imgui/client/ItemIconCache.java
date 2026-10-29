@@ -113,7 +113,7 @@ public class ItemIconCache {
 			}
 
 			renderer.renderAsync(size, key, (colorView, depthView, projBuf, s) -> {
-				//? if >= 26.2 {
+				//? if >=26.2 {
                 /*Projection projection = new Projection();
                 projection.setupOrtho(-1000.0F, 1000.0F, s, s, true);
                 RenderSystem.backupProjectionMatrix();

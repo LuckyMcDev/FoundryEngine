@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
-//? if >= 26.2 {
+//? if >=26.2 {
 /*import com.mojang.blaze3d.PrimitiveTopology;
 import com.mojang.blaze3d.pipeline.BindGroupLayout;
 import net.minecraft.client.renderer.StagedVertexBuffer;
@@ -40,7 +40,7 @@ public class MeshRenderer implements AutoCloseable {
 	private static final Map<String, RenderType> RENDER_TYPES = new LinkedHashMap<>();
 
 	public static RenderType renderType(Identifier vertexShader, Identifier fragmentShader,
-	                                    Identifier texture0, Identifier texture1) {
+										Identifier texture0, Identifier texture1) {
 		String key = vertexShader + "|" + fragmentShader + "|" + texture0 + "|" + texture1;
 		RenderType renderType = RENDER_TYPES.computeIfAbsent(key, k -> {
 			RenderPipeline pipeline = PIPELINES.computeIfAbsent(fragmentShader,
@@ -58,7 +58,7 @@ public class MeshRenderer implements AutoCloseable {
 	}
 
 	public static RenderType cutoutRenderType(Identifier vertexShader, Identifier fragmentShader,
-	                                          Identifier texture0, Identifier texture1) {
+											  Identifier texture0, Identifier texture1) {
 		String key = "cutout|" + vertexShader + "|" + fragmentShader + "|" + texture0 + "|" + texture1;
 		RenderType renderType = RENDER_TYPES.computeIfAbsent(key, k -> {
 			Identifier location = Identifier.fromNamespaceAndPath(
@@ -89,8 +89,8 @@ public class MeshRenderer implements AutoCloseable {
 	}
 
 	private static RenderPipeline buildCutoutPipeline(Identifier location, Identifier vertexShader,
-	                                                  Identifier fragmentShader) {
-	//? if >= 26.2 {
+													  Identifier fragmentShader) {
+		//? if >=26.2 {
 	/*return RenderPipeline.builder()
 		.withLocation(location)
 		.withVertexShader(vertexShader)
@@ -102,26 +102,26 @@ public class MeshRenderer implements AutoCloseable {
 		.withCull(false)
 		.build();
 	*///?} else {
-	return RenderPipeline.builder()
-		.withLocation(location)
-		.withVertexShader(vertexShader)
-		.withFragmentShader(fragmentShader)
-		.withSampler("Sampler0")
-		.withSampler("Sampler1")
-		.withSampler("DepthSampler")
-		.withUniform("Projection", UniformType.UNIFORM_BUFFER)
-		.withUniform("DynamicTransforms", UniformType.UNIFORM_BUFFER)
-		.withUniform("Globals", UniformType.UNIFORM_BUFFER)
-		.withVertexFormat(DefaultVertexFormat.POSITION_TEX_COLOR_NORMAL, VertexFormat.Mode.QUADS)
-		.withColorTargetState(ColorTargetState.DEFAULT)
-		.withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, true))
-		.withCull(false)
-		.build();
-	//?}
+		return RenderPipeline.builder()
+			.withLocation(location)
+			.withVertexShader(vertexShader)
+			.withFragmentShader(fragmentShader)
+			.withSampler("Sampler0")
+			.withSampler("Sampler1")
+			.withSampler("DepthSampler")
+			.withUniform("Projection", UniformType.UNIFORM_BUFFER)
+			.withUniform("DynamicTransforms", UniformType.UNIFORM_BUFFER)
+			.withUniform("Globals", UniformType.UNIFORM_BUFFER)
+			.withVertexFormat(DefaultVertexFormat.POSITION_TEX_COLOR_NORMAL, VertexFormat.Mode.QUADS)
+			.withColorTargetState(ColorTargetState.DEFAULT)
+			.withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, true))
+			.withCull(false)
+			.build();
+		//?}
 	}
 
 	private static RenderPipeline buildPipeline(Identifier vertexShader, Identifier fragmentShader) {
-	//? if >= 26.2 {
+		//? if >=26.2 {
 	/*return RenderPipeline.builder()
 		.withLocation(fragmentShader)
 		.withVertexShader(vertexShader)
@@ -133,26 +133,26 @@ public class MeshRenderer implements AutoCloseable {
 		.withCull(true)
 		.build();
 	*///?} else {
-	return RenderPipeline.builder()
-		.withLocation(fragmentShader)
-		.withVertexShader(vertexShader)
-		.withFragmentShader(fragmentShader)
-		.withSampler("Sampler0")
-		.withSampler("Sampler1")
-		.withSampler("DepthSampler")
-		.withUniform("Projection", UniformType.UNIFORM_BUFFER)
-		.withUniform("DynamicTransforms", UniformType.UNIFORM_BUFFER)
-		.withUniform("Globals", UniformType.UNIFORM_BUFFER)
-		.withVertexFormat(DefaultVertexFormat.POSITION_TEX_COLOR_NORMAL, VertexFormat.Mode.QUADS)
-		.withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
-		.withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, false))
-		.withCull(true)
-		.build();
-	//?}
+		return RenderPipeline.builder()
+			.withLocation(fragmentShader)
+			.withVertexShader(vertexShader)
+			.withFragmentShader(fragmentShader)
+			.withSampler("Sampler0")
+			.withSampler("Sampler1")
+			.withSampler("DepthSampler")
+			.withUniform("Projection", UniformType.UNIFORM_BUFFER)
+			.withUniform("DynamicTransforms", UniformType.UNIFORM_BUFFER)
+			.withUniform("Globals", UniformType.UNIFORM_BUFFER)
+			.withVertexFormat(DefaultVertexFormat.POSITION_TEX_COLOR_NORMAL, VertexFormat.Mode.QUADS)
+			.withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
+			.withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, false))
+			.withCull(true)
+			.build();
+		//?}
 	}
 
 	public void draw(RenderType renderType, Matrix4fc modelView, Consumer<BufferBuilder> buildAction) {
-	//? if >= 26.2 {
+		//? if >=26.2 {
 	/*StagedVertexBuffer staged = new StagedVertexBuffer(() -> "engine_mesh", RenderType.SMALL_BUFFER_SIZE);
 	try {
 		StagedVertexBuffer.Draw draw = staged.appendDraw(renderType.format(), renderType.primitiveTopology());
@@ -173,22 +173,22 @@ public class MeshRenderer implements AutoCloseable {
 		staged.close();
 	}
 	*///?} else {
-	RenderPipeline pipeline = renderType.pipeline();
-	BufferBuilder builder = new BufferBuilder(ALLOCATOR, pipeline.getVertexFormatMode(), pipeline.getVertexFormat());
-	buildAction.accept(builder);
+		RenderPipeline pipeline = renderType.pipeline();
+		BufferBuilder builder = new BufferBuilder(ALLOCATOR, pipeline.getVertexFormatMode(), pipeline.getVertexFormat());
+		buildAction.accept(builder);
 
-	MeshData mesh = builder.build();
-	if (mesh == null) {
-		return;
-	}
+		MeshData mesh = builder.build();
+		if (mesh == null) {
+			return;
+		}
 
-	RenderSystem.getModelViewStack().pushMatrix().mul(modelView);
-	try {
-		renderType.draw(mesh);
-	} finally {
-		RenderSystem.getModelViewStack().popMatrix();
-	}
-	//?}
+		RenderSystem.getModelViewStack().pushMatrix().mul(modelView);
+		try {
+			renderType.draw(mesh);
+		} finally {
+			RenderSystem.getModelViewStack().popMatrix();
+		}
+		//?}
 	}
 
 	public DrawSession begin(RenderType renderType, Matrix4fc modelView) {
@@ -204,7 +204,7 @@ public class MeshRenderer implements AutoCloseable {
 		private final RenderType renderType;
 		private final Matrix4fc modelView;
 		private final BufferBuilder builder;
-		//? if >= 26.2 {
+		//? if >=26.2 {
 		/*private final StagedVertexBuffer staged;
 		private final StagedVertexBuffer.Draw draw;
 		*///?}
@@ -213,7 +213,7 @@ public class MeshRenderer implements AutoCloseable {
 		private DrawSession(RenderType renderType, Matrix4fc modelView) {
 			this.renderType = renderType;
 			this.modelView = modelView;
-			//? if >= 26.2 {
+			//? if >=26.2 {
 			/*this.staged = new StagedVertexBuffer(() -> "engine_mesh", RenderType.SMALL_BUFFER_SIZE);
 			this.draw = staged.appendDraw(renderType.format(), renderType.primitiveTopology());
 			this.builder = (BufferBuilder) staged.getVertexBuilder(this.draw);
@@ -236,7 +236,7 @@ public class MeshRenderer implements AutoCloseable {
 			}
 			finished = true;
 
-			//? if >= 26.2 {
+			//? if >=26.2 {
 			/*staged.upload();
 			RenderSystem.getModelViewStack().pushMatrix().mul(modelView);
 			try {

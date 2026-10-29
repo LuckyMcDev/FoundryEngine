@@ -12,8 +12,8 @@ public class NodePinType<T> {
 	public final Supplier<NodeBuilder<T>> builderFactory;
 
 	public NodePinType(String displayName, NodePinShape defaultShape,
-	                   List<NodeOption<T>> nodeOptions,
-	                   Supplier<NodeBuilder<T>> builderFactory) {
+					   List<NodeOption<T>> nodeOptions,
+					   Supplier<NodeBuilder<T>> builderFactory) {
 		this.displayName = displayName;
 		this.defaultShape = defaultShape;
 		this.singleOutput = List.of(output("Out"));
@@ -23,8 +23,8 @@ public class NodePinType<T> {
 	}
 
 	public static <T> NodePinType<T> fromFactories(String displayName, NodePinShape defaultShape,
-	                                               List<NamedBuilderFactory<T>> factories,
-	                                               Supplier<NodeBuilder<T>> builderFactory) {
+												   List<NamedBuilderFactory<T>> factories,
+												   Supplier<NodeBuilder<T>> builderFactory) {
 		return new NodePinType<>(
 			displayName,
 			defaultShape,

@@ -22,7 +22,7 @@ public class EngineMenu extends AbstractContainerMenu {
 	protected final int containerSlotCount;
 
 	protected EngineMenu(@Nullable MenuType<?> menuType, int containerId,
-	                     Inventory playerInventory, Builder builder) {
+						 Inventory playerInventory, Builder builder) {
 		super(menuType, containerId);
 		this.rows = builder.rows;
 		this.columns = builder.columns;

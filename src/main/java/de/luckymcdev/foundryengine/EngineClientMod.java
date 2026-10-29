@@ -77,12 +77,16 @@ public class EngineClientMod {
 
 	private void onRegisterParticleProviders(RegisterParticleProvidersEvent event) {
 		var collector = Common.getRegistryCollector();
-		if (collector != null) RegistryEventClient.registerParticleProviders(event, collector);
+		if (collector != null) {
+			RegistryEventClient.registerParticleProviders(event, collector);
+		}
 	}
 
 	private void onRegisterMenuScreens(RegisterMenuScreensEvent event) {
 		var collector = Common.getRegistryCollector();
-		if (collector != null) RegistryEventClient.registerMenuScreens(event, collector);
+		if (collector != null) {
+			RegistryEventClient.registerMenuScreens(event, collector);
+		}
 	}
 
 	private void onRegisterCommands(RegisterClientCommandsEvent event) {

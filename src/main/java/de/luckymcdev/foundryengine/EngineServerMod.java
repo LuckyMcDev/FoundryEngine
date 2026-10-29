@@ -9,7 +9,9 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
 import org.slf4j.Logger;
 
-/** Dedicated-server entrypoint — config only; feature wiring lives in the module mods. */
+/**
+ * Dedicated-server entrypoint — config only; feature wiring lives in the module mods.
+ */
 @Mod(value = Common.MODID, dist = Dist.DEDICATED_SERVER)
 public class EngineServerMod {
 	private static final Logger LOGGER = LogUtils.getLogger();

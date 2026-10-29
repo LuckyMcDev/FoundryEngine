@@ -1,9 +1,9 @@
 package de.luckymcdev.foundryengine.builder.common.recipe;
 
 import de.luckymcdev.foundryengine.builder.common.AbstractBuilder;
-//? if >= 26.2 {
+//? if >=26.2 {
 /*import net.minecraft.advancements.triggers.Criterion;
-*///?} else {
+ *///?} else {
 import net.minecraft.advancements.Criterion;
 //?}
 import net.minecraft.core.HolderGetter;

@@ -361,10 +361,10 @@ public final class ImGuiCoreTextEditor {
 	}
 
 	private void renderContent(float charWidth, float lineHeight,
-	                           float width, float height,
-	                           boolean focused, boolean hovered,
-	                           boolean mouseOverAC, boolean isResizing,
-	                           boolean canInput) {
+							   float width, float height,
+							   boolean focused, boolean hovered,
+							   boolean mouseOverAC, boolean isResizing,
+							   boolean canInput) {
 		ImDrawList dl = ImGui.getWindowDrawList();
 		ImVec2 origin = ImGui.getCursorScreenPos();
 		float scrollY = ImGui.getScrollY();

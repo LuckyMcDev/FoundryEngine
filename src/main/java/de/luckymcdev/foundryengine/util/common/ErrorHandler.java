@@ -28,15 +28,15 @@ public final class ErrorHandler {
 		String loc = scriptFrame != null
 			? " (" + scriptFrame.getFileName() + ":" + scriptFrame.getLineNumber() + ")"
 			: (error.getStackTrace().length > 0
-				? " (" + error.getStackTrace()[0].getFileName() + ":" + error.getStackTrace()[0].getLineNumber() + ")"
-				: "");
+			? " (" + error.getStackTrace()[0].getFileName() + ":" + error.getStackTrace()[0].getLineNumber() + ")"
+			: "");
 
 		String message = "§c[Script Error] " + context + ": " + getShortErrorMessage(error) + loc;
 
 		if (server != null) {
 			server.getPlayerList().broadcastSystemMessage(Component.literal(message), false);
 		} else {
-			LOGGER.error("{} (no server): {}{}", context, error.toString(), loc);
+			LOGGER.error("{} (no server): {}{}", context, error, loc);
 		}
 	}
 

@@ -78,8 +78,8 @@ public class TestPanel extends Panel {
 			ImGui.text("Drop something from the Catalogue panel!");
 		}
 
-		if(ImGui.button("MarkdownScreen")) {
-			Client.setScreen(new MdScreen(Component.literal("markdownscreen"),Common.id("md/test.md")));
+		if (ImGui.button("MarkdownScreen")) {
+			Client.setScreen(new MdScreen(Component.literal("markdownscreen"), Common.id("md/test.md")));
 		}
 
 		ImGui.colorPicker3("Pick a color", FLOAT2.getData(), ImGuiColorEditFlags.PickerHueWheel);

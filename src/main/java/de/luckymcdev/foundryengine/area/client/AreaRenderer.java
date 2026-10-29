@@ -57,7 +57,7 @@ public class AreaRenderer {
 		}
 	}
 
-	//? if >= 26.2 {
+	//? if >=26.2 {
 	/*public void renderAreaModules(RenderLevelStageEvent.AfterLevel event, net.minecraft.client.renderer.SubmitNodeStorage submitNodes) {
 		var mc = Minecraft.getInstance();
 		if (!(mc.level instanceof ClientLevel level)) {

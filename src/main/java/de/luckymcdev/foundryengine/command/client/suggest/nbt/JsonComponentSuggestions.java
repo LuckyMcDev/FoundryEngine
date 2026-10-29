@@ -23,18 +23,17 @@ public class JsonComponentSuggestions {
 	);
 
 	private static final List<String> COLORS = colors();
+	private static final List<String> FONTS = List.of(
+		"minecraft:default", "minecraft:uniform", "minecraft:alt", "minecraft:illageralt"
+	);
 
 	private static List<String> colors() {
 		//? if 26.1 {
 		return ChatFormatting.getNames(true, false).stream().toList();
-		 //?} elif 26.2 {
+		//?} elif 26.2 {
 		/*return TextColorAccessor.engine$getNamedColors().keySet().stream().toList();
-		*///?}
+		 *///?}
 	}
-
-	private static final List<String> FONTS = List.of(
-		"minecraft:default", "minecraft:uniform", "minecraft:alt", "minecraft:illageralt"
-	);
 
 	public static CompletableFuture<Suggestions> suggest(SuggestionsBuilder builder) {
 		String remaining = builder.getRemaining().trim();

@@ -327,7 +327,7 @@ public class GameManager implements BundleLifecycleListener {
 	}
 
 	private void forEachActiveSession(Level level, @Nullable Set<GameSession> deduplicate,
-	                                  Consumer<GameSession> action) {
+									  Consumer<GameSession> action) {
 		String name = worldName(level);
 		if (worldLifecycle(name) != GameLifecycle.RUNNING) {
 			return;

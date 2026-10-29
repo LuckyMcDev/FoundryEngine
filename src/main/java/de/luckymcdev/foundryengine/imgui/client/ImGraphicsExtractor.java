@@ -41,7 +41,6 @@ import java.util.Arrays;
 import java.util.function.Function;
 
 
-
 public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorConsumer {
 	private static final OffscreenRenderer offscreenRenderer = new OffscreenRenderer();
 	private static final ItemIconCache itemIconCache = new ItemIconCache();
@@ -527,11 +526,6 @@ public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorCons
 		popStack();
 	}
 
-	enum TextureType {
-		IDENTIFIER,
-		FILE
-	}
-
 	public String timer(long time) {
 		long ms = time % 1000;
 		long sec = (time / 1000) % 60;
@@ -573,6 +567,11 @@ public class ImGraphicsExtractor implements ImStyleVarConsumer, ImStyleColorCons
 
 	public String formatColored(String text, Object... args) {
 		return String.format(text, args);
+	}
+
+	enum TextureType {
+		IDENTIFIER,
+		FILE
 	}
 
 	private static class VarStack {

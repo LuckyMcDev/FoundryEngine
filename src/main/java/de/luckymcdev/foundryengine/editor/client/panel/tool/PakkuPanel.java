@@ -51,7 +51,8 @@ public class PakkuPanel extends EngineServicePanel<PakkuService> {
 		switch (tab) {
 			case TAB_LIST -> run(pakku.list(), "List");
 			case TAB_STATUS -> run(pakku.status(), "Status");
-			default -> {}
+			default -> {
+			}
 		}
 	}
 

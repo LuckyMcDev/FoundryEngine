@@ -12,16 +12,27 @@ import java.util.concurrent.CompletableFuture;
 public interface PakkuService extends EngineService {
 
 	CompletableFuture<EngineServiceResult> list();
+
 	CompletableFuture<EngineServiceResult> add(String... projects);
+
 	CompletableFuture<EngineServiceResult> remove(String... projects);
+
 	CompletableFuture<EngineServiceResult> update(String... projects);
+
 	CompletableFuture<EngineServiceResult> updateAll();
+
 	CompletableFuture<EngineServiceResult> inspect(String... projects);
+
 	CompletableFuture<EngineServiceResult> status();
+
 	CompletableFuture<EngineServiceResult> init();
+
 	CompletableFuture<EngineServiceResult> importModpack(String path);
+
 	CompletableFuture<EngineServiceResult> export(String... options);
+
 	CompletableFuture<EngineServiceResult> sync();
+
 	CompletableFuture<EngineServiceResult> fetch();
 
 	class Default extends CliEngineService implements PakkuService {

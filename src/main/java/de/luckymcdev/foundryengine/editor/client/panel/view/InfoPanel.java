@@ -71,9 +71,9 @@ public class InfoPanel extends EditorPanel {
 		String arch = System.getProperty("os.arch");
 		int cores = Runtime.getRuntime().availableProcessors();
 		String mcVersion = SharedConstants.getCurrentVersion().toString();
-		//? if >= 26.2 {
+		//? if >=26.2 {
 		/*String backendName = RenderSystem.getDevice().getDeviceInfo().backendName();
-		*///?} else {
+		 *///?} else {
 		String backendName = RenderSystem.getDevice().getBackendName();
 		//?}
 

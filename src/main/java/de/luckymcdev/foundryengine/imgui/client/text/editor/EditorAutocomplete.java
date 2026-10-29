@@ -128,8 +128,8 @@ public final class EditorAutocomplete {
 
 	// Returns true if a key was consumed and should not be forwarded to the editor.
 	public boolean handleKeyboard(EditorCoordinates cursor,
-	                              List<List<EditorGlyph>> lines,
-	                              ImGuiCoreTextEditor editor) {
+								  List<List<EditorGlyph>> lines,
+								  ImGuiCoreTextEditor editor) {
 		if (!showPopup || items.isEmpty()) {
 			return false;
 		}
@@ -157,8 +157,8 @@ public final class EditorAutocomplete {
 
 	// Returns true when the mouse is inside the popup (suppresses editor scroll passthrough).
 	public boolean isMouseOver(float charWidth, float lineHeight,
-	                           ImVec2 editorPos, EditorCoordinates cursor,
-	                           float textStart, float scrollY, float panelHeight) {
+							   ImVec2 editorPos, EditorCoordinates cursor,
+							   float textStart, float scrollY, float panelHeight) {
 		if (!showPopup || items.isEmpty()) {
 			return false;
 		}
@@ -171,10 +171,10 @@ public final class EditorAutocomplete {
 
 	// Returns true if an item was accepted by click.
 	public boolean render(float charWidth, float lineHeight,
-	                      ImVec2 editorPos, EditorCoordinates cursor,
-	                      float textStart, float scrollY, float panelHeight,
-	                      List<List<EditorGlyph>> lines,
-	                      ImGuiCoreTextEditor editor) {
+						  ImVec2 editorPos, EditorCoordinates cursor,
+						  float textStart, float scrollY, float panelHeight,
+						  List<List<EditorGlyph>> lines,
+						  ImGuiCoreTextEditor editor) {
 		if (!showPopup || items.isEmpty()) {
 			return false;
 		}
@@ -294,8 +294,8 @@ public final class EditorAutocomplete {
 	}
 
 	private float[] popupRect(float charWidth, float lineHeight,
-	                          ImVec2 editorPos, EditorCoordinates cursor,
-	                          float textStart, float scrollY) {
+							  ImVec2 editorPos, EditorCoordinates cursor,
+							  float textStart, float scrollY) {
 		float cx = editorPos.x + textStart + cursor.column * charWidth;
 		float cy = editorPos.y - scrollY + cursor.line * lineHeight;
 

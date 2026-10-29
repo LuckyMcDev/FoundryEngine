@@ -23,9 +23,9 @@ public class SimpleDebugScreenEntry implements DebugScreenEntry {
 
 	@Override
 	public void display(@NonNull DebugScreenDisplayer displayer,
-	                    @Nullable Level level,
-	                    @Nullable LevelChunk clientChunk,
-	                    @Nullable LevelChunk serverChunk) {
+						@Nullable Level level,
+						@Nullable LevelChunk clientChunk,
+						@Nullable LevelChunk serverChunk) {
 
 		if (level != null) {
 			renderer.render(displayer, level, clientChunk, serverChunk);

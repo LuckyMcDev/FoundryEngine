@@ -37,7 +37,7 @@ public abstract class SuggestionsListMixin {
 
 	@Inject(method = "<init>", at = @At("RETURN"))
 	private void onConstruct(CommandSuggestions commandSuggestions, int x, int y, int width,
-	                         List<Suggestion> suggestions, boolean narrated, CallbackInfo ci) {
+							 List<Suggestion> suggestions, boolean narrated, CallbackInfo ci) {
 		if (!SuggestionData.hasCustomSuggestions) {
 			return;
 		}

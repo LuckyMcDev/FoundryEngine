@@ -54,9 +54,9 @@ public class GenerateIconsCommand implements EngineCommand {
 	}
 
 	private int run(CommandContext<CommandSourceStack> ctx,
-	                HolderLookup.Provider lookup,
-	                String modIdFilter,
-	                boolean regex) {
+					HolderLookup.Provider lookup,
+					String modIdFilter,
+					boolean regex) {
 		Client.getIconExporterLayer().startExport(lookup, modIdFilter, regex);
 		return 1;
 	}

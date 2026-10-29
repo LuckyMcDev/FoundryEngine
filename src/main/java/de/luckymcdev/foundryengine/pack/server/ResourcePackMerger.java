@@ -82,7 +82,7 @@ public class ResourcePackMerger {
 	private static void zipDirectory(Path sourceDir, Path zipFile) throws IOException {
 		Files.createDirectories(zipFile.getParent());
 		try (OutputStream fileOut = Files.newOutputStream(zipFile, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-		     ZipOutputStream zipOut = new ZipOutputStream(fileOut)) {
+			 ZipOutputStream zipOut = new ZipOutputStream(fileOut)) {
 			try (var stream = Files.walk(sourceDir)) {
 				for (Path file : stream.filter(Files::isRegularFile).toList()) {
 					String entryName = sourceDir.relativize(file).toString().replace('\\', '/');

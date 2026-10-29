@@ -17,8 +17,6 @@ import java.util.Stack;
 
 public class MarkdownComponentVisitor {
 	private final Stack<MutableComponent> stack = new Stack<>();
-	private int listDepth = 0;
-	private int orderedListIndex = 1;
 	private final NodeVisitor visitor = new NodeVisitor(
 		new VisitHandler<>(Text.class, this::visitText),
 		new VisitHandler<>(StrongEmphasis.class, this::visitStrongEmphasis),
@@ -49,6 +47,8 @@ public class MarkdownComponentVisitor {
 		new VisitHandler<>(HtmlInline.class, this::visitHtmlInline),
 		new VisitHandler<>(MailLink.class, this::visitMailLink)
 	);
+	private int listDepth = 0;
+	private int orderedListIndex = 1;
 
 	public MarkdownComponentVisitor() {
 		stack.push(Component.literal(""));
@@ -250,7 +250,9 @@ public class MarkdownComponentVisitor {
 		listDepth++;
 		visitor.visitChildren(node);
 		listDepth--;
-		if (listDepth == 0) stack.peek().append("\n");
+		if (listDepth == 0) {
+			stack.peek().append("\n");
+		}
 	}
 
 	private void visitOrderedList(OrderedList node) {
@@ -260,7 +262,9 @@ public class MarkdownComponentVisitor {
 		visitor.visitChildren(node);
 		orderedListIndex = saved;
 		listDepth--;
-		if (listDepth == 0) stack.peek().append("\n");
+		if (listDepth == 0) {
+			stack.peek().append("\n");
+		}
 	}
 
 	private void visitBulletListItem(BulletListItem node) {
@@ -341,7 +345,9 @@ public class MarkdownComponentVisitor {
 		stack.pop();
 
 		boolean header = node.getParent() != null && node.getParent().getParent() instanceof TableHead;
-		if (header) cell = cell.withStyle(s -> s.withBold(true));
+		if (header) {
+			cell = cell.withStyle(s -> s.withBold(true));
+		}
 
 		int padding = Math.max(0, 12 - cell.getString().length());
 		stack.peek().append(
@@ -353,7 +359,9 @@ public class MarkdownComponentVisitor {
 		int count = 0;
 		Node child = row.getFirstChild();
 		while (child != null) {
-			if (child instanceof TableCell) count++;
+			if (child instanceof TableCell) {
+				count++;
+			}
 			child = child.getNext();
 		}
 		return count;

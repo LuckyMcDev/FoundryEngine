@@ -23,7 +23,7 @@ import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import org.joml.Matrix4f;
 import org.lwjgl.glfw.GLFW;
 
-//? if >= 26.2 {
+//? if >=26.2 {
 /*import com.mojang.blaze3d.GpuFormat;
  *///?} else {
 import net.minecraft.network.chat.Component;
@@ -47,7 +47,7 @@ public class ClientWaypointManager {
 		Client.EDITOR_CATEGORY
 	);
 
-	//? if >= 26.2 {
+	//? if >=26.2 {
 	/*public void renderWaypoints(RenderLevelStageEvent.AfterLevel context, SubmitNodeStorage submitNodes) {
 		Minecraft mc = Minecraft.getInstance();
 		if (mc.level == null) {
@@ -171,7 +171,7 @@ public class ClientWaypointManager {
 	}
 
 	private void renderItemIcon(Waypoint w, Vec3 wpPos, Minecraft mc,
-	                            MultiBufferSource.BufferSource bufferSource, float scale) {
+								MultiBufferSource.BufferSource bufferSource, float scale) {
 		var location = Identifier.parse(w.icon());
 		var itemOpt = BuiltInRegistries.ITEM.getOptional(location);
 		if (itemOpt.isEmpty() || itemOpt.get() == Items.AIR) {

@@ -331,7 +331,7 @@ public class AreaManager {
 	}
 
 	private void forEachBlockModule(ServerLevel level, BlockPos pos, BlockState state, ServerPlayer player,
-	                                BiConsumer<AreaBlockModule, Area> action) {
+									BiConsumer<AreaBlockModule, Area> action) {
 		for (Area area : areasNearBlock(level.dimension(), pos)) {
 			if (!area.contains(pos)) {
 				continue;

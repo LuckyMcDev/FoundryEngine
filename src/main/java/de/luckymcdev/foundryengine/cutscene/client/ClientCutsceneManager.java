@@ -92,7 +92,7 @@ public class ClientCutsceneManager {
 			return;
 		}
 
-		//? if >= 26.2 {
+		//? if >=26.2 {
 		/*if (!mc.gui.hud.isHidden()) {
 			mc.gui.hud.toggle();
 		}
@@ -112,7 +112,7 @@ public class ClientCutsceneManager {
 			if (cutsceneQueue.isEmpty()) {
 				currentCutscene = null;
 				if (!Client.getPostEffectManager().inScreenEffect()) {
-					//? if >= 26.2 {
+					//? if >=26.2 {
 					/*if (mc.gui.hud.isHidden()) {
 						mc.gui.hud.toggle();
 					}
@@ -149,7 +149,7 @@ public class ClientCutsceneManager {
 				currentLengthInTicks = 0;
 				holdTimeEnd = 0;
 				holdTimeStart = 0;
-				//? if >= 26.2 {
+				//? if >=26.2 {
 				/*if (Minecraft.getInstance().gui.hud.isHidden()) {
 					Minecraft.getInstance().gui.hud.toggle();
 				}
@@ -223,7 +223,7 @@ public class ClientCutsceneManager {
 	}
 
 	public record QueuedCutscene(PlayingCutscene cutscene, float length, LerpType lerpType, float holdStart,
-	                             float holdEnd) {
+								 float holdEnd) {
 	}
 
 	public static final class PlayingCutscene {

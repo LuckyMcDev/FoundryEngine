@@ -56,8 +56,8 @@ public class RuntimeLevel extends ServerLevel {
 	}
 
 	protected RuntimeLevel(MinecraftServer server, Executor executor, LevelStorageSource.LevelStorageAccess levelStorage, ServerLevelData levelData, ResourceKey<Level> dimension,
-	                       LevelStem levelStem, boolean isDebug, long biomeZoomSeed, List<CustomSpawner> customSpawners, boolean tickTime, Style style,
-	                       @Nullable GameRules gameRules, @Nullable ServerClockManager clockManager) {
+						   LevelStem levelStem, boolean isDebug, long biomeZoomSeed, List<CustomSpawner> customSpawners, boolean tickTime, Style style,
+						   @Nullable GameRules gameRules, @Nullable ServerClockManager clockManager) {
 		this.style = style;
 		this.rules = gameRules;
 		this.clockManager = clockManager;

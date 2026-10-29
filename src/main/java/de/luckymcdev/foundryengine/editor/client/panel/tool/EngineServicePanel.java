@@ -82,11 +82,15 @@ public abstract class EngineServicePanel<T extends EngineService> extends Editor
 			String[] tabs = getTabNames();
 			for (int i = 0; i < tabs.length; i++) {
 				boolean selected = activeTab == i;
-				if (selected) ImGui.pushStyleColor(ImGuiCol.Text, 0xFF4CAF50);
+				if (selected) {
+					ImGui.pushStyleColor(ImGuiCol.Text, 0xFF4CAF50);
+				}
 				if (ImGui.menuItem(tabs[i])) {
 					activeTab = i;
 				}
-				if (selected) ImGui.popStyleColor();
+				if (selected) {
+					ImGui.popStyleColor();
+				}
 			}
 
 			ImGui.separator();
@@ -135,7 +139,9 @@ public abstract class EngineServicePanel<T extends EngineService> extends Editor
 				sb.append(result.stdout());
 			}
 			if (!result.stderr().isEmpty()) {
-				if (!sb.isEmpty() && !sb.toString().endsWith("\n")) sb.append('\n');
+				if (!sb.isEmpty() && !sb.toString().endsWith("\n")) {
+					sb.append('\n');
+				}
 				sb.append(result.stderr());
 			}
 			if (sb.isEmpty() || sb.toString().endsWith(":\n")) {

@@ -89,9 +89,9 @@ public class MinecraftPanelRequirements implements PanelRequirements {
 	}
 
 	private boolean isSinglePlayer(Minecraft mc) {
-		//? if >= 26.2 {
+		//? if >=26.2 {
 		/*return (mc.level != null && mc.hasSingleplayerServer());
-		*///?} else {
+		 *///?} else {
 		return (mc.level != null && mc.isSingleplayer());
 		//?}
 	}

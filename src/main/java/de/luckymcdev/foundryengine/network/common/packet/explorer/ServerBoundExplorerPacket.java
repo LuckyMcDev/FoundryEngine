@@ -186,7 +186,7 @@ public record ServerBoundExplorerPacket(
 			}
 
 			try (InputStream in = opt.get().open();
-			     BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
+				 BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
 				String content = reader.lines().collect(Collectors.joining("\n"));
 				PacketDistributor.sendToPlayer(player, new ClientBoundExplorerPacket(
 					ClientBoundExplorerPacket.Action.RESOURCE_CONTENT, path, content, List.of(), List.of()));

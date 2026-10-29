@@ -572,7 +572,7 @@ public class ExplorerPanel extends EditorPanel {
 
 	private void openResourceFromStream(Identifier id, Resource resource) {
 		try (InputStream in = resource.open();
-		     BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
+			 BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
 			String content = reader.lines().collect(Collectors.joining("\n"));
 			String fileName = id.getPath().contains("/") ? id.getPath().substring(id.getPath().lastIndexOf('/') + 1) : id.getPath();
 			Identifier editorId = generateEditorId("res_" + id.getNamespace(), id.getPath());

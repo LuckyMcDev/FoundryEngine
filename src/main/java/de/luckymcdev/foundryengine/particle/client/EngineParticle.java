@@ -26,8 +26,8 @@ public class EngineParticle extends SingleQuadParticle implements ParticleContex
 	private final Layer layer;
 
 	public EngineParticle(Identifier id, ClientLevel level, double x, double y, double z,
-	                      SpriteSet sprites, int lifetime, ParticleLayer layer,
-	                      List<GenericParticleData> data) {
+						  SpriteSet sprites, int lifetime, ParticleLayer layer,
+						  List<GenericParticleData> data) {
 		super(level, x, y, z, sprites.first());
 		this.id = id;
 		this.sprites = sprites;
@@ -104,7 +104,7 @@ public class EngineParticle extends SingleQuadParticle implements ParticleContex
 		private final SpriteSet sprites;
 
 		public Provider(Identifier id, int lifetime, ParticleLayer layer,
-		                List<GenericParticleData> data, SpriteSet sprites) {
+						List<GenericParticleData> data, SpriteSet sprites) {
 			this.id = id;
 			this.lifetime = lifetime;
 			this.layer = layer;
@@ -114,9 +114,9 @@ public class EngineParticle extends SingleQuadParticle implements ParticleContex
 
 		@Override
 		public Particle createParticle(SimpleParticleType type, ClientLevel level,
-		                               double x, double y, double z,
-		                               double xSpeed, double ySpeed, double zSpeed,
-		                               RandomSource random) {
+									   double x, double y, double z,
+									   double xSpeed, double ySpeed, double zSpeed,
+									   RandomSource random) {
 			EngineParticle particle = new EngineParticle(id, level, x, y, z,
 				sprites, lifetime, layer, data);
 			particle.setParticleSpeed(xSpeed, ySpeed, zSpeed);

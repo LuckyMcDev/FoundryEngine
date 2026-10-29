@@ -14,7 +14,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
-//? if >= 26.2 {
+//? if >=26.2 {
 //?} else {
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -32,7 +32,7 @@ public record Face(List<Vertex> vertices, Material material) {
 	}
 
 	private static void pushVertex(BufferBuilder buffer, Vertex vertex, PoseStack poseStack,
-	                               float r, float g, float b, float a, int packedLight) {
+								   float r, float g, float b, float a, int packedLight) {
 		PoseStack.Pose pose = poseStack.last();
 		Vector3f pos = vertex.position();
 		Vector3f normal = vertex.normal();
@@ -52,7 +52,7 @@ public record Face(List<Vertex> vertices, Material material) {
 	}
 
 	public void buildVerticesTextured(BufferBuilder buffer, PoseStack poseStack,
-	                                  float r, float g, float b, float a, int packedLight) {
+									  float r, float g, float b, float a, int packedLight) {
 		int count = vertices.size();
 		if (count == 3) {
 			buildTriangle(buffer, poseStack, r, g, b, a, packedLight);
@@ -66,7 +66,7 @@ public record Face(List<Vertex> vertices, Material material) {
 	}
 
 	private void buildTriangle(BufferBuilder buffer, PoseStack poseStack,
-	                           float r, float g, float b, float a, int packedLight) {
+							   float r, float g, float b, float a, int packedLight) {
 		for (Vertex v : vertices) {
 			pushVertex(buffer, v, poseStack, r, g, b, a, packedLight);
 		}
@@ -74,14 +74,14 @@ public record Face(List<Vertex> vertices, Material material) {
 	}
 
 	private void buildQuad(BufferBuilder buffer, PoseStack poseStack,
-	                       float r, float g, float b, float a, int packedLight) {
+						   float r, float g, float b, float a, int packedLight) {
 		for (Vertex v : vertices) {
 			pushVertex(buffer, v, poseStack, r, g, b, a, packedLight);
 		}
 	}
 
 	private void buildNgon(BufferBuilder buffer, PoseStack poseStack,
-	                       float r, float g, float b, float a, int packedLight) {
+						   float r, float g, float b, float a, int packedLight) {
 		Vertex anchor = vertices.getFirst();
 		for (int i = 1; i < vertices.size() - 1; i++) {
 			Vertex v1 = vertices.get(i);
@@ -104,8 +104,8 @@ public record Face(List<Vertex> vertices, Material material) {
 	}
 
 	private void renderFace(PoseStack poseStack, RenderType renderType, int packedLight,
-	                        float r, float g, float b, float a) {
-		//? if >= 26.2 {
+							float r, float g, float b, float a) {
+		//? if >=26.2 {
 		/*try (MeshRenderer.DrawSession session = Client.getMeshRenderer().begin(renderType, new Matrix4f())) {
 			VertexConsumer consumer = session.buffer();
 			int count = vertices.size();
@@ -138,7 +138,7 @@ public record Face(List<Vertex> vertices, Material material) {
 	}
 
 	private void addVertex(VertexConsumer buffer, Vertex vertex, PoseStack poseStack, int packedLight,
-	                       float r, float g, float b, float a) {
+						   float r, float g, float b, float a) {
 		PoseStack.Pose pose = poseStack.last();
 		Vector3f position = vertex.position();
 		Vector3f normal = vertex.normal();
@@ -153,7 +153,7 @@ public record Face(List<Vertex> vertices, Material material) {
 	}
 
 	private void renderTriangle(PoseStack poseStack, VertexConsumer buffer, int packedLight,
-	                            float r, float g, float b, float a) {
+								float r, float g, float b, float a) {
 		for (Vertex v : vertices) {
 			addVertex(buffer, v, poseStack, packedLight, r, g, b, a);
 		}
@@ -161,14 +161,14 @@ public record Face(List<Vertex> vertices, Material material) {
 	}
 
 	private void renderQuad(PoseStack poseStack, VertexConsumer buffer, int packedLight,
-	                        float r, float g, float b, float a) {
+							float r, float g, float b, float a) {
 		for (Vertex v : vertices) {
 			addVertex(buffer, v, poseStack, packedLight, r, g, b, a);
 		}
 	}
 
 	private void renderNgon(PoseStack poseStack, VertexConsumer buffer, int packedLight,
-	                        float r, float g, float b, float a) {
+							float r, float g, float b, float a) {
 		Vertex anchor = vertices.getFirst();
 		for (int i = 1; i < vertices.size() - 1; i++) {
 			Vertex v1 = vertices.get(i);

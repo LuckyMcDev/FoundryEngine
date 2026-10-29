@@ -30,10 +30,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * {@code ClientMod}.
  */
 public final class ImGuiManager implements NativeResource {
-	private final AtomicBoolean enabled = new AtomicBoolean(false);
-	private final AtomicBoolean menuBarVisible = new AtomicBoolean(true);
 	public static final Identifier FONT = Common.id("jetbrains_mono_nf");
 	public static float scaleOverride = 1.4f;
+	private final AtomicBoolean enabled = new AtomicBoolean(false);
+	private final AtomicBoolean menuBarVisible = new AtomicBoolean(true);
 	private @Nullable ImNodesContext imNodesContext;
 	private boolean blockInput;
 	private int dockId;

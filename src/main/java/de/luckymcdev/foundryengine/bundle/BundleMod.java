@@ -43,7 +43,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-/** Owns bundle discovery, resource-pack injection and script lifecycle. */
+/**
+ * Owns bundle discovery, resource-pack injection and script lifecycle.
+ */
 @Mod(BundleMod.MODID)
 public final class BundleMod implements EngineModPart {
 	public static final String MODID = "foundryengine_bundle";
@@ -137,8 +139,11 @@ public final class BundleMod implements EngineModPart {
 				.filter(Files::exists).toList(), Pack.Position.TOP, false);
 		Path genPath = type == PackType.CLIENT_RESOURCES
 			? BundleDataGenerator.getGeneratedAssetsPath() : BundleDataGenerator.getGeneratedDataPath();
-		try { Files.createDirectories(genPath); }
-		catch (IOException e) { LOGGER.error("Could not create generated dir {}", genPath, e); }
+		try {
+			Files.createDirectories(genPath);
+		} catch (IOException e) {
+			LOGGER.error("Could not create generated dir {}", genPath, e);
+		}
 		var generated = new DynamicPackRepository(type, "foundryengine/bundles_generated", "FoundryEngine: Generated",
 			"Foundry Engine Generated Resource Files", () -> List.of(genPath), Pack.Position.BOTTOM, true);
 		event.addRepositorySource(bundles);
@@ -173,7 +178,9 @@ public final class BundleMod implements EngineModPart {
 	}
 
 	private void onScreenOpening(ScreenEvent.Opening event) {
-		if (handledClassFilter || !(event.getNewScreen() instanceof TitleScreen)) return;
+		if (handledClassFilter || !(event.getNewScreen() instanceof TitleScreen)) {
+			return;
+		}
 		handledClassFilter = true;
 		checkMaliciousScriptConfig();
 	}
@@ -187,8 +194,12 @@ public final class BundleMod implements EngineModPart {
 	}
 
 	private void onClassFilterAccepted() {
-		try { SandboxWaiver.markAccepted(); }
-		catch (IOException e) { LOGGER.error("Failed to write acceptance file", e); return; }
+		try {
+			SandboxWaiver.markAccepted();
+		} catch (IOException e) {
+			LOGGER.error("Failed to write acceptance file", e);
+			return;
+		}
 		LOGGER.info("Class filter acknowledged - disabling class filter");
 		Common.getScriptManager().unloadAll();
 	}
@@ -204,6 +215,9 @@ public final class BundleMod implements EngineModPart {
 	private void onLoggingIn(ClientPlayerNetworkEvent.LoggingIn event) {
 		FolderHash.hashFolderAsync(Common.BUNDLES)
 			.thenAccept(hash -> ClientPacketDistributor.sendToServer(new BundleHashPacket(hash)))
-			.exceptionally(e -> { LOGGER.error("Failed to hash bundles folder", e); return null; });
+			.exceptionally(e -> {
+				LOGGER.error("Failed to hash bundles folder", e);
+				return null;
+			});
 	}
 }

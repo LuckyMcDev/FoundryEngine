@@ -7,13 +7,13 @@ import java.util.List;
 
 public interface IAutocompleteProvider {
 	List<AutocompleteItem> getCandidates(String prefix,
-	                                     List<List<EditorGlyph>> lines,
-	                                     EditorCoordinates cursor);
+										 List<List<EditorGlyph>> lines,
+										 EditorCoordinates cursor);
 
 	// Return true to suppress the popup (e.g. after a dot for swizzles).
 	boolean shouldSuppress(String prefix,
-	                       List<List<EditorGlyph>> lines,
-	                       EditorCoordinates cursor);
+						   List<List<EditorGlyph>> lines,
+						   EditorCoordinates cursor);
 
 	default int minPrefixLength() {
 		return 2;

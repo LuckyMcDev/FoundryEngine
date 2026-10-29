@@ -7,9 +7,9 @@ public record EditorState(List<List<EditorGlyph>> lines, EditorCoordinates curso
 	public static final int MAX_UNDO = 200;
 
 	public EditorState(List<List<EditorGlyph>> lines,
-	                   EditorCoordinates cursor,
-	                   EditorCoordinates selStart,
-	                   EditorCoordinates selEnd) {
+					   EditorCoordinates cursor,
+					   EditorCoordinates selStart,
+					   EditorCoordinates selEnd) {
 		this.lines = deepCopyLines(lines);
 		this.cursor = cursor.copy();
 		this.selStart = selStart.copy();

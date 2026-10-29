@@ -37,9 +37,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 
-//? if >= 26.2 {
+//? if >=26.2 {
 /*import com.mojang.blaze3d.GpuFormat;
-*///?} else {
+ *///?} else {
 import com.mojang.blaze3d.textures.TextureFormat;
 import com.mojang.blaze3d.systems.CommandEncoder;
 //?}
@@ -179,7 +179,7 @@ public class IconExporterLayer implements GuiLayer {
 	private void renderBatch(Minecraft mc, Level level, List<ImageExportUtil.ItemExportData> batch, int columns, int rows, int texWidth, int texHeight) {
 		var device = RenderSystem.getDevice();
 
-		//? if >= 26.2 {
+		//? if >=26.2 {
 		/*GpuTexture colorTex = device.createTexture(() -> "Icons color", GpuTexture.USAGE_RENDER_ATTACHMENT | GpuTexture.USAGE_TEXTURE_BINDING | GpuTexture.USAGE_COPY_SRC | GpuTexture.USAGE_COPY_DST, GpuFormat.RGBA8_UNORM, texWidth, texHeight, 1, 1);
 		GpuTextureView colorView = device.createTextureView(colorTex);
 		GpuTexture depthTex = device.createTexture(() -> "Icons depth", GpuTexture.USAGE_RENDER_ATTACHMENT | GpuTexture.USAGE_TEXTURE_BINDING | GpuTexture.USAGE_COPY_SRC | GpuTexture.USAGE_COPY_DST, GpuFormat.D32_FLOAT, texWidth, texHeight, 1, 1);
@@ -204,7 +204,7 @@ public class IconExporterLayer implements GuiLayer {
 			RenderSystem.backupProjectionMatrix();
 			RenderSystem.setProjectionMatrix(projBuf.getBuffer(projection), ProjectionType.ORTHOGRAPHIC);
 
-			//? if >= 26.2 {
+			//? if >=26.2 {
 			/*var lighting = gameRenderer.lighting();
 			var submitNodes = new net.minecraft.client.renderer.SubmitNodeStorage();
 			var featureDispatcher = gameRenderer.featureRenderDispatcher();
@@ -286,7 +286,7 @@ public class IconExporterLayer implements GuiLayer {
 			RenderSystem.outputColorTextureOverride = null;
 			RenderSystem.outputDepthTextureOverride = null;
 
-			//? if >= 26.2 {
+			//? if >=26.2 {
 			/*int pixelSize = GpuFormat.RGBA8_UNORM.blockSize();
 			GpuBuffer readBuffer = device.createBuffer(() -> "Icons read", GpuBuffer.USAGE_MAP_READ | GpuBuffer.USAGE_COPY_DST, (long) texWidth * texHeight * pixelSize);
 			device.createCommandEncoder().copyTextureToBuffer(colorTex, readBuffer, 0, () -> {
@@ -297,7 +297,7 @@ public class IconExporterLayer implements GuiLayer {
 			CommandEncoder encoder = device.createCommandEncoder();
 			device.createCommandEncoder().copyTextureToBuffer(colorTex, readBuffer, 0, () -> {
 				try (var mapped = encoder.mapBuffer(readBuffer, true, false)) {
-			//?}
+					//?}
 					NativeImage image = new NativeImage(texWidth, texHeight, false);
 					for (int y = 0; y < texHeight; y++) {
 						for (int x = 0; x < texWidth; x++) {
