@@ -93,6 +93,7 @@ final class LenientClosureTransformer extends ClassCodeExpressionTransformer {
 		List<Statement> bindings = new ArrayList<>();
 
 		if (parameters == null) {
+			// No parameters so no work.
 		} else if (parameters.length == 0) {
 			String itName = "__foundryIt" + counter++;
 			renameIt(body, itName);
