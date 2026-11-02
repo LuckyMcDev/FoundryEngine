@@ -90,12 +90,12 @@ public class EngineMod {
 
 		LOGGER.info("""
 				
-				‚Ėą‚Ėą‚Ėą‚Ėą‚Ėą‚Ėą‚Ėą‚ēó‚Ėą‚Ėą‚Ėą‚Ėą‚Ėą‚Ėą‚Ėą‚ēó
-				‚Ėą‚Ėą‚ēĒ‚ēź‚ēź‚ēź‚ēź‚ēĚ‚Ėą‚Ėą‚ēĒ‚ēź‚ēź‚ēź‚ēź‚ēĚ  Foundry Engine {}
-				‚Ėą‚Ėą‚Ėą‚Ėą‚Ėą‚ēó  ‚Ėą‚Ėą‚Ėą‚Ėą‚Ėą‚ēó    Running on NeoForge {}
-				‚Ėą‚Ėą‚ēĒ‚ēź‚ēź‚ēĚ  ‚Ėą‚Ėą‚ēĒ‚ēź‚ēź‚ēĚ    Minecraft {}
-				‚Ėą‚Ėą‚ēĎ     ‚Ėą‚Ėą‚Ėą‚Ėą‚Ėą‚Ėą‚Ėą‚ēó  Platform {}
-				‚ēö‚ēź‚ēĚ     ‚ēö‚ēź‚ēź‚ēź‚ēź‚ēź‚ēź‚ēĚ""",
+				███████╗███████╗
+				██╔════╝██╔════╝  Foundry Engine {}
+				█████╗  █████╗    Running on NeoForge {}
+				██╔══╝  ██╔══╝    Minecraft {}
+				██║     ███████╗  Platform {}
+				╚═╝     ╚══════╝""",
 			modVersion,
 			NeoForgeVersion.getVersion(),
 			SharedConstants.getCurrentVersion().name(),
