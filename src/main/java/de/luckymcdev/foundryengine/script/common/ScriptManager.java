@@ -2,12 +2,12 @@ package de.luckymcdev.foundryengine.script.common;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.bundle.common.info.BundleFiles;
+import de.luckymcdev.foundryengine.config.StartupConfig;
 import de.luckymcdev.foundryengine.script.common.definition.ScriptDefinition;
 import de.luckymcdev.foundryengine.script.common.definition.ScriptEnv;
 import de.luckymcdev.foundryengine.script.common.runtime.ScriptCompiler;
 import de.luckymcdev.foundryengine.script.common.runtime.ScriptRuntime;
 import de.luckymcdev.foundryengine.script.common.sandbox.SandboxPolicy;
-import de.luckymcdev.foundryengine.config.StartupConfig;
 import org.slf4j.Logger;
 
 import java.util.Collection;
@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * thread's behalf under the sandbox timeout, in load order.
  */
 public final class ScriptManager {
-
+	public static final String FILE_EXTENSION = ".groovy";
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private final Set<ScriptEnv> activeEnvs;
 	private final ScriptCompiler compiler;

@@ -2,7 +2,6 @@ package de.luckymcdev.foundryengine.script.common.runtime;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.Common;
-import de.luckymcdev.foundryengine.script.common.ScriptConfig;
 import de.luckymcdev.foundryengine.script.common.definition.ScriptDefinition;
 import de.luckymcdev.foundryengine.script.common.definition.ScriptSource;
 import de.luckymcdev.foundryengine.script.common.event.GroovyScriptEngineModifyEvent;
@@ -48,7 +47,7 @@ public class ScriptCompiler {
 
 	public ScriptCompiler() {
 		this.hostLoader = FMLLoader.getCurrent().getCurrentClassLoader();
-		this.template = ScriptConfig.createBaseCompilerConfig();
+		this.template = new CompilerConfiguration();
 		Common.post(new GroovyScriptEngineModifyEvent(template));
 		this.baseCustomizers = List.copyOf(template.getCompilationCustomizers());
 	}

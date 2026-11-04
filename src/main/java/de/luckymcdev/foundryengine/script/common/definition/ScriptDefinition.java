@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.script.common.definition;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.bundle.common.info.BundleFiles;
+import de.luckymcdev.foundryengine.script.common.ScriptManager;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -17,7 +18,6 @@ import java.util.Set;
 public record ScriptDefinition(String bundleId, Path root, List<ScriptSource> sources) {
 
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final String EXTENSION = ".groovy";
 
 	public ScriptDefinition {
 		root = root.toAbsolutePath().normalize();
@@ -36,7 +36,7 @@ public record ScriptDefinition(String bundleId, Path root, List<ScriptSource> so
 
 		List<ScriptSource> sources = new ArrayList<>();
 		for (Path candidate : files.scripts().collection()) {
-			if (!candidate.toString().endsWith(EXTENSION)) {
+			if (!candidate.toString().endsWith(ScriptManager.FILE_EXTENSION)) {
 				continue;
 			}
 			Path real;
@@ -61,7 +61,7 @@ public record ScriptDefinition(String bundleId, Path root, List<ScriptSource> so
 				continue;
 			}
 			String fileName = real.getFileName().toString();
-			sources.add(new ScriptSource(fileName.substring(0, fileName.length() - EXTENSION.length()), real, env));
+			sources.add(new ScriptSource(fileName.substring(0, fileName.length() - ScriptManager.FILE_EXTENSION.length()), real, env));
 		}
 		sources.sort(Comparator.comparing(ScriptSource::path));
 		return new ScriptDefinition(bundleId, root, sources);

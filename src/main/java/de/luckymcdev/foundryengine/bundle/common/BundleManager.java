@@ -52,7 +52,7 @@ import java.util.concurrent.locks.ReentrantLock;
  *   <li>{@link #loadServerScripts()} must be called from the server dist entrypoint.</li>
  * </ul>
  */
-public class BundleManager implements ResourceManagerReloadListener {
+public class BundleManager {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private final ReentrantLock reloadLock = new ReentrantLock();
 	private final GenericRegistry<String, Bundle> bundles = new GenericRegistry<>();
@@ -413,8 +413,8 @@ public class BundleManager implements ResourceManagerReloadListener {
 		return bundleDiscovery;
 	}
 
-	@Override
-	public void onResourceManagerReload(ResourceManager resourceManager) {
-		this.reload();
-	}
+	//@Override
+	//public void onResourceManagerReload(ResourceManager resourceManager) {
+	//	//this.reload(); // This has caused issues relating to fields resetting unexpectedly.
+	//}
 }

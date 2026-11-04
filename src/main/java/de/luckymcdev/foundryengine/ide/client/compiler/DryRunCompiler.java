@@ -1,6 +1,5 @@
 package de.luckymcdev.foundryengine.ide.client.compiler;
 
-import de.luckymcdev.foundryengine.script.common.ScriptConfig;
 import groovy.lang.GroovyClassLoader;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -25,7 +24,7 @@ public final class DryRunCompiler {
 			return errors;
 		}
 
-		CompilerConfiguration config = ScriptConfig.createBaseCompilerConfig();
+		CompilerConfiguration config = new CompilerConfiguration();
 		GroovyClassLoader gcl = new GroovyClassLoader(
 			Thread.currentThread().getContextClassLoader(),
 			config

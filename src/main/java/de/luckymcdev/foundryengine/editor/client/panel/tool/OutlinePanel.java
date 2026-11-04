@@ -8,7 +8,7 @@ import de.luckymcdev.foundryengine.ide.client.WorkspaceState;
 import de.luckymcdev.foundryengine.imgui.client.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.imgui.client.icon.ImIcons;
 import de.luckymcdev.foundryengine.Common;
-import de.luckymcdev.foundryengine.script.common.ScriptConfig;
+import de.luckymcdev.foundryengine.script.common.ScriptManager;
 import imgui.ImGui;
 import imgui.flag.ImGuiSelectableFlags;
 import imgui.flag.ImGuiTreeNodeFlags;
@@ -150,7 +150,7 @@ public class OutlinePanel extends EditorPanel {
 
 		String filePath = buffer.filePath();
 		String ext = extensionFrom(filePath);
-		if (ScriptConfig.fileExtensions().stream().noneMatch(ext::equals)) {
+		if (!ScriptManager.FILE_EXTENSION.equals(ext)) {
 			ImGui.textDisabled("Outline not available for this file type");
 			return;
 		}
