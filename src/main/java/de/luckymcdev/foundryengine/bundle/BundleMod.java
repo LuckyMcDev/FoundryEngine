@@ -155,7 +155,6 @@ public final class BundleMod implements EngineModPart {
 	}
 
 	private void onAddReloadListeners(AddServerReloadListenersEvent event) {
-		event.addListener(Common.id("bundle_manager"), Common.getBundleManager());
 	}
 
 	private void onServerStarting(ServerStartingEvent event) {
