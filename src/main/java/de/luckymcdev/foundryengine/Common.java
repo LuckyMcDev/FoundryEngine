@@ -33,7 +33,10 @@ import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -298,8 +301,12 @@ public final class Common {
 		Path base = GAMEDIR.toRealPath();
 
 		Path resolved;
-		if (Files.exists(path)) {
-			resolved = path.toRealPath();
+		if (Files.exists(path, LinkOption.NOFOLLOW_LINKS)) {
+			try {
+				resolved = path.toRealPath();
+			} catch (NoSuchFileException e) {
+				throw new IOException("Broken symbolic link: " + path, e);
+			}
 		} else {
 			Path current = path;
 			while (current != null && !Files.exists(current)) {
@@ -318,5 +325,23 @@ public final class Common {
 			throw new SecurityException("Resolved path " + resolved + " is outside the Minecraft directory " + base);
 		}
 		return resolved;
+	}
+
+	/**
+	 * Like {@link #resolveAndValidate(Path)}, but the last path component is NOT resolved.
+	 * If {@code path} is a symbolic link, the returned path is the link itself rather than
+	 * its target. Only the parent directory is canonicalized and checked against
+	 * {@link #GAMEDIR}. Use this for operations that act on the link (e.g. deleting it).
+	 *
+	 * @throws SecurityException if the parent directory is outside {@link #GAMEDIR}
+	 */
+	public static Path resolveAndValidateNoFollow(Path path) throws IOException {
+		path = path.normalize().toAbsolutePath();
+		Path name = path.getFileName();
+		Path parent = path.getParent();
+		if (name == null || parent == null) {
+			throw new SecurityException("Path has no parent inside the Minecraft directory: " + path);
+		}
+		return resolveAndValidate(parent).resolve(name.toString());
 	}
 }
