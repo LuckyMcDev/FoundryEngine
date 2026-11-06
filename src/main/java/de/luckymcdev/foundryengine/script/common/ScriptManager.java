@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.script.common;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.bundle.common.info.BundleFiles;
+import de.luckymcdev.foundryengine.bundle.common.info.MavenLibrary;
 import de.luckymcdev.foundryengine.config.StartupConfig;
 import de.luckymcdev.foundryengine.script.common.definition.ScriptDefinition;
 import de.luckymcdev.foundryengine.script.common.definition.ScriptEnv;
@@ -26,7 +27,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * MANAGER: creates and owns everything else (definitions, runtimes, editor state, compiler, thread pools).
  * <p>
  * Compilation is parallel across bundles on a bounded daemon pool. To get that parallelism call
- * {@link #prepareAll} once with all bundles before the first {@link #load}; a lone {@link #load}
+ * {@link #prepare} once with all bundles before the first {@link #load}; a lone {@link #load}
  * compiles just its bundle. Entry code (constructors, onLoad, onUnload) runs on the calling
  * thread's behalf under the sandbox timeout, in load order.
  */
@@ -64,22 +65,15 @@ public final class ScriptManager {
 	/**
 	 * Starts compiling a bundle if it is not known yet. The future completes when it is compiled.
 	 */
-	public CompletableFuture<Void> prepare(String bundleId, BundleFiles files) {
-		return entries.computeIfAbsent(bundleId, id -> schedule(id, files)).ready();
+	public CompletableFuture<Void> prepare(String bundleId, BundleFiles files, List<MavenLibrary> libraries) {
+		if (!StartupConfig.SCRIPTING_ENABLED.get()) {
+			return CompletableFuture.completedFuture(null);
+		}
+		return entries.computeIfAbsent(bundleId, id -> schedule(id, files, libraries)).ready();
 	}
 
-	/**
-	 * Starts compiling all given bundles in parallel.
-	 */
-	public CompletableFuture<Void> prepareAll(Map<String, BundleFiles> bundles) {
-		CompletableFuture<?>[] futures = bundles.entrySet().stream()
-			.map(e -> prepare(e.getKey(), e.getValue()))
-			.toArray(CompletableFuture[]::new);
-		return CompletableFuture.allOf(futures);
-	}
-
-	private Entry schedule(String bundleId, BundleFiles files) {
-		ScriptDefinition definition = ScriptDefinition.of(bundleId, files, activeEnvs);
+	private Entry schedule(String bundleId, BundleFiles files, List<MavenLibrary> libraries) {
+		ScriptDefinition definition = ScriptDefinition.of(bundleId, files, libraries, activeEnvs);
 		SandboxPolicy policy = SandboxPolicy.current();
 		ScriptRuntime runtime = new ScriptRuntime(definition, policy, reporter);
 		runtime.markCompiling();
@@ -91,17 +85,17 @@ public final class ScriptManager {
 				runtime.recordCompileCrash(t);
 			}
 		}, compilePool);
-		return new Entry(files, runtime, ready);
+		return new Entry(files, libraries, runtime, ready);
 	}
 
 	/**
 	 * Waits for the bundle's compilation, then loads the entrypoints of one environment.
 	 */
-	public List<BundleEntrypoint> load(String bundleId, BundleFiles files, ScriptEnv env) {
+	public List<BundleEntrypoint> load(String bundleId, BundleFiles files, List<MavenLibrary> libraries, ScriptEnv env) {
 		if (!StartupConfig.SCRIPTING_ENABLED.get() || !activeEnvs.contains(env)) {
 			return List.of();
 		}
-		Entry entry = entries.computeIfAbsent(bundleId, id -> schedule(id, files));
+		Entry entry = entries.computeIfAbsent(bundleId, id -> schedule(id, files, libraries));
 		entry.ready().join();
 		return entry.runtime().load(env, source -> true);
 	}
@@ -118,7 +112,7 @@ public final class ScriptManager {
 			Set<ScriptEnv> envs = old.runtime().loadedEnvs();
 			old.runtime().unload();
 			entries.remove(bundleId, old);
-			Entry fresh = entries.computeIfAbsent(bundleId, id -> schedule(id, old.files()));
+			Entry fresh = entries.computeIfAbsent(bundleId, id -> schedule(id, old.files(), old.libraries()));
 			fresh.ready().join();
 			for (ScriptEnv env : envs) {
 				fresh.runtime().load(env, s -> true);
@@ -142,7 +136,7 @@ public final class ScriptManager {
 
 	/**
 	 * Unloads a single bundle: fires {@code onUnload} on its entrypoints and closes its class
-	 * loader. The bundle is then forgotten so the next {@link #load} recompiles.
+	 * loaders. The bundle is then forgotten so the next {@link #load} recompiles.
 	 */
 	public void unloadBundle(String bundleId) {
 		Entry entry = entries.remove(bundleId);
@@ -183,6 +177,6 @@ public final class ScriptManager {
 		return reporter.drain();
 	}
 
-	private record Entry(BundleFiles files, ScriptRuntime runtime, CompletableFuture<Void> ready) {
+	private record Entry(BundleFiles files, List<MavenLibrary> libraries, ScriptRuntime runtime, CompletableFuture<Void> ready) {
 	}
 }

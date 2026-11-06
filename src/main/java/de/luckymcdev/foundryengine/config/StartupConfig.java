@@ -3,6 +3,8 @@ package de.luckymcdev.foundryengine.config;
 import de.luckymcdev.foundryengine.util.common.CompatibilityMode;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
+import java.util.List;
+
 public final class StartupConfig {
 	public static final ModConfigSpec SPEC;
 	public static final ModConfigSpec.ConfigValue<CompatibilityMode> COMPATIBILITY_MODE;
@@ -13,6 +15,9 @@ public final class StartupConfig {
 	public static final ModConfigSpec.IntValue EVAL_COMMAND_PERMISSION;
 	public static final ModConfigSpec.IntValue SCRIPT_TIMEOUT_SECONDS;
 	public static final ModConfigSpec.BooleanValue CLEAR_DATA_CACHE;
+	public static final ModConfigSpec.BooleanValue MAVEN_LIBRARIES_ENABLED;
+	public static final ModConfigSpec.BooleanValue MAVEN_REQUIRE_SHA256;
+	public static final ModConfigSpec.ConfigValue<List<? extends String>> MAVEN_REPOSITORIES;
 
 	static {
 		ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -60,6 +65,21 @@ public final class StartupConfig {
 			.comment("If in the next run the data cache should be cleared.")
 			.translation("foundryengine.configuration.clear_data_cache")
 			.define("CLEAR_DATA_CACHE", false);
+
+		MAVEN_LIBRARIES_ENABLED = builder
+			.comment("Allow bundles to declare and download Maven libraries. Disabling this refuses all library resolution.")
+			.define("MAVEN_LIBRARIES_ENABLED", true);
+
+		MAVEN_REQUIRE_SHA256 = builder
+			.comment("Reject libraries whose .bundles.toml entry has no sha256. Strongly recommended for public servers.")
+			.define("MAVEN_REQUIRE_SHA256", false);
+
+		MAVEN_REPOSITORIES = builder
+			.comment("Whitelisted Maven repositories, tried in order. Only https:// URLs are accepted.")
+			.defineList(
+				"MAVEN_REPOSITORIES",
+				List.of("https://repo1.maven.org/maven2/"),
+				o -> o instanceof String s && s.startsWith("https://"));
 
 		SPEC = builder.build();
 	}

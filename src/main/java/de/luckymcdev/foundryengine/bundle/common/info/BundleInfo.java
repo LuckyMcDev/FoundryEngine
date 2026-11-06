@@ -16,25 +16,31 @@ import java.util.List;
  * @param authors      the authors
  * @param versionInfo  the SemVer
  * @param dependencies the dependencies
+ * @param libraries    the Maven libraries the bundle pulls in
  */
 public record BundleInfo(
 	String id,
 	String displayName,
 	List<String> authors,
 	VersionInfo versionInfo,
-	List<BundleDependency> dependencies
+	List<BundleDependency> dependencies,
+	List<MavenLibrary> libraries
 ) {
 	public static final Codec<BundleInfo> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 		Codec.STRING.fieldOf("id").forGetter(BundleInfo::id),
 		Codec.STRING.fieldOf("display_name").forGetter(BundleInfo::displayName),
 		Codec.STRING.listOf().fieldOf("authors").forGetter(BundleInfo::authors),
 		VersionInfo.CODEC.fieldOf("version").forGetter(BundleInfo::versionInfo),
-		BundleDependency.CODEC.listOf().fieldOf("dependencies").forGetter(BundleInfo::dependencies)
+		BundleDependency.CODEC.listOf().fieldOf("dependencies").forGetter(BundleInfo::dependencies),
+		MavenLibrary.CODEC.listOf()
+			.optionalFieldOf("libraries", List.of())
+			.forGetter(BundleInfo::libraries)
 	).apply(instance, BundleInfo::new));
 
 	@Override
 	public String toString() {
-		return "{ " + id + ", " + displayName + ", " + authors + ", " + versionInfo + ", " + dependencies + " }";
+		return "{ " + id + ", " + displayName + ", " + authors + ", " + versionInfo
+			+ ", " + dependencies + ", " + libraries + " }";
 	}
 
 	public record VersionInfo(int major, int minor, int patch) {

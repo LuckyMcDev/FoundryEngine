@@ -1,10 +1,10 @@
 package de.luckymcdev.foundryengine;
 
 import com.mojang.logging.LogUtils;
-import de.luckymcdev.foundryengine.EngineMod;
 import de.luckymcdev.foundryengine.area.common.AreaManager;
 import de.luckymcdev.foundryengine.bundle.common.BundleManager;
 import de.luckymcdev.foundryengine.bundle.common.BundleSavePathListener;
+import de.luckymcdev.foundryengine.config.StartupConfig;
 import de.luckymcdev.foundryengine.cutscene.common.CutsceneManager;
 import de.luckymcdev.foundryengine.cutscene.common.CutsceneSessionManager;
 import de.luckymcdev.foundryengine.dialogue.common.DialogueManager;
@@ -21,7 +21,6 @@ import de.luckymcdev.foundryengine.service.common.EngineServiceManager;
 import de.luckymcdev.foundryengine.util.common.CompatibilityMode;
 import de.luckymcdev.foundryengine.util.common.FirstRun;
 import de.luckymcdev.foundryengine.waypoint.common.WaypointManager;
-import de.luckymcdev.foundryengine.config.StartupConfig;
 import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.EventPriority;
@@ -65,6 +64,7 @@ public final class Common {
 	public static final Path ENGINE_DATA = CACHE.resolve("engine.dat");
 	public static final Path PAKKU = dir(CACHE.resolve("pakku"));
 	public static final boolean IS_PAKKU = PAKKU.resolve("pakku.jar").toFile().exists();
+	public static final Path LIBRARIES = dir(CACHE.resolve("libraries"));
 	public static final Path CONFIG_FE = dir(DIRECTORY.resolve("config"));
 	private static final NetworkManager NETWORK_MANAGER = new NetworkManager();
 	private static final SavedDataManager SAVED_DATA_MANAGER = new SavedDataManager(NETWORK_MANAGER);
@@ -113,7 +113,7 @@ public final class Common {
 	}
 
 	/**
-	 * Returns the singleton {@link BundleManager}.
+	 * Returns the singleton {@link ScriptManager}.
 	 */
 	public static ScriptManager getScriptManager() {
 		return SCRIPT_MANAGER;
@@ -221,7 +221,7 @@ public final class Common {
 			return "";
 		}
 		try (InputStream is = Files.newInputStream(file)) {
-			return new String(is.readAllBytes());
+			return new String(is.readAllBytes(), StandardCharsets.UTF_8);
 		} catch (IOException e) {
 			LOGGER.error("Failed to read file: {}", file, e);
 			return "";

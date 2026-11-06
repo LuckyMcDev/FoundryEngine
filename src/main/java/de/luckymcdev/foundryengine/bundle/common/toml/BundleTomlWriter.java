@@ -3,6 +3,7 @@ package de.luckymcdev.foundryengine.bundle.common.toml;
 import com.electronwill.nightconfig.core.CommentedConfig;
 import com.electronwill.nightconfig.toml.TomlFormat;
 import de.luckymcdev.foundryengine.bundle.common.info.BundleInfo;
+import de.luckymcdev.foundryengine.bundle.common.info.MavenLibrary;
 import de.luckymcdev.foundryengine.exception.common.UtilityClassException;
 
 import java.util.ArrayList;
@@ -30,8 +31,13 @@ public class BundleTomlWriter {
 			List<String> depStrings = info.dependencies().stream()
 				.map(d -> d.type().name().toLowerCase() + ":" + d.id() + "@" + d.version())
 				.toList();
-
 			entry.set("dependencies", depStrings);
+
+			List<String> libStrings = info.libraries().stream()
+				.map(MavenLibrary::toString)
+				.toList();
+			entry.set("libraries", libStrings);
+
 			bundleList.add(entry);
 		}
 

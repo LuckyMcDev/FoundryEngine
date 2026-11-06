@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.script.common.runtime;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.bundle.common.info.MavenLibrary;
 import de.luckymcdev.foundryengine.script.common.definition.ScriptDefinition;
 import de.luckymcdev.foundryengine.script.common.definition.ScriptSource;
 import de.luckymcdev.foundryengine.script.common.event.GroovyScriptEngineModifyEvent;
@@ -22,6 +23,7 @@ import org.codehaus.groovy.tools.GroovyClass;
 import org.slf4j.Logger;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.security.CodeSource;
 import java.security.cert.Certificate;
 import java.util.ArrayList;
@@ -31,11 +33,10 @@ import java.util.Map;
 
 /**
  * Thread-safe bundle compiler. Every call to {@link #compile} builds its own configuration,
- * class loader, and compilation unit, so bundles can be compiled in parallel.
- * <p>
+ * class loaders, and compilation unit, so bundles can be compiled in parallel.
  * Sandbox customizers are added here, after the {@link GroovyScriptEngineModifyEvent}, so
  * a mod cannot remove them. With {@code policy.enabled() == false} none of them is added and
- * the parent class loader is not filtered.
+ * the parent class loader is not filtered — but the library loader is still installed.
  */
 public class ScriptCompiler {
 
@@ -44,12 +45,14 @@ public class ScriptCompiler {
 	private final CompilerConfiguration template;
 	private final List<CompilationCustomizer> baseCustomizers;
 	private final ClassLoader hostLoader;
+	private final LibraryResolver libraryResolver;
 
 	public ScriptCompiler() {
 		this.hostLoader = FMLLoader.getCurrent().getCurrentClassLoader();
 		this.template = new CompilerConfiguration();
 		Common.post(new GroovyScriptEngineModifyEvent(template));
 		this.baseCustomizers = List.copyOf(template.getCompilationCustomizers());
+		this.libraryResolver = new LibraryResolver(Common.LIBRARIES);
 	}
 
 	private static void logErrors(ScriptSource source, MultipleCompilationErrorsException mce) {
@@ -68,43 +71,73 @@ public class ScriptCompiler {
 		String bundleId = definition.bundleId();
 		int scriptCount = definition.sources().size();
 		CompilerConfiguration config = configure(policy);
-		ClassLoader parent = policy.enabled() ? new FilteringClassLoader(hostLoader) : hostLoader;
-		GroovyClassLoader loader = new GroovyClassLoader(parent, config);
 
-		Map<String, Class<?>> classes = new LinkedHashMap<>();
 		List<ScriptFailure> failures = new ArrayList<>();
+		BundleLibraryClassLoader libraryLoader = resolveLibraries(definition, failures);
+		ClassLoader libraryParent = libraryLoader != null ? libraryLoader : hostLoader;
+		ClassLoader scriptParent = policy.enabled() ? new FilteringClassLoader(libraryParent) : libraryParent;
 
+		try {
+			GroovyClassLoader loader = new GroovyClassLoader(scriptParent, config);
+			Map<String, Class<?>> classes = new LinkedHashMap<>();
 
-		// May want to re-enable this, since its a cool ass feature but also kinda a security risk
-		if (policy.enabled()) {
-			System.setProperty("groovy.grape.enable", "false");
-		}
-
-		long start = System.nanoTime();
-		if (!definition.sources().isEmpty()) {
-			LOGGER.info("Compiling {} scripts for bundle '{}'", scriptCount, bundleId);
-			try {
-				loader.addURL(definition.root().toUri().toURL());
-				List<GroovyClass> compiled = compileSources(definition, definition.sources(), config, loader);
-				define(loader, compiled, classes, failures, bundleId);
-			} catch (MultipleCompilationErrorsException mce) {
-				LOGGER.warn("Batch compile failed for bundle '{}', falling back to per-file compilation", bundleId);
-				logErrors(null, mce);
-				compilePerFile(definition, config, loader, classes, failures);
-			} catch (Exception | LinkageError e) {
-				LOGGER.error("Batch compile failed unexpectedly for bundle '{}'", bundleId, e);
-				compilePerFile(definition, config, loader, classes, failures);
+			// May want to re-enable this, since its a cool ass feature but also kinda a security risk
+			if (policy.enabled()) {
+				System.setProperty("groovy.grape.enable", "false");
 			}
-			long elapsedMs = (System.nanoTime() - start) / 1_000_000;
-			if (failures.isEmpty()) {
-				LOGGER.info("Compiled {} scripts for bundle '{}' in {} ms",
-					scriptCount, bundleId, elapsedMs);
-			} else {
-				LOGGER.warn("Compiled {} scripts for bundle '{}' in {} ms ({} failures)",
-					scriptCount, bundleId, elapsedMs, failures.size());
+
+			long start = System.nanoTime();
+			if (!definition.sources().isEmpty()) {
+				LOGGER.info("Compiling {} scripts for bundle '{}'", scriptCount, bundleId);
+				try {
+					loader.addURL(definition.root().toUri().toURL());
+					List<GroovyClass> compiled = compileSources(definition, definition.sources(), config, loader);
+					define(loader, compiled, classes, failures, bundleId);
+				} catch (MultipleCompilationErrorsException mce) {
+					LOGGER.warn("Batch compile failed for bundle '{}', falling back to per-file compilation", bundleId);
+					logErrors(null, mce);
+					compilePerFile(definition, config, loader, classes, failures);
+				} catch (Exception | LinkageError e) {
+					LOGGER.error("Batch compile failed unexpectedly for bundle '{}'", bundleId, e);
+					compilePerFile(definition, config, loader, classes, failures);
+				}
+				long elapsedMs = (System.nanoTime() - start) / 1_000_000;
+				if (failures.isEmpty()) {
+					LOGGER.info("Compiled {} scripts for bundle '{}' in {} ms",
+						scriptCount, bundleId, elapsedMs);
+				} else {
+					LOGGER.warn("Compiled {} scripts for bundle '{}' in {} ms ({} failures)",
+						scriptCount, bundleId, elapsedMs, failures.size());
+				}
 			}
+			return new CompiledBundle(loader, libraryLoader, classes, failures);
+		} catch (Exception | LinkageError e) {
+			// If we fail to create the loader or compile entirely, clean up the library loader
+			if (libraryLoader != null) {
+				try {
+					libraryLoader.close();
+				} catch (IOException ignored) {}
+			}
+			throw e;
 		}
-		return new CompiledBundle(loader, classes, failures);
+	}
+
+	private BundleLibraryClassLoader resolveLibraries(ScriptDefinition definition, List<ScriptFailure> failures) {
+		List<MavenLibrary> libraries = definition.libraries();
+		if (libraries.isEmpty()) {
+			return null;
+		}
+		try {
+			List<Path> jars = libraryResolver.resolve(definition.bundleId(), libraries);
+			if (jars.isEmpty()) {
+				return null;
+			}
+			return new BundleLibraryClassLoader(jars, hostLoader);
+		} catch (Exception e) {
+			LOGGER.error("Failed to resolve Maven libraries for bundle '{}'", definition.bundleId(), e);
+			failures.add(new ScriptFailure(null, "resolve-libraries", e));
+			return null;
+		}
 	}
 
 	private CompilerConfiguration configure(SandboxPolicy policy) {

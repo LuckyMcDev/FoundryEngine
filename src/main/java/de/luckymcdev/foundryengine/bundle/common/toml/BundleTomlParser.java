@@ -4,6 +4,7 @@ import com.electronwill.nightconfig.core.CommentedConfig;
 import com.electronwill.nightconfig.toml.TomlFormat;
 import de.luckymcdev.foundryengine.bundle.common.info.BundleDependency;
 import de.luckymcdev.foundryengine.bundle.common.info.BundleInfo;
+import de.luckymcdev.foundryengine.bundle.common.info.MavenLibrary;
 import de.luckymcdev.foundryengine.exception.common.EngineException;
 import de.luckymcdev.foundryengine.exception.common.UtilityClassException;
 
@@ -47,12 +48,18 @@ public class BundleTomlParser {
 			.map(BundleDependency::parse)
 			.toList();
 
+		List<String> libStrings = entry.getOrElse("libraries", List.of());
+		List<MavenLibrary> libraries = libStrings.stream()
+			.map(MavenLibrary::parse)
+			.toList();
+
 		List<String> authors = Arrays.stream((entry.getOrElse("authors", "")).split(","))
 			.map(String::trim)
 			.filter(s -> !s.isEmpty())
 			.toList();
 
-		return new BundleInfo(id, displayName, authors, BundleInfo.VersionInfo.parse(version), dependencies);
+		return new BundleInfo(id, displayName, authors, BundleInfo.VersionInfo.parse(version),
+			dependencies, libraries);
 	}
 
 	private static String requireString(CommentedConfig entry, String key) {

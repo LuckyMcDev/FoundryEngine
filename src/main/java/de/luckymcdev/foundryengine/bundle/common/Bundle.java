@@ -32,15 +32,15 @@ public class Bundle {
 	}
 
 	public void loadCommon(ScriptManager manager) {
-		commonEntrypoints.addAll(manager.load(info.id(), bundleFiles, ScriptEnv.COMMON));
+		commonEntrypoints.addAll(manager.load(info.id(), bundleFiles, info.libraries(), ScriptEnv.COMMON));
 	}
 
 	public void loadClient(ScriptManager manager) {
-		clientEntrypoints.addAll(manager.load(info.id(), bundleFiles, ScriptEnv.CLIENT));
+		clientEntrypoints.addAll(manager.load(info.id(), bundleFiles, info.libraries(), ScriptEnv.CLIENT));
 	}
 
 	public void loadServer(ScriptManager manager) {
-		serverEntrypoints.addAll(manager.load(info.id(), bundleFiles, ScriptEnv.SERVER));
+		serverEntrypoints.addAll(manager.load(info.id(), bundleFiles, info.libraries(), ScriptEnv.SERVER));
 	}
 
 	public List<BundleEntrypoint> entrypoints() {

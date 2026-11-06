@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.script.common.definition;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.bundle.common.info.BundleFiles;
+import de.luckymcdev.foundryengine.bundle.common.info.MavenLibrary;
 import de.luckymcdev.foundryengine.script.common.ScriptManager;
 import org.slf4j.Logger;
 
@@ -15,19 +16,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public record ScriptDefinition(String bundleId, Path root, List<ScriptSource> sources) {
+public record ScriptDefinition(
+	String bundleId,
+	Path root,
+	List<ScriptSource> sources,
+	List<MavenLibrary> libraries
+) {
 
 	private static final Logger LOGGER = LogUtils.getLogger();
 
 	public ScriptDefinition {
 		root = root.toAbsolutePath().normalize();
 		sources = List.copyOf(sources);
+		libraries = List.copyOf(libraries);
 	}
 
 	/**
 	 * Builds a definition from the files of a bundle.
 	 */
-	public static ScriptDefinition of(String bundleId, BundleFiles files, Set<ScriptEnv> activeEnvs) {
+	public static ScriptDefinition of(String bundleId, BundleFiles files, List<MavenLibrary> libraries,
+									  Set<ScriptEnv> activeEnvs) {
 		Path root = realOrNormalized(files.scripts().root());
 		Map<ScriptEnv, Path> envRoots = new EnumMap<>(ScriptEnv.class);
 		envRoots.put(ScriptEnv.COMMON, realOrNormalized(files.scripts().common()));
@@ -64,7 +72,7 @@ public record ScriptDefinition(String bundleId, Path root, List<ScriptSource> so
 			sources.add(new ScriptSource(fileName.substring(0, fileName.length() - ScriptManager.FILE_EXTENSION.length()), real, env));
 		}
 		sources.sort(Comparator.comparing(ScriptSource::path));
-		return new ScriptDefinition(bundleId, root, sources);
+		return new ScriptDefinition(bundleId, root, sources, libraries);
 	}
 
 	private static ScriptEnv envOf(Path real, Map<ScriptEnv, Path> envRoots) {
