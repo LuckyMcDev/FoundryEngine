@@ -1,10 +1,8 @@
 package de.luckymcdev.foundryengine.config;
 
-import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.EnginePaths;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
-import java.util.Collections;
 import java.util.List;
 
 public final class CommonConfig {
@@ -21,21 +19,28 @@ public final class CommonConfig {
 	static {
 		ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
 
+		Config.push(builder, "core", "Core FoundryEngine settings.");
 		TEMP_DIRECTORY_INFO = builder
 			.comment("This is just info for where you temp directory is if you need it.")
 			.translation("foundryengine.configuration.temp_directory_info")
 			.define("TEMP_DIRECTORY_INFO", EnginePaths.TEMP_DIR.toString());
+		Config.pop(builder);
 
+		Config.push(builder, "bundle", "Bundle loading settings.");
 		PACK_MODE = builder
 			.comment("The current pack mode. Set to \"dev\" (case-insensitive) to load bundle saves directly without instancing.")
 			.translation("foundryengine.configuration.pack_mode")
 			.define("PACK_MODE", "");
+		Config.pop(builder);
 
+		Config.push(builder, "icon_exporter", "Icon exporter settings.");
 		FILE_NAME_HASH_COMPONENTS = builder
 			.comment("For the Icon Exporter, If components should be MD5-hashed in file names (and an auxiliary .txt file written with the full components string).")
 			.translation("foundryengine.configuration.filename_hash_components")
 			.define("FILENAME_HASH_COMPONENTS", true);
+		Config.pop(builder);
 
+		Config.push(builder, "cutscene", "Cutscene and screen effect settings.");
 		SCREEN_EFFECT_COMMAND_CHAINING = builder
 			.comment("Allows the /engine screeneffect command to chain an arbitrary server command after the effect finishes. Disable to block command chaining.")
 			.translation("foundryengine.configuration.screen_effect_command_chaining")
@@ -45,7 +50,9 @@ public final class CommonConfig {
 			.comment("Allows the editor cutscene command network packet to execute an arbitrary server command. Disable to block command execution from cutscenes.")
 			.translation("foundryengine.configuration.cutscene_command_execution")
 			.define("CUTSCENE_COMMAND_EXECUTION", true);
+		Config.pop(builder);
 
+		Config.push(builder, "editor", "Editor settings.");
 		SKIP_EXPERIMENTAL_WARNING = builder
 			.comment("Skip the Experimental warning on world join.")
 			.translation("foundryengine.configuration.skip_experimental_warning")
@@ -53,7 +60,13 @@ public final class CommonConfig {
 
 		ALLOWED_EXPLORER_FOLDERS = builder
 			.comment("A list of folders that are displayed in the Explorer.")
-			.defineList("ALLOWED_EXPLORER_FOLDERS", List.of("config", "FoundryEngine"), value -> value instanceof String);
+			.translation("foundryengine.configuration.allowed_explorer_folders")
+			.defineList(
+				"ALLOWED_EXPLORER_FOLDERS",
+				() -> List.of("config", "FoundryEngine"),
+				() -> "Folder",
+				value -> value instanceof String);
+		Config.pop(builder);
 
 		SPEC = builder.build();
 	}

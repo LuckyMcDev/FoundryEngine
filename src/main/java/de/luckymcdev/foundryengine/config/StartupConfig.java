@@ -22,6 +22,7 @@ public final class StartupConfig {
 	static {
 		ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
 
+		Config.push(builder, "core", "Core compatibility and startup settings.");
 		COMPATIBILITY_MODE = builder
 			.comment("Sets the compatibility mode for FoundryEngine.")
 			.comment("Compatibility means, what you support.")
@@ -35,7 +36,9 @@ public final class StartupConfig {
 			.comment("Enables / disables skipping the warning which appears when incompatible with the current compatibility mode.")
 			.translation("foundryengine.configuration.compatibility_mode_warning_skip")
 			.define("COMPATIBILITY_MODE_WARNING_SKIP", false);
+		Config.pop(builder);
 
+		Config.push(builder, "bundle", "Bundle scripting and dependency settings.");
 		SCRIPTING_ENABLED = builder
 			.comment("Enables/disables loading of Groovy scripts from bundles.")
 			.translation("foundryengine.configuration.scripting_enabled")
@@ -44,8 +47,37 @@ public final class StartupConfig {
 		DISABLE_CLASS_FILTER = builder
 			.comment("Disables the blacklist filter on groovy scripts.")
 			.comment("Requires approval by the user on first launch. If the user disagrees it will be set to false again.")
+			.translation("foundryengine.configuration.disable_class_filter")
 			.define("DISABLE_CLASS_FILTER", false);
 
+		Config.push(builder, "scripting", "Bundle scripting settings.");
+		SCRIPT_TIMEOUT_SECONDS = builder
+			.comment("Maximum seconds a bundle script onLoad() or /engine eval may run before it is aborted and skipped.")
+			.translation("foundryengine.configuration.script_timeout_seconds")
+			.defineInRange("SCRIPT_TIMEOUT_SECONDS", 30, 1, 600);
+		Config.pop(builder);
+
+		MAVEN_LIBRARIES_ENABLED = builder
+			.comment("Allow bundles to declare and download Maven libraries. Disabling this refuses all library resolution.")
+			.translation("foundryengine.configuration.maven_libraries_enabled")
+			.define("MAVEN_LIBRARIES_ENABLED", true);
+
+		MAVEN_REQUIRE_SHA256 = builder
+			.comment("Reject libraries whose .bundles.toml entry has no sha256. Strongly recommended for public servers.")
+			.translation("foundryengine.configuration.maven_require_sha256")
+			.define("MAVEN_REQUIRE_SHA256", false);
+
+		MAVEN_REPOSITORIES = builder
+			.comment("Whitelisted Maven repositories, tried in order. Only https:// URLs are accepted.")
+			.translation("foundryengine.configuration.maven_repositories")
+			.defineList(
+				"MAVEN_REPOSITORIES",
+				() -> List.of("https://repo1.maven.org/maven2/"),
+				() -> "https://",
+				o -> o instanceof String s && s.startsWith("https://"));
+		Config.pop(builder);
+
+		Config.push(builder, "commands", "Command settings.");
 		EVAL_COMMAND_ENABLED = builder
 			.comment("Enables/disables the /engine eval command.")
 			.translation("foundryengine.configuration.eval_command_enabled")
@@ -55,31 +87,14 @@ public final class StartupConfig {
 			.comment("Permission level required to use /engine eval (0–4).")
 			.translation("foundryengine.configuration.eval_command_permission")
 			.defineInRange("EVAL_COMMAND_PERMISSION", 4, 0, 4);
+		Config.pop(builder);
 
-		SCRIPT_TIMEOUT_SECONDS = builder
-			.comment("Maximum seconds a bundle script onLoad() or /engine eval may run before it is aborted and skipped.")
-			.translation("foundryengine.configuration.script_timeout_seconds")
-			.defineInRange("SCRIPT_TIMEOUT_SECONDS", 30, 1, 600);
-
+		Config.push(builder, "cache", "Data cache settings.");
 		CLEAR_DATA_CACHE = builder
 			.comment("If in the next run the data cache should be cleared.")
 			.translation("foundryengine.configuration.clear_data_cache")
 			.define("CLEAR_DATA_CACHE", false);
-
-		MAVEN_LIBRARIES_ENABLED = builder
-			.comment("Allow bundles to declare and download Maven libraries. Disabling this refuses all library resolution.")
-			.define("MAVEN_LIBRARIES_ENABLED", true);
-
-		MAVEN_REQUIRE_SHA256 = builder
-			.comment("Reject libraries whose .bundles.toml entry has no sha256. Strongly recommended for public servers.")
-			.define("MAVEN_REQUIRE_SHA256", false);
-
-		MAVEN_REPOSITORIES = builder
-			.comment("Whitelisted Maven repositories, tried in order. Only https:// URLs are accepted.")
-			.defineList(
-				"MAVEN_REPOSITORIES",
-				List.of("https://repo1.maven.org/maven2/"),
-				o -> o instanceof String s && s.startsWith("https://"));
+		Config.pop(builder);
 
 		SPEC = builder.build();
 	}

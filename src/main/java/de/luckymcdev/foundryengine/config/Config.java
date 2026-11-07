@@ -6,6 +6,7 @@ import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 /**
  * Registers the four NeoForge config types (client, server, common, startup).
@@ -27,6 +28,18 @@ public final class Config {
 
 	public static void registerStartup(ModContainer container) {
 		container.registerConfig(ModConfig.Type.STARTUP, StartupConfig.SPEC);
+	}
+
+
+	public static void push(ModConfigSpec.Builder builder, String path, String comment) {
+		builder
+			.comment(comment)
+			.translation("foundryengine.configuration." + path)
+			.push(path);
+	}
+
+	public static void pop(ModConfigSpec.Builder builder) {
+		builder.pop();
 	}
 
 	@SubscribeEvent

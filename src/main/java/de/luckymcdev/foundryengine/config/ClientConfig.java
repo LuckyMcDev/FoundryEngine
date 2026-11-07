@@ -18,11 +18,11 @@ public final class ClientConfig {
 	public static final ModConfigSpec.BooleanValue SHOW_SLOT_TOOLTIP;
 	public static final ModConfigSpec.ConfigValue<String> BLOCK_ENTITY_RENDER_DISTANCE;
 	public static final ModConfigSpec.BooleanValue CUSTOM_SKYBOX;
-	public static final ModConfigSpec.IntValue MOD_PATH_BROADCAST_PORT;
 
 	static {
 		ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
 
+		Config.push(builder, "editor", "Editor and text editing settings.");
 		SELECTED_THEME = builder
 			.comment("The currently selected ImGui theme. Available themes: " + ImThemes.getAvailableThemeNames())
 			.translation("foundryengine.configuration.selected_theme")
@@ -39,22 +39,13 @@ public final class ClientConfig {
 			.comment("")
 			.translation("foundryengine.configuration.font_option")
 			.defineEnum("FONT_OPTION", FontOption.NORMAL);
+		Config.pop(builder);
 
+		Config.push(builder, "rendering", "Client rendering settings.");
 		RENDER_OFFHAND = builder
 			.comment("A Funny Offhand rendering technique. It makes it be rendered the same way the main hand is.")
 			.translation("foundryengine.configuration.render_offhand")
 			.define("RENDER_OFFHAND", false);
-
-		AUTO_EXPORT = builder
-			.comment("Automatically run the icon exporter on login when the registry has changed or no export exists yet.")
-			.translation("foundryengine.configuration.auto_export")
-			.define("AUTO_EXPORT", true);
-
-		ICON_SIZE = builder
-			.comment("How large the icons of the icon exporter should be, default is 64.")
-			.comment("If they are larger, the game takes longer to create them.")
-			.translation("foundryengine.configuration.icon_size")
-			.defineInRange("ICON_SIZE", 64, 16, 256);
 
 		SHOW_SLOT_TOOLTIP = builder
 			.comment("If slot tooltips are shown")
@@ -69,16 +60,27 @@ public final class ClientConfig {
 				"vanilla -> Uses the vanilla 64 blocks")
 			.translation("foundryengine.configuration.block_entity_render_distance")
 			.define("BLOCK_ENTITY_RENDER_DISTANCE", "vanilla");
+		Config.pop(builder);
 
+		Config.push(builder, "icon_exporter", "Icon exporter settings.");
+		AUTO_EXPORT = builder
+			.comment("Automatically run the icon exporter on login when the registry has changed or no export exists yet.")
+			.translation("foundryengine.configuration.auto_export")
+			.define("AUTO_EXPORT", true);
+
+		ICON_SIZE = builder
+			.comment("How large the icons of the icon exporter should be, default is 64.")
+			.comment("If they are larger, the game takes longer to create them.")
+			.translation("foundryengine.configuration.icon_size")
+			.defineInRange("ICON_SIZE", 64, 16, 256);
+		Config.pop(builder);
+
+		Config.push(builder, "skybox", "Custom skybox settings.");
 		CUSTOM_SKYBOX = builder
 			.comment("If the custom skybox rendering is used")
 			.translation("foundryengine.configuration.custom_skybox")
 			.define("CUSTOM_SKYBOX", false);
-
-		MOD_PATH_BROADCAST_PORT = builder
-			.comment("The port the mod path broadcaster connects to so the Gradle plugin can pick up the mods directory.")
-			.translation("foundryengine.configuration.mod_path_broadcast_port")
-			.defineInRange("MOD_PATH_BROADCAST_PORT", 56656, 1, 65535);
+		Config.pop(builder);
 
 		SPEC = builder.build();
 	}
