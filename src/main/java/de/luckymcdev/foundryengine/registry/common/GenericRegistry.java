@@ -18,6 +18,7 @@ import java.util.stream.Stream;
  * @param <K> Key Type.
  * @param <V> Value Type.
  */
+@Deprecated
 public class GenericRegistry<K, V> implements Registry<K, V> {
 	private final ConcurrentHashMap<K, V> primaryLookup = new ConcurrentHashMap<>();
 	private final ConcurrentHashMap<V, K> reverseLookup = new ConcurrentHashMap<>();

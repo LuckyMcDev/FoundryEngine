@@ -14,6 +14,7 @@ import java.util.stream.Stream;
  * @param <K> Key Type.
  * @param <V> Value Type.
  */
+@Deprecated
 public interface Registry<K, V> {
 	/**
 	 * Register a key-value pair in this registry.

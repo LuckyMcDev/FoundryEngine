@@ -12,6 +12,7 @@ import java.util.function.Supplier;
  * @param <K> Key Type.
  * @param <V> Value Type.
  */
+@Deprecated
 public class RegistryRef<K, V> {
 	private final K key;
 	private final Registry<K, V> registry;

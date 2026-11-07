@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 /**
  * Thread-safe implementation of {@link RegistryList} backed by CopyOnWriteArrayList.
  */
+@Deprecated
 public class GenericRegistryList<V> implements RegistryList<V>, Iterable<V> {
 	private final CopyOnWriteArrayList<V> values = new CopyOnWriteArrayList<>();
 	private final CopyOnWriteArrayList<Runnable> onFreezeCallbacks = new CopyOnWriteArrayList<>();

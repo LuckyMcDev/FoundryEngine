@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/// This will be reworked in the Builder rework.
 public class RegistryCollector {
 	private final Map<Identifier, ItemBuilder> items = new LinkedHashMap<>();
 	private final Map<Identifier, ToolMaterialBuilder> toolMaterials = new LinkedHashMap<>();

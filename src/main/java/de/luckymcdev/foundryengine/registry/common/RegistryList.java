@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 /**
  * A registry interface for ordered lists of values with freeze support.
  */
+@Deprecated
 public interface RegistryList<V> {
 	void add(V value);
 
