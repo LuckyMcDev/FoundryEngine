@@ -3,6 +3,11 @@ package de.luckymcdev.foundryengine.cutscene;
 import de.luckymcdev.foundryengine.Client;
 import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.cutscene.common.util.ServerScreenEffectManager;
+import de.luckymcdev.foundryengine.cutscene.common.CutsceneManager;
+import de.luckymcdev.foundryengine.cutscene.common.CutsceneSessionManager;
+import de.luckymcdev.foundryengine.cutscene.client.ClientCutsceneManager;
+import de.luckymcdev.foundryengine.manager.api.ManagerKey;
+import net.neoforged.fml.loading.FMLEnvironment;
 import de.luckymcdev.foundryengine.editor.client.panel.cutscene.CutscenePanel;
 import de.luckymcdev.foundryengine.editor.client.panel.cutscene.CutsceneTimelinePanel;
 import de.luckymcdev.foundryengine.network.common.packet.editor.CutsceneCommandPacket;
@@ -18,8 +23,6 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.event.server.ServerStartingEvent;
-import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 @Mod(CutsceneMod.MODID)
@@ -28,12 +31,22 @@ public final class CutsceneMod implements EngineModPart {
 
 	public CutsceneMod(IEventBus modBus, ModContainer modContainer) {
 		this.wire(modBus);
+		Common.getManagers().register(ManagerKey.CUTSCENE,
+			new CutsceneManager(Common.getSavedDataManager()));
+		Common.getManagers().register(ManagerKey.CUTSCENE_SESSION,
+			new CutsceneSessionManager());
+		if (FMLEnvironment.getDist().isClient()) {
+			Client.getManagers().register(ManagerKey.CLIENT_CUTSCENE, new ClientCutsceneManager());
+		}
 		var b = bus();
-		b.addListener(this::onServerTick);
-		b.addListener(this::onPlayerDisconnect);
-		b.addListener(this::onClientTickPost);
-		b.addListener(this::onServerStarting);
-		b.addListener(this::onServerStopping);
+		b.addListener((ServerTickEvent.Post event) -> ServerScreenEffectManager.tick());
+		b.addListener(this::onPlayerDisconnectForEffects);
+	}
+
+	private void onPlayerDisconnectForEffects(PlayerEvent.PlayerLoggedOutEvent event) {
+		if (event.getEntity() instanceof ServerPlayer player) {
+			ServerScreenEffectManager.onPlayerDisconnect(player);
+		}
 	}
 
 	@Override
@@ -53,27 +66,4 @@ public final class CutsceneMod implements EngineModPart {
 			.startScreenEffect(p.name(), p.introTicks(), p.holdTicks(), p.outroTicks(), p.lerpType());
 	}
 
-	private void onServerStarting(ServerStartingEvent event) {
-		Common.getCutsceneManager().load();
-	}
-
-	private void onServerStopping(ServerStoppingEvent event) {
-		Common.getCutsceneManager().save();
-	}
-
-	private void onServerTick(ServerTickEvent.Post event) {
-		Common.getCutsceneSessionManager().tick(event.getServer());
-		ServerScreenEffectManager.tick();
-	}
-
-	private void onPlayerDisconnect(PlayerEvent.PlayerLoggedOutEvent event) {
-		if (event.getEntity() instanceof ServerPlayer player) {
-			Common.getCutsceneSessionManager().onPlayerDisconnect(player);
-			ServerScreenEffectManager.onPlayerDisconnect(player);
-		}
-	}
-
-	private void onClientTickPost(ClientTickEvent.Post event) {
-		Client.getCutsceneManager().clientTick();
-	}
 }

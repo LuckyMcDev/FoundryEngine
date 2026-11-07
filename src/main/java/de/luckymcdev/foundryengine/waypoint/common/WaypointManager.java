@@ -1,5 +1,7 @@
 package de.luckymcdev.foundryengine.waypoint.common;
 
+import de.luckymcdev.foundryengine.manager.api.Persistable;
+import de.luckymcdev.foundryengine.manager.api.Synced;
 import de.luckymcdev.foundryengine.savedata.common.SavedDataManager;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -15,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class WaypointManager {
+public class WaypointManager implements Persistable, Synced {
 	public static final String SAVE_SECTION = "waypoints";
 	private final SavedDataManager savedDataManager;
 	private final Map<ResourceKey<Level>, List<Waypoint>> waypointsByDimension = new HashMap<>();
@@ -35,7 +37,7 @@ public class WaypointManager {
 	public void addWaypoint(ServerLevel level, Waypoint waypoint) {
 		ResourceKey<Level> dimension = level.dimension();
 		waypointsByDimension.computeIfAbsent(dimension, k -> new ArrayList<>()).add(waypoint);
-		save();
+		savedDataManager.update(this);
 	}
 
 	public void addLocal(ResourceKey<Level> dimension, Waypoint waypoint) {
@@ -50,7 +52,7 @@ public class WaypointManager {
 			removed = list.removeIf(w -> w.x() == x && w.y() == y && w.z() == z);
 		}
 		if (removed) {
-			save();
+			savedDataManager.update(this);
 		}
 		return removed;
 	}
@@ -62,14 +64,15 @@ public class WaypointManager {
 
 	public void clearWaypoints(ServerLevel level) {
 		waypointsByDimension.remove(level.dimension());
-		save();
+		savedDataManager.update(this);
 	}
 
 	public void clearLocal(ResourceKey<Level> dimension) {
 		waypointsByDimension.remove(dimension);
 	}
 
-	public CompoundTag toNbt() {
+	@Override
+	public CompoundTag saveData() {
 		var tag = new CompoundTag();
 		for (var entry : waypointsByDimension.entrySet()) {
 			var dimTag = new CompoundTag();
@@ -83,7 +86,8 @@ public class WaypointManager {
 		return tag;
 	}
 
-	public void fromNbt(CompoundTag tag) {
+	@Override
+	public void loadData(CompoundTag tag) {
 		waypointsByDimension.clear();
 		for (var dimKey : tag.keySet()) {
 			var dimTag = tag.getCompoundOrEmpty(dimKey);
@@ -101,11 +105,9 @@ public class WaypointManager {
 		savedDataManager.syncToAll();
 	}
 
-	public void save() {
-		savedDataManager.setSection(SAVE_SECTION, toNbt());
+	@Override
+	public String saveSection() {
+		return SAVE_SECTION;
 	}
 
-	public void load() {
-		fromNbt(savedDataManager.getSection(SAVE_SECTION));
-	}
 }

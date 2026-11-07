@@ -3,7 +3,8 @@ package de.luckymcdev.foundryengine.imgui.client.hotkey;
 import com.mojang.blaze3d.platform.InputConstants;
 import de.luckymcdev.foundryengine.editor.client.panel.Panel;
 import de.luckymcdev.foundryengine.util.client.ImGuiGLFWKeyThing;
-import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.manager.api.Persistable;
+import de.luckymcdev.foundryengine.savedata.common.SavedDataManager;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -13,7 +14,8 @@ import org.jspecify.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HotKeyManager {
+public class HotKeyManager implements Persistable {
+	public static final String SAVE_SECTION = "hotkeys";
 	private final ImHotKey imHotKey = new ImHotKey();
 	private final ImHotKey execImHotKey = new ImHotKey();
 	private final List<RegisteredHotKey> registry = new ArrayList<>();
@@ -91,20 +93,31 @@ public class HotKeyManager {
 		}
 	}
 
-	public void load() {
-		Common.getSavedDataManager().load();
-		pendingHotkeySection = Common.getSavedDataManager().getSection("hotkeys");
-		for (RegisteredHotKey entry : registry) {
-			applyPersisted(entry);
-		}
+	@Override
+	public String saveSection() {
+		return SAVE_SECTION;
 	}
 
-	public void save() {
+	@Override
+	public SavedDataManager.Scope saveScope() {
+		return SavedDataManager.Scope.GLOBAL;
+	}
+
+	@Override
+	public CompoundTag saveData() {
 		CompoundTag section = new CompoundTag();
 		for (RegisteredHotKey entry : registry) {
 			section.putLong(entry.id().toString(), entry.hotKey().functionKeys);
 		}
-		Common.getSavedDataManager().setSection("hotkeys", section);
+		return section;
+	}
+
+	@Override
+	public void loadData(CompoundTag data) {
+		pendingHotkeySection = data.copy();
+		for (RegisteredHotKey entry : registry) {
+			applyPersisted(entry);
+		}
 	}
 
 	private void applyPersisted(RegisteredHotKey entry) {

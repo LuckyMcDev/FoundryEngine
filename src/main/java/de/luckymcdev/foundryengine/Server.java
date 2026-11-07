@@ -1,5 +1,6 @@
 package de.luckymcdev.foundryengine;
 
+import de.luckymcdev.foundryengine.manager.api.ManagerRegistry;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.world.item.crafting.RecipeManager;
@@ -16,7 +17,13 @@ import java.util.concurrent.CompletableFuture;
  * Only use this class from dedicated server or logical server contexts.
  */
 public final class Server {
+	private static final ManagerRegistry MANAGERS = new ManagerRegistry();
+
 	private Server() {
+	}
+
+	public static ManagerRegistry getManagers() {
+		return MANAGERS;
 	}
 
 	/**

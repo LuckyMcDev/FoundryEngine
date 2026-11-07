@@ -3,6 +3,8 @@ package de.luckymcdev.foundryengine.game.common.stage;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.manager.api.EngineManager;
+import de.luckymcdev.foundryengine.manager.api.ServerTickable;
 import de.luckymcdev.foundryengine.game.common.stage.addon.builtin.BlockStages;
 import de.luckymcdev.foundryengine.game.common.stage.addon.builtin.DimensionStages;
 import de.luckymcdev.foundryengine.game.common.stage.addon.builtin.ItemStages;
@@ -38,7 +40,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
-public class GameStageHandler {
+public class GameStageHandler implements EngineManager, ServerTickable {
 	private final Logger LOGGER = LogUtils.getLogger();
 	private final StageRegistry STAGE_REGISTRY = new StageRegistry();
 	private final BlockStages BLOCKS = new BlockStages();
@@ -220,7 +222,8 @@ public class GameStageHandler {
 		PENDING_STAGES.add(new AbstractMap.SimpleEntry<>(condition, stage));
 	}
 
-	public void onPlayerTick(ServerTickEvent.Post event) {
+	@Override
+	public void onServerTick(ServerTickEvent.Post event) {
 		if (PENDING_STAGES.isEmpty()) {
 			return;
 		}
@@ -237,6 +240,7 @@ public class GameStageHandler {
 					addStage(player, stage);
 				}
 			}
+
 			iterator.remove();
 		}
 	}

@@ -8,8 +8,11 @@ import de.luckymcdev.foundryengine.editor.client.panel.explorer.ExplorerPanel;
 import de.luckymcdev.foundryengine.editor.client.panel.test.*;
 import de.luckymcdev.foundryengine.editor.client.panel.tool.*;
 import de.luckymcdev.foundryengine.editor.client.panel.view.*;
+import de.luckymcdev.foundryengine.editor.client.EditorManager;
 import de.luckymcdev.foundryengine.imgui.client.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.imgui.client.ImGuiManager;
+import de.luckymcdev.foundryengine.imgui.client.hotkey.HotKeyManager;
+import de.luckymcdev.foundryengine.manager.api.ManagerKey;
 import de.luckymcdev.foundryengine.network.common.packet.editor.GiveItemPacket;
 import de.luckymcdev.foundryengine.network.common.packet.explorer.ClientBoundExplorerPacket;
 import de.luckymcdev.foundryengine.network.common.packet.explorer.ServerBoundExplorerPacket;
@@ -31,13 +34,16 @@ import java.util.concurrent.CompletableFuture;
 /**
  * Owns the ImGui editor, its panels, hotkeys, icon exporter and reload listeners.
  */
-@Mod(value = EditorMod.MODID)
+@Mod(value = EditorMod.MODID, dist = Dist.CLIENT)
 public final class EditorMod implements EngineModPart {
 	public static final String MODID = "foundryengine_editor";
 	private static final Logger LOGGER = LogUtils.getLogger();
 
 	public EditorMod(IEventBus modBus, ModContainer modContainer) {
 		this.wire(modBus);
+		Client.getManagers().register(ManagerKey.IMGUI, new ImGuiManager());
+		Client.getManagers().register(ManagerKey.EDITOR, new EditorManager());
+		Client.getManagers().register(ManagerKey.HOTKEY, new HotKeyManager());
 		var b = bus();
 		modBus.addListener(this::onRegisterKeyMapping);
 		modBus.addListener(this::onRegisterGuiLayers);
@@ -69,12 +75,14 @@ public final class EditorMod implements EngineModPart {
 		);
 
 		var hkm = Client.getHotKeyManager();
+		Common.getSavedDataManager().registerPersistable(hkm);
 		hkm.register(Common.id("code_editor.save"), "Save", "Save active file", null, InputConstants.KEY_LCONTROL, InputConstants.KEY_S);
 		hkm.register(Common.id("code_editor.find"), "Find", "Find in active file", null, InputConstants.KEY_LCONTROL, InputConstants.KEY_F);
 		hkm.register(Common.id("code_editor.replace"), "Find/Replace", "Find and replace", null, InputConstants.KEY_LCONTROL, InputConstants.KEY_H);
 		hkm.register(Common.id("code_editor.goto_line"), "Go to Line", "Go to a specific line", null, InputConstants.KEY_LCONTROL, InputConstants.KEY_G);
-		hkm.getImHotKey().setOnHotKeySet(hkm::save);
-		hkm.load();
+		hkm.getImHotKey().setOnHotKeySet(() ->
+			Common.getSavedDataManager().update(hkm));
+		Common.getSavedDataManager().load();
 
 		ClientBoundExplorerPacket.CLIENT_HANDLER = p -> {
 			switch (p.action()) {

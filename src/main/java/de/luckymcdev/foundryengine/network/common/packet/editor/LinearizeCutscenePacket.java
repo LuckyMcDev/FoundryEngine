@@ -68,7 +68,7 @@ public record LinearizeCutscenePacket(String cutsceneName) implements AbstractPa
 		target.path.getPoints().get(1).setPos(tangent);
 		target.path.getPoints().get(2).setPos(tangent);
 
-		manager.save();
+		Common.getSavedDataManager().update(manager);
 		manager.syncToAll();
 	}
 }

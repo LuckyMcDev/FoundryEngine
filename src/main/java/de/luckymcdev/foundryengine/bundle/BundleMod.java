@@ -1,36 +1,23 @@
 package de.luckymcdev.foundryengine.bundle;
 
 import com.mojang.logging.LogUtils;
-import de.luckymcdev.foundryengine.Client;
 import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.EnginePaths;
-import de.luckymcdev.foundryengine.bundle.common.modcompat.BundleModContainer;
-import de.luckymcdev.foundryengine.config.StartupConfig;
 import de.luckymcdev.foundryengine.data.common.gen.BundleDataGenerator;
-import de.luckymcdev.foundryengine.debug.client.screen.BundleDebugEntry;
-import de.luckymcdev.foundryengine.event.common.BundleEvents;
 import de.luckymcdev.foundryengine.network.common.packet.BundleHashPacket;
+import de.luckymcdev.foundryengine.event.common.BundleEvents;
 import de.luckymcdev.foundryengine.pack.server.DynamicPackRepository;
 import de.luckymcdev.foundryengine.pack.server.ResourcePackMerger;
-import de.luckymcdev.foundryengine.script.client.MaliciousScriptScreen;
-import de.luckymcdev.foundryengine.script.common.sandbox.SandboxWaiver;
 import de.luckymcdev.foundryengine.util.common.EngineModPart;
-import de.luckymcdev.foundryengine.util.common.FolderHash;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.Pack;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.event.lifecycle.*;
-import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
-import net.neoforged.neoforge.client.event.RegisterDebugEntriesEvent;
-import net.neoforged.neoforge.client.event.ScreenEvent;
-import net.neoforged.neoforge.client.gui.ConfigurationScreen;
-import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
-import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLConstructModEvent;
+import net.neoforged.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
+import net.neoforged.fml.event.lifecycle.InterModProcessEvent;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
@@ -51,8 +38,6 @@ import java.util.List;
 public final class BundleMod implements EngineModPart {
 	public static final String MODID = "foundryengine_bundle";
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static boolean handledClassFilter = false;
-
 	public BundleMod(IEventBus modBus, ModContainer modContainer) {
 		BundleEvents.Internal.register(bus());
 		this.wire(modBus);
@@ -67,11 +52,6 @@ public final class BundleMod implements EngineModPart {
 		b.addListener(this::onServerStarting);
 		b.addListener(this::onServerStopping);
 
-		if (FMLEnvironment.getDist().isClient()) {
-			modBus.addListener(this::onRegisterDebugEntry);
-			b.addListener(this::onScreenOpening);
-			b.addListener(this::onLoggingIn);
-		}
 	}
 
 	@Override
@@ -96,20 +76,6 @@ public final class BundleMod implements EngineModPart {
 		Common.getNetworkManager().register(BundleHashPacket.DEFINITION);
 		BundleEvents.Internal.postCommonSetup(event);
 		BundleDataGenerator.runAll();
-	}
-
-	@Override
-	public void onClientSetup(FMLClientSetupEvent event) {
-		BundleEvents.Internal.postClientSetup(event);
-		event.enqueueWork(() -> {
-			Common.getBundleManager().loadClientScripts();
-			Common.getBundleManager().reportScriptErrors();
-			for (var container : Common.getBundleManager().getBundleContainers()) {
-				if (container instanceof BundleModContainer) {
-					container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
-				}
-			}
-		});
 	}
 
 	private void extractGradleTemplates() {
@@ -173,51 +139,4 @@ public final class BundleMod implements EngineModPart {
 		ResourcePackMerger.mergeToZip(tempPath.resolve("fe-resources.zip"));
 	}
 
-	private void onRegisterDebugEntry(RegisterDebugEntriesEvent event) {
-		event.register(Common.id("bundles_info"), new BundleDebugEntry(Common.getBundleManager()));
-	}
-
-	private void onScreenOpening(ScreenEvent.Opening event) {
-		if (handledClassFilter || !(event.getNewScreen() instanceof TitleScreen)) {
-			return;
-		}
-		handledClassFilter = true;
-		checkMaliciousScriptConfig();
-	}
-
-	private void checkMaliciousScriptConfig() {
-		if (StartupConfig.DISABLE_CLASS_FILTER.get() && !SandboxWaiver.isAccepted()) {
-			var parent = Client.getCurrentScreen();
-			Minecraft.getInstance().execute(() ->
-				Client.setScreen(new MaliciousScriptScreen(parent, this::onClassFilterAccepted, this::onClassFilterDeclined)));
-		}
-	}
-
-	private void onClassFilterAccepted() {
-		try {
-			SandboxWaiver.markAccepted();
-		} catch (IOException e) {
-			LOGGER.error("Failed to write acceptance file", e);
-			return;
-		}
-		LOGGER.info("Class filter acknowledged - disabling class filter");
-		Common.getScriptManager().unloadAll();
-	}
-
-	private void onClassFilterDeclined() {
-		StartupConfig.DISABLE_CLASS_FILTER.set(false);
-		StartupConfig.DISABLE_CLASS_FILTER.save();
-		StartupConfig.SPEC.save();
-		LOGGER.info("User declined - keeping sandbox enabled");
-		Common.getScriptManager().unloadAll();
-	}
-
-	private void onLoggingIn(ClientPlayerNetworkEvent.LoggingIn event) {
-		FolderHash.hashFolderAsync(EnginePaths.BUNDLES)
-			.thenAccept(hash -> ClientPacketDistributor.sendToServer(new BundleHashPacket(hash)))
-			.exceptionally(e -> {
-				LOGGER.error("Failed to hash bundles folder", e);
-				return null;
-			});
-	}
 }

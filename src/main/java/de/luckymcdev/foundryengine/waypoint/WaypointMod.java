@@ -7,6 +7,8 @@ import de.luckymcdev.foundryengine.network.common.packet.editor.WaypointPacket;
 import de.luckymcdev.foundryengine.util.common.EngineModPart;
 import de.luckymcdev.foundryengine.util.common.color.Color;
 import de.luckymcdev.foundryengine.waypoint.client.ClientWaypointManager;
+import de.luckymcdev.foundryengine.waypoint.common.WaypointManager;
+import de.luckymcdev.foundryengine.manager.api.ManagerKey;
 import net.minecraft.core.Vec3i;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -17,8 +19,6 @@ import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
-import net.neoforged.neoforge.event.server.ServerStartingEvent;
-import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 
 @Mod(WaypointMod.MODID)
 public final class WaypointMod implements EngineModPart {
@@ -26,9 +26,11 @@ public final class WaypointMod implements EngineModPart {
 
 	public WaypointMod(IEventBus modBus, ModContainer modContainer) {
 		this.wire(modBus);
+		Common.getManagers().register(ManagerKey.WAYPOINT, new WaypointManager(Common.getSavedDataManager()));
+		if (FMLEnvironment.getDist().isClient()) {
+			Client.getManagers().register(ManagerKey.CLIENT_WAYPOINT, new ClientWaypointManager());
+		}
 		var b = bus();
-		b.addListener(this::onServerStarting);
-		b.addListener(this::onServerStopping);
 		if (FMLEnvironment.getDist().isClient()) {
 			modBus.addListener(this::onRegisterKeyMapping);
 			b.addListener(this::onClientTickPost);
@@ -43,14 +45,6 @@ public final class WaypointMod implements EngineModPart {
 	@Override
 	public void onClientSetup(FMLClientSetupEvent event) {
 		Client.getEditorManager().register(WaypointPanel.INSTANCE);
-	}
-
-	private void onServerStarting(ServerStartingEvent event) {
-		Common.getWaypointManager().load();
-	}
-
-	private void onServerStopping(ServerStoppingEvent event) {
-		Common.getWaypointManager().save();
 	}
 
 	private void onRegisterKeyMapping(RegisterKeyMappingsEvent event) {

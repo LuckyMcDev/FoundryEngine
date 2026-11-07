@@ -673,7 +673,7 @@ public class DialogueEditorPanel extends EditorPanel {
 	private void saveToServer() {
 		var mgr = Common.getDialogueManager();
 		mgr.replaceAll(trees);
-		var nbt = mgr.toNbt();
+		var nbt = mgr.saveData();
 		ClientPacketDistributor.sendToServer(new DialogueSavePacket(nbt));
 		setStatus("Dialogue trees saved.");
 	}

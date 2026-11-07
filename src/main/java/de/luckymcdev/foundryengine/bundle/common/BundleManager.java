@@ -3,6 +3,7 @@ package de.luckymcdev.foundryengine.bundle.common;
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.EnginePaths;
+import de.luckymcdev.foundryengine.manager.api.EngineManager;
 import de.luckymcdev.foundryengine.bundle.common.info.BundleDependency;
 import de.luckymcdev.foundryengine.bundle.common.modcompat.BundleModContainer;
 import de.luckymcdev.foundryengine.bundle.common.modcompat.BundleModFile;
@@ -53,7 +54,7 @@ import java.util.concurrent.locks.ReentrantLock;
  *   <li>{@link #loadServerScripts()} must be called from the server dist entrypoint.</li>
  * </ul>
  */
-public class BundleManager {
+public class BundleManager implements EngineManager {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private final ReentrantLock reloadLock = new ReentrantLock();
 	private final Map<String, Bundle> bundles = new HashMap<>();

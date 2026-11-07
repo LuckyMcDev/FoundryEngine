@@ -2,6 +2,8 @@ package de.luckymcdev.foundryengine.cutscene.common;
 
 import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.cutscene.common.model.Cutscene;
+import de.luckymcdev.foundryengine.manager.api.Persistable;
+import de.luckymcdev.foundryengine.manager.api.Synced;
 import de.luckymcdev.foundryengine.savedata.common.SavedDataManager;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -19,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CutsceneManager {
+public class CutsceneManager implements Persistable, Synced {
 	public static final String SAVE_SECTION = "cutscenes";
 	private final SavedDataManager savedDataManager;
 	private final Map<ResourceKey<Level>, List<Cutscene>> cutscenesByDimension = new HashMap<>();
@@ -71,7 +73,8 @@ public class CutsceneManager {
 		replaceAll(Level.OVERWORLD, list);
 	}
 
-	public void fromNbt(CompoundTag tag) {
+	@Override
+	public void loadData(CompoundTag tag) {
 		cutscenesByDimension.clear();
 		for (var dimKey : tag.keySet()) {
 			var dimTag = tag.getCompoundOrEmpty(dimKey);
@@ -85,7 +88,8 @@ public class CutsceneManager {
 		}
 	}
 
-	public CompoundTag toNbt() {
+	@Override
+	public CompoundTag saveData() {
 		var tag = new CompoundTag();
 		for (var entry : cutscenesByDimension.entrySet()) {
 			var dimTag = new CompoundTag();
@@ -106,7 +110,7 @@ public class CutsceneManager {
 		}
 		list.add(cutscene);
 		replaceAll(dimension, list);
-		save();
+		savedDataManager.update(this);
 		return true;
 	}
 
@@ -117,24 +121,22 @@ public class CutsceneManager {
 			return false;
 		}
 		replaceAll(dimension, list);
-		save();
+		savedDataManager.update(this);
 		return true;
 	}
 
 	public void clear(ResourceKey<Level> dimension) {
 		replaceAll(dimension, List.of());
-		save();
-	}
-
-	public void save() {
-		savedDataManager.setSection(SAVE_SECTION, toNbt());
-	}
-
-	public void load() {
-		fromNbt(savedDataManager.getSection(SAVE_SECTION));
+		savedDataManager.update(this);
 	}
 
 	public void syncToAll() {
 		savedDataManager.syncToAll();
 	}
+
+	@Override
+	public String saveSection() {
+		return SAVE_SECTION;
+	}
+
 }

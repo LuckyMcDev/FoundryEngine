@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.tooltip.client;
 
 import com.mojang.serialization.DynamicOps;
 import de.luckymcdev.foundryengine.util.common.ChatIcons;
+import de.luckymcdev.foundryengine.manager.api.EngineManager;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.RegistryAccess;
@@ -25,7 +26,7 @@ import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-public class TooltipManager {
+public class TooltipManager implements EngineManager {
 
 	public void handleItemTooltip(ItemTooltipEvent event) {
 		var mc = Minecraft.getInstance();

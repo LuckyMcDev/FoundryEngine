@@ -130,7 +130,7 @@ public record CutscenePacket(CompoundTag nbt) implements AbstractPacket<Cutscene
 				list.add(Cutscene.fromNbt(nbtList.getCompoundOrEmpty(i)));
 			}
 			cutsceneManager.replaceAll(dimension, list);
-			cutsceneManager.save();
+			Common.getSavedDataManager().update(cutsceneManager);
 			cutsceneManager.syncToAll();
 			return;
 		}

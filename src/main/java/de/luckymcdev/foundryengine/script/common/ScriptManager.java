@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.script.common;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.bundle.common.info.BundleFiles;
+import de.luckymcdev.foundryengine.manager.api.EngineManager;
 import de.luckymcdev.foundryengine.bundle.common.info.MavenLibrary;
 import de.luckymcdev.foundryengine.config.StartupConfig;
 import de.luckymcdev.foundryengine.script.common.definition.ScriptDefinition;
@@ -31,7 +32,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * compiles just its bundle. Entry code (constructors, onLoad, onUnload) runs on the calling
  * thread's behalf under the sandbox timeout, in load order.
  */
-public final class ScriptManager {
+public final class ScriptManager implements EngineManager {
 	public static final String FILE_EXTENSION = ".groovy";
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private final Set<ScriptEnv> activeEnvs;

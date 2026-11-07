@@ -1,6 +1,9 @@
 package de.luckymcdev.foundryengine.dialogue.common;
 
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.manager.api.Persistable;
+import de.luckymcdev.foundryengine.manager.api.Synced;
+import de.luckymcdev.foundryengine.manager.api.PlayerLifecycle;
 import de.luckymcdev.foundryengine.network.common.packet.dialogue.ClientboundDialoguePacket;
 import de.luckymcdev.foundryengine.savedata.common.SavedDataManager;
 import net.minecraft.nbt.CompoundTag;
@@ -18,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public class DialogueManager {
+public class DialogueManager implements Persistable, Synced, PlayerLifecycle {
 	public static final String SAVE_SECTION = "dialogue";
 	private final SavedDataManager savedDataManager;
 	private final Map<Identifier, DialogueTree> trees = new LinkedHashMap<>();
@@ -178,7 +181,13 @@ public class DialogueManager {
 		savedDataManager.syncToAll();
 	}
 
-	public CompoundTag toNbt() {
+	@Override
+	public String saveSection() {
+		return SAVE_SECTION;
+	}
+
+	@Override
+	public CompoundTag saveData() {
 		var tag = new CompoundTag();
 		var list = new ListTag();
 		for (var tree : trees.values()) {
@@ -190,7 +199,8 @@ public class DialogueManager {
 		return tag;
 	}
 
-	public void applyNbt(CompoundTag tag) {
+	@Override
+	public void loadData(CompoundTag tag) {
 		var list = tag.getListOrEmpty("DialogueTrees");
 		trees.clear();
 		for (int i = 0; i < list.size(); i++) {
@@ -198,14 +208,6 @@ public class DialogueManager {
 			var id = Identifier.parse(entry.getStringOr("Id", "foundryengine:empty"));
 			trees.put(id, DialogueTree.fromNbt(id, entry));
 		}
-	}
-
-	public void save() {
-		savedDataManager.setSection(SAVE_SECTION, toNbt());
-	}
-
-	public void load() {
-		applyNbt(savedDataManager.getSection(SAVE_SECTION));
 	}
 
 	private void advanceTo(ServerPlayer player, DialogueSession session, DialogueTree tree, String targetNodeId) {

@@ -2,12 +2,13 @@ package de.luckymcdev.foundryengine.particle.client;
 
 import de.luckymcdev.foundryengine.Client;
 import de.luckymcdev.foundryengine.builder.common.particle.ParticleBuilder;
+import de.luckymcdev.foundryengine.manager.api.EngineManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.core.particles.SimpleParticleType;
 import org.joml.Vector3d;
 
-public class ParticleManager {
+public class ParticleManager implements EngineManager {
 
 	/**
 	 * Spawns a particle at the position provided by the first keyframe of the position data.

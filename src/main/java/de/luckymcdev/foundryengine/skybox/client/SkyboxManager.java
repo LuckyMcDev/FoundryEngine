@@ -2,6 +2,8 @@ package de.luckymcdev.foundryengine.skybox.client;
 
 import com.mojang.math.Transformation;
 import de.luckymcdev.foundryengine.config.ClientConfig;
+import de.luckymcdev.foundryengine.manager.api.EngineManager;
+import de.luckymcdev.foundryengine.manager.api.ClientTickable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.Identifier;
@@ -17,7 +19,7 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-public class SkyboxManager {
+public class SkyboxManager implements EngineManager, ClientTickable {
 	private static final Vector3f SCALE = new Vector3f(-65000, -65000, -65000);
 	private Display.ItemDisplay skyboxEntity = null;
 	private ItemStack skyboxItemStack = null;
@@ -29,7 +31,8 @@ public class SkyboxManager {
 		}
 	}
 
-	public void tick(ClientTickEvent.Pre event) {
+	@Override
+	public void onClientTick(ClientTickEvent.Pre event) {
 		if (!ClientConfig.CUSTOM_SKYBOX.getAsBoolean()) {
 			return;
 		}

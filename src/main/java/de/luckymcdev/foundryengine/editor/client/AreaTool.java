@@ -27,9 +27,9 @@ public class AreaTool {
 			storedDistance = 0;
 			selectedArea = null;
 			draggingMin = false;
-			Client.getAreaRenderer().selectedCornerArea = null;
-			Client.getAreaRenderer().draggingMin = false;
-			Client.getAreaRenderer().storedDistance = 0;
+			Client.getAreaManager().selectedCornerArea = null;
+			Client.getAreaManager().draggingMin = false;
+			Client.getAreaManager().storedDistance = 0;
 		}
 
 		if (using) {
@@ -48,7 +48,7 @@ public class AreaTool {
 				sendAreaUpdate();
 			}
 			selectedArea = null;
-			Client.getAreaRenderer().selectedCornerArea = null;
+			Client.getAreaManager().selectedCornerArea = null;
 		}
 	}
 
@@ -60,7 +60,7 @@ public class AreaTool {
 			return false;
 		}
 		storedDistance = Math.max(storedDistance + (vertical * 0.25), 0);
-		Client.getAreaRenderer().storedDistance = storedDistance;
+		Client.getAreaManager().storedDistance = storedDistance;
 		return true;
 	}
 
@@ -70,11 +70,11 @@ public class AreaTool {
 		storedDistance = 0;
 		selectedArea = null;
 		draggingMin = false;
-		Client.getAreaRenderer().selectedCornerArea = null;
+		Client.getAreaManager().selectedCornerArea = null;
 	}
 
 	public void render() {
-		Client.getAreaRenderer().render();
+		Client.getAreaManager().render();
 	}
 
 	private void sendAreaUpdate() {
@@ -122,9 +122,9 @@ public class AreaTool {
 				? new Vec3(closestArea.bounds().minX, closestArea.bounds().minY, closestArea.bounds().minZ)
 				: new Vec3(closestArea.bounds().maxX, closestArea.bounds().maxY, closestArea.bounds().maxZ);
 			storedDistance = corner.distanceTo(eye);
-			Client.getAreaRenderer().selectedCornerArea = closestArea;
-			Client.getAreaRenderer().draggingMin = closestIsMin;
-			Client.getAreaRenderer().storedDistance = storedDistance;
+			Client.getAreaManager().selectedCornerArea = closestArea;
+			Client.getAreaManager().draggingMin = closestIsMin;
+			Client.getAreaManager().storedDistance = storedDistance;
 		}
 	}
 

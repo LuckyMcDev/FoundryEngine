@@ -1,5 +1,6 @@
 package de.luckymcdev.foundryengine.game.common.stage.table;
 
+import de.luckymcdev.foundryengine.manager.api.EngineManager;
 import net.minecraft.resources.Identifier;
 
 import java.util.Collection;
@@ -7,7 +8,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class StageTableManager {
+public class StageTableManager implements EngineManager {
 	private final Map<Identifier, StageTable> tables = new HashMap<>();
 
 	public StageTable createTable(Identifier name) {

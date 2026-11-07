@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.dialogue.client;
 
 import de.luckymcdev.foundryengine.dialogue.client.display.ChatDialogueDisplay;
 import de.luckymcdev.foundryengine.dialogue.client.display.ScreenDialogueDisplay;
+import de.luckymcdev.foundryengine.manager.api.EngineManager;
 import de.luckymcdev.foundryengine.dialogue.common.DialogueDisplayMode;
 import de.luckymcdev.foundryengine.dialogue.common.DialogueNode;
 import de.luckymcdev.foundryengine.dialogue.common.DialogueSession;
@@ -17,7 +18,7 @@ import java.util.Map;
  * Routes incoming dialogue packets to the correct display implementation
  * based on the session's {@link DialogueDisplayMode}.
  */
-public class ClientDialogueManager {
+public class ClientDialogueManager implements EngineManager {
 	private final Map<Identifier, DialogueTree> trees = new HashMap<>();
 	private final ScreenDialogueDisplay screenDisplay = new ScreenDialogueDisplay();
 	private final ChatDialogueDisplay chatDisplay = new ChatDialogueDisplay();

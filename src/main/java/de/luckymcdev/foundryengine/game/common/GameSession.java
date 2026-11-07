@@ -2,8 +2,6 @@ package de.luckymcdev.foundryengine.game.common;
 
 import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.EnginePaths;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -27,7 +25,7 @@ public class GameSession {
 
 	private Consumer<Level> commonTickHandler = level -> {
 	};
-	private BiConsumer<Minecraft, ClientLevel> clientTickHandler = (mc, level) -> {
+	private BiConsumer<Object, Level> clientTickHandler = (client, level) -> {
 	};
 	private BiConsumer<MinecraftServer, ServerLevel> serverTickHandler = (server, level) -> {
 	};
@@ -112,8 +110,8 @@ public class GameSession {
 	 * Called on every client tick for this session.
 	 * This cast is needed due to env separation
 	 */
-	public void onClientTick(Minecraft client, Level level) {
-		clientTickHandler.accept(client, (ClientLevel) level);
+	public void onClientTick(Object client, Level level) {
+		clientTickHandler.accept(client, level);
 	}
 
 	/**
@@ -155,7 +153,7 @@ public class GameSession {
 	/**
 	 * Sets the client tick handler for this session.
 	 */
-	public GameSession onClientTick(BiConsumer<Minecraft, ClientLevel> handler) {
+	public GameSession onClientTick(BiConsumer<Object, Level> handler) {
 		this.clientTickHandler = handler;
 		return this;
 	}

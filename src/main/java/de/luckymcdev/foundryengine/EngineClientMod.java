@@ -4,12 +4,21 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.command.client.FoundryCommandsClient;
+import de.luckymcdev.foundryengine.command.client.ItemCommandManager;
 import de.luckymcdev.foundryengine.command.client.suggest.nbt.NbtSuggestions;
 import de.luckymcdev.foundryengine.config.Config;
 import de.luckymcdev.foundryengine.event.client.registry.RegistryEventClient;
 import de.luckymcdev.foundryengine.ext.client.ModPathRecorder;
 import de.luckymcdev.foundryengine.gizmo.client.GizmoBuffer;
 import de.luckymcdev.foundryengine.gizmo.client.GizmoRenderer;
+import de.luckymcdev.foundryengine.manager.api.ManagerKey;
+import de.luckymcdev.foundryengine.manager.api.ClientTickable;
+import de.luckymcdev.foundryengine.particle.client.ParticleManager;
+import de.luckymcdev.foundryengine.render.client.MeshRenderer;
+import de.luckymcdev.foundryengine.render.client.obj.ObjModelManager;
+import de.luckymcdev.foundryengine.post.client.PostEffectManager;
+import de.luckymcdev.foundryengine.skybox.client.SkyboxManager;
+import de.luckymcdev.foundryengine.tooltip.client.TooltipManager;
 import de.luckymcdev.foundryengine.render.client.EngineSceneDepth;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
@@ -48,6 +57,13 @@ public class EngineClientMod {
 	private static final IEventBus BUS = NeoForge.EVENT_BUS;
 
 	public EngineClientMod(IEventBus modBus, ModContainer modContainer) {
+		Client.getManagers().register(ManagerKey.PARTICLE, new ParticleManager());
+		Client.getManagers().register(ManagerKey.MESH, new MeshRenderer());
+		Client.getManagers().register(ManagerKey.OBJ_MODEL, new ObjModelManager());
+		Client.getManagers().register(ManagerKey.POST_EFFECT, new PostEffectManager());
+		Client.getManagers().register(ManagerKey.SKYBOX, new SkyboxManager());
+		Client.getManagers().register(ManagerKey.ITEM_COMMAND, new ItemCommandManager());
+		Client.getManagers().register(ManagerKey.TOOLTIP, new TooltipManager());
 		modBus.addListener(this::onClientSetup);
 		modBus.addListener(this::addClientReloadListener);
 		modBus.addListener(this::onRegisterParticleProviders);
@@ -55,7 +71,7 @@ public class EngineClientMod {
 		BUS.addListener(this::onRegisterCommands);
 		BUS.addListener(this::onRenderLevel);
 		BUS.addListener(this::onAfterOpaqueFeatures);
-		BUS.addListener(this::onClientTickPre);
+		BUS.addListener(this::dispatchClientTick);
 		BUS.addListener(this::onItemTooltip);
 		BUS.addListener(this::onRightClickItem);
 
@@ -119,8 +135,10 @@ public class EngineClientMod {
 		EngineSceneDepth.update();
 	}
 
-	private void onClientTickPre(ClientTickEvent.Pre event) {
-		Client.getSkyboxManager().tick(event);
+	private void dispatchClientTick(ClientTickEvent.Pre event) {
+		for (ClientTickable manager : Client.getManagers().getAll(ClientTickable.class)) {
+			manager.onClientTick(event);
+		}
 	}
 
 	//? if >=26.2 {
@@ -136,7 +154,7 @@ public class EngineClientMod {
 		var mc = Minecraft.getInstance();
 		var submitNodeStorage = new net.minecraft.client.renderer.SubmitNodeStorage();
 		Client.getWaypointRenderer().renderWaypoints(event, submitNodeStorage);
-		Client.getAreaRenderer().renderAreaModules(event, submitNodeStorage);
+		Client.getAreaManager().renderAreaModules(event, submitNodeStorage);
 		GizmoRenderer.render(submitNodeStorage, camState, false);
 
 		mc.gameRenderer.featureRenderDispatcher().renderAllFeatures(submitNodeStorage);
@@ -151,7 +169,7 @@ public class EngineClientMod {
 		Client.getCutsceneManager().renderTick();
 		Client.getEditorController().renderFeatures();
 		Client.getWaypointRenderer().renderWaypoints(event);
-		Client.getAreaRenderer().renderAreaModules(event);
+		Client.getAreaManager().renderAreaModules(event);
 
 		var mc = Minecraft.getInstance();
 		var poseStack = new PoseStack();

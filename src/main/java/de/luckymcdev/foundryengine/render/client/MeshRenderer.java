@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.rendertype.RenderSetup;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.resources.Identifier;
 import org.joml.Matrix4fc;
+import de.luckymcdev.foundryengine.manager.api.EngineManager;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -31,7 +32,7 @@ import com.mojang.blaze3d.vertex.MeshData;
 import com.mojang.blaze3d.vertex.VertexFormat;
 //?}
 
-public class MeshRenderer implements AutoCloseable {
+public class MeshRenderer implements AutoCloseable, EngineManager {
 	private static final int MAX_RENDER_TYPES = 256;
 	private static final int MAX_PIPELINES = 256;
 	private static final AtomicInteger RENDER_TYPE_INDEX = new AtomicInteger();

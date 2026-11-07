@@ -1,6 +1,9 @@
 package de.luckymcdev.foundryengine.cutscene.common;
 
 import de.luckymcdev.foundryengine.cutscene.common.util.ServerScreenEffectManager;
+import de.luckymcdev.foundryengine.manager.api.EngineManager;
+import de.luckymcdev.foundryengine.manager.api.ServerTickable;
+import de.luckymcdev.foundryengine.manager.api.PlayerLifecycle;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.GameType;
@@ -14,10 +17,12 @@ import java.util.UUID;
 /**
  * Server-side tracker for active cutscene playbacks per player (used for temporary invulnerability etc.).
  */
-public class CutsceneSessionManager {
+public class CutsceneSessionManager implements EngineManager, ServerTickable, PlayerLifecycle {
 	private final Map<UUID, ArrayDeque<Integer>> playerInstances = new HashMap<>();
 
-	public void tick(MinecraftServer server) {
+	@Override
+	public void onServerTick(net.neoforged.neoforge.event.tick.ServerTickEvent.Post event) {
+		MinecraftServer server = event.getServer();
 		Iterator<Map.Entry<UUID, ArrayDeque<Integer>>> it = playerInstances.entrySet().iterator();
 		while (it.hasNext()) {
 			Map.Entry<UUID, ArrayDeque<Integer>> entry = it.next();

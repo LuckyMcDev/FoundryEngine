@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.network.common.packet.sync;
 
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.manager.api.Persistable;
 import de.luckymcdev.foundryengine.network.common.AbstractPacket;
 import de.luckymcdev.foundryengine.network.common.PacketBounds;
 import net.minecraft.nbt.CompoundTag;
@@ -28,10 +29,9 @@ public record SavedDataSyncPacket(CompoundTag data) implements AbstractPacket<Sa
 	private static void handleClient(SavedDataSyncPacket packet, IPayloadContext ctx) {
 		ctx.enqueueWork(() -> {
 			Common.getSavedDataManager().setData(packet.data());
-			Common.getWaypointManager().load();
-			Common.getAreaManager().load();
-			Common.getCutsceneManager().load();
-			Common.getDialogueManager().load();
+			for (Persistable manager : Common.getManagers().getAll(Persistable.class)) {
+				manager.loadData(Common.getSavedDataManager().getSection(manager.saveSection()));
+			}
 		});
 	}
 

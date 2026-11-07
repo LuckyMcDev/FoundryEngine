@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.editor.client;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.Client;
+import de.luckymcdev.foundryengine.manager.api.EngineManager;
 import de.luckymcdev.foundryengine.editor.client.panel.Panel;
 import net.minecraft.resources.Identifier;
 import org.jspecify.annotations.Nullable;
@@ -14,7 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class EditorManager {
+public class EditorManager implements EngineManager {
 	private static final Logger LOGGER = LogUtils.getLogger();
 
 	private final Map<Identifier, Panel> panels = new HashMap<>();

@@ -6,6 +6,9 @@ import de.luckymcdev.foundryengine.area.common.module.AreaLeaveModule;
 import de.luckymcdev.foundryengine.area.common.module.AreaModule;
 import de.luckymcdev.foundryengine.area.common.module.AreaTickModule;
 import de.luckymcdev.foundryengine.area.common.preset.AreaPreset;
+import de.luckymcdev.foundryengine.manager.api.Persistable;
+import de.luckymcdev.foundryengine.manager.api.Synced;
+import de.luckymcdev.foundryengine.manager.api.LevelTickable;
 import de.luckymcdev.foundryengine.savedata.common.SavedDataManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -33,7 +36,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 
-public class AreaManager {
+public class AreaManager implements Persistable, Synced, LevelTickable {
 	public static final String SAVE_SECTION = "areas";
 	private static final int SPATIAL_CELL_SIZE = 32;
 	private final SavedDataManager savedDataManager;
@@ -114,7 +117,7 @@ public class AreaManager {
 		}
 		indexAreaSpatially(area);
 		if (level != null) {
-			save();
+			savedDataManager.update(this);
 			syncToAll();
 		}
 	}
@@ -122,7 +125,7 @@ public class AreaManager {
 	public void update(@Nullable ServerLevel level, Area updatedArea) {
 		areasById.put(updatedArea.id(), updatedArea);
 		if (level != null) {
-			save();
+			savedDataManager.update(this);
 			syncToAll();
 		}
 	}
@@ -139,12 +142,13 @@ public class AreaManager {
 		}
 		removeAreaFromSpatialIndex(area);
 		if (level != null) {
-			save();
+			savedDataManager.update(this);
 			syncToAll();
 		}
 	}
 
-	public CompoundTag toNbt() {
+	@Override
+	public CompoundTag saveData() {
 		var tag = new CompoundTag();
 		var allList = new ListTag();
 		for (Area area : areasById.values()) {
@@ -154,7 +158,8 @@ public class AreaManager {
 		return tag;
 	}
 
-	public void fromNbt(CompoundTag tag) {
+	@Override
+	public void loadData(CompoundTag tag) {
 		areasById.clear();
 		areaIdsByDimension.clear();
 		areaSpatialIndex.clear();
@@ -170,18 +175,16 @@ public class AreaManager {
 		}
 	}
 
-	public void save() {
-		savedDataManager.setSection(SAVE_SECTION, toNbt());
-	}
-
-	public void load() {
-		fromNbt(savedDataManager.getSection(SAVE_SECTION));
-	}
-
 	public void syncToAll() {
 		savedDataManager.syncToAll();
 	}
 
+	@Override
+	public String saveSection() {
+		return SAVE_SECTION;
+	}
+
+	@Override
 	public void onLevelTick(LevelTickEvent.Post event) {
 		if (!(event.getLevel() instanceof ServerLevel level)) {
 			return;

@@ -6,6 +6,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import de.luckymcdev.foundryengine.Client;
 import de.luckymcdev.foundryengine.gizmo.client.WorldGizmo;
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.manager.api.EngineManager;
 import de.luckymcdev.foundryengine.util.common.color.Color;
 import de.luckymcdev.foundryengine.waypoint.common.Waypoint;
 import net.minecraft.client.KeyMapping;
@@ -33,7 +34,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
 //?}
 
-public class ClientWaypointManager {
+public class ClientWaypointManager implements EngineManager {
 	public static final KeyMapping PRIMARY_WAYPOINT_KEY = new KeyMapping(
 		"key.foundryengine.primary_waypoint",
 		InputConstants.Type.KEYSYM,

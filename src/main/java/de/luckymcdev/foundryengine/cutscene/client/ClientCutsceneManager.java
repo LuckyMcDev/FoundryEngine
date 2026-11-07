@@ -1,6 +1,9 @@
 package de.luckymcdev.foundryengine.cutscene.client;
 
 import de.luckymcdev.foundryengine.Client;
+import de.luckymcdev.foundryengine.manager.api.EngineManager;
+import de.luckymcdev.foundryengine.manager.api.ClientTickable;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import de.luckymcdev.foundryengine.cutscene.common.model.CommandAttachment;
 import de.luckymcdev.foundryengine.cutscene.common.model.Cutscene;
 import de.luckymcdev.foundryengine.cutscene.common.model.EffectAttachment;
@@ -24,7 +27,7 @@ import java.util.UUID;
  * <p>
  * Owned by {@link Client} as a singleton instance (not static state).
  */
-public class ClientCutsceneManager {
+public class ClientCutsceneManager implements EngineManager, ClientTickable {
 	/**
 	 * Maximum distance in blocks from the player for cutscene camera override to be active.
 	 */
@@ -46,7 +49,8 @@ public class ClientCutsceneManager {
 	private Cutscene previewCutscene = null;
 	private float previewT = 0.0f;
 
-	public void clientTick() {
+	@Override
+	public void onClientTick(ClientTickEvent.Pre event) {
 		Minecraft mc = Minecraft.getInstance();
 
 		if (mc.level == null || mc.player == null) {
@@ -323,4 +327,3 @@ public class ClientCutsceneManager {
 		}
 	}
 }
-

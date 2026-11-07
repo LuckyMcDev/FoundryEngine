@@ -3,6 +3,7 @@ package de.luckymcdev.foundryengine.post.client;
 import de.luckymcdev.foundryengine.post.client.internal.PostEffectEntry;
 import de.luckymcdev.foundryengine.post.client.internal.PostEffectRegistry;
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.manager.api.EngineManager;
 import de.luckymcdev.foundryengine.cutscene.common.util.LerpType;
 import net.minecraft.client.renderer.UniformValue;
 import net.minecraft.resources.Identifier;
@@ -12,7 +13,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.DoubleSupplier;
 
-public final class PostEffectManager {
+public final class PostEffectManager implements EngineManager {
 	private final PostEffectRegistry registry = new PostEffectRegistry();
 
 	private final PostEffectHandle grayscale;

@@ -2,12 +2,13 @@ package de.luckymcdev.foundryengine.service.common;
 
 import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.EnginePaths;
+import de.luckymcdev.foundryengine.manager.api.EngineManager;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public class EngineServiceManager {
+public class EngineServiceManager implements EngineManager {
 	private final Map<Class<? extends EngineService>, EngineService> services = new HashMap<>();
 
 	public EngineServiceManager() {

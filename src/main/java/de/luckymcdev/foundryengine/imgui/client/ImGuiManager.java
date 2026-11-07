@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.imgui.client;
 
 import de.luckymcdev.foundryengine.config.ClientConfig;
 import de.luckymcdev.foundryengine.Client;
+import de.luckymcdev.foundryengine.manager.api.EngineManager;
 import de.luckymcdev.foundryengine.editor.client.style.ImTheme;
 import de.luckymcdev.foundryengine.editor.client.style.ImThemes;
 import de.luckymcdev.foundryengine.Common;
@@ -29,7 +30,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * the {@code ImGuiLoadEventsNeoforge} and {@code RenderImGuiEventsNeoforge} wiring in
  * {@code ClientMod}.
  */
-public final class ImGuiManager implements NativeResource {
+public final class ImGuiManager implements NativeResource, EngineManager {
 	public static final Identifier FONT = Common.id("jetbrains_mono_nf");
 	public static float scaleOverride = 1.4f;
 	private final AtomicBoolean enabled = new AtomicBoolean(false);

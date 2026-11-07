@@ -12,6 +12,8 @@ import de.luckymcdev.foundryengine.exception.common.UtilityClassException;
 import de.luckymcdev.foundryengine.game.common.GameManager;
 import de.luckymcdev.foundryengine.game.common.stage.GameStageHandler;
 import de.luckymcdev.foundryengine.game.common.stage.table.StageTableManager;
+import de.luckymcdev.foundryengine.manager.api.ManagerRegistry;
+import de.luckymcdev.foundryengine.manager.api.ManagerKey;
 import de.luckymcdev.foundryengine.network.common.NetworkManager;
 import de.luckymcdev.foundryengine.registry.common.RegistryCollector;
 import de.luckymcdev.foundryengine.savedata.common.SavedDataManager;
@@ -41,138 +43,96 @@ public final class Common {
 	public static final String MODNAME = "FoundryEngine";
 	public static final String BLOCK_DISPLAY_TAG = MODID + "_blockdisplay";
 	public static final boolean FIRST_RUN = FirstRun.isFirstRun(MODID);
-	private static final NetworkManager NETWORK_MANAGER = new NetworkManager();
-	private static final SavedDataManager SAVED_DATA_MANAGER = new SavedDataManager(NETWORK_MANAGER);
-	private static final GameStageHandler GAME_STAGE_HANDLER = new GameStageHandler();
-	private static final StageTableManager STAGE_TABLE_MANAGER = new StageTableManager();
-	private static final AreaManager AREA_MANAGER = new AreaManager(SAVED_DATA_MANAGER);
-	private static final CutsceneManager CUTSCENE_MANAGER = new CutsceneManager(SAVED_DATA_MANAGER);
-	private static final CutsceneSessionManager CUTSCENE_SESSION_MANAGER = new CutsceneSessionManager();
-	private static final WaypointManager WAYPOINT_MANAGER = new WaypointManager(SAVED_DATA_MANAGER);
-	private static final DialogueManager DIALOGUE_MANAGER = new DialogueManager(SAVED_DATA_MANAGER);
-	private static final EngineServiceManager ENGINE_SERVICE_MANAGER = new EngineServiceManager();
-	private static final ScriptManager SCRIPT_MANAGER = new ScriptManager(EnumSet.allOf(ScriptEnv.class));
-	private static final BundleManager BUNDLE_MANAGER = new BundleManager(EngineMod.getModBus());
-	private static final GameManager GAME_MANAGER = new GameManager();
+
+	private static final ManagerRegistry MANAGERS = new ManagerRegistry();
+
+	// Foundational — must exist before any mod constructs.
 	private static final List<Runnable> EVENT_CLEARERS = new ArrayList<>();
 	private static @Nullable RegistryCollector registryCollector;
 
 	static {
-		BUNDLE_MANAGER.getLifecycleDispatcher().register(new BundleSavePathListener());
-		BUNDLE_MANAGER.getLifecycleDispatcher().register(GAME_MANAGER);
+		var network = MANAGERS.register(ManagerKey.NETWORK, new NetworkManager());
+		MANAGERS.register(ManagerKey.SAVED_DATA, new SavedDataManager(network));
+		MANAGERS.register(ManagerKey.ENGINE_SERVICE, new EngineServiceManager());
+		MANAGERS.register(ManagerKey.SCRIPT, new ScriptManager(EnumSet.allOf(ScriptEnv.class)));
+		var bundle = MANAGERS.register(ManagerKey.BUNDLE, new BundleManager(EngineMod.getModBus()));
+
+		bundle.getLifecycleDispatcher().register(new BundleSavePathListener());
+		// GameManager's lifecycle registration moves to GameMod.
 	}
 
 	private Common() {
 		throw new UtilityClassException();
 	}
 
-	/**
-	 * Returns a {@link Identifier} namespaced to {@link #MODID}.
-	 */
+	public static ManagerRegistry getManagers() {
+		return MANAGERS;
+	}
+
 	public static Identifier id(String path) {
 		return Identifier.fromNamespaceAndPath(MODID, path);
 	}
 
-	/**
-	 * Returns an {@link Identifier} in the default Minecraft namespace.
-	 */
 	public static Identifier mId(String path) {
 		return Identifier.withDefaultNamespace(path);
 	}
 
-	/**
-	 * Returns an {@link Identifier} with the given namespace and path.
-	 */
 	public static Identifier id(String namespace, String path) {
 		return Identifier.fromNamespaceAndPath(namespace, path);
 	}
 
-	/**
-	 * Returns the singleton {@link ScriptManager}.
-	 */
+	// Foundational getters stay direct
 	public static ScriptManager getScriptManager() {
-		return SCRIPT_MANAGER;
+		return MANAGERS.require(ManagerKey.SCRIPT, ScriptManager.class);
 	}
 
 	public static BundleManager getBundleManager() {
-		return BUNDLE_MANAGER;
+		return MANAGERS.require(ManagerKey.BUNDLE, BundleManager.class);
 	}
 
-	/**
-	 * Returns the singleton {@link GameStageHandler}.
-	 */
-	public static GameStageHandler getGameStageHandler() {
-		return GAME_STAGE_HANDLER;
-	}
-
-	/**
-	 * Returns the singleton {@link StageTableManager}.
-	 */
-	public static StageTableManager getStageTableManager() {
-		return STAGE_TABLE_MANAGER;
-	}
-
-	/**
-	 * Returns the singleton {@link NetworkManager}.
-	 */
 	public static NetworkManager getNetworkManager() {
-		return NETWORK_MANAGER;
+		return MANAGERS.require(ManagerKey.NETWORK, NetworkManager.class);
 	}
 
-	/**
-	 * Returns the singleton {@link AreaManager}.
-	 */
-	public static AreaManager getAreaManager() {
-		return AREA_MANAGER;
-	}
-
-	/**
-	 * Returns the singleton {@link CutsceneManager}.
-	 */
-	public static CutsceneManager getCutsceneManager() {
-		return CUTSCENE_MANAGER;
-	}
-
-	/**
-	 * Returns the singleton {@link CutsceneSessionManager}.
-	 */
-	public static CutsceneSessionManager getCutsceneSessionManager() {
-		return CUTSCENE_SESSION_MANAGER;
-	}
-
-	/**
-	 * Returns the singleton {@link SavedDataManager}.
-	 */
 	public static SavedDataManager getSavedDataManager() {
-		return SAVED_DATA_MANAGER;
+		return MANAGERS.require(ManagerKey.SAVED_DATA, SavedDataManager.class);
 	}
 
-	/**
-	 * Returns the singleton {@link WaypointManager}.
-	 */
-	public static WaypointManager getWaypointManager() {
-		return WAYPOINT_MANAGER;
-	}
-
-	/**
-	 * Returns the singleton {@link GameManager}.
-	 */
-	public static GameManager getGameManager() {
-		return GAME_MANAGER;
-	}
-
-	/**
-	 * Returns the singleton {@link DialogueManager}.
-	 */
-	public static DialogueManager getDialogueManager() {
-		return DIALOGUE_MANAGER;
-	}
-
-	/**
-	 * Returns the singleton {@link EngineServiceManager}.
-	 */
 	public static EngineServiceManager getEngineServiceManager() {
-		return ENGINE_SERVICE_MANAGER;
+		return MANAGERS.require(ManagerKey.ENGINE_SERVICE, EngineServiceManager.class);
+	}
+
+	// Feature managers — delegate to the registry.
+	public static GameStageHandler getGameStageHandler() {
+		return MANAGERS.require(ManagerKey.GAME_STAGE, GameStageHandler.class);
+	}
+
+	public static StageTableManager getStageTableManager() {
+		return MANAGERS.require(ManagerKey.STAGE_TABLE, StageTableManager.class);
+	}
+
+	public static AreaManager getAreaManager() {
+		return MANAGERS.require(ManagerKey.AREA, AreaManager.class);
+	}
+
+	public static CutsceneManager getCutsceneManager() {
+		return MANAGERS.require(ManagerKey.CUTSCENE, CutsceneManager.class);
+	}
+
+	public static CutsceneSessionManager getCutsceneSessionManager() {
+		return MANAGERS.require(ManagerKey.CUTSCENE_SESSION, CutsceneSessionManager.class);
+	}
+
+	public static WaypointManager getWaypointManager() {
+		return MANAGERS.require(ManagerKey.WAYPOINT, WaypointManager.class);
+	}
+
+	public static DialogueManager getDialogueManager() {
+		return MANAGERS.require(ManagerKey.DIALOGUE, DialogueManager.class);
+	}
+
+	public static GameManager getGameManager() {
+		return MANAGERS.require(ManagerKey.GAME, GameManager.class);
 	}
 
 	@Nullable
@@ -180,43 +140,30 @@ public final class Common {
 		return registryCollector;
 	}
 
-	public static void setRegistryCollector(@Nullable RegistryCollector collector) {
-		registryCollector = collector;
+	public static void setRegistryCollector(@Nullable RegistryCollector c) {
+		registryCollector = c;
 	}
 
 	public static CompatibilityMode getCompatibilityMode() {
 		return StartupConfig.COMPATIBILITY_MODE.get();
 	}
 
-
-	/**
-	 * Posts an event to the NeoForge event bus.
-	 */
 	public static <T extends Event> T post(T event) {
 		return NeoForge.EVENT_BUS.post(event);
 	}
 
-	/**
-	 * Posts an event at the given priority to the NeoForge event bus.
-	 */
-	public static <T extends Event> T post(EventPriority priority, T event) {
-		return NeoForge.EVENT_BUS.post(priority, event);
+	public static <T extends Event> T post(EventPriority p, T event) {
+		return NeoForge.EVENT_BUS.post(p, event);
 	}
 
-	/**
-	 * Registers a cleanup callback invoked on {@link #clearEvents()}.
-	 */
 	public static void registerEventClear(Runnable clearer) {
 		EVENT_CLEARERS.add(clearer);
 	}
 
-	/**
-	 * Runs all registered event cleanup callbacks.
-	 */
 	public static void clearEvents() {
 		registryCollector = null;
-		for (var clearer : EVENT_CLEARERS) {
-			clearer.run();
+		for (var c : EVENT_CLEARERS) {
+			c.run();
 		}
 	}
 }

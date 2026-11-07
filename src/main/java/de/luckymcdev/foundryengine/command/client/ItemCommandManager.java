@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.command.client;
 
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.manager.api.EngineManager;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.component.DataComponents;
@@ -15,7 +16,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ItemCommandManager {
+public class ItemCommandManager implements EngineManager {
 	private static final Map<ItemStack, ItemCommand> ITEM_COMMANDS = new HashMap<>();
 
 	public void register(ItemCommand command) {

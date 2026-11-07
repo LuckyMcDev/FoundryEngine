@@ -5,8 +5,11 @@ import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.EnginePaths;
 import de.luckymcdev.foundryengine.bundle.common.Bundle;
 import de.luckymcdev.foundryengine.bundle.common.BundleLifecycleListener;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ServerData;
+import de.luckymcdev.foundryengine.manager.api.EngineManager;
+import de.luckymcdev.foundryengine.manager.api.ServerTickable;
+import de.luckymcdev.foundryengine.manager.api.LevelTickable;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
@@ -32,7 +35,7 @@ import java.util.function.Consumer;
  * Lifecycle tracking (STOPPED → STARTING → RUNNING → STOPPING → STOPPED) is per-world,
  * not per-session. All sessions in a world share the world's lifecycle.
  */
-public class GameManager implements BundleLifecycleListener {
+public class GameManager implements BundleLifecycleListener, EngineManager, ServerTickable, LevelTickable {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private final Map<String, Map<Identifier, GameSession>> worlds = new ConcurrentHashMap<>();
 	private final Map<String, Path> worldDataPaths = new ConcurrentHashMap<>();
@@ -49,16 +52,6 @@ public class GameManager implements BundleLifecycleListener {
 		if (level.getServer() != null) {
 			return level.getServer().getWorldData().getLevelName();
 		}
-		Minecraft client = Minecraft.getInstance();
-		if (client.getSingleplayerServer() != null) {
-			return client.getSingleplayerServer().getWorldData().getLevelName();
-		}
-		// Pure client (dedicated-server multiplayer): resolve a meaningful name from the
-		// connected server's data instead of falling back to "unknown".
-		ServerData currentServer = client.getCurrentServer();
-		if (currentServer != null && currentServer.name != null && !currentServer.name.isBlank()) {
-			return currentServer.name;
-		}
 		return "unknown";
 	}
 
@@ -70,6 +63,27 @@ public class GameManager implements BundleLifecycleListener {
 	public void beginServerTick() {
 		tickedCommonSessions.clear();
 		tickedServerSessions.clear();
+	}
+
+	@Override
+	public void onServerTick(ServerTickEvent.Post event) {
+		beginServerTick();
+		for (ServerLevel level : event.getServer().getAllLevels()) {
+			forEachActiveSession(level, tickedServerSessions,
+				session -> session.onServerTick(event.getServer(), level));
+		}
+	}
+
+	@Override
+	public void onLevelTick(LevelTickEvent.Post event) {
+		forEachActiveSession(event.getLevel(), tickedCommonSessions,
+			session -> session.onCommonTick(event.getLevel()));
+	}
+
+	public void onClientTick(Object client, Level level) {
+		if (level != null) {
+			forEachActiveSession(level, null, session -> session.onClientTick(client, level));
+		}
 	}
 
 	/**
@@ -304,27 +318,6 @@ public class GameManager implements BundleLifecycleListener {
 		for (String worldName : worlds.keySet()) {
 			stopAll(worldName);
 		}
-	}
-
-	/**
-	 * Ticks all started sessions for the world of the given level.
-	 */
-	public void tickCommon(Level level) {
-		forEachActiveSession(level, tickedCommonSessions, session -> session.onCommonTick(level));
-	}
-
-	/**
-	 * Ticks all started sessions for the world of the given client level.
-	 */
-	public void tickClient(Minecraft client, Level level) {
-		forEachActiveSession(level, null, session -> session.onClientTick(client, level));
-	}
-
-	/**
-	 * Ticks all started sessions for the world of the given server level.
-	 */
-	public void tickServer(MinecraftServer server, ServerLevel level) {
-		forEachActiveSession(level, tickedServerSessions, session -> session.onServerTick(server, level));
 	}
 
 	private void forEachActiveSession(Level level, @Nullable Set<GameSession> deduplicate,

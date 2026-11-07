@@ -5,7 +5,7 @@ import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.logging.LogUtils;
-import de.luckymcdev.foundryengine.area.client.AreaRenderer;
+import de.luckymcdev.foundryengine.area.client.ClientAreaManager;
 import de.luckymcdev.foundryengine.command.client.ItemCommandManager;
 import de.luckymcdev.foundryengine.cutscene.client.ClientCutsceneManager;
 import de.luckymcdev.foundryengine.dialogue.client.ClientDialogueManager;
@@ -28,6 +28,8 @@ import de.luckymcdev.foundryengine.waypoint.client.ClientWaypointManager;
 import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.exception.common.UtilityClassException;
 import de.luckymcdev.foundryengine.interfaces.EngineMinecraft;
+import de.luckymcdev.foundryengine.manager.api.ManagerRegistry;
+import de.luckymcdev.foundryengine.manager.api.ManagerKey;
 import net.minecraft.client.Camera;
 
 //? if >=26.2 {
@@ -87,28 +89,19 @@ public final class Client {
 		EDITOR_CATEGORY
 	);
 	public static final Logger LOGGER = LogUtils.getLogger();
-	private static final ImGuiManager IMGUI_MANAGER = new ImGuiManager();
+	private static final ManagerRegistry MANAGERS = new ManagerRegistry();
 	private static final ImGraphicsExtractor IM_GRAPHICS_EXTRACTOR = new ImGraphicsExtractor();
 	private static final MainMenu MAIN_MENU = new MainMenu();
-	private static final EditorManager EDITOR_MANAGER = new EditorManager();
-	private static final ParticleManager PARTICLE_MANAGER = new ParticleManager();
-	private static final ClientWaypointManager WAYPOINT_RENDERER = new ClientWaypointManager();
-	private static final AreaRenderer AREA_RENDERER = new AreaRenderer();
-	private static final MeshRenderer MESH_RENDERER = new MeshRenderer();
-	private static final ObjModelManager OBJ_MODEL_MANAGER = new ObjModelManager();
-	private static final ClientCutsceneManager CUTSCENE_MANAGER = new ClientCutsceneManager();
-	private static final PostEffectManager POST_EFFECT_MANAGER = new PostEffectManager();
-	private static final SkyboxManager SKYBOX_MANAGER = new SkyboxManager();
 	private static final EditorController EDITOR_CONTROLLER = new EditorController();
-	private static final ClientDialogueManager DIALOGUE_MANAGER = new ClientDialogueManager();
-	private static final ItemCommandManager ITEM_COMMAND_MANAGER = new ItemCommandManager();
 	private static final IconExporterLayer ICON_EXPORTER_LAYER = new IconExporterLayer();
 	private static final WorkspaceState WORKSPACE_STATE = new WorkspaceState();
-	private static final HotKeyManager HOTKEY_MANAGER = new HotKeyManager();
-	private static final TooltipManager TOOLTIP_MANAGER = new TooltipManager();
 
 	private Client() {
 		throw new UtilityClassException();
+	}
+
+	public static ManagerRegistry getManagers() {
+		return MANAGERS;
 	}
 
 	/**
@@ -126,7 +119,7 @@ public final class Client {
 	 * Returns the ImGui manager.
 	 */
 	public static ImGuiManager getImGuiManager() {
-		return IMGUI_MANAGER;
+		return MANAGERS.require(ManagerKey.IMGUI, ImGuiManager.class);
 	}
 
 	/**
@@ -147,35 +140,35 @@ public final class Client {
 	 * Returns the editor manager.
 	 */
 	public static EditorManager getEditorManager() {
-		return EDITOR_MANAGER;
+		return MANAGERS.require(ManagerKey.EDITOR, EditorManager.class);
 	}
 
 	/**
 	 * Returns the particle manager.
 	 */
 	public static ParticleManager getParticleManager() {
-		return PARTICLE_MANAGER;
+		return MANAGERS.require(ManagerKey.PARTICLE, ParticleManager.class);
 	}
 
 	/**
 	 * Returns the mesh renderer.
 	 */
 	public static MeshRenderer getMeshRenderer() {
-		return MESH_RENDERER;
+		return MANAGERS.require(ManagerKey.MESH, MeshRenderer.class);
 	}
 
 	/**
 	 * Returns the OBJ model manager.
 	 */
 	public static ObjModelManager getObjModelManager() {
-		return OBJ_MODEL_MANAGER;
+		return MANAGERS.require(ManagerKey.OBJ_MODEL, ObjModelManager.class);
 	}
 
 	/**
 	 * Returns the skybox manager.
 	 */
 	public static SkyboxManager getSkyboxManager() {
-		return SKYBOX_MANAGER;
+		return MANAGERS.require(ManagerKey.SKYBOX, SkyboxManager.class);
 	}
 
 	/**
@@ -186,35 +179,35 @@ public final class Client {
 	}
 
 	public static ItemCommandManager getItemCommandManager() {
-		return ITEM_COMMAND_MANAGER;
+		return MANAGERS.require(ManagerKey.ITEM_COMMAND, ItemCommandManager.class);
 	}
 
 	/**
 	 * Returns the waypoint renderer.
 	 */
 	public static ClientWaypointManager getWaypointRenderer() {
-		return WAYPOINT_RENDERER;
+		return MANAGERS.require(ManagerKey.CLIENT_WAYPOINT, ClientWaypointManager.class);
 	}
 
 	/**
 	 * Returns the area renderer.
 	 */
-	public static AreaRenderer getAreaRenderer() {
-		return AREA_RENDERER;
+	public static ClientAreaManager getAreaManager() {
+		return MANAGERS.require(ManagerKey.CLIENT_AREA, ClientAreaManager.class);
 	}
 
 	/**
 	 * Returns the client cutscene manager.
 	 */
 	public static ClientCutsceneManager getCutsceneManager() {
-		return CUTSCENE_MANAGER;
+		return MANAGERS.require(ManagerKey.CLIENT_CUTSCENE, ClientCutsceneManager.class);
 	}
 
 	/**
 	 * Returns the post-effect manager.
 	 */
 	public static PostEffectManager getPostEffectManager() {
-		return POST_EFFECT_MANAGER;
+		return MANAGERS.require(ManagerKey.POST_EFFECT, PostEffectManager.class);
 	}
 
 	/**
@@ -235,7 +228,7 @@ public final class Client {
 	 * Returns the client dialogue manager.
 	 */
 	public static ClientDialogueManager getDialogueManager() {
-		return DIALOGUE_MANAGER;
+		return MANAGERS.require(ManagerKey.CLIENT_DIALOGUE, ClientDialogueManager.class);
 	}
 
 	/**
@@ -249,14 +242,14 @@ public final class Client {
 	 * Returns the hotkey manager.
 	 */
 	public static HotKeyManager getHotKeyManager() {
-		return HOTKEY_MANAGER;
+		return MANAGERS.require(ManagerKey.HOTKEY, HotKeyManager.class);
 	}
 
 	/**
 	 * Returns the tooltip manager.
 	 */
 	public static TooltipManager getTooltipManager() {
-		return TOOLTIP_MANAGER;
+		return MANAGERS.require(ManagerKey.TOOLTIP, TooltipManager.class);
 	}
 
 	/**

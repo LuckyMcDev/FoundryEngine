@@ -47,8 +47,8 @@ public record DialogueSavePacket(CompoundTag data) implements AbstractPacket<Dia
 				return;
 			}
 			var mgr = Common.getDialogueManager();
-			mgr.applyNbt(data);
-			mgr.save();
+			mgr.loadData(data);
+			Common.getSavedDataManager().update(mgr);
 			mgr.syncToAll();
 		});
 	}

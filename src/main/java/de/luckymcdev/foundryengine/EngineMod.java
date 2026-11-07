@@ -12,6 +12,9 @@ import de.luckymcdev.foundryengine.event.common.registry.RegistryEvent;
 import de.luckymcdev.foundryengine.network.common.packet.CustomDataPacket;
 import de.luckymcdev.foundryengine.network.common.packet.sync.SavedDataSyncPacket;
 import de.luckymcdev.foundryengine.registry.common.RegistryCollector;
+import de.luckymcdev.foundryengine.manager.api.LevelTickable;
+import de.luckymcdev.foundryengine.manager.api.PlayerLifecycle;
+import de.luckymcdev.foundryengine.manager.api.ServerTickable;
 import net.minecraft.SharedConstants;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerPlayer;
@@ -32,6 +35,9 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import org.apache.commons.io.FileUtils;
@@ -73,6 +79,9 @@ public class EngineMod {
 		BUS.addListener(this::onServerStarted);
 		BUS.addListener(this::onServerStopping);
 		BUS.addListener(this::onPlayerChangedDimension);
+		BUS.addListener(this::dispatchServerTick);
+		BUS.addListener(this::dispatchLevelTick);
+		BUS.addListener(this::dispatchPlayerLogout);
 
 		registerCrashReportCallables();
 
@@ -207,6 +216,26 @@ public class EngineMod {
 	private void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
 		if (event.getEntity() instanceof ServerPlayer) {
 			Common.getSavedDataManager().syncToAll();
+		}
+	}
+
+	private void dispatchServerTick(ServerTickEvent.Post event) {
+		for (ServerTickable manager : Common.getManagers().getAll(ServerTickable.class)) {
+			manager.onServerTick(event);
+		}
+	}
+
+	private void dispatchLevelTick(LevelTickEvent.Post event) {
+		for (LevelTickable manager : Common.getManagers().getAll(LevelTickable.class)) {
+			manager.onLevelTick(event);
+		}
+	}
+
+	private void dispatchPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
+		if (event.getEntity() instanceof ServerPlayer player) {
+			for (PlayerLifecycle manager : Common.getManagers().getAll(PlayerLifecycle.class)) {
+				manager.onPlayerDisconnect(player);
+			}
 		}
 	}
 }

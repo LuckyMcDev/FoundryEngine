@@ -6,6 +6,7 @@ import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.area.common.AABBArea;
 import de.luckymcdev.foundryengine.area.common.Area;
 import de.luckymcdev.foundryengine.util.common.color.Color;
+import de.luckymcdev.foundryengine.manager.api.EngineManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.resources.Identifier;
@@ -15,7 +16,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
-public class AreaRenderer {
+public class ClientAreaManager implements EngineManager {
 	private final double HANDLE_SIZE = 0.125;
 
 	public @Nullable Area selectedCornerArea;

@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.network.common;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.manager.api.EngineManager;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
@@ -16,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class NetworkManager {
+public class NetworkManager implements EngineManager {
 	private static final Logger LOGGER = LogUtils.getLogger();
 
 	private final Map<Identifier, AbstractPacket.Definition<?>> registry = new HashMap<>();

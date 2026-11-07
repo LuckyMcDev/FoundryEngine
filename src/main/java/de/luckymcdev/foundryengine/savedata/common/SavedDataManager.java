@@ -2,12 +2,10 @@ package de.luckymcdev.foundryengine.savedata.common;
 
 import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.EnginePaths;
-import de.luckymcdev.foundryengine.area.common.AreaManager;
-import de.luckymcdev.foundryengine.cutscene.common.CutsceneManager;
-import de.luckymcdev.foundryengine.dialogue.common.DialogueManager;
+import de.luckymcdev.foundryengine.manager.api.EngineManager;
+import de.luckymcdev.foundryengine.manager.api.Persistable;
 import de.luckymcdev.foundryengine.network.common.NetworkManager;
 import de.luckymcdev.foundryengine.network.common.packet.sync.SavedDataSyncPacket;
-import de.luckymcdev.foundryengine.waypoint.common.WaypointManager;
 import de.luckymcdev.foundryengine.mixin.MinecraftServerAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtAccounter;
@@ -38,21 +36,15 @@ import java.util.stream.Stream;
 /// Central persistence and sync for FoundryEngine's engine data, stored as one `<sectionKey>.dat` file
 /// per section in either the per-world ([Scope#WORLD]) or the shared ([Scope#GLOBAL]) directory.
 /// Writes and syncs are deferred to tick listeners.
-public class SavedDataManager {
+public class SavedDataManager implements EngineManager {
 	public static final int FLUSH_INTERVAL_TICKS = 100;
 
 	private static final String FILE_EXTENSION = ".dat";
 	private static final String WORLD_DIR_NAME = "foundryengine";
-	/// Sections owned by the server managers; always [Scope#WORLD].
-	private static final Set<String> SERVER_MANAGED_SECTIONS = Set.of(
-		AreaManager.SAVE_SECTION,
-		CutsceneManager.SAVE_SECTION,
-		DialogueManager.SAVE_SECTION,
-		WaypointManager.SAVE_SECTION
-	);
 	private final Map<String, Scope> sectionScopes = new ConcurrentHashMap<>();
 
 	private final NetworkManager networkManager;
+	private final Map<String, Persistable> additionalPersistables = new ConcurrentHashMap<>();
 	private final Set<String> dirtySections = ConcurrentHashMap.newKeySet();
 	private final Path dataDir = EnginePaths.ENGINE_DATA.getParent().resolve("data");
 	private @Nullable Path worldDir;
@@ -62,9 +54,6 @@ public class SavedDataManager {
 	private int clientTickCounter = 0;
 	public SavedDataManager(NetworkManager networkManager) {
 		this.networkManager = networkManager;
-		for (String key : SERVER_MANAGED_SECTIONS) {
-			sectionScopes.put(key, Scope.WORLD);
-		}
 		registerEvents();
 	}
 
@@ -98,6 +87,17 @@ public class SavedDataManager {
 		sectionScopes.put(key, scope);
 	}
 
+	/**
+	 * Registers a persistable manager that is owned by a side-specific registry.
+	 */
+	public void registerPersistable(Persistable manager) {
+		Persistable previous = additionalPersistables.putIfAbsent(manager.saveSection(), manager);
+		if (previous != null && previous != manager) {
+			throw new IllegalStateException(
+				"Persistable manager already registered for section: " + manager.saveSection());
+		}
+	}
+
 	public Scope scopeOf(String key) {
 		return sectionScopes.getOrDefault(key, Scope.GLOBAL);
 	}
@@ -109,8 +109,12 @@ public class SavedDataManager {
 	/// Loads the global sections, and the world sections too if a world is resolved, discarding unsaved
 	/// changes of those scopes.
 	public void load() {
+		registerPersistableSections();
 		loadScope(Scope.GLOBAL);
 		loadScope(Scope.WORLD);
+		for (Persistable manager : persistableManagers()) {
+			manager.loadData(getSection(manager.saveSection()));
+		}
 	}
 
 	public CompoundTag getSection(String key) {
@@ -119,6 +123,8 @@ public class SavedDataManager {
 
 	/// Immediately flushes all dirty sections to disk.
 	public void save() {
+		registerPersistableSections();
+		persistManagers();
 		flushDirty(Scope.WORLD);
 		flushDirty(Scope.GLOBAL);
 	}
@@ -141,6 +147,13 @@ public class SavedDataManager {
 		dirtySections.add(key);
 	}
 
+	/**
+	 * Re-serializes a manager into its registered section and marks that section dirty.
+	 */
+	public void update(Persistable manager) {
+		setSection(manager.saveSection(), manager.saveData());
+	}
+
 	/// Requests a broadcast of all [Scope#WORLD] sections to all players on the next server tick.
 	/// There is no per-player variant, since any targeted request is a subset of this broadcast.
 	public void syncToAll() {
@@ -150,11 +163,8 @@ public class SavedDataManager {
 	private void onServerStarted(ServerStartedEvent event) {
 		LevelStorageSource.LevelStorageAccess storageAccess = ((MinecraftServerAccess) event.getServer()).getStorageSource();
 		this.worldDir = storageAccess.getLevelDirectory().path().resolve(WORLD_DIR_NAME);
-		loadScope(Scope.WORLD);
-		Common.getWaypointManager().load();
-		Common.getAreaManager().load();
-		Common.getCutsceneManager().load();
-		Common.getDialogueManager().load();
+		registerPersistableSections();
+		load();
 		flushDirty(Scope.WORLD);
 		syncToAll();
 	}
@@ -176,6 +186,27 @@ public class SavedDataManager {
 		save();
 		// Stop persisting world sections so they can never leak into another world.
 		this.worldDir = null;
+	}
+
+	private void registerPersistableSections() {
+		for (Persistable manager : persistableManagers()) {
+			registerSection(manager.saveSection(), manager.saveScope());
+		}
+	}
+
+	private void persistManagers() {
+		for (Persistable manager : persistableManagers()) {
+			setSection(manager.saveSection(), manager.saveData());
+		}
+	}
+
+	private List<Persistable> persistableManagers() {
+		Map<String, Persistable> managers = new java.util.LinkedHashMap<>();
+		for (Persistable manager : Common.getManagers().getAll(Persistable.class)) {
+			managers.put(manager.saveSection(), manager);
+		}
+		managers.putAll(additionalPersistables);
+		return List.copyOf(managers.values());
 	}
 
 	private void onClientTick(ClientTickEvent.Post event) {

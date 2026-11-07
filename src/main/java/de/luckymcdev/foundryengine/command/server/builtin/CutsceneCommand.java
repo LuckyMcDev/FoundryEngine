@@ -183,7 +183,7 @@ public class CutsceneCommand implements EngineCommand {
 		target.path.getPoints().get(1).setPos(tangent);
 		target.path.getPoints().get(2).setPos(tangent);
 
-		manager.save();
+		Common.getSavedDataManager().update(manager);
 		manager.syncToAll();
 		sendInfo(ctx, "Linearized cutscene: " + name);
 		return 1;
