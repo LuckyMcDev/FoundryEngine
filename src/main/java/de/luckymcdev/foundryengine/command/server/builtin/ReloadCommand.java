@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.command.server.builtin;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.bundle.BundleMod;
 import de.luckymcdev.foundryengine.command.server.EngineCommand;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
@@ -12,6 +13,10 @@ import net.minecraft.network.chat.Component;
  * Command to reload all bundles.
  */
 public class ReloadCommand implements EngineCommand {
+	@Override
+	public boolean enabled() {
+		return BundleMod.isEnabled();
+	}
 
 	@Override
 	public LiteralArgumentBuilder<CommandSourceStack> build(CommandBuildContext buildContext) {

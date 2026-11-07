@@ -2,6 +2,8 @@ package de.luckymcdev.foundryengine.area;
 
 import de.luckymcdev.foundryengine.Client;
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.config.ModuleConfig;
+import de.luckymcdev.foundryengine.editor.EditorMod;
 import de.luckymcdev.foundryengine.editor.client.panel.editor.AreaPanel;
 import de.luckymcdev.foundryengine.area.common.AreaManager;
 import de.luckymcdev.foundryengine.area.client.ClientAreaManager;
@@ -17,8 +19,12 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 @Mod(AreaMod.MODID)
 public final class AreaMod implements EngineModPart {
 	public static final String MODID = "foundryengine_area";
+	private static final ModuleConfig MODULE = new ModuleConfig("Area");
 
 	public AreaMod(IEventBus modBus, ModContainer modContainer) {
+		if (!MODULE.registerAndCheck(modContainer)) {
+			return;
+		}
 		this.wire(modBus);
 		Common.getManagers().register(ManagerKey.AREA, new AreaManager(Common.getSavedDataManager()));
 		if (net.neoforged.fml.loading.FMLEnvironment.getDist().isClient()) {
@@ -30,6 +36,10 @@ public final class AreaMod implements EngineModPart {
 		b.addListener(mgr::onBlockPlace);
 	}
 
+	public static boolean isEnabled() {
+		return MODULE.ENABLED.get();
+	}
+
 	@Override
 	public void onCommonSetup(FMLCommonSetupEvent event) {
 		Common.getNetworkManager().register(AreaPacket.DEFINITION);
@@ -37,7 +47,9 @@ public final class AreaMod implements EngineModPart {
 
 	@Override
 	public void onClientSetup(FMLClientSetupEvent event) {
-		Client.getEditorManager().register(AreaPanel.INSTANCE);
+		if (EditorMod.isEnabled()) {
+			Client.getEditorManager().register(AreaPanel.INSTANCE);
+		}
 	}
 
 }

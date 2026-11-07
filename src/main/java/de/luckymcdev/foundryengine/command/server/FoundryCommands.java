@@ -26,25 +26,29 @@ import java.util.List;
  * are registered separately via {@link de.luckymcdev.foundryengine.command.client.FoundryCommandsClient} on the physical client.</p>
  */
 public class FoundryCommands {
-	private static final List<EngineCommand> COMMANDS = List.of(
-		new DumpCommand(),
-		new HandCommand(),
-		new ReloadCommand(),
-		new StageCommand(),
-		new TestCommand(),
-		new EvalCommand(),
-		new CutsceneCommand(),
-		new DialogueCommand(),
-		new ScreenEffectCommand(),
-		new WaypointCommand(),
-		new BlockToDisplayCommand()
-	);
-
 	public static void registerAll(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext context) {
 		LiteralArgumentBuilder<CommandSourceStack> engineRoot = Commands.literal("engine");
-		for (EngineCommand command : COMMANDS) {
-			engineRoot.then(command.build(context));
+		for (EngineCommand command : commands()) {
+			if (command.enabled()) {
+				engineRoot.then(command.build(context));
+			}
 		}
 		dispatcher.register(engineRoot);
+	}
+
+	private static List<EngineCommand> commands() {
+		var commands = new java.util.ArrayList<EngineCommand>();
+		commands.add(new DumpCommand());
+		commands.add(new HandCommand());
+		commands.add(new BlockToDisplayCommand());
+		commands.add(new ReloadCommand());
+		commands.add(new EvalCommand());
+		commands.add(new StageCommand());
+		commands.add(new TestCommand());
+		commands.add(new CutsceneCommand());
+		commands.add(new ScreenEffectCommand());
+		commands.add(new DialogueCommand());
+		commands.add(new WaypointCommand());
+		return commands;
 	}
 }

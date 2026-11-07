@@ -6,6 +6,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.script.common.ScriptTimeout;
 import de.luckymcdev.foundryengine.script.common.ScriptTimeoutException;
+import de.luckymcdev.foundryengine.bundle.BundleMod;
 import de.luckymcdev.foundryengine.script.common.sandbox.FilteringClassLoader;
 import de.luckymcdev.foundryengine.util.common.ErrorHandler;
 import de.luckymcdev.foundryengine.config.StartupConfig;
@@ -23,6 +24,11 @@ import java.io.PrintStream;
 
 public class EvalCommand implements EngineCommand {
 	private static final Logger LOGGER = LogUtils.getLogger();
+
+	@Override
+	public boolean enabled() {
+		return BundleMod.isEnabled();
+	}
 
 	@Override
 	public LiteralArgumentBuilder<CommandSourceStack> build(CommandBuildContext buildContext) {

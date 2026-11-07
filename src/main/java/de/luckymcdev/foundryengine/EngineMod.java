@@ -1,20 +1,43 @@
 package de.luckymcdev.foundryengine;
 
 import com.mojang.logging.LogUtils;
+import de.luckymcdev.foundryengine.area.AreaMod;
 import de.luckymcdev.foundryengine.command.server.FoundryCommands;
 import de.luckymcdev.foundryengine.config.Config;
 import de.luckymcdev.foundryengine.config.StartupConfig;
+import de.luckymcdev.foundryengine.cutscene.CutsceneMod;
 import de.luckymcdev.foundryengine.data.common.gen.BundleDataGenerator;
-import de.luckymcdev.foundryengine.event.common.*;
+import de.luckymcdev.foundryengine.dialogue.DialogueMod;
+import de.luckymcdev.foundryengine.editor.EditorMod;
+import de.luckymcdev.foundryengine.event.common.BlockEvents;
+import de.luckymcdev.foundryengine.event.common.BundleEvents;
+import de.luckymcdev.foundryengine.event.common.ClientEvents;
+import de.luckymcdev.foundryengine.event.common.CommandEvents;
+import de.luckymcdev.foundryengine.event.common.EntityEvents;
+import de.luckymcdev.foundryengine.event.common.ItemEvents;
+import de.luckymcdev.foundryengine.event.common.LevelEvents;
+import de.luckymcdev.foundryengine.event.common.NetworkEvents;
+import de.luckymcdev.foundryengine.event.common.PlayerEvents;
+import de.luckymcdev.foundryengine.event.common.RecipeEvents;
+import de.luckymcdev.foundryengine.event.common.ServerEvents;
+import de.luckymcdev.foundryengine.event.common.SlotEvents;
+import de.luckymcdev.foundryengine.event.common.StageEvents;
 import de.luckymcdev.foundryengine.event.common.modification.BlockModificationEvent;
 import de.luckymcdev.foundryengine.event.common.modification.ItemModificationEvent;
 import de.luckymcdev.foundryengine.event.common.registry.RegistryEvent;
-import de.luckymcdev.foundryengine.network.common.packet.CustomDataPacket;
-import de.luckymcdev.foundryengine.network.common.packet.sync.SavedDataSyncPacket;
-import de.luckymcdev.foundryengine.registry.common.RegistryCollector;
+import de.luckymcdev.foundryengine.game.GameMod;
 import de.luckymcdev.foundryengine.manager.api.LevelTickable;
+import de.luckymcdev.foundryengine.manager.api.ManagerKey;
 import de.luckymcdev.foundryengine.manager.api.PlayerLifecycle;
 import de.luckymcdev.foundryengine.manager.api.ServerTickable;
+import de.luckymcdev.foundryengine.network.common.packet.CustomDataPacket;
+import de.luckymcdev.foundryengine.network.common.packet.sync.SavedDataSyncPacket;
+import de.luckymcdev.foundryengine.particle.ParticleMod;
+import de.luckymcdev.foundryengine.post.PostProcessingMod;
+import de.luckymcdev.foundryengine.registry.common.RegistryCollector;
+import de.luckymcdev.foundryengine.sound.SoundMod;
+import de.luckymcdev.foundryengine.waypoint.WaypointMod;
+import de.luckymcdev.foundryengine.world.WorldMod;
 import net.minecraft.SharedConstants;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerPlayer;
@@ -35,7 +58,6 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
@@ -131,35 +153,8 @@ public class EngineMod {
 		SlotEvents.Internal.register(BUS);
 	}
 
-	private void registerCrashReportCallables() {
-		CrashReportCallables.registerCrashCallable("FoundryEngine Bundles", () -> {
-			var bundles = Common.getBundleManager().getBundles();
-			if (bundles.isEmpty()) {
-				return "None";
-			}
-			var sb = new StringBuilder("\n");
-			for (var bundle : bundles) {
-				var info = bundle.info();
-				sb.append("\t\t- ").append(info.id()).append(" v").append(info.versionInfo());
-				if (!info.authors().isEmpty()) {
-					sb.append(" by ").append(String.join(", ", info.authors()));
-				}
-				sb.append('\n');
-			}
-			return sb.toString().stripTrailing();
-		}, () -> Common.getBundleManager().anyBundles());
-
-		CrashReportCallables.registerCrashCallable("FoundryEngine Game Sessions", () -> {
-			var sessions = Common.getGameManager().getAllSessions();
-			if (sessions.isEmpty()) {
-				return "None";
-			}
-			var sb = new StringBuilder("\n");
-			for (var session : sessions) {
-				sb.append("\t\t- ").append(session.id()).append('\n');
-			}
-			return sb.toString().stripTrailing();
-		}, () -> Common.getGameManager().anySession());
+	private static String status(boolean enabled) {
+		return enabled ? "ON   " : "OFF  ";
 	}
 
 	private void onCommonSetup(FMLCommonSetupEvent event) {
@@ -183,13 +178,43 @@ public class EngineMod {
 		Common.getNetworkManager().handleRegistration(event);
 	}
 
-	private void onLoadComplete(FMLLoadCompleteEvent event) {
-		event.enqueueWork(() -> {
-			for (Block block : BuiltInRegistries.BLOCK) {
-				var e = new BlockModificationEvent(block);
-				BUS.post(e);
+	private void registerCrashReportCallables() {
+		CrashReportCallables.registerCrashCallable("FoundryEngine Bundles", () -> {
+			if (!Common.getManagers().has(ManagerKey.BUNDLE)) {
+				return "Disabled";
 			}
-		});
+			var bundles = Common.getBundleManager().getBundles();
+			if (bundles.isEmpty()) {
+				return "None";
+			}
+			var sb = new StringBuilder("\n");
+			for (var bundle : bundles) {
+				var info = bundle.info();
+				sb.append("\t\t- ").append(info.id()).append(" v").append(info.versionInfo());
+				if (!info.authors().isEmpty()) {
+					sb.append(" by ").append(String.join(", ", info.authors()));
+				}
+				sb.append('\n');
+			}
+			return sb.toString().stripTrailing();
+		}, () -> Common.getManagers().has(ManagerKey.BUNDLE)
+			&& Common.getBundleManager().anyBundles());
+
+		CrashReportCallables.registerCrashCallable("FoundryEngine Game Sessions", () -> {
+			if (!Common.getManagers().has(ManagerKey.GAME)) {
+				return "Disabled";
+			}
+			var sessions = Common.getGameManager().getAllSessions();
+			if (sessions.isEmpty()) {
+				return "None";
+			}
+			var sb = new StringBuilder("\n");
+			for (var session : sessions) {
+				sb.append("\t\t- ").append(session.id()).append('\n');
+			}
+			return sb.toString().stripTrailing();
+		}, () -> Common.getManagers().has(ManagerKey.GAME)
+			&& Common.getGameManager().anySession());
 	}
 
 	private void onItemModification(ModifyDefaultComponentsEvent event) {
@@ -199,6 +224,38 @@ public class EngineMod {
 			BUS.post(e);
 		}
 		ItemModificationEvent.flush();
+	}
+
+	private void onLoadComplete(FMLLoadCompleteEvent event) {
+		event.enqueueWork(() -> {
+			logModuleStatus();
+			for (Block block : BuiltInRegistries.BLOCK) {
+				var e = new BlockModificationEvent(block);
+				BUS.post(e);
+			}
+		});
+	}
+
+	private void logModuleStatus() {
+		LOGGER.info("""
+          
+          Foundry Engine Modules:
+            Core            : ENABLED   | Bundle          : ENABLED
+            Area            : {}     | Cutscene       : {}
+            Dialogue        : {}     | Editor         : {}
+            Game            : {}     | Particle       : {}
+            Post Processing : {}     | Sound          : {}
+            Waypoint        : {}     | World          : {}""",
+			status(AreaMod.isEnabled()),
+			status(CutsceneMod.isEnabled()),
+			status(DialogueMod.isEnabled()),
+			status(EditorMod.isEnabled()),
+			status(GameMod.isEnabled()),
+			status(ParticleMod.isEnabled()),
+			status(PostProcessingMod.isEnabled()),
+			status(SoundMod.isEnabled()),
+			status(WaypointMod.isEnabled()),
+			status(WorldMod.isEnabled()));
 	}
 
 	private void onRegisterCommands(RegisterCommandsEvent event) {

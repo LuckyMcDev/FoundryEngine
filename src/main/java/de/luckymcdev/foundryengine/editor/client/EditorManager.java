@@ -3,6 +3,8 @@ package de.luckymcdev.foundryengine.editor.client;
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.Client;
 import de.luckymcdev.foundryengine.manager.api.EngineManager;
+import de.luckymcdev.foundryengine.manager.api.Render;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import de.luckymcdev.foundryengine.editor.client.panel.Panel;
 import net.minecraft.resources.Identifier;
 import org.jspecify.annotations.Nullable;
@@ -15,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class EditorManager implements EngineManager {
+public class EditorManager implements Render {
 	private static final Logger LOGGER = LogUtils.getLogger();
 
 	private final Map<Identifier, Panel> panels = new HashMap<>();
@@ -94,8 +96,21 @@ public class EditorManager implements EngineManager {
 			if (panel.isOpen() && !panel.handleRender()) {
 				toClose.add(panel);
 			}
+
 		}
 
 		toClose.forEach(Panel::close);
 	}
+
+	//? if >=26.2 {
+	/*@Override
+	public void render(RenderLevelStageEvent.AfterLevel event, net.minecraft.client.renderer.SubmitNodeStorage submitNodes) {
+		Client.getEditorController().renderFeatures();
+	}*/
+	//?} else {
+	@Override
+	public void render(RenderLevelStageEvent.AfterLevel event) {
+		Client.getEditorController().renderFeatures();
+	}
+	//?}
 }

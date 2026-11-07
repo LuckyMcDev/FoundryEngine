@@ -2,6 +2,8 @@ package de.luckymcdev.foundryengine.dialogue;
 
 import de.luckymcdev.foundryengine.Client;
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.config.ModuleConfig;
+import de.luckymcdev.foundryengine.editor.EditorMod;
 import de.luckymcdev.foundryengine.dialogue.common.DialogueNode;
 import de.luckymcdev.foundryengine.dialogue.common.DialogueSession;
 import de.luckymcdev.foundryengine.dialogue.common.DialogueManager;
@@ -23,8 +25,12 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 @Mod(DialogueMod.MODID)
 public final class DialogueMod implements EngineModPart {
 	public static final String MODID = "foundryengine_dialogue";
+	private static final ModuleConfig MODULE = new ModuleConfig("Dialogue");
 
 	public DialogueMod(IEventBus modBus, ModContainer modContainer) {
+		if (!MODULE.registerAndCheck(modContainer)) {
+			return;
+		}
 		DialogueEvents.Internal.register(bus());
 		this.wire(modBus);
 		Common.getManagers().register(ManagerKey.DIALOGUE, new DialogueManager(Common.getSavedDataManager()));
@@ -32,6 +38,10 @@ public final class DialogueMod implements EngineModPart {
 			Client.getManagers().register(ManagerKey.CLIENT_DIALOGUE, new ClientDialogueManager());
 		}
 		var b = bus();
+	}
+
+	public static boolean isEnabled() {
+		return MODULE.ENABLED.get();
 	}
 
 	@Override
@@ -44,7 +54,9 @@ public final class DialogueMod implements EngineModPart {
 
 	@Override
 	public void onClientSetup(FMLClientSetupEvent event) {
-		Client.getEditorManager().register(DialogueEditorPanel.INSTANCE);
+		if (EditorMod.isEnabled()) {
+			Client.getEditorManager().register(DialogueEditorPanel.INSTANCE);
+		}
 		ClientboundDialoguePacket.CLIENT_HANDLER = p -> {
 			var mgr = Client.getDialogueManager();
 			switch (p.action()) {

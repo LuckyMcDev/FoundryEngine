@@ -6,6 +6,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.cutscene.CutsceneMod;
 import de.luckymcdev.foundryengine.cutscene.common.model.Cutscene;
 import de.luckymcdev.foundryengine.cutscene.common.util.LerpType;
 import de.luckymcdev.foundryengine.easing.common.BezierPath;
@@ -30,6 +31,11 @@ import java.util.Arrays;
 import java.util.List;
 
 public class CutsceneCommand implements EngineCommand {
+	@Override
+	public boolean enabled() {
+		return CutsceneMod.isEnabled();
+	}
+
 	private static final SuggestionProvider<CommandSourceStack> CUTSCENE_SUGGESTIONS = (context, builder) -> {
 		ServerLevel level = context.getSource().getLevel();
 		return SharedSuggestionProvider.suggestResource(

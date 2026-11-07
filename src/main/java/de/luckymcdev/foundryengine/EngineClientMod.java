@@ -7,12 +7,18 @@ import de.luckymcdev.foundryengine.command.client.FoundryCommandsClient;
 import de.luckymcdev.foundryengine.command.client.ItemCommandManager;
 import de.luckymcdev.foundryengine.command.client.suggest.nbt.NbtSuggestions;
 import de.luckymcdev.foundryengine.config.Config;
+import de.luckymcdev.foundryengine.area.AreaMod;
+import de.luckymcdev.foundryengine.cutscene.CutsceneMod;
+import de.luckymcdev.foundryengine.particle.ParticleMod;
+import de.luckymcdev.foundryengine.post.PostProcessingMod;
+import de.luckymcdev.foundryengine.waypoint.WaypointMod;
 import de.luckymcdev.foundryengine.event.client.registry.RegistryEventClient;
 import de.luckymcdev.foundryengine.ext.client.ModPathRecorder;
 import de.luckymcdev.foundryengine.gizmo.client.GizmoBuffer;
 import de.luckymcdev.foundryengine.gizmo.client.GizmoRenderer;
 import de.luckymcdev.foundryengine.manager.api.ManagerKey;
 import de.luckymcdev.foundryengine.manager.api.ClientTickable;
+import de.luckymcdev.foundryengine.manager.api.Render;
 import de.luckymcdev.foundryengine.particle.client.ParticleManager;
 import de.luckymcdev.foundryengine.render.client.MeshRenderer;
 import de.luckymcdev.foundryengine.render.client.obj.ObjModelManager;
@@ -57,10 +63,8 @@ public class EngineClientMod {
 	private static final IEventBus BUS = NeoForge.EVENT_BUS;
 
 	public EngineClientMod(IEventBus modBus, ModContainer modContainer) {
-		Client.getManagers().register(ManagerKey.PARTICLE, new ParticleManager());
 		Client.getManagers().register(ManagerKey.MESH, new MeshRenderer());
 		Client.getManagers().register(ManagerKey.OBJ_MODEL, new ObjModelManager());
-		Client.getManagers().register(ManagerKey.POST_EFFECT, new PostEffectManager());
 		Client.getManagers().register(ManagerKey.SKYBOX, new SkyboxManager());
 		Client.getManagers().register(ManagerKey.ITEM_COMMAND, new ItemCommandManager());
 		Client.getManagers().register(ManagerKey.TOOLTIP, new TooltipManager());
@@ -79,6 +83,12 @@ public class EngineClientMod {
 	}
 
 	private void onClientSetup(FMLClientSetupEvent event) {
+		if (ParticleMod.isEnabled()) {
+			Client.getManagers().register(ManagerKey.PARTICLE, new ParticleManager());
+		}
+		if (PostProcessingMod.isEnabled()) {
+			Client.getManagers().register(ManagerKey.POST_EFFECT, new PostEffectManager());
+		}
 		//? if >=26.2 {
 		/*if (Minecraft.getInstance().options.preferredGraphicsBackend().get() == PreferredGraphicsApi.VULKAN) {
 			//throw new EngineException("Sadly due to how FoundryEngine renders its InGame Editor, Vulkan is not supported at this Time. Switch to OpenGL. or delte the Mod.");
@@ -148,13 +158,11 @@ public class EngineClientMod {
 
 		GizmoBuffer.startFrame();
 
-		Client.getCutsceneManager().renderTick();
-		Client.getEditorController().renderFeatures();
-
 		var mc = Minecraft.getInstance();
 		var submitNodeStorage = new net.minecraft.client.renderer.SubmitNodeStorage();
-		Client.getWaypointRenderer().renderWaypoints(event, submitNodeStorage);
-		Client.getAreaManager().renderAreaModules(event, submitNodeStorage);
+		for (Render renderer : Client.getManagers().getAll(Render.class)) {
+			renderer.render(event, submitNodeStorage);
+		}
 		GizmoRenderer.render(submitNodeStorage, camState, false);
 
 		mc.gameRenderer.featureRenderDispatcher().renderAllFeatures(submitNodeStorage);
@@ -166,10 +174,9 @@ public class EngineClientMod {
 
 		GizmoBuffer.startFrame();
 
-		Client.getCutsceneManager().renderTick();
-		Client.getEditorController().renderFeatures();
-		Client.getWaypointRenderer().renderWaypoints(event);
-		Client.getAreaManager().renderAreaModules(event);
+		for (Render renderer : Client.getManagers().getAll(Render.class)) {
+			renderer.render(event);
+		}
 
 		var mc = Minecraft.getInstance();
 		var poseStack = new PoseStack();

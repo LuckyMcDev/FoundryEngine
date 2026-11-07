@@ -1,6 +1,8 @@
 package de.luckymcdev.foundryengine.editor.client;
 
 import de.luckymcdev.foundryengine.Client;
+import de.luckymcdev.foundryengine.area.AreaMod;
+import de.luckymcdev.foundryengine.cutscene.CutsceneMod;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -51,25 +53,37 @@ public class EditorController {
 			return;
 		}
 
-		cutsceneTool.tick();
-		areaTool.tick();
+		if (CutsceneMod.isEnabled()) {
+			cutsceneTool.tick();
+		} else {
+			cutsceneTool.onDeactivated();
+		}
+		if (AreaMod.isEnabled()) {
+			areaTool.tick();
+		} else {
+			areaTool.onDeactivated();
+		}
 	}
 
 	public boolean onScroll(double vertical) {
 		if (!isHoldingEditorItem()) {
 			return false;
 		}
-		if (cutsceneTool.onScroll(vertical)) {
+		if (CutsceneMod.isEnabled() && cutsceneTool.onScroll(vertical)) {
 			return true;
 		}
-		return areaTool.onScroll(vertical);
+		return AreaMod.isEnabled() && areaTool.onScroll(vertical);
 	}
 
 	public void renderFeatures() {
 		if (!isHoldingEditorItem()) {
 			return;
 		}
-		cutsceneTool.render();
-		areaTool.render();
+		if (CutsceneMod.isEnabled()) {
+			cutsceneTool.render();
+		}
+		if (AreaMod.isEnabled()) {
+			areaTool.render();
+		}
 	}
 }

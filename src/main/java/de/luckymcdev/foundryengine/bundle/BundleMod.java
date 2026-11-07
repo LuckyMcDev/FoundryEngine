@@ -3,9 +3,10 @@ package de.luckymcdev.foundryengine.bundle;
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.EnginePaths;
+import de.luckymcdev.foundryengine.config.ModuleConfig;
 import de.luckymcdev.foundryengine.data.common.gen.BundleDataGenerator;
-import de.luckymcdev.foundryengine.network.common.packet.BundleHashPacket;
 import de.luckymcdev.foundryengine.event.common.BundleEvents;
+import de.luckymcdev.foundryengine.network.common.packet.BundleHashPacket;
 import de.luckymcdev.foundryengine.pack.server.DynamicPackRepository;
 import de.luckymcdev.foundryengine.pack.server.ResourcePackMerger;
 import de.luckymcdev.foundryengine.util.common.EngineModPart;
@@ -37,8 +38,13 @@ import java.util.List;
 @Mod(BundleMod.MODID)
 public final class BundleMod implements EngineModPart {
 	public static final String MODID = "foundryengine_bundle";
+	private static final ModuleConfig MODULE = new ModuleConfig("Bundle");
 	private static final Logger LOGGER = LogUtils.getLogger();
+
 	public BundleMod(IEventBus modBus, ModContainer modContainer) {
+		if (!MODULE.registerAndCheck(modContainer)) {
+			return;
+		}
 		BundleEvents.Internal.register(bus());
 		this.wire(modBus);
 		var b = bus();
@@ -52,6 +58,10 @@ public final class BundleMod implements EngineModPart {
 		b.addListener(this::onServerStarting);
 		b.addListener(this::onServerStopping);
 
+	}
+
+	public static boolean isEnabled() {
+		return MODULE.ENABLED.get();
 	}
 
 	@Override

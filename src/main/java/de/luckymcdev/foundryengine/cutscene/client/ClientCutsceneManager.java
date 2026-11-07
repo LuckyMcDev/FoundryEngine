@@ -1,7 +1,8 @@
 package de.luckymcdev.foundryengine.cutscene.client;
 
 import de.luckymcdev.foundryengine.Client;
-import de.luckymcdev.foundryengine.manager.api.EngineManager;
+import de.luckymcdev.foundryengine.post.PostProcessingMod;
+import de.luckymcdev.foundryengine.manager.api.Render;
 import de.luckymcdev.foundryengine.manager.api.ClientTickable;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import de.luckymcdev.foundryengine.cutscene.common.model.CommandAttachment;
@@ -27,7 +28,7 @@ import java.util.UUID;
  * <p>
  * Owned by {@link Client} as a singleton instance (not static state).
  */
-public class ClientCutsceneManager implements EngineManager, ClientTickable {
+public class ClientCutsceneManager implements Render, ClientTickable {
 	/**
 	 * Maximum distance in blocks from the player for cutscene camera override to be active.
 	 */
@@ -115,7 +116,7 @@ public class ClientCutsceneManager implements EngineManager, ClientTickable {
 		if (currentAgeInTicks >= total) {
 			if (cutsceneQueue.isEmpty()) {
 				currentCutscene = null;
-				if (!Client.getPostEffectManager().inScreenEffect()) {
+				if (!PostProcessingMod.isEnabled() || !Client.getPostEffectManager().inScreenEffect()) {
 					//? if >=26.2 {
 					/*if (mc.gui.hud.isHidden()) {
 						mc.gui.hud.toggle();
@@ -143,11 +144,26 @@ public class ClientCutsceneManager implements EngineManager, ClientTickable {
 		currentCutscene.tickScreenEffects(t, currentLengthInTicks);
 	}
 
+	//? if >=26.2 {
+	/*@Override
+	public void render(net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterLevel event,
+					   net.minecraft.client.renderer.SubmitNodeStorage submitNodes) {
+		renderTick();
+	}*/
+	//?} else {
+	@Override
+	public void render(net.neoforged.neoforge.client.event.RenderLevelStageEvent.AfterLevel event) {
+		renderTick();
+	}
+	//?}
+
 	public void handlePacket(CutscenePacket packet) {
 		CompoundTag tag = packet.nbt();
 
 		if (tag.getBooleanOr("Cancel", false)) {
-			Client.getPostEffectManager().stopScreenEffect();
+			if (PostProcessingMod.isEnabled()) {
+				Client.getPostEffectManager().stopScreenEffect();
+			}
 			if (cutsceneQueue.isEmpty()) {
 				currentCutscene = null;
 				currentLengthInTicks = 0;
@@ -303,13 +319,15 @@ public class ClientCutsceneManager implements EngineManager, ClientTickable {
 					continue;
 				}
 				firedEffects[i] = true;
-				Client.getPostEffectManager().startScreenEffect(
+				if (PostProcessingMod.isEnabled()) {
+					Client.getPostEffectManager().startScreenEffect(
 					eff.getEffectName(),
 					eff.getIntroTicks(cutsceneLength),
 					eff.getHoldTicks(cutsceneLength),
 					eff.getOutroTicks(cutsceneLength),
 					eff.getLerpType()
-				);
+					);
+				}
 			}
 
 			// Fire commands

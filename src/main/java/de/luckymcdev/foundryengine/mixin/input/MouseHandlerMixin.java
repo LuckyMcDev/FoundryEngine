@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.mixin.input;
 
 import de.luckymcdev.foundryengine.Client;
+import de.luckymcdev.foundryengine.editor.EditorMod;
 import de.luckymcdev.foundryengine.interfaces.input.EngineMouseHandler;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.client.input.MouseButtonInfo;
@@ -28,7 +29,7 @@ public class MouseHandlerMixin implements EngineMouseHandler {
 	@Override
 	@Inject(method = "onButton", at = @At("HEAD"), cancellable = true)
 	public void engine$onButton(long handle, MouseButtonInfo buttonInfo, int action, CallbackInfo ci) {
-		if (Client.getImGuiManager().shouldBlockInput()) {
+		if (EditorMod.isEnabled() && Client.getImGuiManager().shouldBlockInput()) {
 			ci.cancel();
 		}
 	}
@@ -39,13 +40,15 @@ public class MouseHandlerMixin implements EngineMouseHandler {
 	@Override
 	@Inject(method = "onScroll", at = @At("HEAD"), cancellable = true)
 	public void engine$onScroll(long handle, double horizontal, double vertical, CallbackInfo ci) {
-		if (Client.getImGuiManager().shouldBlockInput()) {
+		if (EditorMod.isEnabled() && Client.getImGuiManager().shouldBlockInput()) {
 			ci.cancel();
 			return;
 		}
 
 		// In-world editor uses scroll to push/pull points.
-		if (Client.getCurrentScreen() == null && Client.getEditorController().onScroll(vertical)) {
+		if (EditorMod.isEnabled()
+			&& Client.getCurrentScreen() == null
+			&& Client.getEditorController().onScroll(vertical)) {
 			ci.cancel();
 		}
 	}
@@ -57,7 +60,7 @@ public class MouseHandlerMixin implements EngineMouseHandler {
 	@Override
 	@Inject(method = "onMove", at = @At("HEAD"), cancellable = true)
 	public void engine$onMove(long handle, double xpos, double ypos, CallbackInfo ci) {
-		if (Client.getImGuiManager().shouldBlockInput()) {
+		if (EditorMod.isEnabled() && Client.getImGuiManager().shouldBlockInput()) {
 			this.xpos = -1.0;
 			this.ypos = -1.0;
 			ci.cancel();

@@ -121,6 +121,8 @@
 	"foundryengine.configuration.section.foundryengine.server.toml.title": "FoundryEngine Server Configuration",
 	"foundryengine.configuration.section.foundryengine.server.toml": "Server configuration",
 	"foundryengine.configuration.title": "FoundryEngine Configuration",
+	"foundryengine.configuration.enabled": "Enabled",
+	"foundryengine.configuration.enabled.tooltip": "Enables or disables this FoundryEngine module.",
 	"foundryengine.stage.required_prefix": " Required: ",
 	"foundryengine.stage.default_locked": "You don't have the required stages to interact with this %s!",
 	"foundryengine.stage.required_header": "Required Stages:",

@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.post;
 
 import de.luckymcdev.foundryengine.Client;
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.config.ModuleConfig;
 import de.luckymcdev.foundryengine.util.common.EngineModPart;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.neoforged.bus.api.IEventBus;
@@ -14,10 +15,18 @@ import java.util.concurrent.CompletableFuture;
 @Mod(PostProcessingMod.MODID)
 public class PostProcessingMod implements EngineModPart {
 	public static final String MODID = "foundryengine_postprocessing";
+	private static final ModuleConfig MODULE = new ModuleConfig("Post Processing");
 
 	public PostProcessingMod(IEventBus modBus, ModContainer modContainer) {
+		if (!MODULE.registerAndCheck(modContainer)) {
+			return;
+		}
 		this.wire(modBus);
 		modBus.addListener(this::addClientReloadListener);
+	}
+
+	public static boolean isEnabled() {
+		return MODULE.ENABLED.get();
 	}
 
 	private void addClientReloadListener(AddClientReloadListenersEvent event) {

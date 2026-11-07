@@ -6,7 +6,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import de.luckymcdev.foundryengine.Client;
 import de.luckymcdev.foundryengine.gizmo.client.WorldGizmo;
 import de.luckymcdev.foundryengine.Common;
-import de.luckymcdev.foundryengine.manager.api.EngineManager;
+import de.luckymcdev.foundryengine.manager.api.Render;
 import de.luckymcdev.foundryengine.util.common.color.Color;
 import de.luckymcdev.foundryengine.waypoint.common.Waypoint;
 import net.minecraft.client.KeyMapping;
@@ -34,7 +34,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
 //?}
 
-public class ClientWaypointManager implements EngineManager {
+public class ClientWaypointManager implements Render {
 	public static final KeyMapping PRIMARY_WAYPOINT_KEY = new KeyMapping(
 		"key.foundryengine.primary_waypoint",
 		InputConstants.Type.KEYSYM,
@@ -195,6 +195,18 @@ public class ClientWaypointManager implements EngineManager {
 		poseStack.scale(scale, -scale, scale);
 
 		renderState.submit(poseStack, submitNodeCollector, 15728880, OverlayTexture.NO_OVERLAY, 0);
+	}
+	//?}
+
+	//? if >=26.2 {
+	/*@Override
+	public void render(RenderLevelStageEvent.AfterLevel event, SubmitNodeStorage submitNodes) {
+		renderWaypoints(event, submitNodes);
+	}*/
+	//?} else {
+	@Override
+	public void render(RenderLevelStageEvent.AfterLevel event) {
+		renderWaypoints(event);
 	}
 	//?}
 }

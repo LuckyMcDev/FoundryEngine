@@ -3,6 +3,7 @@ package de.luckymcdev.foundryengine.editor.client;
 import de.luckymcdev.foundryengine.Client;
 import de.luckymcdev.foundryengine.gizmo.client.WorldGizmo;
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.area.AreaMod;
 import de.luckymcdev.foundryengine.area.common.AABBArea;
 import de.luckymcdev.foundryengine.area.common.Area;
 import de.luckymcdev.foundryengine.network.common.packet.editor.AreaPacket;
@@ -70,7 +71,15 @@ public class AreaTool {
 		storedDistance = 0;
 		selectedArea = null;
 		draggingMin = false;
-		Client.getAreaManager().selectedCornerArea = null;
+		if (!AreaMod.isEnabled()) {
+			return;
+		}
+		var manager = Client.getAreaManagerOrNull();
+		if (manager != null) {
+			manager.selectedCornerArea = null;
+			manager.draggingMin = false;
+			manager.storedDistance = 0;
+		}
 	}
 
 	public void render() {

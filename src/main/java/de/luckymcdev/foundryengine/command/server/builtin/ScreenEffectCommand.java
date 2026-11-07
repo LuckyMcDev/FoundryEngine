@@ -1,5 +1,7 @@
 package de.luckymcdev.foundryengine.command.server.builtin;
 
+import de.luckymcdev.foundryengine.cutscene.CutsceneMod;
+
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -27,6 +29,11 @@ import java.util.Arrays;
 import java.util.Collection;
 
 public class ScreenEffectCommand implements EngineCommand {
+	@Override
+	public boolean enabled() {
+		return CutsceneMod.isEnabled();
+	}
+
 
 	private static final String[] KNOWN_EFFECTS = {"none", "black", "circle", "star", "cinematic", "grayscale", "sepia", "depth_vis"};
 

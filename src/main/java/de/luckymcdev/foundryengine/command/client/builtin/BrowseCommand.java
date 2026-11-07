@@ -3,6 +3,7 @@ package de.luckymcdev.foundryengine.command.client.builtin;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.EnginePaths;
+import de.luckymcdev.foundryengine.editor.EditorMod;
 import de.luckymcdev.foundryengine.command.server.EngineCommand;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
@@ -10,6 +11,11 @@ import net.minecraft.commands.Commands;
 import net.minecraft.util.Util;
 
 public class BrowseCommand implements EngineCommand {
+	@Override
+	public boolean enabled() {
+		return EditorMod.isEnabled();
+	}
+
 	@Override
 	public LiteralArgumentBuilder<CommandSourceStack> build(CommandBuildContext context) {
 		return Commands.literal("browse").executes(c -> {

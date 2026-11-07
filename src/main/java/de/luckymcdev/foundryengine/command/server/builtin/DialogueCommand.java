@@ -6,6 +6,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.dialogue.DialogueMod;
 import de.luckymcdev.foundryengine.dialogue.common.DialogueDisplayMode;
 import de.luckymcdev.foundryengine.command.server.EngineCommand;
 import net.minecraft.commands.CommandBuildContext;
@@ -26,6 +27,11 @@ import java.util.stream.Collectors;
  * Player subcommands (no permission check): next, end, select {@code <index>}.
  */
 public class DialogueCommand implements EngineCommand {
+	@Override
+	public boolean enabled() {
+		return DialogueMod.isEnabled();
+	}
+
 
 	private static final SuggestionProvider<CommandSourceStack> TREE_SUGGESTIONS = (ctx, builder) ->
 		SharedSuggestionProvider.suggest(

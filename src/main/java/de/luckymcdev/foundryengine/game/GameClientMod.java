@@ -14,6 +14,9 @@ import net.neoforged.neoforge.client.event.RegisterDebugEntriesEvent;
 @Mod(value = GameMod.MODID, dist = Dist.CLIENT)
 public final class GameClientMod {
 	public GameClientMod(IEventBus modBus, ModContainer modContainer) {
+		if (!GameMod.isEnabled()) {
+			return;
+		}
 		Client.getManagers().register(ManagerKey.GAME_CLIENT, new ClientGameManager());
 		modBus.addListener(this::onRegisterDebugEntry);
 	}

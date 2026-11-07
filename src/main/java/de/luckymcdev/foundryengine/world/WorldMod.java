@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.world;
 
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.config.ModuleConfig;
 import de.luckymcdev.foundryengine.network.common.packet.world.ServerBoundChangeWeatherPacket;
 import de.luckymcdev.foundryengine.network.common.packet.world.ServerBoundSetTimePacket;
 import de.luckymcdev.foundryengine.network.common.packet.world.ServerBoundSpawnEntityPacket;
@@ -19,10 +20,18 @@ import net.neoforged.neoforge.registries.RegisterEvent;
 @Mod(WorldMod.MODID)
 public class WorldMod implements EngineModPart {
 	public static final String MODID = "foundryengine_world";
+	private static final ModuleConfig MODULE = new ModuleConfig("World");
 
 	public WorldMod(IEventBus modBus, ModContainer modContainer) {
+		if (!MODULE.registerAndCheck(modContainer)) {
+			return;
+		}
 		this.wire(modBus);
 		modBus.addListener(EventPriority.LOWEST, this::onRegisterChunkGenerators);
+	}
+
+	public static boolean isEnabled() {
+		return MODULE.ENABLED.get();
 	}
 
 	@Override

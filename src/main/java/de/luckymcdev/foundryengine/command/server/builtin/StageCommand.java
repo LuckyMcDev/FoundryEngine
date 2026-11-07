@@ -5,6 +5,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.game.GameMod;
 import de.luckymcdev.foundryengine.command.server.EngineCommand;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
@@ -20,6 +21,11 @@ import java.util.Collection;
 import java.util.Set;
 
 public class StageCommand implements EngineCommand {
+	@Override
+	public boolean enabled() {
+		return GameMod.isEnabled();
+	}
+
 	private static final SuggestionProvider<CommandSourceStack> SUGGEST_STAGES = (ctx, builder) ->
 		SharedSuggestionProvider.suggest(
 			Common.getGameStageHandler().getStageRegistry().getStages().stream()

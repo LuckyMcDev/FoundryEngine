@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.game;
 
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.config.ModuleConfig;
 import de.luckymcdev.foundryengine.event.common.GameEvents;
 import de.luckymcdev.foundryengine.game.common.GameManager;
 import de.luckymcdev.foundryengine.game.common.stage.GameStageHandler;
@@ -22,8 +23,12 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
 @Mod(GameMod.MODID)
 public final class GameMod implements EngineModPart {
 	public static final String MODID = "foundryengine_game";
+	private static final ModuleConfig MODULE = new ModuleConfig("Game");
 
 	public GameMod(IEventBus modBus, ModContainer modContainer) {
+		if (!MODULE.registerAndCheck(modContainer)) {
+			return;
+		}
 		this.wire(modBus);
 		Common.getManagers().register(ManagerKey.GAME, new GameManager());
 		Common.getManagers().register(ManagerKey.GAME_STAGE, new GameStageHandler());
@@ -43,6 +48,10 @@ public final class GameMod implements EngineModPart {
 		b.addListener(this::onServerStopping);
 		b.addListener(this::onPlayerChangedDimension);
 
+	}
+
+	public static boolean isEnabled() {
+		return MODULE.ENABLED.get();
 	}
 
 	private void onServerStopping(ServerStoppingEvent event) {

@@ -39,6 +39,9 @@ public final class BundleClientMod {
 	}
 
 	private void onClientSetup(net.neoforged.fml.event.lifecycle.FMLClientSetupEvent event) {
+		if (!BundleMod.isEnabled()) {
+			return;
+		}
 		event.enqueueWork(() -> {
 			for (var container : Common.getBundleManager().getBundleContainers()) {
 				if (container instanceof BundleModContainer) {
@@ -49,10 +52,16 @@ public final class BundleClientMod {
 	}
 
 	private void onRegisterDebugEntry(RegisterDebugEntriesEvent event) {
+		if (!BundleMod.isEnabled()) {
+			return;
+		}
 		event.register(Common.id("bundles_info"), new BundleDebugEntry(Common.getBundleManager()));
 	}
 
 	private void onScreenOpening(ScreenEvent.Opening event) {
+		if (!BundleMod.isEnabled()) {
+			return;
+		}
 		if (handledClassFilter || !(event.getNewScreen() instanceof TitleScreen)) {
 			return;
 		}
@@ -83,6 +92,9 @@ public final class BundleClientMod {
 	}
 
 	private void onLoggingIn(ClientPlayerNetworkEvent.LoggingIn event) {
+		if (!BundleMod.isEnabled()) {
+			return;
+		}
 		FolderHash.hashFolderAsync(EnginePaths.BUNDLES)
 			.thenAccept(hash -> ClientPacketDistributor.sendToServer(new BundleHashPacket(hash)))
 			.exceptionally(e -> {

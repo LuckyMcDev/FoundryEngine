@@ -2,6 +2,8 @@ package de.luckymcdev.foundryengine.waypoint;
 
 import de.luckymcdev.foundryengine.Client;
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.config.ModuleConfig;
+import de.luckymcdev.foundryengine.editor.EditorMod;
 import de.luckymcdev.foundryengine.editor.client.panel.tool.WaypointPanel;
 import de.luckymcdev.foundryengine.network.common.packet.editor.WaypointPacket;
 import de.luckymcdev.foundryengine.util.common.EngineModPart;
@@ -23,8 +25,12 @@ import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 @Mod(WaypointMod.MODID)
 public final class WaypointMod implements EngineModPart {
 	public static final String MODID = "foundryengine_waypoint";
+	private static final ModuleConfig MODULE = new ModuleConfig("Waypoint");
 
 	public WaypointMod(IEventBus modBus, ModContainer modContainer) {
+		if (!MODULE.registerAndCheck(modContainer)) {
+			return;
+		}
 		this.wire(modBus);
 		Common.getManagers().register(ManagerKey.WAYPOINT, new WaypointManager(Common.getSavedDataManager()));
 		if (FMLEnvironment.getDist().isClient()) {
@@ -37,6 +43,10 @@ public final class WaypointMod implements EngineModPart {
 		}
 	}
 
+	public static boolean isEnabled() {
+		return MODULE.ENABLED.get();
+	}
+
 	@Override
 	public void onCommonSetup(FMLCommonSetupEvent event) {
 		Common.getNetworkManager().register(WaypointPacket.DEFINITION);
@@ -44,7 +54,9 @@ public final class WaypointMod implements EngineModPart {
 
 	@Override
 	public void onClientSetup(FMLClientSetupEvent event) {
-		Client.getEditorManager().register(WaypointPanel.INSTANCE);
+		if (EditorMod.isEnabled()) {
+			Client.getEditorManager().register(WaypointPanel.INSTANCE);
+		}
 	}
 
 	private void onRegisterKeyMapping(RegisterKeyMappingsEvent event) {

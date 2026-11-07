@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.mixin;
 
 import com.mojang.blaze3d.platform.Window;
 import de.luckymcdev.foundryengine.Client;
+import de.luckymcdev.foundryengine.editor.EditorMod;
 import de.luckymcdev.foundryengine.interfaces.EngineMinecraft;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.main.GameConfig;
@@ -40,7 +41,9 @@ public class MinecraftMixin implements EngineMinecraft {
 	@Override
 	@Inject(method = "close", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/font/providers/FreeTypeUtil;destroy()V", shift = At.Shift.BEFORE))
 	public void engine$close(CallbackInfo ci) {
-		Client.getImGuiManager().free();
+		if (EditorMod.isEnabled()) {
+			Client.getImGuiManager().free();
+		}
 	}
 
 	@Override

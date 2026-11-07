@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.mixin.input;
 
 import de.luckymcdev.foundryengine.Client;
+import de.luckymcdev.foundryengine.editor.EditorMod;
 import de.luckymcdev.foundryengine.editor.client.EditorScreen;
 import de.luckymcdev.foundryengine.interfaces.input.EngineKeyboardHandler;
 import net.minecraft.client.KeyboardHandler;
@@ -27,6 +28,9 @@ public class KeyboardHandlerMixin implements EngineKeyboardHandler {
 	 */
 	@Inject(method = "keyPress", at = @At("HEAD"), cancellable = true)
 	public void engine$keyPress(long handle, int action, KeyEvent event, CallbackInfo ci) {
+		if (!EditorMod.isEnabled()) {
+			return;
+		}
 		if (Client.getImGuiManager().shouldBlockInput()) {
 			ci.cancel();
 			return;
@@ -52,7 +56,7 @@ public class KeyboardHandlerMixin implements EngineKeyboardHandler {
 	@Override
 	@Inject(method = "charTyped", at = @At("HEAD"), cancellable = true)
 	public void engine$charTyped(long handle, CharacterEvent event, CallbackInfo ci) {
-		if (Client.getImGuiManager().shouldBlockInput()) {
+		if (EditorMod.isEnabled() && Client.getImGuiManager().shouldBlockInput()) {
 			ci.cancel();
 		}
 	}

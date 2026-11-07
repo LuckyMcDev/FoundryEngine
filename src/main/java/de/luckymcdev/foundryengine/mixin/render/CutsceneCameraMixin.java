@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.mixin.render;
 
 import de.luckymcdev.foundryengine.Client;
+import de.luckymcdev.foundryengine.cutscene.CutsceneMod;
 import de.luckymcdev.foundryengine.cutscene.client.ClientCutsceneManager;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -34,6 +35,9 @@ public abstract class CutsceneCameraMixin {
 	 */
 	@Inject(method = "isDetached", at = @At("HEAD"), cancellable = true)
 	private void engine$detachCameraDuringCutscene(CallbackInfoReturnable<Boolean> cir) {
+		if (!CutsceneMod.isEnabled()) {
+			return;
+		}
 		if (Client.getCutsceneManager().isCameraOverrideDisabled()) {
 			return;
 		}
@@ -53,6 +57,9 @@ public abstract class CutsceneCameraMixin {
 	 */
 	@Inject(method = "setPosition(Lnet/minecraft/world/phys/Vec3;)V", at = @At("TAIL"))
 	private void engine$overridePosition(Vec3 ignored, CallbackInfo ci) {
+		if (!CutsceneMod.isEnabled()) {
+			return;
+		}
 		if (Client.getCutsceneManager().isCameraOverrideDisabled()) {
 			return;
 		}

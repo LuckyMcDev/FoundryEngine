@@ -197,6 +197,13 @@ public final class Client {
 	}
 
 	/**
+	 * Returns the client area manager when Area is available.
+	 */
+	public static @Nullable ClientAreaManager getAreaManagerOrNull() {
+		return MANAGERS.requireOrNull(ManagerKey.CLIENT_AREA, ClientAreaManager.class);
+	}
+
+	/**
 	 * Returns the client cutscene manager.
 	 */
 	public static ClientCutsceneManager getCutsceneManager() {
@@ -208,6 +215,13 @@ public final class Client {
 	 */
 	public static PostEffectManager getPostEffectManager() {
 		return MANAGERS.require(ManagerKey.POST_EFFECT, PostEffectManager.class);
+	}
+
+	/**
+	 * Returns the post-effect manager when Post Processing is available.
+	 */
+	public static @Nullable PostEffectManager getPostEffectManagerOrNull() {
+		return MANAGERS.requireOrNull(ManagerKey.POST_EFFECT, PostEffectManager.class);
 	}
 
 	/**

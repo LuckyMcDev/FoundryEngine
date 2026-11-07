@@ -6,6 +6,7 @@ import de.luckymcdev.foundryengine.editor.client.panel.editor.EditorPanel;
 import de.luckymcdev.foundryengine.imgui.client.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.imgui.client.icon.ImIcons;
 import de.luckymcdev.foundryengine.post.client.internal.PostEffectEntry;
+import de.luckymcdev.foundryengine.post.PostProcessingMod;
 import de.luckymcdev.foundryengine.Common;
 import imgui.ImGui;
 import imgui.flag.ImGuiCol;
@@ -24,7 +25,15 @@ public class EffectPanel extends EditorPanel {
 
 	@Override
 	public void content(ImGraphicsExtractor g) {
-		var mgr = Client.getPostEffectManager();
+		if (!PostProcessingMod.isEnabled()) {
+			g.centeredMessage("Post Processing is disabled.");
+			return;
+		}
+		var mgr = Client.getPostEffectManagerOrNull();
+		if (mgr == null) {
+			g.centeredMessage("Post Processing is unavailable.");
+			return;
+		}
 		List<PostEffectEntry> entries = mgr.getRegistry().getEntries();
 
 		int enabledCount = (int) entries.stream().filter(PostEffectEntry::isEnabled).count();

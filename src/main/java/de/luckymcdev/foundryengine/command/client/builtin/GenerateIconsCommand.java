@@ -4,6 +4,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import de.luckymcdev.foundryengine.Client;
+import de.luckymcdev.foundryengine.editor.EditorMod;
 import de.luckymcdev.foundryengine.command.server.EngineCommand;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandBuildContext;
@@ -18,6 +19,11 @@ import java.util.List;
 
 
 public class GenerateIconsCommand implements EngineCommand {
+	@Override
+	public boolean enabled() {
+		return EditorMod.isEnabled();
+	}
+
 
 	@Override
 	public LiteralArgumentBuilder<CommandSourceStack> build(CommandBuildContext context) {

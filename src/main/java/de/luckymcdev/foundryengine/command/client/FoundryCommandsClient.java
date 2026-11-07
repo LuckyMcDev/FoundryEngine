@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import de.luckymcdev.foundryengine.command.client.builtin.BrowseCommand;
 import de.luckymcdev.foundryengine.command.client.builtin.GenerateIconsCommand;
+import de.luckymcdev.foundryengine.editor.EditorMod;
 import de.luckymcdev.foundryengine.command.server.EngineCommand;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
@@ -22,9 +23,14 @@ public class FoundryCommandsClient {
 	);
 
 	public static void registerAll(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext context) {
+		if (!EditorMod.isEnabled()) {
+			return;
+		}
 		LiteralArgumentBuilder<CommandSourceStack> engineRoot = Commands.literal("engine");
 		for (EngineCommand command : COMMANDS) {
-			engineRoot.then(command.build(context));
+			if (command.enabled()) {
+				engineRoot.then(command.build(context));
+			}
 		}
 		dispatcher.register(engineRoot);
 	}

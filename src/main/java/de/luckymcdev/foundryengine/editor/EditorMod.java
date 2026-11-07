@@ -16,7 +16,9 @@ import de.luckymcdev.foundryengine.manager.api.ManagerKey;
 import de.luckymcdev.foundryengine.network.common.packet.editor.GiveItemPacket;
 import de.luckymcdev.foundryengine.network.common.packet.explorer.ClientBoundExplorerPacket;
 import de.luckymcdev.foundryengine.network.common.packet.explorer.ServerBoundExplorerPacket;
+import de.luckymcdev.foundryengine.post.PostProcessingMod;
 import de.luckymcdev.foundryengine.util.common.EngineModPart;
+import de.luckymcdev.foundryengine.config.ModuleConfig;
 import foundry.imgui.api.ImGuiMC;
 import foundry.imgui.neoforge.api.event.*;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
@@ -37,9 +39,12 @@ import java.util.concurrent.CompletableFuture;
 @Mod(value = EditorMod.MODID, dist = Dist.CLIENT)
 public final class EditorMod implements EngineModPart {
 	public static final String MODID = "foundryengine_editor";
+	public static final ModuleConfig MODULE = new ModuleConfig("Editor");
 	private static final Logger LOGGER = LogUtils.getLogger();
-
 	public EditorMod(IEventBus modBus, ModContainer modContainer) {
+		if (!MODULE.registerAndCheck(modContainer)) {
+			return;
+		}
 		this.wire(modBus);
 		Client.getManagers().register(ManagerKey.IMGUI, new ImGuiManager());
 		Client.getManagers().register(ManagerKey.EDITOR, new EditorManager());
@@ -53,6 +58,10 @@ public final class EditorMod implements EngineModPart {
 		b.addListener(this::renderImGuiEvent);
 		b.addListener(this::onClientTickPost);
 		b.addListener(this::onRenderFramePost);
+	}
+
+	public static boolean isEnabled() {
+		return MODULE.ENABLED.get();
 	}
 
 	@Override
@@ -69,10 +78,13 @@ public final class EditorMod implements EngineModPart {
 			TestPanel.INSTANCE, ExplorerPanel.INSTANCE, ConsolePanel.INSTANCE,
 			MinecraftToolsPanel.INSTANCE, DevToolsPanel.INSTANCE, ProblemsPanel.INSTANCE,
 			StopwatchPanel.INSTANCE, InfoPanel.INSTANCE, CataloguePanel.INSTANCE,
-			ThemeSelectorPanel.INSTANCE, EffectPanel.INSTANCE, OutlinePanel.INSTANCE,
+			ThemeSelectorPanel.INSTANCE, OutlinePanel.INSTANCE,
 			NodeTestPanel.INSTANCE, HotkeySettingsPanel.INSTANCE, GitPanel.INSTANCE,
 			PakkuPanel.INSTANCE
 		);
+		if (PostProcessingMod.isEnabled()) {
+			Client.getEditorManager().register(EffectPanel.INSTANCE);
+		}
 
 		var hkm = Client.getHotKeyManager();
 		Common.getSavedDataManager().registerPersistable(hkm);

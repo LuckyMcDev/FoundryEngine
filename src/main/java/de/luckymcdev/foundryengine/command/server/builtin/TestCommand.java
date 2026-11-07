@@ -1,5 +1,7 @@
 package de.luckymcdev.foundryengine.command.server.builtin;
 
+import de.luckymcdev.foundryengine.game.GameMod;
+
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import de.luckymcdev.foundryengine.Client;
@@ -28,6 +30,11 @@ import net.minecraft.world.phys.Vec3;
 import java.util.HashMap;
 
 public class TestCommand implements EngineCommand {
+	@Override
+	public boolean enabled() {
+		return GameMod.isEnabled();
+	}
+
 	private final HashMap<Identifier, RuntimeLevelHandle> worlds = new HashMap<>();
 
 	private LiteralArgumentBuilder<CommandSourceStack> worldSection() {

@@ -8,6 +8,9 @@ import de.luckymcdev.foundryengine.editor.client.panel.editor.EditorPanel;
 import de.luckymcdev.foundryengine.imgui.client.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.imgui.client.icon.ImIcons;
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.manager.api.ManagerKey;
+import de.luckymcdev.foundryengine.post.PostProcessingMod;
+import de.luckymcdev.foundryengine.post.client.PostEffectManager;
 import de.luckymcdev.foundryengine.cutscene.common.model.CommandAttachment;
 import de.luckymcdev.foundryengine.cutscene.common.model.Cutscene;
 import de.luckymcdev.foundryengine.cutscene.common.model.CutsceneAttachment;
@@ -487,15 +490,31 @@ public class CutsceneTimelinePanel extends EditorPanel {
 
 		// Preview button for effects
 		ImGui.sameLine();
+		var postEffectManager = PostProcessingMod.isEnabled()
+			? Client.getManagers().get(ManagerKey.POST_EFFECT, PostEffectManager.class)
+			: null;
+		if (postEffectManager == null) {
+			ImGui.beginDisabled();
+		}
 		if (ImGui.button(ImIcons.EYE + " Preview##cs_att_preview")) {
 			int idx = selectedAttachmentIndex.get();
 			if (idx >= 0 && idx < attachments.size()) {
 				var att = attachments.get(idx);
 				if (att instanceof EffectAttachment eff) {
 					int len = Math.max(1, c.getDefaultLength());
-					Client.getPostEffectManager().startScreenEffect(
+					var manager = Client.getPostEffectManagerOrNull();
+					if (manager == null) {
+						return;
+					}
+					manager.startScreenEffect(
 						eff.getEffectName(), eff.getIntroTicks(len), eff.getHoldTicks(len), eff.getOutroTicks(len), eff.getLerpType());
 				}
+			}
+		}
+		if (postEffectManager == null) {
+			ImGui.endDisabled();
+			if (ImGui.isItemHovered()) {
+				ImGui.setTooltip("Post Processing is disabled or unavailable.");
 			}
 		}
 

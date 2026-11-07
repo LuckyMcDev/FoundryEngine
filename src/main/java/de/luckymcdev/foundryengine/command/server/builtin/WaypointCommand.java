@@ -6,6 +6,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.waypoint.WaypointMod;
 import de.luckymcdev.foundryengine.util.common.color.Color;
 import de.luckymcdev.foundryengine.waypoint.common.Waypoint;
 import de.luckymcdev.foundryengine.command.server.EngineCommand;
@@ -19,6 +20,11 @@ import net.minecraft.server.level.ServerLevel;
 import java.util.List;
 
 public class WaypointCommand implements EngineCommand {
+	@Override
+	public boolean enabled() {
+		return WaypointMod.isEnabled();
+	}
+
 
 	@Override
 	public LiteralArgumentBuilder<CommandSourceStack> build(CommandBuildContext buildContext) {

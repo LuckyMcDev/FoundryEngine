@@ -1,6 +1,8 @@
 package de.luckymcdev.foundryengine.manager.api;
 
+import com.mojang.logging.LogUtils;
 import org.jspecify.annotations.Nullable;
+import org.slf4j.Logger;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -12,6 +14,7 @@ import java.util.Map;
  * Each side (common, client, server) owns its own instance.
  */
 public final class ManagerRegistry {
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private final Map<String, EngineManager> managers = new LinkedHashMap<>();
 
 	/**
@@ -62,6 +65,23 @@ public final class ManagerRegistry {
 
 	public <T extends EngineManager> T require(ManagerKey key, Class<T> type) {
 		return require(key.id(), type);
+	}
+
+	/**
+	 * Returns a manager when it is registered, otherwise logs the missing
+	 * optional dependency and returns {@code null}.
+	 */
+	public <T extends EngineManager> @Nullable T requireOrNull(ManagerKey key, Class<T> type) {
+		return requireOrNull(key.id(), type);
+	}
+
+	public <T extends EngineManager> @Nullable T requireOrNull(String key, Class<T> type) {
+		T manager = get(key, type);
+		if (manager == null) {
+			LOGGER.error("Skipping operation because no manager is registered under '{}' of type {}",
+				key, type.getName());
+		}
+		return manager;
 	}
 
 	/**

@@ -17,6 +17,13 @@ import net.minecraft.server.permissions.Permissions;
  */
 public interface EngineCommand {
 	/**
+	 * Determines whether this command should be included in the command tree.
+	 */
+	default boolean enabled() {
+		return true;
+	}
+
+	/**
 	 * Define the command structure here.
 	 */
 	LiteralArgumentBuilder<CommandSourceStack> build(CommandBuildContext context);

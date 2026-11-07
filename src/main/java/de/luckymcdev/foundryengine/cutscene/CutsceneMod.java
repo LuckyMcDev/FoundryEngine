@@ -2,6 +2,9 @@ package de.luckymcdev.foundryengine.cutscene;
 
 import de.luckymcdev.foundryengine.Client;
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.config.ModuleConfig;
+import de.luckymcdev.foundryengine.editor.EditorMod;
+import de.luckymcdev.foundryengine.post.PostProcessingMod;
 import de.luckymcdev.foundryengine.cutscene.common.util.ServerScreenEffectManager;
 import de.luckymcdev.foundryengine.cutscene.common.CutsceneManager;
 import de.luckymcdev.foundryengine.cutscene.common.CutsceneSessionManager;
@@ -28,8 +31,12 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
 @Mod(CutsceneMod.MODID)
 public final class CutsceneMod implements EngineModPart {
 	public static final String MODID = "foundryengine_cutscene";
+	private static final ModuleConfig MODULE = new ModuleConfig("Cutscene");
 
 	public CutsceneMod(IEventBus modBus, ModContainer modContainer) {
+		if (!MODULE.registerAndCheck(modContainer)) {
+			return;
+		}
 		this.wire(modBus);
 		Common.getManagers().register(ManagerKey.CUTSCENE,
 			new CutsceneManager(Common.getSavedDataManager()));
@@ -41,6 +48,10 @@ public final class CutsceneMod implements EngineModPart {
 		var b = bus();
 		b.addListener((ServerTickEvent.Post event) -> ServerScreenEffectManager.tick());
 		b.addListener(this::onPlayerDisconnectForEffects);
+	}
+
+	public static boolean isEnabled() {
+		return MODULE.ENABLED.get();
 	}
 
 	private void onPlayerDisconnectForEffects(PlayerEvent.PlayerLoggedOutEvent event) {
@@ -60,10 +71,14 @@ public final class CutsceneMod implements EngineModPart {
 
 	@Override
 	public void onClientSetup(FMLClientSetupEvent event) {
-		Client.getEditorManager().register(CutscenePanel.INSTANCE, CutsceneTimelinePanel.INSTANCE);
+		if (EditorMod.isEnabled()) {
+			Client.getEditorManager().register(CutscenePanel.INSTANCE, CutsceneTimelinePanel.INSTANCE);
+		}
 		CutscenePacket.CLIENT_HANDLER = p -> Client.getCutsceneManager().handlePacket(p);
-		ScreenEffectPacket.CLIENT_HANDLER = p -> Client.getPostEffectManager()
-			.startScreenEffect(p.name(), p.introTicks(), p.holdTicks(), p.outroTicks(), p.lerpType());
+		if (PostProcessingMod.isEnabled()) {
+			ScreenEffectPacket.CLIENT_HANDLER = p -> Client.getPostEffectManager()
+				.startScreenEffect(p.name(), p.introTicks(), p.holdTicks(), p.outroTicks(), p.lerpType());
+		}
 	}
 
 }

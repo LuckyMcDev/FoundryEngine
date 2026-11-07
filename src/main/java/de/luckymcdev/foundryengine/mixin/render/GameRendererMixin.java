@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.mixin.render;
 
 import com.mojang.blaze3d.resource.CrossFrameResourcePool;
 import de.luckymcdev.foundryengine.Client;
+import de.luckymcdev.foundryengine.post.PostProcessingMod;
 import de.luckymcdev.foundryengine.post.client.RenderPhase;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.renderer.GameRenderer;
@@ -34,6 +35,9 @@ public class GameRendererMixin {
 		)
 	)
 	private void engine$onPostWorldRender(DeltaTracker ticker, CallbackInfo ci) {
+		if (!PostProcessingMod.isEnabled()) {
+			return;
+		}
 		if (Client.getPostEffectManager().getRegistry().hasEnabledEffectInPhase(RenderPhase.PRE_GUI)
 			|| Client.getPostEffectManager().getRegistry().hasEnabledEffectInPhase(RenderPhase.POST_RENDER)) {
 			Client.getPostEffectManager().getRegistry().captureWorldDepthSnapshot(Client.getMainRenderTarget());
@@ -53,7 +57,7 @@ public class GameRendererMixin {
 		)
 	)
 	private void engine$onPreScreenDepthClear(DeltaTracker ticker, boolean renderLevel, CallbackInfo ci) {
-		if (!renderLevel) {
+		if (!renderLevel || !PostProcessingMod.isEnabled()) {
 			return;
 		}
 
@@ -68,6 +72,9 @@ public class GameRendererMixin {
 	 */
 	@Inject(method = "render", at = @At("TAIL"))
 	private void engine$onPostRender(DeltaTracker ticker, boolean renderLevel, CallbackInfo ci) {
+		if (!PostProcessingMod.isEnabled()) {
+			return;
+		}
 		if (Client.getPostEffectManager().getRegistry().hasEnabledEffectInPhase(RenderPhase.POST_RENDER)) {
 			Client.getPostEffectManager().getRegistry().restorePostRenderDepthSnapshotInto(Client.getMainRenderTarget());
 		}

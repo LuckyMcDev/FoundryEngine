@@ -6,7 +6,7 @@ import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.area.common.AABBArea;
 import de.luckymcdev.foundryengine.area.common.Area;
 import de.luckymcdev.foundryengine.util.common.color.Color;
-import de.luckymcdev.foundryengine.manager.api.EngineManager;
+import de.luckymcdev.foundryengine.manager.api.Render;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.resources.Identifier;
@@ -16,7 +16,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
-public class ClientAreaManager implements EngineManager {
+public class ClientAreaManager implements Render {
 	private final double HANDLE_SIZE = 0.125;
 
 	public @Nullable Area selectedCornerArea;
@@ -96,6 +96,18 @@ public class ClientAreaManager implements EngineManager {
 				}
 			}
 		}
+	}
+	//?}
+
+	//? if >=26.2 {
+	/*@Override
+	public void render(RenderLevelStageEvent.AfterLevel event, net.minecraft.client.renderer.SubmitNodeStorage submitNodes) {
+		renderAreaModules(event, submitNodes);
+	}*/
+	//?} else {
+	@Override
+	public void render(RenderLevelStageEvent.AfterLevel event) {
+		renderAreaModules(event);
 	}
 	//?}
 }
