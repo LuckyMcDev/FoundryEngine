@@ -103,15 +103,7 @@ public class EngineClientMod {
 	}
 
 	private void addClientReloadListener(AddClientReloadListenersEvent event) {
-		event.addListener(Common.id("obj_models"),
-			createReloadListener(() -> Client.getObjModelManager().loadModels()));
-	}
-
-	private PreparableReloadListener createReloadListener(Runnable runnable) {
-		return (s, bg, barrier, game) ->
-			CompletableFuture.<Void>supplyAsync(() -> null, bg)
-				.thenCompose(barrier::wait)
-				.thenAcceptAsync(v -> runnable.run(), game);
+		event.addListener(Common.id("obj_models"),Client.getObjModelManager());
 	}
 
 	private void onRegisterParticleProviders(RegisterParticleProvidersEvent event) {
