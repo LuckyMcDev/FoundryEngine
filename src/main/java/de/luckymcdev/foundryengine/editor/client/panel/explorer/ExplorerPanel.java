@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.editor.client.panel.explorer;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.Client;
+import de.luckymcdev.foundryengine.EnginePaths;
 import de.luckymcdev.foundryengine.editor.client.config.PanelCategory;
 import de.luckymcdev.foundryengine.editor.client.panel.Panel;
 import de.luckymcdev.foundryengine.editor.client.panel.editor.EditorPanel;
@@ -78,7 +79,7 @@ public class ExplorerPanel extends EditorPanel {
 			.icon(ImIcons.FILES_O)
 			.category(PanelCategory.EDITOR_EXPLORER));
 		for (var folder : CommonConfig.ALLOWED_EXPLORER_FOLDERS.get()) {
-			rootDirs.add(Common.GAMEDIR.resolve(folder.toString()).toFile());
+			rootDirs.add(EnginePaths.GAMEDIR.resolve(folder.toString()).toFile());
 		}
 	}
 

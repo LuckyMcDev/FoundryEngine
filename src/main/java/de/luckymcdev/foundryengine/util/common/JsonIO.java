@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.EnginePaths;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -16,14 +17,14 @@ public class JsonIO {
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
 	public static JsonElement read(Path path) throws IOException {
-		Path resolved = Common.resolveAndValidate(path);
+		Path resolved = EnginePaths.resolveAndValidate(path);
 		try (Reader reader = Files.newBufferedReader(resolved)) {
 			return JsonParser.parseReader(reader);
 		}
 	}
 
 	public static void write(JsonElement element, Path path) throws IOException {
-		Path resolved = Common.resolveAndValidate(path);
+		Path resolved = EnginePaths.resolveAndValidate(path);
 		Files.createDirectories(resolved.getParent());
 		try (Writer writer = Files.newBufferedWriter(resolved)) {
 			GSON.toJson(element, writer);

@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.md.client;
 
 import de.luckymcdev.foundryengine.Client;
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.EnginePaths;
 import de.luckymcdev.foundryengine.md.common.MarkdownParser;
 import net.minecraft.client.gui.components.MultiLineTextWidget;
 import net.minecraft.client.gui.components.ScrollableLayout;
@@ -39,7 +40,7 @@ public class MdScreen extends Screen {
 	 */
 	public MdScreen(Component title, Path mdFile) {
 		super(title);
-		this.markdownComponent = MarkdownParser.parse(Common.getFileContent(mdFile));
+		this.markdownComponent = MarkdownParser.parse(EnginePaths.getFileContent(mdFile));
 	}
 
 	/**

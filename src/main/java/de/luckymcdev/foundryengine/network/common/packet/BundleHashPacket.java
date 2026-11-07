@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.network.common.packet;
 
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.EnginePaths;
 import de.luckymcdev.foundryengine.network.common.AbstractPacket;
 import de.luckymcdev.foundryengine.network.common.PacketBounds;
 import de.luckymcdev.foundryengine.util.common.FolderHash;
@@ -47,7 +48,7 @@ public record BundleHashPacket(String clientHash) implements AbstractPacket<Bund
 	public void handleServer(IPayloadContext ctx) {
 		ctx.enqueueWork(() -> {
 			try {
-				String serverHash = FolderHash.hashFolder(Common.BUNDLES);
+				String serverHash = FolderHash.hashFolder(EnginePaths.BUNDLES);
 				if (!Objects.equals(clientHash, serverHash)) {
 					ServerPlayer player = AbstractPacket.serverPlayer(ctx);
 					if (player != null) {

@@ -4,6 +4,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.EnginePaths;
 import de.luckymcdev.foundryengine.command.server.EngineCommand;
 import net.minecraft.SharedConstants;
 import net.minecraft.commands.CommandBuildContext;
@@ -40,7 +41,7 @@ public class DumpCommand implements EngineCommand {
 		String fileName = filter.map(id -> "dump-" + id.getPath().replace("/", "_") + "-" + now.format(FILE_TIME_FORMAT) + ".md")
 			.orElse("dump-all-" + now.format(FILE_TIME_FORMAT) + ".md");
 
-		Path outputPath = Common.DUMPS.resolve(fileName);
+		Path outputPath = EnginePaths.DUMPS.resolve(fileName);
 
 		try {
 			Files.createDirectories(outputPath.getParent());

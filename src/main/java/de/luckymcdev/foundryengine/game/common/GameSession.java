@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.game.common;
 
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.EnginePaths;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.resources.Identifier;
@@ -194,12 +195,12 @@ public class GameSession {
 	/**
 	 * Loads the session data from persistent storage.
 	 * Uses the world data path previously set via {@link #load(Path)}/{@link #save(Path)},
-	 * falling back to {@link Common#GAME} (the shared cache dir) only when no world path
+	 * falling back to {@link EnginePaths#GAME} (the shared cache dir) only when no world path
 	 * has been provided — that fallback exists purely to keep direct script-driven calls
 	 * working and should be avoided for world-scoped data.
 	 */
 	public void load() {
-		data.loadFrom(worldDataPath != null ? worldDataPath : Common.GAME);
+		data.loadFrom(worldDataPath != null ? worldDataPath : EnginePaths.GAME);
 		flushInit();
 	}
 
@@ -223,7 +224,7 @@ public class GameSession {
 	 * See {@link #load()} for the world-path vs. cache-dir fallback semantics.
 	 */
 	public void save() {
-		data.saveTo(worldDataPath != null ? worldDataPath : Common.GAME);
+		data.saveTo(worldDataPath != null ? worldDataPath : EnginePaths.GAME);
 	}
 
 	/**

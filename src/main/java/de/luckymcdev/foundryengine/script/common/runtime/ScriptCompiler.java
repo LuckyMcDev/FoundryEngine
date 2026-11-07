@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.script.common.runtime;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.EnginePaths;
 import de.luckymcdev.foundryengine.bundle.common.info.MavenLibrary;
 import de.luckymcdev.foundryengine.script.common.definition.ScriptDefinition;
 import de.luckymcdev.foundryengine.script.common.definition.ScriptSource;
@@ -52,7 +53,7 @@ public class ScriptCompiler {
 		this.template = new CompilerConfiguration();
 		Common.post(new GroovyScriptEngineModifyEvent(template));
 		this.baseCustomizers = List.copyOf(template.getCompilationCustomizers());
-		this.libraryResolver = new LibraryResolver(Common.LIBRARIES);
+		this.libraryResolver = new LibraryResolver(EnginePaths.LIBRARIES);
 	}
 
 	private static void logErrors(ScriptSource source, MultipleCompilationErrorsException mce) {

@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.world.common;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.EnginePaths;
 import de.luckymcdev.foundryengine.config.CommonConfig;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.storage.LevelStorageException;
@@ -236,7 +237,7 @@ public class StorageSourceManager {
 			instancedWorlds.clear();
 		}
 		try {
-			Path instancesDir = Common.TEMP_DIR.resolve("instances").resolve("worlds");
+			Path instancesDir = EnginePaths.TEMP_DIR.resolve("instances").resolve("worlds");
 			if (Files.isDirectory(instancesDir)) {
 				FileUtils.deleteDirectory(instancesDir.toFile());
 			}
@@ -314,6 +315,6 @@ public class StorageSourceManager {
 		} catch (NoSuchAlgorithmException e) {
 			key = Integer.toHexString(source.hashCode());
 		}
-		return Common.TEMP_DIR.resolve("instances").resolve("worlds").resolve(key).resolve(levelId);
+		return EnginePaths.TEMP_DIR.resolve("instances").resolve("worlds").resolve(key).resolve(levelId);
 	}
 }

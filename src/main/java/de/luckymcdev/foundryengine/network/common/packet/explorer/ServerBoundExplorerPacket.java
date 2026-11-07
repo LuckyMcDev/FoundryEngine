@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.network.common.packet.explorer;
 
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.EnginePaths;
 import de.luckymcdev.foundryengine.network.common.AbstractPacket;
 import de.luckymcdev.foundryengine.network.common.PacketBounds;
 import de.luckymcdev.foundryengine.network.common.codec.ActionCodec;
@@ -81,7 +82,7 @@ public record ServerBoundExplorerPacket(
 	}
 
 	private void handleFileList(ServerPlayer player) {
-		Path serverRoot = Common.DIRECTORY;
+		Path serverRoot = EnginePaths.DIRECTORY;
 		Path resolved = serverRoot.resolve(path).normalize();
 		if (!resolved.startsWith(serverRoot)) {
 			return;
@@ -114,7 +115,7 @@ public record ServerBoundExplorerPacket(
 	}
 
 	private void handleFileContent(ServerPlayer player) {
-		Path serverRoot = Common.DIRECTORY;
+		Path serverRoot = EnginePaths.DIRECTORY;
 		Path target = serverRoot.resolve(path).normalize();
 		if (!target.startsWith(serverRoot)) {
 			return;
@@ -134,7 +135,7 @@ public record ServerBoundExplorerPacket(
 	}
 
 	private void handleSaveFile(ServerPlayer player) {
-		Path serverRoot = Common.DIRECTORY;
+		Path serverRoot = EnginePaths.DIRECTORY;
 		Path target = serverRoot.resolve(path).normalize();
 		if (!target.startsWith(serverRoot)) {
 			Common.LOGGER.warn("Player {} attempted path traversal on save: {}",

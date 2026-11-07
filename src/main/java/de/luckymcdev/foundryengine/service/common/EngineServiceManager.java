@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.service.common;
 
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.EnginePaths;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,7 +12,7 @@ public class EngineServiceManager {
 
 	public EngineServiceManager() {
 		register(GitService.class, new GitService.Default());
-		if (Common.IS_PAKKU) {
+		if (EnginePaths.IS_PAKKU) {
 			register(PakkuService.class, new PakkuService.Default());
 		}
 	}

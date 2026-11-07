@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.command.client.builtin;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.EnginePaths;
 import de.luckymcdev.foundryengine.command.server.EngineCommand;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
@@ -12,7 +13,7 @@ public class BrowseCommand implements EngineCommand {
 	@Override
 	public LiteralArgumentBuilder<CommandSourceStack> build(CommandBuildContext context) {
 		return Commands.literal("browse").executes(c -> {
-			Util.getPlatform().openPath(Common.DIRECTORY);
+			Util.getPlatform().openPath(EnginePaths.DIRECTORY);
 			return 1;
 		});
 	}

@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.config;
 
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.EnginePaths;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 import java.util.Collections;
@@ -23,7 +24,7 @@ public final class CommonConfig {
 		TEMP_DIRECTORY_INFO = builder
 			.comment("This is just info for where you temp directory is if you need it.")
 			.translation("foundryengine.configuration.temp_directory_info")
-			.define("TEMP_DIRECTORY_INFO", Common.TEMP_DIR.toString());
+			.define("TEMP_DIRECTORY_INFO", EnginePaths.TEMP_DIR.toString());
 
 		PACK_MODE = builder
 			.comment("The current pack mode. Set to \"dev\" (case-insensitive) to load bundle saves directly without instancing.")

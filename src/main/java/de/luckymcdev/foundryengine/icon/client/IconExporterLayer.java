@@ -9,6 +9,7 @@ import com.mojang.blaze3d.textures.GpuTexture;
 import com.mojang.blaze3d.textures.GpuTextureView;
 import com.mojang.blaze3d.vertex.PoseStack;
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.EnginePaths;
 import de.luckymcdev.foundryengine.config.ClientConfig;
 import de.luckymcdev.foundryengine.config.CommonConfig;
 import net.minecraft.client.DeltaTracker;
@@ -73,7 +74,7 @@ public class IconExporterLayer implements GuiLayer {
 		this.pendingItems.clear();
 		this.exporting = true;
 
-		File outputDir = Common.CACHE.resolve("icons").resolve(String.valueOf(imageSize)).toFile();
+		File outputDir = EnginePaths.CACHE.resolve("icons").resolve(String.valueOf(imageSize)).toFile();
 
 		for (Item item : BuiltInRegistries.ITEM.stream().toList()) {
 			Identifier id = BuiltInRegistries.ITEM.getKey(item);
@@ -122,7 +123,7 @@ public class IconExporterLayer implements GuiLayer {
 		this.pendingItems.clear();
 		this.exporting = true;
 
-		File outputDir = Common.CACHE.resolve("icons").resolve(String.valueOf(imageSize)).toFile();
+		File outputDir = EnginePaths.CACHE.resolve("icons").resolve(String.valueOf(imageSize)).toFile();
 
 		for (ItemStack stack : customItems) {
 			Identifier id = BuiltInRegistries.ITEM.getKey(stack.getItem());

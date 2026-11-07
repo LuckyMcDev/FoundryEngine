@@ -3,6 +3,7 @@ package de.luckymcdev.foundryengine.pack.server;
 import com.google.gson.JsonObject;
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.EnginePaths;
 import de.luckymcdev.foundryengine.data.common.gen.BundleDataGenerator;
 import net.minecraft.SharedConstants;
 import net.minecraft.server.packs.PackType;
@@ -26,7 +27,7 @@ public class ResourcePackMerger {
 	private static final Logger LOGGER = LogUtils.getLogger();
 
 	public static Path mergeToZip(Path outputZip) {
-		Path staging = Common.TEMP_DIR.resolve("resourcepack-merge");
+		Path staging = EnginePaths.TEMP_DIR.resolve("resourcepack-merge");
 		try {
 			FileUtils.deleteDirectory(staging.toFile());
 			Files.createDirectories(staging);

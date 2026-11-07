@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.bundle.common;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.EnginePaths;
 import de.luckymcdev.foundryengine.bundle.common.info.BundleDependency;
 import de.luckymcdev.foundryengine.bundle.common.modcompat.BundleModContainer;
 import de.luckymcdev.foundryengine.bundle.common.modcompat.BundleModFile;
@@ -287,7 +288,7 @@ public class BundleManager {
 			failedBundleIds.clear();
 
 			try {
-				discover(Common.BUNDLES);
+				discover(EnginePaths.BUNDLES);
 			} catch (IOException e) {
 				BundleExceptionHandler.handle("Failed to reload bundles", e);
 			}

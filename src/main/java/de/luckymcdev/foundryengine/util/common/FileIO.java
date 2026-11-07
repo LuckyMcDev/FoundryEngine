@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.util.common;
 
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.EnginePaths;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,7 +48,7 @@ public class FileIO {
 	private static final int MAX_REDIRECTS = 5;
 
 	private static Path validate(Path path) throws IOException {
-		return Common.resolveAndValidate(path);
+		return EnginePaths.resolveAndValidate(path);
 	}
 
 	/**
@@ -55,7 +56,7 @@ public class FileIO {
 	 * is returned as the link itself instead of its target.
 	 */
 	private static Path validateNoFollow(Path path) throws IOException {
-		return Common.resolveAndValidateNoFollow(path);
+		return EnginePaths.resolveAndValidateNoFollow(path);
 	}
 
 	private static void ensureParent(Path file) throws IOException {
@@ -149,11 +150,11 @@ public class FileIO {
 	}
 
 	public static Path gameDir() {
-		return Common.GAMEDIR;
+		return EnginePaths.GAMEDIR;
 	}
 
 	public static Path resolve(String path) throws IOException {
-		return validate(Common.GAMEDIR.resolve(path));
+		return validate(EnginePaths.GAMEDIR.resolve(path));
 	}
 
 	public static String readText(Path path) throws IOException {
@@ -250,7 +251,7 @@ public class FileIO {
 	}
 
 	private static void deleteTree(Path root) throws IOException {
-		if (Files.isSameFile(root, Common.GAMEDIR)) {
+		if (Files.isSameFile(root, EnginePaths.GAMEDIR)) {
 			throw new IOException("Refusing to delete the game directory: " + root);
 		}
 		// walkFileTree does not follow symlinks, so links inside the tree are deleted as links

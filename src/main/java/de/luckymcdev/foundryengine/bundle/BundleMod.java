@@ -3,6 +3,7 @@ package de.luckymcdev.foundryengine.bundle;
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.Client;
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.EnginePaths;
 import de.luckymcdev.foundryengine.bundle.common.modcompat.BundleModContainer;
 import de.luckymcdev.foundryengine.config.StartupConfig;
 import de.luckymcdev.foundryengine.data.common.gen.BundleDataGenerator;
@@ -76,7 +77,7 @@ public final class BundleMod implements EngineModPart {
 	@Override
 	public void onConstruct(FMLConstructModEvent event) {
 		try {
-			Common.getBundleManager().discover(Common.BUNDLES);
+			Common.getBundleManager().discover(EnginePaths.BUNDLES);
 			Common.getBundleManager().refreshModList();
 			Common.getBundleManager().reportScriptErrors();
 		} catch (IOException e) {
@@ -117,7 +118,7 @@ public final class BundleMod implements EngineModPart {
 			String path = "assets/foundryengine/gradle/" + fileName;
 			try (var stream = getClass().getClassLoader().getResourceAsStream(path)) {
 				if (stream != null) {
-					Files.copy(stream, Common.GAMEDIR.resolve(fileName));
+					Files.copy(stream, EnginePaths.GAMEDIR.resolve(fileName));
 					LOGGER.debug("Extracted gradle template: {}", fileName);
 				}
 			} catch (Exception e) {
@@ -168,7 +169,7 @@ public final class BundleMod implements EngineModPart {
 
 	private void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
 		LOGGER.debug("Player logged in, should send resource pack");
-		var tempPath = Common.TEMP_DIR.resolve("resourcepack-out");
+		var tempPath = EnginePaths.TEMP_DIR.resolve("resourcepack-out");
 		ResourcePackMerger.mergeToZip(tempPath.resolve("fe-resources.zip"));
 	}
 
@@ -212,7 +213,7 @@ public final class BundleMod implements EngineModPart {
 	}
 
 	private void onLoggingIn(ClientPlayerNetworkEvent.LoggingIn event) {
-		FolderHash.hashFolderAsync(Common.BUNDLES)
+		FolderHash.hashFolderAsync(EnginePaths.BUNDLES)
 			.thenAccept(hash -> ClientPacketDistributor.sendToServer(new BundleHashPacket(hash)))
 			.exceptionally(e -> {
 				LOGGER.error("Failed to hash bundles folder", e);

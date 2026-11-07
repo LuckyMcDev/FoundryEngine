@@ -1,5 +1,6 @@
 package de.luckymcdev.foundryengine.editor.client.panel.editor;
 
+import de.luckymcdev.foundryengine.EnginePaths;
 import de.luckymcdev.foundryengine.editor.client.config.PanelCategory;
 import de.luckymcdev.foundryengine.editor.client.panel.tool.CataloguePanel;
 import de.luckymcdev.foundryengine.icon.client.ImageExportUtil;
@@ -431,7 +432,7 @@ public class RecipeEditorPanel extends EditorPanel {
 			return;
 		}
 
-		File iconDir = Common.CACHE.resolve("icons")
+		File iconDir = EnginePaths.CACHE.resolve("icons")
 			.resolve(String.valueOf(ClientConfig.ICON_SIZE.get()))
 			.resolve(itemId.getNamespace())
 			.toFile();

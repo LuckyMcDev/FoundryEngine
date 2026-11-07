@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.savedata.common;
 
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.EnginePaths;
 import de.luckymcdev.foundryengine.area.common.AreaManager;
 import de.luckymcdev.foundryengine.cutscene.common.CutsceneManager;
 import de.luckymcdev.foundryengine.dialogue.common.DialogueManager;
@@ -229,12 +230,12 @@ public class SavedDataManager {
 	}
 
 	private void migrateLegacyIfNeeded(Path worldFile) {
-		if (Files.exists(worldFile) || !Files.exists(Common.ENGINE_DATA)) {
+		if (Files.exists(worldFile) || !Files.exists(EnginePaths.ENGINE_DATA)) {
 			return;
 		}
 		try {
 			CompoundTag legacy;
-			try (DataInputStream dis = new DataInputStream(Files.newInputStream(Common.ENGINE_DATA))) {
+			try (DataInputStream dis = new DataInputStream(Files.newInputStream(EnginePaths.ENGINE_DATA))) {
 				legacy = NbtIo.readCompressed(dis, NbtAccounter.defaultQuota());
 			}
 			writeTag(worldFile, legacy);
@@ -253,8 +254,8 @@ public class SavedDataManager {
 			return;
 		}
 		CompoundTag target = new CompoundTag();
-		if (Files.exists(Common.ENGINE_DATA)) {
-			try (DataInputStream dis = new DataInputStream(Files.newInputStream(Common.ENGINE_DATA))) {
+		if (Files.exists(EnginePaths.ENGINE_DATA)) {
+			try (DataInputStream dis = new DataInputStream(Files.newInputStream(EnginePaths.ENGINE_DATA))) {
 				target = NbtIo.readCompressed(dis, NbtAccounter.defaultQuota());
 			} catch (IOException e) {
 				Common.LOGGER.warn("Failed to read existing client data; starting fresh", e);
@@ -270,7 +271,7 @@ public class SavedDataManager {
 			}
 		}
 		if (changed) {
-			writeTag(Common.ENGINE_DATA, target);
+			writeTag(EnginePaths.ENGINE_DATA, target);
 		}
 	}
 
@@ -291,6 +292,6 @@ public class SavedDataManager {
 		if (worldScoped && diskFile != null) {
 			return diskFile;
 		}
-		return Common.ENGINE_DATA;
+		return EnginePaths.ENGINE_DATA;
 	}
 }

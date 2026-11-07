@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.game.common;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.EnginePaths;
 import de.luckymcdev.foundryengine.bundle.common.Bundle;
 import de.luckymcdev.foundryengine.bundle.common.BundleLifecycleListener;
 import net.minecraft.client.Minecraft;
@@ -192,10 +193,10 @@ public class GameManager implements BundleLifecycleListener {
 	}
 
 	/**
-	 * Returns the data directory for a world, or {@link Common#GAME} if not set.
+	 * Returns the data directory for a world, or {@link EnginePaths#GAME} if not set.
 	 */
 	public Path worldDataPath(String worldName) {
-		return worldDataPaths.getOrDefault(worldName, Common.GAME);
+		return worldDataPaths.getOrDefault(worldName, EnginePaths.GAME);
 	}
 
 	/**

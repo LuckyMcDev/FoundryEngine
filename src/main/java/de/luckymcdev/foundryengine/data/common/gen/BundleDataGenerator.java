@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.data.common.gen;
 
 import com.mojang.logging.LogUtils;
+import de.luckymcdev.foundryengine.EnginePaths;
 import de.luckymcdev.foundryengine.data.client.provider.EngineEquipmentAssetProvider;
 import de.luckymcdev.foundryengine.data.client.provider.EngineLanguageProvider;
 import de.luckymcdev.foundryengine.data.client.provider.EngineModelProvider;
@@ -53,7 +54,7 @@ import java.util.concurrent.CompletableFuture;
  * Generates data (recipes, loot tables, models, etc.) for all loaded bundles.
  */
 public class BundleDataGenerator {
-	public static final Path OUTPUT_ROOT = Common.TEMP_DIR.resolve("instances").resolve(instanceKey()).resolve("bundles");
+	public static final Path OUTPUT_ROOT = EnginePaths.TEMP_DIR.resolve("instances").resolve(instanceKey()).resolve("bundles");
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final Path generatedDataPath = OUTPUT_ROOT.resolve("data");
 	private static final Path generatedAssetsPath = OUTPUT_ROOT.resolve("assets");
@@ -199,7 +200,7 @@ public class BundleDataGenerator {
 	}
 
 	private static String instanceKey() {
-		String gameDir = Common.GAMEDIR.toString().toLowerCase(Locale.ROOT);
+		String gameDir = EnginePaths.GAMEDIR.toString().toLowerCase(Locale.ROOT);
 		try {
 			byte[] digest = MessageDigest.getInstance("SHA-256").digest(gameDir.getBytes(StandardCharsets.UTF_8));
 			StringBuilder key = new StringBuilder("game-");

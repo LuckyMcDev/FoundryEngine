@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.service.common;
 
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.EnginePaths;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -42,8 +43,8 @@ public interface PakkuService extends EngineService {
 
 		public Default() {
 			super("java");
-			this.jarPath = Common.PAKKU.resolve("pakku.jar");
-			this.workingDirectory = Common.DIRECTORY;
+			this.jarPath = EnginePaths.PAKKU_FILE;
+			this.workingDirectory = EnginePaths.DIRECTORY;
 			if (!jarPath.toFile().exists()) {
 				throw new IllegalStateException("pakku.jar not found at " + jarPath);
 			}

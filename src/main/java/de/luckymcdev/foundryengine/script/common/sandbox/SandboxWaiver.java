@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.script.common.sandbox;
 
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.EnginePaths;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,7 +13,7 @@ import java.nio.file.Path;
  */
 public final class SandboxWaiver {
 
-	private static final Path FILE = Common.USER_SPACE.resolve("sandbox_waiver.lock");
+	private static final Path FILE = EnginePaths.USER_SPACE.resolve("sandbox_waiver.lock");
 	private static volatile boolean accepted = Files.exists(FILE);
 
 	private SandboxWaiver() {
