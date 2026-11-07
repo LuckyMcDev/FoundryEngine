@@ -25,50 +25,51 @@ import org.jspecify.annotations.Nullable;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashSet;
+import java.nio.file.StandardCopyOption;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Stream;
 
-/**
- * Central persistence and sync for FoundryEngine's engine data.
- * <p>
- * Server-managed sections (areas, cutscenes, dialogue, waypoints) are persisted per world to
- * {@code <levelDir>/foundryengine/engine.dat} (resolved on {@code ServerStartedEvent}). On first
- * load of a world the legacy global file ({@link Common#ENGINE_DATA}) is imported once.
- * Client-local sections (e.g. the {@code hotkeys} section) stay in the legacy global file so they
- * survive across worlds and sessions; synced world data is kept in memory on the client.
- * <p>
- * Writes and broadcasts are deferred: mutations only mark the store dirty, and self-registered tick
- * listeners flush the disk at most every {@link #FLUSH_INTERVAL_TICKS} ticks and coalesce all
- * {@code syncToAll}/{@code syncToPlayer} calls into a single {@link SavedDataSyncPacket} per tick.
- */
+/// Central persistence and sync for FoundryEngine's engine data, stored as one `<sectionKey>.dat` file
+/// per section in either the per-world ([Scope#WORLD]) or the shared ([Scope#GLOBAL]) directory.
+/// Writes and syncs are deferred to tick listeners.
 public class SavedDataManager {
 	public static final int FLUSH_INTERVAL_TICKS = 100;
 
-	/**
-	 * Sections owned by the server managers; never treated as client-local.
-	 */
+	private static final String FILE_EXTENSION = ".dat";
+	private static final String WORLD_DIR_NAME = "foundryengine";
+	/// Sections owned by the server managers; always [Scope#WORLD].
 	private static final Set<String> SERVER_MANAGED_SECTIONS = Set.of(
 		AreaManager.SAVE_SECTION,
 		CutsceneManager.SAVE_SECTION,
 		DialogueManager.SAVE_SECTION,
 		WaypointManager.SAVE_SECTION
 	);
+	private final Map<String, Scope> sectionScopes = new ConcurrentHashMap<>();
 
 	private final NetworkManager networkManager;
-	private final Set<String> clientLocalSections = new HashSet<>();
+	private final Set<String> dirtySections = ConcurrentHashMap.newKeySet();
+	private final Path dataDir = EnginePaths.ENGINE_DATA.getParent().resolve("data");
+	private @Nullable Path worldDir;
 	private CompoundTag data = new CompoundTag();
-	private @Nullable Path diskFile;
-	private boolean worldScoped = false;
-	private boolean serverDirty = false;
-	private boolean clientDirty = false;
+	private int serverTickCounter = 0;
 	private boolean broadcastPending = false;
-	private int tickCounter = 0;
-
+	private int clientTickCounter = 0;
 	public SavedDataManager(NetworkManager networkManager) {
 		this.networkManager = networkManager;
+		for (String key : SERVER_MANAGED_SECTIONS) {
+			sectionScopes.put(key, Scope.WORLD);
+		}
 		registerEvents();
+	}
+
+	private static String fileNameFor(String key) {
+		return key + FILE_EXTENSION;
 	}
 
 	private void registerEvents() {
@@ -81,103 +82,91 @@ public class SavedDataManager {
 		}
 	}
 
-	/**
-	 * Loads the engine data from disk. Uses the per-world file when a server has resolved it,
-	 * otherwise falls back to the legacy global location until then.
-	 */
-	public void load() {
-		CompoundTag loaded = new CompoundTag();
-		Path file = resolvedFile();
-		if (Files.exists(file)) {
-			try (DataInputStream dis = new DataInputStream(Files.newInputStream(file))) {
-				loaded = NbtIo.readCompressed(dis, NbtAccounter.defaultQuota());
-			} catch (IOException e) {
-				Common.LOGGER.error("Failed to load game data", e);
-				loaded = new CompoundTag();
-			}
-		}
-		preserveClientLocal(loaded);
-		this.data = loaded;
+	private static String keyOf(Path file) {
+		String name = file.getFileName().toString();
+		return name.substring(0, name.length() - FILE_EXTENSION.length());
 	}
 
-	/**
-	 * Immediately flushes pending server and client data to disk (called on server stop).
-	 */
-	public void save() {
-		flushServerData();
-		if (clientDirty) {
-			flushClientLocal();
-		}
+	private static boolean isSectionFile(Path file) {
+		String name = file.getFileName().toString();
+		return name.endsWith(FILE_EXTENSION) && Files.isRegularFile(file);
+	}
+
+	/// Declares in which [Scope] a section is stored; unregistered sections default to [Scope#GLOBAL].
+	/// Call this before the section is first loaded or set.
+	public void registerSection(String key, Scope scope) {
+		sectionScopes.put(key, scope);
+	}
+
+	public Scope scopeOf(String key) {
+		return sectionScopes.getOrDefault(key, Scope.GLOBAL);
 	}
 
 	public CompoundTag getData() {
 		return data;
 	}
 
-	/**
-	 * Replaces the full engine data in memory. Client-local sections are preserved across the
-	 * replacement so locally edited preferences survive server syncs.
-	 */
-	public void setData(CompoundTag tag) {
-		CompoundTag merged = tag;
-		if (!clientLocalSections.isEmpty()) {
-			merged = tag.copy();
-			preserveClientLocal(merged);
-		}
-		this.data = merged;
-		clientDirty = true;
+	/// Loads the global sections, and the world sections too if a world is resolved, discarding unsaved
+	/// changes of those scopes.
+	public void load() {
+		loadScope(Scope.GLOBAL);
+		loadScope(Scope.WORLD);
 	}
 
 	public CompoundTag getSection(String key) {
 		return data.getCompound(key).orElseGet(CompoundTag::new);
 	}
 
-	/**
-	 * Stores a section and marks the store dirty. Disk persistence is deferred: server-managed
-	 * sections are flushed by the server tick listener, client-local sections by the client tick
-	 * (or logout) listener.
-	 */
-	public void setSection(String key, CompoundTag section) {
-		data.put(key, section);
-		if (FMLEnvironment.getDist().isClient() && !SERVER_MANAGED_SECTIONS.contains(key)) {
-			clientLocalSections.add(key);
-			clientDirty = true;
-		} else {
-			serverDirty = true;
-		}
+	/// Immediately flushes all dirty sections to disk.
+	public void save() {
+		flushDirty(Scope.WORLD);
+		flushDirty(Scope.GLOBAL);
 	}
 
-	/**
-	 * Requests a broadcast of the full engine data. The snapshot is sent to all players, so there
-	 * is no need for a per-player variant: any targeted request is a subset of this broadcast.
-	 */
+	/// Replaces the in-memory data with a server sync while keeping the global sections.
+	/// Nothing is marked dirty, so synced world data is never persisted by the receiving client.
+	public void setData(CompoundTag tag) {
+		CompoundTag merged = tag.copy();
+		for (String key : List.copyOf(data.keySet())) {
+			if (scopeOf(key) == Scope.GLOBAL) {
+				data.getCompound(key).ifPresent(section -> merged.put(key, section));
+			}
+		}
+		this.data = merged;
+	}
+
+	/// Stores a section and marks it dirty; the actual write is deferred to the tick listeners.
+	public void setSection(String key, CompoundTag section) {
+		data.put(key, section);
+		dirtySections.add(key);
+	}
+
+	/// Requests a broadcast of all [Scope#WORLD] sections to all players on the next server tick.
+	/// There is no per-player variant, since any targeted request is a subset of this broadcast.
 	public void syncToAll() {
 		broadcastPending = true;
 	}
 
 	private void onServerStarted(ServerStartedEvent event) {
 		LevelStorageSource.LevelStorageAccess storageAccess = ((MinecraftServerAccess) event.getServer()).getStorageSource();
-		Path worldFile = storageAccess.getLevelDirectory().path().resolve("foundryengine").resolve("engine.dat");
-		migrateLegacyIfNeeded(worldFile);
-		this.diskFile = worldFile;
-		this.worldScoped = true;
-		load();
+		this.worldDir = storageAccess.getLevelDirectory().path().resolve(WORLD_DIR_NAME);
+		loadScope(Scope.WORLD);
 		Common.getWaypointManager().load();
 		Common.getAreaManager().load();
 		Common.getCutsceneManager().load();
 		Common.getDialogueManager().load();
-		if (serverDirty) {
-			flushServerData();
-		}
+		flushDirty(Scope.WORLD);
 		syncToAll();
 	}
 
 	private void onServerTick(ServerTickEvent.Post event) {
-		tickCounter++;
-		if (tickCounter >= FLUSH_INTERVAL_TICKS) {
-			tickCounter = 0;
-			if (serverDirty) {
-				flushServerData();
+		serverTickCounter++;
+		if (serverTickCounter >= FLUSH_INTERVAL_TICKS) {
+			serverTickCounter = 0;
+			flushDirty(Scope.WORLD);
+			if (!FMLEnvironment.getDist().isClient()) {
+				// A dedicated server has no client tick, so it flushes global sections itself.
+				flushDirty(Scope.GLOBAL);
 			}
 		}
 		sendPendingBroadcast();
@@ -185,22 +174,20 @@ public class SavedDataManager {
 
 	private void onServerStopping(ServerStoppingEvent event) {
 		save();
+		// Stop persisting world sections so they can never leak into another world.
+		this.worldDir = null;
 	}
 
 	private void onClientTick(ClientTickEvent.Post event) {
-		tickCounter++;
-		if (tickCounter >= FLUSH_INTERVAL_TICKS) {
-			tickCounter = 0;
-			if (clientDirty) {
-				flushClientLocal();
-			}
+		clientTickCounter++;
+		if (clientTickCounter >= FLUSH_INTERVAL_TICKS) {
+			clientTickCounter = 0;
+			flushDirty(Scope.GLOBAL);
 		}
 	}
 
 	private void onClientLogout(ClientPlayerNetworkEvent.LoggingOut event) {
-		if (clientDirty) {
-			flushClientLocal();
-		}
+		flushDirty(Scope.GLOBAL);
 	}
 
 	private void sendPendingBroadcast() {
@@ -208,90 +195,104 @@ public class SavedDataManager {
 			return;
 		}
 		broadcastPending = false;
-		networkManager.sendToAllPlayers(new SavedDataSyncPacket(data.copy()));
+		networkManager.sendToAllPlayers(new SavedDataSyncPacket(worldSnapshot()));
 	}
 
-	private void flushServerData() {
-		try {
-			writeTag(resolvedFile(), data);
-			serverDirty = false;
-		} catch (IOException e) {
-			Common.LOGGER.error("Failed to save game data", e);
-		}
-	}
-
-	private void flushClientLocal() {
-		try {
-			writeClientLocal();
-			clientDirty = false;
-		} catch (IOException e) {
-			Common.LOGGER.error("Failed to save client data", e);
-		}
-	}
-
-	private void migrateLegacyIfNeeded(Path worldFile) {
-		if (Files.exists(worldFile) || !Files.exists(EnginePaths.ENGINE_DATA)) {
-			return;
-		}
-		try {
-			CompoundTag legacy;
-			try (DataInputStream dis = new DataInputStream(Files.newInputStream(EnginePaths.ENGINE_DATA))) {
-				legacy = NbtIo.readCompressed(dis, NbtAccounter.defaultQuota());
+	private CompoundTag worldSnapshot() {
+		CompoundTag snapshot = new CompoundTag();
+		for (String key : List.copyOf(data.keySet())) {
+			if (scopeOf(key) == Scope.WORLD) {
+				data.getCompound(key).ifPresent(section -> snapshot.put(key, section.copy()));
 			}
-			writeTag(worldFile, legacy);
-			Common.LOGGER.info("Imported legacy engine data into per-world save {}", worldFile);
-		} catch (IOException e) {
-			Common.LOGGER.error("Failed to migrate legacy engine data", e);
 		}
+		return snapshot;
 	}
 
-	/**
-	 * Persists only the client-local sections, merged into the legacy global file so existing
-	 * content (and the pre-refactor data) is preserved.
-	 */
-	private void writeClientLocal() throws IOException {
-		if (clientLocalSections.isEmpty()) {
+	private @Nullable Path dirFor(Scope scope) {
+		return scope == Scope.WORLD ? worldDir : dataDir;
+	}
+
+	/// Writes every dirty section of the scope, doing nothing while the scope has no directory yet.
+	/// A failed write leaves the section dirty so the next flush retries it.
+	private void flushDirty(Scope scope) {
+		Path dir = dirFor(scope);
+		if (dir == null) {
 			return;
 		}
-		CompoundTag target = new CompoundTag();
-		if (Files.exists(EnginePaths.ENGINE_DATA)) {
-			try (DataInputStream dis = new DataInputStream(Files.newInputStream(EnginePaths.ENGINE_DATA))) {
-				target = NbtIo.readCompressed(dis, NbtAccounter.defaultQuota());
+		for (String key : List.copyOf(dirtySections)) {
+			if (scopeOf(key) != scope || !dirtySections.remove(key)) {
+				continue;
+			}
+			try {
+				writeTag(dir.resolve(fileNameFor(key)), getSection(key));
 			} catch (IOException e) {
-				Common.LOGGER.warn("Failed to read existing client data; starting fresh", e);
-				target = new CompoundTag();
+				dirtySections.add(key);
+				Common.LOGGER.error("Failed to save section '{}' to {}", key, dir, e);
 			}
-		}
-		boolean changed = false;
-		for (String key : clientLocalSections) {
-			var section = data.getCompound(key);
-			if (section.isPresent()) {
-				target.put(key, section.get());
-				changed = true;
-			}
-		}
-		if (changed) {
-			writeTag(EnginePaths.ENGINE_DATA, target);
 		}
 	}
 
-	private void preserveClientLocal(CompoundTag target) {
-		for (String key : clientLocalSections) {
-			data.getCompound(key).ifPresent(section -> target.put(key, section));
+	/// Replaces all in-memory sections of the scope with the ones on disk.
+	private void loadScope(Scope scope) {
+		Path dir = dirFor(scope);
+		if (dir == null) {
+			return;
+		}
+
+		for (String key : List.copyOf(data.keySet())) {
+			if (scopeOf(key) == scope) {
+				data.remove(key);
+			}
+		}
+		dirtySections.removeIf(key -> scopeOf(key) == scope);
+
+		if (!Files.isDirectory(dir)) {
+			return;
+		}
+		try (Stream<Path> files = Files.list(dir)) {
+			files.filter(SavedDataManager::isSectionFile).forEach(file -> {
+				String key = keyOf(file);
+				if (scopeOf(key) != scope) {
+					return;
+				}
+				CompoundTag section = readTag(file);
+				if (section != null) {
+					data.put(key, section);
+				}
+			});
+		} catch (IOException e) {
+			Common.LOGGER.error("Failed to list engine data in {}", dir, e);
 		}
 	}
 
+	private @Nullable CompoundTag readTag(Path file) {
+		try (DataInputStream dis = new DataInputStream(Files.newInputStream(file))) {
+			return NbtIo.readCompressed(dis, NbtAccounter.defaultQuota());
+		} catch (IOException e) {
+			Common.LOGGER.error("Failed to load {}", file, e);
+			return null;
+		}
+	}
+
+	/// Writes to a temp file and then moves it over the target, so a crash mid-write cannot corrupt it.
 	private void writeTag(Path file, CompoundTag tag) throws IOException {
 		Files.createDirectories(file.getParent());
-		try (DataOutputStream dos = new DataOutputStream(Files.newOutputStream(file))) {
+		Path tmp = file.resolveSibling(file.getFileName() + ".tmp");
+		try (DataOutputStream dos = new DataOutputStream(Files.newOutputStream(tmp))) {
 			NbtIo.writeCompressed(tag, dos);
+		}
+		try {
+			Files.move(tmp, file, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+		} catch (AtomicMoveNotSupportedException e) {
+			Files.move(tmp, file, StandardCopyOption.REPLACE_EXISTING);
 		}
 	}
 
-	private Path resolvedFile() {
-		if (worldScoped && diskFile != null) {
-			return diskFile;
-		}
-		return EnginePaths.ENGINE_DATA;
+	/// Where a section is persisted.
+	public enum Scope {
+		/// Shared by all worlds, stored in the FoundryEngine directory
+		GLOBAL,
+		/// Stored inside the world / level folder.
+		WORLD
 	}
 }
