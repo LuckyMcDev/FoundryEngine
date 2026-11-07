@@ -1,7 +1,6 @@
 package de.luckymcdev.foundryengine.game.common.stage.addon;
 
 import de.luckymcdev.foundryengine.Common;
-import de.luckymcdev.foundryengine.registry.common.GenericRegistry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -9,14 +8,16 @@ import net.minecraft.world.entity.player.Player;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public abstract class StageAddon<T> {
 
-	protected final GenericRegistry<T, Set<Identifier>> requiredStages = new GenericRegistry<>();
-	protected final GenericRegistry<T, Component> lockedMessages = new GenericRegistry<>();
+	protected final Map<T, Set<Identifier>> requiredStages = new HashMap<>();
+	protected final Map<T, Component> lockedMessages = new HashMap<>();
 
 	protected Component getMissingStagesMessage(Player player, T object) {
 		var missing = getMissingStages(player, object);
@@ -35,12 +36,12 @@ public abstract class StageAddon<T> {
 	}
 
 	public void requireStages(T object, Identifier... stages) {
-		requiredStages.register(object, new HashSet<>(List.of(stages)));
+		requiredStages.put(object, new HashSet<>(List.of(stages)));
 	}
 
 	public void requireStages(T object, Component message, Identifier... stages) {
 		requireStages(object, stages);
-		lockedMessages.register(object, message);
+		lockedMessages.put(object, message);
 	}
 
 	public boolean canAccess(Player player, T object) {
@@ -73,11 +74,11 @@ public abstract class StageAddon<T> {
 	}
 
 	protected Component getLockedMessage(T object) {
-		return lockedMessages.getRef(object).orElseGet(this::getDefaultLockedMessage);
+		return lockedMessages.getOrDefault(object, getDefaultLockedMessage());
 	}
 
 	public Collection<T> getGatedObjects() {
-		return Collections.unmodifiableCollection(requiredStages.keys());
+		return Collections.unmodifiableCollection(requiredStages.keySet());
 	}
 
 	public boolean isAccessible(T object) {

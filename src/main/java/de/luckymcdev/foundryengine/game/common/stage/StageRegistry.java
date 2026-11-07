@@ -1,7 +1,6 @@
 package de.luckymcdev.foundryengine.game.common.stage;
 
 import com.mojang.logging.LogUtils;
-import de.luckymcdev.foundryengine.registry.common.GenericRegistry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
@@ -10,24 +9,26 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class StageRegistry {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private final GenericRegistry<Identifier, StageMetadata> registry = new GenericRegistry<>();
+	private final Map<Identifier, StageMetadata> registry = new HashMap<>();
 
 	public StageMetadata register(Identifier id, Component displayName, Component description, Identifier... parents) {
 		var metadata = new StageMetadata(displayName, description,
 			parents.length > 0 ? List.of(parents) : List.of());
-		registry.register(id, metadata);
+		registry.put(id, metadata);
 		return metadata;
 	}
 
 	public StageMetadata register(Identifier id, Component displayName, Component description, List<Identifier> parents) {
 		var metadata = new StageMetadata(displayName, description, filterCyclicParents(id, parents));
-		registry.register(id, metadata);
+		registry.put(id, metadata);
 		return metadata;
 	}
 
@@ -73,7 +74,7 @@ public class StageRegistry {
 	}
 
 	public boolean contains(Identifier id) {
-		return registry.contains(id);
+		return registry.containsKey(id);
 	}
 
 	public StageMetadata get(Identifier id) {
@@ -81,7 +82,7 @@ public class StageRegistry {
 	}
 
 	public Collection<Identifier> getStages() {
-		return registry.keys();
+		return registry.keySet();
 	}
 
 	public boolean hasParents(Identifier id) {

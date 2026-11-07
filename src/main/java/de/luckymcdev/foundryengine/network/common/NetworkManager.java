@@ -2,7 +2,6 @@ package de.luckymcdev.foundryengine.network.common;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.Common;
-import de.luckymcdev.foundryengine.registry.common.GenericRegistry;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
@@ -13,16 +12,18 @@ import org.jetbrains.annotations.ApiStatus;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class NetworkManager {
 	private static final Logger LOGGER = LogUtils.getLogger();
 
-	private final GenericRegistry<Identifier, AbstractPacket.Definition<?>> registry = new GenericRegistry<>();
+	private final Map<Identifier, AbstractPacket.Definition<?>> registry = new HashMap<>();
 	private final List<AbstractPacket.Definition<?>> registrationQueue = new ArrayList<>();
 
 	public <T extends AbstractPacket<T>> void register(AbstractPacket.Definition<T> definition) {
-		registry.register(definition.type().id(), definition);
+		registry.put(definition.type().id(), definition);
 		registrationQueue.add(definition);
 	}
 

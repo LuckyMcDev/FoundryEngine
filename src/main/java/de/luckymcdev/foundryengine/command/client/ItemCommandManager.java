@@ -1,7 +1,6 @@
 package de.luckymcdev.foundryengine.command.client;
 
 import de.luckymcdev.foundryengine.Common;
-import de.luckymcdev.foundryengine.registry.common.GenericRegistry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.component.DataComponents;
@@ -13,15 +12,18 @@ import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class ItemCommandManager {
-	private static final GenericRegistry<ItemStack, ItemCommand> ITEM_COMMANDS = new GenericRegistry<>();
+	private static final Map<ItemStack, ItemCommand> ITEM_COMMANDS = new HashMap<>();
 
 	public void register(ItemCommand command) {
-		if (ITEM_COMMANDS.contains(command.stack())) {
+		if (ITEM_COMMANDS.containsKey(command.stack())) {
 			ITEM_COMMANDS.remove(command.stack());
-			ITEM_COMMANDS.register(command.stack(), command);
+			ITEM_COMMANDS.put(command.stack(), command);
 		} else {
-			ITEM_COMMANDS.register(command.stack(), command);
+			ITEM_COMMANDS.put(command.stack(), command);
 		}
 	}
 

@@ -1,7 +1,6 @@
 package de.luckymcdev.foundryengine.game.common.stage.addon.builtin;
 
 import de.luckymcdev.foundryengine.game.common.stage.addon.StageAddon;
-import de.luckymcdev.foundryengine.registry.common.GenericRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntitySpawnReason;
@@ -19,13 +18,15 @@ import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class MobStages extends StageAddon<EntityType<?>> {
-	private final GenericRegistry<EntityType<?>, EntityType<?>> replacements = new GenericRegistry<>();
+	private final Map<EntityType<?>, EntityType<?>> replacements = new HashMap<>();
 	private final Set<EntityType<?>> bypassSpawners = new HashSet<>();
-	private final GenericRegistry<EntityType<?>, Integer> spawnRanges = new GenericRegistry<>();
+	private final Map<EntityType<?>, Integer> spawnRanges = new HashMap<>();
 
 	@Override
 	protected String getObjectType() {
@@ -33,7 +34,7 @@ public class MobStages extends StageAddon<EntityType<?>> {
 	}
 
 	public void addReplacement(EntityType<?> from, EntityType<?> to) {
-		replacements.register(from, to);
+		replacements.put(from, to);
 	}
 
 	public void setBypassSpawner(EntityType<?> type, boolean bypass) {
@@ -45,7 +46,7 @@ public class MobStages extends StageAddon<EntityType<?>> {
 	}
 
 	public void setSpawnRange(EntityType<?> type, int range) {
-		spawnRanges.register(type, range);
+		spawnRanges.put(type, range);
 	}
 
 	private int getSpawnRange(EntityType<?> type) {

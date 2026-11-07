@@ -7,7 +7,6 @@ import de.luckymcdev.foundryengine.bundle.common.modcompat.BundleModContainer;
 import de.luckymcdev.foundryengine.bundle.common.modcompat.BundleModFile;
 import de.luckymcdev.foundryengine.bundle.common.modcompat.BundleModFileInfo;
 import de.luckymcdev.foundryengine.bundle.common.modcompat.BundleModInfo;
-import de.luckymcdev.foundryengine.registry.common.GenericRegistry;
 import de.luckymcdev.foundryengine.util.common.ErrorHandler;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.Commands;
@@ -35,6 +34,7 @@ import java.nio.file.FileSystem;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -55,7 +55,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class BundleManager {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private final ReentrantLock reloadLock = new ReentrantLock();
-	private final GenericRegistry<String, Bundle> bundles = new GenericRegistry<>();
+	private final Map<String, Bundle> bundles = new HashMap<>();
 	private final List<ModContainer> bundleContainers = new ArrayList<>();
 	private final Set<String> registeredConfigs = ConcurrentHashMap.newKeySet();
 	private final Set<String> failedBundleIds = ConcurrentHashMap.newKeySet();
@@ -88,7 +88,7 @@ public class BundleManager {
 	 * Registers a bundle and immediately loads its common-side scripts.
 	 */
 	public void register(Bundle bundle) {
-		bundles.register(bundle.info().id(), bundle);
+		bundles.put(bundle.info().id(), bundle);
 		var container = createModContainer(bundle);
 		bundleContainers.add(container);
 

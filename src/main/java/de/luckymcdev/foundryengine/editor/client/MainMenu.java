@@ -9,16 +9,18 @@ import de.luckymcdev.foundryengine.editor.client.menu.builtin.CategoryMenuSectio
 import de.luckymcdev.foundryengine.imgui.client.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.imgui.client.icon.ImIcons;
 import de.luckymcdev.foundryengine.Common;
-import de.luckymcdev.foundryengine.registry.common.GenericRegistry;
 import imgui.ImGui;
 import imgui.flag.ImGuiStyleVar;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The Main Menu implementation. Manages the top info bar and coordinates menu sections.
  * Uses lazy initialization to handle potential timing issues with Client initialization.
  */
 public class MainMenu {
-	private final GenericRegistry<String, MenuSection> menuSections = new GenericRegistry<>();
+	private final Map<String, MenuSection> menuSections = new HashMap<>();
 	private ShortcutHandler shortcutHandler;
 
 	public void register() {
@@ -49,7 +51,7 @@ public class MainMenu {
 	}
 
 	public void register(String name, MenuSection section) {
-		this.menuSections.register(name, section);
+		this.menuSections.put(name, section);
 	}
 
 	public void remove(String name) {
@@ -66,7 +68,7 @@ public class MainMenu {
 			g.drawImage(ImGraphicsExtractor.getTexture(EngineClientMod.LOGO_TRANSPARENT), 32, 32);
 
 			g.pushStack();
-			menuSections.forEach(MenuSection::render);
+			menuSections.values().forEach(MenuSection::render);
 			g.popStack();
 
 			ImGui.endMainMenuBar();
