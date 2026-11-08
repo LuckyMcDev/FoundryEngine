@@ -6,7 +6,7 @@ description: The .bundles.toml file that describes a bundle.
 
 # Bundle metadata
 
-Every bundle carries a `.bundles.toml` file that the engine reads to identify it. The file sits at the bundle root and is named `<bundleId>.bundles.toml`.
+Every bundle carries one `.bundles.toml` file at its root. The filename must end in `.bundles.toml`; the `bundleId` field identifies the bundle. A bundle directory cannot contain multiple matching metadata files.
 
 ## Fields
 
@@ -15,23 +15,31 @@ Every bundle carries a `.bundles.toml` file that the engine reads to identify it
 bundleId = "mybundle"
 version = "1.0.0"
 displayName = "My Bundle"
-displayURL = "https://example.com/my-bundle"
 authors = "Your Name"
-description = "What this bundle does."
 dependencies = [
-    "mod:neoforge@26.1.0.1-beta"
+    "mod:neoforge@[26.1.2,26.2)"
 ]
 ```
 
 | Field | Meaning |
 | --- | --- |
 | `bundleId` | Unique id. Used as the namespace for `Identifier`s and the script package. |
-| `version` | SemVer string `MAJOR.MINOR.PATCH`. |
+| `version` | Three numeric components in `MAJOR.MINOR.PATCH` form. |
 | `displayName` | Name shown in lists and menus. |
-| `displayURL` | Link shown in the bundle info. |
-| `authors` | Author name or list. |
-| `description` | Short summary. |
-| `dependencies` | List of dependencies, like `mod:neoforge@26.1.0.1-beta`. |
+| `authors` | Author name or a comma-separated string of names. |
+| `dependencies` | Versioned mod or bundle dependencies. A range such as `mod:neoforge@[26.1.2,26.2)` accepts NeoForge 26.1.x only. |
+
+## Optional Maven libraries
+
+Bundles can declare Maven libraries in the same metadata object:
+
+```toml
+libraries = ["group:artifact:version", "group:other-artifact:version:sha256"]
+```
+
+The optional fourth coordinate part is the artifact's SHA-256 hash. Versions must be exact; ranges and dynamic versions are rejected.
+
+Library loading must be enabled in the startup configuration. Use a SHA-256 value for libraries distributed to other users, and set `MAVEN_REQUIRE_SHA256` to `true` on servers that require hashes.
 
 ## The bundle id is the namespace
 

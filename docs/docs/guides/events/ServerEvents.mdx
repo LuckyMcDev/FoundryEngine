@@ -1,0 +1,39 @@
+---
+sidebar_position: 7
+---
+
+# ServerEvents
+
+**Applies to:** server-side bundle scripts.
+
+`ServerEvents` exposes the listed server lifecycle hooks through closures. Each callback receives its NeoForge event object. Listener callbacks are cleared when bundles reload.
+
+## Hooks
+
+| Hook | Fires |
+| --- | --- |
+| `aboutToStart` | before the server starts |
+| `starting` | while the server is starting |
+| `started` | after the server starts |
+| `stopping` | while the server is stopping |
+| `stopped` | after the server stops |
+| `tick` | `ServerTickEvent.Post`, after each server tick |
+| `tags` | A `TagsUpdatedEvent` is posted after tag data updates |
+
+```groovy
+ServerEvents.started { event ->
+    println "Server started"
+}
+
+ServerEvents.tick { event ->
+    // Keep per-tick work small.
+}
+```
+
+Use `ServerEvents` for server lifecycle work. Use [LevelEvents](LevelEvents) for a specific level and [PlayerEvents](PlayerEvents) for player lifecycle events.
+
+## Related
+
+- [Server-side scripts](../scripts-and-sandboxing)
+- [Managers](../managers)
+- [`ServerEvents`](pathname:///javadoc/de/luckymcdev/foundryengine/event/common/ServerEvents.html)

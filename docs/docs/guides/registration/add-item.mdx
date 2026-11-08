@@ -13,6 +13,7 @@ An item is registered from your bundle's **common** entrypoint script. Common sc
 ```groovy title="scripts/common/<bundle>/Common.groovy"
 import de.luckymcdev.foundryengine.builder.common.item.ItemBuilder
 import de.luckymcdev.foundryengine.event.common.BundleEvents
+import de.luckymcdev.foundryengine.script.common.BundleEntrypoint
 import net.minecraft.resources.Identifier
 
 class CommonEntrypoint implements BundleEntrypoint {
@@ -30,6 +31,9 @@ class CommonEntrypoint implements BundleEntrypoint {
             it.items(gem)
         }
     }
+
+    @Override
+    void onUnload() {}
 }
 ```
 

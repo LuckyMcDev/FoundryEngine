@@ -1,56 +1,49 @@
 ---
 sidebar_position: 1
 title: BundleEvents
-description: Reference for bundle lifecycle events.
+description: Reference for bundle lifecycle and registration events.
 ---
 
 # BundleEvents
 
-`BundleEvents` is the static entry point for the bundle lifecycle. Every method takes a callback and returns void; callbacks run inside the bundle's Groovy context.
+**Applies to:** common, client, and server bundle scripts, subject to each event's side. Custom event types are a Java extension surface.
 
-## Registry
+Register callbacks by calling the method with a Groovy closure. Event callback lists clear when bundles reload; the reloaded scripts register them again.
 
-| Method | Runs |
+## Registry and setup
+
+| Registration | Timing and eligible entrypoint |
 | --- | --- |
-| `registry { it -> ... }` | When content registers. The lambda gets a `RegistryEvent`; call `it.items(...)`, `it.blocks(...)`, `it.recipes(...)`, `it.sounds(...)`, `it.particles(...)`, `it.toolMaterials(...)`, `it.menus(...)`, `it.blockEntities(...)`, `it.tags(...)`. |
+| `registry { event -> ... }` | During registry registration. Register from common entrypoints, which load during discovery. Client and server entrypoints load too late. The wrapper supports `items`, `blocks`, `recipes`, `sounds`, `particles`, `toolMaterials`, `menus`, `blockEntities`, `tags`, and generic `register`. |
+| `commonSetup { event -> ... }` | NeoForge common setup. Register from common entrypoints. |
+| `clientSetup { event -> ... }` | Declared in the event class, but current source has no call site for this callback; it does not fire. |
+| `dedicatedServerSetup { event -> ... }` | Dedicated server setup. Register from common entrypoints; server entrypoints load when the server starts, after this setup phase. |
+| `postInit { event -> ... }` | NeoForge inter-mod process event. Register from common entrypoints; server scripts load later. |
 
-## Setup
+## Other callbacks
 
-| Method | When |
+| Registration | Timing |
 | --- | --- |
-| `commonSetup { event -> ... }` | FML common setup. |
-| `clientSetup { event -> ... }` | FML client setup. |
-| `dedicatedServerSetup { event -> ... }` | FML dedicated server setup. Runs only on dedicated servers. |
-| `postInit { event -> ... }` | After mod initialization (InterModProcessEvent). |
-
-## Runtime
-
-| Method | When |
-| --- | --- |
-| `vanillaGame { event -> ... }` | A vanilla game event (block, entity, etc.) is posted on the NeoForge bus. |
-| `dataGen { event -> ... }` | During data generation (runs automatically on every startup). The event exposes `event.getGenerator()` and a convenience `event.addProvider(...)`. |
-| `custom(Class, callback)` | Register a callback for a NeoForge `Event` subclass. The class must extend `net.neoforged.neoforge.event.Event`. |
+| `vanillaGame { event -> ... }` | A NeoForge `VanillaGameEvent` is posted. |
+| `dataGen { event -> ... }` | During the engine's data-generation run. The payload is `BundleDataGenEvent`; `getLookup()` returns a `CompletableFuture<HolderLookup.Provider>`, and `addProvider` accepts a `DataProvider`. |
+| `custom(EventClass, callback)` | A matching `net.neoforged.bus.api.Event` subclass is posted on the mod event bus. This requires access to the Java event class. |
 
 ## Example
 
 ```groovy
-BundleEvents.registry {
-    it.items(gem)
-    it.blocks(glow)
-    it.recipes(recipe)
-    it.sounds(sound)
-    it.particles(sparkle)
+BundleEvents.registry { event ->
+    event.items(gem)
+    event.blocks(glow)
 }
 
 BundleEvents.commonSetup { event ->
     println "Common setup"
 }
-
-BundleEvents.dataGen { event ->
-    event.addProvider(myDataProvider)
-}
 ```
+
+The engine posts the registry wrapper for each underlying registry registration event. Register before the relevant lifecycle event: registry and setup callbacks belong in common entrypoint `onLoad()`. Callback failures are reported as script errors; they do not stop later callbacks in the same event group.
 
 ## Related
 
-- Content registration: [Explanation](../../concepts/bundles-to-registry-pipeline).
+- [Content registration](../../concepts/bundles-to-registry-pipeline)
+- [Data generation](../packaging/generate-data)

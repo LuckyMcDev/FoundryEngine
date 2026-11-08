@@ -114,6 +114,12 @@ const config: Config = {
 					position: 'left',
 					label: 'Concepts',
 				},
+				{
+					type: 'docSidebar',
+					sidebarId: 'referenceSidebar',
+					position: 'left',
+					label: 'Reference',
+				},
 				{to: '/news', label: 'News', position: 'left'},
 				{
 					to: 'pathname:///javadoc/',
@@ -152,6 +158,10 @@ const config: Config = {
 						{
 							label: 'Concepts',
 							to: '/docs/concepts/',
+						},
+						{
+							label: 'Reference',
+							to: '/docs/reference/',
 						},
 					],
 				},

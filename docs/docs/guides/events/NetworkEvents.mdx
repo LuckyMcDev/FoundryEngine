@@ -1,27 +1,29 @@
 ---
 sidebar_position: 11
 title: NetworkEvents
-description: Reference for custom network data events.
+description: Reference for custom data receive events.
 ---
 
 # NetworkEvents
 
-`NetworkEvents` posts callbacks when custom network data is received from the other side (client or server).
+**Applies to:** common bundle scripts. Registering custom packet types is Java extensions only.
 
-## Events
+## Event
 
-| Method | When |
+| Registration | Timing and payload |
 | --- | --- |
-| `onCustomDataReceived { event -> ... }` | Custom network data is received. |
+| `onCustomDataReceived { event -> ... }` | Engine custom data is received. The event exposes `player`, `id`, and `data` (`CompoundTag`). |
 
 ## Example
 
 ```groovy
 NetworkEvents.onCustomDataReceived { event ->
-    println "Received custom data: ${event.data}"
+    println "Received ${event.id} from ${event.player.name}: ${event.data}"
 }
 ```
 
+The event is observational; it has no cancellation or mutation methods. Its callback list clears when bundles reload. For Java packet registration, see the [networking guide](../networking) and [NetworkManager Javadoc](pathname:///javadoc/de/luckymcdev/foundryengine/network/common/NetworkManager.html).
+
 ## Related
 
-- [BundleEvents](BundleEvents).
+- [BundleEvents](BundleEvents)

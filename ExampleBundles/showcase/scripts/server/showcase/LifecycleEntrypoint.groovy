@@ -1,12 +1,12 @@
 package showcase
 
-import de.luckymcdev.foundryengine.common.Common
-import de.luckymcdev.foundryengine.common.event.EntityEvents
-import de.luckymcdev.foundryengine.common.event.GameEvents
-import de.luckymcdev.foundryengine.common.event.PlayerEvents
-import de.luckymcdev.foundryengine.common.game.GameData
-import de.luckymcdev.foundryengine.common.game.GameSession
-import de.luckymcdev.foundryengine.common.script.BundleEntrypoint
+import de.luckymcdev.foundryengine.Common
+import de.luckymcdev.foundryengine.event.common.EntityEvents
+import de.luckymcdev.foundryengine.event.common.GameEvents
+import de.luckymcdev.foundryengine.event.common.PlayerEvents
+import de.luckymcdev.foundryengine.game.common.GameData
+import de.luckymcdev.foundryengine.game.common.GameSession
+import de.luckymcdev.foundryengine.script.common.BundleEntrypoint
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.Identifier
 

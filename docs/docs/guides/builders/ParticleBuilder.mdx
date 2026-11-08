@@ -6,6 +6,8 @@ description: Reference for the ParticleBuilder fluent API.
 
 # ParticleBuilder
 
+**Applies to:** Java client extensions. The current bundle mod wiring does not load client-side bundle entrypoints.
+
 `ParticleBuilder` builds a particle definition. Create one with `ParticleBuilder.create(Identifier)` and register it through `BundleEvents.registry { it.particles(...) }` from a **client** entrypoint.
 
 ## Creation
@@ -22,7 +24,7 @@ description: Reference for the ParticleBuilder fluent API.
 | `.layer(ParticleLayer)` | `TRANSLUCENT` or `OPAQUE` render layer. |
 | `.alwaysShow()` | Visible even with reduced particle settings. |
 | `.factory(...)` | Swap the particle implementation. |
-| `.generateData(boolean)` | Skip JSON generation. |
+| `.generateData(boolean)` | Whether to generate the particle description. Default: `true`. |
 
 ## Colour and size
 
@@ -37,7 +39,7 @@ description: Reference for the ParticleBuilder fluent API.
 
 | Method | Notes |
 | --- | --- |
-| `.velocity(Vector3d)` | Constant velocity in blocks per second. |
+| `.velocity(Vector3d)` | Set the initial particle speed vector. |
 | `.velocityData(...)` | Velocity over time. |
 | `.positionData(...)` / `.rotationData(...)` | Position and rotation over time. |
 

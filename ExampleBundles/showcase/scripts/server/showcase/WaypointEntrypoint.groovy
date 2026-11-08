@@ -1,10 +1,10 @@
 package showcase
 
-import de.luckymcdev.foundryengine.common.Common
-import de.luckymcdev.foundryengine.common.event.PlayerEvents
-import de.luckymcdev.foundryengine.common.script.BundleEntrypoint
-import de.luckymcdev.foundryengine.common.waypoint.Waypoint
-import de.luckymcdev.foundryengine.common.util.color.Color
+import de.luckymcdev.foundryengine.Common
+import de.luckymcdev.foundryengine.event.common.PlayerEvents
+import de.luckymcdev.foundryengine.script.common.BundleEntrypoint
+import de.luckymcdev.foundryengine.waypoint.common.Waypoint
+import de.luckymcdev.foundryengine.util.common.color.Color
 import net.minecraft.server.level.ServerPlayer
 
 class WaypointEntrypoint implements BundleEntrypoint {

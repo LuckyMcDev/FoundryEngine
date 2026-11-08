@@ -1,0 +1,23 @@
+---
+sidebar_position: 11
+---
+
+# Enable or disable modules
+
+Feature modules have a per-module startup configuration file under `config/foundryengine/`. The file name is the module id with the `foundryengine_` prefix removed, followed by `.toml` (for example, `foundryengine_dialogue` becomes `config/foundryengine/dialogue.toml`). Its `enabled` option defaults to `true`. A disabled module does not register its managers, listeners, packets, or content registration wiring.
+
+The module configuration is generated from `ModuleConfig` and uses an `enabled` boolean. Changes take effect at startup, not during a bundle reload.
+
+## When to disable a module
+
+Disable a module when a server does not need its feature set, or when a client does not want the associated screens or rendering code. Check the module's own configuration file name and restart after changing it.
+
+## Configuration boundaries
+
+Module toggles are separate from the common, startup, client, and server settings documented in [Configuration](config). They control whether a feature module wires itself at all; the other config sections control behavior after a module is active.
+
+## Related
+
+- [Configuration](config)
+- [Sandbox and security](../concepts/sandbox-and-security)
+- [`ModuleConfig`](pathname:///javadoc/de/luckymcdev/foundryengine/config/ModuleConfig.html)

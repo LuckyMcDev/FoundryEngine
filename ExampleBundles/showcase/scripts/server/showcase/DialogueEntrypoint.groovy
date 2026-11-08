@@ -1,8 +1,8 @@
 package showcase
 
-import de.luckymcdev.foundryengine.common.Common
-import de.luckymcdev.foundryengine.common.dialogue.*
-import de.luckymcdev.foundryengine.common.script.BundleEntrypoint
+import de.luckymcdev.foundryengine.Common
+import de.luckymcdev.foundryengine.dialogue.common.*
+import de.luckymcdev.foundryengine.script.common.BundleEntrypoint
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.Identifier
 

@@ -6,7 +6,7 @@ description: Reference for the SoundBuilder fluent API.
 
 # SoundBuilder
 
-`SoundBuilder` builds a sound event. Create one with `SoundBuilder.create(Identifier)` and register it through `BundleEvents.registry { it.sounds(...) }`.
+**Applies to:** common bundle scripts. `SoundBuilder` creates a sound event. Register it through `BundleEvents.registry { it.sounds(...) }`; the engine gates sound registration by compatibility mode.
 
 ## Creation
 
@@ -18,20 +18,28 @@ description: Reference for the SoundBuilder fluent API.
 
 | Method | Notes |
 | --- | --- |
-| `.subtitle(String)` | The subtitle shown above the hotbar. |
-| `.range(float)` | Audible range in blocks. |
-| `.replace()` | Replace the vanilla sound definition instead of extending it. |
-| `.addSound(Identifier)` | Point at a file under `assets/<ns>/sounds/<path>.ogg`. |
-| `.addSound(Identifier, SoundFileEntry)` | Add a file with volume/pitch hints. |
-| `.generateData(boolean)` | Skip JSON generation for the sound definition. |
+| `.subtitle(String)` | Translation key for the sound subtitle. Default: no subtitle. |
+| `.range(float)` | Fixed audible range in blocks. Default: variable range. |
+| `.replace(boolean)` | Whether to replace the existing sound definition. Default: `false`. |
+| `.addSound(Identifier)` | Point at a sound file under `assets/<ns>/sounds/`; defaults volume, pitch, weight, streaming, attenuation, and preload options. |
+| `.addSound(Identifier, float volume, float pitch, int weight, boolean stream, int attenuationDistance, boolean preload)` | Add a file with the specified sound options. |
+| `.generateData(boolean)` | Whether to generate the sound definition. Default: `true`. |
 
 ## Example
 
 ```groovy
 def chime = SoundBuilder.create(id("magic_chime"))
-        .subtitle("Magic Chime")
+        .subtitle("subtitles.mybundle.magic_chime")
         .addSound(id("magic_chime"))
         .range(16.0f)
+```
+
+Add the subtitle translation yourself in `assets/mybundle/lang/en_us.json`:
+
+```json
+{
+  "subtitles.mybundle.magic_chime": "Magic chime"
+}
 ```
 
 ## Related

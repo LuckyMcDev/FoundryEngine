@@ -1,56 +1,59 @@
 ---
 sidebar_position: 6
 title: Add a command
-description: Register server commands from your bundle.
+description: Register server commands from a bundle.
 ---
 
 # Add a command
 
-Server commands are registered from the **server** entrypoint, where the game's command dispatcher is available.
+**Applies to:** server bundle scripts for server commands; client bundle scripts for client commands. Client entrypoints load during client setup. Integrated-world bundle reloads reload client entrypoints; dedicated servers cannot reload remote clients.
 
-## Register commands
+This entrypoint registers `/hello` on the server command dispatcher:
 
-```groovy title="scripts/server/<bundle>/Server.groovy"
+```groovy title="scripts/server/mybundle/CommandEntrypoint.groovy"
+package server.mybundle
+
 import com.mojang.brigadier.Command
-import com.mojang.brigadier.arguments.StringArgumentType
 import de.luckymcdev.foundryengine.event.common.CommandEvents
+import de.luckymcdev.foundryengine.script.common.BundleEntrypoint
 import net.minecraft.commands.Commands
 import net.minecraft.network.chat.Component
 
-@Override
-void onLoad() {
-    CommandEvents.register { event ->
-        def dispatcher = event.getDispatcher()
-
-        dispatcher.register(
-                Commands.literal("showcase")
-                        .then(Commands.literal("hello")
-                                .executes { ctx ->
-                                    ctx.getSource().sendSuccess(
-                                            Component.literal("Hello from the bundle!"), false)
-                                    Command.SINGLE_SUCCESS
-                                }))
+class CommandEntrypoint implements BundleEntrypoint {
+    @Override
+    void onLoad() {
+        CommandEvents.register { event ->
+            event.dispatcher.register(
+                Commands.literal("hello").executes { context ->
+                    context.source.sendSuccess(Component.literal("Hello from mybundle!"), false)
+                    Command.SINGLE_SUCCESS
+                }
+            )
+        }
     }
+
+    @Override
+    void onUnload() {}
 }
 ```
 
-## Arguments
-
-Commands use the vanilla [Brigadier](https://github.com/Mojang/brigadier) library. Arguments come from `net.minecraft.commands.arguments`:
+Use Brigadier argument types to add arguments. This example uses a string argument and the imports used by the showcase bundle:
 
 ```groovy
-import net.minecraft.commands.arguments.ResourceLocationArgument
+import com.mojang.brigadier.arguments.StringArgumentType
 
-.then(Commands.argument("target", ResourceLocationArgument.id())
-        .executes { ctx ->
-            def id = ResourceLocationArgument.getId(ctx, "target")
-            // ...
+Commands.literal("greet")
+    .then(Commands.argument("name", StringArgumentType.word())
+        .executes { context ->
+            def name = StringArgumentType.getString(context, "name")
+            context.source.sendSuccess(Component.literal("Hello, ${name}!"), false)
             Command.SINGLE_SUCCESS
         })
 ```
 
-Inside the closure, `ctx` is the command context. `ctx.getSource()` gives you the command source. Call `getPlayerOrException()` to get the executing player.
+`CommandEvents.register` receives the server `RegisterCommandsEvent`; `registerClient` receives `RegisterClientCommandsEvent` and is client-only. These callbacks are cleared and re-registered on bundle reload.
 
 ## Related
 
-- Command helpers and the full engine command set: [Engine commands reference](../engine-commands).
+- [CommandEvents](../events/CommandEvents)
+- [Engine commands](../engine-commands)

@@ -1,0 +1,44 @@
+---
+sidebar_position: 9
+---
+
+# Register and send packets
+
+**Applies to:** custom packet registration is Java extensions only. Bundle scripts can use the engine's exposed managers and events, but cannot register custom payload types through the bundle API.
+
+The Java API wraps NeoForge payload registration in `NetworkManager`. A Java packet implements `AbstractPacket<T>` and declares its payload type, codec, delivery bounds, and handlers.
+
+## Delivery bounds
+
+`PacketBounds` controls which direction is registered:
+
+- `CLIENT`: server to client
+- `SERVER`: client to server
+- `BOTH`: bidirectional
+
+The selected bound must have a handler for every side it names. If a handler is missing, the engine logs a warning and skips registration.
+
+## Send packets
+
+Use the manager methods for the common delivery cases:
+
+```java
+networkManager.sendToServer(packet);
+networkManager.sendToPlayer(packet, player);
+networkManager.sendToAllPlayers(packet);
+```
+
+Payload handlers run through the NeoForge play channel. The engine registers them with protocol version `1` and marks the payload channel optional.
+
+## Engine synchronization
+
+Saved data uses `SavedDataSyncPacket` to broadcast world-scoped sections to clients. Other engine systems use dedicated packets for dialogue, cutscenes, waypoints, areas, screen effects, and editor operations. Those packets are engine implementation details; bundle code should prefer the corresponding manager or event API.
+
+Bundle authors should treat engine synchronization as internal transport. Use the documented dialogue, cutscene, waypoint, area, screen-effect, and event APIs; they manage their own packets and synchronization.
+
+## Related
+
+- [Network and persistence](../concepts/network-and-persistence)
+- [Network events](events/NetworkEvents)
+- [`AbstractPacket`](pathname:///javadoc/de/luckymcdev/foundryengine/network/common/AbstractPacket.html)
+- [`NetworkManager`](pathname:///javadoc/de/luckymcdev/foundryengine/network/common/NetworkManager.html)

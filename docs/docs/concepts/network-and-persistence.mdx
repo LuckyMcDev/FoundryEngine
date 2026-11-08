@@ -6,7 +6,7 @@ description: How server state stays in sync with clients and survives restarts.
 
 # Network and persistence
 
-Two problems repeat across every feature in the engine: keeping the server and client in agreement, and keeping state across restarts. This page explains the two mechanisms.
+Managers store server state and send selected data to clients. `SavedDataManager` persists engine sections; networking carries updates for features that expose synchronization.
 
 ## Server is the source of truth
 
@@ -30,13 +30,13 @@ Sessions keep persistent data in `GameData`, keyed by the session id and saved p
 
 ## Network sync
 
-The network manager handles the packets that keep clients in sync:
+The engine uses feature-specific packets and events. For example:
 
-- Content changes from a reload are pushed to connected clients.
-- Area membership is computed server-side and dispatched as enter/leave events.
-- Waypoints are synced when they change.
+- Area membership is computed on the server and delivered through area events.
+- Waypoint and other manager state is synchronized through the engine's saved-data mechanism.
+- Client requests and server updates use engine-owned packet types.
 
-Because each feature has a dedicated sync path, the engine can guarantee the client is never the one deciding what is true.
+Bundle reload re-runs scripts and callbacks; it does not promise that registry content can be changed safely on a live server. The reload command warns that command and registry state may remain inconsistent until restart.
 
 ## Related
 

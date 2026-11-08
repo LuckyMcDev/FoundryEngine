@@ -6,12 +6,13 @@ description: The BundleEntrypoint interface and how bundles load and unload.
 
 # Entrypoint lifecycle
 
-Every bundle declares entrypoint scripts by folder. The engine loads one entrypoint object per folder and calls its lifecycle methods.
+Every `.groovy` file whose matching class implements `BundleEntrypoint` can create an entrypoint. The class's simple name must match the script filename. Common entrypoints load during bundle discovery; server entrypoints load when the server starts.
 
 ## The interface
 
 ```groovy
 import de.luckymcdev.foundryengine.script.common.BundleEntrypoint
+import de.luckymcdev.foundryengine.priority.common.Priority
 
 class MyEntrypoint implements BundleEntrypoint {
     @Override
@@ -31,7 +32,9 @@ class MyEntrypoint implements BundleEntrypoint {
 }
 ```
 
-`getPriority()` has a default implementation; override it only when load order matters. `onLoad` runs when the bundle loads, `onUnload` when it is unloaded or reloaded.
+Place the class under a side directory such as `scripts/common/mybundle/`. The package and class name are not required to match the bundle id, but keeping them aligned makes bundles easier to maintain.
+
+`getPriority()` defaults to `Priority.NORMAL`. In the current runtime, `onLoad()` runs before the loaded entrypoint list is sorted by priority, so do not rely on this value to order `onLoad()` calls. `onUnload()` runs in reverse order of the stored list when a script runtime unloads.
 
 ## Which scripts run where
 
@@ -39,15 +42,15 @@ class MyEntrypoint implements BundleEntrypoint {
 | --- | --- |
 | `scripts/common/` | client and server |
 | `scripts/server/` | server only |
-| `scripts/client/` | client only |
+| `scripts/client/` | client during client setup; reloaded after an integrated-world bundle reload |
 
-Register content that must exist on both sides (items, blocks, recipes, sounds) from a common entrypoint; server-only logic (commands, stages, dialogue) from a server entrypoint; rendering-only features (particles) from a client entrypoint.
+Register bundle content that must exist on both sides from a common entrypoint; use server entrypoints for commands, stages, and dialogue. Client entrypoints run during client setup, after common scripts load. In an integrated world, the reload-completed lifecycle hook reloads client entrypoints on the client thread. A dedicated server cannot trigger reloads in remote client processes.
 
 ## Loading and unloading
 
-- **Load**: bundle is discovered and its scripts run `onLoad`, in priority order per folder.
-- **Reload**: every bundle receives `onUnload`, then `onLoad` again. Sessions stop and restart.
-- **Remove**: `onUnload` runs and the bundle's content is deregistered.
+- **Load**: bundle discovery loads common entrypoints; server entrypoints load when the server starts. The engine sorts loaded entrypoint references after calling `onLoad()`.
+- **Reload**: engine event callbacks clear, sessions stop, loaded entrypoints receive `onUnload()`, and the bundle directory is scanned again. Common and server scripts load again. In an integrated world, client entrypoints reload on the client thread after rediscovery. A dedicated server cannot reload remote client entrypoints. Registry content is not deregistered or re-registered safely in the live process; restart after changing registered content.
+- **Remove**: `onUnload()` runs for loaded entrypoints and the bundle is removed from the manager. Minecraft registry content remains until restart.
 
 ## Related
 

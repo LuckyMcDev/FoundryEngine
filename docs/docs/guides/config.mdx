@@ -6,7 +6,7 @@ description: The NeoForge config files and their options.
 
 # Configuration
 
-FoundryEngine uses NeoForge config files. The relevant one for everyday use is the **client** config; the common config holds engine-wide switches.
+FoundryEngine uses NeoForge config files under `config/foundryengine/`. The files are scoped by when and where the values are read: `common.toml`, `startup.toml`, `client.toml`, and `server.toml`.
 
 ## Common config
 
@@ -19,6 +19,25 @@ FoundryEngine uses NeoForge config files. The relevant one for everyday use is t
 | `CUTSCENE_COMMAND_EXECUTION` | `true` | Allow cutscenes to execute server commands. |
 | `SKIP_EXPERIMENTAL_WARNING` | `true` | Skip the experimental warning on world join. |
 | `FILENAME_HASH_COMPONENTS` | `true` | MD5-hash component file names in the icon exporter. |
+| `ALLOWED_EXPLORER_FOLDERS` | `["config", "FoundryEngine"]` | Folders shown by the in-game Explorer. |
+
+## Startup config
+
+`startup.toml` is read before normal runtime initialization.
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `COMPATIBILITY_MODE` | `BOTH` | Whether the installation supports client, server, or both sides. |
+| `COMPATIBILITY_MODE_WARNING_SKIP` | `false` | Suppress compatibility-mode warnings during startup. |
+| `SCRIPTING_ENABLED` | `true` | Enable Groovy bundle scripts. |
+| `DISABLE_CLASS_FILTER` | `false` | With an accepted sandbox waiver, disables the entire script sandbox. |
+| `SCRIPT_TIMEOUT_SECONDS` | `30` | Maximum runtime for a bundle `onLoad()` callback or `/engine eval`. |
+| `MAVEN_LIBRARIES_ENABLED` | `true` | Allow bundles to resolve Maven libraries. |
+| `MAVEN_REQUIRE_SHA256` | `false` | Reject library entries without a SHA-256 hash. |
+| `MAVEN_REPOSITORIES` | `https://repo1.maven.org/maven2/` | HTTPS Maven repositories tried when resolving bundle libraries. |
+| `EVAL_COMMAND_ENABLED` | `true` | Enable `/engine eval`. |
+| `EVAL_COMMAND_PERMISSION` | `4` | Required permission level for `/engine eval`. |
+| `CLEAR_DATA_CACHE` | `false` | Clear the data cache on the next launch. |
 
 ## Client config
 
@@ -35,8 +54,12 @@ FoundryEngine uses NeoForge config files. The relevant one for everyday use is t
 | `SHOW_SLOT_TOOLTIP` | `true` | Show slot tooltips. |
 | `BLOCK_ENTITY_RENDER_DISTANCE` | `vanilla` | `full`, `half`, or `vanilla`. |
 | `CUSTOM_SKYBOX` | `false` | Use the custom skybox renderer. |
-| `MOD_PATH_BROADCAST_PORT` | `56656` | Port the mod path broadcaster connects to. |
+
+## Server config
+
+`server.toml` is registered but currently has no FoundryEngine-specific options.
 
 ## Related
 
 - Themes in game: [Themes and shortcuts](../guides/editor/themes-and-shortcuts).
+- Bundle library metadata: [Bundle metadata](bundle-metadata).

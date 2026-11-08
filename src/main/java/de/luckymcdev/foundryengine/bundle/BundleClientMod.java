@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.Client;
 import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.EnginePaths;
+import de.luckymcdev.foundryengine.bundle.common.BundleLifecycleListener;
 import de.luckymcdev.foundryengine.bundle.common.modcompat.BundleModContainer;
 import de.luckymcdev.foundryengine.debug.client.screen.BundleDebugEntry;
 import de.luckymcdev.foundryengine.network.common.packet.BundleHashPacket;
@@ -16,6 +17,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.RegisterDebugEntriesEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
@@ -33,16 +35,30 @@ public final class BundleClientMod {
 	public BundleClientMod(IEventBus modBus, ModContainer modContainer) {
 		modBus.addListener(this::onRegisterDebugEntry);
 		modBus.addListener(this::onClientSetup);
+		Common.getBundleManager().getLifecycleDispatcher().register(new BundleLifecycleListener() {
+			@Override
+			public void onBundleReloadCompleted() {
+				Minecraft.getInstance().execute(() -> {
+					LOGGER.info("Reloading client bundle scripts...");
+					Common.getBundleManager().loadClientScripts();
+					Common.getBundleManager().reportScriptErrors();
+				});
+			}
+		});
 		var bus = NeoForge.EVENT_BUS;
 		bus.addListener(this::onScreenOpening);
 		bus.addListener(this::onLoggingIn);
 	}
 
-	private void onClientSetup(net.neoforged.fml.event.lifecycle.FMLClientSetupEvent event) {
+	private void onClientSetup(FMLClientSetupEvent event) {
 		if (!BundleMod.isEnabled()) {
 			return;
 		}
+
 		event.enqueueWork(() -> {
+			Common.getBundleManager().loadClientScripts();
+			Common.getBundleManager().reportScriptErrors();
+
 			for (var container : Common.getBundleManager().getBundleContainers()) {
 				if (container instanceof BundleModContainer) {
 					container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);

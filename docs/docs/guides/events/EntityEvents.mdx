@@ -6,27 +6,28 @@ description: Reference for entity lifecycle and combat events.
 
 # EntityEvents
 
-`EntityEvents` posts callbacks around entity actions. Each callback receives an event object with fields like `event.entity`.
+**Applies to:** common bundle scripts. `hurt` reports post-damage values; it cannot cancel damage.
 
-## Events
+The callbacks receive NeoForge event objects. FoundryEngine clears these listeners when bundles reload.
 
-| Method | When |
-| --- | --- |
-| `joinLevel { event -> ... }` | An entity joins a level. |
-| `death { event -> ... }` | An entity dies. Event exposes `entity` and `source` (the damage source). |
-| `drops { event -> ... }` | An entity's drops are calculated. Event exposes the drop list. |
-| `hurt { event -> ... }` | An entity is damaged (after damage is applied). |
-
-## Example
+| Method | Event | Behavior |
+| --- | --- | --- |
+| `joinLevel` | `EntityJoinLevelEvent` | An entity joins a level. |
+| `death` | `LivingDeathEvent` | A living entity is about to die; the underlying event is cancellable. |
+| `drops` | `LivingDropsEvent` | Living entity drops are available for modification. |
+| `hurt` | `LivingDamageEvent.Post` | Damage has been applied; observation only. |
 
 ```groovy
 EntityEvents.death { event ->
     def entity = event.entity
-    def killer = event.source.getEntity()
+    def killer = event.getSource().getEntity()
     println "${entity.name} died${killer != null ? ' to ' + killer.name : ''}"
 }
 ```
 
+The death callback can cancel the underlying event with `event.setCanceled(true)` where the event permits cancellation. The example only observes it.
+
 ## Related
 
-- [BundleEvents](BundleEvents).
+- [BundleEvents](BundleEvents)
+- [`EntityEvents`](pathname:///javadoc/de/luckymcdev/foundryengine/event/common/EntityEvents.html)

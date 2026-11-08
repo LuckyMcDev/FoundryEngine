@@ -6,7 +6,9 @@ description: Reference for level lifecycle and world events.
 
 # LevelEvents
 
-`LevelEvents` posts callbacks around level (world) state changes.
+**Applies to:** common/server scripts.
+
+`LevelEvents` wraps level load, unload, save, post-tick, and explosion events. Callbacks receive the underlying NeoForge event.
 
 ## Events
 
@@ -15,9 +17,9 @@ description: Reference for level lifecycle and world events.
 | `load { event -> ... }` | A level loads. |
 | `unload { event -> ... }` | A level unloads. |
 | `save { event -> ... }` | A level saves. |
-| `tick { event -> ... }` | After a level tick. |
-| `beforeExplosion { event -> ... }` | Before an explosion detonates. Cancel to prevent it. |
-| `afterExplosion { event -> ... }` | After an explosion has detonated and blocks are affected. |
+| `tick { event -> ... }` | `LevelTickEvent.Post`, after a level tick. |
+| `beforeExplosion { event -> ... }` | `ExplosionEvent.Start`, before an explosion. This event is cancellable. |
+| `afterExplosion { event -> ... }` | `ExplosionEvent.Detonate`, during detonation processing. |
 
 ## Example
 
@@ -26,6 +28,8 @@ LevelEvents.load { event ->
     println "Level loaded: ${event.level.dimension()}"
 }
 ```
+
+Callbacks are cleared on bundle reload. Cancellation and mutation follow each underlying event's NeoForge contract.
 
 ## Related
 

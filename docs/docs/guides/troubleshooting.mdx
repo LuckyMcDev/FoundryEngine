@@ -1,0 +1,36 @@
+---
+sidebar_position: 12
+---
+
+# Troubleshoot a bundle
+
+Start with the first error in the log. A later registration or rendering error is often a consequence of an earlier script or metadata failure.
+
+## The bundle is not discovered
+
+Check that the bundle is in the engine's `bundles` directory, that the metadata file ends in `.bundles.toml`, and that its `bundleId` is unique. A directory bundle and a zip bundle use the same metadata rules.
+
+## Scripts do not run
+
+Check the script directory and environment. Files under `scripts/common` load on both sides; `scripts/client` loads during client setup and `scripts/server` when the server starts. In an integrated world, `/engine reload` reloads client entrypoints after rediscovery; a dedicated server cannot reload connected client processes. A client-only import in a common script can prevent the bundle from loading.
+
+Use the editor's Problems panel before reloading. The compiler reports the script path and stage for compilation and execution failures.
+
+## Content is missing
+
+Confirm that the registration callback runs before the registry phase, and that the identifier uses the bundle namespace. For generated assets, run data generation on the client and inspect the generated bundle output.
+
+## Reload does not fix the problem
+
+Reload clears the engine's registered callbacks and re-runs bundle discovery and scripts. It does not repair malformed metadata, missing files, or a Java/NeoForge class-loading error. Restart the game when the failure occurs during startup or module registration.
+
+## Dedicated server failures
+
+Remove client-only imports from common and server scripts. Client event hooks, editor APIs, renderers, and client resource providers do not load on a dedicated server.
+
+## Related
+
+- [Validate your scripts](editor/validate-your-scripts)
+- [Reload in game](packaging/reload-in-game)
+- [Run a dedicated server](packaging/dedicated-server)
+- [Scripts and sandboxing](scripts-and-sandboxing)

@@ -6,6 +6,8 @@ description: Reference for the RecipeBuilder fluent API.
 
 # RecipeBuilder
 
+**Applies to:** common bundle scripts. Recipe data is generated for server use.
+
 `RecipeBuilder` builds a recipe of a fixed type. The type is chosen by the creation method.
 
 ## Creation
@@ -20,8 +22,8 @@ description: Reference for the RecipeBuilder fluent API.
 | `static campfireCooking(Identifier id, Item result)` | Campfire. |
 | `static stonecutting(Identifier id, Item result)` | Stonecutter. |
 | `static smithingTransform(Identifier id, Item result)` | Smithing table transform. |
-| `static smithingTrim(Identifier id, Item result)` | Smithing table trim. |
-| `static custom(Identifier id, ...)` | Custom recipe type. |
+| `static smithingTrim(Identifier id)` | Smithing table trim. |
+| `static custom(Identifier id, RecipeBuilder delegate)` | Wrap a vanilla recipe builder. Overloads accept `SmithingTransformRecipeBuilder` and `SmithingTrimRecipeBuilder`. |
 
 ## Shaped
 

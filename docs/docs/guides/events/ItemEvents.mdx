@@ -6,6 +6,8 @@ description: Reference for item interaction events.
 
 # ItemEvents
 
+**Applies to:** common/server scripts; empty-click events are client-side.
+
 `ItemEvents` posts callbacks around item interactions. Each callback receives the relevant NeoForge event object.
 
 ## Events
@@ -13,7 +15,7 @@ description: Reference for item interaction events.
 | Method | When |
 | --- | --- |
 | `pickedUp { event -> ... }` | An item entity is picked up by a player. |
-| `destroyed { event -> ... }` | A player's item is destroyed (breaks, consumed). |
+| `destroyed { event -> ... }` | A player's item is destroyed, for example when it breaks. |
 | `rightClicked { event -> ... }` | A player right-clicks while holding an item. |
 | `crafted { event -> ... }` | A player crafts an item. |
 | `dropped { event -> ... }` | A player drops an item. |
@@ -21,8 +23,8 @@ description: Reference for item interaction events.
 | `smelted { event -> ... }` | An item is smelted for a player. |
 | `dynamicTooltips { event -> ... }` | Item tooltips are being built. Modify the tooltip list here. |
 | `entityInteracted { event -> ... }` | A player interacts with an entity while holding an item. |
-| `firstLeftClicked { event -> ... }` | A player left-clicks with nothing targeted (empty hit). |
-| `firstRightClicked { event -> ... }` | A player right-clicks with nothing targeted (empty use). |
+| `firstLeftClicked { event -> ... }` | Client `LeftClickEmpty` event. |
+| `firstRightClicked { event -> ... }` | Client `RightClickEmpty` event. |
 | `modification { event -> ... }` | An item is being modified (default components). |
 
 ## Example
@@ -33,6 +35,10 @@ ItemEvents.crafted { event ->
 }
 ```
 
+The callback argument is the corresponding NeoForge event, except `modification`, which receives FoundryEngine's `ItemModificationEvent`. Event mutation and cancellation follow the payload type. Listener callbacks clear during bundle reload; client-entrypoint listeners are not restored by `/engine reload` until the client restarts.
+
 ## Related
 
-- [BundleEvents](BundleEvents).
+- [BundleEvents](BundleEvents)
+- [`ItemEvents`](pathname:///javadoc/de/luckymcdev/foundryengine/event/common/ItemEvents.html)
+- [`ItemModificationEvent`](pathname:///javadoc/de/luckymcdev/foundryengine/event/common/modification/ItemModificationEvent.html)

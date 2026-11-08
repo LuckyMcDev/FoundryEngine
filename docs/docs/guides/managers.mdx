@@ -23,9 +23,10 @@ Managers are singletons that own the engine's subsystems. Reach them from `Commo
 | `Common.getWaypointManager()` | `WaypointManager` | Waypoints. |
 | `Common.getDialogueManager()` | `DialogueManager` | Dialogue trees and actions. |
 | `Common.getGameManager()` | `GameManager` | Game sessions. |
-| `Common.getScriptShell()` | `ScriptShell` | Groovy script execution. |
 
 ## Client managers
+
+These managers are client-only APIs available to Java client extensions and client bundle scripts. Client bundle scripts load in queued client-setup work after the particle and post-effect managers are registered, so enabled managers are available from a client entrypoint's `onLoad()`. In an integrated world, `/engine reload` reloads client entrypoints on the client thread after rediscovery.
 
 | Getter | Class | Owns |
 | --- | --- | --- |

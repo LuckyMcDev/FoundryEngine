@@ -58,13 +58,13 @@ How the parts fit:
 A shapeless recipe is shorter, since order does not matter:
 
 ```groovy
-def shapeless = RecipeBuilder.shapeless(id("gems_from_glowstone"), id("magic_gem"))
+def shapeless = RecipeBuilder.shapeless(id("diamonds_from_glowstone"), Items.DIAMOND)
         .requires(Blocks.GLOWSTONE)
         .count(4)
         .unlockedBy("has_glowstone", InventoryChangeTrigger.TriggerInstance.hasItems(Items.GLOWSTONE))
 ```
 
-`.count(4)` sets how many of the output item the recipe gives.
+`.count(4)` sets how many diamonds the recipe gives. This example uses vanilla ingredients and output; replace them with registered `Item` objects when adding bundle content to the recipe.
 
 ## Run the game
 

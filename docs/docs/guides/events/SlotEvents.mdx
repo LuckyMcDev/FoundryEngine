@@ -1,27 +1,28 @@
 ---
 sidebar_position: 10
 title: SlotEvents
-description: Reference for container slot events.
+description: Reference for container slot changes.
 ---
 
 # SlotEvents
 
-`SlotEvents` posts callbacks when a container is opened, allowing modification of its slots.
+**Applies to:** common/server bundle scripts. The callback receives an `AbstractContainerMenu` directly.
 
-## Events
+## Event
 
-| Method | When |
+| Registration | Timing and payload |
 | --- | --- |
-| `modification { event -> ... }` | A container is opened. The event object is the `AbstractContainerMenu`. |
-
-## Example
+| `modification { menu -> ... }` | Runs when a player opens a container. The argument is `event.getContainer()` from `PlayerContainerEvent.Open`, not an event wrapper. |
 
 ```groovy
-SlotEvents.modification { event ->
-    println "Container opened: ${event.menu}"
+SlotEvents.modification { menu ->
+    println "Opened container ${menu}"
 }
 ```
 
+The menu is the live container, so changes to its slots affect that menu instance. Listener callbacks clear on bundle reload. The facade does not provide a separate close callback.
+
 ## Related
 
-- [BundleEvents](BundleEvents).
+- [BundleEvents](BundleEvents)
+- [SlotEvents Javadoc](pathname:///javadoc/de/luckymcdev/foundryengine/event/common/SlotEvents.html)

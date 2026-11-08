@@ -1,13 +1,13 @@
 package showcase
 
-import de.luckymcdev.foundryengine.client.particle.ParticleLayer
-import de.luckymcdev.foundryengine.client.particle.data.KeyframeSequence
-import de.luckymcdev.foundryengine.client.particle.data.ParticleScaleData
-import de.luckymcdev.foundryengine.common.builder.particle.ParticleBuilder
-import de.luckymcdev.foundryengine.common.easing.Easing
-import de.luckymcdev.foundryengine.common.event.BundleEvents
-import de.luckymcdev.foundryengine.common.script.BundleEntrypoint
-import de.luckymcdev.foundryengine.common.util.color.Color
+import de.luckymcdev.foundryengine.particle.client.ParticleLayer
+import de.luckymcdev.foundryengine.particle.client.data.KeyframeSequence
+import de.luckymcdev.foundryengine.particle.client.data.ParticleScaleData
+import de.luckymcdev.foundryengine.builder.common.particle.ParticleBuilder
+import de.luckymcdev.foundryengine.easing.common.Easing
+import de.luckymcdev.foundryengine.event.common.BundleEvents
+import de.luckymcdev.foundryengine.script.common.BundleEntrypoint
+import de.luckymcdev.foundryengine.util.common.color.Color
 import net.minecraft.resources.Identifier
 import org.joml.Vector3d
 

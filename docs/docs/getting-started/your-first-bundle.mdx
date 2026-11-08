@@ -4,33 +4,22 @@ sidebar_position: 2
 
 # Your first bundle
 
-This lesson gets a working bundle into the game. By the end you will have cloned a bundle, edited its identity, run the game, and loaded your own bundle in it.
+This lesson gets a working bundle into the game. By the end you will have copied a bundle, edited its identity, run the game, and loaded it.
 
-You need Java 25 and the IntelliJ IDEA IDE. If you do not have them, install a Java 25 JDK and IntelliJ IDEA (Community works) before you start.
+You need FoundryEngine installed in a Minecraft 26.1.2 or 26.2 profile. A Java IDE is optional; bundles run as files from the game's bundle directory.
 
 ## What a bundle is
 
 A bundle is a folder of Groovy scripts, textures, and data. The game reads it at runtime, so you change content without compiling Java. This tutorial uses a copy of the Minimal Bundle found in the FoundryEngine repository.
 
-## Launch the Game one time
-
-The game must be launched once to generate all necessary files.
-
-## Open the Minecraft Folder in IntelliJ
-
-Open IntelliJ IDEA, then open the `minecraft` folder as a project. IntelliJ imports it as a Gradle project.
-
-The first Gradle sync downloads NeoForge and Minecraft and decompiles them. This can take up to an hour on a slow machine. Let it finish. When it is done, the project compiles and IntelliJ shows the Gradle tool window.
-
-
 ## Copy the Minimal Bundle
-Copy the minimal bundle from the FoundryEngine repository, specifically under the "ExampleBundles" folder. Place it in `FoundryEngine/bundles/` inside your `.minecraft` directory.
+Copy `ExampleBundles/minimal` from the FoundryEngine repository. Place the copied folder in `<game directory>/FoundryEngine/bundles/`.
 
 ## Set the identity of the bundle
 
 A bundle knows who it is through one file.
 
-Open `minimal.bundles.toml` and set your own values:
+Open `minimal.bundles.toml`, change the `bundleId` and metadata, and keep the filename ending in `.bundles.toml`:
 
 ```toml
 [[bundles]]
@@ -41,7 +30,7 @@ displayURL = "https://example.com/my-bundle"
 authors = "Your Name"
 description = "What this bundle does."
 dependencies = [
-    "mod:neoforge@26.1.0.1-beta"
+    "mod:neoforge@[26.1.2,26.3)"
 ]
 ```
 
@@ -74,7 +63,7 @@ class MyBundle implements BundleEntrypoint {
 
 ## Run the game
 
-Run the game from your launcher. The engine extracts Gradle templates to your game directory on first launch, so you can open the `minecraft` folder as a Gradle project in IntelliJ after that.
+Run the game from your launcher. The engine scans the copied bundle at startup.
 
 ## Check the outcome
 

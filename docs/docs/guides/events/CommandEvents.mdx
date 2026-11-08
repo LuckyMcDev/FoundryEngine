@@ -1,36 +1,37 @@
 ---
 sidebar_position: 5
 title: CommandEvents
-description: Reference for registering commands from bundles.
+description: Reference for registering commands from bundles and Java extensions.
 ---
 
 # CommandEvents
 
-`CommandEvents` is how bundles add commands. The callback receives an event with the command dispatcher; register Brigadier commands on it.
+`CommandEvents.register` receives the server's `RegisterCommandsEvent`. It can be registered from common or server bundle entrypoints. Callback registrations are cleared during bundle reload; commands already installed in the dispatcher require a server restart to be rebuilt safely.
 
-## Register
+`registerClient` receives `RegisterClientCommandsEvent` on the client event bus. Register it from a client entrypoint. In an integrated world, `/engine reload` clears and re-registers these callbacks after rediscovery. A dedicated server cannot reload the callback in remote clients.
 
-| Method | When |
-| --- | --- |
-| `register { event -> ... }` | Called on the server with `event.getDispatcher()`. |
-| `registerClient { event -> ... }` | Called on the client with the client dispatcher. |
-
-## Example
+## Server command example
 
 ```groovy
+import com.mojang.brigadier.Command
+import net.minecraft.commands.Commands
+import net.minecraft.network.chat.Component
+
 CommandEvents.register { event ->
-    def dispatcher = event.getDispatcher()
-    dispatcher.register(
-            Commands.literal("hello")
-                    .executes { ctx ->
-                        ctx.getSource().sendSuccess(
-                                Component.literal("Hello from the bundle!"), false)
-                        Command.SINGLE_SUCCESS
-                    })
+    event.dispatcher.register(
+        Commands.literal("hello")
+            .executes { context ->
+                context.source.sendSuccess(Component.literal("Hello from the bundle!"), false)
+                Command.SINGLE_SUCCESS
+            }
+    )
 }
 ```
+
+This uses the dispatcher accessor and success-message signature from the current Minecraft target. Keep registration inside the callback; the dispatcher is provided by the server event.
 
 ## Related
 
 - Registering commands: [Add a command](../registration/add-command).
 - Engine's own commands: [Engine commands](../engine-commands).
+- [`CommandEvents`](pathname:///javadoc/de/luckymcdev/foundryengine/event/common/CommandEvents.html)

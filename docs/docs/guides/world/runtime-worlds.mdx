@@ -1,0 +1,54 @@
+---
+sidebar_position: 8
+---
+
+# Create a runtime world
+
+**Applies to:** Java extensions only. The engine does not expose `RuntimeLevelManager` through the bundle Groovy API.
+
+Runtime worlds are server-side `ServerLevel` instances. `RuntimeLevelConfig` describes the dimension type, generator, game rules, seed, clock behavior, and persistence behavior. Register or create them from server-side Java integration after the server has initialized.
+
+## Configure a level
+
+```java
+RuntimeLevelConfig config = new RuntimeLevelConfig()
+    .setSeed(1234L)
+    .setShouldTickTime(false)
+    .setMirrorOverworldGameRules(true)
+    .setMirrorOverworldDifficulty(true)
+    .setMirrorOverworldClocks(true);
+```
+
+The configuration is fluent. You can also set a dimension type, chunk generator, game rules, flat-world behavior, initial game time, and a custom `RuntimeLevel` constructor.
+
+## Add and remove a level
+
+`RuntimeLevelManager.add` registers the dimension, constructs the level, posts the normal level-load event, and ticks the level once before returning it:
+
+```java
+ResourceKey<Level> key = ResourceKey.create(
+    Registries.DIMENSION,
+    Identifier.parse("my_bundle:arena")
+);
+
+ServerLevel arena = runtimeLevelManager.add(
+    key,
+    config,
+    RuntimeLevel.Style.TEMPORARY
+);
+```
+
+`Style.TEMPORARY` skips level saves when the server flushes the level. `Style.PERSISTENT` allows them. `unload` explicitly saves the level, posts the unload event, and removes the runtime level and dimension registration. `delete` removes it and deletes its dimension directory.
+
+## Constraints
+
+- Runtime levels are created and managed on the server.
+- The manager registers the dimension key only when it is absent. A collision can therefore leave the existing dimension options in place while creating a level with that key; choose a unique key.
+- A dimension type must resolve from the server registry when the configuration uses a `ResourceKey`.
+- Temporary levels are removed from the server registry when deleted or unloaded.
+
+## Related
+
+- [Runtime worlds concept](../../concepts/runtime-worlds)
+- [`RuntimeLevelConfig`](pathname:///javadoc/de/luckymcdev/foundryengine/world/common/level/runtime/RuntimeLevelConfig.html)
+- [`RuntimeLevelManager`](pathname:///javadoc/de/luckymcdev/foundryengine/world/common/level/runtime/RuntimeLevelManager.html)

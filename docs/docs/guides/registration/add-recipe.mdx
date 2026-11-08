@@ -1,60 +1,62 @@
 ---
 sidebar_position: 3
 title: Add a recipe
-description: Register shaped, shapeless, or smelting recipes from your bundle.
+description: Register shaped, shapeless, and smelting recipes from a bundle.
 ---
 
 # Add a recipe
 
-Recipes are registered from the **common** entrypoint. The `RecipeBuilder` covers the three most common recipe types.
+**Applies to:** common bundle scripts. Recipes are data generated for the server.
 
-## Shaped crafting
+This complete entrypoint registers three recipes. Each recipe needs an unlock criterion to appear in the recipe book.
 
-```groovy title="scripts/common/<bundle>/Common.groovy"
+```groovy title="scripts/common/mybundle/RecipeEntrypoint.groovy"
+package common.mybundle
+
 import de.luckymcdev.foundryengine.builder.common.recipe.RecipeBuilder
+import de.luckymcdev.foundryengine.event.common.BundleEvents
+import de.luckymcdev.foundryengine.script.common.BundleEntrypoint
+import net.minecraft.advancements.criterion.InventoryChangeTrigger
+import net.minecraft.resources.Identifier
 import net.minecraft.world.item.Items
 
-def shaped = RecipeBuilder.shaped(id("wand_from_diamond"), Items.DIAMOND_HORSE_ARMOR)
-        .pattern(" D ", " S ", " S ")
-        .define('D' as char, Items.DIAMOND)
-        .define('S' as char, Items.STICK)
-        .unlockedBy("has_diamond", InventoryChangeTrigger.TriggerInstance.hasItems(Items.DIAMOND))
-```
+class RecipeEntrypoint implements BundleEntrypoint {
+    private static Identifier id(String path) {
+        Identifier.fromNamespaceAndPath("mybundle", path)
+    }
 
-The first argument is the recipe id, the second is the output item. `.pattern` lays out the grid, `.define` maps a character to an ingredient.
+    @Override
+    void onLoad() {
+        def shaped = RecipeBuilder.shaped(id("wand_from_diamond"), Items.DIAMOND_HORSE_ARMOR)
+            .pattern(" D ", " S ", " S ")
+            .define('D' as char, Items.DIAMOND)
+            .define('S' as char, Items.STICK)
+            .unlockedBy("has_diamond", InventoryChangeTrigger.TriggerInstance.hasItems(Items.DIAMOND))
 
-## Shapeless crafting
+        def shapeless = RecipeBuilder.shapeless(id("gems_from_diamond"), Items.DIAMOND)
+            .requires(Items.DIAMOND)
+            .requires(Items.EMERALD)
+            .count(3)
+            .unlockedBy("has_diamond", InventoryChangeTrigger.TriggerInstance.hasItems(Items.DIAMOND))
 
-```groovy
-def shapeless = RecipeBuilder.shapeless(id("gems_from_diamond"), Items.DIAMOND)
-        .requires(Items.DIAMOND)
-        .requires(Items.EMERALD)
-        .count(3)
-        .unlockedBy("has_diamond", InventoryChangeTrigger.TriggerInstance.hasItems(Items.DIAMOND))
-```
+        def smelting = RecipeBuilder.smelting(id("smelt_smooth"), Items.SMOOTH_STONE)
+            .ingredient(Items.STONE)
+            .experience(0.5f)
+            .cookingTime(200)
+            .unlockedBy("has_stone", InventoryChangeTrigger.TriggerInstance.hasItems(Items.STONE))
 
-`.requires` adds one ingredient per call. `.count` sets the number of output items.
+        BundleEvents.registry { event ->
+            event.recipes(shaped, shapeless, smelting)
+        }
+    }
 
-## Smelting
-
-```groovy
-def smelting = RecipeBuilder.smelting(id("smelt_smooth"), Blocks.SMOOTH_STONE)
-        .ingredient(Blocks.STONE)
-        .experience(0.5f)
-        .cookingTime(200)
-        .unlockedBy("has_stone", InventoryChangeTrigger.TriggerInstance.hasItems(Blocks.STONE))
-```
-
-## Register them
-
-```groovy
-BundleEvents.registry {
-    it.recipes(shaped, shapeless, smelting)
+    @Override
+    void onUnload() {}
 }
 ```
 
-Every recipe needs an `.unlockedBy` so it appears in the recipe book. The first argument is a name you choose; the second is the condition, usually an `InventoryChangeTrigger` that fires when the player has the ingredient.
+The shaped recipe maps characters to ingredients. Shapeless recipes use `.requires`; cooking recipes use `.ingredient`, `.experience`, and `.cookingTime`. `RecipeBuilder` also supports blasting, smoking, campfire cooking, stonecutting, and smithing recipes.
 
 ## Related
 
-- All builder calls: [RecipeBuilder reference](../builders/RecipeBuilder).
+- Full method list: [RecipeBuilder reference](../builders/RecipeBuilder).

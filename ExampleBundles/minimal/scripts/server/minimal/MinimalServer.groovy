@@ -1,6 +1,6 @@
 package server.minimal
 
-import de.luckymcdev.foundryengine.common.script.BundleEntrypoint
+import de.luckymcdev.foundryengine.script.common.BundleEntrypoint
 
 class MinimalServer implements BundleEntrypoint {
 

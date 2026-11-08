@@ -6,16 +6,18 @@ description: Reference for game session lifecycle events.
 
 # GameEvents
 
+**Applies to:** server-side bundle scripts.
+
 `GameEvents` posts callbacks around game session state changes. Each callback receives an event with `event.sessionId` (the `Identifier` of the session).
 
 ## Events
 
 | Method | When |
 | --- | --- |
-| `onStarting { event -> ... }` | A game session is about to start. |
-| `onStarted { event -> ... }` | A game session has started. |
-| `onStopping { event -> ... }` | A game session is about to stop. |
-| `onStopped { event -> ... }` | A game session has stopped. |
+| `onStarting { event -> ... }` | Before a game session starts. Cancellable. |
+| `onStarted { event -> ... }` | After a game session starts. |
+| `onStopping { event -> ... }` | Before a game session stops. Cancellable. |
+| `onStopped { event -> ... }` | After a game session stops. |
 
 ## Example
 
@@ -24,6 +26,8 @@ GameEvents.onStarted { event ->
     println "Session ${event.sessionId} started!"
 }
 ```
+
+Each callback receives `GameSessionEvent` and its `sessionId`. Listener callbacks clear during bundle reload.
 
 ## Related
 

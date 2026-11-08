@@ -1,15 +1,15 @@
 package showcase
 
-import de.luckymcdev.foundryengine.common.builder.block.BlockBuilder
-import de.luckymcdev.foundryengine.common.builder.item.ItemBuilder
-import de.luckymcdev.foundryengine.common.builder.particle.ParticleBuilder
-import de.luckymcdev.foundryengine.common.builder.recipe.RecipeBuilder
-import de.luckymcdev.foundryengine.common.builder.sound.SoundBuilder
-import de.luckymcdev.foundryengine.common.event.BlockEvents
-import de.luckymcdev.foundryengine.common.event.BundleEvents
-import de.luckymcdev.foundryengine.common.event.PlayerEvents
-import de.luckymcdev.foundryengine.common.script.BundleEntrypoint
-import de.luckymcdev.foundryengine.common.util.color.Color
+import de.luckymcdev.foundryengine.builder.common.block.BlockBuilder
+import de.luckymcdev.foundryengine.builder.common.item.ItemBuilder
+import de.luckymcdev.foundryengine.builder.common.particle.ParticleBuilder
+import de.luckymcdev.foundryengine.builder.common.recipe.RecipeBuilder
+import de.luckymcdev.foundryengine.builder.common.sound.SoundBuilder
+import de.luckymcdev.foundryengine.event.common.BlockEvents
+import de.luckymcdev.foundryengine.event.common.BundleEvents
+import de.luckymcdev.foundryengine.event.common.PlayerEvents
+import de.luckymcdev.foundryengine.script.common.BundleEntrypoint
+import de.luckymcdev.foundryengine.util.common.color.Color
 import net.minecraft.advancements.criterion.InventoryChangeTrigger
 import net.minecraft.core.component.DataComponents
 import net.minecraft.network.chat.Component

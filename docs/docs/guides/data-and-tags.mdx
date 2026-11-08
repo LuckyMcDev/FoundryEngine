@@ -1,0 +1,56 @@
+---
+sidebar_position: 6
+---
+
+# Add tags and generated data
+
+**Applies to:** common bundle scripts.
+
+Tags are collected by the same registry event as the other bundle content. Use a typed tag builder when the registry is known, or use `TagBuilder` for a registry that does not have a dedicated helper.
+
+```groovy
+import de.luckymcdev.foundryengine.builder.common.tag.BlockTagBuilder
+import net.minecraft.core.registries.Registries
+import net.minecraft.resources.Identifier
+import net.minecraft.resources.ResourceKey
+
+BundleEvents.registry {
+    def stone = ResourceKey.create(Registries.BLOCK, Identifier.parse("minecraft:stone"))
+    def tag = BlockTagBuilder.create(Identifier.parse("${BUNDLE_ID}:mineable"))
+        .add(stone)
+        .replace(false)
+
+    it.tags(tag)
+}
+```
+
+`BlockTagBuilder.add` accepts a `ResourceKey<Block>` or a registered `Block`. `ItemTagBuilder` has corresponding item overloads. The generic `TagBuilder.create` requires both an identifier and registry key. Keep the tag registry and entry type consistent.
+
+## Entry types
+
+`TagBuilder` supports four entry forms:
+
+- required elements, added with `add`
+- optional elements, added with `addOptional`
+- required nested tags, added with `addTag`
+- optional nested tags, added with `addOptionalTag`
+
+Use `remove` or `removeTag` to add removal entries. Call `replace()` only when the generated tag should replace existing tag contents.
+
+## Generated files
+
+The data generator consumes builders collected by the registry event. It writes server data below `data/<namespace>` and client assets below `assets/<namespace>`. Tag builders produce `data/<namespace>/tags/blocks/<path>.json` or `data/<namespace>/tags/items/<path>.json`. Client asset providers run on the client; tags are server data.
+
+The generated providers currently cover recipes, recipe priorities, block and item tags, loot tables, global loot modifiers, advancements, language files, models, equipment assets, particle descriptions, and sound definitions.
+
+## Troubleshooting
+
+- If a tag never appears, verify that the builder is registered during `BundleEvents.registry`.
+- If an entry is missing, check its namespace and whether the entry is optional.
+- If client assets are missing but server data exists, generate assets in a client environment. Client asset providers are not registered on a dedicated server.
+
+## Related
+
+- [Content and registration](../reference/content-and-registration)
+- [Generate data](packaging/generate-data)
+- [Bundle metadata](bundle-metadata)

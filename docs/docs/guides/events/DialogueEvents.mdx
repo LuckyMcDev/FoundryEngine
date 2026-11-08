@@ -1,0 +1,37 @@
+---
+sidebar_position: 9
+---
+
+# DialogueEvents
+
+**Applies to:** server-side bundle scripts.
+
+`DialogueEvents` reports the lifecycle of a running dialogue. Register callbacks when a bundle needs to update stages, grant an item, or start another system in response to dialogue progress.
+
+## Hooks
+
+- `onStarted`
+- `onAdvanced`
+- `onOptionSelected`
+- `onEnded`
+
+Each callback receives a `DialogueEvent` subtype and the player and session. `Advanced` also exposes `fromNodeId` and `toNodeId`; `OptionSelected` exposes `option`. The event callbacks are notifications and do not provide cancellation methods. They clear on bundle reload.
+
+```groovy
+DialogueEvents.onStarted { event ->
+    println "Dialogue started"
+}
+
+DialogueEvents.onEnded { event ->
+    println "Dialogue ended"
+}
+```
+
+Use [Run a dialogue](../world/run-dialogue) to build and start the dialogue itself.
+
+## Related
+
+- [A branching dialogue](../../getting-started/a-branching-dialogue)
+- [Run a dialogue](../world/run-dialogue)
+- [`DialogueEvents`](pathname:///javadoc/de/luckymcdev/foundryengine/event/common/DialogueEvents.html)
+- [DialogueEvent Javadoc](pathname:///javadoc/de/luckymcdev/foundryengine/dialogue/common/DialogueEvent.html)

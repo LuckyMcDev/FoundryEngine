@@ -1,0 +1,35 @@
+---
+sidebar_position: 10
+---
+
+# Script environments and sandboxing
+
+FoundryEngine compiles bundle scripts into three environments:
+
+| Directory | Environment | Loaded on |
+| --- | --- | --- |
+| `scripts/common` | `COMMON` | client and server |
+| `scripts/client` | `CLIENT` | client setup |
+| `scripts/server` | `SERVER` | server |
+
+Keep client-only classes out of common scripts. A common script is loaded by both distributions and can fail before the side-specific script is reached.
+
+Client entrypoints load during client setup. In an integrated world, the in-game bundle reload path reloads them on the client thread after rediscovery. A dedicated server cannot reload client processes; restart clients after changing their `scripts/client` files.
+
+## Sandbox policy
+
+The engine takes a sandbox policy snapshot when a bundle's scripts are compiled. The default policy enables class-loader filtering, source checks, interrupt checks, and script timeouts. `SCRIPT_TIMEOUT_SECONDS` sets the timeout for script entrypoint callbacks and `/engine eval`; its configured range is 1 to 600 seconds.
+
+Setting `DISABLE_CLASS_FILTER` to `true` together with an accepted sandbox waiver disables the entire sandbox policy, including class filtering, source checks, interrupt checks, and timeouts. Without the waiver, the policy stays enabled. Revoke consent or turn the option off to restore the restrictions for scripts compiled afterward.
+
+## Failures
+
+Script compilation and execution failures are reported with the script path and execution stage. A timeout raises `ScriptTimeoutException`. Fix the first reported script error before reloading the bundle; later failures may be consequences of the first one.
+
+## Related
+
+- [Sandbox and security](../concepts/sandbox-and-security)
+- [Entrypoint lifecycle](entrypoint-lifecycle)
+- [Validate your scripts](editor/validate-your-scripts)
+- [`ScriptEnv`](pathname:///javadoc/de/luckymcdev/foundryengine/script/common/definition/ScriptEnv.html)
+- [`SandboxPolicy`](pathname:///javadoc/de/luckymcdev/foundryengine/script/common/sandbox/SandboxPolicy.html)

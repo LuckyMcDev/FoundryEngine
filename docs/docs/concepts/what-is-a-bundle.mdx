@@ -10,7 +10,7 @@ A bundle is the unit of content in FoundryEngine. It is a folder with Groovy scr
 
 ## Why bundles instead of a mod
 
-A normal Minecraft mod is a JAR that is baked into the game at launch. A bundle is separate: the engine discovers it at runtime, loads it, and can unload and reload it without restarting the game. That changes how you work:
+A normal Minecraft mod is a JAR loaded at launch. A bundle is separate: the engine discovers and reloads its scripts without restarting. Registry content still requires a game restart after changes because `/engine reload` does not rebuild Minecraft registries.
 
 - **Edit and see the result.** You change a script, reload, and the new behavior is live. No JAR building, no relaunch.
 - **Content is data.** A bundle is a folder you can copy, zip, and share. It is portable the way a texture pack is portable.
@@ -20,7 +20,7 @@ A normal Minecraft mod is a JAR that is baked into the game at launch. A bundle 
 
 ```
 mybundle/
-├── mybundle.bundles.toml     metadata: id, version, name
+├── mybundle.bundles.toml     metadata: id, version, display name
 └── scripts/
     ├── common/               runs on client and server
     ├── server/               runs on the server only
@@ -31,7 +31,7 @@ Assets and data live alongside scripts in the same folder. The engine builds the
 
 ## Three folders, three audiences
 
-The split into `common`, `server`, and `client` mirrors how Minecraft itself is split. Anything that both sides need to know about must be registered from a common script. Anything that only the server should do (commands, stages, dialogue) goes in server scripts. Anything that only the client can do (particles, screen effects) goes in client scripts.
+Common scripts load during bundle discovery on both physical sides. Server scripts load when the server starts. Client scripts load during client setup. In an integrated world, `/engine reload` also reloads client entrypoints after rediscovery. A dedicated server cannot reload scripts in remote client processes; restart those clients after changing client scripts.
 
 ## One bundle id, one namespace
 

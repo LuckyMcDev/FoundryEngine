@@ -6,7 +6,7 @@ description: Guidelines for contributing to the FoundryEngine documentation.
 
 # Contributing to the documentation
 
-These guidelines explain how to contribute to the FoundryEngine documentation. You can contribute by forking the repository and opening a pull request on GitHub.
+These guidelines explain how to contribute to the FoundryEngine documentation. Fork the repository, make the changes, and open a pull request on GitHub.
 
 Run the website locally with [npm]. Use a Node Version Manager like [nvm] (Mac, Linux) or [nvs] (Windows) to install Node and npm. Run these commands from the `docs/` directory:
 
@@ -18,15 +18,16 @@ npm run start
 
 ## Documentation principles
 
-The documentation explains how to implement concepts in FoundryEngine and Minecraft.
+The documentation explains how to build and use content with FoundryEngine and Minecraft.
 
-- **It is not a tutorial.** It does not provide code for copy-pasting. Use external videos or guides for tutorials.
-- **It is not an API reference.** Descriptions clarify guides, but class documentation belongs in [Parchment for Minecraft][parchment] or [NeoForge][neo].
-- **It does not explain Java.** Readers must have basic knowledge of Java and Groovy. Link to original resources for complex language concepts.
+- **Getting-started pages are tutorials.** They should produce a working result and use code that can be copied into a bundle.
+- **Guides are task-focused references.** Keep builder and event names accurate, but link to generated Javadoc for exhaustive Java and Minecraft API details.
+- **Concept pages explain design.** Describe the runtime model and the boundaries between bundles, the engine, and Minecraft.
+- **Code examples must match the current source and the example bundles.** Do not leave an example that depends on a removed package or method.
 
 ## Content structure
 
-Content is in `docs/docs/` under three folders: `getting-started`, `guides`, and `concepts`. Each page covers one concept. Split large concepts into sub-concepts on separate pages.
+Content is in `docs/docs/` under four folders: `getting-started`, `guides`, `concepts`, and `reference`. Each page covers one task, concept, or subsystem. Split large topics into separate pages.
 
 ### Concepts and guides
 Introduce the concept, its use in Minecraft or the engine, why it is used, and how to use it. Use headers for each section. Divide sections into sub-sections when needed.
@@ -36,7 +37,7 @@ Link to other concepts. Include a summary or example to explain the relationship
 ### Examples
 Code examples use pseudocode to explain concepts. Pseudocode uses the syntax and structure of the language but uses comments as placeholders for implementation logic. Lines must use valid syntax even if the block is not compilable.
 
-Guides cover general use cases. Use a full code example if pseudocode is unclear. Provide dummy values and explain their purpose.
+Guides cover general use cases. Use a full code example when pseudocode would hide an important API detail. Provide dummy values and explain their purpose.
 
 For a method like `#applyDiscount`, the pseudocode uses a comment to describe the logic:
 
@@ -52,6 +53,10 @@ public float applyDiscount(float price) {
 :::tip
 Use a full code example if pseudocode is unclear. Provide dummy values and explain their purpose.
 :::
+
+### Reference pages
+
+Reference pages map a subsystem to its guides and generated Javadoc. Use them for content indexes, lifecycle constraints, and links to supported types. Do not copy every Java method into MDX when the generated Javadoc already provides the signature.
 
 ## Style guide
 
@@ -100,10 +105,11 @@ Check API calls against the source code before publishing:
 
 - **Builders:** `src/main/java/de/luckymcdev/foundryengine/builder/common/`
 - **Events:** `src/main/java/de/luckymcdev/foundryengine/event/common/`
-- **Managers:** `de.luckymcdev.foundryengine.Common`
+- **Managers:** `src/main/java/de/luckymcdev/foundryengine/Common.java`
+- **Runtime systems:** `src/main/java/de/luckymcdev/foundryengine/world/`, `savedata/`, `network/`, and `script/`
 - **Examples:** `ExampleBundles/` and `TestBundle/`
 
-Run `npm run docs:build` to check for broken links. Fix every failure before opening a pull request.
+Run `npm run typecheck` and `npm run build` to check the Docusaurus configuration and links. Fix every failure before opening a pull request.
 
 ## Versioning
 

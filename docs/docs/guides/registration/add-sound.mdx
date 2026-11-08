@@ -6,43 +6,53 @@ description: Register a custom sound event from your bundle.
 
 # Add a sound
 
-A custom sound event is registered from the **client** entrypoint.
+A sound event is registered from a **common** entrypoint. The sound file and generated sound definition are client assets.
 
 ## Use the SoundBuilder
 
-```groovy title="scripts/client/<bundle>/Client.groovy"
+```groovy title="scripts/common/mybundle/SoundEntrypoint.groovy"
+package common.mybundle
+
 import de.luckymcdev.foundryengine.builder.common.sound.SoundBuilder
+import de.luckymcdev.foundryengine.event.common.BundleEvents
+import de.luckymcdev.foundryengine.script.common.BundleEntrypoint
+import net.minecraft.resources.Identifier
 
-def chime = SoundBuilder.create(id("magic_chime"))
-        .subtitle("Magic Chime")
-        .addSound(id("magic_chime"))
-        .range(16.0f)
+class SoundEntrypoint implements BundleEntrypoint {
+    private static Identifier id(String path) {
+        Identifier.fromNamespaceAndPath("mybundle", path)
+    }
 
-BundleEvents.registry {
-    it.sounds(chime)
+    @Override
+    void onLoad() {
+        def chime = SoundBuilder.create(id("magic_chime"))
+            .subtitle("subtitles.mybundle.magic_chime")
+            .addSound(id("magic_chime"))
+            .range(16.0f)
+
+        BundleEvents.registry { event ->
+            event.sounds(chime)
+        }
+    }
+
+    @Override
+    void onUnload() {}
 }
 ```
 
-`SoundBuilder.create()` defines the sound event. `.addSound()` points at the sound file, and `.subtitle()` sets the text shown above the hotbar.
+`SoundBuilder.create()` defines the sound event. `.addSound()` points at the sound file. `.subtitle()` takes a localization key, not the displayed text.
 
 ## Add the audio file
 
-Place the audio at `assets/mybundle/sounds/magic_chime.ogg`. The file must be in OGG format, which is what Minecraft's sound system expects. The path after `assets/mybundle/sounds/` has to match the path you pass to `.addSound()`.
+Place the audio at `assets/mybundle/sounds/magic_chime.ogg`. The path after `assets/mybundle/sounds/` has to match the path you pass to `.addSound()`. `addSound(id)` uses defaults; the overload accepts volume, pitch, weight, streaming, attenuation distance, and preload settings. Add the subtitle translation in `assets/mybundle/lang/en_us.json`:
 
-## Play it
-
-```groovy
-import net.minecraft.sounds.SoundSource
-
-player.level().playSound(
-        null,
-        player.getX(), player.getY(), player.getZ(),
-        id("magic_chime"),
-        SoundSource.AMBIENT,
-        1.0f, 1.0f)
+```json
+{
+  "subtitles.mybundle.magic_chime": "Magic chime"
+}
 ```
 
-`sound.ogg` variants play fine through Minecraft's sound system. Keep `.range()` in mind: sounds registered with a short range fade out quickly, which is what you want for a small chime.
+The sound event can be played through Minecraft's sound APIs. `.range()` selects a fixed audible range; omit it to use the variable-range event.
 
 ## Related
 

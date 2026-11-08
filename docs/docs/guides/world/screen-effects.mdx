@@ -6,21 +6,18 @@ description: Apply post-processing effects like fades, vignettes, and blur from 
 
 # Add screen effects
 
+**Applies to:** client bundle scripts and Java client extensions, when the post-processing module is enabled. Client scripts load in queued client-setup work after `PostEffectManager` is registered, so a client entrypoint can use the manager from `onLoad()`.
+
 Screen effects are post-processing shaders applied after the world renders. You drive them from the client through the post-effect manager.
 
 ## One-shot screen effects
 
 The simplest case is a timed effect that fades in, holds, and fades out:
 
-```groovy title="scripts/client/<bundle>/Client.groovy"
-import de.luckymcdev.foundryengine.Client
+```java
+import de.luckymcdev.foundryengine.Client;
 
-Client.getPostEffectManager().startScreenEffect(
-        "black",   // effect name
-        20,        // fade in, ticks
-        40,        // hold, ticks
-        20,        // fade out, ticks
-        "linear")  // lerp type
+Client.getPostEffectManager().startScreenEffect("black", 20, 40, 20, "linear");
 ```
 
 Built-in effects include `black`, `star`, `circle`, and `cinematic`. The lerp type is one of `linear`, `sine_in`, `sine_out`, `sine_in_out`, or similar easing names.
@@ -29,16 +26,18 @@ Built-in effects include `black`, `star`, `circle`, and `cinematic`. The lerp ty
 
 For an effect that follows a condition, register it with a fade:
 
-```groovy
-def lowHp = Client.getPostEffectManager().conditionalWithFade(
-        id("low_hp_vignette"),
-        { playerHealth < 6.0f } as BooleanSupplier,
-        10, 10)
+```java
+import de.luckymcdev.foundryengine.Client;
+import de.luckymcdev.foundryengine.Common;
 
-def intensity = Client.getPostEffectManager().vignette(
-        id("my_vignette"),
-        { Math.min(1.0f, missingHealth / 10.0f) } as DoubleSupplier)
+var lowHp = Client.getPostEffectManager().conditionalWithFade(
+    Common.id("low_hp_vignette"), () -> false, 10, 10);
+
+var intensity = Client.getPostEffectManager().vignette(
+    Common.id("my_vignette"), () -> 0.5);
 ```
+
+Replace the suppliers with values from your client integration; this API does not provide a player-health helper.
 
 `conditionalWithFade` re-evaluates the condition every frame and fades the effect in and out. The `DoubleSupplier` variants let a uniform, like the vignette intensity, animate over time.
 
@@ -46,14 +45,15 @@ def intensity = Client.getPostEffectManager().vignette(
 
 Custom shaders need their JSON + shader files. Register the effect with its uniforms:
 
-```groovy
-import de.luckymcdev.foundryengine.Common
-import de.luckymcdev.foundryengine.post.client.RenderPhase
+```java
+import de.luckymcdev.foundryengine.Client;
+import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.post.client.RenderPhase;
 
-def handle = Client.getPostEffectManager().register(id("my_effect"), { cfg ->
+var handle = Client.getPostEffectManager().register(Common.id("my_effect"), cfg -> {
     cfg.phase(RenderPhase.POST_RENDER)
-    cfg.uniform("Radius", 4.0f)
-})
+        .uniform("Radius", 4.0f);
+});
 ```
 
 The shader and its JSON definition live under `assets/mybundle/shaders/`. The JSON declares the uniforms; `cfg.uniform(...)` fills them each frame.

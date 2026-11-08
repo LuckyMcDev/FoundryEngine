@@ -9,7 +9,9 @@ import de.luckymcdev.foundryengine.bundle.common.modcompat.BundleModContainer;
 import de.luckymcdev.foundryengine.bundle.common.modcompat.BundleModFile;
 import de.luckymcdev.foundryengine.bundle.common.modcompat.BundleModFileInfo;
 import de.luckymcdev.foundryengine.bundle.common.modcompat.BundleModInfo;
+import de.luckymcdev.foundryengine.script.common.ScriptManager;
 import de.luckymcdev.foundryengine.util.common.ErrorHandler;
+import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.Commands;
 import net.minecraft.server.MinecraftServer;
@@ -49,7 +51,7 @@ import java.util.concurrent.locks.ReentrantLock;
  *
  * <p>Script loading is sided:
  * <ul>
- *   <li>{@link #register(Bundle)} always loads <em>common</em> scripts.</li>
+ *   <li>{@link #loadCommonScripts()} loads scripts shared by both sides.</li>
  *   <li>{@link #loadClientScripts()} must be called from the client dist entrypoint.</li>
  *   <li>{@link #loadServerScripts()} must be called from the server dist entrypoint.</li>
  * </ul>
@@ -87,7 +89,8 @@ public class BundleManager implements EngineManager {
 	}
 
 	/**
-	 * Registers a bundle and immediately loads its common-side scripts.
+	 * Registers a bundle without loading scripts. Script loading is performed explicitly by
+	 * {@link #loadCommonScripts()}, {@link #loadClientScripts()}, and {@link #loadServerScripts()}.
 	 */
 	public void register(Bundle bundle) {
 		bundles.put(bundle.info().id(), bundle);
@@ -95,28 +98,6 @@ public class BundleManager implements EngineManager {
 		bundleContainers.add(container);
 
 		String bundleId = bundle.info().id();
-		boolean depsFailed = false;
-		for (BundleDependency dep : bundle.info().dependencies()) {
-			if (dep.type() == BundleDependency.Type.BUNDLE && failedBundleIds.contains(dep.id())) {
-				LOGGER.error("Skipping script loading for bundle '{}' because its dependency '{}' failed to load scripts.", bundleId, dep.id());
-				failedBundleIds.add(bundleId);
-				depsFailed = true;
-
-				String msg = String.format("Bundle '%s' skipped script loading because its dependency '%s' failed to load scripts.", bundleId, dep.id());
-				ModLoader.addLoadingIssue(ModLoadingIssue.warning(msg));
-				break;
-			}
-		}
-
-		if (!depsFailed) {
-			try {
-				bundle.loadCommon(Common.getScriptManager());
-			} catch (Exception e) {
-				BundleExceptionHandler.handle(
-					"Failed to load common scripts for bundle '" + bundleId + "'", e);
-			}
-		}
-
 		var spec = bundle.configSpec().build();
 		if (!registeredConfigs.contains(bundleId)) {
 			container.registerConfig(ModConfig.Type.COMMON, spec);
@@ -163,39 +144,42 @@ public class BundleManager implements EngineManager {
 	}
 
 	/**
+	 * Loads common scripts for all registered bundles.
+	 */
+	public void loadCommonScripts() {
+		LOGGER.info("Loading common bundle scripts...");
+		loadScripts("common", Bundle::loadCommon);
+	}
+
+	/**
 	 * Loads client-side scripts for all registered bundles.
-	 * Call this from {@code ClientMod} during client setup.
+	 * Call this from the client dist entrypoint during client setup.
 	 */
 	public void loadClientScripts() {
-		for (Bundle bundle : bundles.values()) {
-			String bundleId = bundle.info().id();
-			if (failedBundleIds.contains(bundleId)) {
-				continue;
-			}
-			try {
-				bundle.loadClient(Common.getScriptManager());
-			} catch (Exception e) {
-				BundleExceptionHandler.handle(
-					"Failed to load client scripts for bundle '" + bundleId + "'", e);
-			}
-		}
+		LOGGER.info("Loading client bundle scripts...");
+		loadScripts("client", Bundle::loadClient);
 	}
 
 	/**
 	 * Loads server-side scripts for all registered bundles.
-	 * Call this from {@code ServerMod} during server setup.
+	 * Call this from the server dist entrypoint during server setup.
 	 */
 	public void loadServerScripts() {
+		LOGGER.info("Loading server bundle scripts...");
+		loadScripts("server", Bundle::loadServer);
+	}
+
+	private void loadScripts(String side, java.util.function.BiConsumer<Bundle, ScriptManager> loader) {
 		for (Bundle bundle : bundles.values()) {
 			String bundleId = bundle.info().id();
 			if (failedBundleIds.contains(bundleId)) {
 				continue;
 			}
 			try {
-				bundle.loadServer(Common.getScriptManager());
+				loader.accept(bundle, Common.getScriptManager());
 			} catch (Exception e) {
 				BundleExceptionHandler.handle(
-					"Failed to load server scripts for bundle '" + bundleId + "'", e);
+					"Failed to load " + side + " scripts for bundle '" + bundleId + "'", e);
 			}
 		}
 	}
@@ -295,6 +279,7 @@ public class BundleManager implements EngineManager {
 			}
 
 			refreshModList();
+			loadCommonScripts();
 			loadServerScripts();
 			reportScriptErrors();
 

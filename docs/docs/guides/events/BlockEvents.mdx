@@ -6,34 +6,32 @@ description: Reference for block interaction events.
 
 # BlockEvents
 
-`BlockEvents` posts callbacks around block interactions. Each callback receives an event object with fields like `event.pos`, `event.state`, and `event.player`.
+**Applies to:** common/server bundle scripts. Callbacks receive the corresponding NeoForge event object.
 
-## Break and place
+## Events
 
-| Method | When |
+| Registration | Payload and timing |
 | --- | --- |
-| `broken { event -> ... }` | A block is broken. Event exposes `pos`, `state`, `player`. |
-| `placed { event -> ... }` | A block is placed. |
-| `postBroken` / `postPlaced` | After the engine's own handling. |
-
-## Click handling
-
-| Method | When |
-| --- | --- |
-| `leftClicked` / `rightClicked` | A player clicks a block. |
-| `postLeftClicked` / `postRightClicked` | Afterwards. |
-| `neighborNotify` | A neighbor block changes. |
-| `modification` | The block is modified in place. |
-| `farmlandTrampled` | An entity tramples farmland. |
+| `broken { event -> ... }` | `BreakBlockEvent` when a block is broken. |
+| `placed { event -> ... }` | `BlockEvent.EntityPlaceEvent` when an entity places a block. |
+| `neighborNotify { event -> ... }` | `BlockEvent.NeighborNotifyEvent`. |
+| `leftClicked { event -> ... }` | `PlayerInteractEvent.LeftClickBlock`. |
+| `rightClicked { event -> ... }` | `PlayerInteractEvent.RightClickBlock`. |
+| `farmlandTrampled { event -> ... }` | `BlockEvent.FarmlandTrampleEvent`. |
+| `modification { event -> ... }` | Engine `BlockModificationEvent`, posted for engine blocks so their supported properties can be changed. |
 
 ## Example
 
 ```groovy
 BlockEvents.broken { event ->
-    println "[Showcase] ${event.player.name} broke ${event.state.block} at ${event.pos}"
+    println "Block broken at ${event.pos}"
 }
 ```
 
+The payload is the underlying event, so available properties and cancellation behavior depend on that event class. `BlockModificationEvent` provides mutation methods such as `hasCollision(boolean)`, `soundType(SoundType)`, and `lightEmission(int)`. Listener callbacks are cleared on bundle reload. The facade has no separate `postBroken` or `postPlaced` methods.
+
 ## Related
 
-- [BundleEvents](BundleEvents).
+- [BundleEvents](BundleEvents)
+- [`BlockEvents`](pathname:///javadoc/de/luckymcdev/foundryengine/event/common/BlockEvents.html)
+- [Block modification event Javadoc](pathname:///javadoc/de/luckymcdev/foundryengine/event/common/modification/BlockModificationEvent.html)

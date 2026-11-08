@@ -1,29 +1,29 @@
 ---
 sidebar_position: 12
 title: RecipeEvents
-description: Reference for recipe sync and modification events.
+description: Reference for recipe sync and JSON modification events.
 ---
 
 # RecipeEvents
 
-`RecipeEvents` posts callbacks around recipe synchronization and modification.
+**Applies to:** common bundle scripts.
 
-## Events
+These callbacks receive NeoForge events. FoundryEngine clears their listeners when bundles reload. They are registered on the mod event bus, so callbacks run at the corresponding event even when the originating bundle did not just reload.
 
-| Method | When |
-| --- | --- |
-| `recipesReceived { event -> ... }` | The server sends the recipe list to the client. |
-| `modifyRecipes { event -> ... }` | Recipes are being modified before they are applied. |
-
-## Example
+| Method | Event | Timing and scope |
+| --- | --- | --- |
+| `recipesReceived` | `RecipesReceivedEvent` | Client-side recipe synchronization after the server sends recipes. |
+| `modifyRecipes` | `ModifyRecipeJsonsEvent` | Data/resource loading hook for modifying recipe JSON before recipes are built. |
 
 ```groovy
-RecipeEvents.modifyRecipes { event ->
-    // Modify recipe JSONs here
-    println "Modifying recipes"
+RecipeEvents.recipesReceived { event ->
+    println "Recipes synchronized"
 }
 ```
 
+Use the event's own API to inspect or modify recipe data. This example only observes synchronization; recipe edits belong in the pre-build modification event, not in `recipesReceived`.
+
 ## Related
 
-- [BundleEvents](BundleEvents).
+- [BundleEvents](BundleEvents)
+- [`RecipeEvents`](pathname:///javadoc/de/luckymcdev/foundryengine/event/common/RecipeEvents.html)

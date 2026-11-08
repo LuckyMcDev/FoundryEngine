@@ -1,13 +1,13 @@
 package showcase
 
-import de.luckymcdev.foundryengine.common.Common
-import de.luckymcdev.foundryengine.common.area.Area
-import de.luckymcdev.foundryengine.common.area.preset.AreaPreset
-import de.luckymcdev.foundryengine.common.area.module.AreaEnterModule
-import de.luckymcdev.foundryengine.common.area.module.AreaLeaveModule
-import de.luckymcdev.foundryengine.common.area.module.AreaTickModule
-import de.luckymcdev.foundryengine.common.script.BundleEntrypoint
-import de.luckymcdev.foundryengine.common.util.color.Color
+import de.luckymcdev.foundryengine.Common
+import de.luckymcdev.foundryengine.area.common.Area
+import de.luckymcdev.foundryengine.area.common.preset.AreaPreset
+import de.luckymcdev.foundryengine.area.common.module.AreaEnterModule
+import de.luckymcdev.foundryengine.area.common.module.AreaLeaveModule
+import de.luckymcdev.foundryengine.area.common.module.AreaTickModule
+import de.luckymcdev.foundryengine.script.common.BundleEntrypoint
+import de.luckymcdev.foundryengine.util.common.color.Color
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.Identifier
 import net.minecraft.server.level.ServerPlayer

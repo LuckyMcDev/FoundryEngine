@@ -1,0 +1,40 @@
+---
+sidebar_position: 8
+---
+
+# ClientEvents
+
+**Applies to:** client bundle scripts and Java client extensions. Client scripts load during `FMLClientSetupEvent`; callbacks that fire later can be registered there. The `keyMappings` registration event fires earlier, so register key mappings from Java mod setup instead. Integrated-world bundle reloads re-register client callbacks; a dedicated server cannot reload callbacks in remote clients.
+
+`ClientEvents` wraps the client lifecycle, chat, key-mapping registration, render, and client network events. Each closure receives the underlying event object. Key mappings use the mod event bus; the other listed hooks use the client event bus.
+
+## Hooks
+
+| Hook | Fires |
+| --- | --- |
+| `tick` | after a client tick |
+| `stopped` / `stopping` | during client shutdown |
+| `chat` / `chatReceived` | local chat send and received chat |
+| `keyMappings` | key mapping registration |
+| `renderGui` / `renderGuiLayer` | GUI rendering |
+| `renderHand` | hand rendering |
+| `renderAfterLevel` | after the level render stage |
+| `loggedIn` / `loggedOut` | client network state changes |
+
+```java
+import de.luckymcdev.foundryengine.event.common.ClientEvents;
+
+ClientEvents.loggedIn(event -> {
+    System.out.println("Client connected");
+});
+```
+
+This API is client-only; do not load it from common scripts or dedicated-server Java code. The common script environment runs on both physical sides.
+
+The callback lists are cleared on bundle reload. Integrated-world reload re-registers client callbacks on the client thread; a dedicated server cannot reload callbacks in remote clients. Render callbacks run during rendering and should avoid blocking or expensive work.
+
+## Related
+
+- [Scripts and sandboxing](../scripts-and-sandboxing)
+- [Rendering pipeline](../../concepts/rendering-pipeline)
+- [`ClientEvents`](pathname:///javadoc/de/luckymcdev/foundryengine/event/common/ClientEvents.html)

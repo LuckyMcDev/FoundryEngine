@@ -1,0 +1,25 @@
+---
+sidebar_position: 10
+title: Data-generation events
+description: Bundle data provider extension point.
+---
+
+# Data-generation events
+
+**Applies to:** bundle callback registration is common; custom `DataProvider` implementation is a Java extension API.
+
+`BundleEvents.dataGen` receives `BundleDataGenEvent` once during common setup, after the per-bundle built-in generators run. Register this callback from a common entrypoint; client and server scripts load after this event. The event exposes the `EngineDataGenerator`, a `CompletableFuture<HolderLookup.Provider>`, and `addProvider(DataProvider)`.
+
+```groovy
+BundleEvents.dataGen { event ->
+    println "Adding a provider to ${event.generator}"
+}
+```
+
+This callback registers an observer only; adding generated files requires a Java `DataProvider` implementation. The engine's built-in generators split server data and client assets. Client asset providers do not run on a dedicated server. Data-generation callbacks are cleared on bundle reload and registered again when common scripts load.
+
+## Related
+
+- [Generate data](../packaging/generate-data)
+- [Content and registration](../../reference/content-and-registration)
+- [BundleDataGenEvent Javadoc](pathname:///javadoc/de/luckymcdev/foundryengine/event/common/data/BundleDataGenEvent.html)

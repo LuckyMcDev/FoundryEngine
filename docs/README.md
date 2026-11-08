@@ -1,10 +1,10 @@
 # FoundryEngine docs
 
-The docs site for FoundryEngine, built with [Docusaurus](https://docusaurus.io/). Content lives in `docs/docs/` in three sections: getting started, guides, concepts.
+The docs site for FoundryEngine, built with [Docusaurus](https://docusaurus.io/). Content lives in `docs/docs/` in four sections: getting started, guides, concepts, and reference.
 
 ## Prerequisites
 
-- Node.js 18 or newer.
+- Node.js 20 or newer.
 - `npm install` in this directory.
 
 ## Local development
@@ -18,7 +18,7 @@ Starts a local server that hot-reloads on change. Most edits show up without a r
 ## Build
 
 ```bash
-npm run docs:build
+npm run build
 ```
 
 Builds static content into the `build` directory. The build fails on broken links and missing pages, so run it before pushing.
@@ -28,6 +28,7 @@ Builds static content into the `build` directory. The build fails on broken link
 - `docs/docs/getting-started/`: learning journeys, read in order.
 - `docs/docs/guides/`: recipes and API lookups.
 - `docs/docs/concepts/`: how the engine works.
+- `docs/docs/reference/`: subsystem maps and links to generated Javadoc.
 - `docs/blog/`: the news and changelog feed at `/news`.
 - `docs/version_labels.json`: the label for the current version.
 
@@ -46,10 +47,10 @@ FoundryEngine uses unified mod versioning across all supported Minecraft edition
 Run the `bumpVersion` task to update `stonecutter.properties.toml`, `docs/version_labels.json`, and optionally create Git commits and tags:
 
 ```bash
-# Bump patch version (e.g. 0.1.9 -> 0.1.10)
+# Bump patch version (e.g. 0.2.2 -> 0.2.3)
 ./gradlew bumpVersion --bump=patch
 
-# Bump minor version (e.g. 0.1.9 -> 0.2.0)
+# Bump minor version (e.g. 0.2.2 -> 0.3.0)
 ./gradlew bumpVersion --bump=minor
 
 # Set an explicit version and suffix
@@ -63,8 +64,8 @@ Run the `bumpVersion` task to update `stonecutter.properties.toml`, `docs/versio
 
 Releases and documentation deployments can be triggered in two ways:
 
-1. **Pushing a Git Tag**: Pushing any tag starting with `v*` (e.g. `v0.1.9` or `v0.1.9-26.1`) runs `.github/workflows/release.yml`, building all Stonecutter targets and publishing to GitHub Releases, CurseForge, and Modrinth.
-2. **Workflow Dispatch**: Run **Release & Publish** under GitHub Actions with inputs for `bump_type`, `suffix`, `snapshot_docs`, and `dry_run`. The workflow automatically handles bumping files, committing as `github-actions[bot]`, creating Git tags, publishing artifacts, and deploying updated docs.
+1. **Documentation deployment**: `.github/workflows/deploy.yml` builds Docusaurus, generates Javadoc for Minecraft 26.2, and publishes both to GitHub Pages when documentation or source files change on `master`.
+2. **Build validation**: `.github/workflows/build.yml` builds the mod on pushes, pull requests, and manual dispatch. Release publishing is not configured in these workflows.
 
 ## Writing
 

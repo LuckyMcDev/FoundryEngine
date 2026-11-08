@@ -10,18 +10,31 @@ A block is registered from the **common** entrypoint, exactly like an item.
 
 ## Use the BlockBuilder
 
-```groovy title="scripts/common/<bundle>/Common.groovy"
+```groovy title="scripts/common/mybundle/BlockEntrypoint.groovy"
+package common.mybundle
+
 import de.luckymcdev.foundryengine.builder.common.block.BlockBuilder
 import de.luckymcdev.foundryengine.event.common.BundleEvents
+import de.luckymcdev.foundryengine.script.common.BundleEntrypoint
+import net.minecraft.resources.Identifier
 
-@Override
-void onLoad() {
-    def glow = BlockBuilder.create(id("glowing_stone"))
+class BlockEntrypoint implements BundleEntrypoint {
+    private static Identifier id(String path) {
+        Identifier.fromNamespaceAndPath("mybundle", path)
+    }
+
+    @Override
+    void onLoad() {
+        def glow = BlockBuilder.create(id("glowing_stone"))
             .properties { it.strength(3.0f, 6.0f).lightLevel { 15 } }
 
-    BundleEvents.registry {
-        it.blocks(glow)
+        BundleEvents.registry { event ->
+            event.blocks(glow)
+        }
     }
+
+    @Override
+    void onUnload() {}
 }
 ```
 

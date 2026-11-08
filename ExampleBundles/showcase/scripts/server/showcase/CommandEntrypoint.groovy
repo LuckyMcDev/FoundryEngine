@@ -2,9 +2,9 @@ package showcase
 
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.arguments.StringArgumentType
-import de.luckymcdev.foundryengine.common.Common
-import de.luckymcdev.foundryengine.common.event.CommandEvents
-import de.luckymcdev.foundryengine.common.script.BundleEntrypoint
+import de.luckymcdev.foundryengine.Common
+import de.luckymcdev.foundryengine.event.common.CommandEvents
+import de.luckymcdev.foundryengine.script.common.BundleEntrypoint
 import net.minecraft.commands.Commands
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.Identifier

@@ -1,35 +1,34 @@
 ---
 sidebar_position: 2
 title: Reload in game
-description: Pick up script changes without restarting the game.
+description: Reload bundle scripts without restarting the game.
 ---
 
 # Reload in game
 
-After you edit a script, apply the change without restarting the client.
-
-## Reload all bundles
+`/engine reload` re-discovers bundles and reloads their common and server scripts. It requires operator permissions.
 
 ```text
 /engine reload
 ```
 
-`/engine reload` unloads and re-runs every bundle. It needs operator permissions. On success it prints **Scripts reloaded successfully!**; if a script fails to load you get the failure message instead.
-
 ## What reload does
 
-- Stops all game sessions and clears their tick state.
-- Calls `onUnload()` on every bundle.
-- Re-reads the bundle scripts from disk.
-- Calls `onLoad()` on every bundle again.
+- Clears engine event callback lists.
+- Stops active game sessions.
+- Calls `onUnload()` on loaded common and server entrypoints.
+- Re-scans bundles, runs common entrypoints, and reloads server entrypoints.
+- Re-registers commands and reports script failures.
 
-Because reload restarts sessions, persistent data saved by sessions stays on disk and loads again on the next start.
+The command does not rebuild Minecraft registries. Restart after changing items, blocks, recipes, sounds, particles, or other registry content. The engine warns that command and registry state can remain inconsistent during a live reload.
 
-## Reloading in the editor
+The reload path re-discovers bundles and reloads common and server entrypoints. In an integrated world, a reload-completed callback schedules client entrypoints to reload on the client thread. A dedicated server cannot reload scripts in connected client processes; restart clients after changing their `scripts/client` files.
 
-The editor works on the same files on disk. Save the file in the code editor, then run `/engine reload` in the game console. If a file has a syntax error, the Problems panel and the console report it before the bundle executes.
+## In the editor
+
+Save script changes to disk, then run `/engine reload` from the game. Check the console and Problems panel for compilation or entrypoint errors.
 
 ## Related
 
-- Errors before you reload: [Validate your scripts](../editor/validate-your-scripts).
-- Bundle lifecycle in detail: [Entrypoint lifecycle reference](../entrypoint-lifecycle).
+- [Entrypoint lifecycle](../entrypoint-lifecycle)
+- [Validate your scripts](../editor/validate-your-scripts)

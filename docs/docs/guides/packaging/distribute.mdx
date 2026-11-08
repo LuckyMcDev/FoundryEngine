@@ -6,19 +6,15 @@ description: Hand your bundle to other players.
 
 # Distribute a bundle
 
-A bundle is the folder with your scripts, assets, and data, plus a `.bundles.toml` metadata file. Distributing it means giving that to someone else to drop into their bundle directory.
+A bundle is the folder with your scripts, assets, and data, plus a `.bundles.toml` metadata file. The engine can load a bundle from a directory or a `.zip` archive.
 
 ## Share the files
 
-Zip the bundle directory and send it. The recipient unzips it into their bundle directory and restarts, or runs `/engine reload` if the engine is already running.
-
-:::note
-Technically it doesnt need to be unzipped, im just not sure which is more performant.
-:::
+Send the bundle directory or zip it. Place a directory in the bundle directory, or place a `.zip` file directly there. The recipient can restart the game or run `/engine reload` after copying it.
 
 ## What the recipient needs
 
-- The same Minecraft version and NeoForge build.
+- A compatible Minecraft version and NeoForge build. The current 26.1 target uses Minecraft 26.1.2 and NeoForge 26.1.2.x.
 - FoundryEngine installed.
 - For singleplayer: just the bundle.
 - For a server: the bundle on the server, and the client bundle on every player who needs the content (see [dedicated server](dedicated-server)).

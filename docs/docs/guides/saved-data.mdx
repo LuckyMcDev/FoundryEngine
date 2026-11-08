@@ -1,0 +1,66 @@
+---
+sidebar_position: 7
+---
+
+# Save engine data
+
+**Applies to:** common/server bundle scripts can access `Common.getSavedDataManager()` for sections. Implementing a `Persistable` manager and registering it as an extension is a Java integration API.
+
+`SavedDataManager` stores engine sections as NBT data. Each section has a key and a scope. World sections live under the current world's `FoundryEngine` data directory; global sections live under the shared engine data directory.
+
+## Sections
+
+Register a section before loading or writing it. The manager is available as `Common.getSavedDataManager()`:
+
+```groovy
+import de.luckymcdev.foundryengine.Common
+import de.luckymcdev.foundryengine.savedata.common.SavedDataManager
+import net.minecraft.nbt.CompoundTag
+
+Common.getSavedDataManager().registerSection("my_bundle.progress", SavedDataManager.Scope.WORLD)
+Common.getSavedDataManager().setSection("my_bundle.progress", new CompoundTag())
+```
+
+Unregistered sections use the global scope. Use a namespaced key so that two bundles cannot accidentally write the same section.
+
+The manager exposes section operations:
+
+- `getSection(key)` reads the current in-memory section.
+- `setSection(key, tag)` replaces a section and marks it dirty.
+- `update(persistable)` serializes a registered `Persistable` manager.
+- `save()` flushes dirty sections immediately.
+- `syncToAll()` schedules a broadcast of world-scoped sections.
+
+Writes are normally deferred to tick listeners. The manager flushes dirty data periodically and saves again when the server stops.
+
+## Persistable managers
+
+For Java extensions, implement `saveSection`, `saveData`, and `loadData`. `saveScope` is optional and defaults to `WORLD`:
+
+```java
+import de.luckymcdev.foundryengine.manager.api.EngineManager;
+import de.luckymcdev.foundryengine.savedata.common.SavedDataManager;
+import net.minecraft.nbt.CompoundTag;
+
+public interface Persistable extends EngineManager {
+    String saveSection();
+    default SavedDataManager.Scope saveScope() {
+        return SavedDataManager.Scope.WORLD;
+    }
+    CompoundTag saveData();
+    void loadData(CompoundTag data);
+}
+```
+
+The default scope is `WORLD`. Register the manager with `SavedDataManager.registerPersistable`. The manager then participates in load, save, and synchronization automatically.
+
+## Client behavior
+
+Clients receive world-scoped data through `SavedDataSyncPacket`. Receiving data replaces the client copy of world sections while preserving global sections. The client does not persist the received world sections.
+
+## Related
+
+- [Network synchronization](networking#engine-synchronization)
+- [Managers](managers)
+- [`SavedDataManager`](pathname:///javadoc/de/luckymcdev/foundryengine/savedata/common/SavedDataManager.html)
+- [`Persistable`](pathname:///javadoc/de/luckymcdev/foundryengine/manager/api/Persistable.html)

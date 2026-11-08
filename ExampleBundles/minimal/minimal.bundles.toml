@@ -2,9 +2,7 @@
 bundleId = "minimal"
 version = "0.0.1"
 displayName = "Minimal"
-displayURL = "https://github.com/Example"
 authors = "You"
-description = '''This is a bundle, which you can copy and rename all occorrences of "minimal" to your bundles id, and start writing stuff.'''
 dependencies = [
-    "mod:neoforge@26.1.0.1-beta"
+    "mod:neoforge@[26.1.2,26.2)"
 ]

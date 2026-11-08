@@ -1,0 +1,36 @@
+---
+sidebar_position: 2
+---
+
+# Content and registration
+
+Bundle scripts describe content during `BundleEvents.registry`. The engine collects the builders, assigns each object an identifier, and registers the resulting objects during the normal NeoForge registration phase.
+
+The current builder groups are:
+
+| Content | Builder | Guide |
+| --- | --- | --- |
+| Items | `ItemBuilder` | [Add an item](../guides/registration/add-item) |
+| Blocks | `BlockBuilder` | [Add a block](../guides/registration/add-block) |
+| Recipes | `RecipeBuilder` | [Add a recipe](../guides/registration/add-recipe) |
+| Sounds | `SoundBuilder` | [Add a sound](../guides/registration/add-sound) |
+| Particles | `ParticleBuilder` | [Add a particle](../guides/registration/add-particle) |
+| Tags | `TagBuilder`, `BlockTagBuilder`, `ItemTagBuilder` | [Tags and generated data](../guides/data-and-tags) |
+
+Builders are not registries. A builder stores the definition and optional data-generation settings; the registry collector owns the definitions until the registration and data-generation phases consume them.
+
+## Identifiers
+
+Use the bundle id as the namespace. The same identifier is used for the registry entry, generated resource paths, and references from other scripts. A duplicate identifier in the same registry is a registration error.
+
+## Data generation
+
+Data generation reads the collected builders and writes the generated data and asset files under the engine's temporary bundle output directory. The generated providers include recipes, recipe priorities, tags, loot, advancements, language entries, models, equipment assets, particles, and sounds. Client-only providers run only on the client.
+
+See [Generate data](../guides/packaging/generate-data) for the command and output workflow.
+
+## Related API
+
+- [`RegistryCollector`](pathname:///javadoc/de/luckymcdev/foundryengine/registry/common/RegistryCollector.html)
+- [`TagBuilder`](pathname:///javadoc/de/luckymcdev/foundryengine/builder/common/tag/TagBuilder.html)
+- [`BundleDataGenerator`](pathname:///javadoc/de/luckymcdev/foundryengine/data/common/gen/BundleDataGenerator.html)

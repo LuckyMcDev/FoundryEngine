@@ -6,28 +6,24 @@ description: Reference for player stage change events.
 
 # StageEvents
 
-`StageEvents` fires around stage changes on players. Each event has `event.entity` (the player) and `event.stage` (the `Identifier` of the stage).
+**Applies to:** server-side bundle scripts. Each callback receives a `GameStageEvent` with the player and stage identifier.
 
-## Adding and removing
-
-| Method | When |
-| --- | --- |
-| `adding { event -> ... }` | A stage is about to be granted. Canceling the NeoForge event stops it. |
-| `added { event -> ... }` | A stage was granted. |
-| `removing { ... }` | A stage is about to be removed. |
-| `removed { ... }` | A stage was removed. |
-
-The `post*` variants run after the engine's own handling.
-
-## Example
+| Registration | Timing | Cancellation |
+| --- | --- | --- |
+| `adding { event -> ... }` | Before the stage is added. | Cancellable; cancel to prevent the addition. |
+| `added { event -> ... }` | After the stage was added. | Not cancellable. |
+| `removing { event -> ... }` | Before the stage is removed. | Cancellable; cancel to prevent removal. |
+| `removed { event -> ... }` | After the stage was removed. | Not cancellable. |
 
 ```groovy
 StageEvents.added { event ->
-    def player = event.entity as ServerPlayer
-    player.sendSystemMessage(Component.literal("New stage: ${event.stage}"))
+    println "${event.entity.name} received stage ${event.stage}"
 }
 ```
 
+Listeners clear when bundles reload. The before events implement NeoForge's cancellable event contract; the after events are notifications.
+
 ## Related
 
-- Gating content: [Gate content with stages](../world/gate-with-stages).
+- [Gate content with stages](../world/gate-with-stages)
+- [GameStageEvent Javadoc](pathname:///javadoc/de/luckymcdev/foundryengine/game/common/stage/GameStageEvent.html)

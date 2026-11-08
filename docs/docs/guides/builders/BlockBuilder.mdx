@@ -6,6 +6,8 @@ description: Reference for the BlockBuilder fluent API.
 
 # BlockBuilder
 
+**Applies to:** common bundle scripts. Block registration runs on both client and server.
+
 `BlockBuilder` builds a `Block`. Create one with `BlockBuilder.create(Identifier)` and register it through `BundleEvents.registry { it.blocks(...) }`.
 
 ## Creation
@@ -20,9 +22,9 @@ description: Reference for the BlockBuilder fluent API.
 | --- | --- |
 | `.properties { it -> ... }` | Configure `BlockBehaviour.Properties`. Common calls inside: `strength`, `lightLevel`, `noCollision`, `requiresCorrectToolForDrops`. |
 | `.noItem()` | Register the block without an item. |
-| `.hasItem()` | Register the block with its item. |
+| `.hasItem()` | Reports whether the block builder will register its block item. Block items are enabled by default. |
 | `.itemProperties { ... }` | Configure the item for the block. |
-| `.generateData(boolean)` | `false` skips JSON generation for the block. |
+| `.generateData(boolean)` | Whether to generate block and related data files. Default: `true`. |
 | `.blockEntity(...)` | Attach a block entity. |
 
 ## Behaviour callbacks

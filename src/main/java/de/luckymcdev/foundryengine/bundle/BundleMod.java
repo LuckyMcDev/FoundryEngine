@@ -68,6 +68,7 @@ public final class BundleMod implements EngineModPart {
 	public void onConstruct(FMLConstructModEvent event) {
 		try {
 			Common.getBundleManager().discover(EnginePaths.BUNDLES);
+			Common.getBundleManager().loadCommonScripts();
 			Common.getBundleManager().refreshModList();
 			Common.getBundleManager().reportScriptErrors();
 		} catch (IOException e) {
