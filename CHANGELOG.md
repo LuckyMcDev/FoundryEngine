@@ -1,8 +1,11 @@
-## 0.2.2
+## 0.2.3
 
 ---
 
-- Fix Script Engine Error, where it was reloading the Runtime at a time, where it should not have reloaded.
-- Remove Code that is poorly written and can be lived without.
+- Add Maven based Library support to Bundles.
+- Rewrite the Engines paths to not be in Common anymore but in EnginePaths
+- Make all "optional" Features of the engine toggleable, like Cutscenes, Areas, and others.
+- Fix a Script Engine Error.
+- Fix GameData not being per world
 
 ---

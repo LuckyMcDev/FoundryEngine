@@ -7,6 +7,7 @@ description: Start and stop a session with lifecycle and tick handlers on world 
 # Build a game session
 
 A game session bundles persistent data with lifecycle and tick handlers. It can auto-start when the world loads and its data survives server restarts.
+The Data is per world.
 
 ## Define the session
 
@@ -56,7 +57,7 @@ data.putInt("score", 42)
 def score = data.getInt("score")
 ```
 
-Save with `session.save()` and load with `session.load()`. Sessions registered for a world persist under that world's data directory.
+The Data is automatically saved for all worlds. This means that for each new world you create, data is reset again.
 
 ## Related
 
