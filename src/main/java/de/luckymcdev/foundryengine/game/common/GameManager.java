@@ -34,6 +34,10 @@ import java.util.function.Consumer;
  * <p>
  * Lifecycle tracking (STOPPED → STARTING → RUNNING → STOPPING → STOPPED) is per-world,
  * not per-session. All sessions in a world share the world's lifecycle.
+ * <p>
+ * Persistent session data is also scoped per world. There is no global tag store —
+ * a session's data only exists once it has been bound to a world (see
+ * {@link GameSession#load(String, Path)} / {@link GameSession#save(String, Path)}).
  */
 public class GameManager implements BundleLifecycleListener, EngineManager, ServerTickable, LevelTickable {
 	private static final Logger LOGGER = LogUtils.getLogger();
@@ -41,7 +45,7 @@ public class GameManager implements BundleLifecycleListener, EngineManager, Serv
 	private final Map<String, Path> worldDataPaths = new ConcurrentHashMap<>();
 	private final Map<String, GameLifecycle> worldLifecycles = new ConcurrentHashMap<>();
 	private final Map<Identifier, GameSession> globalSessions = new ConcurrentHashMap<>();
-	private final Map<Identifier, CompoundTag> persistentSessionData = new ConcurrentHashMap<>();
+	private final Map<String, Map<Identifier, CompoundTag>> persistentSessionData = new ConcurrentHashMap<>();
 	private final Set<GameSession> tickedCommonSessions = ConcurrentHashMap.newKeySet();
 	private final Set<GameSession> tickedServerSessions = ConcurrentHashMap.newKeySet();
 
@@ -191,12 +195,25 @@ public class GameManager implements BundleLifecycleListener, EngineManager, Serv
 	}
 
 	/**
-	 * Returns the persistent CompoundTag for a session ID, creating one if absent.
-	 * The returned tag survives bundle reloads and is shared by all GameData instances
-	 * with the same ID.
+	 * Returns the persistent {@link CompoundTag} for a session in the given world,
+	 * creating one if absent. The tag is scoped to {@code worldName} — sessions with
+	 * the same ID in different worlds get distinct tags. The tag survives bundle
+	 * reloads.
 	 */
-	public CompoundTag getOrCreateSessionData(Identifier id) {
-		return persistentSessionData.computeIfAbsent(id, k -> new CompoundTag());
+	public CompoundTag getOrCreateSessionData(String worldName, Identifier id) {
+		return persistentSessionData
+			.computeIfAbsent(worldName, k -> new ConcurrentHashMap<>())
+			.computeIfAbsent(id, k -> new CompoundTag());
+	}
+
+	/**
+	 * Drops the persistent tag for a session in the given world.
+	 */
+	public void clearSessionData(String worldName, Identifier id) {
+		Map<Identifier, CompoundTag> data = persistentSessionData.get(worldName);
+		if (data != null) {
+			data.remove(id);
+		}
 	}
 
 	/**
@@ -258,7 +275,7 @@ public class GameManager implements BundleLifecycleListener, EngineManager, Serv
 			return false;
 		}
 
-		session.load(dataPath);
+		session.load(worldName, dataPath);
 		session.onStarting();
 		session.setStarted(true);
 
@@ -287,7 +304,7 @@ public class GameManager implements BundleLifecycleListener, EngineManager, Serv
 		Path dataPath = worldDataPath(worldName);
 		try {
 			session.onStopping();
-			session.save(dataPath);
+			session.save(worldName, dataPath);
 		} finally {
 			session.setStarted(false);
 		}

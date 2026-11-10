@@ -15,17 +15,39 @@ import java.nio.file.Path;
 
 /**
  * Persistable data container identified by an Identifier, backed by NBT compounds.
+ * <p>
+ * Data is scoped per world: a {@code GameData} starts out detached and is bound to a
+ * world's per-world tag store via {@link #bindWorld(String)}, which happens when the
+ * owning {@link GameSession} is loaded/saved for that world. Two sessions with the same
+ * ID in different worlds therefore get distinct tags.
  */
 public class GameData {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final String INITIALIZED_KEY = "_initialized";
 	private final Identifier identifier;
-	private final CompoundTag data;
+	private volatile CompoundTag data;
+	private @Nullable String worldName;
 	private @Nullable Runnable initHandler;
 
 	public GameData(Identifier identifier) {
 		this.identifier = identifier;
-		this.data = Common.getGameManager().getOrCreateSessionData(identifier);
+		this.data = new CompoundTag();
+	}
+
+	/**
+	 * Binds this data to the given world's per-world tag store. Called by
+	 * {@link GameSession} when the session is loaded/saved for that world.
+	 */
+	void bindWorld(String worldName) {
+		this.worldName = worldName;
+		this.data = Common.getGameManager().getOrCreateSessionData(worldName, identifier);
+	}
+
+	/**
+	 * Returns the world this data is currently bound to, or {@code null} if detached.
+	 */
+	public @Nullable String worldName() {
+		return worldName;
 	}
 
 	/**
@@ -37,14 +59,15 @@ public class GameData {
 
 	/**
 	 * Returns the underlying NBT compound data.
-	 * The returned tag is shared via GameManager's persistent store and survives
-	 * bundle reloads — modifications are visible to all sessions with the same ID.
+	 * <p>
+	 * The tag is the per-world tag for this data's ID. It survives bundle reloads and is
+	 * shared by all sessions with the same ID <em>in the same world</em>.
 	 * <p>
 	 * Threading contract: a session can be ticked from both the client and the server
 	 * thread in the same process (integrated server), so the shared tag may be accessed
-	 * concurrently. Every read/write that goes through the  accessors is
-	 * guarded by synchronizing on the tag itself. If the returned tag is mutated directly,
-	 * the caller must synchronize on that tag object as well to avoid races.
+	 * concurrently. Every read/write that goes through the accessors is guarded by
+	 * synchronizing on the tag itself. If the returned tag is mutated directly, the
+	 * caller must synchronize on that tag object as well to avoid races.
 	 */
 	public CompoundTag data() {
 		return data;
@@ -54,8 +77,9 @@ public class GameData {
 	 * Returns true if this data has been initialized at least once.
 	 */
 	public boolean isInitialized() {
-		synchronized (data) {
-			return data.getBoolean(INITIALIZED_KEY).orElse(false);
+		CompoundTag tag = data;
+		synchronized (tag) {
+			return tag.getBoolean(INITIALIZED_KEY).orElse(false);
 		}
 	}
 
@@ -63,8 +87,9 @@ public class GameData {
 	 * Sets the initialization flag for this data.
 	 */
 	public void setInitialized(boolean initialized) {
-		synchronized (data) {
-			data.putBoolean(INITIALIZED_KEY, initialized);
+		CompoundTag tag = data;
+		synchronized (tag) {
+			tag.putBoolean(INITIALIZED_KEY, initialized);
 		}
 	}
 
@@ -80,8 +105,9 @@ public class GameData {
 	 * Gets a boolean value from the data.
 	 */
 	public boolean getBoolean(String key) {
-		synchronized (data) {
-			return data.getBoolean(key).orElse(false);
+		CompoundTag tag = data;
+		synchronized (tag) {
+			return tag.getBoolean(key).orElse(false);
 		}
 	}
 
@@ -89,8 +115,9 @@ public class GameData {
 	 * Puts a boolean value into the data.
 	 */
 	public void putBoolean(String key, boolean value) {
-		synchronized (data) {
-			data.putBoolean(key, value);
+		CompoundTag tag = data;
+		synchronized (tag) {
+			tag.putBoolean(key, value);
 		}
 	}
 
@@ -98,8 +125,9 @@ public class GameData {
 	 * Gets a double value from the data.
 	 */
 	public double getDouble(String key) {
-		synchronized (data) {
-			return data.getDouble(key).orElse(0.0);
+		CompoundTag tag = data;
+		synchronized (tag) {
+			return tag.getDouble(key).orElse(0.0);
 		}
 	}
 
@@ -107,8 +135,9 @@ public class GameData {
 	 * Puts a double value into the data.
 	 */
 	public void putDouble(String key, double value) {
-		synchronized (data) {
-			data.putDouble(key, value);
+		CompoundTag tag = data;
+		synchronized (tag) {
+			tag.putDouble(key, value);
 		}
 	}
 
@@ -116,8 +145,9 @@ public class GameData {
 	 * Gets an integer value from the data.
 	 */
 	public int getInt(String key) {
-		synchronized (data) {
-			return data.getInt(key).orElse(0);
+		CompoundTag tag = data;
+		synchronized (tag) {
+			return tag.getInt(key).orElse(0);
 		}
 	}
 
@@ -125,8 +155,9 @@ public class GameData {
 	 * Puts an integer value into the data.
 	 */
 	public void putInt(String key, int value) {
-		synchronized (data) {
-			data.putInt(key, value);
+		CompoundTag tag = data;
+		synchronized (tag) {
+			tag.putInt(key, value);
 		}
 	}
 
@@ -134,8 +165,9 @@ public class GameData {
 	 * Gets a string value from the data, or null if absent.
 	 */
 	public @Nullable String getString(String key) {
-		synchronized (data) {
-			return data.getString(key).orElse(null);
+		CompoundTag tag = data;
+		synchronized (tag) {
+			return tag.getString(key).orElse(null);
 		}
 	}
 
@@ -143,27 +175,30 @@ public class GameData {
 	 * Puts a string value into the data.
 	 */
 	public void putString(String key, String value) {
-		synchronized (data) {
-			data.putString(key, value);
+		CompoundTag tag = data;
+		synchronized (tag) {
+			tag.putString(key, value);
 		}
 	}
 
 	protected void onSave(CompoundTag tag) {
-		synchronized (data) {
-			tag.put("data", data);
+		CompoundTag dataTag = data;
+		synchronized (dataTag) {
+			tag.put("data", dataTag);
 		}
 	}
 
 	protected void onLoad(CompoundTag tag) {
-		synchronized (data) {
+		CompoundTag dataTag = data;
+		synchronized (dataTag) {
 			if (tag.contains("data")) {
-				tag.getCompound("data").ifPresent(data::merge);
+				tag.getCompound("data").ifPresent(dataTag::merge);
 			}
-			if (!isInitialized()) {
+			if (!dataTag.getBoolean(INITIALIZED_KEY).orElse(false)) {
 				if (initHandler != null) {
 					initHandler.run();
 				}
-				setInitialized(true);
+				dataTag.putBoolean(INITIALIZED_KEY, true);
 			}
 		}
 	}
@@ -175,7 +210,8 @@ public class GameData {
 		CompoundTag tag = new CompoundTag();
 		onSave(tag);
 		Path path = resolvePath(directory);
-		synchronized (data) {
+		CompoundTag dataTag = data;
+		synchronized (dataTag) {
 			try {
 				Files.createDirectories(path.getParent());
 				NbtIo.writeCompressed(tag, path);
@@ -190,7 +226,8 @@ public class GameData {
 	 */
 	public final void loadFrom(Path directory) {
 		Path path = resolvePath(directory);
-		synchronized (data) {
+		CompoundTag dataTag = data;
+		synchronized (dataTag) {
 			try {
 				if (Files.exists(path)) {
 					CompoundTag tag = NbtIo.readCompressed(path, NbtAccounter.defaultQuota());
@@ -199,7 +236,7 @@ public class GameData {
 					if (initHandler != null) {
 						initHandler.run();
 					}
-					setInitialized(true);
+					dataTag.putBoolean(INITIALIZED_KEY, true);
 				}
 			} catch (IOException e) {
 				LOGGER.error("Failed to load game data [{}]", identifier, e);

@@ -1,5 +1,6 @@
 package de.luckymcdev.foundryengine.game.common;
 
+import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.EnginePaths;
 import net.minecraft.resources.Identifier;
@@ -7,6 +8,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import org.jspecify.annotations.Nullable;
+import org.slf4j.Logger;
 
 import java.nio.file.Path;
 import java.util.function.BiConsumer;
@@ -16,11 +18,13 @@ import java.util.function.Consumer;
  * A single game session with configurable tick and lifecycle handlers.
  */
 public class GameSession {
+	private static final Logger LOGGER = LogUtils.getLogger();
 	final GameData data;
 	private final Identifier id;
 	private boolean started;
 	private GameState publicState = SimpleState.LOBBY;
 	private boolean autoStart;
+	private @Nullable String worldName;
 	private @Nullable Path worldDataPath;
 
 	private Consumer<Level> commonTickHandler = level -> {
@@ -53,6 +57,14 @@ public class GameSession {
 	 */
 	public GameData data() {
 		return data;
+	}
+
+	/**
+	 * Returns the world this session is currently bound to, or {@code null} if it has
+	 * not been loaded for a world yet.
+	 */
+	public @Nullable String worldName() {
+		return worldName;
 	}
 
 	/**
@@ -191,24 +203,27 @@ public class GameSession {
 	}
 
 	/**
-	 * Loads the session data from persistent storage.
-	 * Uses the world data path previously set via {@link #load(Path)}/{@link #save(Path)},
-	 * falling back to {@link EnginePaths#GAME} (the shared cache dir) only when no world path
-	 * has been provided — that fallback exists purely to keep direct script-driven calls
-	 * working and should be avoided for world-scoped data.
+	 * Loads the session data for the given world from persistent storage.
+	 * This binds the session's {@link GameData} to that world's per-world tag store.
 	 */
-	public void load() {
-		data.loadFrom(worldDataPath != null ? worldDataPath : EnginePaths.GAME);
+	public void load(String worldName, Path dataDir) {
+		this.worldName = worldName;
+		this.worldDataPath = dataDir;
+		data.bindWorld(worldName);
+		data.loadFrom(dataDir);
 		flushInit();
 	}
 
 	/**
-	 * Loads the session data from a world-specific directory.
+	 * Reloads the session data for the world this session was last bound to.
+	 * Does nothing (and logs a warning) if the session has never been bound.
 	 */
-	public void load(Path dataDir) {
-		this.worldDataPath = dataDir;
-		data.loadFrom(dataDir);
-		flushInit();
+	public void load() {
+		if (worldName == null || worldDataPath == null) {
+			LOGGER.warn("Cannot load game session [{}]: no world bound", id);
+			return;
+		}
+		load(worldName, worldDataPath);
 	}
 
 	private void flushInit() {
@@ -218,19 +233,24 @@ public class GameSession {
 	}
 
 	/**
-	 * Saves the session data to persistent storage.
-	 * See {@link #load()} for the world-path vs. cache-dir fallback semantics.
+	 * Saves the session data for the given world to persistent storage.
 	 */
-	public void save() {
-		data.saveTo(worldDataPath != null ? worldDataPath : EnginePaths.GAME);
-	}
-
-	/**
-	 * Saves the session data to a world-specific directory.
-	 */
-	public void save(Path dataDir) {
+	public void save(String worldName, Path dataDir) {
+		this.worldName = worldName;
 		this.worldDataPath = dataDir;
+		data.bindWorld(worldName);
 		data.saveTo(dataDir);
 	}
 
+	/**
+	 * Saves the session data for the world this session was last bound to.
+	 * Does nothing (and logs a warning) if the session has never been bound.
+	 */
+	public void save() {
+		if (worldName == null || worldDataPath == null) {
+			LOGGER.warn("Cannot save game session [{}]: no world bound", id);
+			return;
+		}
+		save(worldName, worldDataPath);
+	}
 }
