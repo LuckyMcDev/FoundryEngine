@@ -1,0 +1,7 @@
+# Graphify
+*
+!.gitignore
+!graph.json
+!graph.html
+!manifest.json
+!GRAPH_REPORT.md
