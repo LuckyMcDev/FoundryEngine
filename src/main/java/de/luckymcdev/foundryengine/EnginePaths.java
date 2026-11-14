@@ -23,7 +23,7 @@ public interface EnginePaths {
 	Path GAMEDIR = FMLPaths.GAMEDIR.get().normalize().toAbsolutePath();
 	Path CONFIG = FMLPaths.CONFIGDIR.get();
 	Path TEMP_DIR = Path.of(SystemProperties.getProperty("java.io.tmpdir")).resolve(MODID);
-	Path USER_SPACE = Paths.get(System.getProperty("user.home"), "."+MODID);
+	Path USER_SPACE = Paths.get(System.getProperty("user.home"), "." + MODID);
 	Path DIRECTORY = dir(GAMEDIR.resolve(MODNAME));
 	Path BUNDLES = dir(DIRECTORY.resolve("bundles"));
 	Path CACHE = dir(DIRECTORY.resolve(".cache"));

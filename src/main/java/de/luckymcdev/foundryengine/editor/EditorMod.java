@@ -4,12 +4,24 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.Client;
 import de.luckymcdev.foundryengine.Common;
-import de.luckymcdev.foundryengine.editor.client.panel.editor.RecipeEditorPanel;
-import de.luckymcdev.foundryengine.editor.client.panel.explorer.ExplorerPanel;
-import de.luckymcdev.foundryengine.editor.client.panel.test.*;
-import de.luckymcdev.foundryengine.editor.client.panel.tool.*;
-import de.luckymcdev.foundryengine.editor.client.panel.view.*;
+import de.luckymcdev.foundryengine.config.ModuleConfig;
 import de.luckymcdev.foundryengine.editor.client.EditorManager;
+import de.luckymcdev.foundryengine.editor.client.panel.explorer.ExplorerPanel;
+import de.luckymcdev.foundryengine.editor.client.panel.test.NodeTestPanel;
+import de.luckymcdev.foundryengine.editor.client.panel.test.TestPanel;
+import de.luckymcdev.foundryengine.editor.client.panel.tool.CataloguePanel;
+import de.luckymcdev.foundryengine.editor.client.panel.tool.ConsolePanel;
+import de.luckymcdev.foundryengine.editor.client.panel.tool.DevToolsPanel;
+import de.luckymcdev.foundryengine.editor.client.panel.tool.EffectPanel;
+import de.luckymcdev.foundryengine.editor.client.panel.tool.GitPanel;
+import de.luckymcdev.foundryengine.editor.client.panel.tool.MinecraftToolsPanel;
+import de.luckymcdev.foundryengine.editor.client.panel.tool.OutlinePanel;
+import de.luckymcdev.foundryengine.editor.client.panel.tool.PakkuPanel;
+import de.luckymcdev.foundryengine.editor.client.panel.tool.ProblemsPanel;
+import de.luckymcdev.foundryengine.editor.client.panel.tool.StopwatchPanel;
+import de.luckymcdev.foundryengine.editor.client.panel.view.HotkeySettingsPanel;
+import de.luckymcdev.foundryengine.editor.client.panel.view.InfoPanel;
+import de.luckymcdev.foundryengine.editor.client.panel.view.ThemeSelectorPanel;
 import de.luckymcdev.foundryengine.editor.client.popup.test.TestPopUp;
 import de.luckymcdev.foundryengine.imgui.client.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.imgui.client.ImGuiManager;
@@ -20,9 +32,10 @@ import de.luckymcdev.foundryengine.network.common.packet.explorer.ClientBoundExp
 import de.luckymcdev.foundryengine.network.common.packet.explorer.ServerBoundExplorerPacket;
 import de.luckymcdev.foundryengine.post.PostProcessingMod;
 import de.luckymcdev.foundryengine.util.common.EngineModPart;
-import de.luckymcdev.foundryengine.config.ModuleConfig;
 import foundry.imgui.api.ImGuiMC;
-import foundry.imgui.neoforge.api.event.*;
+import foundry.imgui.neoforge.api.event.ImGuiLoadEventsNeoforge;
+import foundry.imgui.neoforge.api.event.RegisterImGuiFontsEventNeoforge;
+import foundry.imgui.neoforge.api.event.RenderImGuiEventsNeoforge;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -30,7 +43,11 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.neoforge.client.event.*;
+import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
+import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.event.RenderFrameEvent;
 import org.slf4j.Logger;
 
 import java.util.concurrent.CompletableFuture;
@@ -43,6 +60,7 @@ public final class EditorMod implements EngineModPart {
 	public static final String MODID = "foundryengine_editor";
 	public static final ModuleConfig MODULE = new ModuleConfig("Editor");
 	private static final Logger LOGGER = LogUtils.getLogger();
+
 	public EditorMod(IEventBus modBus, ModContainer modContainer) {
 		if (!MODULE.registerAndCheck(modContainer)) {
 			return;

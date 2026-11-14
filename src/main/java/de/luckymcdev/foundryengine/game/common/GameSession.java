@@ -1,8 +1,6 @@
 package de.luckymcdev.foundryengine.game.common;
 
 import com.mojang.logging.LogUtils;
-import de.luckymcdev.foundryengine.Common;
-import de.luckymcdev.foundryengine.EnginePaths;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;

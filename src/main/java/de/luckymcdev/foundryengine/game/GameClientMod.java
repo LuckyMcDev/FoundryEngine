@@ -1,12 +1,12 @@
 package de.luckymcdev.foundryengine.game;
 
-import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.Client;
+import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.debug.client.screen.GameStagesDebugEntry;
 import de.luckymcdev.foundryengine.game.client.ClientGameManager;
 import de.luckymcdev.foundryengine.manager.api.ManagerKey;
-import net.neoforged.bus.api.IEventBus;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.RegisterDebugEntriesEvent;

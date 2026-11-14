@@ -1,5 +1,6 @@
 package de.luckymcdev.foundryengine.editor.client.panel.tool;
 
+import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.editor.client.config.PanelCategory;
 import de.luckymcdev.foundryengine.imgui.client.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.imgui.client.icon.ImIcons;
@@ -7,7 +8,6 @@ import de.luckymcdev.foundryengine.imgui.client.text.ImGuiCoreTextEditor;
 import de.luckymcdev.foundryengine.imgui.client.text.color.IEditorColorizer;
 import de.luckymcdev.foundryengine.imgui.client.text.editor.EditorTheme;
 import de.luckymcdev.foundryengine.imgui.client.text.preset.git.GitColorizer;
-import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.service.common.EngineServiceResult;
 import de.luckymcdev.foundryengine.service.common.GitService;
 import imgui.ImGui;
@@ -19,7 +19,6 @@ import imgui.type.ImString;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public class GitPanel extends EngineServicePanel<GitService> {

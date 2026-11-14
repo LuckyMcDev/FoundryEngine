@@ -1,11 +1,6 @@
 package de.luckymcdev.foundryengine.builder.common.recipe;
 
 import de.luckymcdev.foundryengine.builder.common.AbstractBuilder;
-//? if >=26.2 {
-/*import net.minecraft.advancements.triggers.Criterion;
- *///?} else {
-import net.minecraft.advancements.Criterion;
-//?}
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
@@ -32,6 +27,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
+
+//? if >=26.2 {
+/*import net.minecraft.advancements.triggers.Criterion;
+ *///?} else {
+import net.minecraft.advancements.Criterion;
+//?}
 
 public class RecipeBuilder extends AbstractBuilder<BiConsumer<RecipeOutput, HolderLookup.Provider>> {
 	private final RecipeType type;

@@ -5,8 +5,8 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import de.luckymcdev.foundryengine.Common;
-import de.luckymcdev.foundryengine.world.common.entity.EntitySpawner;
 import de.luckymcdev.foundryengine.command.server.EngineCommand;
+import de.luckymcdev.foundryengine.world.common.entity.EntitySpawner;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -15,11 +15,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Display;
-//? if >=26.2 {
-/*import net.minecraft.world.entity.EntityTypes;
- *///?} else {
-import net.minecraft.world.entity.EntityType;
-//?}
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -28,6 +23,12 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
+
+//? if >=26.2 {
+/*import net.minecraft.world.entity.EntityTypes;
+ *///?} else {
+import net.minecraft.world.entity.EntityType;
+//?}
 
 public class BlockToDisplayCommand implements EngineCommand {
 	private static final int MAX_REGION_BLOCKS = 4096;

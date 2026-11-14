@@ -1,11 +1,11 @@
 package de.luckymcdev.foundryengine.imgui.client;
 
-import de.luckymcdev.foundryengine.config.ClientConfig;
 import de.luckymcdev.foundryengine.Client;
-import de.luckymcdev.foundryengine.manager.api.EngineManager;
+import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.config.ClientConfig;
 import de.luckymcdev.foundryengine.editor.client.style.ImTheme;
 import de.luckymcdev.foundryengine.editor.client.style.ImThemes;
-import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.manager.api.EngineManager;
 import de.luckymcdev.foundryengine.mixin.MinecraftMixin;
 import imgui.ImGui;
 import imgui.ImGuiIO;

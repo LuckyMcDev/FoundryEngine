@@ -12,6 +12,7 @@ import java.util.List;
  * Supports narrative-only flow via {@link #nextNodeId}.
  */
 public class DialogueNode {
+	private static final String NEXT_NODE_ID_TAG = "NextNodeId";
 	private final String id;
 	private final String speaker;
 	private final String text;
@@ -20,7 +21,6 @@ public class DialogueNode {
 	private final List<String> enterActionIds;
 	private final List<String> conditionIds;
 	private String nextNodeId;
-	private static final String NEXT_NODE_ID_TAG = "NextNodeId";
 
 	public DialogueNode(String id, String speaker, String text) {
 		this(id, speaker, text, 0x55FF55);

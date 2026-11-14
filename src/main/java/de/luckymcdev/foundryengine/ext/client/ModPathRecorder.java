@@ -1,7 +1,6 @@
 package de.luckymcdev.foundryengine.ext.client;
 
 import com.mojang.logging.LogUtils;
-import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.EnginePaths;
 import net.neoforged.fml.loading.FMLPaths;
 import org.slf4j.Logger;
@@ -10,7 +9,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class ModPathRecorder {
 	private static final Logger LOGGER = LogUtils.getLogger();

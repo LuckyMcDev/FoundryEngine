@@ -4,9 +4,9 @@ import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.EnginePaths;
 import de.luckymcdev.foundryengine.manager.api.EngineManager;
 import de.luckymcdev.foundryengine.manager.api.Persistable;
+import de.luckymcdev.foundryengine.mixin.MinecraftServerAccess;
 import de.luckymcdev.foundryengine.network.common.NetworkManager;
 import de.luckymcdev.foundryengine.network.common.packet.sync.SavedDataSyncPacket;
-import de.luckymcdev.foundryengine.mixin.MinecraftServerAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
@@ -52,6 +52,7 @@ public class SavedDataManager implements EngineManager {
 	private int serverTickCounter = 0;
 	private boolean broadcastPending = false;
 	private int clientTickCounter = 0;
+
 	public SavedDataManager(NetworkManager networkManager) {
 		this.networkManager = networkManager;
 		registerEvents();
@@ -59,16 +60,6 @@ public class SavedDataManager implements EngineManager {
 
 	private static String fileNameFor(String key) {
 		return key + FILE_EXTENSION;
-	}
-
-	private void registerEvents() {
-		NeoForge.EVENT_BUS.addListener(this::onServerStarted);
-		NeoForge.EVENT_BUS.addListener(this::onServerTick);
-		NeoForge.EVENT_BUS.addListener(this::onServerStopping);
-		if (FMLEnvironment.getDist().isClient()) {
-			NeoForge.EVENT_BUS.addListener(this::onClientTick);
-			NeoForge.EVENT_BUS.addListener(this::onClientLogout);
-		}
 	}
 
 	private static String keyOf(Path file) {
@@ -79,6 +70,16 @@ public class SavedDataManager implements EngineManager {
 	private static boolean isSectionFile(Path file) {
 		String name = file.getFileName().toString();
 		return name.endsWith(FILE_EXTENSION) && Files.isRegularFile(file);
+	}
+
+	private void registerEvents() {
+		NeoForge.EVENT_BUS.addListener(this::onServerStarted);
+		NeoForge.EVENT_BUS.addListener(this::onServerTick);
+		NeoForge.EVENT_BUS.addListener(this::onServerStopping);
+		if (FMLEnvironment.getDist().isClient()) {
+			NeoForge.EVENT_BUS.addListener(this::onClientTick);
+			NeoForge.EVENT_BUS.addListener(this::onClientLogout);
+		}
 	}
 
 	/// Declares in which [Scope] a section is stored; unregistered sections default to [Scope#GLOBAL].
@@ -106,6 +107,18 @@ public class SavedDataManager implements EngineManager {
 		return data;
 	}
 
+	/// Replaces the in-memory data with a server sync while keeping the global sections.
+	/// Nothing is marked dirty, so synced world data is never persisted by the receiving client.
+	public void setData(CompoundTag tag) {
+		CompoundTag merged = tag.copy();
+		for (String key : List.copyOf(data.keySet())) {
+			if (scopeOf(key) == Scope.GLOBAL) {
+				data.getCompound(key).ifPresent(section -> merged.put(key, section));
+			}
+		}
+		this.data = merged;
+	}
+
 	/// Loads the global sections, and the world sections too if a world is resolved, discarding unsaved
 	/// changes of those scopes.
 	public void load() {
@@ -127,18 +140,6 @@ public class SavedDataManager implements EngineManager {
 		persistManagers();
 		flushDirty(Scope.WORLD);
 		flushDirty(Scope.GLOBAL);
-	}
-
-	/// Replaces the in-memory data with a server sync while keeping the global sections.
-	/// Nothing is marked dirty, so synced world data is never persisted by the receiving client.
-	public void setData(CompoundTag tag) {
-		CompoundTag merged = tag.copy();
-		for (String key : List.copyOf(data.keySet())) {
-			if (scopeOf(key) == Scope.GLOBAL) {
-				data.getCompound(key).ifPresent(section -> merged.put(key, section));
-			}
-		}
-		this.data = merged;
 	}
 
 	/// Stores a section and marks it dirty; the actual write is deferred to the tick listeners.

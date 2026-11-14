@@ -2,9 +2,9 @@ package de.luckymcdev.foundryengine.imgui.client.hotkey;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import de.luckymcdev.foundryengine.editor.client.panel.Panel;
-import de.luckymcdev.foundryengine.util.client.ImGuiGLFWKeyThing;
 import de.luckymcdev.foundryengine.manager.api.Persistable;
 import de.luckymcdev.foundryengine.savedata.common.SavedDataManager;
+import de.luckymcdev.foundryengine.util.client.ImGuiGLFWKeyThing;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;

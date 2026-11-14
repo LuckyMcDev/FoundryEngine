@@ -1,8 +1,8 @@
 package de.luckymcdev.foundryengine.tooltip.client;
 
 import com.mojang.serialization.DynamicOps;
-import de.luckymcdev.foundryengine.util.common.ChatIcons;
 import de.luckymcdev.foundryengine.manager.api.EngineManager;
+import de.luckymcdev.foundryengine.util.common.ChatIcons;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.RegistryAccess;

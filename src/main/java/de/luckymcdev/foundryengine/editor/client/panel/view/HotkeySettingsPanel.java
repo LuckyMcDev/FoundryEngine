@@ -1,11 +1,11 @@
 package de.luckymcdev.foundryengine.editor.client.panel.view;
 
 import de.luckymcdev.foundryengine.Client;
+import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.editor.client.config.PanelCategory;
 import de.luckymcdev.foundryengine.editor.client.panel.editor.EditorPanel;
 import de.luckymcdev.foundryengine.imgui.client.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.imgui.client.icon.ImIcons;
-import de.luckymcdev.foundryengine.Common;
 
 public class HotkeySettingsPanel extends EditorPanel {
 	public static final HotkeySettingsPanel INSTANCE = new HotkeySettingsPanel();

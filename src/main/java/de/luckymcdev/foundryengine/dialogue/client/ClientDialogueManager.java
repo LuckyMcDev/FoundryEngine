@@ -2,12 +2,12 @@ package de.luckymcdev.foundryengine.dialogue.client;
 
 import de.luckymcdev.foundryengine.dialogue.client.display.ChatDialogueDisplay;
 import de.luckymcdev.foundryengine.dialogue.client.display.ScreenDialogueDisplay;
-import de.luckymcdev.foundryengine.manager.api.EngineManager;
 import de.luckymcdev.foundryengine.dialogue.common.DialogueDisplayMode;
 import de.luckymcdev.foundryengine.dialogue.common.DialogueNode;
 import de.luckymcdev.foundryengine.dialogue.common.DialogueSession;
 import de.luckymcdev.foundryengine.dialogue.common.DialogueTree;
 import de.luckymcdev.foundryengine.dialogue.common.display.IDialogueDisplay;
+import de.luckymcdev.foundryengine.manager.api.EngineManager;
 import net.minecraft.resources.Identifier;
 
 import java.util.HashMap;

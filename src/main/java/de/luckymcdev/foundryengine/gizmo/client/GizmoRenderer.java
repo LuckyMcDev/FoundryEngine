@@ -1,5 +1,7 @@
 package de.luckymcdev.foundryengine.gizmo.client;
 
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+
 //? if >=26.2 {
 
 /*import net.minecraft.client.renderer.SubmitNodeCollector;
@@ -8,7 +10,6 @@ package de.luckymcdev.foundryengine.gizmo.client;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
 //?}
-import net.minecraft.client.renderer.state.level.CameraRenderState;
 //? if 26.1 {
 import org.joml.Matrix4fc;
 	//?}

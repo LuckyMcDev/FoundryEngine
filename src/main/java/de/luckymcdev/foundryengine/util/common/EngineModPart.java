@@ -1,7 +1,11 @@
 package de.luckymcdev.foundryengine.util.common;
 
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.event.lifecycle.*;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLConstructModEvent;
+import net.neoforged.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.neoforge.common.NeoForge;
 
 /**

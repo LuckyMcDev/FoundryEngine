@@ -1,12 +1,12 @@
 package de.luckymcdev.foundryengine.area.client;
 
-import de.luckymcdev.foundryengine.area.client.module.AreaRenderModule;
-import de.luckymcdev.foundryengine.gizmo.client.WorldGizmo;
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.area.client.module.AreaRenderModule;
 import de.luckymcdev.foundryengine.area.common.AABBArea;
 import de.luckymcdev.foundryengine.area.common.Area;
-import de.luckymcdev.foundryengine.util.common.color.Color;
+import de.luckymcdev.foundryengine.gizmo.client.WorldGizmo;
 import de.luckymcdev.foundryengine.manager.api.Render;
+import de.luckymcdev.foundryengine.util.common.color.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.resources.Identifier;

@@ -1,21 +1,19 @@
 package de.luckymcdev.foundryengine.game.common;
 
 import com.mojang.logging.LogUtils;
-import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.EnginePaths;
 import de.luckymcdev.foundryengine.bundle.common.Bundle;
 import de.luckymcdev.foundryengine.bundle.common.BundleLifecycleListener;
 import de.luckymcdev.foundryengine.manager.api.EngineManager;
-import de.luckymcdev.foundryengine.manager.api.ServerTickable;
 import de.luckymcdev.foundryengine.manager.api.LevelTickable;
-import net.neoforged.neoforge.event.tick.LevelTickEvent;
-import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import de.luckymcdev.foundryengine.manager.api.ServerTickable;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 

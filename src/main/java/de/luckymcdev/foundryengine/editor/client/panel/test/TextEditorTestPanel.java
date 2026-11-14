@@ -1,12 +1,12 @@
 package de.luckymcdev.foundryengine.editor.client.panel.test;
 
+import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.editor.client.config.PanelCategory;
 import de.luckymcdev.foundryengine.editor.client.panel.Panel;
 import de.luckymcdev.foundryengine.imgui.client.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.imgui.client.icon.ImIcons;
 import de.luckymcdev.foundryengine.imgui.client.text.ImGuiCoreTextEditor;
 import de.luckymcdev.foundryengine.imgui.client.text.editor.EditorTheme;
-import de.luckymcdev.foundryengine.Common;
 import imgui.ImGui;
 
 public class TextEditorTestPanel extends Panel {

@@ -1,9 +1,9 @@
 package de.luckymcdev.foundryengine.event.client.registry;
 
-import de.luckymcdev.foundryengine.particle.client.EngineParticle;
 import de.luckymcdev.foundryengine.builder.common.blockentity.BlockEntityBuilder;
 import de.luckymcdev.foundryengine.builder.common.menu.MenuBuilder;
 import de.luckymcdev.foundryengine.builder.common.particle.ParticleBuilder;
+import de.luckymcdev.foundryengine.particle.client.EngineParticle;
 import de.luckymcdev.foundryengine.registry.common.RegistryCollector;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.Screen;

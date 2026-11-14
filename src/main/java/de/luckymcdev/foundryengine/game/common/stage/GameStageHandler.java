@@ -3,14 +3,14 @@ package de.luckymcdev.foundryengine.game.common.stage;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import de.luckymcdev.foundryengine.Common;
-import de.luckymcdev.foundryengine.manager.api.EngineManager;
-import de.luckymcdev.foundryengine.manager.api.ServerTickable;
 import de.luckymcdev.foundryengine.game.common.stage.addon.builtin.BlockStages;
 import de.luckymcdev.foundryengine.game.common.stage.addon.builtin.DimensionStages;
 import de.luckymcdev.foundryengine.game.common.stage.addon.builtin.ItemStages;
 import de.luckymcdev.foundryengine.game.common.stage.addon.builtin.LootStages;
 import de.luckymcdev.foundryengine.game.common.stage.addon.builtin.MobStages;
 import de.luckymcdev.foundryengine.game.common.stage.addon.builtin.RecipeStages;
+import de.luckymcdev.foundryengine.manager.api.EngineManager;
+import de.luckymcdev.foundryengine.manager.api.ServerTickable;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.Identifier;
@@ -41,6 +41,10 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 public class GameStageHandler implements EngineManager, ServerTickable {
+	public static final Codec<Set<Identifier>> IDENTIFIER_SET_CODEC = Identifier.CODEC.listOf().xmap(
+		HashSet::new,
+		ArrayList::new
+	);
 	private final Logger LOGGER = LogUtils.getLogger();
 	private final StageRegistry STAGE_REGISTRY = new StageRegistry();
 	private final BlockStages BLOCKS = new BlockStages();
@@ -51,10 +55,6 @@ public class GameStageHandler implements EngineManager, ServerTickable {
 	private final RecipeStages RECIPES = new RecipeStages();
 	private final List<Map.Entry<StageAdditionCondition, Identifier>> PENDING_STAGES = new ArrayList<>();
 	private final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, Common.MODID);
-	public static final Codec<Set<Identifier>> IDENTIFIER_SET_CODEC = Identifier.CODEC.listOf().xmap(
-		HashSet::new,
-		ArrayList::new
-	);
 	public final Supplier<AttachmentType<Set<Identifier>>> ATTACHMENT = ATTACHMENT_TYPES.register(
 		"player_stages",
 		() -> AttachmentType.<Set<Identifier>>builder(() -> new HashSet<>())

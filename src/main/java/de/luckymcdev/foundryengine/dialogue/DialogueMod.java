@@ -3,24 +3,24 @@ package de.luckymcdev.foundryengine.dialogue;
 import de.luckymcdev.foundryengine.Client;
 import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.config.ModuleConfig;
-import de.luckymcdev.foundryengine.editor.EditorMod;
+import de.luckymcdev.foundryengine.dialogue.client.ClientDialogueManager;
+import de.luckymcdev.foundryengine.dialogue.common.DialogueManager;
 import de.luckymcdev.foundryengine.dialogue.common.DialogueNode;
 import de.luckymcdev.foundryengine.dialogue.common.DialogueSession;
-import de.luckymcdev.foundryengine.dialogue.common.DialogueManager;
-import de.luckymcdev.foundryengine.dialogue.client.ClientDialogueManager;
-import de.luckymcdev.foundryengine.manager.api.ManagerKey;
-import net.neoforged.fml.loading.FMLEnvironment;
+import de.luckymcdev.foundryengine.editor.EditorMod;
 import de.luckymcdev.foundryengine.editor.client.panel.editor.DialogueEditorPanel;
 import de.luckymcdev.foundryengine.event.common.DialogueEvents;
-import de.luckymcdev.foundryengine.network.common.packet.dialogue.*;
+import de.luckymcdev.foundryengine.manager.api.ManagerKey;
+import de.luckymcdev.foundryengine.network.common.packet.dialogue.ClientboundDialoguePacket;
+import de.luckymcdev.foundryengine.network.common.packet.dialogue.DialogueSavePacket;
+import de.luckymcdev.foundryengine.network.common.packet.dialogue.ServerboundDialoguePacket;
 import de.luckymcdev.foundryengine.util.common.EngineModPart;
-import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.fml.loading.FMLEnvironment;
 
 @Mod(DialogueMod.MODID)
 public final class DialogueMod implements EngineModPart {

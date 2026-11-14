@@ -4,14 +4,12 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.vertex.PoseStack;
 import de.luckymcdev.foundryengine.Client;
-import de.luckymcdev.foundryengine.gizmo.client.WorldGizmo;
 import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.manager.api.Render;
 import de.luckymcdev.foundryengine.util.common.color.Color;
 import de.luckymcdev.foundryengine.waypoint.common.Waypoint;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.SubmitNodeStorage;
 import net.minecraft.client.renderer.item.TrackingItemStackRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -23,6 +21,8 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import org.joml.Matrix4f;
 import org.lwjgl.glfw.GLFW;
+import de.luckymcdev.foundryengine.gizmo.client.WorldGizmo;
+import net.minecraft.client.renderer.SubmitNodeStorage;
 
 //? if >=26.2 {
 /*import com.mojang.blaze3d.GpuFormat;

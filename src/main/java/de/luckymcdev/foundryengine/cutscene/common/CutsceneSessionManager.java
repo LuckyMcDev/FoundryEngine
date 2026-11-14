@@ -2,8 +2,8 @@ package de.luckymcdev.foundryengine.cutscene.common;
 
 import de.luckymcdev.foundryengine.cutscene.common.util.ServerScreenEffectManager;
 import de.luckymcdev.foundryengine.manager.api.EngineManager;
-import de.luckymcdev.foundryengine.manager.api.ServerTickable;
 import de.luckymcdev.foundryengine.manager.api.PlayerLifecycle;
+import de.luckymcdev.foundryengine.manager.api.ServerTickable;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.GameType;

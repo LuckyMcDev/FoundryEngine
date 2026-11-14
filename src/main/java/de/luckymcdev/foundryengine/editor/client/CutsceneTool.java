@@ -1,11 +1,11 @@
 package de.luckymcdev.foundryengine.editor.client;
 
 import de.luckymcdev.foundryengine.cutscene.client.CutsceneRenderer;
-import de.luckymcdev.foundryengine.gizmo.client.WorldGizmo;
 import de.luckymcdev.foundryengine.cutscene.common.model.Cutscene;
 import de.luckymcdev.foundryengine.easing.common.BezierPath;
 import de.luckymcdev.foundryengine.easing.common.BezierPoint;
 import de.luckymcdev.foundryengine.easing.common.BezierSpline;
+import de.luckymcdev.foundryengine.gizmo.client.WorldGizmo;
 import de.luckymcdev.foundryengine.network.common.packet.editor.CutscenePacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;

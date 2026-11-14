@@ -2,13 +2,14 @@ package de.luckymcdev.foundryengine.command.client.suggest.nbt;
 
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import de.luckymcdev.foundryengine.mixin.render.TextColorAccessor;
-//? if 26.1 {
-import net.minecraft.ChatFormatting;
- //?}
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import de.luckymcdev.foundryengine.mixin.render.TextColorAccessor;
+
+//? if 26.1 {
+import net.minecraft.ChatFormatting;
+ //?}
 
 public class JsonComponentSuggestions {
 	private static final List<String> TEXT_COMPONENT_KEYS = List.of(

@@ -1,6 +1,5 @@
 package de.luckymcdev.foundryengine.particle.client;
 
-import de.luckymcdev.foundryengine.Client;
 import de.luckymcdev.foundryengine.builder.common.particle.ParticleBuilder;
 import de.luckymcdev.foundryengine.manager.api.EngineManager;
 import net.minecraft.client.Minecraft;

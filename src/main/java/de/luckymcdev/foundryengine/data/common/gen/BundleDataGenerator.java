@@ -1,13 +1,8 @@
 package de.luckymcdev.foundryengine.data.common.gen;
 
 import com.mojang.logging.LogUtils;
-import de.luckymcdev.foundryengine.EnginePaths;
-import de.luckymcdev.foundryengine.data.client.provider.EngineEquipmentAssetProvider;
-import de.luckymcdev.foundryengine.data.client.provider.EngineLanguageProvider;
-import de.luckymcdev.foundryengine.data.client.provider.EngineModelProvider;
-import de.luckymcdev.foundryengine.data.client.provider.EngineParticleDescriptionProvider;
-import de.luckymcdev.foundryengine.data.client.provider.EngineSoundDefinitionsProvider;
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.EnginePaths;
 import de.luckymcdev.foundryengine.builder.common.block.BlockBuilder;
 import de.luckymcdev.foundryengine.builder.common.item.ItemBuilder;
 import de.luckymcdev.foundryengine.builder.common.recipe.RecipeBuilder;
@@ -15,8 +10,11 @@ import de.luckymcdev.foundryengine.builder.common.sound.SoundBuilder;
 import de.luckymcdev.foundryengine.builder.common.tag.TagBuilder;
 import de.luckymcdev.foundryengine.bundle.common.Bundle;
 import de.luckymcdev.foundryengine.bundle.common.BundleExceptionHandler;
-import de.luckymcdev.foundryengine.event.common.data.BundleDataGenEvent;
-import de.luckymcdev.foundryengine.registry.common.RegistryCollector;
+import de.luckymcdev.foundryengine.data.client.provider.EngineEquipmentAssetProvider;
+import de.luckymcdev.foundryengine.data.client.provider.EngineLanguageProvider;
+import de.luckymcdev.foundryengine.data.client.provider.EngineModelProvider;
+import de.luckymcdev.foundryengine.data.client.provider.EngineParticleDescriptionProvider;
+import de.luckymcdev.foundryengine.data.client.provider.EngineSoundDefinitionsProvider;
 import de.luckymcdev.foundryengine.data.server.provider.EngineGlobalLootModifierProvider;
 import de.luckymcdev.foundryengine.data.server.provider.adv.EngineAdvancementProvider;
 import de.luckymcdev.foundryengine.data.server.provider.adv.EngineAdvancementSubProvider;
@@ -26,6 +24,8 @@ import de.luckymcdev.foundryengine.data.server.provider.recipe.EngineRecipePrior
 import de.luckymcdev.foundryengine.data.server.provider.recipe.EngineRecipeProvider;
 import de.luckymcdev.foundryengine.data.server.provider.tag.EngineBlockTagsProvider;
 import de.luckymcdev.foundryengine.data.server.provider.tag.EngineItemTagsProvider;
+import de.luckymcdev.foundryengine.event.common.data.BundleDataGenEvent;
+import de.luckymcdev.foundryengine.registry.common.RegistryCollector;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.LayeredRegistryAccess;
 import net.minecraft.core.registries.Registries;

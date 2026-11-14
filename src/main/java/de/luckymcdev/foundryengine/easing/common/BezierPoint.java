@@ -1,6 +1,5 @@
 package de.luckymcdev.foundryengine.easing.common;
 
-import de.luckymcdev.foundryengine.util.common.color.Color;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;

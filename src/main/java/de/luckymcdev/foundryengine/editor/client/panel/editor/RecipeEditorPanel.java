@@ -1,14 +1,14 @@
 package de.luckymcdev.foundryengine.editor.client.panel.editor;
 
+import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.EnginePaths;
+import de.luckymcdev.foundryengine.config.ClientConfig;
 import de.luckymcdev.foundryengine.editor.client.config.PanelCategory;
 import de.luckymcdev.foundryengine.editor.client.panel.tool.CataloguePanel;
 import de.luckymcdev.foundryengine.icon.client.ImageExportUtil;
 import de.luckymcdev.foundryengine.imgui.client.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.imgui.client.ImTexture;
 import de.luckymcdev.foundryengine.imgui.client.icon.ImIcons;
-import de.luckymcdev.foundryengine.Common;
-import de.luckymcdev.foundryengine.config.ClientConfig;
 import imgui.ImGui;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiInputTextFlags;

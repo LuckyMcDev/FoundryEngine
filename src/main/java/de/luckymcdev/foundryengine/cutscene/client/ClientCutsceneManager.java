@@ -1,22 +1,22 @@
 package de.luckymcdev.foundryengine.cutscene.client;
 
 import de.luckymcdev.foundryengine.Client;
-import de.luckymcdev.foundryengine.post.PostProcessingMod;
-import de.luckymcdev.foundryengine.manager.api.Render;
-import de.luckymcdev.foundryengine.manager.api.ClientTickable;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
 import de.luckymcdev.foundryengine.cutscene.common.model.CommandAttachment;
 import de.luckymcdev.foundryengine.cutscene.common.model.Cutscene;
 import de.luckymcdev.foundryengine.cutscene.common.model.EffectAttachment;
 import de.luckymcdev.foundryengine.cutscene.common.util.LerpType;
+import de.luckymcdev.foundryengine.manager.api.ClientTickable;
+import de.luckymcdev.foundryengine.manager.api.Render;
 import de.luckymcdev.foundryengine.network.common.packet.editor.CutsceneCommandPacket;
 import de.luckymcdev.foundryengine.network.common.packet.editor.CutscenePacket;
+import de.luckymcdev.foundryengine.post.PostProcessingMod;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
 import java.util.ArrayList;
@@ -321,11 +321,11 @@ public class ClientCutsceneManager implements Render, ClientTickable {
 				firedEffects[i] = true;
 				if (PostProcessingMod.isEnabled()) {
 					Client.getPostEffectManager().startScreenEffect(
-					eff.getEffectName(),
-					eff.getIntroTicks(cutsceneLength),
-					eff.getHoldTicks(cutsceneLength),
-					eff.getOutroTicks(cutsceneLength),
-					eff.getLerpType()
+						eff.getEffectName(),
+						eff.getIntroTicks(cutsceneLength),
+						eff.getHoldTicks(cutsceneLength),
+						eff.getOutroTicks(cutsceneLength),
+						eff.getLerpType()
 					);
 				}
 			}

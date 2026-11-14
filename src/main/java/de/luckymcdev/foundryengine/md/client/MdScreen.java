@@ -1,7 +1,6 @@
 package de.luckymcdev.foundryengine.md.client;
 
 import de.luckymcdev.foundryengine.Client;
-import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.EnginePaths;
 import de.luckymcdev.foundryengine.md.common.MarkdownParser;
 import net.minecraft.client.gui.components.MultiLineTextWidget;

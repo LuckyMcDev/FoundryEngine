@@ -2,6 +2,7 @@ package de.luckymcdev.foundryengine.editor.client.panel.test;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.Client;
+import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.editor.client.config.PanelCategory;
 import de.luckymcdev.foundryengine.editor.client.panel.Panel;
 import de.luckymcdev.foundryengine.editor.client.panel.tool.CataloguePanel;
@@ -10,7 +11,6 @@ import de.luckymcdev.foundryengine.imgui.client.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.imgui.client.icon.ImIcons;
 import de.luckymcdev.foundryengine.md.client.MdScreen;
 import de.luckymcdev.foundryengine.ui.client.ExampleScreen;
-import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.util.common.color.Color;
 import imgui.ImGui;
 import imgui.extension.imguiknobs.ImGuiKnobs;

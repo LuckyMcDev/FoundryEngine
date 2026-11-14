@@ -1,11 +1,11 @@
 package de.luckymcdev.foundryengine.editor.client;
 
 import de.luckymcdev.foundryengine.Client;
-import de.luckymcdev.foundryengine.gizmo.client.WorldGizmo;
 import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.area.AreaMod;
 import de.luckymcdev.foundryengine.area.common.AABBArea;
 import de.luckymcdev.foundryengine.area.common.Area;
+import de.luckymcdev.foundryengine.gizmo.client.WorldGizmo;
 import de.luckymcdev.foundryengine.network.common.packet.editor.AreaPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.AABB;

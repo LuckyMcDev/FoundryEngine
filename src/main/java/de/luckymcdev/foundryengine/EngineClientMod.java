@@ -7,37 +7,39 @@ import de.luckymcdev.foundryengine.command.client.FoundryCommandsClient;
 import de.luckymcdev.foundryengine.command.client.ItemCommandManager;
 import de.luckymcdev.foundryengine.command.client.suggest.nbt.NbtSuggestions;
 import de.luckymcdev.foundryengine.config.Config;
-import de.luckymcdev.foundryengine.area.AreaMod;
-import de.luckymcdev.foundryengine.cutscene.CutsceneMod;
-import de.luckymcdev.foundryengine.particle.ParticleMod;
-import de.luckymcdev.foundryengine.post.PostProcessingMod;
-import de.luckymcdev.foundryengine.waypoint.WaypointMod;
 import de.luckymcdev.foundryengine.event.client.registry.RegistryEventClient;
 import de.luckymcdev.foundryengine.ext.client.ModPathRecorder;
 import de.luckymcdev.foundryengine.gizmo.client.GizmoBuffer;
 import de.luckymcdev.foundryengine.gizmo.client.GizmoRenderer;
-import de.luckymcdev.foundryengine.manager.api.ManagerKey;
 import de.luckymcdev.foundryengine.manager.api.ClientTickable;
+import de.luckymcdev.foundryengine.manager.api.ManagerKey;
 import de.luckymcdev.foundryengine.manager.api.Render;
+import de.luckymcdev.foundryengine.particle.ParticleMod;
 import de.luckymcdev.foundryengine.particle.client.ParticleManager;
+import de.luckymcdev.foundryengine.post.PostProcessingMod;
+import de.luckymcdev.foundryengine.post.client.PostEffectManager;
+import de.luckymcdev.foundryengine.render.client.EngineSceneDepth;
 import de.luckymcdev.foundryengine.render.client.MeshRenderer;
 import de.luckymcdev.foundryengine.render.client.obj.ObjModelManager;
-import de.luckymcdev.foundryengine.post.client.PostEffectManager;
 import de.luckymcdev.foundryengine.tooltip.client.TooltipManager;
-import de.luckymcdev.foundryengine.render.client.EngineSceneDepth;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.neoforge.client.event.*;
+import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import org.slf4j.Logger;
+import net.neoforged.neoforge.client.event.*;
 
 //? if >=26.2 {
 /*import net.minecraft.client.PreferredGraphicsApi;
@@ -46,8 +48,6 @@ import de.luckymcdev.foundryengine.exception.common.EngineException;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 //?}
-
-import java.util.concurrent.CompletableFuture;
 
 /**
  * Core client entrypoint — registry renderers, shared client commands, tooltips,
@@ -101,7 +101,7 @@ public class EngineClientMod {
 	}
 
 	private void addClientReloadListener(AddClientReloadListenersEvent event) {
-		event.addListener(Common.id("obj_models"),Client.getObjModelManager());
+		event.addListener(Common.id("obj_models"), Client.getObjModelManager());
 	}
 
 	private void onRegisterParticleProviders(RegisterParticleProvidersEvent event) {

@@ -6,12 +6,12 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.command.server.EngineCommand;
 import de.luckymcdev.foundryengine.cutscene.CutsceneMod;
 import de.luckymcdev.foundryengine.cutscene.common.model.Cutscene;
 import de.luckymcdev.foundryengine.cutscene.common.util.LerpType;
 import de.luckymcdev.foundryengine.easing.common.BezierPath;
 import de.luckymcdev.foundryengine.network.common.packet.editor.CutscenePacket;
-import de.luckymcdev.foundryengine.command.server.EngineCommand;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -31,11 +31,6 @@ import java.util.Arrays;
 import java.util.List;
 
 public class CutsceneCommand implements EngineCommand {
-	@Override
-	public boolean enabled() {
-		return CutsceneMod.isEnabled();
-	}
-
 	private static final SuggestionProvider<CommandSourceStack> CUTSCENE_SUGGESTIONS = (context, builder) -> {
 		ServerLevel level = context.getSource().getLevel();
 		return SharedSuggestionProvider.suggestResource(
@@ -43,7 +38,6 @@ public class CutsceneCommand implements EngineCommand {
 			builder
 		);
 	};
-
 	private static final SuggestionProvider<CommandSourceStack> EASING_SUGGESTIONS = (context, builder) ->
 		SharedSuggestionProvider.suggest(
 			Arrays.stream(LerpType.values()).map(Enum::name),
@@ -64,6 +58,11 @@ public class CutsceneCommand implements EngineCommand {
 		} catch (IllegalArgumentException ex) {
 			return fallback;
 		}
+	}
+
+	@Override
+	public boolean enabled() {
+		return CutsceneMod.isEnabled();
 	}
 
 	@Override

@@ -1,11 +1,11 @@
 package de.luckymcdev.foundryengine.editor.client.panel.tool;
 
+import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.editor.client.config.PanelCategory;
 import de.luckymcdev.foundryengine.imgui.client.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.imgui.client.icon.ImIcons;
 import de.luckymcdev.foundryengine.imgui.client.text.color.IEditorColorizer;
 import de.luckymcdev.foundryengine.imgui.client.text.preset.pakku.PakkuColorizer;
-import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.service.common.PakkuService;
 import imgui.ImGui;
 import imgui.flag.ImGuiInputTextFlags;

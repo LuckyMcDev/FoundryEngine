@@ -7,7 +7,6 @@ import de.luckymcdev.foundryengine.bundle.common.registry.BundleCreativeModeTab;
 import net.neoforged.bus.api.IEventBus;
 import org.jspecify.annotations.Nullable;
 
-import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
 

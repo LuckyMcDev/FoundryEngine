@@ -117,7 +117,8 @@ public class ScriptCompiler {
 			if (libraryLoader != null) {
 				try {
 					libraryLoader.close();
-				} catch (IOException ignored) {}
+				} catch (IOException ignored) {
+				}
 			}
 			throw e;
 		}

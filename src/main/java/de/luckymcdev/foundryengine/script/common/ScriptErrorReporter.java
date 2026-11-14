@@ -1,9 +1,9 @@
 package de.luckymcdev.foundryengine.script.common;
 
 import com.mojang.logging.LogUtils;
+import de.luckymcdev.foundryengine.Server;
 import de.luckymcdev.foundryengine.script.common.runtime.ScriptFailure;
 import de.luckymcdev.foundryengine.util.common.ErrorHandler;
-import de.luckymcdev.foundryengine.Server;
 import net.minecraft.network.chat.Component;
 import org.slf4j.Logger;
 

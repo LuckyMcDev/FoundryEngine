@@ -1,10 +1,10 @@
 package de.luckymcdev.foundryengine.post.client;
 
+import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.cutscene.common.util.LerpType;
+import de.luckymcdev.foundryengine.manager.api.EngineManager;
 import de.luckymcdev.foundryengine.post.client.internal.PostEffectEntry;
 import de.luckymcdev.foundryengine.post.client.internal.PostEffectRegistry;
-import de.luckymcdev.foundryengine.Common;
-import de.luckymcdev.foundryengine.manager.api.EngineManager;
-import de.luckymcdev.foundryengine.cutscene.common.util.LerpType;
 import net.minecraft.client.renderer.UniformValue;
 import net.minecraft.resources.Identifier;
 

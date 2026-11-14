@@ -1,6 +1,8 @@
 package de.luckymcdev.foundryengine.editor.client.panel.file;
 
 import de.luckymcdev.foundryengine.Client;
+import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.config.ClientConfig;
 import de.luckymcdev.foundryengine.editor.client.config.PanelCategory;
 import de.luckymcdev.foundryengine.editor.client.panel.editor.EditorPanel;
 import de.luckymcdev.foundryengine.ide.client.compiler.DryRunCompiler;
@@ -9,8 +11,6 @@ import de.luckymcdev.foundryengine.imgui.client.hotkey.ImHotKey;
 import de.luckymcdev.foundryengine.imgui.client.icon.ImIcons;
 import de.luckymcdev.foundryengine.imgui.client.text.ImGuiCoreTextEditor;
 import de.luckymcdev.foundryengine.imgui.client.text.editor.EditorTheme;
-import de.luckymcdev.foundryengine.Common;
-import de.luckymcdev.foundryengine.config.ClientConfig;
 import de.luckymcdev.foundryengine.script.common.ScriptManager;
 import imgui.ImGui;
 import imgui.flag.ImGuiFocusedFlags;

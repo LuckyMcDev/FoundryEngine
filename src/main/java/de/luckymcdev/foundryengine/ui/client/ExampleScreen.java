@@ -1,7 +1,6 @@
 package de.luckymcdev.foundryengine.ui.client;
 
 import com.mojang.logging.LogUtils;
-import de.luckymcdev.foundryengine.Client;
 import de.luckymcdev.foundryengine.ui.client.screen.EngineScreen;
 import de.luckymcdev.foundryengine.ui.client.widget.ButtonWidget;
 import de.luckymcdev.foundryengine.ui.client.widget.MinecraftButtonWidget;

@@ -1,10 +1,10 @@
 package de.luckymcdev.foundryengine.cutscene.client;
 
-import de.luckymcdev.foundryengine.gizmo.client.WorldGizmo;
 import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.cutscene.common.model.Cutscene;
 import de.luckymcdev.foundryengine.easing.common.BezierPoint;
 import de.luckymcdev.foundryengine.easing.common.BezierSpline;
+import de.luckymcdev.foundryengine.gizmo.client.WorldGizmo;
 import de.luckymcdev.foundryengine.util.common.color.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;

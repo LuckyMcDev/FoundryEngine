@@ -1,5 +1,7 @@
 package de.luckymcdev.foundryengine.builder.common.particle;
 
+import de.luckymcdev.foundryengine.builder.common.AbstractBuilder;
+import de.luckymcdev.foundryengine.easing.common.Easing;
 import de.luckymcdev.foundryengine.particle.client.ParticleLayer;
 import de.luckymcdev.foundryengine.particle.client.data.GenericParticleData;
 import de.luckymcdev.foundryengine.particle.client.data.KeyframeSequence;
@@ -8,8 +10,6 @@ import de.luckymcdev.foundryengine.particle.client.data.ParticlePositionData;
 import de.luckymcdev.foundryengine.particle.client.data.ParticleRotationData;
 import de.luckymcdev.foundryengine.particle.client.data.ParticleScaleData;
 import de.luckymcdev.foundryengine.particle.client.data.ParticleVelocityData;
-import de.luckymcdev.foundryengine.builder.common.AbstractBuilder;
-import de.luckymcdev.foundryengine.easing.common.Easing;
 import de.luckymcdev.foundryengine.util.common.color.Color;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;

@@ -1,6 +1,7 @@
 package de.luckymcdev.foundryengine.editor.client.panel.view;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.EngineMod;
 import de.luckymcdev.foundryengine.editor.client.config.PanelCategory;
 import de.luckymcdev.foundryengine.editor.client.panel.editor.EditorPanel;
@@ -8,7 +9,6 @@ import de.luckymcdev.foundryengine.imgui.client.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.imgui.client.icon.ImIcons;
 import de.luckymcdev.foundryengine.imgui.client.text.ImGuiCoreTextEditor;
 import de.luckymcdev.foundryengine.imgui.client.text.editor.EditorTheme;
-import de.luckymcdev.foundryengine.Common;
 import imgui.ImGui;
 import net.minecraft.SharedConstants;
 

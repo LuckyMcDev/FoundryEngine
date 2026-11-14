@@ -1,12 +1,12 @@
 package de.luckymcdev.foundryengine.editor.client.panel.editor;
 
-import de.luckymcdev.foundryengine.editor.client.config.PanelCategory;
-import de.luckymcdev.foundryengine.imgui.client.ImGraphicsExtractor;
-import de.luckymcdev.foundryengine.imgui.client.icon.ImIcons;
 import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.dialogue.common.DialogueNode;
 import de.luckymcdev.foundryengine.dialogue.common.DialogueOption;
 import de.luckymcdev.foundryengine.dialogue.common.DialogueTree;
+import de.luckymcdev.foundryengine.editor.client.config.PanelCategory;
+import de.luckymcdev.foundryengine.imgui.client.ImGraphicsExtractor;
+import de.luckymcdev.foundryengine.imgui.client.icon.ImIcons;
 import de.luckymcdev.foundryengine.network.common.packet.dialogue.DialogueSavePacket;
 import de.luckymcdev.foundryengine.util.common.color.Color;
 import imgui.ImGui;

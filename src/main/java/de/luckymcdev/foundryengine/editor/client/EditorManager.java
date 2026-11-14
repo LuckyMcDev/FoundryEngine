@@ -2,11 +2,11 @@ package de.luckymcdev.foundryengine.editor.client;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.Client;
-import de.luckymcdev.foundryengine.manager.api.Render;
 import de.luckymcdev.foundryengine.editor.client.panel.Panel;
 import de.luckymcdev.foundryengine.editor.client.popup.PopUp;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import de.luckymcdev.foundryengine.manager.api.Render;
 import net.minecraft.resources.Identifier;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 

@@ -2,9 +2,9 @@ package de.luckymcdev.foundryengine.script.common;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.bundle.common.info.BundleFiles;
-import de.luckymcdev.foundryengine.manager.api.EngineManager;
 import de.luckymcdev.foundryengine.bundle.common.info.MavenLibrary;
 import de.luckymcdev.foundryengine.config.StartupConfig;
+import de.luckymcdev.foundryengine.manager.api.EngineManager;
 import de.luckymcdev.foundryengine.script.common.definition.ScriptDefinition;
 import de.luckymcdev.foundryengine.script.common.definition.ScriptEnv;
 import de.luckymcdev.foundryengine.script.common.runtime.ScriptCompiler;

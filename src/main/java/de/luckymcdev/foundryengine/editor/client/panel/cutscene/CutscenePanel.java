@@ -1,15 +1,15 @@
 package de.luckymcdev.foundryengine.editor.client.panel.cutscene;
 
 import de.luckymcdev.foundryengine.Client;
+import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.cutscene.client.CutsceneRenderer;
 import de.luckymcdev.foundryengine.cutscene.client.CutsceneUiState;
+import de.luckymcdev.foundryengine.cutscene.common.model.Cutscene;
+import de.luckymcdev.foundryengine.cutscene.common.util.LerpType;
 import de.luckymcdev.foundryengine.editor.client.config.PanelCategory;
 import de.luckymcdev.foundryengine.editor.client.panel.editor.EditorPanel;
 import de.luckymcdev.foundryengine.imgui.client.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.imgui.client.icon.ImIcons;
-import de.luckymcdev.foundryengine.Common;
-import de.luckymcdev.foundryengine.cutscene.common.model.Cutscene;
-import de.luckymcdev.foundryengine.cutscene.common.util.LerpType;
 import de.luckymcdev.foundryengine.network.common.packet.editor.CutscenePacket;
 import de.luckymcdev.foundryengine.util.common.color.Color;
 import imgui.ImGui;

@@ -1,10 +1,10 @@
 package de.luckymcdev.foundryengine.network.common.packet.editor;
 
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.config.CommonConfig;
 import de.luckymcdev.foundryengine.network.common.AbstractPacket;
 import de.luckymcdev.foundryengine.network.common.PacketBounds;
 import de.luckymcdev.foundryengine.util.common.PermissionChecks;
-import de.luckymcdev.foundryengine.config.CommonConfig;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;

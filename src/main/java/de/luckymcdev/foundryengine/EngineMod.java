@@ -138,6 +138,10 @@ public class EngineMod {
 		return modBus;
 	}
 
+	private static String status(boolean enabled) {
+		return enabled ? "ON   " : "OFF  ";
+	}
+
 	private void registerInternalEvents() {
 		BlockEvents.Internal.register(BUS);
 		ClientEvents.Internal.register(BUS);
@@ -151,10 +155,6 @@ public class EngineMod {
 		ServerEvents.Internal.register(BUS);
 		StageEvents.Internal.register(BUS);
 		SlotEvents.Internal.register(BUS);
-	}
-
-	private static String status(boolean enabled) {
-		return enabled ? "ON   " : "OFF  ";
 	}
 
 	private void onCommonSetup(FMLCommonSetupEvent event) {
@@ -238,14 +238,14 @@ public class EngineMod {
 
 	private void logModuleStatus() {
 		LOGGER.info("""
-          
-          Foundry Engine Modules:
-            Core            : ENABLED   | Bundle          : ENABLED
-            Area            : {}     | Cutscene       : {}
-            Dialogue        : {}     | Editor         : {}
-            Game            : {}     | Particle       : {}
-            Post Processing : {}     | Sound          : {}
-            Waypoint        : {}     | World          : {}""",
+				
+				Foundry Engine Modules:
+				  Core            : ENABLED   | Bundle          : ENABLED
+				  Area            : {}     | Cutscene       : {}
+				  Dialogue        : {}     | Editor         : {}
+				  Game            : {}     | Particle       : {}
+				  Post Processing : {}     | Sound          : {}
+				  Waypoint        : {}     | World          : {}""",
 			status(AreaMod.isEnabled()),
 			status(CutsceneMod.isEnabled()),
 			status(DialogueMod.isEnabled()),

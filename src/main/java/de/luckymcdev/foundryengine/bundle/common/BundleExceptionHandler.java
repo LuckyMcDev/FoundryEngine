@@ -1,8 +1,8 @@
 package de.luckymcdev.foundryengine.bundle.common;
 
 import com.mojang.logging.LogUtils;
-import de.luckymcdev.foundryengine.exception.common.UtilityClassException;
 import de.luckymcdev.foundryengine.Server;
+import de.luckymcdev.foundryengine.exception.common.UtilityClassException;
 import net.minecraft.network.chat.Component;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.ModLoadingIssue;

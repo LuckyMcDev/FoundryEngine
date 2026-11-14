@@ -1,6 +1,5 @@
 package de.luckymcdev.foundryengine.debug.client.screen;
 
-import de.luckymcdev.foundryengine.Client;
 import de.luckymcdev.foundryengine.Common;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.debug.DebugEntryCategory;

@@ -1,5 +1,6 @@
 package de.luckymcdev.foundryengine.editor.client.panel.test;
 
+import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.editor.client.config.PanelCategory;
 import de.luckymcdev.foundryengine.editor.client.panel.editor.EditorPanel;
 import de.luckymcdev.foundryengine.imgui.client.ImGraphicsExtractor;
@@ -9,7 +10,6 @@ import de.luckymcdev.foundryengine.node.client.NodeEditorInstance;
 import de.luckymcdev.foundryengine.node.client.NodePin;
 import de.luckymcdev.foundryengine.node.client.NodePinType;
 import de.luckymcdev.foundryengine.node.client.NodeTypes;
-import de.luckymcdev.foundryengine.Common;
 import imgui.ImGui;
 import net.minecraft.network.chat.Component;
 

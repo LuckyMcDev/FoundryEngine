@@ -1,19 +1,17 @@
 package de.luckymcdev.foundryengine.command.server.builtin;
 
-import de.luckymcdev.foundryengine.cutscene.CutsceneMod;
-
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.command.server.EngineCommand;
+import de.luckymcdev.foundryengine.config.CommonConfig;
+import de.luckymcdev.foundryengine.cutscene.CutsceneMod;
 import de.luckymcdev.foundryengine.cutscene.common.util.LerpType;
-
 import de.luckymcdev.foundryengine.cutscene.common.util.ServerScreenEffectManager;
 import de.luckymcdev.foundryengine.network.common.packet.sync.ScreenEffectPacket;
-import de.luckymcdev.foundryengine.config.CommonConfig;
-import de.luckymcdev.foundryengine.command.server.EngineCommand;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -29,17 +27,9 @@ import java.util.Arrays;
 import java.util.Collection;
 
 public class ScreenEffectCommand implements EngineCommand {
-	@Override
-	public boolean enabled() {
-		return CutsceneMod.isEnabled();
-	}
-
-
 	private static final String[] KNOWN_EFFECTS = {"none", "black", "circle", "star", "cinematic", "grayscale", "sepia", "depth_vis"};
-
 	private static final SuggestionProvider<CommandSourceStack> EFFECT_SUGGESTIONS = (context, builder) ->
 		SharedSuggestionProvider.suggest(Arrays.stream(KNOWN_EFFECTS), builder);
-
 	private static final SuggestionProvider<CommandSourceStack> EASING_SUGGESTIONS = (context, builder) ->
 		SharedSuggestionProvider.suggest(Arrays.stream(LerpType.values()).map(Enum::name), builder);
 
@@ -49,6 +39,11 @@ public class ScreenEffectCommand implements EngineCommand {
 		} catch (IllegalArgumentException ex) {
 			return fallback;
 		}
+	}
+
+	@Override
+	public boolean enabled() {
+		return CutsceneMod.isEnabled();
 	}
 
 	@Override

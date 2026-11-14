@@ -8,7 +8,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.textures.GpuTexture;
 import com.mojang.blaze3d.textures.GpuTextureView;
 import com.mojang.blaze3d.vertex.PoseStack;
-import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.EnginePaths;
 import de.luckymcdev.foundryengine.config.ClientConfig;
 import de.luckymcdev.foundryengine.config.CommonConfig;
@@ -28,7 +27,6 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.client.gui.GuiLayer;
-import org.joml.Vector4f;
 import org.jspecify.annotations.Nullable;
 
 import java.io.File;
@@ -37,6 +35,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
+import org.joml.Vector4f;
 
 //? if >=26.2 {
 /*import com.mojang.blaze3d.GpuFormat;

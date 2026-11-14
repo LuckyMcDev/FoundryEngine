@@ -4,16 +4,12 @@ import com.google.common.collect.ImmutableMap;
 import de.luckymcdev.foundryengine.bundle.common.info.BundleInfo;
 import net.neoforged.fml.jarcontents.EmptyJarContents;
 import net.neoforged.fml.jarcontents.JarContents;
-import net.neoforged.fml.loading.LogMarkers;
-import net.neoforged.fml.loading.modscan.ModClassVisitor;
 import net.neoforged.neoforgespi.language.IModFileInfo;
 import net.neoforged.neoforgespi.language.IModInfo;
 import net.neoforged.neoforgespi.language.ModFileScanData;
 import net.neoforged.neoforgespi.locating.IModFile;
 import net.neoforged.neoforgespi.locating.ModFileDiscoveryAttributes;
-import org.objectweb.asm.ClassReader;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;

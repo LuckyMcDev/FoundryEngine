@@ -9,11 +9,11 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.ByteBufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import de.luckymcdev.foundryengine.manager.api.EngineManager;
 import net.minecraft.client.renderer.rendertype.RenderSetup;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.resources.Identifier;
 import org.joml.Matrix4fc;
-import de.luckymcdev.foundryengine.manager.api.EngineManager;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;

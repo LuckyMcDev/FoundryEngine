@@ -1,7 +1,6 @@
 package de.luckymcdev.foundryengine.world.common;
 
 import com.mojang.logging.LogUtils;
-import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.EnginePaths;
 import de.luckymcdev.foundryengine.config.CommonConfig;
 import net.minecraft.network.chat.Component;

@@ -1,9 +1,9 @@
 package de.luckymcdev.foundryengine.render.client.obj;
 
+import de.luckymcdev.foundryengine.manager.api.EngineManager;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import org.jetbrains.annotations.ApiStatus;
-import de.luckymcdev.foundryengine.manager.api.EngineManager;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -2,8 +2,8 @@ package de.luckymcdev.foundryengine.dialogue.common;
 
 import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.manager.api.Persistable;
-import de.luckymcdev.foundryengine.manager.api.Synced;
 import de.luckymcdev.foundryengine.manager.api.PlayerLifecycle;
+import de.luckymcdev.foundryengine.manager.api.Synced;
 import de.luckymcdev.foundryengine.network.common.packet.dialogue.ClientboundDialoguePacket;
 import de.luckymcdev.foundryengine.savedata.common.SavedDataManager;
 import net.minecraft.nbt.CompoundTag;

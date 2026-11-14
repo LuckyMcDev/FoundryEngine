@@ -17,9 +17,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.permissions.PermissionSet;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-//? if >=26.2 {
-/*import net.minecraft.world.entity.EntityTypes;
- *///?}
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.Block;
@@ -41,6 +38,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
+
+//? if >=26.2 {
+/*import net.minecraft.world.entity.EntityTypes;
+ *///?}
 
 public class NbtSuggestions {
 	private static final Map<String, List<FieldDef>> ROOT_FIELDS = new LinkedHashMap<>();

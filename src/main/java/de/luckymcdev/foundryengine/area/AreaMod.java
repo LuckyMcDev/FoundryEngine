@@ -2,11 +2,11 @@ package de.luckymcdev.foundryengine.area;
 
 import de.luckymcdev.foundryengine.Client;
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.area.client.ClientAreaManager;
+import de.luckymcdev.foundryengine.area.common.AreaManager;
 import de.luckymcdev.foundryengine.config.ModuleConfig;
 import de.luckymcdev.foundryengine.editor.EditorMod;
 import de.luckymcdev.foundryengine.editor.client.panel.editor.AreaPanel;
-import de.luckymcdev.foundryengine.area.common.AreaManager;
-import de.luckymcdev.foundryengine.area.client.ClientAreaManager;
 import de.luckymcdev.foundryengine.manager.api.ManagerKey;
 import de.luckymcdev.foundryengine.network.common.packet.editor.AreaPacket;
 import de.luckymcdev.foundryengine.util.common.EngineModPart;

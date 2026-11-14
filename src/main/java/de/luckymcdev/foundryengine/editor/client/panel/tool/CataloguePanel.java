@@ -1,15 +1,14 @@
 package de.luckymcdev.foundryengine.editor.client.panel.tool;
 
 import de.luckymcdev.foundryengine.Client;
+import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.editor.client.config.PanelCategory;
 import de.luckymcdev.foundryengine.editor.client.panel.editor.EditorPanel;
 import de.luckymcdev.foundryengine.imgui.client.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.imgui.client.ImTexture;
 import de.luckymcdev.foundryengine.imgui.client.icon.ImIcons;
-import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.network.common.packet.editor.GiveItemPacket;
 import de.luckymcdev.foundryengine.network.common.packet.world.ServerBoundSpawnEntityPacket;
-import de.luckymcdev.foundryengine.config.ClientConfig;
 import imgui.ImGui;
 import imgui.flag.ImGuiMouseButton;
 import imgui.flag.ImGuiStyleVar;
@@ -24,14 +23,11 @@ import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
-
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;

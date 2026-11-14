@@ -1,27 +1,21 @@
 package de.luckymcdev.foundryengine.command.server.builtin;
 
-import de.luckymcdev.foundryengine.game.GameMod;
-
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import de.luckymcdev.foundryengine.Client;
+import de.luckymcdev.foundryengine.command.server.EngineCommand;
+import de.luckymcdev.foundryengine.game.GameMod;
 import de.luckymcdev.foundryengine.util.common.FirstRun;
 import de.luckymcdev.foundryengine.world.common.entity.EntitySpawner;
 import de.luckymcdev.foundryengine.world.common.level.EngineLevels;
 import de.luckymcdev.foundryengine.world.common.level.runtime.RuntimeLevelConfig;
 import de.luckymcdev.foundryengine.world.common.level.runtime.RuntimeLevelHandle;
-import de.luckymcdev.foundryengine.command.server.EngineCommand;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.IdentifierArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-//? if >=26.2 {
-/*import net.minecraft.world.entity.EntityTypes;
- *///?} else {
-import net.minecraft.world.entity.EntityType;
-//?}
 import net.minecraft.world.entity.decoration.Mannequin;
 import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.portal.TeleportTransition;
@@ -29,13 +23,19 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
 
+//? if >=26.2 {
+/*import net.minecraft.world.entity.EntityTypes;
+ *///?} else {
+import net.minecraft.world.entity.EntityType;
+//?}
+
 public class TestCommand implements EngineCommand {
+	private final HashMap<Identifier, RuntimeLevelHandle> worlds = new HashMap<>();
+
 	@Override
 	public boolean enabled() {
 		return GameMod.isEnabled();
 	}
-
-	private final HashMap<Identifier, RuntimeLevelHandle> worlds = new HashMap<>();
 
 	private LiteralArgumentBuilder<CommandSourceStack> worldSection() {
 		var world = Commands.literal("world");

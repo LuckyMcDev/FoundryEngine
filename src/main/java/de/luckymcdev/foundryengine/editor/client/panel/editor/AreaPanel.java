@@ -1,13 +1,13 @@
 package de.luckymcdev.foundryengine.editor.client.panel.editor;
 
-import de.luckymcdev.foundryengine.editor.client.config.PanelCategory;
-import de.luckymcdev.foundryengine.imgui.client.ImGraphicsExtractor;
-import de.luckymcdev.foundryengine.imgui.client.icon.ImIcons;
 import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.area.common.AABBArea;
 import de.luckymcdev.foundryengine.area.common.Area;
 import de.luckymcdev.foundryengine.area.common.AreaManager;
 import de.luckymcdev.foundryengine.area.common.BlockArea;
+import de.luckymcdev.foundryengine.editor.client.config.PanelCategory;
+import de.luckymcdev.foundryengine.imgui.client.ImGraphicsExtractor;
+import de.luckymcdev.foundryengine.imgui.client.icon.ImIcons;
 import de.luckymcdev.foundryengine.network.common.packet.editor.AreaPacket;
 import de.luckymcdev.foundryengine.util.common.color.Color;
 import imgui.ImGui;
