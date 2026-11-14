@@ -50,7 +50,7 @@ public final class ImGuiGizmoCamera {
 				isDraggingOrbit = true;
 			} else {
 				yaw += (mx - lastMouseX) * orbitSensitivity;
-				pitch = Math.clamp(pitch - (my - lastMouseY) * orbitSensitivity, -89.0f, 89.0f);
+				pitch = Math.clamp(pitch + (my - lastMouseY) * orbitSensitivity, -89.0f, 89.0f);
 			}
 			lastMouseX = mx;
 			lastMouseY = my;
@@ -81,14 +81,16 @@ public final class ImGuiGizmoCamera {
 	}
 
 	public void syncFromViewMatrix(Matrix4f view) {
-		float newPitch = (float) Math.toDegrees(Math.asin(Math.max(-1.0f, Math.min(1.0f, view.m12()))));
-		float newYaw = (float) Math.toDegrees(Math.atan2(-view.m02(), view.m00()));
-		float newDist = -view.m23();
+		float sinY = view.m02(), cosY = view.m00();
+		float sinP = view.m10() * sinY - view.m12() * cosY; // = sin(pitch)
+		float yawDeg   = (float) Math.toDegrees(Math.atan2(sinY, cosY));
+		float pitchDeg = (float) Math.toDegrees(Math.atan2(sinP, view.m11()));
 
-		if (Float.isFinite(newPitch) && Float.isFinite(newYaw)) {
-			pitch = Math.max(-89.0f, Math.min(89.0f, newPitch));
-			yaw = newYaw;
+		if (Float.isFinite(pitchDeg) && Float.isFinite(yawDeg)) {
+			pitch = Math.max(-89.0f, Math.min(89.0f, pitchDeg));
+			yaw   = yawDeg;
 		}
+		float newDist = -view.m23();
 		if (newDist > minDistance && newDist < maxDistance) {
 			distance = newDist;
 		}

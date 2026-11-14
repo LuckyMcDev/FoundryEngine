@@ -15,6 +15,7 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.loading.FMLEnvironment;
 
 @Mod(AreaMod.MODID)
 public final class AreaMod implements EngineModPart {
@@ -27,7 +28,7 @@ public final class AreaMod implements EngineModPart {
 		}
 		this.wire(modBus);
 		Common.getManagers().register(ManagerKey.AREA, new AreaManager(Common.getSavedDataManager()));
-		if (net.neoforged.fml.loading.FMLEnvironment.getDist().isClient()) {
+		if (FMLEnvironment.getDist().isClient()) {
 			Client.getManagers().register(ManagerKey.CLIENT_AREA, new ClientAreaManager());
 		}
 		var b = bus();

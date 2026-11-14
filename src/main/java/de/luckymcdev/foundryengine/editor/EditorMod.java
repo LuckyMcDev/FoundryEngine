@@ -6,9 +6,12 @@ import de.luckymcdev.foundryengine.Client;
 import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.config.ModuleConfig;
 import de.luckymcdev.foundryengine.editor.client.EditorManager;
+import de.luckymcdev.foundryengine.editor.client.panel.editor.RecipeEditorPanel;
 import de.luckymcdev.foundryengine.editor.client.panel.explorer.ExplorerPanel;
+import de.luckymcdev.foundryengine.editor.client.panel.test.GizmoTestPanel;
 import de.luckymcdev.foundryengine.editor.client.panel.test.NodeTestPanel;
 import de.luckymcdev.foundryengine.editor.client.panel.test.TestPanel;
+import de.luckymcdev.foundryengine.editor.client.panel.test.TextEditorTestPanel;
 import de.luckymcdev.foundryengine.editor.client.panel.tool.CataloguePanel;
 import de.luckymcdev.foundryengine.editor.client.panel.tool.ConsolePanel;
 import de.luckymcdev.foundryengine.editor.client.panel.tool.DevToolsPanel;
@@ -94,14 +97,13 @@ public final class EditorMod implements EngineModPart {
 
 	@Override
 	public void onClientSetup(FMLClientSetupEvent event) {
-		Client.getEditorManager().register(
-			TestPanel.INSTANCE, ExplorerPanel.INSTANCE, ConsolePanel.INSTANCE,
-			MinecraftToolsPanel.INSTANCE, DevToolsPanel.INSTANCE, ProblemsPanel.INSTANCE,
-			StopwatchPanel.INSTANCE, InfoPanel.INSTANCE, CataloguePanel.INSTANCE,
-			ThemeSelectorPanel.INSTANCE, OutlinePanel.INSTANCE,
-			NodeTestPanel.INSTANCE, HotkeySettingsPanel.INSTANCE, GitPanel.INSTANCE,
-			PakkuPanel.INSTANCE
-		);
+		Client.getEditorManager().register(TestPanel.INSTANCE, NodeTestPanel.INSTANCE, GizmoTestPanel.INSTANCE, TextEditorTestPanel.INSTANCE);
+		Client.getEditorManager().register(MinecraftToolsPanel.INSTANCE, DevToolsPanel.INSTANCE);
+		Client.getEditorManager().register(PakkuPanel.INSTANCE, GitPanel.INSTANCE);
+		Client.getEditorManager().register(RecipeEditorPanel.INSTANCE, CataloguePanel.INSTANCE);
+		Client.getEditorManager().register(StopwatchPanel.INSTANCE, ThemeSelectorPanel.INSTANCE, HotkeySettingsPanel.INSTANCE, InfoPanel.INSTANCE);
+		Client.getEditorManager().register(ExplorerPanel.INSTANCE, ConsolePanel.INSTANCE, ProblemsPanel.INSTANCE, OutlinePanel.INSTANCE);
+
 		Client.getEditorManager().register(TestPopUp.INSTANCE);
 		if (PostProcessingMod.isEnabled()) {
 			Client.getEditorManager().register(EffectPanel.INSTANCE);

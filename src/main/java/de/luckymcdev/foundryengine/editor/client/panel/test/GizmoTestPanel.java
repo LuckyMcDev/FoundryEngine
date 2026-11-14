@@ -11,14 +11,23 @@ import de.luckymcdev.foundryengine.imgui.client.gizmo.ImGuiGizmoScreen;
 import de.luckymcdev.foundryengine.imgui.client.gizmo.ImGuiGizmoTheme;
 import de.luckymcdev.foundryengine.imgui.client.icon.ImIcons;
 import imgui.ImGui;
+import imgui.extension.imguizmo.flag.Mode;
+import imgui.extension.imguizmo.flag.Operation;
 import org.joml.Matrix4f;
 
 public class GizmoTestPanel extends Panel {
 	public static final GizmoTestPanel INSTANCE = new GizmoTestPanel();
 
+	private static final float MINI_BAR_BTN_W = 30.0f;
+	private static final float MINI_BAR_BTN_H = 26.0f;
+	private static final float[] DEFAULT_BOUNDS = {-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f};
+
 	private final ImGuiGizmoScreen gizmo;
 	private final ImGuiGizmoCamera camera;
 	private final Matrix4f modelMatrix;
+
+	// Kept alive so that toggling the bar off/on preserves button size and selection.
+	private final ImGuiGizmoMiniBar miniBar;
 
 	private boolean showMiniBar = true;
 	private boolean showGrid = true;
@@ -26,6 +35,7 @@ public class GizmoTestPanel extends Panel {
 	private boolean lockTransform = false;
 	private boolean lockView = false;
 	private int selectedTheme = 0;
+	private boolean showMesh = true;
 
 	private GizmoTestPanel() {
 		super(new Builder(Common.id("gizmo_test"))
@@ -35,15 +45,16 @@ public class GizmoTestPanel extends Panel {
 		this.modelMatrix = new Matrix4f();
 		this.camera = new ImGuiGizmoCamera();
 
+		this.miniBar = new ImGuiGizmoMiniBar(ImGuiGizmoMiniBar.Anchor.TOP_LEFT)
+			.setButtonSize(MINI_BAR_BTN_W, MINI_BAR_BTN_H);
+
 		this.gizmo = new ImGuiGizmoScreen("gizmo_test_panel")
 			.setSize(0, 400)
 			.setConfig(ImGuiGizmoConfig.universal().build())
 			.setTheme(ImGuiGizmoTheme.dark().build())
-			.setCamera(camera);
-
-		ImGuiGizmoMiniBar miniBar = new ImGuiGizmoMiniBar(ImGuiGizmoMiniBar.Anchor.TOP_LEFT)
-			.setButtonSize(30.0f, 26.0f);
-		gizmo.setMiniBar(miniBar);
+			.setCamera(camera)
+			.setMiniBar(miniBar)
+			.setRenderModelWireframe(true);
 
 		resetMatrix();
 	}
@@ -52,18 +63,44 @@ public class GizmoTestPanel extends Panel {
 		modelMatrix.identity().scale(2.0f);
 	}
 
+	/**
+	 * Switch the operation/mode while preserving every other config setting.
+	 */
+	private void applyOperation(int op, int mode) {
+		miniBar.setOperation(op);
+
+		gizmo.setConfig(gizmo.getConfig().toBuilder()
+			.withOperation(op)
+			.withMode(mode)
+			.withLocalBounds(null)
+			.withBoundsSnap(null)
+			.build());
+	}
+
+	private void applyBounds() {
+		miniBar.setOperation(Operation.BOUNDS);
+
+		gizmo.setConfig(gizmo.getConfig().toBuilder()
+			.withOperation(Operation.BOUNDS)
+			.withMode(Mode.LOCAL)
+			.withLocalBounds(DEFAULT_BOUNDS)
+			.withBoundsSnap(new float[]{0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f})
+			.build());
+	}
+
 	@Override
 	public void content(ImGraphicsExtractor g) {
-		if (!requireLocal()) {
-			return;
-		}
-
 		ImGui.text("Gizmo Configuration");
 		ImGui.separator();
 
 		if (ImGui.checkbox("Show Mini Bar##gizmo", showMiniBar)) {
 			showMiniBar = !showMiniBar;
-			gizmo.setMiniBar(showMiniBar ? new ImGuiGizmoMiniBar(ImGuiGizmoMiniBar.Anchor.TOP_LEFT) : null);
+			if (showMiniBar) {
+				miniBar.setOperation(gizmo.getConfig().operation);
+				gizmo.setMiniBar(miniBar);
+			} else {
+				gizmo.setMiniBar(null);
+			}
 		}
 		ImGui.sameLine();
 		if (ImGui.checkbox("Show Grid##gizmo", showGrid)) {
@@ -73,18 +110,31 @@ public class GizmoTestPanel extends Panel {
 		ImGui.sameLine();
 		if (ImGui.checkbox("Show View Cube##gizmo", showViewCube)) {
 			showViewCube = !showViewCube;
-			gizmo.setConfig(gizmo.getConfig().withShowGrid(showViewCube));
+			// Correct flag (was previously withShowGrid) and no direct mutator exists.
+			gizmo.setConfig(gizmo.getConfig().toBuilder()
+				.withShowViewCube(showViewCube)
+				.build());
 		}
-
+		if (ImGui.checkbox("Show Mesh##gizmo", showMesh)) {
+			showMesh = !showMesh;
+			gizmo.setRenderModelWireframe(showMesh);
+		}
 		if (ImGui.checkbox("Lock Transform##gizmo", lockTransform)) {
 			lockTransform = !lockTransform;
-			gizmo.setConfig(gizmo.getConfig().toBuilder().withLockTransform(lockTransform).build());
+			gizmo.setConfig(gizmo.getConfig().toBuilder()
+				.withLockTransform(lockTransform)
+				.build());
 		}
 
 		ImGui.sameLine();
 		if (ImGui.checkbox("Lock View##gizmo", lockView)) {
 			lockView = !lockView;
 			camera.setLocked(lockView);
+			// Must also update the config, otherwise the view cube keeps drawing
+			// and keeps mutating the camera via syncFromViewMatrix().
+			gizmo.setConfig(gizmo.getConfig().toBuilder()
+				.withLockView(lockView)
+				.build());
 		}
 
 		if (ImGui.radioButton("Dark Theme##gizmo", selectedTheme == 0)) {
@@ -100,33 +150,34 @@ public class GizmoTestPanel extends Panel {
 		ImGui.separator();
 		ImGui.text("Quick Configs:");
 
-		if (ImGui.button("Translate")) {
-			gizmo.setConfig(ImGuiGizmoConfig.translate().build());
+		if (ImGui.button("Translate##gizmo")) {
+			applyOperation(Operation.TRANSLATE, Mode.LOCAL);
 		}
 		ImGui.sameLine();
-		if (ImGui.button("Rotate")) {
-			gizmo.setConfig(ImGuiGizmoConfig.rotate().build());
+		if (ImGui.button("Rotate##gizmo")) {
+			applyOperation(Operation.ROTATE, Mode.LOCAL);
 		}
 		ImGui.sameLine();
-		if (ImGui.button("Scale")) {
-			gizmo.setConfig(ImGuiGizmoConfig.scale().build());
+		if (ImGui.button("Scale##gizmo")) {
+			applyOperation(Operation.SCALEU, Mode.LOCAL);
 		}
 		ImGui.sameLine();
-		if (ImGui.button("Bounds")) {
-			gizmo.setConfig(ImGuiGizmoConfig.bounds().build());
+		if (ImGui.button("Bounds##gizmo")) {
+			applyBounds();
 		}
 
-		if (ImGui.button("Reset Matrix")) {
+		if (ImGui.button("Reset Matrix##gizmo")) {
 			resetMatrix();
 		}
 		ImGui.sameLine();
-		if (ImGui.button("Reset Camera")) {
+		if (ImGui.button("Reset Camera##gizmo")) {
 			camera.reset();
 		}
 
 		ImGui.separator();
 		ImGui.text("Camera (Yaw/Pitch/Distance):");
-		ImGui.text(String.format("  Yaw: %.1f°  Pitch: %.1f°  Distance: %.2f", camera.getYaw(), camera.getPitch(), camera.getDistance()));
+		ImGui.text(String.format("  Yaw: %.1f\u00b0  Pitch: %.1f\u00b0  Distance: %.2f",
+			camera.getYaw(), camera.getPitch(), camera.getDistance()));
 
 		ImGui.separator();
 		ImGui.text("Model Matrix:");
@@ -137,14 +188,12 @@ public class GizmoTestPanel extends Panel {
 		ImGui.text(String.format("  [%.3f, %.3f, %.3f, %.3f]", m[12], m[13], m[14], m[15]));
 
 		ImGui.separator();
-		ImGui.textWrapped("Interaction: Right-click drag to orbit · Mouse wheel to zoom · Drag colored arrows/circles to transform");
+		ImGui.textWrapped("Interaction: Right-click drag to orbit \u00b7 Mouse wheel to zoom \u00b7 Drag colored arrows/circles to transform");
 
 		gizmo.setModelMatrix(modelMatrix);
 		gizmo.render();
 
-		if (gizmo.wasImguiGizmoUsed()) {
-			g.redTextIf("Gizmo in use", true);
-		}
+		g.redTextIf("Gizmo in use", gizmo.wasImguiGizmoUsed());
 
 		modelMatrix.set(gizmo.getMatrices().getModelMatrix());
 	}
