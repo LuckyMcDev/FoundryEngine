@@ -22,7 +22,6 @@ import de.luckymcdev.foundryengine.particle.client.ParticleManager;
 import de.luckymcdev.foundryengine.post.client.PostEffectManager;
 import de.luckymcdev.foundryengine.render.client.MeshRenderer;
 import de.luckymcdev.foundryengine.render.client.obj.ObjModelManager;
-import de.luckymcdev.foundryengine.skybox.client.SkyboxManager;
 import de.luckymcdev.foundryengine.tooltip.client.TooltipManager;
 import de.luckymcdev.foundryengine.waypoint.client.ClientWaypointManager;
 import de.luckymcdev.foundryengine.Common;
@@ -162,13 +161,6 @@ public final class Client {
 	 */
 	public static ObjModelManager getObjModelManager() {
 		return MANAGERS.require(ManagerKey.OBJ_MODEL, ObjModelManager.class);
-	}
-
-	/**
-	 * Returns the skybox manager.
-	 */
-	public static SkyboxManager getSkyboxManager() {
-		return MANAGERS.require(ManagerKey.SKYBOX, SkyboxManager.class);
 	}
 
 	/**
