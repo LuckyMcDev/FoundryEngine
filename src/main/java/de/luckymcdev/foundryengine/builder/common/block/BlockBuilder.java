@@ -231,7 +231,7 @@ public class BlockBuilder extends AbstractBuilder<Block> {
 		EngineBlock block;
 		if (blockEntityBuilder != null) {
 			block = new EngineEntityBlock(this.properties,
-				() -> (BlockEntityType<?>) blockEntityBuilder.getOrCreate(),
+				() -> blockEntityBuilder.getOrCreate(),
 				blockEntityBuilder.hasTick());
 		} else if (!blockCallbacks.isEmpty() || visibilityCondition != null) {
 			block = new EngineBlock(this.properties);

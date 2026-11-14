@@ -4,11 +4,13 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.Client;
 import de.luckymcdev.foundryengine.Common;
+import de.luckymcdev.foundryengine.editor.client.panel.editor.RecipeEditorPanel;
 import de.luckymcdev.foundryengine.editor.client.panel.explorer.ExplorerPanel;
 import de.luckymcdev.foundryengine.editor.client.panel.test.*;
 import de.luckymcdev.foundryengine.editor.client.panel.tool.*;
 import de.luckymcdev.foundryengine.editor.client.panel.view.*;
 import de.luckymcdev.foundryengine.editor.client.EditorManager;
+import de.luckymcdev.foundryengine.editor.client.popup.test.TestPopUp;
 import de.luckymcdev.foundryengine.imgui.client.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.imgui.client.ImGuiManager;
 import de.luckymcdev.foundryengine.imgui.client.hotkey.HotKeyManager;
@@ -82,6 +84,7 @@ public final class EditorMod implements EngineModPart {
 			NodeTestPanel.INSTANCE, HotkeySettingsPanel.INSTANCE, GitPanel.INSTANCE,
 			PakkuPanel.INSTANCE
 		);
+		Client.getEditorManager().register(TestPopUp.INSTANCE);
 		if (PostProcessingMod.isEnabled()) {
 			Client.getEditorManager().register(EffectPanel.INSTANCE);
 		}

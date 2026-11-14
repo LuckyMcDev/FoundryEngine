@@ -20,6 +20,7 @@ public class DialogueNode {
 	private final List<String> enterActionIds;
 	private final List<String> conditionIds;
 	private String nextNodeId;
+	private static final String NEXT_NODE_ID_TAG = "NextNodeId";
 
 	public DialogueNode(String id, String speaker, String text) {
 		this(id, speaker, text, 0x55FF55);
@@ -43,8 +44,8 @@ public class DialogueNode {
 			tag.getStringOr("Text", ""),
 			tag.getIntOr("SpeakerColor", 0x55FF55)
 		);
-		if (tag.contains("NextNodeId")) {
-			node.nextNodeId = tag.getStringOr("NextNodeId", null);
+		if (tag.contains(NEXT_NODE_ID_TAG)) {
+			node.nextNodeId = tag.getStringOr(NEXT_NODE_ID_TAG, null);
 		}
 		var opts = tag.getListOrEmpty("Options");
 		for (int i = 0; i < opts.size(); i++) {
@@ -52,11 +53,11 @@ public class DialogueNode {
 		}
 		var acts = tag.getListOrEmpty("EnterActions");
 		for (int i = 0; i < acts.size(); i++) {
-			acts.getString(i).ifPresent(s -> node.enterActionIds.add(s));
+			acts.getString(i).ifPresent(node.enterActionIds::add);
 		}
 		var conds = tag.getListOrEmpty("Conditions");
 		for (int i = 0; i < conds.size(); i++) {
-			conds.getString(i).ifPresent(s -> node.conditionIds.add(s));
+			conds.getString(i).ifPresent(node.conditionIds::add);
 		}
 		return node;
 	}
@@ -68,7 +69,7 @@ public class DialogueNode {
 		tag.putString("Text", text);
 		tag.putInt("SpeakerColor", speakerColor);
 		if (nextNodeId != null) {
-			tag.putString("NextNodeId", nextNodeId);
+			tag.putString(NEXT_NODE_ID_TAG, nextNodeId);
 		}
 		var opts = new ListTag();
 		for (var o : options) {

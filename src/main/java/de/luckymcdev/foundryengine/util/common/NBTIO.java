@@ -1,6 +1,5 @@
 package de.luckymcdev.foundryengine.util.common;
 
-import de.luckymcdev.foundryengine.Common;
 import de.luckymcdev.foundryengine.EnginePaths;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;

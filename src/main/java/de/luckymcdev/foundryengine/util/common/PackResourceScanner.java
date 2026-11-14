@@ -47,42 +47,42 @@ public final class PackResourceScanner {
 
 	private static void scanPack(PackResources pack, PackType type, BiConsumer<Identifier, Path> consumer) {
 		try {
-			if (pack instanceof JarContentsPackResources jarPack) {
-				return; // JarContentsPackResources needs to be skipped.
-			}
-
-			if (pack instanceof EmptyPackResources) {
-				return; // genuinely nothing to scan
-			}
-
-			if (pack instanceof PathPackResources pathPack) {
-				Path root = ((PathPackResourcesAccessor) pathPack).engine$getRoot();
-				if (root != null) {
-					walkDirectory(root.resolve(type.getDirectory()), consumer);
+			switch (pack) {
+				case JarContentsPackResources _ -> {
+					return; // JarContentsPackResources needs to be skipped.
 				}
-				return;
-			}
-
-			if (pack instanceof VanillaPackResources vanillaPack) {
-				Map<PackType, List<Path>> pathsForType = ((VanillaPackResourcesAccessor) vanillaPack).engine$getPathsForType();
-				if (pathsForType != null) {
-					List<Path> roots = pathsForType.get(type);
-					if (roots != null) {
-						for (Path root : roots) {
-							walkDirectory(root, consumer);
+				case EmptyPackResources _ -> {
+					return; // genuinely nothing to scan
+				}
+				case PathPackResources pathPack -> {
+					Path root = ((PathPackResourcesAccessor) pathPack).engine$getRoot();
+					if (root != null) {
+						walkDirectory(root.resolve(type.getDirectory()), consumer);
+					}
+					return;
+				}
+				case VanillaPackResources vanillaPack -> {
+					Map<PackType, List<Path>> pathsForType = ((VanillaPackResourcesAccessor) vanillaPack).engine$getPathsForType();
+					if (pathsForType != null) {
+						List<Path> roots = pathsForType.get(type);
+						if (roots != null) {
+							for (Path root : roots) {
+								walkDirectory(root, consumer);
+							}
 						}
 					}
+					return;
 				}
-				return;
-			}
-
-			if (pack instanceof FilePackResources filePack) {
-				Path zipFile = ((SharedZipFileAccessAccessor) ((FilePackResourcesAccessor) filePack).engine$zipFileAccess()).engine$getFile().toPath();
-				if (zipFile != null && Files.isRegularFile(zipFile)) {
-					String prefix = ((FilePackResourcesAccessor) filePack).engine$prefix();
-					walkZipFile(zipFile, prefix, type, consumer);
+				case FilePackResources filePack -> {
+					Path zipFile = ((SharedZipFileAccessAccessor) ((FilePackResourcesAccessor) filePack).engine$zipFileAccess()).engine$getFile().toPath();
+					if (zipFile != null && Files.isRegularFile(zipFile)) {
+						String prefix = ((FilePackResourcesAccessor) filePack).engine$prefix();
+						walkZipFile(zipFile, prefix, type, consumer);
+					}
+					return;
 				}
-				return;
+				default -> {
+				}
 			}
 
 			List<Path> roots = findPathsGenerically(pack, new IdentityHashMap<>(), 0);

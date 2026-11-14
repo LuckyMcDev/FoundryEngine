@@ -2,13 +2,20 @@ package de.luckymcdev.foundryengine.editor.client.popup;
 
 import imgui.ImGui;
 import imgui.flag.ImGuiPopupFlags;
+import imgui.flag.ImGuiWindowFlags;
 import net.minecraft.resources.Identifier;
 
 /**
  * A base class for creating and managing ImGui popups in the Foundry Engine.
  * <p>
- * This class provides functionality to create, open, close, and render both modal and non-modal popups.
- * It serves as a foundation for custom popups by allowing subclasses to override the {@link #content()} method.
+ * Supports modal and non-modal popups. Subclasses override {@link #content()} to draw the popup body.
+ * </p>
+ * <p>
+ * {@link #open()} and {@link #close()} may be called from anywhere (button handlers, ticks, other panels).
+ * The actual ImGui calls are deferred to {@link #handleRender()}, because ImGui requires
+ * {@code openPopup}, {@code beginPopup} and {@code closeCurrentPopup} to run inside a frame, at the
+ * same ID-stack level, and {@code closeCurrentPopup} only works between begin and end of the popup.
+ * Call {@link #handleRender()} every frame, at the same place in the UI where the popup was declared.
  * </p>
  */
 public class PopUp {
@@ -18,23 +25,27 @@ public class PopUp {
 	private final Identifier id;
 
 	/**
-	 * The string identifier used by ImGui to manage the popup.
+	 * The string identifier used by ImGui to manage the popup. For modals this is also the title.
 	 */
 	private final String strId;
 
 	/**
-	 * Flags that control the behavior of the popup (e.g., no move, no resize).
-	 * Uses constants from {@link ImGuiPopupFlags}.
+	 * Flags passed to {@code openPopup} (see {@link ImGuiPopupFlags}).
 	 */
-	private final int flags;
+	private final int popupFlags;
 
 	/**
-	 * Indicates whether this popup is modal.
-	 * <p>
-	 * Modal popups block interaction with other windows until they are closed.
-	 * </p>
+	 * Flags passed to {@code beginPopup} / {@code beginPopupModal} (see {@link ImGuiWindowFlags}).
+	 */
+	private final int windowFlags;
+
+	/**
+	 * Modal popups block interaction with everything else until closed.
 	 */
 	private final boolean modal;
+
+	private boolean openRequested;
+	private boolean closeRequested;
 
 	/**
 	 * Constructs a non-modal popup with default flags.
@@ -43,95 +54,104 @@ public class PopUp {
 	 * @param strId The string identifier used by ImGui to manage the popup.
 	 */
 	public PopUp(Identifier id, String strId) {
-		this(id, strId, false, ImGuiPopupFlags.None);
+		this(id, strId, false, ImGuiPopupFlags.None, ImGuiWindowFlags.None);
 	}
 
 	/**
-	 * Constructs a popup with customizable modal behavior and flags.
+	 * Constructs a popup with customizable modal behavior and popup flags.
 	 *
 	 * @param id         The unique identifier for this popup.
 	 * @param strId      The string identifier used by ImGui to manage the popup.
-	 * @param modal      If {@code true}, the popup will be modal (blocks interaction with other windows).
-	 * @param popUpFlags Flags to control the popup's behavior. See {@link ImGuiPopupFlags} for available options.
+	 * @param modal      If {@code true}, the popup is modal.
+	 * @param popUpFlags {@link ImGuiPopupFlags} applied when the popup is opened.
 	 */
 	public PopUp(Identifier id, String strId, boolean modal, int popUpFlags) {
-		this.id = id;
-		this.strId = strId;
-		this.modal = modal;
-		this.flags = popUpFlags;
+		this(id, strId, modal, popUpFlags, ImGuiWindowFlags.None);
 	}
 
 	/**
-	 * Returns the unique identifier of this popup.
+	 * Constructs a popup with customizable modal behavior, popup flags and window flags.
 	 *
-	 * @return The popup's {@link Identifier}.
+	 * @param id          The unique identifier for this popup.
+	 * @param strId       The string identifier used by ImGui to manage the popup.
+	 * @param modal       If {@code true}, the popup is modal.
+	 * @param popUpFlags  {@link ImGuiPopupFlags} applied when the popup is opened.
+	 * @param windowFlags {@link ImGuiWindowFlags} applied to the popup window (e.g. {@code AlwaysAutoResize}).
 	 */
+	public PopUp(Identifier id, String strId, boolean modal, int popUpFlags, int windowFlags) {
+		this.id = id;
+		this.strId = strId;
+		this.modal = modal;
+		this.popupFlags = popUpFlags;
+		this.windowFlags = windowFlags;
+	}
+
 	public Identifier getId() {
 		return id;
 	}
 
-	/**
-	 * Returns the string identifier used by ImGui to manage this popup.
-	 *
-	 * @return The ImGui string identifier.
-	 */
 	public String getStrId() {
 		return strId;
 	}
 
 	/**
-	 * Checks if this popup is currently open.
-	 *
-	 * @return {@code true} if the popup is open, {@code false} otherwise.
+	 * @return {@code true} if the popup is open or about to be opened on the next render.
 	 */
 	public boolean isOpen() {
-		return ImGui.isPopupOpen(strId);
+		return openRequested || ImGui.isPopupOpen(strId);
 	}
 
 	/**
-	 * Opens this popup.
-	 * <p>
-	 * This method triggers the popup to appear in the next ImGui frame.
-	 * </p>
+	 * Requests this popup to open. It appears when {@link #handleRender()} next runs.
 	 */
 	public void open() {
-		ImGui.openPopup(this.strId);
+		closeRequested = false;
+		openRequested = true;
 	}
 
 	/**
-	 * Closes this popup if it is currently open.
-	 * <p>
-	 * This method ensures the popup is closed gracefully by checking its state first.
-	 * </p>
+	 * Requests this popup to close. It is closed when {@link #handleRender()} next runs
+	 * (or right after {@link #content()} if called from within it).
 	 */
 	public void close() {
-		if (ImGui.isPopupOpen(strId)) {
-			ImGui.closeCurrentPopup();
-		}
+		openRequested = false;
+		closeRequested = true;
 	}
 
 	/**
-	 * Handles the rendering of this popup.
-	 * <p>
-	 * This method begins the popup context, renders its content, and ensures proper cleanup afterward.
-	 * The actual content is delegated to the {@link #content()} method, which can be overridden by subclasses.
-	 * </p>
+	 * Opens, draws and closes the popup as requested. Call every frame.
 	 */
 	public void handleRender() {
-		boolean isOpen = modal ? ImGui.beginPopupModal(strId, flags) : ImGui.beginPopup(strId, flags);
+		if (openRequested) {
+			openRequested = false;
+			ImGui.openPopup(strId, popupFlags);
+		}
 
-		if (isOpen) {
-			this.content();
+		boolean visible = modal
+			? ImGui.beginPopupModal(strId, windowFlags)
+			: ImGui.beginPopup(strId, windowFlags);
+
+		if (!visible) {
+			// Not open (or dismissed by the user): drop stale close requests.
+			closeRequested = false;
+			return;
+		}
+
+		try {
+			if (!closeRequested) {
+				this.content();
+			}
+			if (closeRequested) {
+				closeRequested = false;
+				ImGui.closeCurrentPopup();
+			}
+		} finally {
 			ImGui.endPopup();
 		}
 	}
 
 	/**
-	 * Renders the content of this popup.
-	 * <p>
-	 * Subclasses should override this method to define custom content for the popup.
-	 * The default implementation does nothing.
-	 * </p>
+	 * Renders the content of this popup. Subclasses override this; the default does nothing.
 	 */
 	public void content() {
 	}

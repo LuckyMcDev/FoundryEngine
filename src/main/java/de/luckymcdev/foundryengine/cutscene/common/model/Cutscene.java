@@ -12,13 +12,14 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 
 public class Cutscene {
 	public final BezierPath path;
 	private final String name;
-	private final ArrayList<Vec2> anchorRotations = new ArrayList<>();
-	private final ArrayList<Integer> anchorHoldTicks = new ArrayList<>();
-	private final ArrayList<CutsceneAttachment> attachments = new ArrayList<>();
+	private final List<Vec2> anchorRotations = new ArrayList<>();
+	private final List<Integer> anchorHoldTicks = new ArrayList<>();
+	private final List<CutsceneAttachment> attachments = new ArrayList<>();
 	private Color color;
 	private int defaultLength = 60;
 	private int defaultHoldStart = 0;
@@ -36,7 +37,7 @@ public class Cutscene {
 		String name = tag.getStringOr("Name", "cutscene");
 		BezierPath path = new BezierPath(tag.getListOrEmpty("BezierPath"));
 
-		ArrayList<Vec2> rots = new ArrayList<>();
+		List<Vec2> rots = new ArrayList<>();
 		ListTag rotList = tag.getListOrEmpty("Rotations");
 		for (int i = 0; i < rotList.size(); i++) {
 			CompoundTag rotTag = rotList.getCompoundOrEmpty(i);
@@ -274,7 +275,7 @@ public class Cutscene {
 		this.color = new Color(argb);
 	}
 
-	public ArrayList<Vec2> getAnchorRotations() {
+	public List<Vec2> getAnchorRotations() {
 		ensureAnchorRotations();
 		return this.anchorRotations;
 	}
@@ -283,8 +284,8 @@ public class Cutscene {
 	 * Returns all attachments of type EffectAttachment.
 	 * For backward compatibility, this replaces the old getScreenEffects().
 	 */
-	public ArrayList<EffectAttachment> getEffectAttachments() {
-		ArrayList<EffectAttachment> effects = new ArrayList<>();
+	public List<EffectAttachment> getEffectAttachments() {
+		List<EffectAttachment> effects = new ArrayList<>();
 		for (CutsceneAttachment att : this.attachments) {
 			if (att instanceof EffectAttachment eff) {
 				effects.add(eff);
@@ -296,8 +297,8 @@ public class Cutscene {
 	/**
 	 * Returns all attachments of type CommandAttachment.
 	 */
-	public ArrayList<CommandAttachment> getCommandAttachments() {
-		ArrayList<CommandAttachment> commands = new ArrayList<>();
+	public List<CommandAttachment> getCommandAttachments() {
+		List<CommandAttachment> commands = new ArrayList<>();
 		for (CutsceneAttachment att : this.attachments) {
 			if (att instanceof CommandAttachment cmd) {
 				commands.add(cmd);
@@ -309,7 +310,7 @@ public class Cutscene {
 	/**
 	 * Returns all attachments.
 	 */
-	public ArrayList<CutsceneAttachment> getAttachments() {
+	public List<CutsceneAttachment> getAttachments() {
 		return this.attachments;
 	}
 
@@ -331,7 +332,7 @@ public class Cutscene {
 	 * @param type  The class type to filter by.
 	 */
 	public void removeAttachment(int index, Class<? extends CutsceneAttachment> type) {
-		ArrayList<CutsceneAttachment> filtered = new ArrayList<>();
+		List<CutsceneAttachment> filtered = new ArrayList<>();
 		for (CutsceneAttachment att : this.attachments) {
 			if (type.isInstance(att)) {
 				filtered.add(att);
@@ -363,7 +364,7 @@ public class Cutscene {
 	 */
 	@Deprecated
 	public void removeScreenEffect(int index) {
-		ArrayList<EffectAttachment> effects = getEffectAttachments();
+		List<EffectAttachment> effects = getEffectAttachments();
 		if (index < 0 || index >= effects.size()) {
 			return;
 		}
@@ -387,7 +388,7 @@ public class Cutscene {
 		if (point == null || point.isTangent()) {
 			return;
 		}
-		ArrayList<BezierPoint> anchors = this.path.getAnchorPoints();
+		List<BezierPoint> anchors = this.path.getAnchorPoints();
 		int idx = anchors.indexOf(point);
 		if (idx >= 0) {
 			setAnchorRotation(idx, rot);
@@ -583,7 +584,7 @@ public class Cutscene {
 		return 1.0f;
 	}
 
-	public ArrayList<Integer> getAnchorHoldTicks() {
+	public List<Integer> getAnchorHoldTicks() {
 		ensureAnchorRotations();
 		return this.anchorHoldTicks;
 	}

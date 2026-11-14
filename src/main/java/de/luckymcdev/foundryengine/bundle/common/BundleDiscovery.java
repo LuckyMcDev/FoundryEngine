@@ -194,7 +194,7 @@ public class BundleDiscovery {
 			Bundle bundle = bundleFactory.createBundle(info, bundleDir, zipFs);
 			discoveredBundles.put(info.id(), info);
 			bundleConsumer.accept(bundle);
-		} catch (IOException | RuntimeException e) {
+		} catch (RuntimeException e) {
 			BundleExceptionHandler.handle("Failed to create bundle '" + info.id() + "'", e);
 		}
 	}

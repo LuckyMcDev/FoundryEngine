@@ -185,7 +185,7 @@ public class EngineModelProvider implements DataProvider {
 			return DataProvider.saveAll(
 				cachedOutput,
 				ModelInstance::get,
-				id -> pathProvider.json(id),
+				pathProvider::json,
 				models
 			);
 		}

@@ -5,6 +5,7 @@ import de.luckymcdev.foundryengine.Client;
 import de.luckymcdev.foundryengine.editor.client.config.PanelCategory;
 import de.luckymcdev.foundryengine.editor.client.panel.Panel;
 import de.luckymcdev.foundryengine.editor.client.panel.tool.CataloguePanel;
+import de.luckymcdev.foundryengine.editor.client.popup.test.TestPopUp;
 import de.luckymcdev.foundryengine.imgui.client.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.imgui.client.icon.ImIcons;
 import de.luckymcdev.foundryengine.md.client.MdScreen;
@@ -42,6 +43,12 @@ public class TestPanel extends Panel {
 
 		ImGui.text("Hello, World!");
 		ImGui.separator();
+
+		if (ImGui.button("Open Test Popup")) {
+			TestPopUp.INSTANCE.open();
+		}
+		ImGui.sameLine();
+		ImGui.textDisabled(TestPopUp.INSTANCE.isOpen() ? "(open)" : "(closed)");
 
 		ImGui.text("You dont know what i do? Hover it.");
 		g.helpTooltip("BOO!");

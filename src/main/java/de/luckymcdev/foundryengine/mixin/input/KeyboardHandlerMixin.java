@@ -26,6 +26,7 @@ public class KeyboardHandlerMixin implements EngineKeyboardHandler {
 	/**
 	 * Cancels keyboard events when ImGui captures the keyboard, and handles editor/menu toggle hotkeys.
 	 */
+	@Override
 	@Inject(method = "keyPress", at = @At("HEAD"), cancellable = true)
 	public void engine$keyPress(long handle, int action, KeyEvent event, CallbackInfo ci) {
 		if (!EditorMod.isEnabled()) {

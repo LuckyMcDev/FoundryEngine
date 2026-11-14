@@ -6,6 +6,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents a complete Bézier path composed of multiple splines.
@@ -15,7 +16,7 @@ public class BezierPath {
 	private static final int LUT_RESOLUTION = 100;
 	private static final double DISTANCE_EPSILON = 1.0e-6;
 	private final double[] lutDistances = new double[LUT_RESOLUTION];
-	public ArrayList<BezierSpline> splines = new ArrayList<>();
+	public List<BezierSpline> splines = new ArrayList<>();
 	private boolean lutValid = false;
 
 	/**
@@ -101,7 +102,7 @@ public class BezierPath {
 
 		double between = (desiredDistance - lutDistances[index]) /
 			(lutDistances[index + 1] - lutDistances[index]);
-		return ((double) index + between) / (double) (LUT_RESOLUTION - 1);
+		return (index + between) / (LUT_RESOLUTION - 1);
 	}
 
 	private int findClosestFloorIndex(double distance) {
@@ -204,8 +205,8 @@ public class BezierPath {
 	/**
 	 * Gets all control points in the path.
 	 */
-	public ArrayList<BezierPoint> getPoints() {
-		ArrayList<BezierPoint> send = new ArrayList<>();
+	public List<BezierPoint> getPoints() {
+		List<BezierPoint> send = new ArrayList<>();
 		for (BezierSpline spline : this.splines) {
 			for (BezierPoint point : spline.points) {
 				if (!send.contains(point)) {
@@ -219,8 +220,8 @@ public class BezierPath {
 	/**
 	 * Returns all non-tangent ("node") points in order from start to end.
 	 */
-	public ArrayList<BezierPoint> getAnchorPoints() {
-		ArrayList<BezierPoint> anchors = new ArrayList<>();
+	public List<BezierPoint> getAnchorPoints() {
+		List<BezierPoint> anchors = new ArrayList<>();
 
 		if (this.splines.isEmpty()) {
 			return anchors;
@@ -279,12 +280,12 @@ public class BezierPath {
 	 * Checks if a point is at the start or end of the path.
 	 */
 	public boolean isPointFirstOrLast(BezierPoint point) {
-		ArrayList<BezierPoint> points = this.getPoints();
+		List<BezierPoint> points = this.getPoints();
 		return points.getFirst() == point || points.getLast() == point;
 	}
 
 	private void init(ListTag list) {
-		ArrayList<Vec3> points = new ArrayList<>();
+		List<Vec3> points = new ArrayList<>();
 		int pointCount = list.size() / 3;
 
 		for (int i = 0; i < pointCount; i++) {
@@ -295,7 +296,7 @@ public class BezierPath {
 			));
 		}
 
-		ArrayList<BezierSpline> newSplines = new ArrayList<>();
+		List<BezierSpline> newSplines = new ArrayList<>();
 		int splineCount = (points.size() - 1) / 3;
 
 		for (int i = 0; i < splineCount; i++) {

@@ -26,7 +26,7 @@ public abstract class CreativeModeInventoryScreenSlotWrapperMixin extends Slot i
 	@Unique
 	private boolean engine$disabledOverride = false;
 
-	public CreativeModeInventoryScreenSlotWrapperMixin(Container container, int slot, int x, int y) {
+	protected CreativeModeInventoryScreenSlotWrapperMixin(Container container, int slot, int x, int y) {
 		super(container, slot, x, y);
 	}
 

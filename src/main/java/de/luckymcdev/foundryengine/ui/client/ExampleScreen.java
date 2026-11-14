@@ -76,7 +76,7 @@ public class ExampleScreen extends EngineScreen {
 
 		panel.addWidget(checkbox);
 
-		MinecraftSliderWidget slider = MinecraftSliderWidget.of(0.5, Component.literal("Volume"), (value) -> {
+		MinecraftSliderWidget slider = MinecraftSliderWidget.of(0.5, Component.literal("Volume"), value -> {
 			LOGGER.debug("Slider value: {}", value);
 		});
 		slider.setSize(120, 20);

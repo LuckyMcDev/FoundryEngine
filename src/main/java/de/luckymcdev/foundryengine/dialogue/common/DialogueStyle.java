@@ -18,6 +18,29 @@ import java.util.Map;
  * {@link #push()} / {@link #pop()} while the tree-level base style stays intact.</p>
  */
 public class DialogueStyle {
+	public static final String KEY_DIALOGUE_BACKGROUND = "DialogueBackground";
+	public static final String KEY_DIALOGUE_BORDER = "DialogueBorder";
+	public static final String KEY_DIALOGUE_BORDER_WIDTH = "DialogueBorderWidth";
+	public static final String KEY_OPTIONS_BACKGROUND = "OptionsBackground";
+	public static final String KEY_OPTIONS_BORDER = "OptionsBorder";
+	public static final String KEY_OPTIONS_BORDER_WIDTH = "OptionsBorderWidth";
+	public static final String KEY_BUTTON_BACKGROUND = "ButtonBackground";
+	public static final String KEY_BUTTON_HOVER = "ButtonHover";
+	public static final String KEY_BUTTON_BORDER = "ButtonBorder";
+	public static final String KEY_NAV_BUTTON_BACKGROUND = "NavButtonBackground";
+	public static final String KEY_NAV_BUTTON_HOVER = "NavButtonHover";
+	public static final String KEY_NAV_BUTTON_BORDER = "NavButtonBorder";
+	public static final String KEY_OVERLAY_COLOR = "OverlayColor";
+	public static final String KEY_SPEAKER_FONT_SIZE = "SpeakerFontSize";
+	public static final String KEY_DIALOGUE_FONT_SIZE = "DialogueFontSize";
+	public static final String KEY_OPTION_FONT_SIZE = "OptionFontSize";
+	public static final String KEY_MARGIN = "Margin";
+	public static final String KEY_PANEL_HEIGHT = "PanelHeight";
+	public static final String KEY_BUTTON_HEIGHT = "ButtonHeight";
+	public static final String KEY_OPTION_GAP = "OptionGap";
+	public static final String KEY_TYPEWRITER_SOUND_ENABLED = "TypewriterSoundEnabled";
+	public static final String KEY_TYPEWRITER_CHARS_PER_SECOND = "TypewriterCharsPerSecond";
+
 	public static final StyleLayer DEFAULTS = createDefaults();
 	private final Deque<StyleLayer> layers = new ArrayDeque<>();
 
@@ -29,71 +52,71 @@ public class DialogueStyle {
 		var s = new DialogueStyle();
 		var layer = s.peek();
 
-		if (tag.contains("DialogueBackground")) {
-			layer.set("DialogueBackground", new Color(tag.getIntOr("DialogueBackground", 0)));
+		if (tag.contains(KEY_DIALOGUE_BACKGROUND)) {
+			layer.set(KEY_DIALOGUE_BACKGROUND, new Color(tag.getIntOr(KEY_DIALOGUE_BACKGROUND, 0)));
 		}
-		if (tag.contains("DialogueBorder")) {
-			layer.set("DialogueBorder", new Color(tag.getIntOr("DialogueBorder", 0)));
+		if (tag.contains(KEY_DIALOGUE_BORDER)) {
+			layer.set(KEY_DIALOGUE_BORDER, new Color(tag.getIntOr(KEY_DIALOGUE_BORDER, 0)));
 		}
-		if (tag.contains("DialogueBorderWidth")) {
-			layer.set("DialogueBorderWidth", tag.getIntOr("DialogueBorderWidth", 0));
+		if (tag.contains(KEY_DIALOGUE_BORDER_WIDTH)) {
+			layer.set(KEY_DIALOGUE_BORDER_WIDTH, tag.getIntOr(KEY_DIALOGUE_BORDER_WIDTH, 0));
 		}
-		if (tag.contains("OptionsBackground")) {
-			layer.set("OptionsBackground", new Color(tag.getIntOr("OptionsBackground", 0)));
+		if (tag.contains(KEY_OPTIONS_BACKGROUND)) {
+			layer.set(KEY_OPTIONS_BACKGROUND, new Color(tag.getIntOr(KEY_OPTIONS_BACKGROUND, 0)));
 		}
-		if (tag.contains("OptionsBorder")) {
-			layer.set("OptionsBorder", new Color(tag.getIntOr("OptionsBorder", 0)));
+		if (tag.contains(KEY_OPTIONS_BORDER)) {
+			layer.set(KEY_OPTIONS_BORDER, new Color(tag.getIntOr(KEY_OPTIONS_BORDER, 0)));
 		}
-		if (tag.contains("OptionsBorderWidth")) {
-			layer.set("OptionsBorderWidth", tag.getIntOr("OptionsBorderWidth", 0));
+		if (tag.contains(KEY_OPTIONS_BORDER_WIDTH)) {
+			layer.set(KEY_OPTIONS_BORDER_WIDTH, tag.getIntOr(KEY_OPTIONS_BORDER_WIDTH, 0));
 		}
-		if (tag.contains("ButtonBackground")) {
-			layer.set("ButtonBackground", new Color(tag.getIntOr("ButtonBackground", 0)));
+		if (tag.contains(KEY_BUTTON_BACKGROUND)) {
+			layer.set(KEY_BUTTON_BACKGROUND, new Color(tag.getIntOr(KEY_BUTTON_BACKGROUND, 0)));
 		}
-		if (tag.contains("ButtonHover")) {
-			layer.set("ButtonHover", new Color(tag.getIntOr("ButtonHover", 0)));
+		if (tag.contains(KEY_BUTTON_HOVER)) {
+			layer.set(KEY_BUTTON_HOVER, new Color(tag.getIntOr(KEY_BUTTON_HOVER, 0)));
 		}
-		if (tag.contains("ButtonBorder")) {
-			layer.set("ButtonBorder", new Color(tag.getIntOr("ButtonBorder", 0)));
+		if (tag.contains(KEY_BUTTON_BORDER)) {
+			layer.set(KEY_BUTTON_BORDER, new Color(tag.getIntOr(KEY_BUTTON_BORDER, 0)));
 		}
-		if (tag.contains("NavButtonBackground")) {
-			layer.set("NavButtonBackground", new Color(tag.getIntOr("NavButtonBackground", 0)));
+		if (tag.contains(KEY_NAV_BUTTON_BACKGROUND)) {
+			layer.set(KEY_NAV_BUTTON_BACKGROUND, new Color(tag.getIntOr(KEY_NAV_BUTTON_BACKGROUND, 0)));
 		}
-		if (tag.contains("NavButtonHover")) {
-			layer.set("NavButtonHover", new Color(tag.getIntOr("NavButtonHover", 0)));
+		if (tag.contains(KEY_NAV_BUTTON_HOVER)) {
+			layer.set(KEY_NAV_BUTTON_HOVER, new Color(tag.getIntOr(KEY_NAV_BUTTON_HOVER, 0)));
 		}
-		if (tag.contains("NavButtonBorder")) {
-			layer.set("NavButtonBorder", new Color(tag.getIntOr("NavButtonBorder", 0)));
+		if (tag.contains(KEY_NAV_BUTTON_BORDER)) {
+			layer.set(KEY_NAV_BUTTON_BORDER, new Color(tag.getIntOr(KEY_NAV_BUTTON_BORDER, 0)));
 		}
-		if (tag.contains("OverlayColor")) {
-			layer.set("OverlayColor", new Color(tag.getIntOr("OverlayColor", 0)));
+		if (tag.contains(KEY_OVERLAY_COLOR)) {
+			layer.set(KEY_OVERLAY_COLOR, new Color(tag.getIntOr(KEY_OVERLAY_COLOR, 0)));
 		}
-		if (tag.contains("SpeakerFontSize")) {
-			layer.set("SpeakerFontSize", tag.getIntOr("SpeakerFontSize", 0));
+		if (tag.contains(KEY_SPEAKER_FONT_SIZE)) {
+			layer.set(KEY_SPEAKER_FONT_SIZE, tag.getIntOr(KEY_SPEAKER_FONT_SIZE, 0));
 		}
-		if (tag.contains("DialogueFontSize")) {
-			layer.set("DialogueFontSize", tag.getIntOr("DialogueFontSize", 0));
+		if (tag.contains(KEY_DIALOGUE_FONT_SIZE)) {
+			layer.set(KEY_DIALOGUE_FONT_SIZE, tag.getIntOr(KEY_DIALOGUE_FONT_SIZE, 0));
 		}
-		if (tag.contains("OptionFontSize")) {
-			layer.set("OptionFontSize", tag.getIntOr("OptionFontSize", 0));
+		if (tag.contains(KEY_OPTION_FONT_SIZE)) {
+			layer.set(KEY_OPTION_FONT_SIZE, tag.getIntOr(KEY_OPTION_FONT_SIZE, 0));
 		}
-		if (tag.contains("Margin")) {
-			layer.set("Margin", tag.getIntOr("Margin", 0));
+		if (tag.contains(KEY_MARGIN)) {
+			layer.set(KEY_MARGIN, tag.getIntOr(KEY_MARGIN, 0));
 		}
-		if (tag.contains("PanelHeight")) {
-			layer.set("PanelHeight", tag.getIntOr("PanelHeight", 0));
+		if (tag.contains(KEY_PANEL_HEIGHT)) {
+			layer.set(KEY_PANEL_HEIGHT, tag.getIntOr(KEY_PANEL_HEIGHT, 0));
 		}
-		if (tag.contains("ButtonHeight")) {
-			layer.set("ButtonHeight", tag.getIntOr("ButtonHeight", 0));
+		if (tag.contains(KEY_BUTTON_HEIGHT)) {
+			layer.set(KEY_BUTTON_HEIGHT, tag.getIntOr(KEY_BUTTON_HEIGHT, 0));
 		}
-		if (tag.contains("OptionGap")) {
-			layer.set("OptionGap", tag.getIntOr("OptionGap", 0));
+		if (tag.contains(KEY_OPTION_GAP)) {
+			layer.set(KEY_OPTION_GAP, tag.getIntOr(KEY_OPTION_GAP, 0));
 		}
-		if (tag.contains("TypewriterSoundEnabled")) {
-			layer.set("TypewriterSoundEnabled", tag.getBooleanOr("TypewriterSoundEnabled", true));
+		if (tag.contains(KEY_TYPEWRITER_SOUND_ENABLED)) {
+			layer.set(KEY_TYPEWRITER_SOUND_ENABLED, tag.getBooleanOr(KEY_TYPEWRITER_SOUND_ENABLED, true));
 		}
-		if (tag.contains("TypewriterCharsPerSecond")) {
-			layer.set("TypewriterCharsPerSecond", tag.getIntOr("TypewriterCharsPerSecond", 0));
+		if (tag.contains(KEY_TYPEWRITER_CHARS_PER_SECOND)) {
+			layer.set(KEY_TYPEWRITER_CHARS_PER_SECOND, tag.getIntOr(KEY_TYPEWRITER_CHARS_PER_SECOND, 0));
 		}
 
 		return s;
@@ -101,28 +124,28 @@ public class DialogueStyle {
 
 	private static StyleLayer createDefaults() {
 		var layer = new StyleLayer();
-		layer.set("DialogueBackground", new Color(0xCC101010));
-		layer.set("DialogueBorder", new Color(0xFF666666));
-		layer.set("DialogueBorderWidth", 2);
-		layer.set("OptionsBackground", new Color(0xCC101010));
-		layer.set("OptionsBorder", new Color(0xFF666666));
-		layer.set("OptionsBorderWidth", 2);
-		layer.set("ButtonBackground", new Color(0x88000000));
-		layer.set("ButtonHover", new Color(0xAA444444));
-		layer.set("ButtonBorder", new Color(0xFF888888));
-		layer.set("NavButtonBackground", new Color(0x88000000));
-		layer.set("NavButtonHover", new Color(0xAA444444));
-		layer.set("NavButtonBorder", new Color(0xFF888888));
-		layer.set("OverlayColor", new Color(0x88000000));
-		layer.set("SpeakerFontSize", 9);
-		layer.set("DialogueFontSize", 9);
-		layer.set("OptionFontSize", 9);
-		layer.set("Margin", 10);
-		layer.set("PanelHeight", 125);
-		layer.set("ButtonHeight", 22);
-		layer.set("OptionGap", 4);
-		layer.set("TypewriterSoundEnabled", true);
-		layer.set("TypewriterCharsPerSecond", 45);
+		layer.set(KEY_DIALOGUE_BACKGROUND, new Color(0xCC101010));
+		layer.set(KEY_DIALOGUE_BORDER, new Color(0xFF666666));
+		layer.set(KEY_DIALOGUE_BORDER_WIDTH, 2);
+		layer.set(KEY_OPTIONS_BACKGROUND, new Color(0xCC101010));
+		layer.set(KEY_OPTIONS_BORDER, new Color(0xFF666666));
+		layer.set(KEY_OPTIONS_BORDER_WIDTH, 2);
+		layer.set(KEY_BUTTON_BACKGROUND, new Color(0x88000000));
+		layer.set(KEY_BUTTON_HOVER, new Color(0xAA444444));
+		layer.set(KEY_BUTTON_BORDER, new Color(0xFF888888));
+		layer.set(KEY_NAV_BUTTON_BACKGROUND, new Color(0x88000000));
+		layer.set(KEY_NAV_BUTTON_HOVER, new Color(0xAA444444));
+		layer.set(KEY_NAV_BUTTON_BORDER, new Color(0xFF888888));
+		layer.set(KEY_OVERLAY_COLOR, new Color(0x88000000));
+		layer.set(KEY_SPEAKER_FONT_SIZE, 9);
+		layer.set(KEY_DIALOGUE_FONT_SIZE, 9);
+		layer.set(KEY_OPTION_FONT_SIZE, 9);
+		layer.set(KEY_MARGIN, 10);
+		layer.set(KEY_PANEL_HEIGHT, 125);
+		layer.set(KEY_BUTTON_HEIGHT, 22);
+		layer.set(KEY_OPTION_GAP, 4);
+		layer.set(KEY_TYPEWRITER_SOUND_ENABLED, true);
+		layer.set(KEY_TYPEWRITER_CHARS_PER_SECOND, 45);
 		return layer.freeze();
 	}
 
@@ -200,205 +223,205 @@ public class DialogueStyle {
 	}
 
 	public Color getDialogueBackground() {
-		return color("DialogueBackground");
+		return color(KEY_DIALOGUE_BACKGROUND);
 	}
 
 	public void setDialogueBackground(Color v) {
-		set("DialogueBackground", v);
+		set(KEY_DIALOGUE_BACKGROUND, v);
 	}
 
 	public Color getDialogueBorder() {
-		return color("DialogueBorder");
+		return color(KEY_DIALOGUE_BORDER);
 	}
 
 	public void setDialogueBorder(Color v) {
-		set("DialogueBorder", v);
+		set(KEY_DIALOGUE_BORDER, v);
 	}
 
 	public int getDialogueBorderWidth() {
-		return integer("DialogueBorderWidth");
+		return integer(KEY_DIALOGUE_BORDER_WIDTH);
 	}
 
 	public void setDialogueBorderWidth(int v) {
-		set("DialogueBorderWidth", v);
+		set(KEY_DIALOGUE_BORDER_WIDTH, v);
 	}
 
 	public Color getOptionsBackground() {
-		return color("OptionsBackground");
+		return color(KEY_OPTIONS_BACKGROUND);
 	}
 
 	public void setOptionsBackground(Color v) {
-		set("OptionsBackground", v);
+		set(KEY_OPTIONS_BACKGROUND, v);
 	}
 
 	public Color getOptionsBorder() {
-		return color("OptionsBorder");
+		return color(KEY_OPTIONS_BORDER);
 	}
 
 	public void setOptionsBorder(Color v) {
-		set("OptionsBorder", v);
+		set(KEY_OPTIONS_BORDER, v);
 	}
 
 	public int getOptionsBorderWidth() {
-		return integer("OptionsBorderWidth");
+		return integer(KEY_OPTIONS_BORDER_WIDTH);
 	}
 
 	public void setOptionsBorderWidth(int v) {
-		set("OptionsBorderWidth", v);
+		set(KEY_OPTIONS_BORDER_WIDTH, v);
 	}
 
 	public Color getButtonBackground() {
-		return color("ButtonBackground");
+		return color(KEY_BUTTON_BACKGROUND);
 	}
 
 	public void setButtonBackground(Color v) {
-		set("ButtonBackground", v);
+		set(KEY_BUTTON_BACKGROUND, v);
 	}
 
 	public Color getButtonHover() {
-		return color("ButtonHover");
+		return color(KEY_BUTTON_HOVER);
 	}
 
 	public void setButtonHover(Color v) {
-		set("ButtonHover", v);
+		set(KEY_BUTTON_HOVER, v);
 	}
 
 	public Color getButtonBorder() {
-		return color("ButtonBorder");
+		return color(KEY_BUTTON_BORDER);
 	}
 
 	public void setButtonBorder(Color v) {
-		set("ButtonBorder", v);
+		set(KEY_BUTTON_BORDER, v);
 	}
 
 	public Color getNavButtonBackground() {
-		return color("NavButtonBackground");
+		return color(KEY_NAV_BUTTON_BACKGROUND);
 	}
 
 	public void setNavButtonBackground(Color v) {
-		set("NavButtonBackground", v);
+		set(KEY_NAV_BUTTON_BACKGROUND, v);
 	}
 
 	public Color getNavButtonHover() {
-		return color("NavButtonHover");
+		return color(KEY_NAV_BUTTON_HOVER);
 	}
 
 	public void setNavButtonHover(Color v) {
-		set("NavButtonHover", v);
+		set(KEY_NAV_BUTTON_HOVER, v);
 	}
 
 	public Color getNavButtonBorder() {
-		return color("NavButtonBorder");
+		return color(KEY_NAV_BUTTON_BORDER);
 	}
 
 	public void setNavButtonBorder(Color v) {
-		set("NavButtonBorder", v);
+		set(KEY_NAV_BUTTON_BORDER, v);
 	}
 
 	public Color getOverlayColor() {
-		return color("OverlayColor");
+		return color(KEY_OVERLAY_COLOR);
 	}
 
 	public void setOverlayColor(Color v) {
-		set("OverlayColor", v);
+		set(KEY_OVERLAY_COLOR, v);
 	}
 
 	public int getSpeakerFontSize() {
-		return integer("SpeakerFontSize");
+		return integer(KEY_SPEAKER_FONT_SIZE);
 	}
 
 	public void setSpeakerFontSize(int v) {
-		set("SpeakerFontSize", v);
+		set(KEY_SPEAKER_FONT_SIZE, v);
 	}
 
 	public int getDialogueFontSize() {
-		return integer("DialogueFontSize");
+		return integer(KEY_DIALOGUE_FONT_SIZE);
 	}
 
 	public void setDialogueFontSize(int v) {
-		set("DialogueFontSize", v);
+		set(KEY_DIALOGUE_FONT_SIZE, v);
 	}
 
 	public int getOptionFontSize() {
-		return integer("OptionFontSize");
+		return integer(KEY_OPTION_FONT_SIZE);
 	}
 
 	public void setOptionFontSize(int v) {
-		set("OptionFontSize", v);
+		set(KEY_OPTION_FONT_SIZE, v);
 	}
 
 	public int getMargin() {
-		return integer("Margin");
+		return integer(KEY_MARGIN);
 	}
 
 	public void setMargin(int v) {
-		set("Margin", v);
+		set(KEY_MARGIN, v);
 	}
 
 	public int getPanelHeight() {
-		return integer("PanelHeight");
+		return integer(KEY_PANEL_HEIGHT);
 	}
 
 	public void setPanelHeight(int v) {
-		set("PanelHeight", v);
+		set(KEY_PANEL_HEIGHT, v);
 	}
 
 	public int getButtonHeight() {
-		return integer("ButtonHeight");
+		return integer(KEY_BUTTON_HEIGHT);
 	}
 
 	public void setButtonHeight(int v) {
-		set("ButtonHeight", v);
+		set(KEY_BUTTON_HEIGHT, v);
 	}
 
 	public int getOptionGap() {
-		return integer("OptionGap");
+		return integer(KEY_OPTION_GAP);
 	}
 
 	public void setOptionGap(int v) {
-		set("OptionGap", v);
+		set(KEY_OPTION_GAP, v);
 	}
 
 	public boolean isTypewriterSoundEnabled() {
-		return bool("TypewriterSoundEnabled");
+		return bool(KEY_TYPEWRITER_SOUND_ENABLED);
 	}
 
 	public void setTypewriterSoundEnabled(boolean v) {
-		set("TypewriterSoundEnabled", v);
+		set(KEY_TYPEWRITER_SOUND_ENABLED, v);
 	}
 
 	public int getTypewriterCharsPerSecond() {
-		return integer("TypewriterCharsPerSecond");
+		return integer(KEY_TYPEWRITER_CHARS_PER_SECOND);
 	}
 
 	public void setTypewriterCharsPerSecond(int v) {
-		set("TypewriterCharsPerSecond", v);
+		set(KEY_TYPEWRITER_CHARS_PER_SECOND, v);
 	}
 
 	public CompoundTag toNbt() {
 		var tag = new CompoundTag();
-		tag.putInt("DialogueBackground", getDialogueBackground().argb());
-		tag.putInt("DialogueBorder", getDialogueBorder().argb());
-		tag.putInt("DialogueBorderWidth", getDialogueBorderWidth());
-		tag.putInt("OptionsBackground", getOptionsBackground().argb());
-		tag.putInt("OptionsBorder", getOptionsBorder().argb());
-		tag.putInt("OptionsBorderWidth", getOptionsBorderWidth());
-		tag.putInt("ButtonBackground", getButtonBackground().argb());
-		tag.putInt("ButtonHover", getButtonHover().argb());
-		tag.putInt("ButtonBorder", getButtonBorder().argb());
-		tag.putInt("NavButtonBackground", getNavButtonBackground().argb());
-		tag.putInt("NavButtonHover", getNavButtonHover().argb());
-		tag.putInt("NavButtonBorder", getNavButtonBorder().argb());
-		tag.putInt("OverlayColor", getOverlayColor().argb());
-		tag.putInt("SpeakerFontSize", getSpeakerFontSize());
-		tag.putInt("DialogueFontSize", getDialogueFontSize());
-		tag.putInt("OptionFontSize", getOptionFontSize());
-		tag.putInt("Margin", getMargin());
-		tag.putInt("PanelHeight", getPanelHeight());
-		tag.putInt("ButtonHeight", getButtonHeight());
-		tag.putInt("OptionGap", getOptionGap());
-		tag.putBoolean("TypewriterSoundEnabled", isTypewriterSoundEnabled());
-		tag.putInt("TypewriterCharsPerSecond", getTypewriterCharsPerSecond());
+		tag.putInt(KEY_DIALOGUE_BACKGROUND, getDialogueBackground().argb());
+		tag.putInt(KEY_DIALOGUE_BORDER, getDialogueBorder().argb());
+		tag.putInt(KEY_DIALOGUE_BORDER_WIDTH, getDialogueBorderWidth());
+		tag.putInt(KEY_OPTIONS_BACKGROUND, getOptionsBackground().argb());
+		tag.putInt(KEY_OPTIONS_BORDER, getOptionsBorder().argb());
+		tag.putInt(KEY_OPTIONS_BORDER_WIDTH, getOptionsBorderWidth());
+		tag.putInt(KEY_BUTTON_BACKGROUND, getButtonBackground().argb());
+		tag.putInt(KEY_BUTTON_HOVER, getButtonHover().argb());
+		tag.putInt(KEY_BUTTON_BORDER, getButtonBorder().argb());
+		tag.putInt(KEY_NAV_BUTTON_BACKGROUND, getNavButtonBackground().argb());
+		tag.putInt(KEY_NAV_BUTTON_HOVER, getNavButtonHover().argb());
+		tag.putInt(KEY_NAV_BUTTON_BORDER, getNavButtonBorder().argb());
+		tag.putInt(KEY_OVERLAY_COLOR, getOverlayColor().argb());
+		tag.putInt(KEY_SPEAKER_FONT_SIZE, getSpeakerFontSize());
+		tag.putInt(KEY_DIALOGUE_FONT_SIZE, getDialogueFontSize());
+		tag.putInt(KEY_OPTION_FONT_SIZE, getOptionFontSize());
+		tag.putInt(KEY_MARGIN, getMargin());
+		tag.putInt(KEY_PANEL_HEIGHT, getPanelHeight());
+		tag.putInt(KEY_BUTTON_HEIGHT, getButtonHeight());
+		tag.putInt(KEY_OPTION_GAP, getOptionGap());
+		tag.putBoolean(KEY_TYPEWRITER_SOUND_ENABLED, isTypewriterSoundEnabled());
+		tag.putInt(KEY_TYPEWRITER_CHARS_PER_SECOND, getTypewriterCharsPerSecond());
 		return tag;
 	}
 

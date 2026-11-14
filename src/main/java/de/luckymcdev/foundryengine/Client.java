@@ -3,7 +3,6 @@ package de.luckymcdev.foundryengine;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.platform.Window;
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.area.client.ClientAreaManager;
 import de.luckymcdev.foundryengine.command.client.ItemCommandManager;
@@ -13,40 +12,28 @@ import de.luckymcdev.foundryengine.editor.client.CutsceneTool;
 import de.luckymcdev.foundryengine.editor.client.EditorController;
 import de.luckymcdev.foundryengine.editor.client.EditorManager;
 import de.luckymcdev.foundryengine.editor.client.MainMenu;
+import de.luckymcdev.foundryengine.exception.common.UtilityClassException;
 import de.luckymcdev.foundryengine.icon.client.IconExporterLayer;
 import de.luckymcdev.foundryengine.ide.client.WorkspaceState;
 import de.luckymcdev.foundryengine.imgui.client.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.imgui.client.ImGuiManager;
 import de.luckymcdev.foundryengine.imgui.client.hotkey.HotKeyManager;
+import de.luckymcdev.foundryengine.manager.api.ManagerKey;
+import de.luckymcdev.foundryengine.manager.api.ManagerRegistry;
 import de.luckymcdev.foundryengine.particle.client.ParticleManager;
 import de.luckymcdev.foundryengine.post.client.PostEffectManager;
 import de.luckymcdev.foundryengine.render.client.MeshRenderer;
 import de.luckymcdev.foundryengine.render.client.obj.ObjModelManager;
 import de.luckymcdev.foundryengine.tooltip.client.TooltipManager;
 import de.luckymcdev.foundryengine.waypoint.client.ClientWaypointManager;
-import de.luckymcdev.foundryengine.Common;
-import de.luckymcdev.foundryengine.exception.common.UtilityClassException;
-import de.luckymcdev.foundryengine.interfaces.EngineMinecraft;
-import de.luckymcdev.foundryengine.manager.api.ManagerRegistry;
-import de.luckymcdev.foundryengine.manager.api.ManagerKey;
-import net.minecraft.client.Camera;
-
-//? if >=26.2 {
-/*import com.mojang.blaze3d.GpuFormat;
- *///?}
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.multiplayer.ClientPacketListener;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelTargetBundle;
 import net.minecraft.core.Vec3i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FontDescription;
-import net.minecraft.network.protocol.Packet;
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -60,7 +47,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.Objects;
+
+//? if >=26.2 {
+/*import com.mojang.blaze3d.GpuFormat;
+ *///?}
 
 /**
  * Client-side singleton providing access to all client subsystems and utility methods.

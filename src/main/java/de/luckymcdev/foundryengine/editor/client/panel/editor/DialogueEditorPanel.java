@@ -34,7 +34,7 @@ public class DialogueEditorPanel extends EditorPanel {
 	private final ImString editSpeaker = new ImString("", 64);
 	private final ImString editText = new ImString("", 4096);
 	private final ImString editNextNode = new ImString("", 64);
-	private final float[] editSpeakerColor = new float[]{0.33f, 1.0f, 0.33f, 1.0f};
+	private final float[] editSpeakerColor = {0.33f, 1.0f, 0.33f, 1.0f};
 	private final ImString newTreeId = new ImString(64);
 	private final ImString newNodeId = new ImString(64);
 	private final ImString newNodeSpeaker = new ImString(64);

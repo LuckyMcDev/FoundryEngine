@@ -26,11 +26,9 @@ public class CategoryMenuSection implements MenuSection {
 			renderPanelsForCategory(this.category);
 
 			for (PanelCategory sub : PanelCategory.values()) {
-				if (sub.isChildOf(this.category)) {
-					if (ImGui.beginMenu(sub.getMenuLabel())) {
-						renderPanelsForCategory(sub);
-						ImGui.endMenu();
-					}
+				if (sub.isChildOf(this.category) && ImGui.beginMenu(sub.getMenuLabel())) {
+					renderPanelsForCategory(sub);
+					ImGui.endMenu();
 				}
 			}
 			ImGui.endMenu();

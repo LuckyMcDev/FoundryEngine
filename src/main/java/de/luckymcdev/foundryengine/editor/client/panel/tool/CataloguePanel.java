@@ -43,7 +43,6 @@ public class CataloguePanel extends EditorPanel {
 	private static final Identifier BUCKET_ID = Identifier.parse("minecraft:water_bucket");
 	private static final Identifier SPAWNER_ID = Identifier.parse("minecraft:spawner");
 	private static final Identifier CRAFTING_TABLE_ID = Identifier.parse("minecraft:crafting_table");
-	private final Set<Identifier> failedLoads = new HashSet<>();
 	private final ImString searchBuffer = new ImString(256);
 
 	public CataloguePanel() {
@@ -204,18 +203,8 @@ public class CataloguePanel extends EditorPanel {
 				}
 				ImGui.endTabItem();
 			}
-
-			if (ImGui.beginTabItem(ImIcons.CODE + " Classes")) {
-				ImGui.textDisabled("Class browser has been removed.");
-				ImGui.endTabItem();
-			}
-
 			ImGui.endTabBar();
 		}
-	}
-
-	private void renderClassesTab() {
-		ImGui.textDisabled("Class browser has been removed.");
 	}
 
 	private void renderSearchHeader() {

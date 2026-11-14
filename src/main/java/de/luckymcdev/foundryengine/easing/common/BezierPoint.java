@@ -34,8 +34,8 @@ public class BezierPoint {
 	 * Returns the tangent points connected to this point.
 	 */
 	public List<BezierPoint> getTangents() {
-		ArrayList<BezierPoint> send = new ArrayList<>();
-		ArrayList<BezierPoint> points = this.path.getPoints();
+		List<BezierPoint> send = new ArrayList<>();
+		List<BezierPoint> points = this.path.getPoints();
 		if (this.isTangent) {
 			return send;
 		}
@@ -57,11 +57,11 @@ public class BezierPoint {
 	/**
 	 * Returns the splines that this point belongs to.
 	 */
-	public ArrayList<BezierSpline> getSplines() {
+	public List<BezierSpline> getSplines() {
 		if (this.isTangent) {
 			return this.getRoot().getSplines();
 		}
-		ArrayList<BezierSpline> send = new ArrayList<>();
+		List<BezierSpline> send = new ArrayList<>();
 		int index = this.getIndex();
 		int splineIndex = (index - 1) / 3;
 		send.add(this.path.splines.get(splineIndex));
@@ -110,27 +110,6 @@ public class BezierPoint {
 		return this.path;
 	}
 
-	private Color getColor() {
-		Color red = new Color(0xFFFFFF00);
-		Color blue = new Color(0xFF0000FF);
-		if (this.isTangent) {
-			if (this.getRoot().isFirst()) {
-				return red;
-			}
-			if (this.getRoot().isLast()) {
-				return blue;
-			}
-		} else {
-			if (this.isFirst()) {
-				return red;
-			}
-			if (this.isLast()) {
-				return blue;
-			}
-		}
-		return new Color(0xFF808080);
-	}
-
 	/**
 	 * Returns true if this is an endpoint (first or last anchor).
 	 */
@@ -142,7 +121,7 @@ public class BezierPoint {
 	 * Returns true if this is the first point in the path.
 	 */
 	public boolean isFirst() {
-		ArrayList<BezierPoint> points = this.path.getPoints();
+		List<BezierPoint> points = this.path.getPoints();
 		return points.getFirst() == this;
 	}
 
@@ -150,7 +129,7 @@ public class BezierPoint {
 	 * Returns true if this is the last point in the path.
 	 */
 	public boolean isLast() {
-		ArrayList<BezierPoint> points = this.path.getPoints();
+		List<BezierPoint> points = this.path.getPoints();
 		return points.getLast() == this;
 	}
 
@@ -161,7 +140,7 @@ public class BezierPoint {
 		if (!this.isTangent) {
 			return null;
 		}
-		ArrayList<BezierPoint> points = this.path.getPoints();
+		List<BezierPoint> points = this.path.getPoints();
 		int index = this.getIndex();
 		int alter = index + (2 * (index % 3) - 3);
 		return points.get(alter);
@@ -174,7 +153,7 @@ public class BezierPoint {
 		if (!this.isTangent || this.path.isPointFirstOrLast(this.getRoot())) {
 			return null;
 		}
-		ArrayList<BezierPoint> points = this.path.getPoints();
+		List<BezierPoint> points = this.path.getPoints();
 		int index = this.getIndex();
 		int alter = index + (-2 * ((index + 1) % 3) + 2);
 		return points.get(alter);

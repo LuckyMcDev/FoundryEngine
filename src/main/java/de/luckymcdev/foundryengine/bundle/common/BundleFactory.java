@@ -19,7 +19,7 @@ public class BundleFactory {
 		this.modBus = modBus;
 	}
 
-	public Bundle createBundle(BundleInfo info, Path bundleDir, @Nullable FileSystem zipFs) throws IOException {
+	public Bundle createBundle(BundleInfo info, Path bundleDir, @Nullable FileSystem zipFs) {
 		BundleFiles files = BundleFiles.builder().build(bundleDir, zipFs);
 
 		BundleCreativeModeTab creativeTab = new BundleCreativeModeTab(info.id(), modBus);

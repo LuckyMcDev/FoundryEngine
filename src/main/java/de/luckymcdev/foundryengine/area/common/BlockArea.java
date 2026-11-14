@@ -12,8 +12,6 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 public class BlockArea extends Area {
-	private static final double BLOCK_HALF = 0.5;
-
 	private BlockPos pos;
 
 	public BlockArea(Identifier id, BlockPos pos, ResourceKey<Level> dimension, Color color) {

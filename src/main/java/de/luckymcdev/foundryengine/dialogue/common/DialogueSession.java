@@ -45,7 +45,7 @@ public class DialogueSession {
 
 		var histTag = tag.getListOrEmpty("History");
 		for (int i = 0; i < histTag.size(); i++) {
-			histTag.getString(i).ifPresent(s -> session.history.addLast(s));
+			histTag.getString(i).ifPresent(session.history::addLast);
 		}
 
 		var varTag = tag.getCompoundOrEmpty("Variables");

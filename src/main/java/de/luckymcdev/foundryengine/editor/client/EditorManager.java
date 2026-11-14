@@ -2,10 +2,10 @@ package de.luckymcdev.foundryengine.editor.client;
 
 import com.mojang.logging.LogUtils;
 import de.luckymcdev.foundryengine.Client;
-import de.luckymcdev.foundryengine.manager.api.EngineManager;
 import de.luckymcdev.foundryengine.manager.api.Render;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import de.luckymcdev.foundryengine.editor.client.panel.Panel;
+import de.luckymcdev.foundryengine.editor.client.popup.PopUp;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.minecraft.resources.Identifier;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
@@ -21,6 +21,7 @@ public class EditorManager implements Render {
 	private static final Logger LOGGER = LogUtils.getLogger();
 
 	private final Map<Identifier, Panel> panels = new HashMap<>();
+	private final Map<Identifier, PopUp> popups = new HashMap<>();
 
 	public void register(Panel... panels) {
 		for (Panel panel : panels) {
@@ -37,18 +38,45 @@ public class EditorManager implements Render {
 		}
 	}
 
+	public void register(PopUp... popups) {
+		for (PopUp popup : popups) {
+			register(popup);
+		}
+	}
+
+	public void register(PopUp popup) {
+		if (popups.containsKey(popup.getId())) {
+			LOGGER.error("Tried to register popup with duplicate id: {}", popup.getId());
+		} else {
+			popups.put(popup.getId(), popup);
+		}
+	}
+
 	public void remove(Panel panel) {
 		closePanel(panel);
 		panels.remove(panel.getId());
 		Client.getHotKeyManager().remove(panel.getId());
 	}
 
+	public void remove(PopUp popup) {
+		popup.close();
+		popups.remove(popup.getId());
+	}
+
 	public @Nullable Panel getPanel(Identifier id) {
 		return panels.get(id);
 	}
 
+	public @Nullable PopUp getPopup(Identifier id) {
+		return popups.get(id);
+	}
+
 	public Collection<Panel> getPanels() {
 		return Collections.unmodifiableCollection(panels.values());
+	}
+
+	public Collection<PopUp> getPopups() {
+		return Collections.unmodifiableCollection(popups.values());
 	}
 
 	public void openPanel(Panel panel) {
@@ -71,6 +99,26 @@ public class EditorManager implements Render {
 		return panel != null && panel.isOpen();
 	}
 
+	public void openPopup(PopUp popup) {
+		popup.open();
+	}
+
+	public void closePopup(PopUp popup) {
+		popup.close();
+	}
+
+	public void togglePopup(PopUp popup) {
+		if (popup.isOpen()) {
+			popup.close();
+		} else {
+			popup.open();
+		}
+	}
+
+	public boolean isOpen(PopUp popup) {
+		return popup != null && popup.isOpen();
+	}
+
 	public void closeAllPanels() {
 		List<Panel> snapshot = new ArrayList<>();
 		for (Panel panel : panels.values()) {
@@ -79,6 +127,16 @@ public class EditorManager implements Render {
 			}
 		}
 		snapshot.forEach(Panel::close);
+	}
+
+	public void closeAllPopups() {
+		List<PopUp> snapshot = new ArrayList<>();
+		for (PopUp popup : popups.values()) {
+			if (popup.isOpen()) {
+				snapshot.add(popup);
+			}
+		}
+		snapshot.forEach(PopUp::close);
 	}
 
 	public void handleTick() {
@@ -96,10 +154,13 @@ public class EditorManager implements Render {
 			if (panel.isOpen() && !panel.handleRender()) {
 				toClose.add(panel);
 			}
-
 		}
 
 		toClose.forEach(Panel::close);
+
+		for (PopUp popup : List.copyOf(popups.values())) {
+			popup.handleRender();
+		}
 	}
 
 	//? if >=26.2 {

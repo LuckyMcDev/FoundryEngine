@@ -81,11 +81,6 @@ public class ScrollingPanelWidget extends PanelWidget {
 	}
 
 	@Override
-	public void onInit() {
-		super.onInit();
-	}
-
-	@Override
 	public void updateArea(UIArea parentArea) {
 		super.updateArea(parentArea);
 		this.recalculateScrollLimits();

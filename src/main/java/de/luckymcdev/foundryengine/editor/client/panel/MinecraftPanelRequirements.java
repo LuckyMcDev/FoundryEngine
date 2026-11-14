@@ -1,6 +1,5 @@
 package de.luckymcdev.foundryengine.editor.client.panel;
 
-import de.luckymcdev.foundryengine.Client;
 import de.luckymcdev.foundryengine.imgui.client.ImGraphicsExtractor;
 import de.luckymcdev.foundryengine.imgui.client.icon.ImIcons;
 import imgui.ImGui;
@@ -47,12 +46,11 @@ public class MinecraftPanelRequirements implements PanelRequirements {
 			textDenied("World Required", "You need to join a world for this panel to work.");
 			return false;
 		}
-		if (isSinglePlayer(mc)) {
-			if (!Minecraft.getInstance().player.permissions().hasPermission(new Permission.HasCommandLevel(level))) {
-				textDenied("Insufficient permissions", customMessage);
-				return false;
-			}
+		if (isSinglePlayer(mc) && !Minecraft.getInstance().player.permissions().hasPermission(new Permission.HasCommandLevel(level))) {
+			textDenied("Insufficient permissions", customMessage);
+			return false;
 		}
+
 		return true;
 	}
 
