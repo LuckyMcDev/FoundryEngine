@@ -115,6 +115,14 @@ public final class ImGuiGizmoMatrices {
 		toMatrix4f(proj, projMat);
 	}
 
+	@Override
+	public String toString() {
+		return "ImGuiGizmoMatrices{model=\n" + modelMat
+			+ "view=\n" + viewMat
+			+ "proj=\n" + projMat
+			+ "}";
+	}
+
 	public static final class Context {
 
 		public final float wx, wy, ww, wh;

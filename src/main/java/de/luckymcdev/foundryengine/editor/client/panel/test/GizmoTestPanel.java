@@ -35,7 +35,7 @@ public class GizmoTestPanel extends Panel {
 	private boolean lockTransform = false;
 	private boolean lockView = false;
 	private int selectedTheme = 0;
-	private boolean showMesh = true;
+	private final boolean showMesh = true;
 
 	private GizmoTestPanel() {
 		super(new Builder(Common.id("gizmo_test"))
@@ -90,10 +90,14 @@ public class GizmoTestPanel extends Panel {
 
 	@Override
 	public void content(ImGraphicsExtractor g) {
+		if (!requireLocal()) {
+			return;
+		}
+
 		ImGui.text("Gizmo Configuration");
 		ImGui.separator();
 
-		if (ImGui.checkbox("Show Mini Bar##gizmo", showMiniBar)) {
+		if (ImGui.checkbox("Show Mini Bar##showMiniBar", showMiniBar)) {
 			showMiniBar = !showMiniBar;
 			if (showMiniBar) {
 				miniBar.setOperation(gizmo.getConfig().operation);
@@ -103,46 +107,39 @@ public class GizmoTestPanel extends Panel {
 			}
 		}
 		ImGui.sameLine();
-		if (ImGui.checkbox("Show Grid##gizmo", showGrid)) {
+		if (ImGui.checkbox("Show Grid##showGrid", showGrid)) {
 			showGrid = !showGrid;
 			gizmo.setConfig(gizmo.getConfig().withShowGrid(showGrid));
 		}
 		ImGui.sameLine();
-		if (ImGui.checkbox("Show View Cube##gizmo", showViewCube)) {
+		if (ImGui.checkbox("Show View Cube##showViewCube", showViewCube)) {
 			showViewCube = !showViewCube;
-			// Correct flag (was previously withShowGrid) and no direct mutator exists.
 			gizmo.setConfig(gizmo.getConfig().toBuilder()
 				.withShowViewCube(showViewCube)
 				.build());
 		}
-		if (ImGui.checkbox("Show Mesh##gizmo", showMesh)) {
-			showMesh = !showMesh;
-			gizmo.setRenderModelWireframe(showMesh);
-		}
-		if (ImGui.checkbox("Lock Transform##gizmo", lockTransform)) {
+
+		if (ImGui.checkbox("Lock Transform##lockTransform", lockTransform)) {
 			lockTransform = !lockTransform;
 			gizmo.setConfig(gizmo.getConfig().toBuilder()
 				.withLockTransform(lockTransform)
 				.build());
 		}
-
 		ImGui.sameLine();
-		if (ImGui.checkbox("Lock View##gizmo", lockView)) {
+		if (ImGui.checkbox("Lock View##lockView", lockView)) {
 			lockView = !lockView;
 			camera.setLocked(lockView);
-			// Must also update the config, otherwise the view cube keeps drawing
-			// and keeps mutating the camera via syncFromViewMatrix().
 			gizmo.setConfig(gizmo.getConfig().toBuilder()
 				.withLockView(lockView)
 				.build());
 		}
 
-		if (ImGui.radioButton("Dark Theme##gizmo", selectedTheme == 0)) {
+		if (ImGui.radioButton("Dark Theme##darkTheme", selectedTheme == 0)) {
 			selectedTheme = 0;
 			gizmo.setTheme(ImGuiGizmoTheme.dark().build());
 		}
 		ImGui.sameLine();
-		if (ImGui.radioButton("Warm Theme##gizmo", selectedTheme == 1)) {
+		if (ImGui.radioButton("Warm Theme##warmTheme", selectedTheme == 1)) {
 			selectedTheme = 1;
 			gizmo.setTheme(ImGuiGizmoTheme.warm().build());
 		}
@@ -150,27 +147,27 @@ public class GizmoTestPanel extends Panel {
 		ImGui.separator();
 		ImGui.text("Quick Configs:");
 
-		if (ImGui.button("Translate##gizmo")) {
+		if (ImGui.button("Translate##btnTranslate")) {
 			applyOperation(Operation.TRANSLATE, Mode.LOCAL);
 		}
 		ImGui.sameLine();
-		if (ImGui.button("Rotate##gizmo")) {
+		if (ImGui.button("Rotate##btnRotate")) {
 			applyOperation(Operation.ROTATE, Mode.LOCAL);
 		}
 		ImGui.sameLine();
-		if (ImGui.button("Scale##gizmo")) {
+		if (ImGui.button("Scale##btnScale")) {
 			applyOperation(Operation.SCALEU, Mode.LOCAL);
 		}
 		ImGui.sameLine();
-		if (ImGui.button("Bounds##gizmo")) {
+		if (ImGui.button("Bounds##btnBounds")) {
 			applyBounds();
 		}
 
-		if (ImGui.button("Reset Matrix##gizmo")) {
+		if (ImGui.button("Reset Matrix##btnResetMatrix")) {
 			resetMatrix();
 		}
 		ImGui.sameLine();
-		if (ImGui.button("Reset Camera##gizmo")) {
+		if (ImGui.button("Reset Camera##btnResetCamera")) {
 			camera.reset();
 		}
 
@@ -181,11 +178,7 @@ public class GizmoTestPanel extends Panel {
 
 		ImGui.separator();
 		ImGui.text("Model Matrix:");
-		float[] m = gizmo.getMatrices().getModelRaw();
-		ImGui.text(String.format("  [%.3f, %.3f, %.3f, %.3f]", m[0], m[1], m[2], m[3]));
-		ImGui.text(String.format("  [%.3f, %.3f, %.3f, %.3f]", m[4], m[5], m[6], m[7]));
-		ImGui.text(String.format("  [%.3f, %.3f, %.3f, %.3f]", m[8], m[9], m[10], m[11]));
-		ImGui.text(String.format("  [%.3f, %.3f, %.3f, %.3f]", m[12], m[13], m[14], m[15]));
+		ImGui.text(gizmo.getMatrices().toString());
 
 		ImGui.separator();
 		ImGui.textWrapped("Interaction: Right-click drag to orbit \u00b7 Mouse wheel to zoom \u00b7 Drag colored arrows/circles to transform");
